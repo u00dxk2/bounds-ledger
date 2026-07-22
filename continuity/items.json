@@ -1,0 +1,33 @@
+{
+  "project": "bounds-ledger",
+  "items": [
+    {
+      "id": "G-1",
+      "created": "2026-07-22",
+      "type": "active",
+      "status": "open",
+      "title": "GOAL: become the reproducible steward of at least one drifting record inventory (re-verification CI + public status surface)",
+      "note": "Stewardship-not-search: adopt a record surface (bounds/constants/certificates), stand up automated re-fetch + re-verification + drift detection. Extension path if the pattern works: ML benchmark rot (same shape, different records). Source: skylark-site/docs/research-library/2026-07-22-portfolio-verifier-rich-domains.md.",
+      "closeWhen": "One record inventory under automated re-verification with 30-day green CI and at least one externally-acknowledged correction or confirmation."
+    },
+    {
+      "id": "A-1",
+      "created": "2026-07-22",
+      "type": "active",
+      "status": "open",
+      "title": "Customer-zero artifact: reconcile the Erdős minimum-overlap constant discrepancy (TTT-Discover 0.380876 vs Tao optimization-constants repo 0.380868)",
+      "note": "2-week target from lane open (2026-07-22). Determine which value is the current best upper bound and why the two sources differ (superseded result? different problem variant? transcription?). Deliverable: a reconciliation note in-repo with both primary sources cited and the checkable computation reproduced. This doubles as the lane's method template.",
+      "closeWhen": "Reconciliation note published in-repo with both sources cited and the discrepancy explained.",
+      "verifyBy": { "method": "the note's cited sources re-fetch to the claimed values and the reproduced computation runs green", "owner": "bounds-ledger" }
+    },
+    {
+      "id": "A-2",
+      "created": "2026-07-22",
+      "type": "active",
+      "status": "open",
+      "title": "Stand up re-verification CI for the first adopted record surface (scheduled re-fetch + check + drift alarm)",
+      "note": "Follows A-1 — the reconciliation picks the first surface to adopt (likely Tao's optimization-constants inventory or a subset of erdosproblems.com bounds). CI: scheduled job re-fetches sources, re-runs checks, diffs against the ledger, opens a finding on drift. Public status page comes after the pattern holds, and the public flip is adversarial-review + David-gated.",
+      "closeWhen": "CI green on a schedule for one adopted surface with drift detection demonstrated on a synthetic change."
+    }
+  ]
+}
