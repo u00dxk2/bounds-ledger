@@ -1,0 +1,53 @@
+[
+  {
+    "id": "C-1",
+    "statement": "Current best known upper bound on the Erdős minimum-overlap constant is 0.380868 (SimpleTES, Apr 2026)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1b.md",
+    "expect": "0.380868",
+    "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md"
+  },
+  {
+    "id": "C-2",
+    "statement": "Tao's curated table lists Haugland's 2016 bound as 0.380927 (round-to-nearest, bound-safe)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1b.md",
+    "expect": "0.380927",
+    "asserts": "docs/findings/2026-07-23-haugland-final-digit.md"
+  },
+  {
+    "id": "C-3",
+    "statement": "Best known lower bound is 0.379005 (White 2022)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1b.md",
+    "expect": "0.379005",
+    "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md"
+  },
+  {
+    "id": "C-4",
+    "statement": "Haugland's abstract states the bound as 0.380926... (truncation with ellipsis)",
+    "url": "https://arxiv.org/abs/1609.08000",
+    "expect": "0.380926",
+    "asserts": "docs/findings/2026-07-23-haugland-final-digit.md"
+  },
+  {
+    "id": "C-5",
+    "statement": "Haugland's final section gives the bound to full precision: 0.3809268534330870",
+    "url": "https://ar5iv.labs.arxiv.org/html/1609.08000",
+    "expect": "0.3809268534330870",
+    "asserts": "docs/findings/2026-07-23-haugland-final-digit.md"
+  },
+  {
+    "id": "C-6",
+    "statement": "Wikipedia's minimum-overlap article carries the 0.380926 form (ellipsis dropped)",
+    "url": "https://en.wikipedia.org/w/index.php?title=Minimum_overlap_problem&action=raw",
+    "expect": "0.380926",
+    "asserts": "docs/findings/2026-07-23-haugland-final-digit.md"
+  },
+  {
+    "id": "C-7",
+    "statement": "erdosproblems.com/36 still shows 0.380876 — three records stale (A-3)",
+    "url": "https://www.erdosproblems.com/36",
+    "expect": "0.380876",
+    "manual": true,
+    "note": "site 403s automated fetch; provenance is agent-fetch 2026-07-22 only. David board card 951db5ae asks for the hand-browse.",
+    "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md"
+  }
+]

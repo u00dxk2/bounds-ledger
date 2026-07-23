@@ -33,6 +33,16 @@ First adopted surface: **`teorth/optimizationproblems`** (109 constant files und
 - `node scripts/reverify.test.mjs` — network-free self-test: proves a synthetic single-digit tamper is caught.
 - `.github/workflows/reverify.yml` — daily cron (09:17 UTC) + on push + manual. A failed run IS the drift alarm; it auto-files a GitHub issue containing the drift report. Drift is expected behavior (records move) — the alarm demands re-verification, then a deliberate `--snapshot` commit turns it green.
 
+### Claim-level checks (the second half of the constraint)
+
+The mirror above watches ONE surface and reports any change. `ledger/claims.json` does the complementary job: each ledger claim names its source URL and the exact string that must still appear there, **across every surface we cite** — Tao's repo at live HEAD, arXiv abstracts, Wikipedia. Cross-surface divergence is what produced this lane's founding finding; a same-repo mirror diff would never have caught it.
+
+- `node scripts/check-claims.mjs` — re-fetch every cited source, assert each claim still holds; exit 1 if any broke.
+- `node scripts/check-claims.mjs --selftest` — network-free matcher self-check (also runs in CI).
+- A claim marked `"manual": true` (source blocks automated fetch, e.g. erdosproblems.com) reports **UNVERIFIED** and never counts as green — the repo's "never silently trusted" rule, made mechanical.
+
+Adding a claim to a published note means adding a row here; that's what keeps *re-fetchable citation + re-runnable check* true rather than aspirational.
+
 ## Constraints
 
 - Every ledger claim carries a re-fetchable citation AND a re-runnable check; a claim without both is marked unverified — never silently trusted.

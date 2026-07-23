@@ -20,16 +20,21 @@ jobs:
           node-version: 22
       - name: Self-test drift detection (no network)
         run: node scripts/reverify.test.mjs
+      - name: Self-test claim matcher (no network)
+        run: node scripts/check-claims.mjs --selftest
       - name: Check adopted surface for drift
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: node scripts/reverify.mjs --check | tee drift-report.txt
-      - name: Open drift finding
+        run: node scripts/reverify.mjs --check | tee -a finding.txt
+      - name: Check ledger claims across cited surfaces
+        if: '!cancelled()'
+        run: node scripts/check-claims.mjs | tee -a finding.txt
+      - name: Open finding
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh issue create \
-            --title "Drift: teorth/optimizationproblems ($(date -u +%F))" \
-            --body-file drift-report.txt \
+            --title "Drift: bounds-ledger re-verification ($(date -u +%F))" \
+            --body-file finding.txt \
             --repo "$GITHUB_REPOSITORY"
