@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-23T19:33:47.145Z",
+  "projectPath": "C:\\dev\\skylark\\bounds-ledger",
+  "itemCount": 5,
+  "knownPatternCount": 0,
+  "commitCount": 7,
+  "findings": [
+    {
+      "check": "MODIFIED_ITEM_LAST_24H",
+      "severity": "info",
+      "id": "G-1",
+      "title": "GOAL: become the reproducible steward of at least one drifting record inventory (re-verification CI + public status surface)",
+      "message": "Item G-1 title/closeWhen modified in last 24h (diff hash ec32de05); investigate before per-day judgment.",
+      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
+    },
+    {
+      "check": "MODIFIED_ITEM_LAST_24H",
+      "severity": "info",
+      "id": "A-1",
+      "title": "Customer-zero artifact: reconcile the Erdős minimum-overlap constant discrepancy (TTT-Discover 0.380876 vs Tao optimization-constants repo 0.380868)",
+      "message": "Item A-1 title/closeWhen modified in last 24h (diff hash cd03edfc); investigate before per-day judgment.",
+      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
+    },
+    {
+      "check": "MODIFIED_ITEM_LAST_24H",
+      "severity": "info",
+      "id": "A-2",
+      "title": "Stand up re-verification CI for the first adopted record surface (scheduled re-fetch + check + drift alarm)",
+      "message": "Item A-2 title/closeWhen modified in last 24h (diff hash 8d537fdd); investigate before per-day judgment.",
+      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
+    },
+    {
+      "check": "MODIFIED_ITEM_LAST_24H",
+      "severity": "info",
+      "id": "W-2",
+      "title": "Haugland-2016 final-digit discrepancy: Tao table 0.380927 vs paper abstract + Wikipedia 0.380926 - candidate first upstream PR",
+      "message": "Item W-2 title/closeWhen modified in last 24h (diff hash b73fc5f5); investigate before per-day judgment.",
+      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
+    },
+    {
+      "check": "MODIFIED_ITEM_LAST_24H",
+      "severity": "info",
+      "id": "A-3",
+      "title": "erdosproblems.com/36 is three records stale - decide whether/how to report upstream",
+      "message": "Item A-3 title/closeWhen modified in last 24h (diff hash 3ac3105c); investigate before per-day judgment.",
+      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
+    },
+    {
+      "check": "UNTRACKED_COMMITS",
+      "severity": "info",
+      "count": 2,
+      "message": "2 commit(s) in last 48h not in any item's linkedCommits[] (mentions in prose fields like explanation/notes don't count by design)",
+      "commits": [
+        {
+          "hash": "2f5d684",
+          "subject": "feat(ledger): reconciliation #1 RESOLVED same-day — record sequence not conflict; erdosproblems.com 3 records stale; Haugland final-digit catch (W-2); A-3 + curated-vs-live convention",
+          "date": "2026-07-22"
+        },
+        {
+          "hash": "f131b33",
+          "subject": "seed: bounds-ledger lane — thesis, customer-zero artifact, continuity ledger (opened 2026-07-22)",
+          "date": "2026-07-22"
+        }
+      ],
+      "suggested": "Verify each is reflected in changelog/shipped log, or link via item.linkedCommits[], or add to items.json.meta.untrackedCommits with a rationale."
+    }
+  ],
+  "counts": {
+    "critical": 0,
+    "warn": 0,
+    "info": 6
+  },
+  "suppressedCount": 0,
+  "actionsOnlyMode": false,
+  "status": "ok"
+}

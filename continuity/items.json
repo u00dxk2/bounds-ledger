@@ -8,7 +8,8 @@
       "status": "open",
       "title": "GOAL: become the reproducible steward of at least one drifting record inventory (re-verification CI + public status surface)",
       "note": "Stewardship-not-search: adopt a record surface (bounds/constants/certificates), stand up automated re-fetch + re-verification + drift detection. Extension path if the pattern works: ML benchmark rot (same shape, different records). Source: skylark-site/docs/research-library/2026-07-22-portfolio-verifier-rich-domains.md.",
-      "closeWhen": "One record inventory under automated re-verification with 30-day green CI and at least one externally-acknowledged correction or confirmation."
+      "closeWhen": "One record inventory under automated re-verification with 30-day green CI and at least one externally-acknowledged correction or confirmation.",
+      "linkedCommits": ["6056ffe"]
     },
     {
       "id": "A-1",
@@ -31,7 +32,8 @@
       "status": "open",
       "title": "Stand up re-verification CI for the first adopted record surface (scheduled re-fetch + check + drift alarm)",
       "note": "Follows A-1 — the reconciliation picks the first surface to adopt (likely Tao's optimization-constants inventory or a subset of erdosproblems.com bounds). CI: scheduled job re-fetches sources, re-runs checks, diffs against the ledger, opens a finding on drift. Public status page comes after the pattern holds, and the public flip is adversarial-review + David-gated. Surface selected 2026-07-22: teorth/optimizationproblems (~85 constants, structure documented in reconciliation #1). CI checks: re-fetch constant files, diff tables vs ledger copy, cross-check external surfaces (erdosproblems.com, Wikipedia, paper abstracts), finding on drift. STOOD UP 2026-07-23: scripts/reverify.mjs (--snapshot/--check) + .github/workflows/reverify.yml (daily cron 09:17 UTC + push + manual; drift -> failed run + auto-filed GitHub issue). Snapshot: 109 files @ a002311. Synthetic-drift demo PASS (scripts/reverify.test.mjs, runs in CI every time, no network). Cross-surface half shipped same day: scripts/check-claims.mjs + ledger/claims.json (7 claims; 6 fetchable HOLD across Tao-at-HEAD + arXiv abs + ar5iv + Wikipedia, C-7 erdosproblems reports UNVERIFIED by design since the site 403s bots). Both checks + both selftests wired into reverify.yml; a failure files one combined finding issue. Remaining for close: green on schedule (30-day streak per G-1).",
-      "closeWhen": "CI green on a schedule for one adopted surface with drift detection demonstrated on a synthetic change."
+      "closeWhen": "CI green on a schedule for one adopted surface with drift detection demonstrated on a synthetic change.",
+      "linkedCommits": ["9ca5af7", "a7236c0", "7c0446a"]
     },
     {
       "id": "W-2",
@@ -41,7 +43,8 @@
       "title": "Haugland-2016 final-digit discrepancy: Tao table 0.380927 vs paper abstract + Wikipedia 0.380926 - candidate first upstream PR",
       "note": "True value ~0.3809268; determine rounding-choice vs typo by reading arXiv:1609.08000 final section. If typo: a one-character upstream PR to teorth/optimizationproblems = the lane's first outward artifact. OUTWARD: adversarial refute-it review + David sign-off required before submitting. RESOLVED 2026-07-23: NOT a typo - rounding convention. Paper final section gives 0.3809268534330870; Tao rounds to nearest (0.380927, bound-safe), abstract truncates with ellipsis (0.380926...), Wikipedia dropped the ellipsis. Repo is right; no upstream PR. Finding: docs/findings/2026-07-23-haugland-final-digit.md.",
       "closeWhen": "Determined which value is correct; if repo wrong, upstream PR submitted (after David gate) or finding recorded.",
-      "closedAt": "2026-07-23"
+      "closedAt": "2026-07-23",
+      "linkedCommits": ["9ca5af7"]
     },
     {
       "id": "A-3",
@@ -50,7 +53,8 @@
       "status": "open",
       "title": "erdosproblems.com/36 is three records stale - decide whether/how to report upstream",
       "note": "The most popular Erdos problem index still shows 0.380876 (last edited 2026-01-23), missing TogetherAI + SimpleTES. First: re-verify by hand-browse (site 403s bots; current provenance is agent-fetch only). Reporting upstream (Thomas Bloom) is outward contact: David-gated. Also a candidate demonstration artifact for the ledger's value. STALENESS HAND-CONFIRMED 2026-07-23: David screenshot (via orchestrator reading local disk) shows '0.379005 < c < 0.380876', 0.380868 absent, last edited 23 Jan 2026 - matches our finding exactly. Claim C-7 provenance upgraded from agent-fetch to hand-verified. DECISION FILED: docs/decisions/2026-07-23-A3-erdosproblems-report.md - RECOMMEND report upstream (customer-zero payoff, factual/low-risk), gated on (1) adversarial refute-it review then (2) David outward-send gate; copy-paste draft correction ready in the doc. HELD pending David's gate; no contact made.",
-      "closeWhen": "Staleness hand-verified AND either reported upstream (post-gate) or a deliberate no-report decision recorded."
+      "closeWhen": "Staleness hand-verified AND either reported upstream (post-gate) or a deliberate no-report decision recorded.",
+      "linkedCommits": ["758ece6"]
     }
   ]
 }
