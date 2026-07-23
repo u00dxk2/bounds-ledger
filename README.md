@@ -24,6 +24,15 @@ Source research: `skylark-site/docs/research-library/2026-07-22-portfolio-verifi
 
 A published reconciliation of the minimum-overlap discrepancy (0.380876 vs 0.380868): which is current, why they differ, with both sources cited and the checkable artifact (certificate/computation) reproduced in this repo.
 
+## Re-verification CI (A-2, stood up 2026-07-23)
+
+First adopted surface: **`teorth/optimizationproblems`** (109 constant files under `constants/`). Ledger copy lives at `ledger/teorth-optimizationproblems/` (snapshot + `manifest.json` pinning the upstream sha).
+
+- `node scripts/reverify.mjs --snapshot` — refresh the ledger copy from upstream HEAD (run only after a drift has been re-verified against primary sources; commit the result).
+- `node scripts/reverify.mjs --check` — re-fetch upstream, diff vs the ledger copy, print a drift report; exit 1 on drift.
+- `node scripts/reverify.test.mjs` — network-free self-test: proves a synthetic single-digit tamper is caught.
+- `.github/workflows/reverify.yml` — daily cron (09:17 UTC) + on push + manual. A failed run IS the drift alarm; it auto-files a GitHub issue containing the drift report. Drift is expected behavior (records move) — the alarm demands re-verification, then a deliberate `--snapshot` commit turns it green.
+
 ## Constraints
 
 - Every ledger claim carries a re-fetchable citation AND a re-runnable check; a claim without both is marked unverified — never silently trusted.

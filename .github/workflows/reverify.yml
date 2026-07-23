@@ -1,0 +1,35 @@
+name: reverify
+on:
+  schedule:
+    - cron: "17 9 * * *" # daily 09:17 UTC (03:17 MT)
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Self-test drift detection (no network)
+        run: node scripts/reverify.test.mjs
+      - name: Check adopted surface for drift
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/reverify.mjs --check | tee drift-report.txt
+      - name: Open drift finding
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "Drift: teorth/optimizationproblems ($(date -u +%F))" \
+            --body-file drift-report.txt \
+            --repo "$GITHUB_REPOSITORY"
