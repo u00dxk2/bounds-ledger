@@ -20,9 +20,9 @@ Source research: `skylark-site/docs/research-library/2026-07-22-portfolio-verifi
 - Not an OEIS contributor (OEIS forbids AI-generated submissions — closed route).
 - Not a mathlib-primary contributor (2,600+ open-PR review backlog; human-supervision norms). Formalization rides **inside** this lane opportunistically where acceptance is mechanical: DeepMind's Formal Conjectures repo (1,170 open statements), the Equational Theories successor challenge (SAIR Foundation, Mar 2026 — explicitly welcomes automated contributions).
 
-## First artifact (2-week target)
+## First artifact — DONE (2026-07-22, day one)
 
-A published reconciliation of the minimum-overlap discrepancy (0.380876 vs 0.380868): which is current, why they differ, with both sources cited and the checkable artifact (certificate/computation) reproduced in this repo.
+The 2-week target was a published reconciliation of the minimum-overlap discrepancy (0.380876 vs 0.380868). Delivered same-day: **`docs/reconciliations/2026-07-22-minimum-overlap.md`** — the two values were not in conflict but consecutive entries in a fast-moving record sequence (the stale surface was erdosproblems.com/36, not either primary source). That note is also the lane's method template.
 
 ## Re-verification CI (A-2, stood up 2026-07-23)
 
