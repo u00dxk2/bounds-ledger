@@ -47,7 +47,8 @@
     "url": "https://www.erdosproblems.com/36",
     "expect": "0.380876",
     "manual": true,
-    "note": "site 403s automated fetch; provenance is agent-fetch 2026-07-22 only. David board card 951db5ae asks for the hand-browse.",
+    "note": "site 403s automated fetch, so the checker cannot re-run this — HAND-VERIFIED by David via screenshot 2026-07-23: page shows '0.379005 < c < 0.380876' (upper attributed to TTT-Discover), 0.380868 absent, last edited 23 Jan 2026. Staleness confirmed (A-3). Re-confirm by hand if the page's last-edited date changes.",
+    "lastHandVerify": "2026-07-23",
     "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md"
   }
 ]

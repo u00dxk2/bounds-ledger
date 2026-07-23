@@ -49,7 +49,7 @@
       "type": "active",
       "status": "open",
       "title": "erdosproblems.com/36 is three records stale - decide whether/how to report upstream",
-      "note": "The most popular Erdos problem index still shows 0.380876 (last edited 2026-01-23), missing TogetherAI + SimpleTES. First: re-verify by hand-browse (site 403s bots; current provenance is agent-fetch only). Reporting upstream (Thomas Bloom) is outward contact: David-gated. Also a candidate demonstration artifact for the ledger's value.",
+      "note": "The most popular Erdos problem index still shows 0.380876 (last edited 2026-01-23), missing TogetherAI + SimpleTES. First: re-verify by hand-browse (site 403s bots; current provenance is agent-fetch only). Reporting upstream (Thomas Bloom) is outward contact: David-gated. Also a candidate demonstration artifact for the ledger's value. STALENESS HAND-CONFIRMED 2026-07-23: David screenshot (via orchestrator reading local disk) shows '0.379005 < c < 0.380876', 0.380868 absent, last edited 23 Jan 2026 - matches our finding exactly. Claim C-7 provenance upgraded from agent-fetch to hand-verified. DECISION FILED: docs/decisions/2026-07-23-A3-erdosproblems-report.md - RECOMMEND report upstream (customer-zero payoff, factual/low-risk), gated on (1) adversarial refute-it review then (2) David outward-send gate; copy-paste draft correction ready in the doc. HELD pending David's gate; no contact made.",
       "closeWhen": "Staleness hand-verified AND either reported upstream (post-gate) or a deliberate no-report decision recorded."
     }
   ]
