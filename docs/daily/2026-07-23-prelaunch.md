@@ -1,10 +1,27 @@
+---
+product: bounds-ledger
+date: 2026-07-23
+lifecycle_stage: prelaunch
+north_star_metric: externally-acknowledged corrections/confirmations on a stewarded surface (G-1; leading indicator = drift catches)
+north_star_value: 0
+north_star_status: amber
+north_star_classification: emerging
+last_deploy: 9ca5af7
+sentry_open_p1: 0
+sentry_open_p2: 0
+mrr_usd: null
+n_active_users_28d: 0
+on_hold_items: 1
+top_action_today: "A-2 re-verification CI stood up (109-file snapshot @ a002311, synthetic-drift demo PASS, first Actions run green); W-2 closed — not a typo, no upstream PR"
+---
+
 # bounds-ledger — daily (prelaunch) — 2026-07-23 (MT)
 
 First /daily for this lane. Lite rail.
 
 ## (1) Engineering signals
 
-- CI: none existed before today. `reverify.yml` ships today (daily cron + push + manual); the push-triggered first run is the live validation — result recorded below in (2).
+- CI: none existed before today. `reverify.yml` ships today (daily cron + push + manual); the push-triggered first run (run 30009166472) completed **green** — self-test + live drift check both passed on GitHub Actions.
 - Sentry/deps: n/a (no app surface, no dependencies — scripts are Node stdlib only).
 - Codex: GREEN (codex-cli 0.143.0, health OK). Not used today — both tasks were far under the ≥250-LOC Codex-first bar.
 
@@ -30,7 +47,7 @@ This lane's product-love analog is G-1's close condition: **an externally-acknow
 
 ## (5) Continuity
 
-- W-2 closed (finding recorded). A-2 progressed: synthetic-drift half ✓, scheduled-green-streak half begins tonight. A-3 unchanged. G-1 unchanged (30-day green CI clock starts now).
+- W-2 (Haugland final-digit discrepancy) closed — finding recorded. A-2 (re-verification CI) progressed: synthetic-drift half ✓, scheduled-green-streak half begins tonight. A-3 unchanged. G-1 unchanged (30-day green CI clock starts now).
 
 ---
 
