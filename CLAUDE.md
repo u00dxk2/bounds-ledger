@@ -43,4 +43,5 @@ No dependencies — Node stdlib + `fetch` only. `npm install` is a no-op.
 
 - **erdosproblems.com 403s automated fetch.** Re-verifying it needs David's browser; the value can reach you via a screenshot he attaches to a board card (the orchestrator reads it off local disk). Don't substitute a bot fetch — a 403 proves nothing.
 - **LF→CRLF git warnings on Windows are benign** — ignore them on commit.
+- **Never pipe a check step in CI without `shell: bash`.** GitHub Actions' default runner shell is `bash -e {0}` — no `pipefail` — so `node scripts/x.mjs | tee ...` reports `tee`'s exit 0 and a real drift passes green. This made the alarm fake for the lane's first two days (`docs/findings/2026-07-24-drift-alarm-was-never-armed.md`). `reverify.test.mjs` now guards it; don't defeat the guard.
 - **The mirror diff only sees changes *inside* the adopted repo.** Cross-surface divergence (the lane's founding finding) is caught by `check-claims.mjs`, not `reverify.mjs`. Both run in CI.
