@@ -67,6 +67,8 @@ Sure about the disagreement. Not sure about the mathematics — and the differen
 > **We have not checked the mathematics behind 0.380868.** We did not reproduce the construction or read the proof. We are trusting the authors' paper and Tao's curation of it.
 >
 > So the claim we can actually stand behind is *"your page disagrees with the field's curated table, and the table is newer"* — not *"we proved this number."* The draft below is worded to claim only the first. If it ever drifted toward the second, it would be overclaiming and I'd pull it.
+>
+> **This nearly went wrong.** The draft said "cross-checked against the curated table *and the source-paper abstracts*" right up to the moment of sending. It isn't true: none of the three cited abstracts (SimpleTES 2604.19341, White 2201.05704, TTT-Discover 2601.16175) state their numeric bounds — verified 2026-07-24. The phrase was carried over from the Haugland work on 7/23, where the abstract *did* carry the value, and no one re-examined it. The adversarial review attacked the claim from five angles and never audited the evidence sentence. **Our verification of 0.380868 rests on Tao's curated table alone.** Caught at David's pre-send check; clause removed.
 
 One expiry condition: your screenshot is from 23 July. Because the site blocks us, we cannot re-check it on our own, so it doesn't age gracefully. **If you greenlight this after 30 July, I'll ask you to glance at the page once more first.**
 
@@ -78,7 +80,7 @@ One expiry condition: your screenshot is from 23 July. Because the site blocks u
 >
 > - **0.380868** — SimpleTES, "Evaluation-driven Scaling for Scientific Discovery," [arXiv:2604.19341](https://arxiv.org/abs/2604.19341) (Apr 2026)
 >
-> That would make the current bracket 0.379005 < c < 0.380868 (lower bound White 2022, [arXiv:2201.05704](https://arxiv.org/abs/2201.05704)). Cross-checked against the curated table and the source-paper abstracts; happy to be corrected if you're tracking it deliberately.
+> That would make the current bracket 0.379005 < c < 0.380868 (lower bound White 2022, [arXiv:2201.05704](https://arxiv.org/abs/2201.05704)). Cross-checked against the curated table; happy to be corrected if you're tracking it deliberately.
 
 Short on purpose. It gives the value, the source, and a way to disagree — and it doesn't tell a mathematician what their own page should say.
 

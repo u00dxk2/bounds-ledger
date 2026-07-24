@@ -43,6 +43,8 @@ The page state is a 2026-07-23 hand-verification (David's screenshot). C-7 is `m
 
 ## Verdict
 
+*(Verdict below was written before Angle 6 was found at the pre-send check — it stands, but note that the review as originally run was incomplete.)*
+
 **SURVIVES.** The core factual claim — erdosproblems.com/36's upper bound 0.380876 is superseded by the curated, paper-cited 0.380868, correct bracket `0.379005 < c < 0.380868` — withstood every angle. Two amendments are required before send (A: drop 0.380871; B: neutral framing), plus the 7-day re-confirmation condition.
 
 Gate 1 of 2 is now **clear**. Gate 2 (David's outward-send gate) remains **closed** — no contact made.
@@ -55,4 +57,14 @@ Gate 1 of 2 is now **clear**. Gate 2 (David's outward-send gate) remains **close
 >
 > - **0.380868** — SimpleTES, "Evaluation-driven Scaling for Scientific Discovery," [arXiv:2604.19341](https://arxiv.org/abs/2604.19341) (Apr 2026)
 >
-> That would make the current bracket 0.379005 < c < 0.380868 (lower bound White 2022, [arXiv:2201.05704](https://arxiv.org/abs/2201.05704)). Cross-checked against the curated table and the source-paper abstracts; happy to be corrected if you're tracking it deliberately.
+> That would make the current bracket 0.379005 < c < 0.380868 (lower bound White 2022, [arXiv:2201.05704](https://arxiv.org/abs/2201.05704)). Cross-checked against the curated table; happy to be corrected if you're tracking it deliberately.
+
+## Angle 6 — added at the pre-send check (2026-07-24): **SUSTAINED — the review missed this**
+
+*Attack (David's pre-send read, not the review's):* the draft's own evidence sentence claimed "cross-checked against the curated table **and the source-paper abstracts**."
+
+*Result:* **false.** Verified 2026-07-24 by fetching all three abstracts — SimpleTES `2604.19341`, White `2201.05704`, TTT-Discover `2601.16175` — **none states its numeric bound**. (SimpleTES's abstract does claim "new Erdos minimum overlap constructions that surpass the best-known results", but prints no digits.) The clause was inherited from the W-2 Haugland work on 7/23, where the abstract genuinely *did* carry the value, and was never re-examined when the draft was rewritten for a different constant.
+
+**Our verification of 0.380868 rests on Tao's curated table alone.** Clause removed from the draft.
+
+*Lesson for the next outward artifact:* angles 1–5 all attacked the **claim**. None audited the **evidence sentence** — the part that tells the recipient what work we did. A false claim about our own method is worse than a wrong value: it is the one thing the recipient cannot check and must take on trust. **Audit the method sentence as its own angle, every time.**
