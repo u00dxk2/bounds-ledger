@@ -12,7 +12,10 @@
       "note4": "ALARM LEGIBILITY FIXED 2026-07-24 (David greenlit): reverify.yml Open-finding step now (a) code-fences the issue body so the -/+ drift diff renders verbatim in <pre><code> instead of GFM mangling it into nested bullets (old-vs-new was unreadable), and (b) titles the issue with the drifted file(s)/claim ids (P-1) instead of a bare date. Verified against GitHub's own GFM API. P-2 (verdict-first) + P-3 (one rolling issue) deferred. Commit 03ced9e. Finding: docs/findings/2026-07-24-peak-moment-render.md.",
       "note3": "FIRST OUTWARD ARTIFACT SENT 2026-07-24 (A-3 → erdosproblems.com maintainer, David-sent post-gate). This is the halfway point of G-1's second close condition, NOT the condition itself: G-1 needs an externally-ACKNOWLEDGED correction, and acknowledgement is still 0. Tracked as W-3.",
       "note2": "GREEN-STREAK CLOCK RESTARTED 2026-07-24: the 7/23-7/24 greens carried no information — piped CI steps masked exit codes (default runner shell is `bash -e`, no pipefail), so the job was green-by-construction and would never have filed a drift issue. Fixed + guarded 2026-07-24; finding: docs/findings/2026-07-24-drift-alarm-was-never-armed.md. Day 1 of the real streak = 2026-07-24.",
-      "linkedCommits": ["6056ffe"]
+      "linkedCommits": [
+        "6056ffe",
+        "f131b33"
+      ]
     },
     {
       "id": "A-1",
@@ -26,7 +29,10 @@
         "method": "the note's cited sources re-fetch to the claimed values and the reproduced computation runs green",
         "owner": "bounds-ledger"
       },
-      "closedAt": "2026-07-22"
+      "closedAt": "2026-07-22",
+      "linkedCommits": [
+        "2f5d684"
+      ]
     },
     {
       "id": "A-2",
@@ -37,7 +43,14 @@
       "note": "Follows A-1 — the reconciliation picks the first surface to adopt (likely Tao's optimization-constants inventory or a subset of erdosproblems.com bounds). CI: scheduled job re-fetches sources, re-runs checks, diffs against the ledger, opens a finding on drift. Public status page comes after the pattern holds, and the public flip is adversarial-review + David-gated. Surface selected 2026-07-22: teorth/optimizationproblems (~85 constants, structure documented in reconciliation #1). CI checks: re-fetch constant files, diff tables vs ledger copy, cross-check external surfaces (erdosproblems.com, Wikipedia, paper abstracts), finding on drift. STOOD UP 2026-07-23: scripts/reverify.mjs (--snapshot/--check) + .github/workflows/reverify.yml (daily cron 09:17 UTC + push + manual; drift -> failed run + auto-filed GitHub issue). Snapshot: 109 files @ a002311. Synthetic-drift demo PASS (scripts/reverify.test.mjs, runs in CI every time, no network). Cross-surface half shipped same day: scripts/check-claims.mjs + ledger/claims.json (7 claims; 6 fetchable HOLD across Tao-at-HEAD + arXiv abs + ar5iv + Wikipedia, C-7 erdosproblems reports UNVERIFIED by design since the site 403s bots). Both checks + both selftests wired into reverify.yml; a failure files one combined finding issue. Remaining for close: green on schedule (30-day streak per G-1). 2026-07-24 — ALARM WAS NOT ACTUALLY ARMED: both live checks piped into `tee` and the GitHub Actions default shell is `bash -e {0}` with no pipefail, so a drift exit-1 was reported as exit 0, the job passed, and `if: failure()` never filed the issue. The synthetic-drift self-test could not catch it (it tested the script's exit code, not the workflow's consumption of it). Fixed with `shell: bash` on both piped steps; reverify.test.mjs now asserts every piped workflow step declares it (negative control performed). Finding: docs/findings/2026-07-24-drift-alarm-was-never-armed.md.",
       "closeWhen": "CI green on a schedule for one adopted surface with drift detection demonstrated on a synthetic change.",
       "note2": "PIN EXTENSION SHIPPED 2026-07-24 eve (David unheld the 7/23 feature hold in-pane: 'Accidental hold. Please proceed.'): scripts/extract-pins.mjs generates 216 claim pins covering all 109 constants (1b.md stays hand-pinned as C-1/C-3) — ledger/claims.json now 7 hand + 216 generated = 223 claims, 222/222 fetchable HOLD live, C-7 UNVERIFIED by design. DESIGN DECISION: pins assert the LAST-LISTED row of each bounds table (verbatim raw line), NOT 'the record' — numeric record-ranking is defeated by symbolic cells ($K_{DR}+10^{-26}$), negatives, O(.) asymptotics (verified against the corpus; a min/max prototype mis-picked 10a/21a/41a), and auto-asserting 'record' 216x would put unverified statements in our own ledger. Last-listed is true by construction; an appended new record trips the mirror diff instead. NEW DISCIPLINE: after any deliberate --snapshot, re-run extract-pins.mjs and commit the regenerated pins — pins are the post-snapshot ratchet (a moved row stays BROKEN until deliberately re-pinned). check-claims.mjs now per-URL fetch-caches and counts (not lists) held claims so a real BREAK can't drown below the fold. Commit 22fa79c.",
-      "linkedCommits": ["9ca5af7", "a7236c0", "7c0446a", "22fa79c"]
+      "linkedCommits": [
+        "9ca5af7",
+        "a7236c0",
+        "7c0446a",
+        "22fa79c",
+        "e6f6e33",
+        "03ced9e"
+      ]
     },
     {
       "id": "W-2",
@@ -48,7 +61,9 @@
       "note": "True value ~0.3809268; determine rounding-choice vs typo by reading arXiv:1609.08000 final section. If typo: a one-character upstream PR to teorth/optimizationproblems = the lane's first outward artifact. OUTWARD: adversarial refute-it review + David sign-off required before submitting. RESOLVED 2026-07-23: NOT a typo - rounding convention. Paper final section gives 0.3809268534330870; Tao rounds to nearest (0.380927, bound-safe), abstract truncates with ellipsis (0.380926...), Wikipedia dropped the ellipsis. Repo is right; no upstream PR. Finding: docs/findings/2026-07-23-haugland-final-digit.md.",
       "closeWhen": "Determined which value is correct; if repo wrong, upstream PR submitted (after David gate) or finding recorded.",
       "closedAt": "2026-07-23",
-      "linkedCommits": ["9ca5af7"]
+      "linkedCommits": [
+        "9ca5af7"
+      ]
     },
     {
       "id": "A-3",
@@ -60,7 +75,11 @@
       "closeWhen": "Staleness hand-verified AND either reported upstream (post-gate) or a deliberate no-report decision recorded.",
       "status2": "SENT 2026-07-24 — David opened the outward gate and sent the email himself. Wording sent = the corrected draft (0.380868 SimpleTES arXiv:2604.19341; bracket 0.379005 < c < 0.380868; teorth.github.io/optimizationproblems/constants/1b.html linked; 'cross-checked against the curated table' — the false 'and the source-paper abstracts' clause removed at his pre-send read). A-3 CLOSES on send per its closeWhen. NOTE: sending is NOT acknowledgement — the G-1 metric (externally-acknowledged corrections) is still 0. Acknowledgement is tracked as W-3.",
       "closedAt": "2026-07-24",
-      "linkedCommits": ["758ece6"]
+      "linkedCommits": [
+        "758ece6",
+        "087dd0d",
+        "32afcff"
+      ]
     },
     {
       "id": "W-3",
@@ -70,6 +89,7 @@
       "title": "Watch for acknowledgement of the erdosproblems.com/36 correction — the first external ack, which is G-1's close condition",
       "note": "A-3's correction was emailed to the erdosproblems.com maintainer 2026-07-24 (David sent it). SENDING IS NOT ACKNOWLEDGEMENT — the lane's north-star metric (externally-acknowledged corrections/confirmations) remains 0 until one of: (a) a reply from the maintainer, (b) erdosproblems.com/36 updates its upper bound to 0.380868, or (c) the page's 'last edited' date moves. TWO WATCH LEGS, and both need David: the site 403s automated fetch (so claim C-7 stays manual: true and reports UNVERIFIED by design — a bot fetch proves nothing), and the reply lands in David's inbox, not ours. Ask: David pastes/forwards any reply, and re-checks the page by hand periodically. Do NOT substitute an agent fetch for either leg. If the page updates, C-7's expected value flips from 0.380876 to 0.380868 and ledger/claims.json needs the pin updated deliberately.",
       "closeWhen": "An acknowledgement is recorded — a maintainer reply, or a hand-verified page update to 0.380868 — OR a deliberate decision that no response is coming and the watch ends.",
+      "onTrigger": "When David supplies evidence (pasted/forwarded reply, or a hand-browse showing the page changed): (1) file the ack as a finding in docs/findings/ quoting the evidence verbatim with date; (2) if the page now shows 0.380868, flip C-7 in ledger/claims.json — expect 0.380876 -> 0.380868, statement rewritten, lastHandVerify updated (deliberate hand edit; C-7 is a hand claim, NOT generated); (3) update G-1 note3 — external-ack metric 0 -> 1, its second close condition met; (4) close W-3 with closedAt + the evidence pointer; (5) post a bus task-complete (this is the lane's north-star event). If instead David decides no response is coming, close W-3 recording that decision — do NOT silently let it age out.",
       "verifyBy": {
         "method": "David-supplied evidence only: a pasted/forwarded reply, or a hand-browse of erdosproblems.com/36 showing the changed value or last-edited date. An automated fetch does not count (site 403s bots).",
         "owner": "david"
