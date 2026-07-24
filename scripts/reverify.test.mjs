@@ -38,4 +38,15 @@ assert.equal(dirty.code, 1, `tampered copy should exit 1, got ${dirty.code}`);
 assert.ok(dirty.out.includes(`CHANGED constants/${victim}`), `report should name constants/${victim}:\n${dirty.out}`);
 
 await rm(TMP, { recursive: true, force: true });
-console.log(`reverify.test: PASS (synthetic drift in ${victim} detected; pristine copy clean)`);
+
+// The script exiting 1 is worthless if the WORKFLOW swallows it. Default runner shell is
+// `bash -e {0}` (no pipefail), so a piped step reports the pipe's last command — a drift
+// exits green. Every piped `run:` must name `shell: bash` (which adds -o pipefail).
+const wf = (await readFile(join(ROOT, ".github", "workflows", "reverify.yml"), "utf8")).replace(/^[ \t]*#.*$/gm, "");
+const steps = wf.split(/^      - name:/m).slice(1);
+// strip the YAML block-scalar indicator (`run: |`) first — it is not a shell pipe
+const runBody = (s) => (s.match(/^\s*run:[\s\S]*/m)?.[0] ?? "").replace(/^\s*run:[ \t]*\|-?[ \t]*$/m, "");
+const unguarded = steps.filter((s) => runBody(s).includes("|") && !/^\s*shell:[ \t]*bash[ \t]*$/m.test(s));
+assert.equal(unguarded.length, 0, `piped workflow step(s) missing \`shell: bash\` — exit codes will be masked:\n${unguarded.join("\n---\n")}`);
+
+console.log(`reverify.test: PASS (synthetic drift in ${victim} detected; pristine copy clean; ${steps.length} workflow steps, piped steps pipefail-guarded)`);

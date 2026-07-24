@@ -22,12 +22,17 @@ jobs:
         run: node scripts/reverify.test.mjs
       - name: Self-test claim matcher (no network)
         run: node scripts/check-claims.mjs --selftest
+      # `shell: bash` is load-bearing: the DEFAULT runner shell is `bash -e {0}` with NO
+      # pipefail, so `node ... | tee` reports tee's exit 0 and a drift exits GREEN. Naming
+      # the shell gets `-eo pipefail`. Guarded by reverify.test.mjs.
       - name: Check adopted surface for drift
+        shell: bash
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: node scripts/reverify.mjs --check | tee -a finding.txt
       - name: Check ledger claims across cited surfaces
         if: '!cancelled()'
+        shell: bash
         run: node scripts/check-claims.mjs | tee -a finding.txt
       - name: Open finding
         if: failure()
