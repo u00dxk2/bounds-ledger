@@ -39,7 +39,8 @@ function selftest() {
 async function run() {
   const claims = JSON.parse(await readFile(CLAIMS, "utf8"));
   const rows = [];
-  let broken = 0, unverified = 0;
+  let broken = 0, unverified = 0, held = 0;
+  const bodies = new Map(); // many pins share a source URL — fetch each once
 
   for (const c of claims) {
     if (c.manual) {
@@ -47,18 +48,21 @@ async function run() {
       rows.push(`UNVERIFIED  ${c.id}  ${c.statement}\n            source blocks automated fetch (${c.url}) — ${c.note ?? "hand-verify"}`);
       continue;
     }
-    let body;
-    try {
-      const res = await fetch(c.url, { headers: { "user-agent": "bounds-ledger-claims" } });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      body = await res.text();
-    } catch (err) {
-      broken++;
-      rows.push(`UNREACHABLE ${c.id}  ${c.statement}\n            ${c.url} — ${err.message}`);
-      continue;
+    let body = bodies.get(c.url);
+    if (body === undefined) {
+      try {
+        const res = await fetch(c.url, { headers: { "user-agent": "bounds-ledger-claims" } });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        body = await res.text();
+        bodies.set(c.url, body);
+      } catch (err) {
+        broken++;
+        rows.push(`UNREACHABLE ${c.id}  ${c.statement}\n            ${c.url} — ${err.message}`);
+        continue;
+      }
     }
     if (holds(body, c.expect)) {
-      rows.push(`HOLDS       ${c.id}  ${c.statement}`);
+      held++; // held claims are counted, not listed — a real break must not drown below the fold
     } else {
       broken++;
       rows.push(`BROKEN      ${c.id}  ${c.statement}\n            expected "${c.expect}" at ${c.url} — no longer present`);
@@ -66,8 +70,8 @@ async function run() {
   }
 
   console.log(`# Claim check — ${new Date().toISOString()}`);
-  console.log(rows.join("\n"));
-  console.log(`\n${claims.length} claim(s): ${claims.length - broken - unverified} hold, ${broken} broken/unreachable, ${unverified} unverified (manual).`);
+  if (rows.length) console.log(rows.join("\n"));
+  console.log(`\n${claims.length} claim(s): ${held} hold, ${broken} broken/unreachable, ${unverified} unverified (manual).`);
   if (broken) console.log(`\nA broken claim means a cited surface moved. Re-verify against primary sources, update the claim (and the note that asserts it), then commit.`);
   return broken ? 1 : 0;
 }
