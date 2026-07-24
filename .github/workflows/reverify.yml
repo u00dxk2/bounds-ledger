@@ -34,12 +34,29 @@ jobs:
         if: '!cancelled()'
         shell: bash
         run: node scripts/check-claims.mjs | tee -a finding.txt
+      # The report is terminal text (console.log). Two fixes here, from the 2026-07-24
+      # peak-moment render read (docs/findings/2026-07-24-peak-moment-render.md):
+      #   P-1  the TITLE names what drifted — else every alarm is titled by date alone and
+      #        carries no signal (recognition over recall).
+      #   fence  the BODY goes in a ``` block — GFM otherwise eats the report's -/+ diff into
+      #        nested bullets, destroying which value is old vs new, and italicises the $..$ nums.
+      # shell: bash is load-bearing (pipes below need pipefail); guarded by reverify.test.mjs.
       - name: Open finding
         if: failure()
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          parts=$(grep -hE '^(CHANGED|ADDED|REMOVED) ' finding.txt | sed -E 's/^[A-Z]+ //' | paste -sd', ' - || true)
+          if [ -z "$parts" ]; then
+            parts=$(grep -hE '^(BROKEN|UNREACHABLE) ' finding.txt | awk '{print $2}' | paste -sd', ' - || true)
+            [ -n "$parts" ] && parts="claims $parts"
+          fi
+          title="Drift: ${parts:-bounds-ledger re-verification} ($(date -u +%F))"
+          title=${title:0:240}
+          # ponytail: finding.txt is our own tool output and never contains ```, so a plain fence is safe.
+          { printf '```\n'; cat finding.txt; printf '\n```\n'; } > issue-body.md
           gh issue create \
-            --title "Drift: bounds-ledger re-verification ($(date -u +%F))" \
-            --body-file finding.txt \
+            --title "$title" \
+            --body-file issue-body.md \
             --repo "$GITHUB_REPOSITORY"

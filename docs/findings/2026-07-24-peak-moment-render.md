@@ -1,6 +1,6 @@
 # Finding — the drift alarm's peak moment renders garbled
 
-**Date:** 2026-07-24 · **Status:** OPEN — one-line fix ready, not yet shipped (David held new work; surfaced for greenlight) · **Items:** A-2 render quality; supersedes this-morning's abstract P-1/P-2/P-3
+**Date:** 2026-07-24 · **Status:** FIXED + verified same day (David greenlit "1") — code-fence + P-1 shipped; P-2/P-3 deferred · **Items:** A-2 render quality; supersedes this-morning's abstract P-1/P-2/P-3
 **Method:** peak-moment render read (warm-context proposal, orchestrator-approved). Same class as the bloom-edu 2026-07-24 story defect — instruments read green, nobody read what the moment literally renders.
 
 ## The peak moment
@@ -59,6 +59,23 @@ gh issue create --title "…" --body-file issue-body.md
 
 Combined with a title that names the drift (this morning's P-1 — have `reverify.mjs` emit a one-line summary and pass it to `--title`), the moment becomes legible. **Held for greenlight:** it changes rendered behaviour, and today's discipline (the pre-send method-sentence catch) argues for the checkpoint over a unilateral ship. The one-liner above is ready to apply.
 
+## Shipped fix (verified against GitHub's own render)
+
+David greenlit the fix ("1"). Applied to `reverify.yml`'s `Open finding` step:
+
+- **Code-fence the body** — `{ printf '```\n'; cat finding.txt; printf '\n```\n'; } > issue-body.md`. The report now renders inside `<pre><code>`, so the `-`/`+` diff is verbatim monospace and the `#`/`$…$` mangling is gone.
+- **P-1 — title names the drift** — the step greps `CHANGED/ADDED/REMOVED` (falling back to `BROKEN/UNREACHABLE` claim ids) from `finding.txt` and builds `Drift: constants/1b.md (YYYY-MM-DD)` instead of a bare date.
+
+Verified the same way the defect was found — the fixed body rendered through GitHub's own GFM API (`POST /markdown`):
+
+```
+CHANGED constants/1b.md
+  - | $0.380868$ | [YLTLYS…] | SimpleTES |
+  + | $0.380861$ | [YLTLYS…] | SimpleTES |
+```
+
+renders as `<pre><code>` (not `<ul><li>`): both values present, `-`/`+` markers survive, **old vs new is legible again**; zero `<math-renderer>`, zero spurious `<h1>`. Title resolves to `Drift: constants/1b.md (2026-07-24)`. The `Open finding` step is now piped, so it carries `shell: bash` — the workflow-guard in `reverify.test.mjs` validates that (selftests green). **P-2 (verdict-before-diff) and P-3 (one rolling issue) deferred** — polish that only pays on a multi-day real drift.
+
 ## Evidence
 
-Synthetic issue #1 (closed), `finding.txt`, and the GFM-rendered HTML captured in the session scratchpad. The tamper was performed on a scratchpad copy; `ledger/` was never touched (`git status` clean throughout).
+Synthetic issue #1 (closed), `finding.txt`, the before/after GFM-rendered HTML in the session scratchpad. The tamper was on a scratchpad copy; `ledger/` was never touched (`git status` clean throughout).
