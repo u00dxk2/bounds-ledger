@@ -79,3 +79,12 @@ $0 spend — no paid APIs, no hosting, no dependencies (Node stdlib + `fetch`). 
 Both preconditions on the lane's side are now met: staleness hand-confirmed (David's 7/23 screenshot) and the adversarial review cleared with amendments. The only thing left is the outward-send gate, which is David's alone. This is the lane's sole path to its first external acknowledgement — the metric that is currently 0 and is the whole point of G-1.
 
 One condition attached: if the gate opens after 2026-07-30, the page state needs re-confirming by hand first (the site 403s bots, so C-7 cannot age gracefully on its own).
+
+## (6) Post-report addendum — claim pins extended to all 109 constants (shipped after the report went out)
+
+David unheld the 7/23 feature hold in-pane ("Accidental hold. Please proceed."), so the queued extension shipped same evening (`22fa79c`):
+
+- `scripts/extract-pins.mjs` — generates 216 pins from the mirror: the **last-listed row** of every Known-upper/lower-bounds table, pinned verbatim against the file at upstream live HEAD. `ledger/claims.json` is now 7 hand claims + 216 generated = 223; live run 222/222 fetchable HOLD, C-7 UNVERIFIED by design.
+- **Design decision worth the paragraph:** the first prototype ranked rows numerically to pin "the record" — and the mandatory hand-review of its 41 flags showed the corpus defeats that (symbolic cells like `$K_{DR}+10^{-26}$`, negatives like `$-50$`, `O(·)` asymptotics; it mis-picked 10a/21a/41a). Auto-asserting "record" 216× would have put unverified mathematical statements in our own ledger — the exact thing this lane exists to prevent. Pins now assert listing position, which is true by construction; a newly appended record trips the mirror diff instead. The ranking prototype was deleted, not fixed.
+- **New standing discipline (in CLAUDE.md):** after every deliberate `--snapshot`, re-run `extract-pins.mjs` and commit — pins intentionally don't auto-follow the mirror, so a moved row stays BROKEN until deliberately re-pinned. That makes the claims layer the post-snapshot ratchet.
+- `check-claims.mjs` hardening for scale: per-URL fetch cache (216 pins share ~108 URLs), and held claims are counted rather than listed so a real BREAK renders above the fold (peak-moment finding, item 6).
