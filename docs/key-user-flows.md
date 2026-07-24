@@ -43,3 +43,7 @@ All three are reversible micro-fixes that would normally ship under default auth
 ### Validation status
 
 Not persona-tested. `/persona-friction` drives a **browser** against a URL, and F-1 terminates in a GitHub issue with an audience of one — there is no page to test. The flow that will need persona validation is F-2, and it doesn't exist yet.
+
+### Render read (2026-07-24) — P-1/P-2/P-3 confirmed against the LITERAL render
+
+The three proposals above were written from the code's intent, before the alarm could fire. On 2026-07-24 the alarm was fired for real (synthetic drift, issue #1, GitHub GFM API render captured) and the render is **worse than proposed**: the diff's `+/-` direction is destroyed (renders as bullet + nested sub-bullet, no removed/added marker), `$…$` numbers render as italic math, two H1s, 12 irrelevant HOLDS below-fold. Details + a ready one-line fix (code-fence the body) in `docs/findings/2026-07-24-peak-moment-render.md`. Ship order on greenlight: **code-fence (new, fixes the mangling) → P-1 title → P-2 verdict-first → P-3 rolling issue.**
