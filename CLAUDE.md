@@ -23,6 +23,7 @@ No dependencies — Node stdlib + `fetch` only. `npm install` is a no-op.
 - **Curated vs live records: track both, labeled, NEVER blend.** A live/leaderboard claim graduates to the curated column only via a checkable construction or acceptance into a curated source. (Reconciliation #1 finding 3.)
 - **A `manual: true` claim reports UNVERIFIED, never green.** When a source blocks automated fetch (erdosproblems.com 403s bots), the checker cannot re-run it, so it stays UNVERIFIED until a human re-verifies. A done-click or hand-verify does not flip it green — that is the "never silently trusted" rule made mechanical.
 - **Snapshot-on-drift discipline.** A red `reverify` run is the alarm, not a bug — records are *supposed* to move. Only re-`--snapshot` after verifying the change against **primary sources**, then commit the updated mirror deliberately. Never snapshot just to silence the alarm.
+- **Never hand David an artifact link.** `claude.ai/code/artifact/...` URLs are session-scoped and do not resolve in his browser — a brief delivered that way reads as page-not-found and the board card gets dismissed (happened 2026-07-24). David-facing briefs for lanes without their own site go on the Skylark site at `/t/lanes/<slug>`: keep the source at `docs/lane-brief.md`, post a bus note, the orchestrator ports it.
 - **Outward gate.** Any upstream contact (PR, correction, email) or the public-repo flip goes through the **adversarial refute-it review first** (portfolio standing rule), and the actual send is **David-gated**. Never contact a maintainer or flip the repo public on your own.
 - **No self-rating.** Lite rail has no self-rating/audit contract. Write the daily report + run the presence linters; skip `/daily-close` scoring.
 - **MT for human labels** (commits, file slugs, doc headers, `docs/cold-starts/<MT-date>.md`); UTC only for cross-system timestamps (bus, git `%ai`, logs).
@@ -35,6 +36,7 @@ No dependencies — Node stdlib + `fetch` only. `npm install` is a no-op.
 - `docs/decisions/` — filed decisions awaiting a gate (e.g. A-3's report-upstream draft).
 - `docs/daily/<date>-prelaunch.md` — daily reports (needs §3a YAML frontmatter — the r8 linter FAILs without it).
 - `docs/cold-starts/<MT-date>.md` — next-agent primer.
+- `docs/lane-brief.md` — **source** for the David-facing brief hosted at `https://skylarkcreations.com/t/lanes/bounds-ledger`. Edit here, then post a bus note so the orchestrator re-ports it.
 - `ledger/teorth-optimizationproblems/` — machine **mirror** of the adopted surface (109 files) + `manifest.json` pinning the upstream sha. **Do not hand-edit**; refresh only via `--snapshot`.
 - `ledger/claims.json` — claim-level value pins (source URL + exact expected string per published claim).
 - `scripts/` — `reverify.mjs` (mirror diff), `check-claims.mjs` (cross-surface claim check), `*.test.mjs` / `--selftest` (network-free).
