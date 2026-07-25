@@ -3,3 +3,4 @@ node_modules/
 continuity/lint-history.json
 finding.txt
 issue-body.md
+.playwright-mcp/
