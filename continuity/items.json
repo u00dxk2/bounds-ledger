@@ -98,6 +98,23 @@
       }
     },
     {
+      "id": "A-5",
+      "created": "2026-07-25",
+      "type": "active",
+      "status": "closed",
+      "title": "Alarm labelled a transient network failure 'Drift:' and omitted the reason entirely (production issue #2)",
+      "note": "CAUGHT IN PRODUCTION 2026-07-25, not by review. CI run 30168372746 (push of 59cd3a1, 17:48Z) failed and auto-filed issue #2 titled 'Drift: bounds-ledger re-verification (2026-07-25)' over a body reading '223 claim(s): 222 hold, 0 broken/unreachable' — self-contradictory. No record drifted: reverify.mjs --check hit a transient network error, printed 'error: fetch failed', exited 2; the claims step then ran via if:'!cancelled()' and everything held; the next push ten minutes later was green. TWO DEFECTS. (1) A tool error was titled 'Drift:', asserting a mathematical record moved when none did — the title extraction found no CHANGED/ADDED/REMOVED and no BROKEN/UNREACHABLE lines and fell through to the generic default, which is still prefixed 'Drift:'. (2) The reason was invisible: reverify.mjs reports errors via console.error (stderr) but the step piped only stdout (`| tee`), so 'error: fetch failed' reached the CI log and never the issue body. Same failure family as the 2026-07-24 never-armed defect from the opposite direction — that alarm could not speak, this one spoke and said the wrong thing. Cost model: a false 'Drift:' burns a reader's time hunting a record change that never happened, and repeated flakes train us to skim past Drift: issues, which is how a REAL drift gets missed. Finding: docs/findings/2026-07-25-alarm-called-a-network-flake-a-drift.md.",
+      "closeWhen": "A tool/network error produces an honestly-titled issue that states the cause, and a real drift still titles as a drift.",
+      "closedAt": "2026-07-25",
+      "resolution": "FIXED 2026-07-25 same day. (a) `2>&1` added to both piped check steps so stderr lands in finding.txt and therefore in the issue body; (b) the title now branches three ways instead of falling through — 'Drift: <what moved>' on real drift/claim lines, 'Check error: … could not complete' when finding.txt contains an ^error: line, 'Re-verification failed' otherwise (A-4 supplies a fourth, 'Instrument failure', when finding.txt does not exist at all). VERIFIED BY EXECUTION under GitHub's exact shell (bash --noprofile --norc -eo pipefail) against four real inputs including a byte-accurate replay of run 30168372746: replay => 'Check error: bounds-ledger re-verification could not complete (2026-07-25)'; absent finding.txt => 'Instrument failure: bounds-ledger self-test (2026-07-25)'; injected mirror drift => 'Drift: constants/21a.md (2026-07-25)'; broken pin => 'Drift: claims pin:10a:U (2026-07-25)'. npm test green; all 5 piped workflow steps still carry shell: bash.",
+      "note2": "RESOLVES TWO SWEEP UNKNOWNS, for free and within the hour. The 2026-07-25 gate-execution sweep marked the composite CI failure path (if: failure() -> gh issue create) and if:'!cancelled()' on the claims step as UNKNOWN, because closing them would have required pushing a corrupted mirror. Production answered both: the issue-filing path FIRES (issue #2 exists) and !cancelled() FIRES (claim output appears in the body although the mirror step had already failed) — and the output was WRONG, which a green could never have revealed. Method lesson worth keeping: the honest UNKNOWN left the question open, so the evidence was recognised when it arrived; a fabricated green would have closed it and issue #2 would have been read as a real drift.",
+      "note3": "DELIBERATELY NOT BUILT: retry/backoff on a transient fetch failure. One flake in four days does not justify it, and suppressing the alarm is the wrong direction. If check-error issues become frequent, add retry inside reverify.mjs — never silence the step.",
+      "verifyBy": {
+        "method": "replay the deployed Open-finding body under `bash --noprofile --norc -eo pipefail` against a finding.txt containing an ^error: line and confirm the title says Check error, not Drift",
+        "owner": "bounds-ledger"
+      }
+    },
+    {
       "id": "W-3",
       "created": "2026-07-24",
       "type": "watch",

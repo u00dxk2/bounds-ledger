@@ -29,11 +29,14 @@ jobs:
         shell: bash
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: node scripts/reverify.mjs --check | tee -a finding.txt
+        # 2>&1 is load-bearing: reverify.mjs reports tool errors via console.error, and a bare
+        # `| tee` captures only stdout — so a transient `error: fetch failed` reached the CI log
+        # but NEVER the issue body, producing an alarm that fired with no stated reason (A-5).
+        run: node scripts/reverify.mjs --check 2>&1 | tee -a finding.txt
       - name: Check ledger claims across cited surfaces
         if: '!cancelled()'
         shell: bash
-        run: node scripts/check-claims.mjs | tee -a finding.txt
+        run: node scripts/check-claims.mjs 2>&1 | tee -a finding.txt
       # The report is terminal text (console.log). Two fixes here, from the 2026-07-24
       # peak-moment render read (docs/findings/2026-07-24-peak-moment-render.md):
       #   P-1  the TITLE names what drifted — else every alarm is titled by date alone and
@@ -58,7 +61,17 @@ jobs:
               parts=$(grep -hE '^(BROKEN|UNREACHABLE) ' finding.txt | awk '{print $2}' | paste -sd', ' - || true)
               [ -n "$parts" ] && parts="claims $parts"
             fi
-            title="Drift: ${parts:-bounds-ledger re-verification} ($(date -u +%F))"
+            if [ -n "$parts" ]; then
+              title="Drift: $parts ($(date -u +%F))"
+            elif grep -qE '^error:' finding.txt; then
+              # A tool error is NOT a drift. Titling it "Drift:" asserts a record moved when
+              # none did — and a reader who opens it finds every claim holding, which reads as
+              # contradictory and trains us to ignore the alarm. A-5, caught in production
+              # 2026-07-25 by a transient `error: fetch failed` filing issue #2.
+              title="Check error: bounds-ledger re-verification could not complete ($(date -u +%F))"
+            else
+              title="Re-verification failed: bounds-ledger ($(date -u +%F))"
+            fi
             body=$(cat finding.txt)
           else
             title="Instrument failure: bounds-ledger self-test ($(date -u +%F))"
