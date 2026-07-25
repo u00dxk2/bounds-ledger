@@ -47,15 +47,26 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          parts=$(grep -hE '^(CHANGED|ADDED|REMOVED) ' finding.txt | sed -E 's/^[A-Z]+ //' | paste -sd', ' - || true)
-          if [ -z "$parts" ]; then
-            parts=$(grep -hE '^(BROKEN|UNREACHABLE) ' finding.txt | awk '{print $2}' | paste -sd', ' - || true)
-            [ -n "$parts" ] && parts="claims $parts"
+          # finding.txt only exists once the drift/claims steps have RUN. If a self-test
+          # failed, the job is red but there is no check output — file an honestly-titled
+          # instrument-failure issue rather than dying at `cat` (which filed nothing at all,
+          # leaving the alarm silent about its own breakage). A-4, found 2026-07-25 by
+          # executing this step's body rather than reading it.
+          if [ -s finding.txt ]; then
+            parts=$(grep -hE '^(CHANGED|ADDED|REMOVED) ' finding.txt | sed -E 's/^[A-Z]+ //' | paste -sd', ' - || true)
+            if [ -z "$parts" ]; then
+              parts=$(grep -hE '^(BROKEN|UNREACHABLE) ' finding.txt | awk '{print $2}' | paste -sd', ' - || true)
+              [ -n "$parts" ] && parts="claims $parts"
+            fi
+            title="Drift: ${parts:-bounds-ledger re-verification} ($(date -u +%F))"
+            body=$(cat finding.txt)
+          else
+            title="Instrument failure: bounds-ledger self-test ($(date -u +%F))"
+            body='(no check output — the job failed before the drift/claims steps ran; see the failed step above)'
           fi
-          title="Drift: ${parts:-bounds-ledger re-verification} ($(date -u +%F))"
           title=${title:0:240}
           # ponytail: finding.txt is our own tool output and never contains ```, so a plain fence is safe.
-          { printf '```\n'; cat finding.txt; printf '\n```\n'; } > issue-body.md
+          { printf '```\n'; printf '%s\n' "$body"; printf '```\n'; } > issue-body.md
           gh issue create \
             --title "$title" \
             --body-file issue-body.md \
