@@ -82,6 +82,20 @@
       ]
     },
     {
+      "id": "A-4",
+      "created": "2026-07-25",
+      "type": "active",
+      "status": "open",
+      "title": "Alarm files NO finding issue when the job fails before the drift/claims steps run (self-test failure path)",
+      "note": "Found by the 2026-07-25 gate-execution sweep by EXECUTING reverify.yml's `Open finding` body under GitHub's exact shell semantics (`bash --noprofile --norc -eo pipefail`), not by reading it. When either self-test step fails, `finding.txt` is never created; the step's `cat finding.txt` then exits 1 under `-eo pipefail`, so the step dies BEFORE `gh issue create` and no finding issue is filed. Two consequences: (1) an instrument failure produces a red job but no issue — the drift alarm is silent about its own breakage, which is the same family as the 2026-07-24 never-armed defect; (2) the only diagnostic emitted is `cat: finding.txt: No such file or directory`, which points at the wrong thing. NOT a drift-masking bug: the job still goes red and the workflow-failure notification still fires, so a real drift is never hidden. Severity LOW. Evidence: with finding.txt absent the step exits 1; with a real synthetic drift present it produces title `Drift: constants/21a.md (2026-07-25)`, and with a real BROKEN claim it produces `Drift: claims pin:10a:U (2026-07-25)` — both branches of the title extractor verified FIRING against real tool output.",
+      "closeWhen": "The Open-finding step either files a legibly-titled instrument-failure issue when finding.txt is absent, or a deliberate decision is recorded that a red job alone is sufficient for self-test failures.",
+      "note2": "READY FIX (deliberately NOT shipped in the sweep — it changes WHEN the alarm files, and the alarm surface is this lane's most load-bearing artifact; 7/24's lesson is that changes here get deliberated): guard the cat and make the title honest, e.g. `cat finding.txt 2>/dev/null || echo '(no check output — job failed before the drift/claims steps ran; see the failed step above)'` plus a title fallback that says instrument-failure rather than `Drift:`. Decide first whether a self-test failure SHOULD file an issue at all — arguably yes, since a steward whose instrument breaks silently is the exact failure mode this lane exists to prevent.",
+      "verifyBy": {
+        "method": "re-run the Open-finding body under `bash --noprofile --norc -eo pipefail` with finding.txt absent and confirm it reaches the issue-create call with a non-misleading title",
+        "owner": "bounds-ledger"
+      }
+    },
+    {
       "id": "W-3",
       "created": "2026-07-24",
       "type": "watch",
