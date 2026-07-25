@@ -43,12 +43,22 @@
   },
   {
     "id": "C-7",
-    "statement": "erdosproblems.com/36 still shows 0.380876 — three records stale (A-3)",
+    "statement": "erdosproblems.com/36 still shows the stale bracket 0.379005 < c < 0.380876 — three records behind the curated table (A-3/W-3)",
     "url": "https://www.erdosproblems.com/36",
-    "expect": "0.380876",
-    "manual": true,
-    "note": "site 403s automated fetch, so the checker cannot re-run this — HAND-VERIFIED by David via screenshot 2026-07-23: page shows '0.379005 < c < 0.380876' (upper attributed to TTT-Discover), 0.380868 absent, last edited 23 Jan 2026. Staleness confirmed (A-3). Re-confirm by hand if the page's last-edited date changes.",
-    "lastHandVerify": "2026-07-23",
+    "expect": "0.379005 &lt; c &lt; 0.380876",
+    "note": "AUTOMATED 2026-07-25: the site does NOT 403 automated fetch (verified — Node default-UA fetch returns HTTP 200, 35185 bytes, page text readable). The manual:true designation was stale. This claim now re-runs in CI daily. IT HOLDS WHILE THE PAGE IS STILL STALE; it BREAKS when the upper bound changes — that break is GOOD NEWS (our correction landed) and is W-3 firing. Prior provenance: hand-verified by David via screenshot 2026-07-23 and again by hand 2026-07-25 (unchanged), plus a Playwright browser read 2026-07-25 (unchanged).",
+    "lastHandVerify": "2026-07-25",
+    "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md",
+    "onBreak": "Do NOT re-pin to silence it. A break here means erdosproblems.com/36 changed — check whether the upper bound is now 0.380868. If so, that is the first external acknowledgement (G-1s second close condition): follow W-3 onTrigger."
+  },
+  {
+    "id": "C-8",
+    "statement": "erdosproblems.com/36 last-edited date is still 23 January 2026 — the page has not been touched since our correction was sent (W-3)",
+    "url": "https://www.erdosproblems.com/36",
+    "expect": "This page was last edited 23 January 2026.",
+    "note": "Companion to C-7. Catches the case where the maintainer edits the page WITHOUT changing this bound — one of W-3s three acknowledgement triggers. Breaks the moment the page is edited at all.",
+    "lastHandVerify": "2026-07-25",
+    "onBreak": "The page was edited. Read it and determine whether our correction was applied; follow W-3 onTrigger.",
     "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md"
   },
   {
