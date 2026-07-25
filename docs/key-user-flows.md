@@ -1,6 +1,6 @@
 # Key user flows — bounds-ledger
 
-Living doc (built 2026-07-24, flow-craft first run). One rotating flow gets a world's-best-PM critique per daily run. Standard: `docs/product-flow-critique-standard.md` (portfolio).
+Living doc (built 2026-07-24, flow-craft first run). One rotating flow gets a world's-best-PM critique per daily run. Standard: `../skylark-site/docs/product-flow-critique-standard.md` (portfolio-level, lives in skylark-site — not in this repo).
 
 ## The ONE core problem, in the user's words
 
