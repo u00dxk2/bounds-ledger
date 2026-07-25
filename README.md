@@ -40,7 +40,7 @@ The mirror above watches ONE surface and reports any change. `ledger/claims.json
 
 - `node scripts/check-claims.mjs` — re-fetch every cited source, assert each claim still holds; exit 1 if any broke.
 - `node scripts/check-claims.mjs --selftest` — network-free matcher self-check (also runs in CI).
-- A claim marked `"manual": true` (a source we genuinely cannot fetch) reports **UNVERIFIED** and never counts as green — the repo's "never silently trusted" rule, made mechanical. **As of 2026-07-25 no claim uses it:** erdosproblems.com was assumed to block automated fetch, and on re-test it does not, so its claims were automated and the last UNVERIFIED disappeared. Before marking a source manual, prove the fetch fails.
+- A claim marked `"manual": true` (source blocks automated fetch from CI, e.g. erdosproblems.com) reports **UNVERIFIED** and never counts as green — the repo's "never silently trusted" rule, made mechanical. Note the block is **IP-dependent**: that page serves 200 to a residential IP and 403 to GitHub Actions runners, so a local `npm run check` re-verifies it mechanically while CI cannot. A local 200 is not evidence about CI.
 
 Adding a claim to a published note means adding a row here; that's what keeps *re-fetchable citation + re-runnable check* true rather than aspirational.
 

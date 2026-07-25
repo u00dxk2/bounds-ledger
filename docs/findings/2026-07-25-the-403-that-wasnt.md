@@ -1,55 +1,58 @@
-# The 403 that wasn't — the lane's most load-bearing constraint was never re-tested
+# The 403 is IP-dependent — and a local 200 proves nothing about CI
 
-**2026-07-25 · found while trying to automate a workaround for it**
+**2026-07-25 · I got this wrong first, shipped it, and CI caught it within four minutes. The correction is the finding.**
 
-## The claim we had been operating on
+> **Superseded title:** this document was first written as "The 403 that wasn't," asserting the block did not exist. That was wrong. The original convention was right about the case that matters. What follows is the corrected account, kept in place deliberately — the mistake is the more useful artifact.
 
-From `CLAUDE.md`, since the lane opened:
+## What I claimed
 
-> **erdosproblems.com 403s automated fetch.** Re-verifying it needs David's browser… Don't substitute a bot fetch — a 403 proves nothing.
+David hand-checked erdosproblems.com/36 (unchanged) and asked for a Playwright poller so the page-check wouldn't be forgotten. Before building the workaround I tested the premise behind it — the lane's oldest operating constraint:
 
-This single sentence shaped four days of work. It is why claim **C-7** carried `manual: true` and reported UNVERIFIED forever. It is why **W-3** — the watch on the acknowledgement that is *G-1's second close condition* — was filed as **David-owned on both legs**. It is why the answer to "has the page changed?" was always "ask David to look."
+> **erdosproblems.com 403s automated fetch.** Re-verifying it needs David's browser.
 
-## What is actually true
-
-David asked for a Playwright poller so the page-check wouldn't be forgotten. Before building it, I tested the premise:
+From my machine:
 
 ```
-node fetch (default UA) => HTTP 200 | bytes 35185 | has 0.380876: true | last-edited: 23 January 2026
-with browser UA         => HTTP 200 | bytes 35185 | has 0.380876: true | last-edited: 23 January 2026
+node fetch (default UA) => HTTP 200 | bytes 35185 | bound readable | last-edited: 23 January 2026
+with browser UA         => HTTP 200 | bytes 35185 | bound readable | last-edited: 23 January 2026
 ```
 
-**Plain `fetch`, no browser, no user-agent spoofing, HTTP 200.** The page body contains the bracket as raw LaTeX (`\[0.379005 &lt; c &lt; 0.380876,\]`) and the edit date as plain text. Playwright reads the identical content, so the browser was never needed either.
+I concluded the constraint was stale, automated claim **C-7**, added **C-8** pinning the edit date, declared *"224 claims, 224 hold, zero UNVERIFIED — the lane no longer has an unverifiable claim,"* and pushed.
 
-Whatever blocked us earlier — a transient Cloudflare rule, a different path, a bad early attempt — **no longer blocks us, and nobody had re-tested it.**
+## What was actually true
 
-## What changed as a result
+CI went red on the next run. From a GitHub Actions runner:
 
-| Before | After |
-|---|---|
-| C-7 `manual: true`, reports UNVERIFIED forever | C-7 automated; pins the stale bracket verbatim |
-| — | **C-8 added**: pins `This page was last edited 23 January 2026.` |
-| 223 claims: 222 hold, **1 UNVERIFIED** | **224 claims: 224 hold, 0 UNVERIFIED** |
-| W-3: both legs need David | W-3: **two of three triggers now mechanical**, checked daily in CI |
+```
+UNREACHABLE C-7  https://www.erdosproblems.com/36 — HTTP 403
+UNREACHABLE C-8  https://www.erdosproblems.com/36 — HTTP 403
+224 claim(s): 222 hold, 2 broken/unreachable
+```
 
-Both claims **hold while the page stays stale, and break when it changes** — and a break here is *good news*: it means our correction landed. Negative-controlled: re-pinning C-7 to the corrected value `0.380868` and C-8 to a future date makes both go BROKEN and the run exit 1; restoring makes them green again. The watch is armed, not decorative.
+**The block is real and it is IP-dependent.** The site serves 200 to a residential IP and 403 to datacenter ranges — the ordinary shape of a Cloudflare/datacenter rule. My local test measured a machine that will never run the check. The original convention was correct about the only context that mattered: **CI**.
 
-The only leg still genuinely David's is a **maintainer reply**, which arrives in his inbox and nowhere we can reach.
+Reverted — C-7 is `manual: true` again, C-8 removed, back to 223 claims with one honest UNVERIFIED.
 
-## Why this is the finding, not a footnote
+## The actual lesson, which is sharper than the one I thought I had
 
-The lane exists to catch **cited-not-checked** claims — facts that are true once, get written down, and are never re-examined while the world moves underneath them. Our own most load-bearing operational constraint was exactly that: asserted early, written into `CLAUDE.md`, and inherited by every session after without a single re-test. It cost four days of treating a mechanical check as a human errand, and it parked the lane's north-star watch on a person.
+**A capability test is only valid from the environment that will exercise the capability.** I verified a fact from my machine and generalised it to a runner in another network, and every number in that conclusion was wrong in the same direction — optimistically. Nothing about the local evidence was false; it simply did not license the claim I built on it.
 
-Three of this week's findings are now the same shape from different angles:
+This is a close cousin of the defect this lane was founded on. The 7/24 finding was a green that carried no information because the *harness* differed from what the test assumed. This is a green that carried no information because the *network* differed from what the test assumed. In both cases the check ran, passed, and answered a question nobody had asked.
 
-- **7/24** — the drift alarm was never armed (a green that couldn't go red)
-- **7/25** — a network flake titled "Drift:" (an alarm that fired and said the wrong thing)
-- **7/25** — this one (a constraint that was never true, or stopped being true unnoticed)
+And note the failure mode it *nearly* caused: had CI not exercised these claims immediately, we'd have carried a ledger asserting "zero unverified claims" while the one claim gating the lane's north-star watch was silently unverifiable. **The over-claim was in the safe direction only by luck of timing.**
 
-The unifying lesson: **an assertion about our own instruments deserves the same re-verification discipline we apply to the records.** We re-fetch 224 mathematical claims every single day and had never re-fetched the sentence that shaped how we work.
+## What survives, and it is worth keeping
 
-## Practical rule adopted
+The local 200 is real, and it buys something the screenshot round-trip did not:
 
-`manual: true` is now the fallback for a source we have **proven** we cannot fetch — not a standing state. Before marking anything manual, run the fetch. A stale "we can't check this" is worse than no claim at all, because it parks a question forever behind a human who was never told the block had lifted.
+- **An agent running `npm run check` on a residential connection genuinely re-verifies C-7 mechanically.** That is a real upgrade on "ask David for a screenshot" — same evidentiary strength, no human in the loop, available to any local session.
+- **Three independent reads now agree** on the current page state: David's hand-check, a local Node fetch, and a Playwright browser read. All show `0.379005 < c < 0.380876`, no `0.380868`, last edited 23 January 2026.
+- **CI can never do it**, so C-7 stays `manual: true` and keeps reporting UNVERIFIED. That is the "never silently trusted" rule working exactly as designed — and this episode is the argument for keeping it.
 
-**Do not re-add `manual: true` to these claims without re-testing first.** If the block genuinely returns, it surfaces as UNREACHABLE — a legible check error since A-5 — not as a silent green.
+Also learned incidentally: three consecutive pushes each filed their own issue (#3, #4, #5) for one underlying condition. **P-3 (one rolling issue) was deferred on the grounds that it only pays during a multi-day real drift — that assumption is now falsified.** Any repeated red files a new issue per push.
+
+## Rules adopted
+
+1. **Test a capability from where it will run.** Before declaring a source fetchable, fetch it *from CI* — or treat the local result as a hint, never a verdict.
+2. **`manual: true` still requires proof the fetch fails** — but the proof must come from the runner, not the laptop.
+3. **Do not re-automate C-7 on the strength of a local 200.** It has now been tried; it fails in CI. If you want to revisit, the only evidence that counts is a green CI run.
