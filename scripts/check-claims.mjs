@@ -7,7 +7,10 @@
 //
 // usage: check-claims.mjs [--selftest]
 // exit 0 = all fetchable claims hold · 1 = a claim no longer holds · 2 = error
-// `manual: true` claims (source blocks automated fetch) are reported UNVERIFIED, never green.
+// `manual: true` claims (source blocks automated fetch from CI) are reported UNVERIFIED, never
+// green — but an ADVISORY fetch is attempted and its result printed, because the block is
+// IP-dependent (403 from datacenter IPs, 200 from residential). The advisory line never changes
+// counts or the exit code: a local run gains real information, CI output gains one honest line.
 
 import { readFile } from "node:fs/promises";
 import { join, dirname } from "node:path";
@@ -45,7 +48,19 @@ async function run() {
   for (const c of claims) {
     if (c.manual) {
       unverified++;
-      rows.push(`UNVERIFIED  ${c.id}  ${c.statement}\n            source blocks automated fetch (${c.url}) — ${c.note ?? "hand-verify"}`);
+      // Advisory only — default-UA fetch (the configuration proven to get 200 from residential
+      // IPs). Whatever happens here, the claim stays UNVERIFIED and the exit code is untouched.
+      let advisory;
+      try {
+        const res = await fetch(c.url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        advisory = holds(await res.text(), c.expect)
+          ? `advisory fetch from THIS machine: HTTP 200, expected "${c.expect}" still present — page unchanged (stays UNVERIFIED; CI cannot see this)`
+          : `advisory fetch from THIS machine: HTTP 200 but expected "${c.expect}" NOT FOUND — the cited page may have moved; hand-verify now and follow the claim's watch runbook`;
+      } catch (err) {
+        advisory = `advisory fetch failed (${err.message}) — expected from datacenter IPs (CI); hand/local verification still required`;
+      }
+      rows.push(`UNVERIFIED  ${c.id}  ${c.statement}\n            source blocks automated fetch (${c.url}) — ${c.note ?? "hand-verify"}\n            ${advisory}`);
       continue;
     }
     let body = bodies.get(c.url);
