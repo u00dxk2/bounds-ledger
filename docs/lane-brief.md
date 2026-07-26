@@ -15,7 +15,21 @@
 >
 > **What we're waiting for, and it isn't the same thing as being done:** sending is not acknowledgement. The lane's one real metric — externally-acknowledged corrections — is **still 0**. It moves only when the maintainer replies, or the page's bound changes to 0.380868, or its last-edited date moves.
 >
-> **Two things only David can do**, because the site blocks our bots and the reply goes to his inbox: paste or forward any reply, and glance at the page by hand now and then. An automated check proves nothing here. Tracked as **W-3**.
+> **One thing to send my way** — forward any reply from the maintainer. Tracked as **W-3**. (Separately, one *decision* stays his: whether we ever comment publicly if the email goes unanswered. See the update below.)
+>
+> *(This said "two things" until 26 July: it also asked him to glance at the page by hand. That ask is retired — see the update below.)*
+
+> ## Update — 26 July 2026: one of the two asks is retired
+>
+> **The hand-glance at the page is no longer needed.** When this brief was written we believed the site blocked us outright, so watching it had to be David's eyes. That was half wrong, and the half matters: the block is **IP-dependent** — it refuses our CI servers but serves an ordinary home connection normally. So the page *can* be checked mechanically; it just can't be checked by the always-on CI.
+>
+> As of today both page-side triggers are pinned and read whenever a session runs the lane's check: the **bound** (does it still say 0.380876?) and the **last-edited date** (has the page been touched since 23 January?). Both checked today — page unchanged on both.
+>
+> **The honest limit:** it runs when someone runs it, not continuously. If nobody works the lane for a week, nobody checks for a week. Against the screenshot round-trip it buys cadence and removes the human step — it is not stronger evidence than David's own eyes on the page, and it is not a 24/7 monitor. The daily CI alarm still can't see this page, and won't for as long as the site refuses datacenter traffic.
+>
+> **What's left for David is one thing: forward the maintainer's reply if it comes.** That's the acknowledgement, and no amount of engineering reaches his inbox.
+>
+> Also since he last read this: a **second surface** is now stewarded — the community metadata database behind erdosproblems.com. Worth knowing for one reason: we checked, and **the bounds are not in it**, so a correction like this one can never be submitted there as a code change. If the email goes unanswered, the remaining route is a **public comment on the problem page itself**. That is outward contact, so it would come to him for a decision first — not something to do on our own.
 
 The most-used index of Erdős problems lists a number that two later results have beaten. Below is everything behind the correction that was sent, including what we did *not* check.
 
@@ -68,7 +82,7 @@ Sure about the disagreement. Not sure about the mathematics — and the differen
 
 **What we verified ourselves:**
 
-- **What the page says.** From your own browser screenshot on 23 July: `0.379005 < c < 0.380876`, no sign of 0.380868, last edited 23 January. We could not check this ourselves — the site blocks our bots — so it rests on your eyes, not a fetch we could have fooled ourselves with.
+- **What the page says.** From your own browser screenshot on 23 July: `0.379005 < c < 0.380876`, no sign of 0.380868, last edited 23 January. At the time we believed we could not check this ourselves, so it rested on your eyes. It has since been confirmed three independent ways that agree — your hand-check, a direct fetch from a home connection, and a real browser read — and re-confirmed on 26 July. The evidence behind the sent message was your screenshot; the corroboration came later and did not change it.
 - **What the curated table says.** Terence Tao and two collaborators (Davis and Ivanisvili) maintain a reviewed table of these constants. It lists 0.380868 as current, citing a published paper. We keep a byte-for-byte mirror of that table and re-checked it against the live version on 24 July: **no drift**, all 109 files identical.
 - **That the two pages are about the same quantity.** The obvious way to be wrong here is to compare two different problems. The curated table states the equivalence outright and links to that exact page — and independently, *both* of the page's numbers (the floor 0.379005 and the ceiling 0.380876) appear as rows in the table. Two coincidental matches isn't plausible.
 
@@ -116,10 +130,11 @@ Standing rule: nothing goes outward until someone has genuinely tried to break i
 
 Nothing is owed by anyone right now. The open question is whether it lands, and that's out of our hands — which is the honest shape of a first outward result.
 
-Two things to send my way whenever they happen, neither of which I can get myself:
+**One thing to send my way, and it's the only one I can't get myself:**
 
 - **Any reply from the maintainer** — paste or forward it. That is the acknowledgement, and it's what moves the lane's metric off zero for the first time.
-- **A hand-glance at [the page](https://www.erdosproblems.com/36) now and then** — if the upper bound becomes 0.380868, or the last-edited date moves, that's the correction landing. The site blocks our bots, so an automated check proves nothing; it has to be your eyes.
+
+The other half of this ask used to be yours and no longer is. Both page-side signals — the bound changing to 0.380868, and the last-edited date moving off 23 January — are now pinned and read mechanically whenever a session works this lane (26 July; both checked today, page unchanged). If either moves, it surfaces here without you looking.
 
 No reply is also an answer, just a slower one. Maintainers of personal projects have their own cadence, and a factual note that sits unanswered for weeks isn't a rejection.
 

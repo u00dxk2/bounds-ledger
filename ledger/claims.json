@@ -61,6 +61,16 @@
     "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md"
   },
   {
+    "id": "C-9",
+    "statement": "erdosproblems.com/36 has not been edited since 23 January 2026 — the second leg of the W-3 ack watch",
+    "url": "https://www.erdosproblems.com/36",
+    "expect": "This page was last edited 23 January 2026.",
+    "note": "MANUAL BY DESIGN, same site block as C-7 (403 from datacenter IPs, 200 from residential) — so this reports UNVERIFIED in CI and never touches the exit code. NOT a re-automation of C-7: the claim briefly holding the C-8 ID on 2026-07-25 pinned this same date but was FETCHABLE, so CI reported UNREACHABLE and went red (docs/findings/2026-07-25-the-403-that-wasnt.md). `manual: true` is what makes an edit-date pin safe to hold. WHY IT EARNS ITS PLACE: C-7 pins the bound, so it catches the correction landing as a value change; this pin catches Bloom TOUCHING the page at all — a note, a restructure, a citation added — which is ack-adjacent evidence C-7 alone cannot see. Both legs of W-3's page trigger are now mechanically readable by any local `npm run check`; only the maintainer's email reply still requires David. COST NOTED: manual claims fetch outside the shared body cache, so a local run now makes two requests to a personal site that signals it dislikes bots. Two is courteous; do not grow this pattern.",
+    "lastHandVerify": "2026-07-26",
+    "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md",
+    "manual": true
+  },
+  {
     "id": "pin:10a:U",
     "statement": "Last-listed upper-bound table row for The real Grothendieck constant (10a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10a.md",
