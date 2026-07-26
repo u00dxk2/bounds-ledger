@@ -40,6 +40,8 @@ Today's fix made this flow *fire at all* (see `docs/findings/2026-07-24-drift-al
 
 All three are reversible micro-fixes that would normally ship under default authority. Holding them: David held new work on this lane 2026-07-23, and today already spent its budget on a defect that made the alarm itself fake. Ship on the next greenlight; P-1 first.
 
+> **Superseded 2026-07-24 — read the Render section below before acting on this paragraph.** The hold was lifted the same day ("Accidental hold. Please proceed."), and **P-1 shipped**. Only P-2 and P-3 remain deferred. P-3's stated premise — that it "matters on day 2 of any real drift, not day 1" — was **falsified on 2026-07-25**: three consecutive pushes each filed their own issue for one condition, no real drift required. It still isn't worth shipping unasked, but the reason is now "small annoyance, rare" rather than "only pays during a multi-day drift."
+
 ### Validation status
 
 Not persona-tested. `/persona-friction` drives a **browser** against a URL, and F-1 terminates in a GitHub issue with an audience of one — there is no page to test. The flow that will need persona validation is F-2, and it doesn't exist yet.

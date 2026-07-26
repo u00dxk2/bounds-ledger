@@ -44,7 +44,9 @@ The mirror above watches ONE surface and reports any change. `ledger/claims.json
 
 Adding a claim to a published note means adding a row here; that's what keeps *re-fetchable citation + re-runnable check* true rather than aspirational.
 
-**Coverage as of 2026-07-25: 224 claims** — 8 hand-written (C-1…C-8) plus **216 generated pins covering all 109 constants**, via `node scripts/extract-pins.mjs`.
+**Coverage as of 2026-07-26: 225 claims** — 9 hand-written (C-1…C-9) plus **216 generated pins covering all 109 constants**, via `node scripts/extract-pins.mjs`.
+
+Two of the hand claims — **C-7** (the bound on erdosproblems.com/36) and **C-9** (that page's last-edited date) — are `manual: true` and report **UNVERIFIED, never green**: the site serves 403 to datacenter IPs, so CI can never check them. They still carry an *advisory* fetch whose result is printed without touching counts or the exit code, so a run from a residential connection gains real information and CI gains one honest line. Two UNVERIFIED claims is not a gap in the ledger; it is the ledger declining to launder an unverifiable fact into a green.
 
 C-8 opens the **second stewarded surface** (A-6, 2026-07-25): `teorth/erdosproblems` — the community metadata database behind erdosproblems.com, CI-reachable via raw.githubusercontent where the site itself is not. Stewarded as **entry-level claims, not a byte-level mirror**: that repo is pushed near-daily, and a whole-file drift alarm on a high-churn surface would be permanently red — an always-red alarm carries exactly as much information as a permanently-green one, which is the defect this ledger was founded on. Bounds do not live in that repo (verified 2026-07-25); its PR channel applies to metadata corrections only.
 
