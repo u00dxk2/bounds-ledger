@@ -52,6 +52,15 @@
     "manual": true
   },
   {
+    "id": "C-8",
+    "statement": "teorth/erdosproblems data/problems.yaml lists problem 36 as informally OPEN with no prize (A-6 second surface)",
+    "url": "https://raw.githubusercontent.com/teorth/erdosproblems/main/data/problems.yaml",
+    "expect": "- number: \"36\"\n  prize: \"no\"\n  informal_status:\n    state: \"open\"",
+    "note": "FIRST CLAIM ON THE SECOND STEWARDED SURFACE (A-6, adopted 2026-07-25, David greenlit). The community metadata database behind erdosproblems.com — CI-reachable via raw.githubusercontent (unlike the site, which 403s datacenter IPs). Entry-level pin, deliberately NOT a byte-level mirror: the repo is pushed near-daily, so a whole-file drift alarm would be permanently red, and an always-red alarm carries no information. The pin spans number → prize → informal_status.state and stops BEFORE last_update (churns on any upstream edit). A BREAK means problem 36's entry changed (solved? prize added? entry restructured?) — re-verify against the repo and re-pin deliberately. ID NOTE: an unrelated, reverted claim briefly used the C-8 ID earlier on 2026-07-25 (site last-edited-date pin; see docs/findings/2026-07-25-the-403-that-wasnt.md) — this claim is not it.",
+    "lastHandVerify": "2026-07-25",
+    "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md"
+  },
+  {
     "id": "pin:10a:U",
     "statement": "Last-listed upper-bound table row for The real Grothendieck constant (10a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10a.md",

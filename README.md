@@ -44,7 +44,9 @@ The mirror above watches ONE surface and reports any change. `ledger/claims.json
 
 Adding a claim to a published note means adding a row here; that's what keeps *re-fetchable citation + re-runnable check* true rather than aspirational.
 
-**Coverage as of 2026-07-24: 223 claims** — 7 hand-written (C-1…C-7) plus **216 generated pins covering all 109 constants**, via `node scripts/extract-pins.mjs`.
+**Coverage as of 2026-07-25: 224 claims** — 8 hand-written (C-1…C-8) plus **216 generated pins covering all 109 constants**, via `node scripts/extract-pins.mjs`.
+
+C-8 opens the **second stewarded surface** (A-6, 2026-07-25): `teorth/erdosproblems` — the community metadata database behind erdosproblems.com, CI-reachable via raw.githubusercontent where the site itself is not. Stewarded as **entry-level claims, not a byte-level mirror**: that repo is pushed near-daily, and a whole-file drift alarm on a high-churn surface would be permanently red — an always-red alarm carries exactly as much information as a permanently-green one, which is the defect this ledger was founded on. Bounds do not live in that repo (verified 2026-07-25); its PR channel applies to metadata corrections only.
 
 A generated pin asserts the **last-listed row** of a bounds table, verbatim — *not* "the record". Numeric record-ranking is defeated by symbolic cells (`$K_{DR}+10^{-26}$`), negatives and O(·) asymptotics; a ranking prototype mis-picked three constants, and auto-asserting "record" 216 times would put unverified mathematical statements in our own ledger. Last-listed is true by construction, and an appended new record trips the mirror diff instead. Only the hand claims may say "record", because a human checked them.
 
