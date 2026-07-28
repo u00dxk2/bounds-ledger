@@ -16,7 +16,7 @@ The user is a researcher, writer, or curator who **quotes a record** — a bound
 |---|---|---|---|
 | F-1 | **Drift alarm** — a tracked record moves, and the steward learns within a day | us (steward) | yes — daily CI, as of today actually armed |
 | F-2 | **Spot-check one claim** — "is the number I'm about to cite current?" | outside researcher | **no surface at all** |
-| F-3 | **Receive a correction** — a curator is told their published record is behind | upstream maintainer | drafted, never exercised (A-3, David-gated) |
+| F-3 | **Receive a correction** — a curator is told their published record is behind | upstream maintainer | sent once, 2026-07-24 (A-3, David-sent); awaiting reply — tracked as W-3 |
 
 F-2 is where the core problem lives, and it has **zero** surface: the only way to ask "is this current?" is to clone a private repo and run `npm run check`. That is the gap, but closing it means a public status surface, which is the **public-repo flip — David-gated**. Not a micro-fix; do not ship it unasked.
 
