@@ -1767,6 +1767,22 @@
     "generated": true
   },
   {
+    "id": "pin:86a:U",
+    "statement": "Last-listed upper-bound table row for Schur–Siegel–Smyth trace constant (86a.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/86a.md",
+    "expect": "| $1.8216$ | [SO24] | Explicit measures satisfying the conditions of [Smi24], optimized by gradient descent. Corollary 1.10 of [SO24] gives $\\lvert \\Lambda\\_A - 1.8215998 \\rvert \\le 10^{-7}$ for $A = \\\\{x,\\ 1-x,\\ x^2-3x+1,\\ x^3-5x^2+6x-1\\\\}$, and $C\\_{86} \\le \\Lambda\\_A$. Intermediate values in the same family: $\\Lambda\\_{\\\\{x\\\\}} \\approx 1.898302$ (Serre's constant), then $1.84701204$ and $1.8224798$. Preprint; not listed as journal-published as of this writing. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/86a.md",
+    "generated": true
+  },
+  {
+    "id": "pin:86a:L",
+    "statement": "Last-listed lower-bound table row for Schur–Siegel–Smyth trace constant (86a.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/86a.md",
+    "expect": "| $1.80203$ | [OSS25] | Adds constraints coming from the logarithmic energy of the limiting measure to Smyth's linear program, sharply reducing the number of variables required. The authors prove existence and uniqueness of an optimal solution, characterize it in terms of polynomials, and solve numerically by gradient descent. Schur's and Siegel's bounds are recovered as the two simplest cases. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/86a.md",
+    "generated": true
+  },
+  {
     "id": "pin:8a:U",
     "statement": "Last-listed upper-bound table row for Classical zero-free region constant (8a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/8a.md",

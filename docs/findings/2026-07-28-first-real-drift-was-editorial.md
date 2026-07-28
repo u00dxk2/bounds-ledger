@@ -60,10 +60,49 @@ artifact of being rewritten by the snapshot.
 suspect the instrument *and then actually test it*, not to stop at the suspicion. `git status` is not a
 content diff; `--numstat` is.
 
+## A SECOND drift, 21 minutes later — and this one added a constant
+
+At 21:57Z, while this finding was being written, `npm run check` went red again: `c4f8386`. Upstream pushed
+twice in ~20 minutes. Two changes:
+
+**1 — `constants/85a.md`: markdown-escape removal.** `\\{` → `\{`, `1\_{B(H)}` → `1_{B(H)}`, `\\}` → `\}` in
+the definition of $m_H(\varepsilon)$. The escapes were preventing correct LaTeX rendering; the mathematical
+content is character-for-character identical once unescaped. Editorial, like the first pair.
+
+**2 — `ADDED constants/86a.md`: a new constant enters the stewarded surface.** The **Schur–Siegel–Smyth trace
+constant** $C_{86}$ — a full page with upper- and lower-bound tables and ~25 references. This is the first
+*addition* the mirror has seen, as opposed to a modification.
+
+Mirror 109 → **110 files**; generated pins 216 → **218**; ledger 225 → **227 claims (225 hold, 0 broken,
+2 unverified)**. `npm test` 3/3, `npm run check` exit 0.
+
+**The pin extractor handled a never-before-seen file correctly, and this was checked rather than assumed:**
+`pin:86a:U` captured `| $1.8216$ | [SO24] | …` and `pin:86a:L` captured `| $1.80203$ | [OSS25] | …` — the
+last-listed row of each table, matching the page's own stated range $1.80203 \le C_{86} \le 1.8216$. No
+hand-pinning was needed and none was added.
+
+### Worth knowing: the new page self-declares as partly unverified
+
+`86a.md` ends with a "Contribution notes" section stating it was *"Prepared with assistance from Claude Opus
+5"* and that *"The pre-2021 entries have not been checked against the primary sources themselves, and all
+references should be independently verified before citation."*
+
+This is **not** a criticism of upstream — that disclosure is exactly the honesty this lane wants from a
+source, and it is more than most curated tables offer. But it matters to us specifically: our ledger now
+carries two generated pins whose source page flags its own historical rows as unchecked. Our pins remain
+truthful, because **a generated pin asserts listing position, never correctness** — `pin:86a:L` claims only
+that `$1.80203$ [OSS25]` is the last row of that table, which is verifiable and true. The distinction that
+felt pedantic when it was adopted is load-bearing here: had the pins asserted "the record", we would now be
+republishing values their own authors decline to vouch for.
+
 ## Carry-forward
 
 - A red `reverify` is not automatically a record event. **Editorial drift is real drift** and still requires
   the full verify → snapshot → re-pin cycle, because the mirror's job is byte-fidelity to the adopted
   surface, not just numeric fidelity.
-- The alarm's value showed up as designed: it fired within a day of an upstream push, on a change no one
-  would have noticed by hand.
+- **An ADDED file is the cheapest drift class to absorb** — snapshot, re-run `extract-pins.mjs`, confirm the
+  new pins landed on the right rows. No hand claim is owed unless a human verifies the mathematics.
+- **The "listing position, never the record" rule earned its keep on day 7.** When a source page admits its
+  own rows are unverified, a position-pin stays honest and a record-pin would not.
+- The alarm's value showed up as designed: it fired twice within a day of upstream pushes, on changes no one
+  would have noticed by hand — and the second one silently expanded the inventory we steward.

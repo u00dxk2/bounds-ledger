@@ -31,7 +31,7 @@ First adopted surface: **`teorth/optimizationproblems`** (109 constant files und
 - `node scripts/reverify.mjs --snapshot` — refresh the ledger copy from upstream HEAD (run only after a drift has been re-verified against primary sources; commit the result).
 - `node scripts/reverify.mjs --check` — re-fetch upstream, diff vs the ledger copy, print a drift report; exit 1 on drift.
 - `node scripts/reverify.test.mjs` — network-free self-test: proves a synthetic single-digit tamper is caught.
-- `node scripts/extract-pins.mjs` — regenerate the 216 generated claim pins from the mirror. Run after every `--snapshot` (see the ratchet below).
+- `node scripts/extract-pins.mjs` — regenerate the generated claim pins from the mirror. Run after every `--snapshot` (see the ratchet below).
 - `.github/workflows/reverify.yml` — daily cron (09:17 UTC) + on push + manual. A failed run IS the drift alarm; on a drift or a broken claim it auto-files a GitHub issue titled with what moved, body code-fenced so the `-/+` diff survives GFM. Drift is expected behavior (records move) — the alarm demands re-verification, then a deliberate `--snapshot` commit turns it green. *Known exception (A-4): if a **self-test** fails, the job goes red but files no issue — `finding.txt` doesn't exist yet, so the issue step exits early.*
 
 ### Claim-level checks (the second half of the constraint)
@@ -44,13 +44,13 @@ The mirror above watches ONE surface and reports any change. `ledger/claims.json
 
 Adding a claim to a published note means adding a row here; that's what keeps *re-fetchable citation + re-runnable check* true rather than aspirational.
 
-**Coverage as of 2026-07-26: 225 claims** — 9 hand-written (C-1…C-9) plus **216 generated pins covering all 109 constants**, via `node scripts/extract-pins.mjs`.
+**Coverage as of 2026-07-28: 227 claims** — 9 hand-written (C-1…C-9) plus **218 generated pins covering all 110 mirrored constants**, via `node scripts/extract-pins.mjs`. The totals move when upstream adds a constant: on 2026-07-28 it added `86a` (the Schur–Siegel–Smyth trace constant), taking the mirror 109 → 110 files and the pins 216 → 218.
 
 Two of the hand claims — **C-7** (the bound on erdosproblems.com/36) and **C-9** (that page's last-edited date) — are `manual: true` and report **UNVERIFIED, never green**: the site serves 403 to datacenter IPs, so CI can never check them. They still carry an *advisory* fetch whose result is printed without touching counts or the exit code, so a run from a residential connection gains real information and CI gains one honest line. Two UNVERIFIED claims is not a gap in the ledger; it is the ledger declining to launder an unverifiable fact into a green.
 
 C-8 opens the **second stewarded surface** (A-6, 2026-07-25): `teorth/erdosproblems` — the community metadata database behind erdosproblems.com, CI-reachable via raw.githubusercontent where the site itself is not. Stewarded as **entry-level claims, not a byte-level mirror**: that repo is pushed near-daily, and a whole-file drift alarm on a high-churn surface would be permanently red — an always-red alarm carries exactly as much information as a permanently-green one, which is the defect this ledger was founded on. Bounds do not live in that repo (verified 2026-07-25); its PR channel applies to metadata corrections only.
 
-A generated pin asserts the **last-listed row** of a bounds table, verbatim — *not* "the record". Numeric record-ranking is defeated by symbolic cells (`$K_{DR}+10^{-26}$`), negatives and O(·) asymptotics; a ranking prototype mis-picked three constants, and auto-asserting "record" 216 times would put unverified mathematical statements in our own ledger. Last-listed is true by construction, and an appended new record trips the mirror diff instead. Only the hand claims may say "record", because a human checked them.
+A generated pin asserts the **last-listed row** of a bounds table, verbatim — *not* "the record". Numeric record-ranking is defeated by symbolic cells (`$K_{DR}+10^{-26}$`), negatives and O(·) asymptotics; a ranking prototype mis-picked three constants, and auto-asserting "record" for every constant would put unverified mathematical statements in our own ledger. Last-listed is true by construction, and an appended new record trips the mirror diff instead. Only the hand claims may say "record", because a human checked them.
 
 Pins deliberately do **not** auto-follow the mirror. After any `--snapshot`, re-run `extract-pins.mjs` and commit the regenerated pins — until you do, a moved row stays BROKEN in `check-claims`. That is the post-snapshot ratchet, and it is the mechanism that stops a snapshot from silently blessing a change nobody read.
 

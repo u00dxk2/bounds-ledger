@@ -1,40 +1,15 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-26T03:56:08.568Z",
+  "generatedAt": "2026-07-28T22:03:35.512Z",
   "projectPath": "C:\\dev\\skylark\\bounds-ledger",
   "itemCount": 9,
   "knownPatternCount": 0,
-  "commitCount": 28,
-  "findings": [
-    {
-      "check": "MODIFIED_ITEM_LAST_24H",
-      "severity": "info",
-      "id": "A-4",
-      "title": "Alarm files NO finding issue when the job fails before the drift/claims steps run (self-test failure path)",
-      "message": "Item A-4 title/closeWhen modified in last 24h (diff hash 9aca1b61); investigate before per-day judgment.",
-      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
-    },
-    {
-      "check": "MODIFIED_ITEM_LAST_24H",
-      "severity": "info",
-      "id": "A-5",
-      "title": "Alarm labelled a transient network failure 'Drift:' and omitted the reason entirely (production issue #2)",
-      "message": "Item A-5 title/closeWhen modified in last 24h (diff hash d7b11f84); investigate before per-day judgment.",
-      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
-    },
-    {
-      "check": "MODIFIED_ITEM_LAST_24H",
-      "severity": "info",
-      "id": "A-6",
-      "title": "OPPORTUNITY: adopt erdosproblems.com as the second stewarded surface — and route corrections as PRs to teorth/erdosproblems instead of email",
-      "message": "Item A-6 title/closeWhen modified in last 24h (diff hash e0f7a9e9); investigate before per-day judgment.",
-      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
-    }
-  ],
+  "commitCount": 3,
+  "findings": [],
   "counts": {
     "critical": 0,
     "warn": 0,
-    "info": 3
+    "info": 0
   },
   "suppressedCount": 0,
   "actionsOnlyMode": false,
