@@ -31,6 +31,26 @@
 >
 > Also since he last read this: a **second surface** is now stewarded — the community metadata database behind erdosproblems.com. Worth knowing for one reason: we checked, and **the bounds are not in it**, so a correction like this one can never be submitted there as a code change. If the email goes unanswered, the remaining route is a **public comment on the problem page itself**. That is outward contact, so it would come to him for a decision first — not something to do on our own.
 
+> ## Update — 28 July 2026: the alarm went off for real, twice
+>
+> Until this week the watcher had only ever been tested by us — it caught drift in a fake file we planted to
+> prove it worked. On 28 July the real thing happened: the curated table we mirror was edited upstream, and
+> the alarm caught it within the hour. Then it happened again twenty minutes later.
+>
+> **Neither was a record change, and that turns out to be the more useful result.** The first edit fixed a
+> link that pointed at a page which doesn't exist, and restored a character missing from a formula. No number
+> moved. The second added a brand-new constant to the table — the first time the thing we're watching has
+> *grown* rather than shifted. Our copy went from 109 files to 110 and the number of individual values under
+> watch went from 225 to 227, absorbed the same evening.
+>
+> **Why the boring version matters:** the temptation with a "nothing important changed" alarm is to wave it
+> through. We didn't — each change was checked against the source before our copy was updated, which is the
+> only discipline that keeps the alarm meaningful. An alarm you're allowed to silence isn't one.
+>
+> **What it does not change:** the erdosproblems.com page is still untouched — same bound, still last edited
+> 23 January. This week's movement was the curated table correcting itself, not anyone acknowledging us. The
+> lane's one real metric is still **0**.
+
 The most-used index of Erdős problems lists a number that two later results have beaten. Below is everything behind the correction that was sent, including what we did *not* check.
 
 ---
