@@ -171,6 +171,47 @@
         "fd7a692",
         "7e07228"
       ]
+    },
+    {
+      "id": "A-7",
+      "created": "2026-07-29",
+      "type": "active",
+      "status": "open",
+      "title": "engineering-health P1s (fleet-shared controls): no pre-commit secret scan, no history sweep, no repo manifest, no branch protection, no lockfile ratchet",
+      "note": "Reference: docs/engineering-health-review-2026-07-29.md (commit 2b8a438) — the full anchors, rule numbers and smallest-fix notes live there; this item exists only so the doc does not rot untracked. Five of this repo's six P1s, all pure copy/config and all identical across the fleet: R5 no pre-commit staged-secrets scan (`git config core.hooksPath` unset, .git/hooks empty); R7 no scheduled verified full-history sweep; R4 no repo-health.json, so this repo is invisible to the monthly matrix sweep; R16 no branch protection or ruleset on main (force-push and deletion both permitted); R17/R18 no lockfile, no frozen install, no dependabot.yml. DELIBERATELY NOT FIXED PER-REPO: the 2026-07-29 orchestrator dispatch was explicit that these are a coordinated wave with shared recipes and that fixing them locally now would duplicate the work and diverge the solutions. CONTEXT THAT MATTERS FOR SEVERITY: none of these is currently exploited. Verified, not assumed — no secret-shaped path exists in any of this repo's 51 commits, the only credential the code touches is CI-injected (GITHUB_TOKEN, never written to disk), and the repo has zero dependencies by design. The exposure is prospective; what is missing is the ratchet, not a live hole.",
+      "closeWhen": "The Stage-0 wave has landed here and each control is verified BY EXECUTION, not by inspection: `git config core.hooksPath` returns a path AND a planted test secret is refused at commit; a scheduled history-sweep workflow exists and has completed one green run; repo-health.json present at root; `gh api repos/u00dxk2/bounds-ledger/rulesets` returns non-empty with force-push + deletion blocked; package-lock.json committed. R6 (push protection) is EXCLUDED from this condition — see blockedOn.",
+      "blockedOn": "(a) the coordinated fleet fix wave — the orchestrator owns the shared recipes, and per the 2026-07-29 dispatch this lane must not fix these ahead of it. (b) R6 push protection is PLAN-GATED and therefore David-gated: this repo is private on a personal GitHub Pro account, where free secret scanning / push protection covers PUBLIC repos only; enabling it on a private repo needs the paid GitHub Secret Protection add-on, i.e. a spend decision. NO BOARD CARD EXISTS for that spend decision as of filing — surfaced to the orchestrator in the 2026-07-29 close-out report rather than carded here, since infra board cards are not this lane's to create.",
+      "note2": "ONE P1 IS NOT IN THIS ITEM: the CI self-test gap (R21) is tracked separately as A-8 because it is lane-specific, one line, needs no fleet coordination, and is actionable immediately — bundling it here would park a same-day fix behind a multi-repo wave.",
+      "verifyBy": {
+        "method": "re-run the review's own probes and compare against the review doc's platform-inventory table; every row there is a live GitHub API read, so drift is directly checkable",
+        "owner": "bounds-ledger"
+      }
+    },
+    {
+      "id": "A-8",
+      "created": "2026-07-29",
+      "type": "active",
+      "status": "open",
+      "title": "CI runs 2 of the repo's 3 self-tests — extract-pins.mjs --selftest has no workflow step",
+      "note": "Reference: docs/engineering-health-review-2026-07-29.md finding P1-3 (rule R21). package.json's `test` script runs reverify.test.mjs + check-claims.mjs --selftest + extract-pins.mjs --selftest; .github/workflows/reverify.yml runs only the first two. So the extractor that generates 218 of the ledger's 227 claims is unguarded in CI, and its 5 extraction cases — escaped-pipe cells, HTML-commented rows, header-only tables, missing-H1 fallback — are exactly the parsing edge cases that made last-listed-row pinning safe to adopt. A regression there is caught only if a human happens to run npm test locally. WHY THIS ONE IS EMBARRASSING RATHER THAN ROUTINE: it is this lane's founding defect closing over itself. The 2026-07-24 finding (docs/findings/2026-07-24-drift-alarm-was-never-armed.md) was that an alarm which is not actually armed carries no information; here a self-test that exists, passes, and is never executed by CI is the same shape. HAZARD ALREADY CHECKED so the fixer does not have to: reverify.test.mjs:46,52 COUNTS workflow steps but only REPORTS the count — the assertion at :50 is on unguarded pipes — so adding a step does not break the pipefail guard, and the new step contains no pipe so it needs no `shell: bash`.",
+      "closeWhen": "reverify.yml contains a step running `node scripts/extract-pins.mjs --selftest`, and a CI run has actually executed it green — log-verified, not inferred from a green badge.",
+      "verifyBy": {
+        "method": "read the CI log for the run and confirm the line `extract-pins selftest: PASS (5 extraction cases)` appears in it",
+        "owner": "bounds-ledger"
+      }
+    },
+    {
+      "id": "A-9",
+      "created": "2026-07-29",
+      "type": "active",
+      "status": "open",
+      "title": "engineering-health P2 backlog (fix-on-touch, not scheduled work)",
+      "note": "Reference: docs/engineering-health-review-2026-07-29.md, the six P2 findings. EXPLICITLY A FIX-ON-TOUCH BACKLOG — do not schedule a session for these; fix one when you are already in the file. The six: R3 no SECURITY.md (the honest answer here is short — no secrets live in-repo, only a CI-injected github.token — and is worth writing down before any public-repo flip); R13 actions pinned to floating tags rather than SHAs (both are GitHub-owned first-party and rule 13's text scopes to THIRD-party actions, so by the rule's own wording this is not a violation — filed as hardening and flagged for a fleet-level ruling); R29 the snapshot-rollback path is undocumented (revert the snapshot commit, re-run extract-pins.mjs, re-commit — obvious to an agent that has read CLAUDE.md, invisible to one that has not); R33 housekeeping ledger — DONE 2026-07-29, seeded at docs/housekeeping-ledger.md, commit d89e10f; R34 README:47 says the generated pins cover 'all 110 mirrored constants' when they cover 109 (1b.md is deliberately skipped and hand-pinned as C-1/C-3 per extract-pins.mjs:31 — so ledger coverage IS complete and only the sentence is wrong; checked the extractor before filing rather than reporting a phantom coverage gap); R19 Dependabot security UPDATES disabled, though alerts are ON and the inbox is empty, which is inert at zero dependencies and should be flipped when the first dependency lands.",
+      "closeWhen": "The review doc's P2 list is empty, OR this item is superseded by the next engineering-health audit — whichever comes first. Superseding is a legitimate close here, not an evasion: a fix-on-touch backlog that survives to the next audit has been re-evaluated by that audit.",
+      "verifyBy": {
+        "method": "re-read the P2 section of docs/engineering-health-review-2026-07-29.md and confirm each entry is either fixed in-repo or restated by the newer audit",
+        "owner": "bounds-ledger"
+      }
     }
   ]
 }
