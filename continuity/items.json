@@ -191,7 +191,12 @@
       "id": "A-8",
       "created": "2026-07-29",
       "type": "active",
-      "status": "open",
+      "status": "closed",
+      "closedAt": "2026-07-30",
+      "resolution": "FIXED 2026-07-30, commit ebd52f2. reverify.yml gained a `Self-test pin extractor (no network)` step running `node scripts/extract-pins.mjs --selftest`. LOG-VERIFIED per this item's verifyBy, not inferred from a green badge: CI run 30544580239 on ebd52f2 prints `extract-pins selftest: PASS (5 extraction cases)` under its own named step, alongside `reverify.test: PASS (... 6 workflow steps, piped steps pipefail-guarded)` and `check-claims selftest: PASS`. The hazard this item pre-checked held: reverify.test.mjs reports the step count without asserting it, so 5 -> 6 steps did not break the pipefail guard, and the new step has no pipe so it needed no `shell: bash`. All three of the repo's self-tests now run in the alarm that depends on them. The window was six days (2026-07-24 pin-extension ship -> 2026-07-30); nothing regressed in it — the pins were independently confirmed byte-identical across both 7/28 snapshots — so this closes a prospective gap, not a live miss.",
+      "linkedCommits": [
+        "ebd52f2"
+      ],
       "title": "CI runs 2 of the repo's 3 self-tests — extract-pins.mjs --selftest has no workflow step",
       "note": "Reference: docs/engineering-health-review-2026-07-29.md finding P1-3 (rule R21). package.json's `test` script runs reverify.test.mjs + check-claims.mjs --selftest + extract-pins.mjs --selftest; .github/workflows/reverify.yml runs only the first two. So the extractor that generates 218 of the ledger's 227 claims is unguarded in CI, and its 5 extraction cases — escaped-pipe cells, HTML-commented rows, header-only tables, missing-H1 fallback — are exactly the parsing edge cases that made last-listed-row pinning safe to adopt. A regression there is caught only if a human happens to run npm test locally. WHY THIS ONE IS EMBARRASSING RATHER THAN ROUTINE: it is this lane's founding defect closing over itself. The 2026-07-24 finding (docs/findings/2026-07-24-drift-alarm-was-never-armed.md) was that an alarm which is not actually armed carries no information; here a self-test that exists, passes, and is never executed by CI is the same shape. HAZARD ALREADY CHECKED so the fixer does not have to: reverify.test.mjs:46,52 COUNTS workflow steps but only REPORTS the count — the assertion at :50 is on unguarded pipes — so adding a step does not break the pipefail guard, and the new step contains no pipe so it needs no `shell: bash`.",
       "closeWhen": "reverify.yml contains a step running `node scripts/extract-pins.mjs --selftest`, and a CI run has actually executed it green — log-verified, not inferred from a green badge.",
