@@ -22,6 +22,12 @@ jobs:
         run: node scripts/reverify.test.mjs
       - name: Self-test claim matcher (no network)
         run: node scripts/check-claims.mjs --selftest
+      # This step existed in `npm test` but NOT here for six days, so the extractor that
+      # generates 218 of the ledger's 227 claims was unguarded in CI — a self-test that
+      # passes locally and is never executed by the alarm is the lane's founding defect
+      # (an alarm that isn't armed carries no information) turned on itself. A-8.
+      - name: Self-test pin extractor (no network)
+        run: node scripts/extract-pins.mjs --selftest
       # `shell: bash` is load-bearing: the DEFAULT runner shell is `bash -e {0}` with NO
       # pipefail, so `node ... | tee` reports tee's exit 0 and a drift exits GREEN. Naming
       # the shell gets `-eo pipefail`. Guarded by reverify.test.mjs.
