@@ -6,6 +6,6 @@
   "type": "module",
   "scripts": {
     "test": "node scripts/reverify.test.mjs && node scripts/check-claims.mjs --selftest && node scripts/extract-pins.mjs --selftest",
-    "check": "node scripts/reverify.mjs --check && node scripts/check-claims.mjs"
+    "check": "node scripts/reverify.mjs --check && node scripts/check-claims.mjs && node scripts/check-brief.mjs"
   }
 }

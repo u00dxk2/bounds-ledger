@@ -47,6 +47,14 @@ days** after the correction went out. That is a real read CI structurally cannot
 **not** carry the 28 July block. Yesterday's report found this and posted a bus note; a day later nothing
 changed. Escalating rather than re-posting the identical note.
 
+**CORRECTION, added later the same day.** That paragraph is wrong in a way worth keeping visible. Built
+`check-brief.mjs` — a drift check on our own brief — and it found **two** missing blocks, not one: **26 July**
+as well as 28 July. The page is stale since **26 July, five days**, not two. Both hand-checks (7/30 and 7/31)
+searched for the block the primer named and therefore each found exactly one, which is recognition-over-recall
+failing on our own instrument: **a hand-check that inherits its search term from a doc can only ever confirm
+that doc.** The detector derives the expected set from the source and does not inherit anything. This is the
+strongest available argument for the detector — it caught what two careful manual passes missed.
+
 ## What changed
 
 | Commit | What |
