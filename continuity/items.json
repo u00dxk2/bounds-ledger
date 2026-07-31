@@ -229,7 +229,8 @@
       "verifyBy": {
         "method": "for each detector added since the last check, confirm the finding doc or commit message records BOTH a fire-side and a silent-side output",
         "owner": "bounds-ledger"
-      }
+      },
+      "onTrigger": "When you are about to ship anything whose job is to DETECT (test, guard, lint, probe, --check mode, alarm), before committing: (1) construct the condition it exists to catch and confirm it FIRES, naming what it printed; (2) restore and confirm it goes SILENT; (3) prove the mutation actually landed with git diff --numstat BEFORE believing either result -- a control written with \n against these CRLF files silently no-ops and manufactures a false inert verdict (2026-07-25); (4) paste both outputs into the commit message or finding doc. If nothing in the repo currently trips it, build a fixture that does -- a detector validated only against a clean world tells you nothing. Then ask the second question, which is NOT the same: can it see the SHAPE of failure that matters, or only one direction of it? (2026-07-31: both detectors passed can-it-fire and both were blind to a class this lane exists to catch.) Finally: is it wired into something that RUNS on its own? A check only in npm scripts is not a detector."
     },
     {
       "id": "A-10",
@@ -243,7 +244,10 @@
         "method": "read the report section or task-complete that names the constants actually checked -- a bare zero-stale claim with no list does not close this",
         "owner": "bounds-ledger"
       },
-      "closed": "2026-07-31"
+      "closed": "2026-07-31",
+      "linkedCommits": [
+        "5776c40"
+      ]
     },
     {
       "id": "A-11",
@@ -255,6 +259,24 @@
       "closeWhen": "(b) is implemented for C-6 and C-8 with both sides demonstrated, OR David overrides the (c) default for the other four. Not blocked on him either way.",
       "verifyBy": {
         "method": "for the chosen option, demonstrate BOTH sides per W-4 -- an added bound on an off-mirror source must produce the intended reading, and an unchanged source must not",
+        "owner": "bounds-ledger"
+      }
+    },
+    {
+      "id": "A-12",
+      "created": "2026-07-31",
+      "type": "active",
+      "status": "open",
+      "title": "Hosted brief drifts from docs/lane-brief.md — detector shipped, page still stale",
+      "note": "The David-facing brief at https://skylarkcreations.com/t/lanes/bounds-ledger is ported by the ORCHESTRATOR, not by this repo, so it can silently fall behind its source. It did: stale since 26 JULY. Two hand-checks (7/30, 7/31) each reported only ONE missing block because each searched for the block the PRIMER named -- a hand-check that inherits its search term from a doc can only ever confirm that doc. scripts/check-brief.mjs derives the expected set from the source and inherits nothing; it found TWO missing (26 July + 28 July). Runs daily as a SEPARATE always-exits-0 CI job that surfaces via a deduped GitHub issue -- currently issue #6 -- rather than via an exit code nobody reads. Deliberately NOT in the drift job: it would go red and STAY red until the re-port lands, and a permanently-red alarm carries as much information as a permanently-green one (this lane founding defect). G-1 green streak measures the LEDGER, not the porter.",
+      "closeWhen": "The hosted page carries all dated blocks (check-brief.mjs exits 0 against production, issue #6 closed), AND check-brief graduates into the reverify drift job proper on the run after it first reads green.",
+      "onTrigger": "Nothing to do while it stays red -- this repo CANNOT fix it, the port is the orchestrators. Do NOT re-post an identical bus note each day; issue #6 is the standing alarm. If it is still red after 2026-08-07, escalate to David as a real blocker (an outward artifact wrong for two weeks), naming the missing blocks by date.",
+      "linkedCommits": [
+        "90f4c8e",
+        "02b263e"
+      ],
+      "verifyBy": {
+        "method": "run node scripts/check-brief.mjs against production and read the exit code; do not trust the issue state alone",
         "owner": "bounds-ledger"
       }
     }

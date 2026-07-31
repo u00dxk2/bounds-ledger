@@ -1,15 +1,48 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-29T21:08:11.137Z",
+  "generatedAt": "2026-07-31T21:09:21.903Z",
   "projectPath": "C:\\dev\\skylark\\bounds-ledger",
-  "itemCount": 9,
+  "itemCount": 16,
   "knownPatternCount": 0,
-  "commitCount": 7,
-  "findings": [],
+  "commitCount": 12,
+  "findings": [
+    {
+      "check": "MODIFIED_ITEM_LAST_24H",
+      "severity": "info",
+      "id": "W-4",
+      "title": "KP-78 applies to every new detector: demonstrate BOTH sides at write time",
+      "message": "Item W-4 title/closeWhen modified in last 24h (diff hash f409bb23); investigate before per-day judgment.",
+      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
+    },
+    {
+      "check": "MODIFIED_ITEM_LAST_24H",
+      "severity": "info",
+      "id": "A-10",
+      "title": "Audit latency-derived constants + threshold detectors against post-model-swap behavior (orchestrator P2 rider 7/31)",
+      "message": "Item A-10 title/closeWhen modified in last 24h (diff hash 8bf9f701); investigate before per-day judgment.",
+      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
+    },
+    {
+      "check": "MODIFIED_ITEM_LAST_24H",
+      "severity": "info",
+      "id": "A-11",
+      "title": "BC-2 accepted as a documented blind class (option c); pin-a-negative for the two STRUCTURED sources still open",
+      "message": "Item A-11 title/closeWhen modified in last 24h (diff hash 497f5945); investigate before per-day judgment.",
+      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
+    },
+    {
+      "check": "MODIFIED_ITEM_LAST_24H",
+      "severity": "info",
+      "id": "A-12",
+      "title": "Hosted brief drifts from docs/lane-brief.md — detector shipped, page still stale",
+      "message": "Item A-12 title/closeWhen modified in last 24h (diff hash d7d2e72e); investigate before per-day judgment.",
+      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
+    }
+  ],
   "counts": {
     "critical": 0,
     "warn": 0,
-    "info": 0
+    "info": 4
   },
   "suppressedCount": 0,
   "actionsOnlyMode": false,
