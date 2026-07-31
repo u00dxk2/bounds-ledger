@@ -217,6 +217,19 @@
         "method": "re-read the P2 section of docs/engineering-health-review-2026-07-29.md and confirm each entry is either fixed in-repo or restated by the newer audit",
         "owner": "bounds-ledger"
       }
+    },
+    {
+      "id": "W-4",
+      "created": "2026-07-31",
+      "type": "watch",
+      "status": "open",
+      "title": "KP-78 applies to every new detector: demonstrate BOTH sides at write time",
+      "note": "Filed from the 2026-07-31 KP-78 audit (docs/findings/2026-07-31-kp78-prove-the-instrument-can-fail.md). Audited all four detectors in the lane: the drift check and the claim matcher were already two-sided by construction; the pipefail guard had a never-demonstrated fire side (demonstrated 7/31, it fires and names the offending step); and the audit surfaced a detector that did not exist at all -- A-8 (ebd52f2, shipped 7/30) added the pin-extractor self-test to CI as a hand-added YAML step with nothing asserting it stays, so deleting it would have been silent and would have looked exactly like the six unguarded days it just fixed. Built that guard (reverify.test.mjs, derives the expected set from package.json so a newly-added self-test cannot be CI-less either) and demonstrated it both ways. THE WATCH: any future detector here -- test, guard, lint, probe, --check mode, alarm -- ships only with both outputs recorded, and the mutation proved landed via git diff --numstat first (a negative control written with \\\\n against CRLF files silently no-ops and produces a FALSE inert verdict, which is how the pipefail guard was wrongly pronounced broken on 2026-07-25).",
+      "closeWhen": "Standing watch -- does not close. Re-read before shipping any new detector, and when applying KP-78 to a recent commit rather than to the test directory.",
+      "verifyBy": {
+        "method": "for each detector added since the last check, confirm the finding doc or commit message records BOTH a fire-side and a silent-side output",
+        "owner": "bounds-ledger"
+      }
     }
   ]
 }
