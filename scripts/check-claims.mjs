@@ -24,6 +24,16 @@ const squash = (s) => s.replace(/\s+/g, " ");
 
 // A claim holds if its expected string survives in the raw body OR with tags stripped
 // (values split across markup) — both whitespace-collapsed.
+//
+// BLIND CLASS — this is a PRESENCE test, so it can only ever see a pin DISAPPEAR. It is
+// structurally incapable of firing when a source ADDS a new, better bound while leaving the
+// pinned text in place. For the 218 generated pins that is covered: their sources are
+// mirrored, and reverify.mjs sees any added line. It is NOT covered for the six claims whose
+// sources are off-mirror — C-4/C-5 (arXiv), C-6 (Wikipedia), C-7/C-9 (erdosproblems.com),
+// C-8 (teorth/erdosproblems) — where this checker is the ONLY instrument. "A new record
+// appeared alongside the old one" is this lane's north-star event, and on exactly those six
+// surfaces nothing here can report it. Named per the 2026-07-31 P2 rider (A-10); the fix is
+// a design question (mirror those sources vs pin a negative), not a threshold tweak.
 function holds(body, expect) {
   const want = squash(expect);
   return squash(body).includes(want) || squash(stripTags(body)).includes(want);
@@ -36,7 +46,12 @@ function selftest() {
   assert(holds("bound\n  is  0.380868", "bound is 0.380868"), "whitespace-collapsed phrase should hold");
   assert(!holds("the bound is 0.380871", "0.380868"), "absent value must NOT hold");
   assert(!holds("", "0.380868"), "empty body must NOT hold");
-  console.log("check-claims selftest: PASS (4 matcher cases + empty-body guard)");
+  // Blind class, asserted so it cannot be forgotten: a source that ADDS a better bound below
+  // the pinned one still reads as holding. This test PASSING is the defect, not the fix — it
+  // pins the shape of what this instrument cannot see. See the note on holds().
+  assert(holds("upper bound 0.380868\n| $0.379005$ | [NEW2026] |", "0.380868"),
+    "BLIND CLASS: an added better bound leaves the pin green — this checker cannot see additions");
+  console.log("check-claims selftest: PASS (4 matcher cases + empty-body guard + 1 blind-class pin)");
 }
 
 async function run() {

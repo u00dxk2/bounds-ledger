@@ -99,6 +99,16 @@ async function check(liveDir) {
     else {
       lines.push(`CHANGED ${SUBDIR}/${name}`);
       const d = lineDiff(a, b);
+      // The set-diff is blind to changes that preserve the line SET — a row REORDER or a
+      // duplicate-line edit. Those fired the alarm with a completely empty body, which is
+      // A-5's defect (an alarm that fires with no stated reason) surviving inside the finding
+      // that closed it. Row order is load-bearing here: the generated pins assert the
+      // LAST-LISTED row, so a reorder changes what our own pins mean. Say so explicitly.
+      if (!d.removed.length && !d.added.length) {
+        lines.push(`  (line SET unchanged — rows REORDERED or a line duplicated/deduplicated;`);
+        lines.push(`   the set-diff cannot show which. Row order is load-bearing: generated pins`);
+        lines.push(`   assert the LAST-LISTED row. Diff this file against the mirror by hand.)`);
+      }
       for (const l of d.removed) lines.push(`  - ${l}`);
       for (const l of d.added) lines.push(`  + ${l}`);
     }
