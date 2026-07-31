@@ -230,6 +230,19 @@
         "method": "for each detector added since the last check, confirm the finding doc or commit message records BOTH a fire-side and a silent-side output",
         "owner": "bounds-ledger"
       }
+    },
+    {
+      "id": "A-10",
+      "created": "2026-07-31",
+      "type": "active",
+      "status": "open",
+      "title": "Audit latency-derived constants + threshold detectors against post-model-swap behavior (orchestrator P2 rider 7/31)",
+      "note": "DEFERRED ON ARRIVAL per the dispatch (do not process on receipt; log as a P2 item). NOTE: this lane is LITE RAIL and has no P2 continuity phase, so the trigger is the NEXT DAILY rather than a phase boundary -- logged with an explicit trigger so it is not silently dropped, which is the failure mode the rider itself is about. THE CLASS: a threshold derived from a measurement of the OLD regime keeps reading as authoritative after the regime changes, and the whole fleet swapped models on 7/30. Anchors: frame-dial killed a digest because a do-not-push clock fence measured against gpt-5.4 wall-clock was ~45min wrong after builds roughly doubled on claude-opus-5; agentic-news hook canary reported CLEAR on a 2.38 SD quality drop because a fixed threshold vs a 7-run trailing mean is structurally incapable of firing on a single-day cliff. THE ASK: (1) inventory every constant that is a MEASUREMENT not a POLICY -- timeouts, stall thresholds, cron spacing, retry backoffs, quiet windows, any if(ageMinutes > N); (2) per constant, one line: what was N measured against, what is that behavior now; (3) fix by RE-KEYING TO OBSERVABLE STATE, not re-numbering (a re-numbered constant is the same bug with a fresh expiry date); only re-number when no observable state exists, and then write the measurement date + the model it was measured against next to the number; (4) run the pass-3 check on each detector touched -- can this instrument report the condition it exists to detect? If it has a blind class, say so in its name or comment; (5) report counts inventoried/stale/re-keyed-vs-re-numbered plus any load-bearing on a send/publish/customer path. PRIOR EXPECTATION, to be verified not assumed: this lane looks nearly empty of latency-derived constants -- no LLM calls, no retries/backoffs, no stall detector, and the cron 17 9 * * * is a POLICY choice not a measurement -- so honest zero-stale is the likely answer, but the dispatch requires saying WHAT WAS CHECKED rather than skipping silently. Pass-3 is the live angle worth real time here: this lane IS detectors, and W-4/KP-78 already covers can-it-fire, but blind-CLASS (can it see the shape of failure that matters) is a different question than can-it-fire at all.",
+      "closeWhen": "The inventory is run and reported with counts (inventoried / stale / re-keyed vs re-numbered / any on a send path), OR reported as an honest zero-stale with the checked list named.",
+      "verifyBy": {
+        "method": "read the report section or task-complete that names the constants actually checked -- a bare zero-stale claim with no list does not close this",
+        "owner": "bounds-ledger"
+      }
     }
   ]
 }
