@@ -90,3 +90,45 @@ jobs:
             --title "$title" \
             --body-file issue-body.md \
             --repo "$GITHUB_REPOSITORY"
+
+  # Separate job, and it ALWAYS exits 0. The hosted brief is ported to the site by the
+  # orchestrator, not by this repo, so a stale page must not turn the ledger's drift alarm red
+  # — G-1's green streak measures the LEDGER, and a permanently-red alarm carries exactly as
+  # much information as a permanently-green one (this lane's founding defect).
+  #
+  # But `npm run check` is a MANUAL invocation, and a check nobody runs is not a check: it sat
+  # in npm-only wiring for one commit before this. The page had been stale since 26 July and
+  # two hand-checks missed half of it. So it runs daily on its own and SURFACES through an
+  # issue rather than through an exit code nobody reads.
+  brief:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check hosted brief is in sync with docs/lane-brief.md
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          node scripts/check-brief.mjs > brief.txt 2>&1
+          code=$?
+          set -e
+          cat brief.txt
+          if [ "$code" -eq 0 ]; then exit 0; fi
+          if [ "$code" -ne 1 ]; then
+            # exit 2 = the checker itself broke (fetch failed, brief format changed). That is an
+            # instrument failure, not a stale brief, and must not be titled as one — A-5.
+            title="Brief check could not complete: bounds-ledger"
+          else
+            title="Brief stale: hosted lane brief is behind docs/lane-brief.md"
+          fi
+          existing=$(gh issue list --state open --search "$title in:title" --json number --jq '.[0].number // empty' --repo "$GITHUB_REPOSITORY")
+          if [ -n "$existing" ]; then
+            echo "already open as #$existing — not duplicating (the issue is the standing alarm)"
+            exit 0
+          fi
+          { printf '```\n'; cat brief.txt; printf '```\n'; } > brief-issue.md
+          gh issue create --title "$title" --body-file brief-issue.md --repo "$GITHUB_REPOSITORY"
