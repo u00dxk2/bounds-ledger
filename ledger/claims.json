@@ -776,7 +776,7 @@
   },
   {
     "id": "pin:3a:U",
-    "statement": "Last-listed upper-bound table row for The Gyamarti-Hennecart-Ruzsa sum-difference constant (3a.md)",
+    "statement": "Last-listed upper-bound table row for The Gyarmati-Hennecart-Ruzsa sum-difference constant (3a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3a.md",
     "expect": "| $4/3 = 1.333\\dots$ | [GHR2007] | |",
     "asserts": "ledger/teorth-optimizationproblems/constants/3a.md",
@@ -784,9 +784,9 @@
   },
   {
     "id": "pin:3a:L",
-    "statement": "Last-listed lower-bound table row for The Gyamarti-Hennecart-Ruzsa sum-difference constant (3a.md)",
+    "statement": "Last-listed lower-bound table row for The Gyarmati-Hennecart-Ruzsa sum-difference constant (3a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3a.md",
-    "expect": "| $1.1835129324$ | [MI2026] | Base-$33$ digit construction with exact counting certificate. |",
+    "expect": "| $1.19102809$* | [K2026] | Base-$34065$ masked-digit limit construction with $M=\\langle1518,1524,1587,2024,2032,2116\\rangle\\cap[0,17032]$ and a directed-rounding certificate. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/3a.md",
     "generated": true
   },
@@ -820,6 +820,22 @@
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3c.md",
     "expect": "| $1.6747338950208249$ | [MI2026] | Entropy construction on a 95-point support. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/3c.md",
+    "generated": true
+  },
+  {
+    "id": "pin:3d:U",
+    "statement": "Last-listed upper-bound table row for Single-set sum-difference exponent (3d.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3d.md",
+    "expect": "| $2$ | [Ru96] | $\\sigma \\le \\delta^2$. Attributed to [Ru96, Theorem 4.1] in [GGSWT2025, Problem 6.42]; [Bl26] describes it as a consequence of the Plünnecke–Ruzsa inequalities. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/3d.md",
+    "generated": true
+  },
+  {
+    "id": "pin:3d:L",
+    "statement": "Last-listed lower-bound table row for Single-set sum-difference exponent (3d.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3d.md",
+    "expect": "| $2$ | [LiLi26] | Solves the problem: $C\\_{3d} = 2$. Explicit family with $\\sigma \\gg K$ and $\\delta \\ll K^{1/2}$ for arbitrarily large $K$; [LiLi26] states it as $C(A\\_K) > \\frac{2K}{K+3}$ for every positive even $K$. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/3d.md",
     "generated": true
   },
   {
