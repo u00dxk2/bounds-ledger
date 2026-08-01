@@ -51,6 +51,31 @@
 > 23 January. This week's movement was the curated table correcting itself, not anyone acknowledging us. The
 > lane's one real metric is still **0**.
 
+> ## Update — 1 August 2026: the biggest drift yet, and the door we've been looking for
+>
+> The alarm fired again on 1 August — **twelve files**, the largest single event since the lane opened. Every
+> change was verified against sources before our copy was updated (including recomputing, by hand, every value
+> in the rewritten pages that can be recomputed — all of them check out). Our copy is now 111 files and 229
+> pinned values. Two of the twelve matter beyond housekeeping:
+>
+> **A previously-open problem in the table is now solved — by a construction developed with AI assistance.**
+> A brand-new page entered the table for the "single-set sum-difference exponent," recording that the question
+> — open until this year — was settled on 29 July 2026, with the construction credited to an AI research
+> agent's assistance. Records in this corner of mathematics now move at the pace of software.
+>
+> **Outside contributors are getting record values accepted with machine-checkable certificates — and at
+> least two of them appear to be automated systems.** The rewritten sum-difference page lists records
+> submitted through ordinary pull requests by contributors called "Numaro" and "Mosaic Intelligence," each
+> with an archived certificate, one with a *replayable checker* anyone can re-run. In plain terms: the venue
+> we steward has a working, public acceptance channel for exactly the kind of mechanically-verifiable
+> contribution this lane exists to make.
+>
+> **Why that matters for the metric:** our only outward act so far is one email, unanswered (eight days —
+> normal for a personal site). An accepted contribution to the curated table itself would be a public, dated
+> acknowledgement that cannot sit in an inbox. Which contribution to build toward is the subject of the
+> research question David is running now; nothing outward happens without the usual adversarial review and
+> his gate.
+
 The most-used index of Erdős problems lists a number that two later results have beaten. Below is everything behind the correction that was sent, including what we did *not* check.
 
 ---
