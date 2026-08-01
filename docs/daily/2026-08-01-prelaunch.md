@@ -54,10 +54,19 @@ prompt was delivered to David this morning and **he is running it now**; channel
 - **Lane brief gained a 1 August block** (`docs/lane-brief.md`) — David-facing account of the drift and why
   it matters for the metric. Note the hosted page is already 2 blocks behind (**A-12** — the hosted-brief
   drift alarm, issue #6); this makes 3. The port is the orchestrator's; escalation date 2026-08-07 stands.
-- **Contribution-channels deep-research generated and delivered** (assessment session, this morning): what
-  forms of AI-augmented contribution the 2026 record-keeping ecosystem accepts and credits — acceptance norms
-  of `teorth/optimizationproblems`, who Numaro/Mosaic Intelligence are, whether independent re-verification is
-  a credited contribution anywhere, failed-approach cases. David confirmed mid-session he is running it.
+- **Contribution-channels deep-research: generated, run by David, returned, and ingested — same day.**
+  2-source synthesis at `skylark-site/docs/research-library/2026-08-01-bounds-ledger-contribution-channels.md`
+  (raws archived alongside). **Channel selected: one correction-shaped `optimizationproblems` PR** coupling
+  independent replay with a repository-changing fact; any verified-by/attestation system explicitly killed
+  until a first acceptance (both engines, same kill criterion). Notable: the engines *disagreed* on whether
+  the GHR record rows had merged — our mirror at `621429c` settled it (they had, 31 Jul 23:37/23:40 UTC);
+  the ledger adjudicated its own research inputs. Decision recorded in **A-13** (the launch-package item),
+  note2.
+- **Rail assessment answered** (David directive, five sections, posted to the bus): exit criterion was
+  unwritten → filed as **A-13** (exit = public flip + stranger-readable surface; flip decision proposed for
+  David at streak day 14 = 2026-08-06); binding blocker named (the public-reader surface doesn't exist);
+  rail proposal = steward cadence daily + a daily launch quota, P1/P2/P4/P5 weekly, no self-rating.
+  SECURITY.md landed same-session (closing **A-9**'s R3 — the engineering-health fix-on-touch backlog item).
 
 ## Inputs (controllable)
 
@@ -95,12 +104,13 @@ replayable checker is the concrete first replay candidate. Any actual contributi
 
 ## On hold pending data
 
-- **Deep-research: contribution channels** — David running it externally (confirmed mid-session today).
-  Ingest path on return: `skylark-site/docs/research-library/2026-08-01-bounds-ledger-contribution-channels.md`.
-- **W-3** — the acknowledgement watch: maintainer reply only David can supply; page legs read mechanically
-  today (unchanged). Standing word: WAIT.
-- **A-12** — hosted-brief re-port: orchestrator-owned; escalation date 2026-08-07.
-- **A-7** — engineering-health P1s: blocked on the coordinated fleet wave, per the 2026-07-29 dispatch.
+- **Two LIVE David decisions** (not dormant — both dated): the flip at streak day 14 (2026-08-06, **A-13** —
+  the launch-package item), and whether the 7/24 correction converts to the public route (his 7/26 "yes but
+  wait" stands; the research adds evidence; his call). Deep-research itself returned and was ingested — see
+  What changed.
+- **W-3** (the acknowledgement watch): reply leg is David's; page legs read today, unchanged. Word: WAIT.
+- **A-12** (hosted-brief re-port): orchestrator-owned; escalation 2026-08-07. **A-7** (engineering-health
+  P1s): blocked on the fleet wave per the 2026-07-29 dispatch.
 
 ## State Appendix
 
