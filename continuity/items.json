@@ -214,6 +214,7 @@
       "status": "open",
       "title": "engineering-health P2 backlog (fix-on-touch, not scheduled work)",
       "note": "Reference: docs/engineering-health-review-2026-07-29.md, the six P2 findings. EXPLICITLY A FIX-ON-TOUCH BACKLOG — do not schedule a session for these; fix one when you are already in the file. The six: R3 no SECURITY.md (the honest answer here is short — no secrets live in-repo, only a CI-injected github.token — and is worth writing down before any public-repo flip); R13 actions pinned to floating tags rather than SHAs (both are GitHub-owned first-party and rule 13's text scopes to THIRD-party actions, so by the rule's own wording this is not a violation — filed as hardening and flagged for a fleet-level ruling); R29 the snapshot-rollback path is undocumented (revert the snapshot commit, re-run extract-pins.mjs, re-commit — obvious to an agent that has read CLAUDE.md, invisible to one that has not); R33 housekeeping ledger — DONE 2026-07-29, seeded at docs/housekeeping-ledger.md, commit d89e10f; R34 README:47 says the generated pins cover 'all 110 mirrored constants' when they cover 109 (1b.md is deliberately skipped and hand-pinned as C-1/C-3 per extract-pins.mjs:31 — so ledger coverage IS complete and only the sentence is wrong; checked the extractor before filing rather than reporting a phantom coverage gap); R19 Dependabot security UPDATES disabled, though alerts are ON and the inbox is empty, which is inert at zero dependencies and should be flipped when the first dependency lands.",
+      "note2": "R3 DONE 2026-08-01: SECURITY.md landed (honest and short per this item's own sketch — no secrets in repo or history, zero dependencies, read-only fetches, issue-based reporting). Touched because A-13's public-flip package needs it, which is exactly the fix-on-touch trigger this item prescribes. Remaining P2s: R13, R29, R34, R19.",
       "closeWhen": "The review doc's P2 list is empty, OR this item is superseded by the next engineering-health audit — whichever comes first. Superseding is a legitimate close here, not an evasion: a fix-on-touch backlog that survives to the next audit has been re-evaluated by that audit.",
       "verifyBy": {
         "method": "re-read the P2 section of docs/engineering-health-review-2026-07-29.md and confirm each entry is either fixed in-repo or restated by the newer audit",
@@ -262,6 +263,19 @@
       "verifyBy": {
         "method": "for the chosen option, demonstrate BOTH sides per W-4 -- an added bound on an off-mirror source must produce the intended reading, and an unchanged source must not",
         "owner": "bounds-ledger"
+      }
+    },
+    {
+      "id": "A-13",
+      "created": "2026-08-01",
+      "type": "active",
+      "status": "open",
+      "title": "LAUNCH DEFINITION + public-flip package: exit pre-launch = repo public with a stranger-readable status surface (David-gated)",
+      "note": "Filed from David's 2026-08-01 pre-launch rail-assessment directive — finding #1 was that NO continuity item named the exit from pre-launch (G-1 encodes credibility conditions, not the launch event). EXIT CRITERION (proposed): the repo flips PUBLIC with a stranger-readable surface — README-as-product (what this is, what the alarm has caught, live counts), SECURITY.md (landed 2026-08-01, closing A-9's R3), a status view (the CI badge + latest-run read is the zero-infra v1), and a verified no-secrets history sweep. GATES, in order: adversarial refute-it review of the public artifact set, then David's explicit flip decision — PROPOSED to be put to him at G-1 streak day 14 (2026-08-06) so the streak's back half runs in public: a public streak is stronger evidence than a private one, and the flip also unlocks free GitHub secret scanning/push protection (A-7's R6 is paid-only on private repos). DELIBERATELY DECOUPLED: the external ack (W-3) is the north-star METRIC, not a launch gate — an inbox must not pace the launch. Backlog feeding the daily launch quota: README-as-product rewrite; history sweep; adversarial review; certificate-replay build (channel choice pends the 2026-08-01 deep-research); A-6's scale-the-catches pipeline (residential fetches, local sessions have exactly that); A-11 pin-a-negative; fetch timeouts.",
+      "closeWhen": "The flip decision has been put to David with the package ready (review done; SECURITY.md + README + history sweep landed), and he has decided — either the repo is public, or his hold is recorded with its reason. Not closeable by silence.",
+      "verifyBy": {
+        "method": "the repo's visibility setting itself, plus the adversarial-review doc; if held, the recorded David decision",
+        "owner": "bounds-ledger (package) + david (flip)"
       }
     },
     {
