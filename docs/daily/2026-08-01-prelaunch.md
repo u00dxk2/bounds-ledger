@@ -104,11 +104,12 @@ replayable checker is the concrete first replay candidate. Any actual contributi
 
 ## On hold pending data
 
-- **Two LIVE David decisions** (not dormant — both dated): the flip at streak day 14 (2026-08-06, **A-13** —
-  the launch-package item), and whether the 7/24 correction converts to the public route (his 7/26 "yes but
-  wait" stands; the research adds evidence; his call). Deep-research itself returned and was ingested — see
-  What changed.
-- **W-3** (the acknowledgement watch): reply leg is David's; page legs read today, unchanged. Word: WAIT.
+- **Both David decisions LANDED late-session, in-pane (2026-08-01):** (1) flip = YES in principle — gate is
+  now the package + adversarial review, not the 8/06 date (**A-13** — the launch-package item, note3); plus a
+  new standing rule: adversarial review on everything public-touching. (2) The 7/24 correction converts to
+  the public route — GO to prepare, and **W-3** (the acknowledgement watch) no longer paces progress; it
+  stays open as a monitor (see its note7). Deep-research returned and was ingested — see What changed.
+- **W-3** (the acknowledgement watch): reply leg is David's; page legs read today, unchanged. Monitors on.
 - **A-12** (hosted-brief re-port): orchestrator-owned; escalation 2026-08-07. **A-7** (engineering-health
   P1s): blocked on the fleet wave per the 2026-07-29 dispatch.
 
