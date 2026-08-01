@@ -4,7 +4,9 @@ Project-specific guidance. The global `~/.claude/CLAUDE.md` still applies (MT da
 
 ## What this lane is
 
-A **steward** of drifting mathematical records: a reproducible, continuously re-verified ledger that alarms when a cited record (bound / constant / certificate) drifts. Not a record-search engine. Full thesis in `README.md`. Pre-launch, **lite rail**.
+A **steward** of drifting mathematical records: a reproducible, continuously re-verified ledger that alarms when a cited record (bound / constant / certificate) drifts. Not a record-search engine. Full thesis in `README.md`. Pre-launch.
+
+**Rail: PACED (David-ruled 2026-08-01, effective 2026-08-02; replaces the lite default).** Each session: the steward cadence FIRST (read the overnight run's LOG not the badge; drift cycle if red; local `npm run check` for the W-3 advisory legs), then **≥1 concrete launch increment from A-13's backlog** (first-PR prep, README-as-product, history sweep, adversarial review — the exit is the public flip, tracked as A-13 with the decision proposed to David at streak day 14 = 2026-08-06). **Weekly forced-decision pass** over `continuity/items.json` (stale items move or die). Still **no self-rating**.
 
 ## Commands
 
@@ -32,7 +34,7 @@ No dependencies — Node stdlib + `fetch` only. `npm install` is a no-op.
 - **Never hand David an artifact link.** `claude.ai/code/artifact/...` URLs are session-scoped and do not resolve in his browser — a brief delivered that way reads as page-not-found and the board card gets dismissed (happened 2026-07-24). David-facing briefs for lanes without their own site go on the Skylark site at `/t/lanes/<slug>`: keep the source at `docs/lane-brief.md`, post a bus note, the orchestrator ports it.
 - **Audit the method sentence, not just the claim.** Any outward artifact that says "cross-checked against X" must have that sentence verified as its own review angle. On 2026-07-24 a draft claimed cross-checks against "the source-paper abstracts" when none of the three abstracts state their bounds — the phrase was inherited from an earlier, different claim and survived a 5-angle adversarial review because every angle attacked the *value*, not the *method*. A false claim about our own method is the one thing the recipient cannot check.
 - **Outward gate.** Any upstream contact (PR, correction, email) or the public-repo flip goes through the **adversarial refute-it review first** (portfolio standing rule), and the actual send is **David-gated**. Never contact a maintainer or flip the repo public on your own.
-- **No self-rating.** Lite rail has no self-rating/audit contract. Write the daily report + run the presence linters; skip `/rate-day` scoring (renamed from `/daily-close` on 2026-07-29; a compat shim still answers the old name).
+- **No self-rating.** The lane has no self-rating/audit contract (kept under the 2026-08-01 paced-rail ruling). Write the daily report + run the presence linters; skip `/rate-day` scoring (renamed from `/daily-close` on 2026-07-29; a compat shim still answers the old name).
 - **Daily reports use the canonical H2 set** (adopted 2026-07-25, replacing the old numbered `## (1) …` format): BLUF / What changed / Inputs (controllable) / Outputs (lagging) / Recommendation / On hold pending data / State Appendix — BLUF first, State Appendix present. Lint with `node ../skylark-site/scripts/check-report-all.mjs docs/daily/<date>-prelaunch.md` (expect 4/4 PASS). Adopted rather than waived because a permanently-red linter gets ignored exactly like a permanently-green alarm carries no information — the lane's founding defect, applied to itself. Gloss every tracker ID on first mention per section (`W-3 — the watch on …`); `check-bare-itemids` is strict in the State Appendix.
 - **MT for human labels** (commits, file slugs, doc headers, `docs/cold-starts/<MT-date>.md`); UTC only for cross-system timestamps (bus, git `%ai`, logs).
 
