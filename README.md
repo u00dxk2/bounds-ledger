@@ -44,7 +44,7 @@ The mirror above watches ONE surface and reports any change. `ledger/claims.json
 
 Adding a claim to a published note means adding a row here; that's what keeps *re-fetchable citation + re-runnable check* true rather than aspirational.
 
-**Coverage as of 2026-07-28: 227 claims** — 9 hand-written (C-1…C-9) plus **218 generated pins covering all 110 mirrored constants**, via `node scripts/extract-pins.mjs`. The totals move when upstream adds a constant: on 2026-07-28 it added `86a` (the Schur–Siegel–Smyth trace constant), taking the mirror 109 → 110 files and the pins 216 → 218.
+**Coverage as of 2026-08-01: 229 claims** — 9 hand-written (C-1…C-9) plus **220 generated pins covering all 111 mirrored constants**, via `node scripts/extract-pins.mjs`. The totals move when upstream adds a constant: 2026-07-28 added `86a` (the Schur–Siegel–Smyth trace constant, 109 → 110 files), and 2026-08-01 added `3d` (the single-set sum-difference exponent — a page recording a problem *solved* in 2026, 110 → 111 files, pins 218 → 220).
 
 Two of the hand claims — **C-7** (the bound on erdosproblems.com/36) and **C-9** (that page's last-edited date) — are `manual: true` and report **UNVERIFIED, never green**: the site serves 403 to datacenter IPs, so CI can never check them. They still carry an *advisory* fetch whose result is printed without touching counts or the exit code, so a run from a residential connection gains real information and CI gains one honest line. Two UNVERIFIED claims is not a gap in the ledger; it is the ledger declining to launder an unverifiable fact into a green.
 
