@@ -6,7 +6,7 @@ north_star_metric: externally-acknowledged corrections/confirmations on a stewar
 north_star_value: 0
 north_star_status: amber
 north_star_classification: emerging
-last_deploy: cc2d26a
+last_deploy: 2e98e55
 sentry_open_p1: 0
 sentry_open_p2: 0
 mrr_usd: null
@@ -116,6 +116,37 @@ item. It is a good pairing with the README in one session.
   is his inbox. Not a blocker. **A-7** and **A-11** unchanged since 7/31 — see State Appendix.
 
 ## State Appendix
+
+### Amendment — 14:50 MT (the day ran well past this report)
+
+Written at 08:02 MT; four more commits landed after it. Recording them here rather than leaving the
+report under-reporting the day.
+
+- **The fourth drift, and the first that is purely records moving** (`d7d66a8`). CI went red on an
+  unrelated push: upstream shipped four commits at ~16:05Z. 10c $5/3 \to 7/\sqrt{17}$, 38a
+  $2.625622 \to 2.6273856$, 71a $>6.5143 \to >6.5218$ (n=17 → n=18). Verified by recomputation
+  before snapshot — 71a's claimed "gain of exactly 1/133" reproduces to double precision. Ledger
+  clean at `dee1660`, 3 pins moved, issue #9 closed.
+- **Both orchestrator-greenlit capacity items shipped** (`2919660`). The no-secrets history sweep
+  reads CLEAN over 75 commits — and its fixtures caught two patterns that could never have fired
+  (`sntr[a-z]_` vs real `sntrys_`; a keyword list blind to `CC_PROMPTS_PIN`), either of which would
+  have produced a confident CLEAN. A-12 re-scoped to the machine credential per the orchestrator's
+  answer that the gating is intentional.
+- **The credentialed probe settled the brief question**: 3 of 4 blocks genuinely missing, matching
+  8/01. This morning's "4 of 4" was the wall artifact; escalation re-armed on true evidence.
+- **A self-inflicted defect, found and closed** (`0c835b2`). The morning's pin change made CI file
+  issue #8, an alarm no action could ever close — the founding defect, caused by me, hours after
+  writing the finding about it. CI now reports exit 3 as not-runnable and files nothing.
+- **David decided: no public comment** (`c1db291`). *"I sent the email. I don't want to add a comment
+  as well."* Angle 6 of our own review was the deciding angle. Recorded as a decision with an
+  explicit do-not-re-propose. R6 push protection deliberately not carded (`2e98e55`) — the pending
+  flip would grant it free.
+
+**Recommendation stands, and is now sharper:** next session is README-as-product + the package-level
+review. Those are the last two A-13 items, and with the public comment declined the flip is the only
+launch-shaped thing left.
+
+### Item glossary
 
 - **G-1** — the goal: one record inventory under automated re-verification with a 30-day green CI
   streak and ≥1 externally-acknowledged correction. Streak day 10/30; acks 0.
