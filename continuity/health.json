@@ -1,33 +1,25 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-31T21:09:21.903Z",
+  "generatedAt": "2026-08-02T20:47:20.154Z",
   "projectPath": "C:\\dev\\skylark\\bounds-ledger",
-  "itemCount": 16,
+  "itemCount": 18,
   "knownPatternCount": 0,
-  "commitCount": 12,
+  "commitCount": 19,
   "findings": [
     {
       "check": "MODIFIED_ITEM_LAST_24H",
       "severity": "info",
-      "id": "W-4",
-      "title": "KP-78 applies to every new detector: demonstrate BOTH sides at write time",
-      "message": "Item W-4 title/closeWhen modified in last 24h (diff hash f409bb23); investigate before per-day judgment.",
+      "id": "A-13",
+      "title": "LAUNCH DEFINITION + public-flip package: exit pre-launch = repo public with a stranger-readable status surface (David-gated)",
+      "message": "Item A-13 closeWhen modified in last 24h (diff hash 57b48e86); investigate before per-day judgment.",
       "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
     },
     {
       "check": "MODIFIED_ITEM_LAST_24H",
       "severity": "info",
-      "id": "A-10",
-      "title": "Audit latency-derived constants + threshold detectors against post-model-swap behavior (orchestrator P2 rider 7/31)",
-      "message": "Item A-10 title/closeWhen modified in last 24h (diff hash 8bf9f701); investigate before per-day judgment.",
-      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
-    },
-    {
-      "check": "MODIFIED_ITEM_LAST_24H",
-      "severity": "info",
-      "id": "A-11",
-      "title": "BC-2 accepted as a documented blind class (option c); pin-a-negative for the two STRUCTURED sources still open",
-      "message": "Item A-11 title/closeWhen modified in last 24h (diff hash 497f5945); investigate before per-day judgment.",
+      "id": "W-5",
+      "title": "MIRROR BLIND CLASS: README.md is not mirrored, and it is where upstream states which records it stands behind",
+      "message": "Item W-5 title/closeWhen modified in last 24h (diff hash 9114a918); investigate before per-day judgment.",
       "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
     },
     {
@@ -35,14 +27,14 @@
       "severity": "info",
       "id": "A-12",
       "title": "Hosted brief drifts from docs/lane-brief.md — detector shipped, page still stale",
-      "message": "Item A-12 title/closeWhen modified in last 24h (diff hash d7d2e72e); investigate before per-day judgment.",
+      "message": "Item A-12 closeWhen modified in last 24h (diff hash 10d7a71f); investigate before per-day judgment.",
       "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
     }
   ],
   "counts": {
     "critical": 0,
     "warn": 0,
-    "info": 4
+    "info": 3
   },
   "suppressedCount": 0,
   "actionsOnlyMode": false,
