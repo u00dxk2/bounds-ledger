@@ -33,6 +33,13 @@ jobs:
       # orchestrator's re-port, and that adding that gate did not swallow the stale verdict.
       - name: Self-test brief checker (no network)
         run: node scripts/check-brief.mjs --selftest
+      # Guards the SECRET-PATTERN SET, not the sweep itself. The sweep is a one-time pre-flip
+      # gate (A-13) and stays out of CI; the scheduled history-sweep control is A-7's R7, which
+      # is fleet-owned and must not be solved locally ahead of that wave. But the patterns rot
+      # silently — two of them could not fire at all in this file's first draft while the sweep
+      # still printed CLEAN — so the fixture set is guarded here.
+      - name: Self-test history-sweep patterns (no network)
+        run: node scripts/history-sweep.mjs --selftest
       # `shell: bash` is load-bearing: the DEFAULT runner shell is `bash -e {0}` with NO
       # pipefail, so `node ... | tee` reports tee's exit 0 and a drift exits GREEN. Naming
       # the shell gets `-eo pipefail`. Guarded by reverify.test.mjs.

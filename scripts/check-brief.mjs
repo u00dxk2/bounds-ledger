@@ -80,7 +80,7 @@ function datedBlocks(md) {
 
 // Pure verdict logic, so every branch is reachable from --selftest without a network.
 // Returns { code, lines }.
-function assess(md, page, redirectedTo) {
+function assess(md, page, redirectedTo, noPin) {
   const lines = [];
   const title = sourceTitle(md);
   const blocks = datedBlocks(md);
@@ -90,6 +90,8 @@ function assess(md, page, redirectedTo) {
     lines.push(`BRIEF UNVERIFIABLE — the response from ${URL} is not the brief.`);
     lines.push(`  the source's title ("${title}") is absent from what came back`);
     if (redirectedTo) lines.push(`  the request was REDIRECTED to ${redirectedTo} — a wall, not a stale port`);
+    if (noPin) lines.push(`  CC_PROMPTS_PIN was NOT set, so the request went out anonymous — /t/* has been`);
+    if (noPin) lines.push(`  gated since 2026-08-02 and an anonymous probe cannot see this page. Set it and re-run.`);
     lines.push(``);
     lines.push(`This is NOT evidence that the re-port is behind: staleness cannot be assessed from`);
     lines.push(`a page we never received. Check whether the route is gated or renamed first.`);
@@ -123,16 +125,26 @@ async function run(pageFile) {
 
   let page;
   let redirectedTo = null;
+  let hadNoPin = false;
   if (pageFile) {
     page = textOf(await readFile(pageFile, "utf8"));
   } else {
-    const res = await fetch(URL, { headers: { "user-agent": "bounds-ledger-brief-check" } });
+    // /t/* went behind a Google sign-in wall on 2026-08-02 (intentional — skylark-site 53c87f83,
+    // the human wall over David-facing CC surfaces). An anonymous fetch can no longer see this
+    // page at all, so the check now takes the MACHINE credential path the orchestrator pointed at:
+    // the x-cc-pin header. The gate did not change; our probe did.
+    // Never log the pin — only whether it was present.
+    const headers = { "user-agent": "bounds-ledger-brief-check" };
+    if (process.env.CC_PROMPTS_PIN) headers["x-cc-pin"] = process.env.CC_PROMPTS_PIN;
+    else hadNoPin = true;
+
+    const res = await fetch(URL, { headers });
     if (!res.ok) throw new Error(`GET ${URL}: HTTP ${res.status}`);
     if (res.redirected && res.url !== URL) redirectedTo = res.url;
     page = textOf(await res.text());
   }
 
-  const { code, lines } = assess(md, page, redirectedTo);
+  const { code, lines } = assess(md, page, redirectedTo, hadNoPin);
   console.log(lines.join("\n"));
   return code;
 }
