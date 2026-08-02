@@ -28,6 +28,11 @@ jobs:
       # (an alarm that isn't armed carries no information) turned on itself. A-8.
       - name: Self-test pin extractor (no network)
         run: node scripts/extract-pins.mjs --selftest
+      # Guards the brief checker's verdict branching — specifically that a page which is NOT
+      # the brief (sign-in wall, wrong port) reports UNVERIFIABLE instead of blaming the
+      # orchestrator's re-port, and that adding that gate did not swallow the stale verdict.
+      - name: Self-test brief checker (no network)
+        run: node scripts/check-brief.mjs --selftest
       # `shell: bash` is load-bearing: the DEFAULT runner shell is `bash -e {0}` with NO
       # pipefail, so `node ... | tee` reports tee's exit 0 and a drift exits GREEN. Naming
       # the shell gets `-eo pipefail`. Guarded by reverify.test.mjs.
