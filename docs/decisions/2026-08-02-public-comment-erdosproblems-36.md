@@ -1,6 +1,25 @@
 # Public-route conversion of the /36 correction — draft wording + adversarial review
 
-**2026-08-02** · A-3 (closed, sent) → public route per **W-3 note7** · **David-gated: nothing posted**
+**2026-08-02** · A-3 (closed, sent) → public route per **W-3 note7** · **DECIDED: DO NOT POST**
+
+> ## ❌ DAVID DECIDED 2026-08-02 — NO PUBLIC COMMENT
+>
+> His words, via the Command Center board (card `18dcc035`), after reading the verbatim draft, the
+> venue, and the mechanics:
+>
+> **"I sent the email. I don't want to add a comment as well."**
+>
+> **This is a decision, not a deferral. Do not re-propose the public comment.** He is not asking for
+> different wording, a better venue, or a later date — he does not want a second contact on the same
+> correction. One approach to one maintainer is the whole of our outward contact on /36.
+>
+> Everything below is retained as the record of what was prepared and why, and because the review's
+> reasoning outlived the artifact (see *What survives* at the end). Nothing in it is an open action.
+>
+> Note for whoever reads this later: **Angle 6 was the deciding angle.** The review flagged that a
+> public post following an unanswered private email is a different act that can read as escalation,
+> called it a judgment that was not ours to make, and put it to him explicitly. He agreed with the
+> concern. The review worked — its job was to surface the question, not to win the argument.
 
 David, 2026-08-01: *"yes - we can still monitor that page to see if he accepts our correction, but
 let's not wait on that to make our progress."* That is GO **to prepare**, not to post. His 7/26
@@ -146,3 +165,33 @@ and one (6) surfaces a judgment that is not ours to make.
 
 **Not posted. No account created. No contact made.** Re-run `npm run check` immediately before any
 send: Angle 2 is a live precondition.
+
+---
+
+## 6. What survives the decision
+
+The comment will not be posted. Three things from this work are still live and should not be thrown
+out with it:
+
+1. **The venue is now mapped, and it was not before.** The comment box is at
+   `erdosproblems.com/forum/discuss/36` — *not* on the problem page, which is where every earlier
+   note assumed it was. Posting requires a login ("Log in to add a comment"); anonymously the page
+   renders zero comment boxes; `/api` and `/api/v1` both 404, so there is no posting API. If an
+   outward public contact is ever authorised on any problem page, that groundwork is done.
+
+2. **Angle 7's reframing is the field's own convention, confirmed independently the same day.**
+   Upstream commit `dee1660` began asterisking submitted-but-not-peer-reviewed records hours after
+   this review rewrote the draft around "a curated repository *listing* a value is not the field
+   *accepting* it." That distinction now belongs in any future outward claim this lane makes,
+   whether or not this particular comment ever existed.
+
+3. **The north star's live channels are now the other two.** With the public route declined and the
+   7/24 email unanswered, an externally-acknowledged correction (G-1) rests on: (a) the email being
+   answered, which is his inbox and no one's to force; (b) a correction-shaped PR to
+   `teorth/optimizationproblems`, the channel the 8/01 research selected — noting A-13 note5, that
+   the three named target PRs merged on 8/02 and new targets are needed; (c) A-6's scale-the-catches
+   pipeline, which is permission-starved and inventoried, not started.
+
+   Stating this plainly because the risk after a declined send is quietly treating the north star as
+   blocked. It is not blocked — it is down to one channel we do not control and two we have not
+   built.
