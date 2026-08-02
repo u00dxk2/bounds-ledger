@@ -114,7 +114,7 @@
     "id": "pin:10c:L",
     "statement": "Last-listed lower-bound table row for Spencer discrepancy constant (“six standard deviations suffice”) (10c.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10c.md",
-    "expect": "| $5/3\\approx 1.666667$ | [X2026] | A 9 by 9 sign matrix with exact discrepancy $5$. |",
+    "expect": "| $7/\\sqrt{17}\\approx 1.697749$ | [L2026] | A 17 by 17 sign matrix with exact discrepancy $7$ ($16$ distinct rows, one repeated to square it). |",
     "asserts": "ledger/teorth-optimizationproblems/constants/10c.md",
     "generated": true
   },
@@ -754,7 +754,7 @@
     "id": "pin:38a:L",
     "statement": "Last-listed lower-bound table row for Square-lattice self-avoiding walk connective constant $\\mu_{\\mathbb{Z}^2}$ (38a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/38a.md",
-    "expect": "| $2.625622$ | <a href=\"#FV2017\">[FV2017]</a> | Reported as a rigorous lower bound in <a href=\"#FV2017\">[FV2017]</a> (attributed there to <a href=\"#Jen2004-lb\">[Jen2004-lb]</a>). <a href=\"#FV2017-bounds-square\">[FV2017-bounds-square]</a> <a href=\"#FV2017-ref-182\">[FV2017-ref-182]</a> |",
+    "expect": "| $2.6273856$ | [Num2026] | Kesten irreducible-bridge renewal exactly as in [Jen2004-lb], extended two span levels past the 2004 computation (span $L=17$, series length $N=260$) by an exact cell-by-cell finite-lattice transfer matrix (CRT big-integer arithmetic); the certificate is a single exact big-integer inequality (self-contained checker included), and secondary certificates at Jensen's own span ($L=15$, $N=260$ gives $2.6256270$) and at $L=16$ ($2.6265705$) independently also exceed $2.625622$. <a href=\"#Num2026-bound\">[Num2026-bound]</a> |",
     "asserts": "ledger/teorth-optimizationproblems/constants/38a.md",
     "generated": true
   },
@@ -1506,7 +1506,7 @@
     "id": "pin:71a:L",
     "statement": "Last-listed lower-bound table row for Fourier Entropy-Influence constant (71a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/71a.md",
-    "expect": "| $>6.514326913930565372$ | [[MI2026b](#MI2026b)] | Explicit balanced **logic-monotone** function on 17 variables via the [[OT2013](#OT2013)] amplification rule $C \\ge H/(I-1)$; exact influence $261/128$; certified by exact-rational spectrum + interval arithmetic; replayable certificate, see PR. The function is monotone, so the same bound holds even restricted to monotone functions. <a href=\"#MI2026b-bound\">[MI2026b-bound]</a> |",
+    "expect": "| $>6.521845710923046575$ | [[Num2026](#Num2026)] | Explicit balanced **logic-monotone** function on 18 variables via the [[OT2013](#OT2013)] amplification rule $C \\ge H/(I-1)$; exact influence $261/128$; obtained from the [[MI2026b](#MI2026b)] function by equalising the auxiliary-variable action (the single 4-cell auxiliary is split 2+2 with the new 18th variable), raising $H$ by exactly twice the moved spectral weight at identical influence — certified gain exactly $1/133$; exact-rational spectrum + interval arithmetic; replayable single-file certificate. The function is monotone, so the same bound holds even restricted to monotone functions. <a href=\"#Num2026-bound\">[Num2026-bound]</a> |",
     "asserts": "ledger/teorth-optimizationproblems/constants/71a.md",
     "generated": true
   },
