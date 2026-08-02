@@ -130,6 +130,19 @@ jobs:
           set -e
           cat brief.txt
           if [ "$code" -eq 0 ]; then exit 0; fi
+          if [ "$code" -eq 3 ]; then
+            # exit 3 = the response was not the brief. From CI that is EXPECTED and permanent:
+            # /t/* went behind a human sign-in wall on 2026-08-02, and CI holds no CC_PROMPTS_PIN,
+            # so an unauthenticated runner can never see this page. Filing an issue for it would
+            # create a permanently-open alarm that can never be closed by any action — which is
+            # this lane's founding defect wearing a different hat. Same shape as C-7: the check is
+            # simply not runnable from here, and the LOCAL `npm run check` is the authoritative
+            # read. Deliberately NOT solved by putting the PIN in repo secrets: this repo is
+            # heading for a public flip (A-13), and a portfolio-wide credential does not belong in
+            # a soon-to-be-public repo's CI for a check a local run already covers.
+            echo "brief check is not runnable from CI (no machine credential; /t/* is gated) — local \`npm run check\` is authoritative. Not filing an issue."
+            exit 0
+          fi
           if [ "$code" -ne 1 ]; then
             # exit 2 = the checker itself broke (fetch failed, brief format changed). That is an
             # instrument failure, not a stale brief, and must not be titled as one — A-5.
