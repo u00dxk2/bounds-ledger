@@ -286,7 +286,8 @@
       "closeWhen": "The flip decision has been put to David with the package ready (review done; SECURITY.md + README + history sweep landed), and he has decided — either the repo is public, or his hold is recorded with its reason. Silence does not close this item; only his explicit decision does.",
       "linkedCommits": [
         "2a82498",
-        "2919660"
+        "2919660",
+        "13af4c4"
       ],
       "verifyBy": {
         "method": "the repo's visibility setting itself, plus the adversarial-review doc; if held, the recorded David decision",
@@ -324,7 +325,8 @@
         "02b263e",
         "bb22c4e",
         "2919660",
-        "0c835b2"
+        "0c835b2",
+        "9d5b941"
       ],
       "verifyBy": {
         "method": "run node scripts/check-brief.mjs against production and read the exit code; do not trust the issue state alone",
