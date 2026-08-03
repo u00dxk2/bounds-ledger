@@ -1,67 +1,72 @@
 # Bounds Ledger
 
-**Skylark portfolio lane (pre-launch, lite rail). Opened 2026-07-22 (David-approved in-session). Working title — rename freely.**
+**A continuously re-verified ledger of mathematical records, which alarms when a cited record drifts.**
 
-## Thesis
+Best-known bounds, constants and certificates move. The papers, repositories and index pages that cite them do not all move at the same time — so a number you looked up last month may already be stale, and nothing tells you. This repo is the thing that tells you.
 
-The computational-conjecture frontier (AlphaEvolve, Aletheia, OpenAI, Sakana, Harmonic, TTT-Discover…) is crowded with **searchers** — and has almost no **stewards**. Record surfaces (best-known bounds, constants, certificates) are drifting faster than observers track. Customer-zero example found by the sourcing research: TTT-Discover reports the Erdős minimum-overlap constant at **0.380876** while Tao's optimization-constants repository lists **0.380868**. This lane is the steward: a reproducible, continuously re-verified ledger of records — the "cited-not-checked" immune system from the Skylark substrate pointed at mathematical records.
+It is not a record-search engine. It does not try to find better bounds. It watches records that already exist, re-checks them on a schedule, and goes red when one moves.
 
-Source research: `skylark-site/docs/research-library/2026-07-22-portfolio-verifier-rich-domains.md` (both sources independently converge on stewardship-not-search as the neglected seat).
+## The problem, concretely
 
-## Why this lane fits the substrate
+This repo opened on a real discrepancy: TTT-Discover ([arXiv:2601.16175](https://arxiv.org/abs/2601.16175)) reported the Erdős minimum-overlap constant as **0.380876**, while Tao's optimization-constants repository listed **0.380868**. Neither was wrong. They were *consecutive entries in a fast-moving record sequence*, and the surface that was actually stale was a third one — the widely-cited index page at erdosproblems.com/36.
 
-- **Verifier**: mechanical and mature — DRAT/LRAT SAT certificates (drat-trim/GRAT), Lean/Coq proof checking, interval-arithmetic/SDP bound verification, direct-arithmetic construction checks. Acceptance is mechanical, not review-queue-gated.
-- **The product is not-drifting** — exactly the substrate's differentiated strength (sustained integrity over months).
-- Zero client acquisition, zero spend.
+That reconciliation is [`docs/reconciliations/2026-07-22-minimum-overlap.md`](docs/reconciliations/2026-07-22-minimum-overlap.md), and it is also this repo's method template: identify the surfaces, date each value, find which one stopped moving.
 
-## What this lane is NOT
+## What it has actually caught
 
-- Not another record-search engine (that frontier is the most crowded in the domain map).
-- Not an OEIS contributor (OEIS forbids AI-generated submissions — closed route).
-- Not a mathlib-primary contributor (2,600+ open-PR review backlog; human-supervision norms). Formalization rides **inside** this lane opportunistically where acceptance is mechanical: DeepMind's Formal Conjectures repo (1,170 open statements), the Equational Theories successor challenge (SAIR Foundation, Mar 2026 — explicitly welcomes automated contributions).
+Since the alarm was armed on 2026-07-24, four upstream drifts — each verified before the mirror was updated, against primary sources where a number moved and against upstream's own content where the change was editorial:
 
-## First artifact — DONE (2026-07-22, day one)
+| Drift | What moved |
+|---|---|
+| [`34a37fc`](../../commit/34a37fc) | Editorial: a dead cross-link and a missing `C` in a LaTeX inequality. **Zero bounds moved** — and it still counted. |
+| [`57442ae`](../../commit/57442ae) | Upstream added a constant (20 minutes after the previous drift). |
+| [`32b138b`](../../commit/32b138b) | Certified record rows landed; a constant for a problem *solved* in 2026 was added. |
+| [`d7d66a8`](../../commit/d7d66a8) | The first drift that was purely records moving: `5/3 → 7/√17`, `2.625622 → 2.6273856`, `>6.5143 → >6.5218`. Verified by recomputation before snapshot. |
 
-The 2-week target was a published reconciliation of the minimum-overlap discrepancy (0.380876 vs 0.380868). Delivered same-day: **`docs/reconciliations/2026-07-22-minimum-overlap.md`** — the two values were not in conflict but consecutive entries in a fast-moving record sequence (the stale surface was erdosproblems.com/36, not either primary source). That note is also the lane's method template.
+It has also caught itself. [`docs/findings/`](docs/findings/) holds both kinds of write-up — the drifts above, and every occasion the *instrument* was the thing that was wrong. The worst of the second kind: **the drift alarm was green-by-construction for its first two days**, because a piped command in CI reported the pipe's exit code instead of the check's ([`2026-07-24-drift-alarm-was-never-armed.md`](docs/findings/2026-07-24-drift-alarm-was-never-armed.md)). A ledger whose alarm cannot fail is decoration; those findings are the evidence that this one can.
 
-## Re-verification CI (A-2, stood up 2026-07-23)
+## Current state
 
-First adopted surface: **`teorth/optimizationproblems`** (109 constant files under `constants/`). Ledger copy lives at `ledger/teorth-optimizationproblems/` (snapshot + `manifest.json` pinning the upstream sha).
+Read 2026-08-03. Re-derive it yourself with `npm run check`.
 
-- `node scripts/reverify.mjs --snapshot` — refresh the ledger copy from upstream HEAD (run only after a drift has been re-verified against primary sources; commit the result).
-- `node scripts/reverify.mjs --check` — re-fetch upstream, diff vs the ledger copy, print a drift report; exit 1 on drift.
-- `node scripts/reverify.test.mjs` — network-free self-test: proves a synthetic single-digit tamper is caught.
-- `node scripts/extract-pins.mjs` — regenerate the generated claim pins from the mirror. Run after every `--snapshot` (see the ratchet below).
-- `.github/workflows/reverify.yml` — daily cron (09:17 UTC) + on push + manual. A failed run IS the drift alarm; on a drift or a broken claim it auto-files a GitHub issue titled with what moved, body code-fenced so the `-/+` diff survives GFM. Drift is expected behavior (records move) — the alarm demands re-verification, then a deliberate `--snapshot` commit turns it green. *Known exception (A-4): if a **self-test** fails, the job goes red but files no issue — `finding.txt` doesn't exist yet, so the issue step exits early.*
+- **111** mirrored constant files, byte-identical to upstream [`teorth/optimizationproblems`](https://github.com/teorth/optimizationproblems) at `dee1660`
+- **229 claims — 227 hold, 0 broken, 2 UNVERIFIED by design** (see below)
+- Checks run daily in CI (09:17 UTC), on push, and on demand
 
-### Claim-level checks (the second half of the constraint)
+## Run it
 
-The mirror above watches ONE surface and reports any change. `ledger/claims.json` does the complementary job: each ledger claim names its source URL and the exact string that must still appear there, **across every surface we cite** — Tao's repo at live HEAD, arXiv abstracts, Wikipedia. Cross-surface divergence is what produced this lane's founding finding; a same-repo mirror diff would never have caught it.
+No dependencies — Node stdlib and `fetch` only. `npm install` is a no-op.
 
-- `node scripts/check-claims.mjs` — re-fetch every cited source, assert each claim still holds; exit 1 if any broke.
-- `node scripts/check-claims.mjs --selftest` — network-free matcher self-check (also runs in CI).
-- A claim marked `"manual": true` (source blocks automated fetch from CI, e.g. erdosproblems.com) reports **UNVERIFIED** and never counts as green — the repo's "never silently trusted" rule, made mechanical. Note the block is **IP-dependent**: that page serves 200 to a residential IP and 403 to GitHub Actions runners, so a local `npm run check` re-verifies it mechanically while CI cannot. A local 200 is not evidence about CI.
+```
+npm test         # network-free self-tests (5)
+npm run check    # LIVE: re-fetch upstream, diff the mirror, re-verify every claim
+```
 
-Adding a claim to a published note means adding a row here; that's what keeps *re-fetchable citation + re-runnable check* true rather than aspirational.
+Individual checks: `scripts/reverify.mjs --check` (mirror diff), `scripts/check-claims.mjs` (cross-surface claims), `scripts/extract-pins.mjs` (regenerate generated pins).
 
-**Coverage as of 2026-08-01: 229 claims** — 9 hand-written (C-1…C-9) plus **220 generated pins covering all 111 mirrored constants**, via `node scripts/extract-pins.mjs`. The totals move when upstream adds a constant: 2026-07-28 added `86a` (the Schur–Siegel–Smyth trace constant, 109 → 110 files), and 2026-08-01 added `3d` (the single-set sum-difference exponent — a page recording a problem *solved* in 2026, 110 → 111 files, pins 218 → 220).
+## How it works
 
-Two of the hand claims — **C-7** (the bound on erdosproblems.com/36) and **C-9** (that page's last-edited date) — are `manual: true` and report **UNVERIFIED, never green**: the site serves 403 to datacenter IPs, so CI can never check them. They still carry an *advisory* fetch whose result is printed without touching counts or the exit code, so a run from a residential connection gains real information and CI gains one honest line. Two UNVERIFIED claims is not a gap in the ledger; it is the ledger declining to launder an unverifiable fact into a green.
+Two complementary checks, because either alone has a blind spot.
 
-C-8 opens the **second stewarded surface** (A-6, 2026-07-25): `teorth/erdosproblems` — the community metadata database behind erdosproblems.com, CI-reachable via raw.githubusercontent where the site itself is not. Stewarded as **entry-level claims, not a byte-level mirror**: that repo is pushed near-daily, and a whole-file drift alarm on a high-churn surface would be permanently red — an always-red alarm carries exactly as much information as a permanently-green one, which is the defect this ledger was founded on. Bounds do not live in that repo (verified 2026-07-25); its PR channel applies to metadata corrections only.
+**1. Mirror diff** (`reverify.mjs`) — `ledger/teorth-optimizationproblems/` holds a byte-level copy of the adopted surface, with `manifest.json` pinning the upstream sha. Any change upstream trips it. This catches everything *inside* one repo and nothing outside it.
 
-A generated pin asserts the **last-listed row** of a bounds table, verbatim — *not* "the record". Numeric record-ranking is defeated by symbolic cells (`$K_{DR}+10^{-26}$`), negatives and O(·) asymptotics; a ranking prototype mis-picked three constants, and auto-asserting "record" for every constant would put unverified mathematical statements in our own ledger. Last-listed is true by construction, and an appended new record trips the mirror diff instead. Only the hand claims may say "record", because a human checked them.
+**2. Claim pins** (`check-claims.mjs`) — `ledger/claims.json` names, per claim, a source URL and the exact string that must still appear there, **across every surface the ledger cites**: the upstream repo at live HEAD, arXiv abstracts, Wikipedia, the community metadata database behind erdosproblems.com. Cross-surface divergence produced this lane's founding finding; a same-repo mirror diff would never have seen it.
 
-Pins deliberately do **not** auto-follow the mirror. After any `--snapshot`, re-run `extract-pins.mjs` and commit the regenerated pins — until you do, a moved row stays BROKEN in `check-claims`. That is the post-snapshot ratchet, and it is the mechanism that stops a snapshot from silently blessing a change nobody read.
+Coverage is 9 hand-written claims plus 220 pins generated from the mirror.
 
-## First outward correction — SENT (2026-07-24)
+## Four rules that are load-bearing
 
-erdosproblems.com/36, the most-used index for the minimum-overlap problem, still lists the January upper bound `0.380876`; the curated table has `0.380868` (SimpleTES, [arXiv:2604.19341](https://arxiv.org/abs/2604.19341)). After an adversarial refute-it review (which cut one claim and rewrote the subject line), David sent the correction to the site's maintainer by email.
+**A red run is the alarm working, not a bug.** Records are *supposed* to move. Re-snapshotting to silence a red run is the one thing that would make this repo worthless. The discipline is: verify against primary sources → `--snapshot` → regenerate pins → commit deliberately. Editorial drift gets the same treatment as numeric drift; the mirror's contract is byte-fidelity, not just "the numbers still look right".
 
-**Sending is not acknowledgement.** The lane's north-star metric — externally-acknowledged corrections — is still **0**, and moves only on a maintainer reply or a hand-verified page change. Tracked as W-3 in `continuity/items.json`. The plain-English account of the whole episode, including what we did *not* verify, is `docs/lane-brief.md`.
+**An unverifiable claim reports UNVERIFIED, never green.** Two claims cite a page that serves HTTP 403 to datacenter IPs, so CI can never check them. They stay UNVERIFIED permanently and never count toward a pass. A run from a residential connection prints an *advisory* result that touches neither the counts nor the exit code. Two UNVERIFIED claims are not a gap in the ledger — they are the ledger declining to launder an unverifiable fact into a green.
 
-## Constraints
+**A generated pin asserts listing position, not "the record".** Each pins the last-listed row of a bounds table, verbatim. Numeric record-ranking is defeated by symbolic cells (`$K_{DR}+10^{-26}$`), negatives and O(·) asymptotics — a ranking prototype mis-picked three constants — and auto-asserting "record" would put unverified mathematical statements into our own ledger. Last-listed is true by construction; a newly appended record trips the mirror diff instead. Only hand claims say "record", because a human checked them.
 
-- Every ledger claim carries a re-fetchable citation AND a re-runnable check; a claim without both is marked unverified — never silently trusted.
-- Public-repo flip and any outward publication (arXiv note, upstream PR) go through the adversarial refute-it review first (portfolio standing rule), and outward sends remain David-gated.
-- Lite rail: `dailyPrelaunch` prompt; reports at `docs/daily/{date}-prelaunch.md`.
+**A high-churn surface does not get a whole-file alarm.** The community metadata database behind erdosproblems.com is pushed near-daily; mirroring it byte-for-byte would produce a permanently red alarm, which carries exactly as much information as a permanently green one. It is stewarded through pins on specific, stable entries instead.
+
+## Status and limits, stated plainly
+
+- **One correction has been sent upstream** (2026-07-24, by email, after an adversarial review that cut one claim). It has **not** been acknowledged. The metric this project judges itself by — externally-acknowledged corrections — is **0**.
+- **Two adopted surfaces.** This is not a survey of mathematical records; it is a deep watch on a small, named set.
+- **Known blind spot:** upstream's `README.md` is not mirrored, and it is where upstream states which records it stands behind — including records flagged as not yet peer-reviewed. The alarm is silent on that today.
+- Bounds do not live in the metadata repository, so a bound correction can never be filed there. Its PR channel covers metadata only.
