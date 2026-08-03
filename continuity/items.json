@@ -312,7 +312,7 @@
       "id": "A-12",
       "created": "2026-07-31",
       "type": "active",
-      "status": "open",
+      "status": "closed",
       "title": "Hosted brief drifts from docs/lane-brief.md — detector shipped, page still stale",
       "note": "The David-facing brief at https://skylarkcreations.com/t/lanes/bounds-ledger is ported by the ORCHESTRATOR, not by this repo, so it can silently fall behind its source. It did: stale since 26 JULY. Two hand-checks (7/30, 7/31) each reported only ONE missing block because each searched for the block the PRIMER named -- a hand-check that inherits its search term from a doc can only ever confirm that doc. scripts/check-brief.mjs derives the expected set from the source and inherits nothing; it found TWO missing (26 July + 28 July). Runs daily as a SEPARATE always-exits-0 CI job that surfaces via a deduped GitHub issue -- currently issue #6 -- rather than via an exit code nobody reads. Deliberately NOT in the drift job: it would go red and STAY red until the re-port lands, and a permanently-red alarm carries as much information as a permanently-green one (this lane founding defect). G-1 green streak measures the LEDGER, not the porter.",
       "closeWhen": "The hosted page carries all dated blocks — check-brief.mjs exits 0 against production WHEN RUN WITH THE MACHINE CREDENTIAL (CC_PROMPTS_PIN in env → x-cc-pin header; an anonymous probe cannot see the page at all since the 2026-08-02 gating and its exit code is meaningless) — and issue #6 closed, AND check-brief graduates into the reverify drift job proper on the run after it first reads green.",
@@ -329,7 +329,9 @@
       "verifyBy": {
         "method": "run node scripts/check-brief.mjs against production and read the exit code; do not trust the issue state alone",
         "owner": "bounds-ledger"
-      }
+      },
+      "note4": "CLOSED 2026-08-03 ON EVIDENCE. Orchestrator ported the three missing blocks (26 Jul, 28 Jul, 1 Aug) from docs/lane-brief.md @ b6ab248 — their commit 8d18e4d0, deploy verified live 15:20Z. Confirmed from this side by a CREDENTIALED probe (CC_PROMPTS_PIN set): \"brief: in sync — all 4 dated block(s) present\", exit 0. First green read since check-brief.mjs shipped 7/31. Issue #6 closed with the probe output pasted in. The 8/07 David-escalation is moot and is NOT to be re-armed. CAUGHT ON THE WAY OUT — the detector fired a trap in our own CLAUDE.md: the 7/31 pre-commitment \"joins CI the run after the page first reads green\" fired for the first time TODAY, and following it would have wired a check into CI that CI cannot run (no pin on a runner = exit 3 UNVERIFIABLE since the 8/02 sign-in wall), whose only fix is putting the pin in repo secrets — forbidden with a public flip pending. Clause retired the same day it first became actionable. This is the A-11 class exactly: a threshold derived from the old regime silently keeps reading as authoritative after the regime changes. Worth remembering that the trap was only visible because the alarm finally went green; a permanently-red alarm would have hidden it indefinitely.",
+      "closed": "2026-08-03"
     }
   ]
 }
