@@ -1,5 +1,9 @@
 # CLAUDE.md — bounds-ledger
 
+@AGENTS.md
+
+Cross-vendor invariants (commands, what-never-to-hand-edit, the outward gate, definition of done) live in `AGENTS.md` above — this file carries only the Claude-specific behavior and the rationale/anchors behind those invariants. Portable facts go THERE, not here; move, never duplicate.
+
 Project-specific guidance. The global `~/.claude/CLAUDE.md` still applies (MT dates, secrets, task-completion docs step). Start each session with the cold-start primer at `docs/cold-starts/<today-MT>.md`, then `continuity/items.json`.
 
 ## What this lane is
@@ -10,18 +14,7 @@ A **steward** of drifting mathematical records: a reproducible, continuously re-
 
 ## Commands
 
-```
-npm test              # network-free self-tests (5: reverify matcher, claim matcher, pin extractor, brief verdicts, sweep patterns)
-npm run check         # LIVE checks (hits the network): mirror diff + cross-surface claim re-verification
-node scripts/reverify.mjs --check        # re-fetch adopted surface, diff vs ledger copy; exit 1 on drift
-node scripts/reverify.mjs --snapshot     # refresh the ledger mirror from upstream HEAD (see discipline below)
-node scripts/check-claims.mjs            # re-verify every pinned claim across its cited source
-node scripts/extract-pins.mjs            # regenerate the generated pins from the mirror (run after every --snapshot)
-node scripts/check-brief.mjs             # is the HOSTED brief in sync with docs/lane-brief.md? NEEDS CC_PROMPTS_PIN (see gotchas)
-node scripts/history-sweep.mjs           # no-secrets sweep over full reachable history — the A-13 pre-flip gate, not in CI
-```
-
-No dependencies — Node stdlib + `fetch` only. `npm install` is a no-op.
+See `AGENTS.md` § Commands (imported above) — the command list is single-sourced there. What each self-test covers: reverify matcher, claim matcher, pin extractor, brief verdicts, sweep patterns.
 
 ## Conventions (the load-bearing ones)
 
