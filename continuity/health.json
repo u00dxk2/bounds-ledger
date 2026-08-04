@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-03T18:59:22.513Z",
+  "generatedAt": "2026-08-04T06:07:04.269Z",
   "projectPath": "C:\\dev\\skylark\\bounds-ledger",
   "itemCount": 18,
   "knownPatternCount": 0,
-  "commitCount": 15,
+  "commitCount": 17,
   "findings": [
     {
       "check": "MODIFIED_ITEM_LAST_24H",
@@ -13,36 +13,12 @@
       "title": "STANDING: drift-resolution log for the adopted surfaces (re-verification CI shipped 2026-07-23; build complete)",
       "message": "Item A-2 title modified in last 24h (diff hash 63b5a066); investigate before per-day judgment.",
       "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
-    },
-    {
-      "check": "MODIFIED_ITEM_LAST_24H",
-      "severity": "info",
-      "id": "A-13",
-      "title": "LAUNCH DEFINITION + public-flip package: exit pre-launch = repo public with a stranger-readable status surface (David-gated)",
-      "message": "Item A-13 closeWhen modified in last 24h (diff hash 57b48e86); investigate before per-day judgment.",
-      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
-    },
-    {
-      "check": "MODIFIED_ITEM_LAST_24H",
-      "severity": "info",
-      "id": "W-5",
-      "title": "MIRROR BLIND CLASS: README.md is not mirrored, and it is where upstream states which records it stands behind",
-      "message": "Item W-5 title/closeWhen modified in last 24h (diff hash 9114a918); investigate before per-day judgment.",
-      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
-    },
-    {
-      "check": "MODIFIED_ITEM_LAST_24H",
-      "severity": "info",
-      "id": "A-12",
-      "title": "Hosted brief drifts from docs/lane-brief.md — detector shipped, page still stale",
-      "message": "Item A-12 closeWhen modified in last 24h (diff hash 10d7a71f); investigate before per-day judgment.",
-      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
     }
   ],
   "counts": {
     "critical": 0,
     "warn": 0,
-    "info": 4
+    "info": 1
   },
   "suppressedCount": 0,
   "actionsOnlyMode": false,
