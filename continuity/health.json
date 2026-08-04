@@ -1,24 +1,15 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-04T06:07:04.269Z",
+  "generatedAt": "2026-08-04T22:30:04.173Z",
   "projectPath": "C:\\dev\\skylark\\bounds-ledger",
   "itemCount": 18,
   "knownPatternCount": 0,
-  "commitCount": 17,
-  "findings": [
-    {
-      "check": "MODIFIED_ITEM_LAST_24H",
-      "severity": "info",
-      "id": "A-2",
-      "title": "STANDING: drift-resolution log for the adopted surfaces (re-verification CI shipped 2026-07-23; build complete)",
-      "message": "Item A-2 title modified in last 24h (diff hash 63b5a066); investigate before per-day judgment.",
-      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
-    }
-  ],
+  "commitCount": 12,
+  "findings": [],
   "counts": {
     "critical": 0,
     "warn": 0,
-    "info": 1
+    "info": 0
   },
   "suppressedCount": 0,
   "actionsOnlyMode": false,
