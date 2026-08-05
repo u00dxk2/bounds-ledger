@@ -31,8 +31,9 @@ different key, so nothing is missing — the two halves of the page disagree abo
 review job — a patch that pushed all five one direction would be wrong in at least one place, and it is
 precisely the kind of thing a bulk pass flattens.
 
-**No README change is needed**, and this was checked rather than assumed: none of the seven affected
-key strings appears in upstream `README.md`. CONTRIBUTING names "improves a bound but leaves the README
+**No README change is needed**, and this was checked rather than assumed: none of the ten distinct key
+strings involved (five current, five proposed) appears in upstream `README.md` — verified by searching
+seven prefixes covering all ten. CONTRIBUTING names "improves a bound but leaves the README
 showing the old value" as *the most common defect in submissions here* — that rule is about **bounds**,
 and we change no bound.
 
@@ -142,9 +143,9 @@ the cost is one polite decline on a trivial patch, not a damaged relationship.
 > | 30 (table) | `[WXXZ24]` | `[VXXZ2023]` |
 > | 31 (table) | `[ADWXXZ25]` | `[ADVXXZ2024]` |
 >
-> I have changed the table in four cases and the reference in one, following the page's existing
-> convention: keys use four-digit years (`BCRL79` is the only two-digit one of the thirty on the page),
-> Le Gall is `LG` (`LG2014`, `LG2017`), and Vassilevska Williams is `V` (`V2012`, `V2012a`, `V2014`).
+> I have changed the table in four cases and the reference in one, following the convention in the
+> page's own reference list: of its thirty definitions, all use four-digit years except `BCRL79`;
+> Le Gall is `LG` (`LG2014`, `LG2017`); and Vassilevska Williams is `V` (`V2012`, `V2012a`, `V2014`).
 > `L2014` also collides with `L2017`, which is Landsberg. If you would rather keep the table spellings
 > and change the five reference keys instead, I am happy to redo it that way.
 >
@@ -157,6 +158,50 @@ the cost is one polite decline on a trivial patch, not a damaged relationship.
 **Note on the last line:** it is written in David's voice because he is the contributor. It is only true
 once he has actually done that check — see Angle 7. If he has not, the line must be changed or the PR
 must not go.
+
+---
+
+## Codex adversarial review — 2026-08-05, at David's instruction
+
+David's reply on card a4ebe45c: *"Do a codex adversarial review on this first, then tell me exactly what
+we want to send / comment and where."* Dispatched refute-only (no rewrite, no patch, and explicitly told
+not to flatten the direction split). **Verdict: SEND WITH CHANGES.** It raised three defects; two are
+real and are now fixed above, one is Codex itself being wrong.
+
+**D-1 — REAL, and the one that justified the whole exercise.** The submission text said *"`BCRL79` is
+the only two-digit one of the thirty on the page."* **False as written.** The page carries four
+two-digit key strings — `[DWZ23]` (29), `[WXXZ24]` (30), `[ADWXXZ25]` (31) and `[BCRL79]` (53).
+Independently re-verified here before accepting: a regex sweep returns exactly those four, while the
+reference list returns 30 definitions of which exactly 1 is two-digit. The claim is true **only of the
+reference list**, and the sentence is now scoped to it. A wrong count inside a PR about citation
+accuracy is the worst available failure for this lane, and this is the second time in one day that the
+defect was in a **sentence about our method** rather than in a fact.
+
+**D-2 — REAL, minor, package-only.** The doc said "seven affected key strings" where ten distinct
+strings are involved; seven was the number of *search prefixes* used, not of keys. Never appeared in
+the PR body. Fixed.
+
+**D-3 — NOT ACCEPTED; Codex is wrong.** It reported only PR #128 open and called our #140/#128 note
+stale. Its own log shows `gh pr list` failed (`proxyconnect tcp 127.0.0.1:9`) and it fell back to
+reading the PR web page. Re-checked here with `gh`: **#140 is open**, updated 2026-08-05T17:00:31Z,
+touching `README.md` + `constants/3a.md`. Neither open PR touches `15a.md`. The original note stands
+unchanged. Recorded because a correction accepted on authority would have put a false "stale" note in
+the package.
+
+**What Codex confirmed rather than broke:** the defect is live at upstream default branch (blob
+`3fdfab1…`, `UNDEFINED_COUNT=5`, `UNUSED_COUNT=5`); the five pairs are one paper each, not two
+different works (arXiv `2210.10173`, `2307.07970`, `2404.16349` fetched and matched, plus BCRL
+1979 pp. 234–235 and Le Gall ISSAC 2014 pp. 296–303); the method sentence holds
+(`MARKDOWN_LINKISH_CITATION_LINE_COUNT=0` — the only three real links on the page are Wikipedia,
+V2014 and LG2017); and `15a.md` has no other defect a maintainer would notice (`TODO_FIXME_COUNT=0`).
+
+**It added one caution worth keeping:** the same defect class exists on `10a`, `22b`, `46a`, `50a`,
+`52a`, so **the submission must not imply a repo-wide audit**. The current text does not — it speaks
+only about this page — and it must stay that way.
+
+**What Codex could not check:** all `Invoke-WebRequest` calls and `gh pr list` failed in its sandbox
+(network refused / proxy), so its upstream reads came via connector and browser fetches; it did not
+verify any bound or attribution; and it did not perform David's required human verification.
 
 ## The precondition
 
