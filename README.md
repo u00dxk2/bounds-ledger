@@ -70,3 +70,16 @@ Coverage is 9 hand-written claims plus 220 pins generated from the mirror.
 - **Two adopted surfaces.** This is not a survey of mathematical records; it is a deep watch on a small, named set.
 - **Known blind spot:** upstream's `README.md` is not mirrored, and it is where upstream states which records it stands behind — including records flagged as not yet peer-reviewed. The alarm is silent on that today.
 - Bounds do not live in the metadata repository, so a bound correction can never be filed there. Its PR channel covers metadata only.
+
+## Tell us this ledger is wrong
+
+**Open an issue.** A pinned value that no longer matches its source, a claim whose citation does not
+support it, a record we have listed as current that has since moved, a check that passes when it should
+not — those are the reports worth the most here, and they are welcome without ceremony. Quote the claim
+id (`C-3`, `pin:15a:U`) or the file, and say what you expect instead.
+
+This project exists because widely-cited numbers go unchecked for months. A ledger that had no way to be
+told it was wrong would be making the same mistake it was built to catch — and unlike the surfaces it
+watches, this one is small enough that a single reader can check it.
+
+For security reports specifically, see [`SECURITY.md`](SECURITY.md).
