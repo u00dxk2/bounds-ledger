@@ -1,15 +1,32 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-04T22:30:04.173Z",
+  "generatedAt": "2026-08-05T20:52:00.960Z",
   "projectPath": "C:\\dev\\skylark\\bounds-ledger",
-  "itemCount": 18,
+  "itemCount": 19,
   "knownPatternCount": 0,
-  "commitCount": 12,
-  "findings": [],
+  "commitCount": 19,
+  "findings": [
+    {
+      "check": "MODIFIED_ITEM_LAST_24H",
+      "severity": "info",
+      "id": "W-6",
+      "title": "Read window for the README report-an-error channel — the clock does NOT start until the repo is public",
+      "message": "Item W-6 title/closeWhen modified in last 24h (diff hash 13a3f542); investigate before per-day judgment.",
+      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
+    },
+    {
+      "check": "MODIFIED_ITEM_LAST_24H",
+      "severity": "info",
+      "id": "W-5",
+      "title": "MIRROR BLIND CLASS: README.md is not mirrored, and it is where upstream states which records it stands behind",
+      "message": "Item W-5 closeWhen modified in last 24h (diff hash 35cd8492); investigate before per-day judgment.",
+      "suggested": "Compare against the prior closeWhen / notes — was scope expanded? was a date moved without explicit decision?"
+    }
+  ],
   "counts": {
     "critical": 0,
     "warn": 0,
-    "info": 0
+    "info": 2
   },
   "suppressedCount": 0,
   "actionsOnlyMode": false,
