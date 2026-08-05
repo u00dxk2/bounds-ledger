@@ -23,7 +23,7 @@ The correct current bracket is **0.379005 < c < 0.380868**. The page is two cura
 **Recommendation: report it upstream — this is the lane's customer-zero payoff — BUT gated on two conditions and NOT to be sent until both clear.**
 
 1. **Adversarial refute-it review** (portfolio standing rule for any outward artifact) — a reviewer tries to break the correction before it goes out. The factual chain is strong (SimpleTES 0.380868 sits in Tao's curated `constants/1b.md` with citation key `[YLTLYSTYLLGDHZSWZSHMELCZX2026]`), so this should pass, but it runs first regardless.
-2. **David's outward-send gate** — the actual contact to the site maintainer (Thomas Bloom) is outward and David-gated. Do not contact them without it.
+2. **David's outward-send gate** — the actual contact to the site maintainer is outward and David-gated. Do not contact them without it.
 
 ### Why report (not no-report)
 
@@ -33,18 +33,22 @@ The correct current bracket is **0.379005 < c < 0.380868**. The page is two cura
 
 ### Why the gate still matters (the case for caution)
 
-- erdosproblems.com is curated personally by Thomas Bloom on his own cadence; an unsolicited correction from a still-pre-launch lane attaches the lane's identity to an outward contact before the public flip.
+- erdosproblems.com is curated personally by its maintainer on their own cadence; an unsolicited correction from a still-pre-launch lane attaches the lane's identity to an outward contact before the public flip.
 - No urgency: the value being stale harms no one on a clock; a wrong-but-static bound is a slow problem, so there is no cost to holding for the gate.
 
-## Draft correction (copy-paste ready IF David greenlights — do not send before the gate)
+## Draft correction — not reproduced here
 
-> Subject: Problem 36 (minimum overlap) — upper bound is two curated improvements out of date
->
-> The page currently lists the upper bound as 0.380876 (TTT-Discover, Jan 2026). Two later improvements have since been curated in Tao/Davis/Ivanisvili's optimization-constants repository (`constants/1b.md`):
-> - 0.380871 — TogetherAI (EinsteinArena)
-> - 0.380868 — SimpleTES, "Evaluation-driven Scaling for Scientific Discovery," arXiv:2604.19341 (Apr 2026)
->
-> So the current best-known bracket is 0.379005 < c < 0.380868 (lower bound White 2022, arXiv:2201.05704). Sources cross-checked against the curated table and the source-paper abstracts on 2026-07-23.
+The verbatim draft has been removed from this repository (see the redaction note in `README.md`); what
+follows is its substance, which is what the rest of this document reasons about.
+
+It listed **two** later curated improvements over the page's 0.380876 — 0.380871 (TogetherAI /
+EinsteinArena) and 0.380868 (SimpleTES, arXiv:2604.19341) — gave the resulting bracket
+0.379005 < c < 0.380868, and claimed the sources were cross-checked against **the curated table and the
+source-paper abstracts**.
+
+Two of those elements did not survive review and both matter to the record: the 0.380871 line was cut
+(its cite is a GitHub README, not a paper), and the "source-paper abstracts" clause was **false** — none
+of the three abstracts states its bound. See the 2026-07-24 review document.
 
 ## Next step
 

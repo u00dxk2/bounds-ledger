@@ -43,7 +43,7 @@ This lane's product-love analog is G-1's close condition: **an externally-acknow
 ## (4) Decisions / blocked
 
 - Nothing newly blocked. Board checked (`answered-cards.mjs`) — no bounds-ledger cards outstanding.
-- Standing (not new): A-3 needs a **hand-browse re-verification of erdosproblems.com/36** (site 403s bots; current provenance is agent-fetch only) before any upstream report, and any report to Thomas Bloom is David-gated. Zero-cost for David to defer; the lane is not waiting on it.
+- Standing (not new): A-3 needs a **hand-browse re-verification of erdosproblems.com/36** (site 403s bots; current provenance is agent-fetch only) before any upstream report, and any report to the site maintainer is David-gated. Zero-cost for David to defer; the lane is not waiting on it.
 
 ## (5) Continuity
 

@@ -49,15 +49,16 @@ The page state is a 2026-07-23 hand-verification (David's screenshot). C-7 is `m
 
 Gate 1 of 2 is now **clear**. Gate 2 (David's outward-send gate) remains **closed** — no contact made.
 
-## Amended draft (supersedes the 2026-07-23 draft; send ONLY after David's gate)
+## Amended draft — not reproduced here
 
-> Subject: Problem 36 (minimum overlap) — a later curated upper bound you may want
->
-> The page currently lists the upper bound as 0.380876 (TTT-Discover, Jan 2026). A later improvement has since been curated in the Tao/Davis/Ivanisvili optimization-constants repository (`constants/1b.md`):
->
-> - **0.380868** — SimpleTES, "Evaluation-driven Scaling for Scientific Discovery," [arXiv:2604.19341](https://arxiv.org/abs/2604.19341) (Apr 2026)
->
-> That would make the current bracket 0.379005 < c < 0.380868 (lower bound White 2022, [arXiv:2201.05704](https://arxiv.org/abs/2201.05704)). Cross-checked against the curated table; happy to be corrected if you're tracking it deliberately.
+This wording became the message David sent on 24 July. It was private correspondence and the verbatim
+text has been removed from this repository (see the redaction note in `README.md`). Its substance, and
+what the review changed, is the part that matters here:
+
+- It named **one** later curated upper bound — 0.380868 (SimpleTES, [arXiv:2604.19341](https://arxiv.org/abs/2604.19341)) — with the curated page it sits on, and gave the resulting bracket 0.379005 < c < 0.380868 (lower bound White 2022, [arXiv:2201.05704](https://arxiv.org/abs/2201.05704)).
+- **Cut from the earlier draft:** the 0.380871 line (Angle 4 below).
+- **Cut at the pre-send check:** the claim of cross-checking against the source-paper abstracts (Angle 6 below) — it was false.
+- It attributed the verification to the curated table alone, and invited correction rather than asserting the page was wrong.
 
 ## Angle 6 — added at the pre-send check (2026-07-24): **SUSTAINED — the review missed this**
 

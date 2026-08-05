@@ -71,6 +71,21 @@ Coverage is 9 hand-written claims plus 220 pins generated from the mirror.
 - **Known blind spot:** upstream's `README.md` is not mirrored, and it is where upstream states which records it stands behind — including records flagged as not yet peer-reviewed. The alarm is silent on that today.
 - Bounds do not live in the metadata repository, so a bound correction can never be filed there. Its PR channel covers metadata only.
 
+## One thing deliberately removed
+
+This repository records an outward correction sent to the maintainer of another site in July 2026. That
+person is not named here, and the text of the message is not reproduced — both were removed before this
+repository was made public. They were private correspondence with someone who never asked to be written
+about, and nothing in the mathematics depends on either.
+
+What remains is the finding itself, which is about a *page*, not a person: a widely-cited index listed an
+upper bound that later curated work had superseded. Where documents here discuss the wording of that
+message, they describe its substance and what review changed, which is the part with any methodological
+value.
+
+Citations of published papers by that author elsewhere in this repository are ordinary scholarly
+references in mirrored upstream content, and are untouched.
+
 ## Tell us this ledger is wrong
 
 **Open an issue.** A pinned value that no longer matches its source, a claim whose citation does not

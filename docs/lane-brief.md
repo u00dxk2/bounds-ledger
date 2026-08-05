@@ -115,7 +115,7 @@ The counterweight, which David weighed and accepted: it attaches our name to an 
 
 ## Who it went to
 
-erdosproblems.com is maintained by **Thomas Bloom**, a mathematician who built and curates the site personally. One person, own cadence, no team.
+erdosproblems.com is maintained by a mathematician who built and curates the site personally. One person, own cadence, no team.
 
 That shapes the tone: they are not a support desk with an SLA, and the page isn't neglected - it's a personal project that a fast-moving result outran. The message should read as a heads-up from someone who found it useful, not a bug report.
 
@@ -143,15 +143,9 @@ The evidence was one day old when it went out - David's screenshot on 23 July, s
 
 ## What we said
 
-> **Subject: Problem 36 (minimum overlap) — a later curated upper bound you may want**
->
-> The page currently lists the upper bound as 0.380876 (TTT-Discover, Jan 2026). A later improvement has since been curated in the Tao/Davis/Ivanisvili optimization-constants repository (`constants/1b`):
->
-> <https://teorth.github.io/optimizationproblems/constants/1b.html>
->
-> - **0.380868** — SimpleTES, "Evaluation-driven Scaling for Scientific Discovery," [arXiv:2604.19341](https://arxiv.org/abs/2604.19341) (Apr 2026)
->
-> That would make the current bracket 0.379005 < c < 0.380868 (lower bound White 2022, [arXiv:2201.05704](https://arxiv.org/abs/2201.05704)). Cross-checked against the curated table; happy to be corrected if you're tracking it deliberately.
+The message itself was private correspondence and is not reproduced here. In substance it gave three
+things and nothing else: the later curated upper bound 0.380868 with its paper and arXiv id, the
+curated page it sits on, and the resulting bracket 0.379005 < c < 0.380868.
 
 Short on purpose. It gave the value, the source, and a way to disagree - and it doesn't tell a mathematician what their own page should say.
 
@@ -165,7 +159,7 @@ Standing rule: nothing goes outward until someone has genuinely tried to break i
 
 **Held up.** Has 0.380868 itself been superseded since? No - re-verified clean on 24 July.
 
-**Landed - cut the 0.380871 line.** The earlier draft cited it too. Its source turns out to be a GitHub README rather than a paper - and naming the project attached to it would point Bloom at a public leaderboard showing an even lower, *unvetted* number we don't stand behind. We'd have broken our own rule about never mixing verified records with unverified claims, in our first outward message. It's also redundant: 0.380868 supersedes it anyway.
+**Landed - cut the 0.380871 line.** The earlier draft cited it too. Its source turns out to be a GitHub README rather than a paper - and naming the project attached to it would point the recipient at a public leaderboard showing an even lower, *unvetted* number we don't stand behind. We'd have broken our own rule about never mixing verified records with unverified claims, in our first outward message. It's also redundant: 0.380868 supersedes it anyway.
 
 **Landed - rewrote the subject line.** It read "upper bound is two curated improvements out of date" - asserting error at someone about their own field. Now it offers information and lets them judge.
 
