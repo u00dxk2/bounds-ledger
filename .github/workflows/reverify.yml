@@ -45,6 +45,12 @@ jobs:
       # flag parseSuspect (instrument error, never a mathematical claim).
       - name: Self-test gap-table parser (no network)
         run: node scripts/gap-table.mjs --selftest
+      # Guards the G-2 27b certificate verifier (search/27b): exact planarity
+      # (DMP) and exact chromatic number, proven both ways — nonplanar graphs
+      # fire, planar stay silent, chi exact on five known graphs, one good
+      # certificate passes and three defect classes fail.
+      - name: Self-test 27b certificate verifier (no network)
+        run: node search/27b/selftest.mjs
       # `shell: bash` is load-bearing: the DEFAULT runner shell is `bash -e {0}` with NO
       # pipefail, so `node ... | tee` reports tee's exit 0 and a drift exits GREEN. Naming
       # the shell gets `-eo pipefail`. Guarded by reverify.test.mjs.
