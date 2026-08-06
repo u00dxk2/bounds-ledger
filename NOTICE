@@ -1,0 +1,50 @@
+# NOTICE — third-party content redistributed in this repository
+
+This repository contains a verbatim copy of material from another project.
+This file records what that material is, where it came from, and the terms it
+is redistributed under.
+
+## What is copied
+
+`ledger/teorth-optimizationproblems/constants/` holds 111 Markdown files copied
+without modification from the `constants/` directory of:
+
+- **Project:** teorth/optimizationproblems — "A collection of optimization problems in mathematics"
+- **Source:** https://github.com/teorth/optimizationproblems
+- **Commit pinned:** `dee1660ef081c56f6b6f6e7f40f5a92471c187d6`
+- **Copied on:** 2026-08-02
+
+These files are a **byte-for-byte mirror**. Nothing in that directory is our
+work and nothing in it has been edited by us. It exists so this project can
+detect when the upstream content changes — the whole point of the mirror is
+that it matches the source exactly, so any difference is a real change
+upstream. It is refreshed only by re-copying from source
+(`node scripts/reverify.mjs --snapshot`), never by hand.
+
+The pinned commit above is recorded in
+`ledger/teorth-optimizationproblems/manifest.json` and is updated whenever the
+mirror is refreshed.
+
+## Terms
+
+teorth/optimizationproblems is licensed under the **Apache License, Version
+2.0**. A complete copy of that license, taken from the upstream repository, is
+included here:
+
+- `ledger/teorth-optimizationproblems/LICENSE`
+
+You may also read it at http://www.apache.org/licenses/LICENSE-2.0
+
+As required by section 4 of that license, the mirrored files are unmodified,
+carry no added or removed notices, and are accompanied by the license above.
+The upstream repository contains no `NOTICE` file of its own (checked against
+the source on 2026-08-06), so there is no upstream notice text to carry
+forward here.
+
+## What this file does not cover
+
+This notice covers **only** the copied upstream material described above. It
+says nothing about the licensing of the rest of this repository — the scripts,
+documentation, claim definitions, and other original work — which is not
+governed by the Apache License and is addressed separately, if at all, by any
+license file at the repository root.

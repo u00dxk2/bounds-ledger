@@ -9,8 +9,8 @@ Counts: P0 0 · P1 6 · P2 6
 **Top 3**
 
 1. **R21 — CI runs 2 of the repo's 3 self-tests.** `extract-pins.mjs --selftest` is in `npm test` but has no workflow step, so the extractor that generates 218 of 227 claims can regress in CI unwatched.
-2. **R5/R6/R7 — the three-layer secrets prevention stack is 0-of-3 present.** No pre-commit scan (`core.hooksPath` unset, `.git/hooks` empty), secret scanning reports disabled, no scheduled history sweep.
-3. **R4/R16 — no `repo-health.json`** (repo is invisible to the monthly matrix sweep) and **no branch protection or ruleset on `main`** (force-push and branch deletion are both possible; the account plan is Pro, so this one is not plan-gated).
+2. **R5/R6/R7 — the three-layer secrets prevention stack is incomplete.** Details of which layers are present are held privately; see the redaction note at the foot of this doc.
+3. **R4/R16 — no `repo-health.json`** (repo is invisible to the monthly matrix sweep) and **gaps in branch-level controls on `main`**. Specifics held privately; not plan-gated, so closable.
 
 **Verdict — what would most alarm a skeptical staff engineer in their first 30 minutes?**
 
@@ -22,16 +22,16 @@ Not the code — the code is unusually careful, and the domain controls here are
 
 ### P1
 
-**P1-1 · R5 — no pre-commit secret scan (prevention Layer 1 absent).**
-Anchor: `git config core.hooksPath` → unset (exit 1); `.git/hooks/` contains only `*.sample`.
-What fails: nothing blocks a candidate secret from being staged and committed. The standard weights this class heaviest — 3 of the 4 criticals in the 2026-07-07 portfolio review were secrets-in-git.
+**P1-1 · R5 — prevention Layer 1 (pre-commit secret scan) not in place.**
+Anchor: verified locally; the specific configuration state is held privately.
+What fails: the staged-commit path is not mechanically gated against candidate secrets. The standard weights this class heaviest — 3 of the 4 criticals in the 2026-07-07 portfolio review were secrets-in-git.
 Mitigating (verified, not assumed): this repo has never carried secret material — `git log --all --diff-filter=A --name-only` across all 51 commits matches no `.env`/`secret`/`credential`/`*.pem`/`*.key`/`token` path, and the only credential the code touches is CI-injected (`GITHUB_TOKEN`, never written to disk). So the exposure is prospective, not live.
 Smallest fix: seed `check-staged-secrets.mjs` from skylark-site and set `core.hooksPath`. Fleet-recipe candidate — identical in all 18 repos.
 
 **P1-2 · R7 — no scheduled verified full-history sweep (Layer 3 absent); R6 Layer 2 plan-gated.**
-Anchor: no TruffleHog/gitleaks workflow in `.github/workflows/` (only `reverify.yml`); `GET /repos/u00dxk2/bounds-ledger/secret-scanning/alerts` → HTTP 404 "Secret scanning is disabled on this repository."
+Anchor: no history-sweep workflow in `.github/workflows/` (only `reverify.yml`); platform-side scanning state verified via API and held privately.
 What fails: Layer 3 answers the question layers 1–2 cannot — *which already-committed secrets are still live* — and is simply absent. It is **not** plan-gated and could be added today.
-Layer 2 (R6, push protection) **is** plan-gated and is recorded honestly per R16 rather than claimed: the repo is private on a personal **Pro** account, where free secret scanning / push protection covers public repos only; enabling it on a private repo needs the paid Secret Protection add-on. Not verified by attempting to enable it (review-only scope).
+Layer 2 (R6, push protection) **is** plan-gated and is recorded honestly per R16 rather than claimed: on this account tier the free offering covers public repos only, and private-repo coverage needs the paid add-on. Not verified by attempting to enable it (review-only scope).
 Smallest fix: one scheduled workflow running TruffleHog `--only-verified` weekly. Fleet-recipe candidate.
 
 **P1-3 · R21 — CI runs 2 of 3 self-tests; the pin extractor is unguarded in CI.**
@@ -44,9 +44,9 @@ Anchor: absent from repo root (`git ls-files` top level: `.github`, `.gitignore`
 What fails: the monthly repo-health matrix reads the manifest, not prose. Without it this repo cannot be swept mechanically and will read as absent rather than as passing.
 Smallest fix: a ~15-line manifest. Most fields are degenerate here and that is the useful signal: runtime `node22`, deploy target `none (CI-only, no service)`, datastores `none (flat JSON + file mirror)`, auth model `none`, secrets source `CI-injected github.token only`, privileged endpoints `[]`, class `service-only: false / artifact-shipping: false`, required checks `reverify`.
 
-**P1-5 · R16 — no branch protection or ruleset on `main`.**
-Anchor: `GET /repos/.../branches/main/protection` → HTTP 404 "Branch not protected"; `GET /repos/.../rulesets` → `[]`.
-What fails: force-push and branch deletion on `main` are both permitted. This is **not** plan-gated (Pro covers protected branches and rulesets on private repos), so R16's honest-gap clause does not apply — it is a real, closable gap.
+**P1-5 · R16 — branch-level controls on `main` are incomplete.**
+Anchor: verified via the branch-protection and rulesets APIs; the returned state is held privately.
+What fails: the `main` branch lacks the write-side guarantees R16 asks for. This is **not** plan-gated on this tier, so R16's honest-gap clause does not apply — it is a real, closable gap.
 Honest scoping: PR-only-to-`main` would break this lane's operating model (a single agent commits directly to `main`, and `reverify.yml` runs on push). The cheap correct subset is a ruleset that blocks **force-push and deletion** only, and optionally requires the `reverify` check — both compatible with direct commits.
 
 **P1-6 · R17/R18 — no lockfile, no frozen install, no dependency automation config.**
@@ -66,7 +66,7 @@ Smallest fix: commit the empty-tree `package-lock.json` (`npm install --package-
 
 **P2-5 · R34 — README overstates generated-pin coverage by one file.** Anchor: `README.md:47` — "218 generated pins covering all 110 mirrored constants". Verified counts: 227 claims = 9 hand + 218 generated, and the generated pins cover **109** distinct files, not 110. The 110th is `1b.md`, deliberately skipped (`scripts/extract-pins.mjs:21,31` — `SKIP`, hand-pinned as C-1 upper / C-3 lower). **Ledger coverage is complete; only the sentence is wrong** — every mirrored constant is pinned, one of them by hand. Worth correcting precisely because 1b is the lane's founding subject (the Erdős minimum-overlap constant), so a reader chasing the discrepancy would land on the one file the generator skips. Smallest fix: "…218 generated pins across 109 files, plus `1b.md` hand-pinned as C-1/C-3."
 
-**P2-6 · R19 — Dependabot security *updates* disabled.** Anchor: `GET /repos/.../automated-security-fixes` → `{"enabled":false,"paused":false}`. Vulnerability **alerts** are ON (`GET /vulnerability-alerts` → 204) and the alert inbox is empty (`/dependabot/alerts` → `[]`), so R19's free-CVE-signal requirement is met and there is no backlog to zero. Inert at zero dependencies; worth flipping on when the first dependency lands, not before.
+**P2-6 · R19 — Dependabot security *updates* not fully enabled.** Anchor: automated-security-fixes API; state held privately. Vulnerability **alerts** are ON (`GET /vulnerability-alerts` → 204) and the alert inbox is empty (`/dependabot/alerts` → `[]`), so R19's free-CVE-signal requirement is met and there is no backlog to zero. Inert at zero dependencies; worth revisiting when the first dependency lands, not before.
 
 ---
 
@@ -102,14 +102,30 @@ Smallest fix: commit the empty-tree `package-lock.json` (`npm install --package-
 | Visibility | **private** | `GET /repos/...` → `"private": true, "visibility": "private"` |
 | Account / plan | personal user `u00dxk2`, **Pro** (not an org) | `GET /user` → `{"type":"User","plan":"pro"}` |
 | Default branch | `main` | `GET /repos/...` |
-| Branch protection | **none** | `GET /branches/main/protection` → 404 "Branch not protected" |
-| Rulesets | **none** | `GET /rulesets` → `[]` |
-| Push protection | **not enabled** (private repo on Pro → needs paid Secret Protection add-on; free tier is public-repo only) | inferred from plan + the 404 below; not tested by attempting to enable |
-| Secret scanning | **disabled** | `GET /secret-scanning/alerts` → 404 "Secret scanning is disabled on this repository" |
+| Branch protection | *held privately* | branch-protection API |
+| Rulesets | *held privately* | rulesets API |
+| Push protection | *held privately* (plan-gated on this tier; see P1-2) | inferred from plan; not tested by attempting to enable |
+| Secret scanning | *held privately* | secret-scanning API |
 | Dependabot alerts | **enabled**, inbox **empty** | `GET /vulnerability-alerts` → 204; `GET /dependabot/alerts` → `[]` |
-| Dependabot security updates | **disabled** | `GET /automated-security-fixes` → `{"enabled":false,"paused":false}` |
+| Dependabot security updates | *held privately* | automated-security-fixes API |
 | Auto-deploy on push | **no — this repo does not deploy.** No Render/Vercel service, no hosting target. Push to `main` triggers only the `reverify` workflow (CI alarm). | `.github/workflows/reverify.yml` is the only workflow; no deploy config in repo |
 | CI health | last 5 runs all `success` (latest 2026-07-29T21:08Z) | `gh run list` |
 | Frozen surfaces | none | — |
+
+## Redaction note — added 2026-08-06
+
+This document originally named, control by control, which protections on this
+repository and its account were switched off, together with the exact API
+responses proving it. That is a useful record for us and a map for anyone else,
+so ahead of the planned public flip those specifics were replaced with *held
+privately*. The findings, their severity, their rule numbers and their fixes
+are unchanged — only the values that would tell a reader precisely where the
+gaps are have been removed. The unredacted state is reproducible by anyone with
+access to the repository's settings.
+
+Redaction is the publication fix, not the real one. The real fix is the
+coordinated Stage-0 wave closing these controls; per the 2026-07-29 dispatch
+they are deliberately not fixed per-repo, because doing so would duplicate the
+work and diverge the solutions across the fleet.
 
 **Fleet-consolidation notes:** P1-1, P1-2, P1-4 and P1-6 are pure copy/config and identical across repos — they belong in Stage-0 recipes, not per-repo work. P1-5's *correct* form is repo-shaped (a direct-commit lane wants force-push/deletion blocking, not PR-only), so the recipe needs a variant. P1-3 and P2-5 are specific to this repo. P2-2 needs a fleet-level ruling on whether rule 13 covers first-party `actions/*`.
