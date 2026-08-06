@@ -1,0 +1,2226 @@
+{
+  "generatedAt": "2026-08-06T15:57:50.760Z",
+  "fileCount": 111,
+  "records": [
+    {
+      "file": "10a.md",
+      "title": "The real Grothendieck constant",
+      "upper": {
+        "cell": "$< \\dfrac{\\pi}{2\\ln(1+\\sqrt{2})} - 6.039*10^{-5}$",
+        "value": null,
+        "rows": 6,
+        "latestYear": 2011
+      },
+      "lower": {
+        "cell": "$K_{DR} + 10^{-12}$",
+        "value": null,
+        "rows": 5,
+        "latestYear": 2026
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "10b.md",
+      "title": "The complex Grothendieck constant",
+      "upper": {
+        "cell": "$1.40491$",
+        "value": 1.40491,
+        "rows": 3,
+        "latestYear": 1987
+      },
+      "lower": {
+        "cell": "$1.338$",
+        "value": 1.338,
+        "rows": 2,
+        "latestYear": 1984
+      },
+      "machineSearched": false,
+      "gap": 0.06691000000000003,
+      "relGap": 0.04762582656540278,
+      "parseSuspect": false
+    },
+    {
+      "file": "10c.md",
+      "title": "Spencer discrepancy constant (“six standard deviations suffice”)",
+      "upper": {
+        "cell": "$3\\sqrt{3/2}\\approx 3.674235$",
+        "value": 3.674235,
+        "rows": 4,
+        "latestYear": 2022
+      },
+      "lower": {
+        "cell": "$7/\\sqrt{17}\\approx 1.697749$",
+        "value": 1.697749,
+        "rows": 5,
+        "latestYear": 2026
+      },
+      "machineSearched": false,
+      "gap": 1.976486,
+      "relGap": 0.5379312972632398,
+      "parseSuspect": false
+    },
+    {
+      "file": "11a.md",
+      "title": "The $L^1$ Poincaré constant on the Hamming cube",
+      "upper": {
+        "cell": "$\\pi/2-\\delta$ with $\\delta\\approx 0.00013$",
+        "value": null,
+        "rows": 3,
+        "latestYear": 2024
+      },
+      "lower": {
+        "cell": "$\\sqrt{\\pi/2} \\approx 1.25331$",
+        "value": null,
+        "rows": 2,
+        "latestYear": 2019
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "11b.md",
+      "title": "The critical exponent for isoperimetric inequality on the hamming cube",
+      "upper": {
+        "cell": "$0.5$",
+        "value": 0.5,
+        "rows": 5,
+        "latestYear": 2026
+      },
+      "lower": {
+        "cell": "$0.5$",
+        "value": 0.5,
+        "rows": 1,
+        "latestYear": 2023
+      },
+      "machineSearched": false,
+      "gap": 0,
+      "relGap": 0,
+      "parseSuspect": false
+    },
+    {
+      "file": "12a.md",
+      "title": "The Beardwood–Halton–Hammersley constant",
+      "upper": {
+        "cell": "$<0.90304$",
+        "value": 0.90304,
+        "rows": 3,
+        "latestYear": 2023
+      },
+      "lower": {
+        "cell": "$0.6277$",
+        "value": 0.6277,
+        "rows": 3,
+        "latestYear": 2020
+      },
+      "machineSearched": false,
+      "gap": 0.2753399999999999,
+      "relGap": 0.3049034372785258,
+      "parseSuspect": false
+    },
+    {
+      "file": "13a.md",
+      "title": "Moser's convex worm cover constant",
+      "upper": {
+        "cell": "$\\frac{\\pi}{12}=0.2617993878\\dots$",
+        "value": null,
+        "rows": 8,
+        "latestYear": 2021
+      },
+      "lower": {
+        "cell": "$0.232239$",
+        "value": 0.232239,
+        "rows": 3,
+        "latestYear": 2013
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "13b.md",
+      "title": "Lebesgue universal covering constant",
+      "upper": {
+        "cell": "$$\\le 0.8440935944$$",
+        "value": 0.8440935944,
+        "rows": 7,
+        "latestYear": 2018
+      },
+      "lower": {
+        "cell": "$0.832$",
+        "value": 0.832,
+        "rows": 4,
+        "latestYear": 2005
+      },
+      "machineSearched": false,
+      "gap": 0.012093594400000018,
+      "relGap": 0.014327314506629336,
+      "parseSuspect": false
+    },
+    {
+      "file": "14a.md",
+      "title": "Smallest $n$ for which the value of $BB(n)$ is undecidable",
+      "upper": {
+        "cell": "432",
+        "value": 432,
+        "rows": 5,
+        "latestYear": 2025
+      },
+      "lower": {
+        "cell": "6",
+        "value": 6,
+        "rows": 3,
+        "latestYear": 2025
+      },
+      "machineSearched": false,
+      "gap": 426,
+      "relGap": 0.9861111111111112,
+      "parseSuspect": false
+    },
+    {
+      "file": "15a.md",
+      "title": "15a",
+      "upper": {
+        "cell": "$2.371339$",
+        "value": 2.371339,
+        "rows": 21,
+        "latestYear": 2020
+      },
+      "lower": {
+        "cell": "$2$",
+        "value": 2,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": 0.37133899999999986,
+      "relGap": 0.1565946496894792,
+      "parseSuspect": false
+    },
+    {
+      "file": "15b.md",
+      "title": "Dual matrix multiplication exponent",
+      "upper": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 1,
+        "latestYear": 2025
+      },
+      "lower": {
+        "cell": "$0.321334$",
+        "value": 0.321334,
+        "rows": 6,
+        "latestYear": 2024
+      },
+      "machineSearched": false,
+      "gap": 0.678666,
+      "relGap": 0.678666,
+      "parseSuspect": false
+    },
+    {
+      "file": "16a.md",
+      "title": "Brezis–Gallouet–Wainger remainder constant on the 2D torus",
+      "upper": {
+        "cell": "$\\approx 2.15627$",
+        "value": 2.15627,
+        "rows": 1,
+        "latestYear": 2013
+      },
+      "lower": {
+        "cell": "$\\frac{\\beta + \\pi}{\\pi} \\approx 1.82283$",
+        "value": null,
+        "rows": 1,
+        "latestYear": 2013
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "17a.md",
+      "title": "Exponential growth constant for diagonal Ramsey numbers",
+      "upper": {
+        "cell": "$3.791993699438612 < 3.792$",
+        "value": 3.792,
+        "rows": 4,
+        "latestYear": 2024
+      },
+      "lower": {
+        "cell": "$\\sqrt{2} = 1.4142135623\\dots$",
+        "value": 1.4142135623,
+        "rows": 1,
+        "latestYear": 1947
+      },
+      "machineSearched": false,
+      "gap": 2.3777864376999998,
+      "relGap": 0.6270533854694093,
+      "parseSuspect": false
+    },
+    {
+      "file": "18a.md",
+      "title": "Marton's conjecture (Polynomial Freiman-Ruzsa) constant",
+      "upper": {
+        "cell": "$9$",
+        "value": 9,
+        "rows": 2,
+        "latestYear": 2025
+      },
+      "lower": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": 8,
+      "relGap": 0.8888888888888888,
+      "parseSuspect": false
+    },
+    {
+      "file": "19a.md",
+      "title": "The Berry–Esseen constant",
+      "upper": {
+        "cell": "$0.4690$",
+        "value": 0.469,
+        "rows": 8,
+        "latestYear": 2013
+      },
+      "lower": {
+        "cell": "$c_{E} := \\dfrac{\\sqrt{10}+3}{6\\sqrt{2\\pi}} \\approx 0.4097321837$",
+        "value": null,
+        "rows": 1,
+        "latestYear": 1956
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "1a.md",
+      "title": "An autocorrelation constant related to Sidon sets",
+      "upper": {
+        "cell": "$1.502862$",
+        "value": 1.502862,
+        "rows": 8,
+        "latestYear": 2026
+      },
+      "lower": {
+        "cell": "$1.292$",
+        "value": 1.292,
+        "rows": 7,
+        "latestYear": 2026
+      },
+      "machineSearched": true,
+      "gap": 0.21086199999999988,
+      "relGap": 0.140306960985107,
+      "parseSuspect": false
+    },
+    {
+      "file": "1b.md",
+      "title": "Erdős minimum overlap constant",
+      "upper": {
+        "cell": "$0.380868$",
+        "value": 0.380868,
+        "rows": 11,
+        "latestYear": 2026
+      },
+      "lower": {
+        "cell": "$0.379005$",
+        "value": 0.379005,
+        "rows": 5,
+        "latestYear": 2022
+      },
+      "machineSearched": true,
+      "gap": 0.0018630000000000035,
+      "relGap": 0.004891458458048468,
+      "parseSuspect": false
+    },
+    {
+      "file": "20a.md",
+      "title": "The thin shell conjecture (variance of $|X|^2$)",
+      "upper": {
+        "cell": "$\\sigma_n \\le O(1)$ (and in fact $\\mathrm{Var}(\\lvert X\\rvert^2)\\le C n$)",
+        "value": null,
+        "rows": 11,
+        "latestYear": 2025
+      },
+      "lower": {
+        "cell": "$2$",
+        "value": 2,
+        "rows": 3,
+        "latestYear": 2025
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "20b.md",
+      "title": "The isotropic constant of a log-concave probability measure",
+      "upper": {
+        "cell": "$C_{20b}<\\infty$ (dimension-free)",
+        "value": null,
+        "rows": 9,
+        "latestYear": 2024
+      },
+      "lower": {
+        "cell": "$C_{20b}\\ge 1/\\sqrt{12}\\approx 0.288675$",
+        "value": null,
+        "rows": 2,
+        "latestYear": 2024
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "20c.md",
+      "title": "The KLS (Kannan–Lovász–Simonovits) constant for log-concave measures",
+      "upper": {
+        "cell": "$\\psi_n \\le C\\sqrt{\\log n}$",
+        "value": null,
+        "rows": 7,
+        "latestYear": 2024
+      },
+      "lower": {
+        "cell": "$\\sqrt{\\pi/2} \\approx 1.25331$",
+        "value": null,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "21a.md",
+      "title": "de Bruijn–Newman constant",
+      "upper": {
+        "cell": "0.1875",
+        "value": 0.1875,
+        "rows": 6,
+        "latestYear": 2026
+      },
+      "lower": {
+        "cell": "0",
+        "value": 0,
+        "rows": 7,
+        "latestYear": 2020
+      },
+      "machineSearched": false,
+      "gap": 0.1875,
+      "relGap": 1,
+      "parseSuspect": false
+    },
+    {
+      "file": "22a.md",
+      "title": "Tight knot constant",
+      "upper": {
+        "cell": "10.02",
+        "value": 10.02,
+        "rows": 4,
+        "latestYear": 2026
+      },
+      "lower": {
+        "cell": "$\\left(\\frac{4\\pi}{11}\\right)^{3/4}\\approx 1.105$",
+        "value": null,
+        "rows": 2,
+        "latestYear": 1999
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "22b.md",
+      "title": "Tight alternating knot constant",
+      "upper": {
+        "cell": "7.31",
+        "value": 7.31,
+        "rows": 5,
+        "latestYear": 2024
+      },
+      "lower": {
+        "cell": "$\\frac{1}{59.5}\\approx 0.017$",
+        "value": 0.017,
+        "rows": 1,
+        "latestYear": 2024
+      },
+      "machineSearched": false,
+      "gap": 7.292999999999999,
+      "relGap": 0.9976744186046511,
+      "parseSuspect": false
+    },
+    {
+      "file": "23a.md",
+      "title": "Smallest unsolved instance of the Hadamard conjecture",
+      "upper": {
+        "cell": "$\\infty$",
+        "value": null,
+        "rows": 1,
+        "latestYear": null
+      },
+      "lower": {
+        "cell": "$668$",
+        "value": 668,
+        "rows": 2,
+        "latestYear": 2024
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "23b.md",
+      "title": "Rate at which $\\kappa(n)$ approaches $1$",
+      "upper": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 1,
+        "latestYear": 2025
+      },
+      "lower": {
+        "cell": "$17/92 \\approx 0.18478$",
+        "value": 0.18478,
+        "rows": 2,
+        "latestYear": 2025
+      },
+      "machineSearched": false,
+      "gap": 0.8152200000000001,
+      "relGap": 0.8152200000000001,
+      "parseSuspect": false
+    },
+    {
+      "file": "23c.md",
+      "title": "Asymptotic counting exponent for partial Hadamard matrices",
+      "upper": {
+        "cell": "$3$",
+        "value": 3,
+        "rows": 3,
+        "latestYear": 2026
+      },
+      "lower": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 1,
+        "latestYear": 2010
+      },
+      "machineSearched": false,
+      "gap": 2,
+      "relGap": 0.6666666666666666,
+      "parseSuspect": false
+    },
+    {
+      "file": "24a.md",
+      "title": "Komlós discrepancy constant",
+      "upper": {
+        "cell": "$\\widetilde{O}(\\log^{1/4} n)$",
+        "value": null,
+        "rows": 5,
+        "latestYear": 2025
+      },
+      "lower": {
+        "cell": "$1+\\sqrt{2}$",
+        "value": 2,
+        "rows": 2,
+        "latestYear": 2023
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "25a.md",
+      "title": "Mahler volume product constant",
+      "upper": {
+        "cell": "$4$",
+        "value": 4,
+        "rows": 1,
+        "latestYear": null
+      },
+      "lower": {
+        "cell": "$\\pi \\approx 3.1416$",
+        "value": null,
+        "rows": 3,
+        "latestYear": 2012
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "26a.md",
+      "title": "Bohnenblust--Hille constant on the Boolean cube",
+      "upper": {
+        "cell": "$\\infty$",
+        "value": null,
+        "rows": 1,
+        "latestYear": 2019
+      },
+      "lower": {
+        "cell": "$2$",
+        "value": 2,
+        "rows": 1,
+        "latestYear": 2025
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "26b.md",
+      "title": "Multilinear Bohnenblust--Hille constant (real)",
+      "upper": {
+        "cell": "$\\infty$",
+        "value": null,
+        "rows": 1,
+        "latestYear": 2018
+      },
+      "lower": {
+        "cell": "$2$",
+        "value": 2,
+        "rows": 1,
+        "latestYear": 2014
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "27a.md",
+      "title": "Chromatic number of the plane",
+      "upper": {
+        "cell": "$7$",
+        "value": 7,
+        "rows": 1,
+        "latestYear": 2017
+      },
+      "lower": {
+        "cell": "$5$",
+        "value": 5,
+        "rows": 3,
+        "latestYear": 2018
+      },
+      "machineSearched": false,
+      "gap": 2,
+      "relGap": 0.2857142857142857,
+      "parseSuspect": false
+    },
+    {
+      "file": "27b.md",
+      "title": "Maximum Chromatic Number of Biplanar Graphs",
+      "upper": {
+        "cell": "12",
+        "value": 12,
+        "rows": 1,
+        "latestYear": 1959
+      },
+      "lower": {
+        "cell": "9",
+        "value": 9,
+        "rows": 2,
+        "latestYear": 1980
+      },
+      "machineSearched": false,
+      "gap": 3,
+      "relGap": 0.25,
+      "parseSuspect": false
+    },
+    {
+      "file": "28a.md",
+      "title": "Smallest dimension in which Borsuk’s conjecture fails",
+      "upper": {
+        "cell": "$63$",
+        "value": 63,
+        "rows": 10,
+        "latestYear": 2026
+      },
+      "lower": {
+        "cell": "$4$",
+        "value": 4,
+        "rows": 1,
+        "latestYear": 2022
+      },
+      "machineSearched": false,
+      "gap": 59,
+      "relGap": 0.9365079365079365,
+      "parseSuspect": false
+    },
+    {
+      "file": "29a.md",
+      "title": "Kissing number in dimension 5",
+      "upper": {
+        "cell": "$44$",
+        "value": 44,
+        "rows": 4,
+        "latestYear": 2012
+      },
+      "lower": {
+        "cell": "$40$",
+        "value": 40,
+        "rows": 2,
+        "latestYear": 2024
+      },
+      "machineSearched": false,
+      "gap": 4,
+      "relGap": 0.09090909090909091,
+      "parseSuspect": false
+    },
+    {
+      "file": "2a.md",
+      "title": "The Crouzeix constant",
+      "upper": {
+        "cell": "$1+\\sqrt{2} \\approx 2.41421$",
+        "value": 2.41421,
+        "rows": 2,
+        "latestYear": 2017
+      },
+      "lower": {
+        "cell": "$2$",
+        "value": 2,
+        "rows": 2,
+        "latestYear": 2007
+      },
+      "machineSearched": false,
+      "gap": 0.4142100000000002,
+      "relGap": 0.1715716528388169,
+      "parseSuspect": false
+    },
+    {
+      "file": "30a.md",
+      "title": "Stanley–Wilf limit for the permutation pattern 1324",
+      "upper": {
+        "cell": "$13.5$",
+        "value": 13.5,
+        "rows": 5,
+        "latestYear": 2017
+      },
+      "lower": {
+        "cell": "$10.27$",
+        "value": 10.27,
+        "rows": 4,
+        "latestYear": 2017
+      },
+      "machineSearched": false,
+      "gap": 3.2300000000000004,
+      "relGap": 0.23925925925925928,
+      "parseSuspect": false
+    },
+    {
+      "file": "31a.md",
+      "title": "Chvátal–Sankoff constant for a binary alphabet",
+      "upper": {
+        "cell": "$0.826280$",
+        "value": 0.82628,
+        "rows": 3,
+        "latestYear": 2009
+      },
+      "lower": {
+        "cell": "$0.79970$",
+        "value": 0.7997,
+        "rows": 6,
+        "latestYear": 2026
+      },
+      "machineSearched": false,
+      "gap": 0.026580000000000048,
+      "relGap": 0.03216827225637804,
+      "parseSuspect": false
+    },
+    {
+      "file": "32a.md",
+      "title": "Constant term of one-shot channel simulation",
+      "upper": {
+        "cell": "$\\sum_{k=1}^{\\infty}2^{-k-1}k\\log_{2}k-\\log_{2}\\log_{2}e \\approx 0.76$",
+        "value": null,
+        "rows": 6,
+        "latestYear": null
+      },
+      "lower": {
+        "cell": "$-\\log_{2}\\log_{2}e\\approx-0.53$",
+        "value": null,
+        "rows": 3,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "33a.md",
+      "title": "Ihara constant over $\\mathbf{F}_2$",
+      "upper": {
+        "cell": "$\\sqrt2-1 \\approx 0.41421$",
+        "value": null,
+        "rows": 2,
+        "latestYear": 2013
+      },
+      "lower": {
+        "cell": "$0.316999\\ldots$",
+        "value": 0.316999,
+        "rows": 6,
+        "latestYear": 2022
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "34a.md",
+      "title": "Falconer distance problem in $\\mathbf{R}^2$",
+      "upper": {
+        "cell": "$5/4=1.25$",
+        "value": 1.25,
+        "rows": 3,
+        "latestYear": 2018
+      },
+      "lower": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 2,
+        "latestYear": 2018
+      },
+      "machineSearched": false,
+      "gap": 0.25,
+      "relGap": 0.2,
+      "parseSuspect": false
+    },
+    {
+      "file": "35a.md",
+      "title": "Gradient Descent Exponent",
+      "upper": {
+        "cell": "2",
+        "value": 2,
+        "rows": 1,
+        "latestYear": 2014
+      },
+      "lower": {
+        "cell": "$\\log_2(1+\\sqrt{2}) \\approx 1.271$",
+        "value": null,
+        "rows": 3,
+        "latestYear": 2015
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "36a.md",
+      "title": "Sphere packing density in $\\mathbf{R}^4$",
+      "upper": {
+        "cell": "$0.644421\\ldots$",
+        "value": 0.644421,
+        "rows": 4,
+        "latestYear": 2014
+      },
+      "lower": {
+        "cell": "$\\pi^2/16 \\approx 0.616850$",
+        "value": null,
+        "rows": 2,
+        "latestYear": 2014
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "37a.md",
+      "title": "The degree--sensitivity exponent",
+      "upper": {
+        "cell": "$2$",
+        "value": 2,
+        "rows": 2,
+        "latestYear": 2021
+      },
+      "lower": {
+        "cell": "$\\log_3 6 \\approx 1.63093$",
+        "value": null,
+        "rows": 3,
+        "latestYear": 2013
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "38a.md",
+      "title": "Square-lattice self-avoiding walk connective constant $\\mu_{\\mathbb{Z}^2}$",
+      "upper": {
+        "cell": "$2.679193$",
+        "value": 2.679193,
+        "rows": 3,
+        "latestYear": 2017
+      },
+      "lower": {
+        "cell": "$2.6273856$",
+        "value": 2.6273856,
+        "rows": 4,
+        "latestYear": 2026
+      },
+      "machineSearched": false,
+      "gap": 0.05180739999999995,
+      "relGap": 0.019336942131455235,
+      "parseSuspect": false
+    },
+    {
+      "file": "39a.md",
+      "title": "Hadwiger covering / illumination number in $\\mathbb{R}^3$",
+      "upper": {
+        "cell": "$14$",
+        "value": 14,
+        "rows": 2,
+        "latestYear": 2024
+      },
+      "lower": {
+        "cell": "$8$",
+        "value": 8,
+        "rows": 1,
+        "latestYear": 2024
+      },
+      "machineSearched": false,
+      "gap": 6,
+      "relGap": 0.42857142857142855,
+      "parseSuspect": false
+    },
+    {
+      "file": "3a.md",
+      "title": "The Gyarmati-Hennecart-Ruzsa sum-difference constant",
+      "upper": {
+        "cell": "$4/3 = 1.333\\dots$",
+        "value": 1.333,
+        "rows": 1,
+        "latestYear": 2007
+      },
+      "lower": {
+        "cell": "$1.19102809$*",
+        "value": 1.19102809,
+        "rows": 14,
+        "latestYear": 2032
+      },
+      "machineSearched": true,
+      "gap": 0.14197190999999987,
+      "relGap": 0.10650555888972234,
+      "parseSuspect": false
+    },
+    {
+      "file": "3b.md",
+      "title": "Kakeya-type sum-difference constant",
+      "upper": {
+        "cell": "$2 - \\frac{1}{6} = 1.83333\\dots$",
+        "value": 1.83333,
+        "rows": 4,
+        "latestYear": 1999
+      },
+      "lower": {
+        "cell": "$1.77898884$",
+        "value": 1.77898884,
+        "rows": 5,
+        "latestYear": 2026
+      },
+      "machineSearched": true,
+      "gap": 0.05434115999999989,
+      "relGap": 0.02964068661943016,
+      "parseSuspect": false
+    },
+    {
+      "file": "3c.md",
+      "title": "4-slope Kakeya-type sum-difference constant",
+      "upper": {
+        "cell": "$2 - \\frac{1}{4} = 1.75$",
+        "value": 1.75,
+        "rows": 2,
+        "latestYear": 1999
+      },
+      "lower": {
+        "cell": "$1.6747338950208249$",
+        "value": 1.6747338950208248,
+        "rows": 5,
+        "latestYear": 2026
+      },
+      "machineSearched": false,
+      "gap": 0.07526610497917519,
+      "relGap": 0.04300920284524296,
+      "parseSuspect": false
+    },
+    {
+      "file": "3d.md",
+      "title": "Single-set sum-difference exponent",
+      "upper": {
+        "cell": "$2$",
+        "value": 2,
+        "rows": 1,
+        "latestYear": 2025
+      },
+      "lower": {
+        "cell": "$2$",
+        "value": 2,
+        "rows": 4,
+        "latestYear": 2025
+      },
+      "machineSearched": true,
+      "gap": 0,
+      "relGap": 0,
+      "parseSuspect": false
+    },
+    {
+      "file": "40a.md",
+      "title": "Lehmer’s Mahler measure constant",
+      "upper": {
+        "cell": "$1.176280\\ldots$",
+        "value": 1.17628,
+        "rows": 2,
+        "latestYear": 2007
+      },
+      "lower": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 1,
+        "latestYear": 2007
+      },
+      "machineSearched": false,
+      "gap": 0.17628,
+      "relGap": 0.1498622776889856,
+      "parseSuspect": false
+    },
+    {
+      "file": "40b.md",
+      "title": "Asymptotic Dobrowolski constant for Lehmer’s problem",
+      "upper": {
+        "cell": "$\\infty$",
+        "value": null,
+        "rows": 1,
+        "latestYear": null
+      },
+      "lower": {
+        "cell": "$9/4$",
+        "value": 4,
+        "rows": 3,
+        "latestYear": 1996
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "41a.md",
+      "title": "Moving Sofa Constant",
+      "upper": {
+        "cell": "2.2195",
+        "value": 2.2195,
+        "rows": 3,
+        "latestYear": 2024
+      },
+      "lower": {
+        "cell": "2.2195",
+        "value": 2.2195,
+        "rows": 2,
+        "latestYear": 1992
+      },
+      "machineSearched": true,
+      "gap": 0,
+      "relGap": 0,
+      "parseSuspect": false
+    },
+    {
+      "file": "41b.md",
+      "title": "Ambidextrous Moving Sofa Constant",
+      "upper": {
+        "cell": "2.2195",
+        "value": 2.2195,
+        "rows": 2,
+        "latestYear": 2024
+      },
+      "lower": {
+        "cell": "1.64495521",
+        "value": 1.64495521,
+        "rows": 2,
+        "latestYear": 2016
+      },
+      "machineSearched": false,
+      "gap": 0.57454479,
+      "relGap": 0.25886226177066907,
+      "parseSuspect": false
+    },
+    {
+      "file": "42a.md",
+      "title": "Turan's pure power sum constant",
+      "upper": {
+        "cell": "0.6906538*",
+        "value": 0.6906538,
+        "rows": 4,
+        "latestYear": null
+      },
+      "lower": {
+        "cell": ">1/2",
+        "value": 2,
+        "rows": 5,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": -1.3093462,
+      "relGap": 1.8958068427336534,
+      "parseSuspect": true
+    },
+    {
+      "file": "43a.md",
+      "title": "Gilbert-Pollak conjecture (Steiner ratio)",
+      "upper": {
+        "cell": "$\\sqrt{3}/2 \\approx 0.866$",
+        "value": 0.866,
+        "rows": 1,
+        "latestYear": 1968
+      },
+      "lower": {
+        "cell": "$0.8559$",
+        "value": 0.8559,
+        "rows": 6,
+        "latestYear": 2026
+      },
+      "machineSearched": false,
+      "gap": 0.010099999999999998,
+      "relGap": 0.011662817551963045,
+      "parseSuspect": false
+    },
+    {
+      "file": "44a.md",
+      "title": "Maximal number of relevant variables in degree-$d$ Boolean functions",
+      "upper": {
+        "cell": "$4.394$",
+        "value": 4.394,
+        "rows": 4,
+        "latestYear": 2022
+      },
+      "lower": {
+        "cell": "$3/2$",
+        "value": 2,
+        "rows": 2,
+        "latestYear": 2020
+      },
+      "machineSearched": false,
+      "gap": 2.394,
+      "relGap": 0.5448338643604916,
+      "parseSuspect": false
+    },
+    {
+      "file": "45a.md",
+      "title": "Romanoff's constant",
+      "upper": {
+        "cell": "$0.490180063290061$",
+        "value": 0.490180063290061,
+        "rows": 6,
+        "latestYear": 2026
+      },
+      "lower": {
+        "cell": "$0.107648$",
+        "value": 0.107648,
+        "rows": 6,
+        "latestYear": 2018
+      },
+      "machineSearched": false,
+      "gap": 0.38253206329006095,
+      "relGap": 0.7803909051757987,
+      "parseSuspect": false
+    },
+    {
+      "file": "46a.md",
+      "title": "Restriction exponent for the 2-sphere (Stein's $L^\\infty$ extension problem)",
+      "upper": {
+        "cell": "$\\frac{22}{7}\\approx 3.142857$",
+        "value": 3.142857,
+        "rows": 12,
+        "latestYear": 2024
+      },
+      "lower": {
+        "cell": "$3$",
+        "value": 3,
+        "rows": 1,
+        "latestYear": 1979
+      },
+      "machineSearched": false,
+      "gap": 0.1428569999999998,
+      "relGap": 0.045454502066113664,
+      "parseSuspect": false
+    },
+    {
+      "file": "47a.md",
+      "title": "Centered Hardy–Littlewood maximal constant in dimension $2$",
+      "upper": {
+        "cell": "$9$",
+        "value": 9,
+        "rows": 2,
+        "latestYear": 2010
+      },
+      "lower": {
+        "cell": "$\\dfrac{11+\\sqrt{61}}{12}\\approx 1.5675208$",
+        "value": null,
+        "rows": 2,
+        "latestYear": 2011
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "48a.md",
+      "title": "One-dimensional convex sub-Gaussian comparison constant",
+      "upper": {
+        "cell": "$c_0^2 \\approx 5.33386$",
+        "value": null,
+        "rows": 2,
+        "latestYear": 2026
+      },
+      "lower": {
+        "cell": "$c_0^2 \\approx 5.33386$",
+        "value": null,
+        "rows": 2,
+        "latestYear": 2026
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "49a.md",
+      "title": "Erdős–Szemerédi $3$-sunflower-free capacity",
+      "upper": {
+        "cell": "$\\frac{3}{2^{2/3}} \\approx 1.8898815748$",
+        "value": null,
+        "rows": 2,
+        "latestYear": 2017
+      },
+      "lower": {
+        "cell": "$\\ge 1.554$ (unpublished)",
+        "value": null,
+        "rows": 3,
+        "latestYear": 2025
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "4a.md",
+      "title": "The cap set constant",
+      "upper": {
+        "cell": "$2.756$",
+        "value": 2.756,
+        "rows": 2,
+        "latestYear": 2016
+      },
+      "lower": {
+        "cell": "$2.2203$",
+        "value": 2.2203,
+        "rows": 7,
+        "latestYear": 2025
+      },
+      "machineSearched": true,
+      "gap": 0.5356999999999998,
+      "relGap": 0.19437590711175612,
+      "parseSuspect": false
+    },
+    {
+      "file": "4b.md",
+      "title": "Furstenberg–Sárközy exponent for square-difference-free sets",
+      "upper": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 1,
+        "latestYear": null
+      },
+      "lower": {
+        "cell": "$\\frac12\\!\\left(1+\\frac{\\log 12}{\\log 205}\\right)\\approx 0.733412$",
+        "value": null,
+        "rows": 3,
+        "latestYear": 2015
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "50a.md",
+      "title": "Approximation ratio for quantum Max Cut.",
+      "upper": {
+        "cell": "0.5",
+        "value": 0.5,
+        "rows": 2,
+        "latestYear": null
+      },
+      "lower": {
+        "cell": "0.614",
+        "value": 0.614,
+        "rows": 10,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": -0.11399999999999999,
+      "relGap": 0.22799999999999998,
+      "parseSuspect": true
+    },
+    {
+      "file": "51a.md",
+      "title": "Erdős maximum-term constant",
+      "upper": {
+        "cell": "$\\frac{2}{\\pi}\\approx 0.6366197724$",
+        "value": null,
+        "rows": 2,
+        "latestYear": 1964
+      },
+      "lower": {
+        "cell": "$0.5850788$",
+        "value": 0.5850788,
+        "rows": 5,
+        "latestYear": 2026
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "52a.md",
+      "title": "The complexity threshold of random 3-SAT",
+      "upper": {
+        "cell": "4.490",
+        "value": 4.49,
+        "rows": 10,
+        "latestYear": 2009
+      },
+      "lower": {
+        "cell": "3.52",
+        "value": 3.52,
+        "rows": 8,
+        "latestYear": 2003
+      },
+      "machineSearched": false,
+      "gap": 0.9700000000000002,
+      "relGap": 0.2160356347438753,
+      "parseSuspect": false
+    },
+    {
+      "file": "53a.md",
+      "title": "Davenport constant for $C_n^3$",
+      "upper": {
+        "cell": "$20369$",
+        "value": 20369,
+        "rows": 2,
+        "latestYear": 2026
+      },
+      "lower": {
+        "cell": "$3$",
+        "value": 3,
+        "rows": 1,
+        "latestYear": 2006
+      },
+      "machineSearched": false,
+      "gap": 20366,
+      "relGap": 0.9998527173646227,
+      "parseSuspect": false
+    },
+    {
+      "file": "54a.md",
+      "title": "Beurling–Ahlfors transform constant",
+      "upper": {
+        "cell": "$1.575$",
+        "value": 1.575,
+        "rows": 3,
+        "latestYear": 2008
+      },
+      "lower": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 1,
+        "latestYear": 2008
+      },
+      "machineSearched": false,
+      "gap": 0.575,
+      "relGap": 0.36507936507936506,
+      "parseSuspect": false
+    },
+    {
+      "file": "55a.md",
+      "title": "The coefficient of the acyclic chromatic index",
+      "upper": {
+        "cell": "3.142",
+        "value": 3.142,
+        "rows": 7,
+        "latestYear": 2026
+      },
+      "lower": {
+        "cell": "1",
+        "value": 1,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": 2.142,
+      "relGap": 0.6817313812858052,
+      "parseSuspect": false
+    },
+    {
+      "file": "56a.md",
+      "title": "$\\mathrm{GL}_2$ Ramanujan conjecture exponent",
+      "upper": {
+        "cell": "$\\tfrac{7}{64}=0.109375$",
+        "value": null,
+        "rows": 4,
+        "latestYear": 2011
+      },
+      "lower": {
+        "cell": "$0$",
+        "value": 0,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "57a.md",
+      "title": "Bloch’s constant",
+      "upper": {
+        "cell": "$\\dfrac{1}{\\sqrt{1+\\sqrt{3}}}\\,\\dfrac{\\Gamma(1/3)\\Gamma(11/12)}{\\Gamma(1/4)}\\approx 0.4719$",
+        "value": null,
+        "rows": 1,
+        "latestYear": 2023
+      },
+      "lower": {
+        "cell": "$\\dfrac{\\sqrt{3}}{4}+2\\times 10^{-4}$",
+        "value": null,
+        "rows": 1,
+        "latestYear": 2023
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "57b.md",
+      "title": "Landau's constant",
+      "upper": {
+        "cell": "$\\dfrac{\\Gamma(1/3)\\Gamma(5/6)}{\\Gamma(1/6)}\\approx 0.5433$",
+        "value": null,
+        "rows": 1,
+        "latestYear": 2023
+      },
+      "lower": {
+        "cell": "$\\dfrac{1}{2}+10^{-335}$",
+        "value": null,
+        "rows": 1,
+        "latestYear": 2023
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "57c.md",
+      "title": "Univalent Bloch constant",
+      "upper": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 1,
+        "latestYear": null
+      },
+      "lower": {
+        "cell": "$0.5708858$",
+        "value": 0.5708858,
+        "rows": 2,
+        "latestYear": 2023
+      },
+      "machineSearched": false,
+      "gap": 0.4291142,
+      "relGap": 0.4291142,
+      "parseSuspect": false
+    },
+    {
+      "file": "58a.md",
+      "title": "Zaremba’s conjecture constant",
+      "upper": {
+        "cell": "$+\\infty$",
+        "value": null,
+        "rows": 1,
+        "latestYear": 2021
+      },
+      "lower": {
+        "cell": "$5$",
+        "value": 5,
+        "rows": 1,
+        "latestYear": 2021
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "59a.md",
+      "title": "Bohr radius for the bidisc",
+      "upper": {
+        "cell": "$0.3174541$",
+        "value": 0.3174541,
+        "rows": 3,
+        "latestYear": 2026
+      },
+      "lower": {
+        "cell": "$0.3006$",
+        "value": 0.3006,
+        "rows": 2,
+        "latestYear": 2025
+      },
+      "machineSearched": false,
+      "gap": 0.01685410000000004,
+      "relGap": 0.0530914547961423,
+      "parseSuspect": false
+    },
+    {
+      "file": "5a.md",
+      "title": "A Sidon set constant",
+      "upper": {
+        "cell": "$0.97633$",
+        "value": 0.97633,
+        "rows": 5,
+        "latestYear": 2025
+      },
+      "lower": {
+        "cell": "$0$",
+        "value": 0,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": true,
+      "gap": 0.97633,
+      "relGap": 1,
+      "parseSuspect": false
+    },
+    {
+      "file": "5b.md",
+      "title": "Sidon set density inside (4,5) sets",
+      "upper": {
+        "cell": "$\\frac{4}{7} \\approx 0.5714$",
+        "value": 0.5714,
+        "rows": 3,
+        "latestYear": null
+      },
+      "lower": {
+        "cell": "$\\frac{9}{17} \\approx 0.5294$",
+        "value": 0.5294,
+        "rows": 3,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": 0.04200000000000004,
+      "relGap": 0.07350367518375925,
+      "parseSuspect": false
+    },
+    {
+      "file": "60a.md",
+      "title": "Favard-length decay exponent",
+      "upper": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 1,
+        "latestYear": 2010
+      },
+      "lower": {
+        "cell": "$1/6$",
+        "value": 6,
+        "rows": 2,
+        "latestYear": 2011
+      },
+      "machineSearched": false,
+      "gap": -5,
+      "relGap": 5,
+      "parseSuspect": true
+    },
+    {
+      "file": "61a.md",
+      "title": "Selberg congruence spectral-gap constant",
+      "upper": {
+        "cell": "$7/64$",
+        "value": 64,
+        "rows": 2,
+        "latestYear": 2003
+      },
+      "lower": {
+        "cell": "$0$",
+        "value": 0,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": 64,
+      "relGap": 1,
+      "parseSuspect": false
+    },
+    {
+      "file": "62a.md",
+      "title": "Lindelof (pointwise growth) exponent for the Riemann zeta function",
+      "upper": {
+        "cell": "$13/84$",
+        "value": 84,
+        "rows": 3,
+        "latestYear": 2019
+      },
+      "lower": {
+        "cell": "$0$",
+        "value": 0,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": 84,
+      "relGap": 1,
+      "parseSuspect": false
+    },
+    {
+      "file": "62b.md",
+      "title": "Burgess-quality subconvexity exponent for Dirichlet $L$-functions",
+      "upper": {
+        "cell": "$3/16$",
+        "value": 16,
+        "rows": 1,
+        "latestYear": 2020
+      },
+      "lower": {
+        "cell": "$0$",
+        "value": 0,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": 16,
+      "relGap": 1,
+      "parseSuspect": false
+    },
+    {
+      "file": "63a.md",
+      "title": "Dirichlet divisor problem exponent",
+      "upper": {
+        "cell": "$131/416$",
+        "value": 416,
+        "rows": 1,
+        "latestYear": 2010
+      },
+      "lower": {
+        "cell": "$1/4$",
+        "value": 4,
+        "rows": 2,
+        "latestYear": 2010
+      },
+      "machineSearched": false,
+      "gap": 412,
+      "relGap": 0.9903846153846154,
+      "parseSuspect": false
+    },
+    {
+      "file": "64a.md",
+      "title": "Gauss circle problem exponent",
+      "upper": {
+        "cell": "$131/208$",
+        "value": 208,
+        "rows": 2,
+        "latestYear": 2023
+      },
+      "lower": {
+        "cell": "$0$",
+        "value": 0,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": 208,
+      "relGap": 1,
+      "parseSuspect": false
+    },
+    {
+      "file": "65a.md",
+      "title": "Linnik's constant",
+      "upper": {
+        "cell": "$5$",
+        "value": 5,
+        "rows": 18,
+        "latestYear": 2024
+      },
+      "lower": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": 4,
+      "relGap": 0.8,
+      "parseSuspect": false
+    },
+    {
+      "file": "66a.md",
+      "title": "Elliott-Halberstam level-of-distribution exponent",
+      "upper": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 1,
+        "latestYear": null
+      },
+      "lower": {
+        "cell": "$1/2$",
+        "value": 2,
+        "rows": 1,
+        "latestYear": 2007
+      },
+      "machineSearched": false,
+      "gap": -1,
+      "relGap": 1,
+      "parseSuspect": true
+    },
+    {
+      "file": "67a.md",
+      "title": "Brennan's conjecture exponent",
+      "upper": {
+        "cell": "$4$",
+        "value": 4,
+        "rows": 1,
+        "latestYear": 2015
+      },
+      "lower": {
+        "cell": "$3.422$",
+        "value": 3.422,
+        "rows": 2,
+        "latestYear": 2015
+      },
+      "machineSearched": false,
+      "gap": 0.5779999999999998,
+      "relGap": 0.14449999999999996,
+      "parseSuspect": false
+    },
+    {
+      "file": "68a.md",
+      "title": "Korenblum's constant",
+      "upper": {
+        "cell": "$0.6778994$",
+        "value": 0.6778994,
+        "rows": 2,
+        "latestYear": 2015
+      },
+      "lower": {
+        "cell": "$0.3554$",
+        "value": 0.3554,
+        "rows": 3,
+        "latestYear": 2025
+      },
+      "machineSearched": false,
+      "gap": 0.32249940000000005,
+      "relGap": 0.47573342003252994,
+      "parseSuspect": false
+    },
+    {
+      "file": "69a.md",
+      "title": "Sendov radius constant",
+      "upper": {
+        "cell": "$2$",
+        "value": 2,
+        "rows": 1,
+        "latestYear": null
+      },
+      "lower": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 1,
+        "latestYear": 2022
+      },
+      "machineSearched": false,
+      "gap": 1,
+      "relGap": 0.5,
+      "parseSuspect": false
+    },
+    {
+      "file": "6a.md",
+      "title": "Union closed sets conjecture",
+      "upper": {
+        "cell": "$1/2 = 0.5$",
+        "value": 0.5,
+        "rows": 1,
+        "latestYear": 1995
+      },
+      "lower": {
+        "cell": "$0.38271$",
+        "value": 0.38271,
+        "rows": 6,
+        "latestYear": 2023
+      },
+      "machineSearched": false,
+      "gap": 0.11729,
+      "relGap": 0.23458,
+      "parseSuspect": false
+    },
+    {
+      "file": "70a.md",
+      "title": "Reverse Brunn-Minkowski constant",
+      "upper": {
+        "cell": "$<\\infty$",
+        "value": null,
+        "rows": 1,
+        "latestYear": 1995
+      },
+      "lower": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "71a.md",
+      "title": "Fourier Entropy-Influence constant",
+      "upper": {
+        "cell": "$\\infty$",
+        "value": null,
+        "rows": 1,
+        "latestYear": 2011
+      },
+      "lower": {
+        "cell": "$>6.521845710923046575$",
+        "value": 6.5218457109230465,
+        "rows": 6,
+        "latestYear": 2026
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "72a.md",
+      "title": "Polya-Vinogradov best constant (squarefree asymptotic)",
+      "upper": {
+        "cell": "$\\dfrac{1}{2\\pi^2}$",
+        "value": null,
+        "rows": 5,
+        "latestYear": 2022
+      },
+      "lower": {
+        "cell": "$0$",
+        "value": 0,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "73a.md",
+      "title": "Flatness constant in dimension 3",
+      "upper": {
+        "cell": "$3.972$",
+        "value": 3.972,
+        "rows": 1,
+        "latestYear": 2021
+      },
+      "lower": {
+        "cell": "$2+\\sqrt{2}$",
+        "value": 2,
+        "rows": 2,
+        "latestYear": 2019
+      },
+      "machineSearched": false,
+      "gap": 1.972,
+      "relGap": 0.49647532729103727,
+      "parseSuspect": false
+    },
+    {
+      "file": "74a.md",
+      "title": "10-point multi-point Seshadri constant on $\\mathbb{P}^2$",
+      "upper": {
+        "cell": "$\\frac{1}{\\sqrt{10}}$",
+        "value": 10,
+        "rows": 1,
+        "latestYear": 2025
+      },
+      "lower": {
+        "cell": "$\\frac{117}{370}$",
+        "value": 370,
+        "rows": 3,
+        "latestYear": 2011
+      },
+      "machineSearched": false,
+      "gap": -360,
+      "relGap": 36,
+      "parseSuspect": true
+    },
+    {
+      "file": "75a.md",
+      "title": "Metric TSP subtour-LP integrality-gap constant",
+      "upper": {
+        "cell": "$3/2 - 2.18 \\cdot 10^{-34}$",
+        "value": null,
+        "rows": 3,
+        "latestYear": 2024
+      },
+      "lower": {
+        "cell": "$4/3$",
+        "value": 3,
+        "rows": 2,
+        "latestYear": 2022
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "76a.md",
+      "title": "Asymptotic line-count constant for smooth degree-$d$ surfaces in $\\mathbb P^3$ in characteristic $0$",
+      "upper": {
+        "cell": "$\\ell_0(d) \\le 11d^2 - 30d + 18$",
+        "value": null,
+        "rows": 3,
+        "latestYear": 2023
+      },
+      "lower": {
+        "cell": "$\\ell_0(d) \\ge 3d^2$",
+        "value": null,
+        "rows": 1,
+        "latestYear": 2007
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "77a.md",
+      "title": "3D critical Bochner–Riesz exponent",
+      "upper": {
+        "cell": "$\\frac{13}{4}=3.25$",
+        "value": 3.25,
+        "rows": 3,
+        "latestYear": 2025
+      },
+      "lower": {
+        "cell": "$3$",
+        "value": 3,
+        "rows": 1,
+        "latestYear": 2023
+      },
+      "machineSearched": false,
+      "gap": 0.25,
+      "relGap": 0.07692307692307693,
+      "parseSuspect": false
+    },
+    {
+      "file": "78a.md",
+      "title": "Conway thrackle constant",
+      "upper": {
+        "cell": "$1.393$",
+        "value": 1.393,
+        "rows": 6,
+        "latestYear": 2025
+      },
+      "lower": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 1,
+        "latestYear": 2011
+      },
+      "machineSearched": false,
+      "gap": 0.393,
+      "relGap": 0.2821249102656138,
+      "parseSuspect": false
+    },
+    {
+      "file": "79a.md",
+      "title": "Asymptotic essential-dimension ratio of the symmetric groups",
+      "upper": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 1,
+        "latestYear": 1997
+      },
+      "lower": {
+        "cell": "$1/2$",
+        "value": 2,
+        "rows": 1,
+        "latestYear": 2024
+      },
+      "machineSearched": false,
+      "gap": -1,
+      "relGap": 1,
+      "parseSuspect": true
+    },
+    {
+      "file": "7a.md",
+      "title": "The irrationality measure of $\\pi$",
+      "upper": {
+        "cell": "$7.103205334137$",
+        "value": 7.103205334137,
+        "rows": 7,
+        "latestYear": 2020
+      },
+      "lower": {
+        "cell": "$2$",
+        "value": 2,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": 5.103205334137,
+      "relGap": 0.7184369723358154,
+      "parseSuspect": false
+    },
+    {
+      "file": "7b.md",
+      "title": "The irrationality measure of $\\Gamma(1/4)$",
+      "upper": {
+        "cell": "$10^{143}$",
+        "value": null,
+        "rows": 1,
+        "latestYear": 2002
+      },
+      "lower": {
+        "cell": "$2$",
+        "value": 2,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "80a.md",
+      "title": "Ising perceptron capacity threshold",
+      "upper": {
+        "cell": "$\\alpha_{\\star} \\approx 0.833$",
+        "value": null,
+        "rows": 5,
+        "latestYear": 2024
+      },
+      "lower": {
+        "cell": "$\\alpha_{\\star} \\approx 0.833$",
+        "value": null,
+        "rows": 3,
+        "latestYear": 2025
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "81a.md",
+      "title": "Brun's Constant",
+      "upper": {
+        "cell": "2.288513",
+        "value": 2.288513,
+        "rows": 2,
+        "latestYear": 2018
+      },
+      "lower": {
+        "cell": "1.840503",
+        "value": 1.840503,
+        "rows": 3,
+        "latestYear": 2018
+      },
+      "machineSearched": false,
+      "gap": 0.44801,
+      "relGap": 0.19576467339272272,
+      "parseSuspect": false
+    },
+    {
+      "file": "82a.md",
+      "title": "Essential minimum of the Zhang-Zagier height",
+      "upper": {
+        "cell": "0.2536331090204145",
+        "value": 0.2536331090204145,
+        "rows": 4,
+        "latestYear": null
+      },
+      "lower": {
+        "cell": "0.24874",
+        "value": 0.24874,
+        "rows": 5,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": 0.004893109020414538,
+      "relGap": 0.019292075231474214,
+      "parseSuspect": false
+    },
+    {
+      "file": "83a.md",
+      "title": "The Wirsing Constant",
+      "upper": {
+        "cell": "$0.30366300289873265859\\!\\ldots\\!6424297 + 10^{-175}$",
+        "value": null,
+        "rows": 3,
+        "latestYear": 2026
+      },
+      "lower": {
+        "cell": "$0.30366300289873265859\\!\\ldots\\!6424297 - 10^{-175}$",
+        "value": null,
+        "rows": 2,
+        "latestYear": 2026
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "84a.md",
+      "title": "Erdős unit distance exponent",
+      "upper": {
+        "cell": "$4/3 = 1.333\\dots$",
+        "value": 1.333,
+        "rows": 2,
+        "latestYear": 1984
+      },
+      "lower": {
+        "cell": "$1.03583\\dots$",
+        "value": 1.03583,
+        "rows": 12,
+        "latestYear": 2026
+      },
+      "machineSearched": false,
+      "gap": 0.29716999999999993,
+      "relGap": 0.22293323330832704,
+      "parseSuspect": false
+    },
+    {
+      "file": "84b.md",
+      "title": "Sum-product exponent for the reals",
+      "upper": {
+        "cell": "$1.999281$",
+        "value": 1.999281,
+        "rows": 3,
+        "latestYear": 2026
+      },
+      "lower": {
+        "cell": "$\\tfrac{4}{3} + \\tfrac{10}{4407} \\approx 1.335602$",
+        "value": null,
+        "rows": 9,
+        "latestYear": 2016
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "85a.md",
+      "title": "Exponent for commutators close to the identity",
+      "upper": {
+        "cell": "$4$",
+        "value": 4,
+        "rows": 3,
+        "latestYear": null
+      },
+      "lower": {
+        "cell": "$1$",
+        "value": 1,
+        "rows": 2,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": 3,
+      "relGap": 0.75,
+      "parseSuspect": false
+    },
+    {
+      "file": "86a.md",
+      "title": "Schur–Siegel–Smyth trace constant",
+      "upper": {
+        "cell": "$1.8216$",
+        "value": 1.8216,
+        "rows": 3,
+        "latestYear": null
+      },
+      "lower": {
+        "cell": "$1.80203$",
+        "value": 1.80203,
+        "rows": 15,
+        "latestYear": 2016
+      },
+      "machineSearched": false,
+      "gap": 0.019570000000000087,
+      "relGap": 0.010743302591128726,
+      "parseSuspect": false
+    },
+    {
+      "file": "8a.md",
+      "title": "Classical zero-free region constant",
+      "upper": {
+        "cell": "$4.896$",
+        "value": 4.896,
+        "rows": 10,
+        "latestYear": 2026
+      },
+      "lower": {
+        "cell": "$2/\\log \\gamma_{1} \\approx 0.755106$",
+        "value": null,
+        "rows": 1,
+        "latestYear": null
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    },
+    {
+      "file": "9a.md",
+      "title": "Shannon capacity of the 7-cycle",
+      "upper": {
+        "cell": "$\\vartheta({\\mathcal C}\\_{7}) \\approx 3.3177$",
+        "value": null,
+        "rows": 2,
+        "latestYear": 1979
+      },
+      "lower": {
+        "cell": "$367^{1/5} \\approx 3.2578$",
+        "value": null,
+        "rows": 5,
+        "latestYear": 2018
+      },
+      "machineSearched": false,
+      "gap": null,
+      "relGap": null,
+      "parseSuspect": false
+    }
+  ]
+}

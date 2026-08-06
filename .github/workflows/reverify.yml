@@ -40,6 +40,11 @@ jobs:
       # still printed CLEAN — so the fixture set is guarded here.
       - name: Self-test history-sweep patterns (no network)
         run: node scripts/history-sweep.mjs --selftest
+      # Guards the G-2 gap-table value parser: numeric cells must parse (rightmost
+      # literal), symbolic/exponent cells must stay null, and an inverted gap must
+      # flag parseSuspect (instrument error, never a mathematical claim).
+      - name: Self-test gap-table parser (no network)
+        run: node scripts/gap-table.mjs --selftest
       # `shell: bash` is load-bearing: the DEFAULT runner shell is `bash -e {0}` with NO
       # pipefail, so `node ... | tee` reports tee's exit 0 and a drift exits GREEN. Naming
       # the shell gets `-eo pipefail`. Guarded by reverify.test.mjs.

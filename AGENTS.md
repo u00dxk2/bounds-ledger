@@ -8,7 +8,7 @@ A reproducible, continuously re-verified ledger of drifting mathematical records
 
 ## Commands
 
-- `npm test` — network-free self-tests (5, all wired into CI; `reverify.test.mjs` fails if you add a 6th without a workflow step)
+- `npm test` — network-free self-tests (6, all wired into CI; `reverify.test.mjs` fails if you add another without a workflow step)
 - `npm run check` — LIVE checks: mirror diff + cross-surface claim re-verification
 - `node scripts/reverify.mjs --check | --snapshot` — diff mirror vs upstream / refresh it
 - `node scripts/extract-pins.mjs` — regenerate generated pins (run after EVERY `--snapshot`)
