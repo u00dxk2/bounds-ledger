@@ -51,6 +51,14 @@ jobs:
       # certificate passes and three defect classes fail.
       - name: Self-test 27b certificate verifier (no network)
         run: node search/27b/selftest.mjs
+      # Guards the G-2 27b PROPOSAL-ROUND gates (search/27b/propose-round.mjs).
+      # Each of the four gates must fire on a graph that trips it and stay
+      # silent on one that does not, the split search must return BOTH of its
+      # outcomes, and Sulanke's graph must re-certify at target 9 — so a gate
+      # that silently starts eliminating everything (or nothing) fails CI
+      # instead of quietly emptying the campaign's search space.
+      - name: Self-test 27b proposal-round gates (no network)
+        run: node search/27b/propose-round.mjs --selftest
       # `shell: bash` is load-bearing: the DEFAULT runner shell is `bash -e {0}` with NO
       # pipefail, so `node ... | tee` reports tee's exit 0 and a drift exits GREEN. Naming
       # the shell gets `-eo pipefail`. Guarded by reverify.test.mjs.
