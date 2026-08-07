@@ -5,7 +5,7 @@
   "description": "Steward of drifting mathematical records: re-verification CI + drift alarm. No dependencies (Node stdlib + fetch).",
   "type": "module",
   "scripts": {
-    "test": "node scripts/reverify.test.mjs && node scripts/check-claims.mjs --selftest && node scripts/extract-pins.mjs --selftest && node scripts/check-brief.mjs --selftest && node scripts/history-sweep.mjs --selftest && node scripts/gap-table.mjs --selftest && node search/27b/selftest.mjs && node search/27b/propose-round.mjs --selftest",
+    "test": "node scripts/reverify.test.mjs && node scripts/check-claims.mjs --selftest && node scripts/extract-pins.mjs --selftest && node scripts/check-brief.mjs --selftest && node scripts/history-sweep.mjs --selftest && node scripts/gap-table.mjs --selftest && node search/27b/selftest.mjs && node search/27b/propose-round.mjs --selftest && node search/27b/round2-grow.mjs --selftest",
     "check": "node scripts/reverify.mjs --check && node scripts/check-claims.mjs && node scripts/check-brief.mjs"
   }
 }

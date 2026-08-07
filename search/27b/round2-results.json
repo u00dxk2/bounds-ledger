@@ -1,0 +1,76 @@
+{
+  "minN": 9,
+  "maxN": 13,
+  "seeds": 200,
+  "generated": "search/27b/round2-grow.mjs",
+  "rows": [
+    {
+      "n": 9,
+      "bestChi": 8,
+      "m": 35,
+      "budget": 42,
+      "leftover": 1,
+      "seed": 5000,
+      "verified": true,
+      "spread": {
+        "7": 12,
+        "8": 188
+      }
+    },
+    {
+      "n": 10,
+      "bestChi": 8,
+      "m": 43,
+      "budget": 48,
+      "leftover": 2,
+      "seed": 5004,
+      "verified": true,
+      "spread": {
+        "7": 67,
+        "8": 133
+      }
+    },
+    {
+      "n": 11,
+      "bestChi": 8,
+      "m": 50,
+      "budget": 54,
+      "leftover": 5,
+      "seed": 5023,
+      "verified": true,
+      "spread": {
+        "6": 11,
+        "7": 98,
+        "8": 91
+      }
+    },
+    {
+      "n": 12,
+      "bestChi": 8,
+      "m": 57,
+      "budget": 60,
+      "leftover": 9,
+      "seed": 5046,
+      "verified": true,
+      "spread": {
+        "6": 14,
+        "7": 124,
+        "8": 62
+      }
+    },
+    {
+      "n": 13,
+      "bestChi": 8,
+      "m": 63,
+      "budget": 66,
+      "leftover": 15,
+      "seed": 5028,
+      "verified": true,
+      "spread": {
+        "6": 24,
+        "7": 144,
+        "8": 32
+      }
+    }
+  ]
+}

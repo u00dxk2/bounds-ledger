@@ -59,6 +59,15 @@ jobs:
       # instead of quietly emptying the campaign's search space.
       - name: Self-test 27b proposal-round gates (no network)
         run: node search/27b/propose-round.mjs --selftest
+      # Guards the G-2 27b ROUND-TWO grower (search/27b/round2-grow.mjs), which
+      # builds biplanar graphs BY CONSTRUCTION. The danger here is a grower that
+      # quietly stops being biplanar while the search keeps reporting numbers,
+      # so the self-test checks its output against the independent verifier AND
+      # proves that same verifier rejects a corrupted partition and a nonplanar
+      # layer — a construction argument must never be the only thing standing
+      # behind a result. Also pins seed-reproducibility.
+      - name: Self-test 27b round-two grower (no network)
+        run: node search/27b/round2-grow.mjs --selftest
       # `shell: bash` is load-bearing: the DEFAULT runner shell is `bash -e {0}` with NO
       # pipefail, so `node ... | tee` reports tee's exit 0 and a drift exits GREEN. Naming
       # the shell gets `-eo pipefail`. Guarded by reverify.test.mjs.

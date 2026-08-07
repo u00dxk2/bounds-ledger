@@ -36,6 +36,7 @@
 //   node search/27b/propose-round.mjs --selftest
 
 import { writeFileSync } from "node:fs";
+import { pathToFileURL } from "node:url";
 import { isPlanar, chromaticNumber, verifyCertificate, normalizeEdges, completeGraph, sulankeGraph } from "./verifier.mjs";
 
 // ---------- construction kit ----------
@@ -233,6 +234,12 @@ function selftest() {
 
 // ---------- main ----------
 
+// Run the round ONLY when invoked directly — this file exports runGates and
+// CANDIDATES, and without the guard an `import` of either would silently run
+// the whole round as a side effect. Same fix applied to round2-grow.mjs.
+const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+if (!isMain) { /* imported for its exports; do nothing */ } else {
+
 const args = process.argv.slice(2);
 const argv = (k, d) => { const i = args.indexOf(`--${k}`); return i !== -1 && args[i + 1] && !args[i + 1].startsWith("--") ? args[i + 1] : d; };
 
@@ -269,4 +276,6 @@ if (certified.length) {
 if (jsonPath) {
   writeFileSync(jsonPath, JSON.stringify({ target, tries, generated: "search/27b/propose-round.mjs", results }, null, 2) + "\n");
   console.log(`\nwrote ${jsonPath}`);
+}
+
 }
