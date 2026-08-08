@@ -88,3 +88,28 @@ they demonstrably did within an hour of being written.
 
 Re-run it immediately before the flip click, not just once. It is cheap, and the claim it supports
 ("no secrets in history") is only true as of the commit it was run against.
+
+## Adjudication before the flip — 2026-08-08
+
+Re-run immediately before the flip click, per the caveat above. It **exits 1 with 4 hits**, and all
+four are this document quoting the fake token planted in `planted.env` to prove the scanner fires.
+The scanner is detecting its own negative control.
+
+**Decision: ship it red, do not allowlist it, do not edit the fixture.** The doc above says an
+allowlist is where a secrets sweep goes to die; silencing the one hit that proves the sweep works
+would be the purest form of that. Neutering the literal would be the same move wearing a different
+hat — the fixture is evidence, and a negative control you have filed the corners off no longer
+controls anything.
+
+What makes shipping it red safe rather than sloppy is that the hit is **individually adjudicated**,
+which is the standard this repo holds every alarm to: the token is `ghp_` followed by a descending
+walk through the alphabet, it was never valid, it authenticates nothing, and it is published here
+precisely so a reader can check that claim. That is a different object from an unexplained hit.
+
+**The rule this sets for anyone running it later:** a red sweep before publication is not a veto and
+not a formality — every hit gets named and dispositioned in writing, and only a hit that is
+demonstrably a fixture may pass. A hit you cannot account for stops the flip. The exit code is not
+the answer; the adjudication is.
+
+Third-party scanners will flag this string forever on a public repo. That is the correct behaviour
+from them, and the cost of keeping an honest control.
