@@ -137,8 +137,7 @@ report under-reporting the day.
 - **A self-inflicted defect, found and closed** (`0c835b2`). The morning's pin change made CI file
   issue #8, an alarm no action could ever close — the founding defect, caused by me, hours after
   writing the finding about it. CI now reports exit 3 as not-runnable and files nothing.
-- **David decided: no public comment** (`c1db291`). *"I sent the email. I don't want to add a comment
-  as well."* Angle 6 of our own review was the deciding angle. Recorded as a decision with an
+- **David decided: no public comment** (`c1db291`). He had sent the email and did not want a comment added on top of it. Angle 6 of our own review was the deciding angle. Recorded as a decision with an
   explicit do-not-re-propose. R6 push protection deliberately not carded (`2e98e55`) — the pending
   flip would grant it free.
 

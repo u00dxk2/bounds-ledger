@@ -93,7 +93,7 @@ Two hazards were checked before believing anything, both of them this repo's own
 | Open P0 / P1 / P2 (engineering-health) | 0 / **5** (was 6) / 6 | P1 −1 |
 
 The two UNVERIFIED claims are **C-7** (the bound) and **C-9** (the page's edit date), both `manual: true`, both
-on the same blocked page, both by design. David said "leave it" on 7/26.
+on the same blocked page, both by design. David ruled on 7/26 that it should be left as is.
 
 ## Recommendation
 

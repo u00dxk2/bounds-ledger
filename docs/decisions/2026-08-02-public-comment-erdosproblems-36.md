@@ -7,7 +7,7 @@
 > His words, via the Command Center board (card `18dcc035`), after reading the verbatim draft, the
 > venue, and the mechanics:
 >
-> **"I sent the email. I don't want to add a comment as well."**
+> **He had already sent the email and did not want to add a comment on top of it.**
 >
 > **This is a decision, not a deferral. Do not re-propose the public comment.** He is not asking for
 > different wording, a better venue, or a later date — he does not want a second contact on the same
