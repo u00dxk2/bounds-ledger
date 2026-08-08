@@ -6,7 +6,7 @@ north_star_metric: externally-acknowledged corrections/confirmations on a stewar
 north_star_value: 0
 north_star_status: amber
 north_star_classification: emerging
-last_deploy: 95adb9f
+last_deploy: 497b7cc
 sentry_open_p1: 0
 sentry_open_p2: 0
 mrr_usd: null
@@ -46,7 +46,7 @@ Fixed and pushed: all four copies in files, plus two copies of a matter belongin
 
 - Green streak day **16 of 30**.
 - Self-tests **9**, unchanged. Claims **229** (227 hold, 0 broken, 2 unverified by design).
-- One commit pushed (`95adb9f`), one finding filed, one decision carded.
+- Two commits pushed (`497b7cc` the redactions, `a2dd590` this report), one finding filed, one decision carded and answered the same day.
 - Codex available and unused - the day's work was judgment about disclosure, not bulk editing.
 
 ## Outputs (lagging)
@@ -65,7 +65,7 @@ The instrument lesson is worth more than the fix and belongs in how we check any
 ## On hold pending data
 
 - **The second yes for going public.** David's own condition, and correctly so - he asked to see the result before deciding.
-- **The last copy of the address**, in commit `03186f8`'s message. Needs his approval because it edits published history. Deliberately not worked around by choosing a smaller equivalent operation, which is what the safety refusal on the 7th was right to stop.
+- ~~**The last copy of the address**, in commit `03186f8`'s message.~~ **Resolved the same day.** He approved it, the safety system refused the command exactly as it did on the 7th, it was not worked around, and he ran it himself at the pane. Three commits restamped from `03186f8` forward; the fingerprint of the current files is unchanged, so nothing moved.
 - **The no-secrets scanner reports 4 hits and fails.** All four are a fake token planted on purpose to prove the scanner works, quoted inside the write-up of that test. Nothing real is exposed. It needs a written decision before publication and deliberately not an ignore list, because that is how a scanner like this quietly stops working.
 - Upstream response on #141. Nothing to do but wait.
 
@@ -76,4 +76,4 @@ The instrument lesson is worth more than the fix and belongs in how we check any
 - **A-13 — the launch item:** two blocker legs closed and pushed, one carded to David, two adjudicated closed. Repository private, verified rather than assumed.
 - **W-3 — the watch on the source page:** no movement, both legs read from this machine.
 - Open continuity items: 11. Weekly forced-decision pass not due today.
-- Head commit `95adb9f`. Working tree clean, local and origin agree, 122 commits.
+- Head commit `a2dd590` after the message rewrite (`03186f8→4cb9723`, `95adb9f→497b7cc`, `7f1f803→a2dd590`; `fa4fb5b` and everything before it untouched). 123 commits, working tree clean.

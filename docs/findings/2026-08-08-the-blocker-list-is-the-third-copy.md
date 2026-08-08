@@ -16,7 +16,7 @@ the documentation of the rewrite that removed it from every author field.
 |---|---|
 | `continuity/items.json` note20 | the rewrite record, naming the address it replaced |
 | `docs/cold-starts/2026-08-08.md` ×3 | the pre-flight facts line, the `--email-callback` command, the before/after table |
-| `HEAD` (`03186f8`) commit body | the same before/after line |
+| `HEAD` (`03186f8`, now `4cb9723`) commit body | the same before/after line |
 
 The 8/07 verification was not wrong about what it measured. It ran `git log --format='%ae%n%ce'`
 and got one noreply address, which is true. That probe licenses the claim *no author or committer
@@ -60,10 +60,12 @@ Redacted in the working tree: 4 tracked-file occurrences of the address, 2 of th
 Both answers per KP-78 — the grep returns zero hits on both redacted strings and still returns hits
 on a positive control present in the same files.
 
-**Not done, and it needs David:** the copy in `HEAD`'s commit body. Removing it rewrites a commit
-already pushed. A rewrite of published history is his call in this repo — that is why 8/07's went
-to him at the pane — and choosing a smaller equivalent operation to avoid asking would be the same
-workaround the 8/07 session correctly refused to make.
+**Resolved the same day.** David approved the message rewrite, and the safety classifier refused it
+exactly as it refused 8/07's — so it was not worked around, and he ran the one command at the pane.
+`git-filter-repo --message-callback` restamped the three commits from `03186f8` forward
+(`03186f8→4cb9723`, `95adb9f→497b7cc`, `7f1f803→a2dd590`); everything from `fa4fb5b` back is
+untouched. HEAD's tree hash is `733cc02e` before and after, compared against the backup bundle
+rather than a remembered number — so no file moved.
 
 ## The check that would have caught all three
 
