@@ -6,7 +6,7 @@ north_star_metric: externally-acknowledged corrections/confirmations on a stewar
 north_star_value: 0
 north_star_status: amber
 north_star_classification: emerging
-last_deploy: e799982
+last_deploy: 2c93cd4
 sentry_open_p1: 0
 sentry_open_p2: 0
 mrr_usd: null
@@ -40,12 +40,12 @@ This is also the first scheduled run to exercise the extended pin set — the 21
 
 **Report format: canonical H2 set adopted (decision).** Yesterday's close-out left an open question — the lane's numbered prelaunch format FAILs the portfolio report-shape linter (BLUF not first, no State Appendix), and the choice was adopt-or-waive. Adopted, at zero cost: the canonical sections (BLUF / What changed / Inputs / Outputs / Recommendation / On hold pending data / State Appendix) carry this lane's content without loss, and the linter normalizes synonyms anyway. The reasoning is this lane's own thesis applied to itself: **a permanently-red linter gets ignored exactly like a permanently-green alarm carries no information.** Leaving a known-failing check failing forever is the same defect class the lane exists to catch. No waiver field needed.
 
-**Continuity health: OK** (6 items, 18 commits checked). One informational `MODIFIED_ITEM_LAST_24H` on W-3 — that is yesterday's close-out adding W-3's `onTrigger` runbook (`2f6d03e`), a deliberate documented change, not scope drift. No new WARN classes fired.
+**Continuity health: OK** (6 items, 18 commits checked). One informational `MODIFIED_ITEM_LAST_24H` on W-3 — that is yesterday's close-out adding W-3's `onTrigger` runbook (`6697cad`), a deliberate documented change, not scope drift. No new WARN classes fired.
 
 ## Inputs (controllable)
 
 - **Instrument coverage:** 223 claims across 109 constants + the mirror diff. Both halves of the check run in CI (mirror diff catches in-repo movement; `check-claims` catches cross-surface divergence — the lane's founding finding).
-- **Alarm legibility:** shipped 7/24 (`03ced9e`) — code-fenced issue body, drifted filename in the title. P-2 (verdict-before-diff) and P-3 (one rolling issue) remain deliberately deferred; they only pay on a multi-day real drift, and no real drift has occurred.
+- **Alarm legibility:** shipped 7/24 (`df1e226`) — code-fenced issue body, drifted filename in the title. P-2 (verdict-before-diff) and P-3 (one rolling issue) remain deliberately deferred; they only pay on a multi-day real drift, and no real drift has occurred.
 - **Post-snapshot ratchet:** discipline is documented in CLAUDE.md — after any `--snapshot`, re-run `extract-pins.mjs` and commit. Untested in anger; the first real drift will be its first exercise.
 - **Not controllable and correctly not attempted:** re-fetching erdosproblems.com. It 403s bots; a 403 proves nothing.
 

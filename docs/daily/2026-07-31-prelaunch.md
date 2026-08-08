@@ -6,13 +6,13 @@ north_star_metric: externally-acknowledged corrections/confirmations on a stewar
 north_star_value: 0
 north_star_status: amber
 north_star_classification: emerging
-last_deploy: ff476c2
+last_deploy: be5d8d8
 sentry_open_p1: 0
 sentry_open_p2: 0
 mrr_usd: null
 n_active_users_28d: 0
 on_hold_items: 3
-top_action_today: "Applied KP-78 to every detector in the lane. Demonstrated the pipefail guard's fire side for the first time (the one prior attempt produced a FALSE inert verdict), and built a detector that did not exist — A-8's own fix was a hand-added CI step nothing asserted. ff476c2, CI green. Streak day 8/30, ack still 0, page still untouched. Brief re-port has now failed to land for a SECOND day."
+top_action_today: "Applied KP-78 to every detector in the lane. Demonstrated the pipefail guard's fire side for the first time (the one prior attempt produced a FALSE inert verdict), and built a detector that did not exist — A-8's own fix was a hand-added CI step nothing asserted. be5d8d8, CI green. Streak day 8/30, ack still 0, page still untouched. Brief re-port has now failed to land for a SECOND day."
 ---
 
 # bounds-ledger — daily (prelaunch) — 2026-07-31 (MT)
@@ -31,7 +31,7 @@ demonstrated**, and is now (exit 1, names the offending step). The fourth findin
 `A-8` — the finding closed yesterday, that CI ran only 2 of the repo's 3 self-tests — was fixed by hand-adding a
 YAML step **with nothing asserting it stays**. Deleting it would have been completely silent and would have
 looked exactly like the six unguarded days it had just fixed. The rule's "revert the fix, watch it fail" clause
-had no answer, because there was no test to revert. Built that guard (`ff476c2`), derived from `package.json` so a
+had no answer, because there was no test to revert. Built that guard (`be5d8d8`), derived from `package.json` so a
 newly-added self-test cannot be CI-less either, and demonstrated both sides at write time. **CI green on the
 runner** (run `30633757959`) — a local green is not evidence in this lane.
 
@@ -59,7 +59,7 @@ strongest available argument for the detector — it caught what two careful man
 
 | Commit | What |
 |---|---|
-| `ff476c2` | New guard — every self-test in `npm test` must appear in the workflow (+11 lines in `reverify.test.mjs`); the audit finding doc; a standing watch on demonstrating both sides of any new detector; CLAUDE.md convention |
+| `be5d8d8` | New guard — every self-test in `npm test` must appear in the workflow (+11 lines in `reverify.test.mjs`); the audit finding doc; a standing watch on demonstrating both sides of any new detector; CLAUDE.md convention |
 
 Nothing in `ledger/` moved — no `--snapshot`, so no post-snapshot re-pin ratchet is owed.
 
@@ -103,7 +103,7 @@ Three inbound dispatches were answered as **not applicable, after checking rathe
 ## Recommendation
 
 **Escalate the hosted-brief re-port instead of re-posting the same note.** The source file has carried the 28
-July block since `2fd740b` (7/29); the hosted page has not picked it up across two report cycles and two bus
+July block since `d17061f` (7/29); the hosted page has not picked it up across two report cycles and two bus
 notes. The failure is outside this repo and this lane cannot fix it directly — and **never hand David an
 artifact link** is the 7/24 lesson, so a workaround is not available either. Posting one bus note that names it
 as a *repeat* failure, which is different information from the first note.
@@ -134,7 +134,7 @@ and a two-day-stale brief is the closest thing this pre-launch lane has to a ret
   both sides demonstrated at write time, and the mutation proved landed before the result is believed. Opened
   today. Standing; does not close.
 - Closed to date: `A-1`, `A-3`, `A-4`, `A-5`, `A-6`, `A-8`, `W-2` (7 of 13 items).
-- Repo: `main`, clean, pushed to `ff476c2`. CI green (run `30633757959`). Codex GREEN (`codex-cli 0.143.0`,
+- Repo: `main`, clean, pushed to `be5d8d8`. CI green (run `30633757959`). Codex GREEN (`codex-cli 0.143.0`,
   `codex-health` exit 0) — not used today; scope was 11 lines plus prose, far under the Codex-first threshold.
 - Listener GREEN — SSE alive (pid 5736) + `/loop-tick 2m` armed.
 - **Process gap, flagged not fixed:** no `docs/cold-starts/2026-07-31.md` existed this morning — the 7/30

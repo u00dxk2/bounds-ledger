@@ -6,7 +6,7 @@ north_star_metric: externally-acknowledged corrections/confirmations on a stewar
 north_star_value: 0
 north_star_status: amber
 north_star_classification: emerging
-last_deploy: 350a625
+last_deploy: 838092c
 sentry_open_p1: 0
 sentry_open_p2: 0
 mrr_usd: null

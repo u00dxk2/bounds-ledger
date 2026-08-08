@@ -6,7 +6,7 @@ north_star_metric: externally-acknowledged corrections/confirmations on a stewar
 north_star_value: 0
 north_star_status: amber
 north_star_classification: emerging
-last_deploy: 2e98e55
+last_deploy: 4e8ad8e
 sentry_open_p1: 0
 sentry_open_p2: 0
 mrr_usd: null
@@ -54,7 +54,7 @@ it hasn't checked. Escalation suspended pending one question below.
   explicitly that this is not evidence the re-port is behind. Generalises past login walls to 404
   shells, renamed routes and wrong-page ports. Verdict logic split into a pure `assess()`;
   `--selftest` covers in-sync / stale / wall / wall-behind-redirect plus a guard that the wall
-  verdict never says `BRIEF STALE` or blames the port. `bb22c4e`.
+  verdict never says `BRIEF STALE` or blames the port. `6c9d059`.
 - **Both sides demonstrated live** under W-4 — the standing watch that every new detector proves
   both directions at write time, applying KP-78 (prove the instrument can fail). Mutation proved
   landed via `git diff --numstat`
@@ -68,7 +68,7 @@ it hasn't checked. Escalation suspended pending one question below.
   the workflow — unguarded in CI: node scripts/check-brief.mjs --selftest"*. Built 7/31 against a
   fixture; this is its first real catch. CI now runs 4 self-tests across 8 steps.
 - **Public-route correction prepared + reviewed** — logged as note8 on W-3 (the acknowledgement
-  watch above); this was the session's launch increment. `cc2d26a`. Record
+  watch above); this was the session's launch increment. `42649e5`. Record
   state re-verified rather than inherited; venue verified by fetching /36 rather than reasoning from
   CONTRIBUTING.md. **Nothing posted, no account created, no contact made.**
 
@@ -79,7 +79,7 @@ it hasn't checked. Escalation suspended pending one question below.
   lines. Local `npm run check` re-read both page legs of W-3 — the acknowledgement watch on the /36
   correction — at HTTP 200: `0.380876` still present, `last edited 23 January 2026` still present.
   No trigger.
-- Two commits, both pushed: `bb22c4e` (detector fix + finding + A-12 note2), `cc2d26a` (public
+- Two commits, both pushed: `6c9d059` (detector fix + finding + A-12 note2), `42649e5` (public
   wording + 8-angle review + that watch's note8). `npm test` 4/4 green.
 - Adversarial review ran 8 angles — 5 re-run from 7/24, **3 new because the venue changed from a
   private inbox to a public page**. Two changed the wording, one added a line, one surfaced a
@@ -122,23 +122,23 @@ item. It is a good pairing with the README in one session.
 Written at 08:02 MT; four more commits landed after it. Recording them here rather than leaving the
 report under-reporting the day.
 
-- **The fourth drift, and the first that is purely records moving** (`d7d66a8`). CI went red on an
+- **The fourth drift, and the first that is purely records moving** (`da17be3`). CI went red on an
   unrelated push: upstream shipped four commits at ~16:05Z. 10c $5/3 \to 7/\sqrt{17}$, 38a
   $2.625622 \to 2.6273856$, 71a $>6.5143 \to >6.5218$ (n=17 → n=18). Verified by recomputation
   before snapshot — 71a's claimed "gain of exactly 1/133" reproduces to double precision. Ledger
   clean at `dee1660`, 3 pins moved, issue #9 closed.
-- **Both orchestrator-greenlit capacity items shipped** (`2919660`). The no-secrets history sweep
+- **Both orchestrator-greenlit capacity items shipped** (`44e313f`). The no-secrets history sweep
   reads CLEAN over 75 commits — and its fixtures caught two patterns that could never have fired
   (`sntr[a-z]_` vs real `sntrys_`; a keyword list blind to `CC_PROMPTS_PIN`), either of which would
   have produced a confident CLEAN. A-12 re-scoped to the machine credential per the orchestrator's
   answer that the gating is intentional.
 - **The credentialed probe settled the brief question**: 3 of 4 blocks genuinely missing, matching
   8/01. This morning's "4 of 4" was the wall artifact; escalation re-armed on true evidence.
-- **A self-inflicted defect, found and closed** (`0c835b2`). The morning's pin change made CI file
+- **A self-inflicted defect, found and closed** (`ce93464`). The morning's pin change made CI file
   issue #8, an alarm no action could ever close — the founding defect, caused by me, hours after
   writing the finding about it. CI now reports exit 3 as not-runnable and files nothing.
-- **David decided: no public comment** (`c1db291`). He had sent the email and did not want a comment added on top of it. Angle 6 of our own review was the deciding angle. Recorded as a decision with an
-  explicit do-not-re-propose. R6 push protection deliberately not carded (`2e98e55`) — the pending
+- **David decided: no public comment** (`183686e`). He had sent the email and did not want a comment added on top of it. Angle 6 of our own review was the deciding angle. Recorded as a decision with an
+  explicit do-not-re-propose. R6 push protection deliberately not carded (`4e8ad8e`) — the pending
   flip would grant it free.
 
 **Recommendation stands, and is now sharper:** next session is README-as-product + the package-level

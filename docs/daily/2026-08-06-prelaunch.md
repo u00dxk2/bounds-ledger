@@ -6,7 +6,7 @@ north_star_metric: externally-acknowledged corrections/confirmations on a stewar
 north_star_value: 0
 north_star_status: amber
 north_star_classification: emerging
-last_deploy: 9c47167
+last_deploy: fbd63e7
 sentry_open_p1: 0
 sentry_open_p2: 0
 mrr_usd: null
@@ -31,7 +31,7 @@ Nothing about the ledger itself moved, which is correct. **The count of correcti
 
 **Steward cadence, read from the run log rather than the badge.** No drift; 111 files still match upstream `dee1660`. 229 claims, 227 hold, 0 broken, 2 unverified by design — C-7 and C-9, the two claims on a site that refuses automated readers from data centres. **G-1 — the goal that measures whether anyone outside ever confirms one of our corrections — is at green streak day 14 of 30.** A local run with the credential set read both legs of **W-3 — the watch for a reply to the 24 July email** — and both are unchanged: the page still shows the same bound and still says it was last edited on 23 January. No acknowledgement.
 
-**Four publication blockers cleared, in commit `9c47167`.**
+**Four publication blockers cleared, in commit `fbd63e7`.**
 
 The mirrored files had no licence statement at all, while this repository redistributes 111 files of someone else's work. Upstream is Apache-2.0 and has no notice file of its own, so its licence is now copied in verbatim alongside the mirror, with a root `NOTICE` recording what was copied, from which commit, and that nothing was edited. Where to put that file was checked by reading the snapshot code rather than guessing: the refresh deletes only the folder of mirrored pages, and the comparison only ever looks at `.md` files, so the licence survives a refresh and is never mistaken for drift.
 
@@ -83,5 +83,5 @@ On the north star: do nothing about the pull request. Watch it, do not chase it,
 - **W-5 — the mirror blind class:** unchanged.
 - **W-6 — the read window on the report-an-error channel:** clock not started.
 - Ledger: 111 mirrored files at upstream `dee1660`; 229 claims, 227 hold, 0 broken, 2 unverified by design.
-- CI: green at `9c47167`. Open GitHub issues: 0. Open continuity items: 10.
-- Commits today: 1 (`9c47167`).
+- CI: green at `fbd63e7`. Open GitHub issues: 0. Open continuity items: 10.
+- Commits today: 1 (`fbd63e7`).

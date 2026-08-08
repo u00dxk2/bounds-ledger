@@ -18,10 +18,10 @@ Since the alarm was armed on 2026-07-24, four upstream drifts — each verified 
 
 | Drift | What moved |
 |---|---|
-| [`34a37fc`](../../commit/34a37fc) | Editorial: a dead cross-link and a missing `C` in a LaTeX inequality. **Zero bounds moved** — and it still counted. |
-| [`57442ae`](../../commit/57442ae) | Upstream added a constant (20 minutes after the previous drift). |
-| [`32b138b`](../../commit/32b138b) | Certified record rows landed; a constant for a problem *solved* in 2026 was added. |
-| [`d7d66a8`](../../commit/d7d66a8) | The first drift that was purely records moving: `5/3 → 7/√17`, `2.625622 → 2.6273856`, `>6.5143 → >6.5218`. Verified by recomputation before snapshot. |
+| [`50c8096`](../../commit/50c8096) | Editorial: a dead cross-link and a missing `C` in a LaTeX inequality. **Zero bounds moved** — and it still counted. |
+| [`e856de9`](../../commit/e856de9) | Upstream added a constant (20 minutes after the previous drift). |
+| [`60a044e`](../../commit/60a044e) | Certified record rows landed; a constant for a problem *solved* in 2026 was added. |
+| [`da17be3`](../../commit/da17be3) | The first drift that was purely records moving: `5/3 → 7/√17`, `2.625622 → 2.6273856`, `>6.5143 → >6.5218`. Verified by recomputation before snapshot. |
 
 It has also caught itself. [`docs/findings/`](docs/findings/) holds both kinds of write-up — the drifts above, and every occasion the *instrument* was the thing that was wrong. The worst of the second kind: **the drift alarm was green-by-construction for its first two days**, because a piped command in CI reported the pipe's exit code instead of the check's ([`2026-07-24-drift-alarm-was-never-armed.md`](docs/findings/2026-07-24-drift-alarm-was-never-armed.md)). A ledger whose alarm cannot fail is decoration; those findings are the evidence that this one can.
 

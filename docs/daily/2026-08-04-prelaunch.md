@@ -6,13 +6,13 @@ north_star_metric: externally-acknowledged corrections/confirmations on a stewar
 north_star_value: 0
 north_star_status: amber
 north_star_classification: emerging
-last_deploy: e32a2ce
+last_deploy: cefb72e
 sentry_open_p1: 0
 sentry_open_p2: 0
 mrr_usd: null
 n_active_users_28d: 0
 on_hold_items: 4
-top_action_today: "The package-level adversarial review shipped (0e235b2), clearing the last gate that was ours before David's flip decision. Verdict: survives with one required decision. The finding is that our clean history sweep swept for credentials and nobody swept for people - the flip would publish a named third party, the verbatim email David sent him, that he has not replied, and a contingency David has since declined. Every artifact is individually accurate; the exposure exists only in the set, which is exactly what four artifact-level reviews could not see."
+top_action_today: "The package-level adversarial review shipped (000bd9a), clearing the last gate that was ours before David's flip decision. Verdict: survives with one required decision. The finding is that our clean history sweep swept for credentials and nobody swept for people - the flip would publish a named third party, the verbatim email David sent him, that he has not replied, and a contingency David has since declined. Every artifact is individually accurate; the exposure exists only in the set, which is exactly what four artifact-level reviews could not see."
 ---
 
 # bounds-ledger — daily (prelaunch) — 2026-08-04 (MT)
@@ -21,19 +21,19 @@ Paced rail, day 3. Steward cadence first, then the launch increment, then five o
 
 ## BLUF
 
-The last gate that was ours is clear. **The package-level adversarial review shipped (`0e235b2`)** and the flip package survives, with one required decision that only David can make.
+The last gate that was ours is clear. **The package-level adversarial review shipped (`000bd9a`)** and the flip package survives, with one required decision that only David can make.
 
 The finding is the reason a package review is not the sum of the artifact reviews. Our history sweep on 2 August came back clean and it was correct - it swept for **credentials**. Nobody swept for **people**. Going public would publish the erdosproblems maintainer by name alongside our finding that his page is stale, the verbatim text of the email David sent him on 24 July, the fact that he has not replied, and a contingency David declined on 2 August. Each of those documents is accurate on its own. The exposure lives only in the set.
 
 Steward cadence green, read from the log and not the badge: **no drift at `dee1660`, 229 claims / 227 hold / 0 broken / 2 UNVERIFIED by design. G-1 - the steward-credibility goal - is at green-streak day 12 of 30.** Both legs of W-3 (the watch for a reply to the 24 July email) read clean from this machine: the page still shows 0.380876 and still says last edited 23 January 2026. No acknowledgement. The north star stays at 0.
 
-Two further findings landed against our own claims rather than the records, which is the pattern this lane keeps producing. `SECURITY.md` told public readers there was no supply chain to compromise, which under-stated the mutable action tags it runs on (`0bb58ac`). And tonight's access inventory - the one I posted to the fleet with a positive control attached - was **missing four entries**, found only because I opened an endpoint to confirm another project's finding (`e32a2ce`).
+Two further findings landed against our own claims rather than the records, which is the pattern this lane keeps producing. `SECURITY.md` told public readers there was no supply chain to compromise, which under-stated the mutable action tags it runs on (`a9b2881`). And tonight's access inventory - the one I posted to the fleet with a positive control attached - was **missing four entries**, found only because I opened an endpoint to confirm another project's finding (`cefb72e`).
 
 ## What changed
 
-- **`0e235b2`** — the **package-level adversarial review**, the paced rail's launch increment and A-13's last owed gate. Verdict SURVIVES WITH ONE REQUIRED DECISION. Three findings (F-1 high, F-2 medium, F-3 low) plus an explicit list of what could not be broken, each item re-derived by execution rather than read: 111 mirror files, 229 claims = 220 generated + 9 hand, every link and all four drift commits resolving, and `arXiv:2601.16175` re-fetched — the citation that was fabricated in yesterday's draft, executed rather than trusted.
-- **`0bb58ac`** — `SECURITY.md` now names its own residual supply chain. F-2 resolved by prose, not by a control, and the reason came from David's words to two other panes.
-- **`e32a2ce`** — F-4 added to A-13: the access enumeration was incomplete, and I found it by accident.
+- **`000bd9a`** — the **package-level adversarial review**, the paced rail's launch increment and A-13's last owed gate. Verdict SURVIVES WITH ONE REQUIRED DECISION. Three findings (F-1 high, F-2 medium, F-3 low) plus an explicit list of what could not be broken, each item re-derived by execution rather than read: 111 mirror files, 229 claims = 220 generated + 9 hand, every link and all four drift commits resolving, and `arXiv:2601.16175` re-fetched — the citation that was fabricated in yesterday's draft, executed rather than trusted.
+- **`a9b2881`** — `SECURITY.md` now names its own residual supply chain. F-2 resolved by prose, not by a control, and the reason came from David's words to two other panes.
+- **`cefb72e`** — F-4 added to A-13: the access enumeration was incomplete, and I found it by accident.
 - **No ledger state moved.** No drift, no snapshot, no claims touched, no pins regenerated.
 
 ## Inputs (controllable)
@@ -65,7 +65,7 @@ Two further findings landed against our own claims rather than the records, whic
 
 ## State Appendix
 
-- **CI:** `reverify: completed/success @ e32a2ce`. Tree clean, everything pushed.
+- **CI:** `reverify: completed/success @ cefb72e`. Tree clean, everything pushed.
 - **Ledger:** 229 claims / 227 hold / 0 broken / 2 UNVERIFIED (C-7 the bound, C-9 the edit date, both `manual: true` on erdosproblems.com/36). 111 mirror files at upstream `dee1660`. 220 generated pins + 9 hand claims.
 - **G-1** — the steward-credibility goal: green-streak day 12 of 30, north star 0.
 - **A-13** — the launch definition and public-flip package: review-complete as of today; notes 7, 8 and 9 added (F-1 through F-4).

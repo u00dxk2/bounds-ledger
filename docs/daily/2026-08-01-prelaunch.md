@@ -6,13 +6,13 @@ north_star_metric: externally-acknowledged corrections/confirmations on a stewar
 north_star_value: 0
 north_star_status: amber
 north_star_classification: emerging
-last_deploy: 32b138b
+last_deploy: 60a044e
 sentry_open_p1: 0
 sentry_open_p2: 0
 mrr_usd: null
 n_active_users_28d: 0
 on_hold_items: 4
-top_action_today: "Third real drift, the largest yet: 12 files verified against sources BEFORE snapshot (every recomputable value recomputed — all reproduce), mirror 110→111, pins 218→220, claims 227→229, resolved same-day at 32b138b, CI green log-read, streak day 9/30. The drift itself is the strategic event: the stewarded table now carries record rows accepted from apparently-automated contributors with archived certificates via ordinary PRs — direct evidence for the certificate-re-verification contribution channel. Contribution-channels deep-research prompt delivered; David is running it."
+top_action_today: "Third real drift, the largest yet: 12 files verified against sources BEFORE snapshot (every recomputable value recomputed — all reproduce), mirror 110→111, pins 218→220, claims 227→229, resolved same-day at 60a044e, CI green log-read, streak day 9/30. The drift itself is the strategic event: the stewarded table now carries record rows accepted from apparently-automated contributors with archived certificates via ordinary PRs — direct evidence for the certificate-re-verification contribution channel. Contribution-channels deep-research prompt delivered; David is running it."
 ---
 
 # bounds-ledger — daily (prelaunch) — 2026-08-01 (MT)
@@ -26,7 +26,7 @@ change the lane's strategy more than its ledger.** Every change was verified aga
 snapshot: every directly-recomputable value in the rewritten sum-difference page (`3a`) reproduces exactly;
 both cross-link fixes repair genuinely dead/wrong links; a brand-new page (`3d`) records a previously-open
 problem as **solved** (`C_3d = 2`, arXiv:2607.27199, 29 July 2026, construction credited to an AI research
-agent's assistance). Resolved same-day at `32b138b`; CI green, log-read (run `30710915822`): 111 files clean at
+agent's assistance). Resolved same-day at `60a044e`; CI green, log-read (run `30710915822`): 111 files clean at
 upstream `621429c`, `229 claim(s): 227 hold, 0 broken/unreachable, 2 unverified (manual)`. **G-1** — the goal
 of becoming a reproducible steward with an externally-acknowledged correction — keeps its green streak:
 **day 9 of 30** (7/28 precedent: a same-day-resolved real drift is the alarm working, not a break).
@@ -40,7 +40,7 @@ prompt was delivered to David this morning and **he is running it now**; channel
 ## What changed
 
 - **Drift cycle executed in full order** (verify → `--snapshot` → `extract-pins` → commit → CI log-read →
-  issue closed): commit `32b138b`, issue #7 closed with the per-file verification record. Verification was by
+  issue closed): commit `60a044e`, issue #7 closed with the per-file verification record. Verification was by
   execution: Node recomputation of the Ru96 closed form, three GHR2007 lemma rows, `C(23,9)`, the K2026 mask
   grid, and both base conventions; citation-tag audits (3a: 10/10 defined, 3d: 8/8); live fetches proving the
   1b/13a link fixes real (no `1.md` exists; `13b` is the Lebesgue page). Also confirmed upstream's own erratum
@@ -115,7 +115,7 @@ replayable checker is the concrete first replay candidate. Any actual contributi
 
 ## State Appendix
 
-- **Tree/CI:** `main` at `32b138b`, pushed; CI run `30710915822` green (log-read, not badge-read). Scheduled
+- **Tree/CI:** `main` at `60a044e`, pushed; CI run `30710915822` green (log-read, not badge-read). Scheduled
   run `30694707057` red at 09:55Z = the caught drift (issue #7, now closed with the verification record).
 - **Ledger:** mirror 111 files clean at upstream `621429c`; 229 claims = 220 generated pins + 9 hand claims;
   227 hold, 0 broken, 2 UNVERIFIED (`C-7` — the erdosproblems.com/36 bound pin — and `C-9` — that page's

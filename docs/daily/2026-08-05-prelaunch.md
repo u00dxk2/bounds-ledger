@@ -6,7 +6,7 @@ north_star_metric: externally-acknowledged corrections/confirmations on a stewar
 north_star_value: 0
 north_star_status: amber
 north_star_classification: emerging
-last_deploy: 3dba7cd
+last_deploy: 7eebe3f
 sentry_open_p1: 0
 sentry_open_p2: 0
 mrr_usd: null
@@ -47,7 +47,7 @@ The scan that found the ten was wrong three times first. It reported 532 defects
 ## Outputs (lagging)
 
 - **North star — externally-acknowledged corrections: 0.** Day 12 since the 24 July email. No reply. Both page legs unchanged.
-- **G-1 green streak: day 13 of 30.** CI green at `3dba7cd`, log-verified.
+- **G-1 green streak: day 13 of 30.** CI green at `7eebe3f`, log-verified.
 - **Ledger: 229 claims / 227 hold / 0 broken / 2 UNVERIFIED** (C-7 and C-9, both by design, both the same blocked page) over a 111-file mirror.
 - **Open GitHub issues: 0. Open continuity items: 9.**
 
@@ -68,7 +68,7 @@ For the lane's own next increment: **the first-PR draft for `15a.md`**, which no
 
 - **Mirror:** 111 files, clean at upstream `dee1660`. No snapshot taken today; no pins regenerated.
 - **Claims:** 229 total — 220 generated (`pin:<file>:U|L`) + 9 hand (C-1…C-9). 227 hold, 0 broken, 2 UNVERIFIED.
-- **CI:** `reverify` green at `3dba7cd`; scheduled run `30996257546` log-read this morning. 5 self-tests, 9 workflow steps, piped steps pipefail-guarded.
+- **CI:** `reverify` green at `7eebe3f`; scheduled run `30996257546` log-read this morning. 5 self-tests, 9 workflow steps, piped steps pipefail-guarded.
 - **G-1 — the goal of becoming a reproducible steward of a drifting record inventory:** green-streak day 13 of 30, external acknowledgements 0.
 - **W-3 — the watch for acknowledgement of the erdosproblems.com/36 correction:** open, both page legs clean from this machine, reply leg outstanding at day 12.
 - **A-13 — the launch critical path and public-flip package:** package complete, package-level review done, decision with David tomorrow. note10 added today.

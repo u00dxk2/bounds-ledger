@@ -50,7 +50,7 @@ Guard is real. Exit codes read without a pipe (`> file 2> file` then `$LASTEXITC
 
 ## Detector 4 — the gap the audit surfaced
 
-A-8 (shipped yesterday, `ebd52f2`) fixed this: `extract-pins.mjs --selftest` ran in `npm test` but **not** in the workflow, leaving the extractor that generates 218 of the ledger's 227 claims unguarded in CI for six days. That is the lane's founding defect — an alarm that isn't armed carries no information — turned on itself.
+A-8 (shipped yesterday, `1ec47ce`) fixed this: `extract-pins.mjs --selftest` ran in `npm test` but **not** in the workflow, leaving the extractor that generates 218 of the ledger's 227 claims unguarded in CI for six days. That is the lane's founding defect — an alarm that isn't armed carries no information — turned on itself.
 
 The fix was a hand-added YAML step **with nothing asserting it stays**. Deleting it would be completely silent, and the failure would look exactly like the six days it just cost us. KP-78 assertion 3 has no answer here because there was no test to revert.
 

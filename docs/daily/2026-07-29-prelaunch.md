@@ -6,7 +6,7 @@ north_star_metric: externally-acknowledged corrections/confirmations on a stewar
 north_star_value: 0
 north_star_status: amber
 north_star_classification: emerging
-last_deploy: dcc22f8
+last_deploy: bbe7036
 sentry_open_p1: 0
 sentry_open_p2: 0
 mrr_usd: null
@@ -22,7 +22,7 @@ Lite rail, steward cadence. No self-rating.
 ## BLUF
 
 **The instrument absorbed two real drifts last night and came back green this morning — verified by log, not
-badge.** Scheduled run `30442566840` at `dcc22f8` prints exactly the expected shape: `No drift. 110 files match
+badge.** Scheduled run `30442566840` at `bbe7036` prints exactly the expected shape: `No drift. 110 files match
 upstream c4f83863…`, `227 claim(s): 225 hold, 0 broken/unreachable, 2 unverified (manual)`, both self-tests
 PASS, and **two** `advisory fetch failed (HTTP 403)` lines — one each under the two `manual: true` claims.
 **G-1 — the goal of becoming a reproducible steward of a drifting record — green-streak: day 6 of 30**

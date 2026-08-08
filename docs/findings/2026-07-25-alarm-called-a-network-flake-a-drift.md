@@ -4,7 +4,7 @@
 
 ## What happened
 
-CI run `30168372746` (push of the gate-sweep commit `59cd3a1`, 17:48Z) failed and auto-filed [issue #2](https://github.com/u00dxk2/bounds-ledger/issues/2). The issue read:
+CI run `30168372746` (push of the gate-sweep commit `8856fb3`, 17:48Z) failed and auto-filed [issue #2](https://github.com/u00dxk2/bounds-ledger/issues/2). The issue read:
 
 > **Drift: bounds-ledger re-verification (2026-07-25)**
 >

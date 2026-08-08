@@ -1,6 +1,6 @@
 # Finding — 2026-08-01: third real drift — certified record rows land, and the acceptance channel shows itself
 
-**Status:** resolved same-day. Verify → `--snapshot` → re-pin executed in order; commit `32b138b`; CI run
+**Status:** resolved same-day. Verify → `--snapshot` → re-pin executed in order; commit `60a044e`; CI run
 `30710915822` green, log-read (`No drift. 111 files match upstream 621429c…` · `229 claim(s): 227 hold,
 0 broken/unreachable, 2 unverified (manual).`). Issue #7 closed with the verification record.
 

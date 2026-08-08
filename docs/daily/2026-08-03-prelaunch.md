@@ -6,13 +6,13 @@ north_star_metric: externally-acknowledged corrections/confirmations on a stewar
 north_star_value: 0
 north_star_status: amber
 north_star_classification: emerging
-last_deploy: 13af4c4
+last_deploy: 6319b77
 sentry_open_p1: 0
 sentry_open_p2: 0
 mrr_usd: null
 n_active_users_28d: 0
 on_hold_items: 4
-top_action_today: "README-as-product shipped (13af4c4), taking the public-flip package to 4 of 4 on artifacts with only the package-level adversarial review left before David's gate. The increment's own adversarial review found three defects in my draft, and the serious one was a FABRICATED arXiv ID — I wrote 2601.11162 for TTT-Discover from a truncated grep when the real ID is 2601.16175. A made-up citation in the README of a repo whose entire thesis is cited-not-checked would have been the most damaging thing this project could publish, and nothing caught it except re-executing the grep instead of trusting my own fresh prose."
+top_action_today: "README-as-product shipped (6319b77), taking the public-flip package to 4 of 4 on artifacts with only the package-level adversarial review left before David's gate. The increment's own adversarial review found three defects in my draft, and the serious one was a FABRICATED arXiv ID — I wrote 2601.11162 for TTT-Discover from a truncated grep when the real ID is 2601.16175. A made-up citation in the README of a repo whose entire thesis is cited-not-checked would have been the most damaging thing this project could publish, and nothing caught it except re-executing the grep instead of trusting my own fresh prose."
 ---
 
 # bounds-ledger — daily (prelaunch) — 2026-08-03 (MT)
@@ -21,7 +21,7 @@ Paced rail, day 2. Steward cadence first, then a launch increment, plus the Mond
 
 ## BLUF
 
-The launch package is artifact-complete. **README-as-product shipped (`13af4c4`)** — the last of the four flip artifacts (README, SECURITY.md, clean history sweep, adversarial review of the correction). What remains before David's gate is one thing: the **package-level** adversarial review, which is not the sum of the individual reviews — it asks what a stranger actually sees on landing, and that is the question none of the per-artifact reviews answered.
+The launch package is artifact-complete. **README-as-product shipped (`6319b77`)** — the last of the four flip artifacts (README, SECURITY.md, clean history sweep, adversarial review of the correction). What remains before David's gate is one thing: the **package-level** adversarial review, which is not the sum of the individual reviews — it asks what a stranger actually sees on landing, and that is the question none of the per-artifact reviews answered.
 
 The steward cadence was green, log-read not badge-read: **no drift at `dee1660`, 229 claims / 227 hold / 0 broken / 2 UNVERIFIED by design. G-1 — the steward-credibility goal — is at green-streak day 11 of 30.**
 
@@ -29,8 +29,8 @@ The day's real finding is about my own output, not the records. The README revie
 
 ## What changed
 
-- **`13af4c4` — README-as-product.** Rewritten for a stranger's first read: what it is, the concrete founding discrepancy, what the alarm has actually caught (the four drifts, each linked to its resolving commit), live counts, how to run it, the four load-bearing rules, and limits stated plainly. The prior version opened by describing itself as a "portfolio lane (pre-launch, lite rail)" and linked into a sibling repo a stranger cannot open. Zero internal jargon remains (verified by grep, not by reading).
-- **`2210deb` — AGENTS.md canonicalized** (fleet convention, orchestrator dispatch). Cross-vendor invariants at repo root; `CLAUDE.md` imports it via `@AGENTS.md`. The Commands block was **moved**, not duplicated — drift between the two files is the documented failure mode of this convention. Flagged one deviation: 2977 chars vs the ~2k brief, because this repo carries more genuine hard invariants than most and cutting a load-bearing rule to hit a character target is the wrong trade.
+- **`6319b77` — README-as-product.** Rewritten for a stranger's first read: what it is, the concrete founding discrepancy, what the alarm has actually caught (the four drifts, each linked to its resolving commit), live counts, how to run it, the four load-bearing rules, and limits stated plainly. The prior version opened by describing itself as a "portfolio lane (pre-launch, lite rail)" and linked into a sibling repo a stranger cannot open. Zero internal jargon remains (verified by grep, not by reading).
+- **`b1c92d5` — AGENTS.md canonicalized** (fleet convention, orchestrator dispatch). Cross-vendor invariants at repo root; `CLAUDE.md` imports it via `@AGENTS.md`. The Commands block was **moved**, not duplicated — drift between the two files is the documented failure mode of this convention. Flagged one deviation: 2977 chars vs the ~2k brief, because this repo carries more genuine hard invariants than most and cutting a load-bearing rule to hit a character target is the wrong trade.
 - **A-2 — the re-verification CI item — moved, not closed** (Monday forced-decision pass). Its stated objective, "stand up re-verification CI", has been finished since 2026-07-23, but the item stayed open because it is where drift resolutions get logged. An item whose objective is done reads to a future session as unfinished work. Retitled to what it is — the standing drift log — so the ledger stops misreporting its own state. Not closed: closing would orphan four drift resolutions and leave the recurring cadence with no home.
 
 ## Inputs (controllable)
@@ -71,4 +71,4 @@ Carry forward as the day's standing lesson: **treat my own fresh prose as an unv
 - **CI:** `reverify` green at HEAD, log-verified. Expected shape confirmed: `No drift. 111 files match upstream dee1660`, `229 claim(s): 227 hold, 0 broken`, two 403 advisory lines, brief job logging *not runnable from CI … Not filing an issue.*
 - **Codex:** GREEN (codex-cli 0.143.0, `codex-health.mjs` exit 0). Not used today — no task met the Codex-first bar (scope ≥250 LOC, single-context-load, no taste calls); the README was pure taste work.
 - **Open items (10):** G-1 — the steward-credibility goal · A-2 — the standing drift log (moved this pass) · W-3 — the watch on the erdosproblems.com/36 acknowledgement · A-7 — engineering-health P1s · A-9 — the P2 fix-on-touch backlog · W-4 — the rule that every new detector must demonstrate both answers (KP-78 — prove the instrument can fail) · A-11 — pin-a-negative for the two structured sources · A-12 — the hosted-brief drift · A-13 — the launch/public-flip package · W-5 — the mirror blind class on upstream's README.
-- **Commits today:** `2210deb` (AGENTS.md), `13af4c4` (README-as-product), plus this report and the continuity update.
+- **Commits today:** `b1c92d5` (AGENTS.md), `6319b77` (README-as-product), plus this report and the continuity update.

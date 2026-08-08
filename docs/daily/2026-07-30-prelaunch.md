@@ -6,7 +6,7 @@ north_star_metric: externally-acknowledged corrections/confirmations on a stewar
 north_star_value: 0
 north_star_status: amber
 north_star_classification: emerging
-last_deploy: ebd52f2
+last_deploy: 1ec47ce
 sentry_open_p1: 0
 sentry_open_p2: 0
 mrr_usd: null
@@ -22,7 +22,7 @@ Lite rail, steward cadence. No self-rating.
 ## BLUF
 
 **The alarm now runs all three of the self-tests it depends on.** `A-8` — the finding that CI executed 2 of the
-repo's 3 self-tests — is **closed** (commit `ebd52f2`). The unguarded one was `extract-pins.mjs --selftest`,
+repo's 3 self-tests — is **closed** (commit `1ec47ce`). The unguarded one was `extract-pins.mjs --selftest`,
 which covers the extractor that generates **218 of the ledger's 227 claims**; it passed in `npm test` and was
 never executed by the workflow, for six days. Closed to this lane's own standard: `extract-pins selftest: PASS
 (5 extraction cases)` read out of the **CI log** for run `30544580239`, under its own named step — not inferred
@@ -48,7 +48,7 @@ January 2026`. The maintainer has not touched the page.
 
 | Commit | What |
 |---|---|
-| `ebd52f2` | `reverify.yml` gains a `Self-test pin extractor (no network)` step — **A-8**, the CI self-test gap, closed |
+| `1ec47ce` | `reverify.yml` gains a `Self-test pin extractor (no network)` step — **A-8**, the CI self-test gap, closed |
 
 Also: `continuity/items.json` — **A-8** (the CI self-test gap) closed with its resolution and the log-verified
 run id. Two bus posts: the Step-0.5 listener-confirm line, and the re-port ask for the brief.
@@ -140,12 +140,12 @@ watch, the public comment on /36 approved *in principle only*, UNVERIFIED stays 
 | A-2 — the re-verification CI | 227 claims across 2 surfaces, 110-file mirror | open — `closeWhen` met 7/28; closes with the streak |
 | W-3 — the ack watch on the /36 correction | reply leg (David) + two page legs (mechanical) | open — page read green + unchanged today |
 | A-7 — the five fleet-shared control P1s | secret scan, history sweep, manifest, branch protection, lockfile | open — blocked on the fleet wave; R6 David-gated |
-| A-8 — the CI self-test gap | `extract-pins --selftest` had no workflow step | **closed 7/30** — `ebd52f2`, log-verified run 30544580239 |
+| A-8 — the CI self-test gap | `extract-pins --selftest` had no workflow step | **closed 7/30** — `1ec47ce`, log-verified run 30544580239 |
 | A-9 — the engineering-health P2 backlog | six findings, fix-on-touch | open — not scheduled work by design |
 | A-1 / W-2 / A-3 / A-4 / A-5 / A-6 — reconciliation, Haugland, correction sent, alarm fixes, second surface | — | closed 7/22–7/25 |
 
 **Instrument state:** mirror 110 files at upstream `c4f8386`; `ledger/claims.json` 9 hand claims (C-1…C-9) +
-218 generated pins; 3/3 self-tests in CI; working tree clean at `main` = `ebd52f2`, pushed. No open issues, no
+218 generated pins; 3/3 self-tests in CI; working tree clean at `main` = `1ec47ce`, pushed. No open issues, no
 open PRs, no deploys (this lane has no service).
 
 **Tier 0 / evangelism read (pre-launch, day 9).** Core problem in the user's words: *"I cited a number. I have

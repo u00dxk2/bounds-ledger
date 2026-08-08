@@ -78,8 +78,8 @@ Attacked and survived, each re-derived by execution rather than read:
 
 - **Counts.** 111 mirrored constant files; 229 claims = 220 generated + 9 hand. Re-counted off
   disk; matches the README, and matches today's scheduled CI log independently.
-- **Links.** Every local path resolves; all four drift commits (`34a37fc`, `57442ae`, `32b138b`,
-  `d7d66a8`) exist.
+- **Links.** Every local path resolves; all four drift commits (`50c8096`, `e856de9`, `60a044e`,
+  `da17be3`) exist.
 - **The citation that was fabricated once.** `arXiv:2601.16175` re-fetched today →
   *"Learning to Discover at Test Time."* Correct. Not trusted from the draft; executed.
 - **"No credentials in the repo or its history."** Backed by a sweep whose own positive control
