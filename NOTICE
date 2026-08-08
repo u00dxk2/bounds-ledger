@@ -43,8 +43,18 @@ forward here.
 
 ## What this file does not cover
 
-This notice covers **only** the copied upstream material described above. It
-says nothing about the licensing of the rest of this repository — the scripts,
-documentation, claim definitions, and other original work — which is not
-governed by the Apache License and is addressed separately, if at all, by any
-license file at the repository root.
+This notice covers **only** the copied upstream material described above.
+
+Everything else in this repository — the scripts, documentation, claim
+definitions, search harness, and other original work — is our own and is
+licensed separately under the `LICENSE` file at the repository root. That is
+**also the Apache License, Version 2.0**, chosen deliberately so the repository
+carries one license story rather than two: the same terms apply whether you are
+reading a mirrored upstream file or one of ours.
+
+The two are still distinct in origin, and that distinction is the point of this
+file. `ledger/teorth-optimizationproblems/constants/` is upstream's work,
+redistributed under upstream's license (`ledger/teorth-optimizationproblems/LICENSE`).
+Everything else is ours, under the root `LICENSE`. Copyright on our own work is
+held by Skylark Creations LLC; copyright on the mirrored files remains with
+their original authors.

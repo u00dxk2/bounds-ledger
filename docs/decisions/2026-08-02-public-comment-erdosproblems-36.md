@@ -21,9 +21,9 @@
 > called it a judgment that was not ours to make, and put it to him explicitly. He agreed with the
 > concern. The review worked — its job was to surface the question, not to win the argument.
 
-David, 2026-08-01: *"yes - we can still monitor that page to see if he accepts our correction, but
-let's not wait on that to make our progress."* That is GO **to prepare**, not to post. His 7/26
-conditions are unrevoked: a fresh adversarial review of the public wording, plus **his pre-send
+David ruled on 2026-08-01: keep monitoring the page for whether the maintainer accepts our
+correction, but do not let that monitoring hold up our own progress. That is GO **to prepare**, not
+to post. His 7/26 conditions are unrevoked: a fresh adversarial review of the public wording, plus **his pre-send
 read of the exact text**. This document is both halves.
 
 ---

@@ -163,8 +163,8 @@ must not go.
 
 ## Codex adversarial review — 2026-08-05, at David's instruction
 
-David's reply on card a4ebe45c: *"Do a codex adversarial review on this first, then tell me exactly what
-we want to send / comment and where."* Dispatched refute-only (no rewrite, no patch, and explicitly told
+David's reply on card a4ebe45c directed a Codex adversarial review first, and then a precise statement
+of exactly what we wanted to send or comment, and where. Dispatched refute-only (no rewrite, no patch, and explicitly told
 not to flatten the direction split). **Verdict: SEND WITH CHANGES.** It raised three defects; two are
 real and are now fixed above, one is Codex itself being wrong.
 
