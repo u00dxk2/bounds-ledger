@@ -68,6 +68,14 @@ jobs:
       # behind a result. Also pins seed-reproducibility.
       - name: Self-test 27b round-two grower (no network)
         run: node search/27b/round2-grow.mjs --selftest
+      # Guards the W-6 traffic sampler's MERGE, which is the only part of it that can destroy
+      # data. GitHub keeps 14 days; continuity/traffic.json is the only copy of everything
+      # older, so a merge that returned just the incoming window would silently delete the
+      # record we are sampling in order to build. The sampler itself never runs in CI (it needs
+      # a credential `gh` holds locally, and this repo is public — no traffic token goes in
+      # repo secrets); only the merge logic is guarded here.
+      - name: Self-test traffic sampler merge (no network)
+        run: node scripts/traffic-snapshot.mjs --selftest
       # `shell: bash` is load-bearing: the DEFAULT runner shell is `bash -e {0}` with NO
       # pipefail, so `node ... | tee` reports tee's exit 0 and a drift exits GREEN. Naming
       # the shell gets `-eo pipefail`. Guarded by reverify.test.mjs.
