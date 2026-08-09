@@ -1,0 +1,65 @@
+{
+  "repo": "bounds-ledger",
+  "product": "bounds-ledger — a continuously re-verified ledger of drifting mathematical records",
+  "url": "https://github.com/u00dxk2/bounds-ledger",
+  "class": "artifact-only",
+  "_disclosureNote": "This repo is PUBLIC (since 2026-08-08), so this manifest is written for a public reader. It states the controls that ARE in place and names remaining gaps by tracker ID only. It deliberately does not enumerate our unprotected surfaces — publishing a weakness inventory was one of the eight blockers found by the 2026-08-05 pre-publication review, and the fix was not to write a better inventory but to stop publishing one.",
+  "runtime": {
+    "language": "node",
+    "packageManager": "npm",
+    "nodeVersion": "22 (CI)",
+    "framework": "none — Node stdlib and global fetch only",
+    "dependencies": "ZERO by design. package-lock.json is committed and CI installs with `npm ci`, so the empty dependency set is a ratchet rather than a coincidence: adding a package becomes a visible, reviewable diff."
+  },
+  "deploy": {
+    "target": "none",
+    "note": "Nothing deploys. There is no service, no runtime host and no build artifact — the repo IS the product, and the only automation is a scheduled GitHub Actions job that re-fetches the stewarded surfaces and fails when a cited record moves.",
+    "rollback": "git revert + push"
+  },
+  "datastores": [
+    { "kind": "flat-files", "note": "ledger/teorth-optimizationproblems/** is a byte-level mirror of the adopted upstream surface; ledger/claims.json holds the value pins; continuity/*.json holds the item ledger and traffic samples. No database." }
+  ],
+  "authModel": "none — no accounts, no sessions, no user data of any kind.",
+  "privilegedEndpoints": [],
+  "publicEndpoints": [],
+  "secrets": {
+    "source": "operator environment at run time",
+    "envFiles": "none — this repo has no .env of any kind",
+    "repoSecrets": "none. Deliberate and load-bearing: two local checks need a credential and BOTH are allowed to report unverified in CI rather than have a credential added to a public repo's Actions secrets. `check-brief.mjs` reads CC_PROMPTS_PIN from the operator's environment; `traffic-snapshot.mjs` delegates entirely to the `gh` CLI and never handles a token itself.",
+    "ciCredential": "the ephemeral github.token issued per workflow run, used only to file a finding issue on drift",
+    "shippedKeys": []
+  },
+  "requiredChecks": {
+    "enforcement": "GitHub Actions on push to main, on a daily schedule, and on manual dispatch",
+    "ci": "10 network-free self-tests, then the live mirror-drift check and the cross-surface claim check; a red run files a finding issue titled with what actually moved",
+    "preCommit": ["node scripts/history-sweep.mjs --staged — refuses a commit whose staged diff carries secret-shaped content"],
+    "additional": [
+      "reverify.test.mjs asserts every self-test in `npm test` has a workflow step, so a check cannot be added without CI coverage",
+      "reverify.test.mjs asserts every piped workflow step declares `shell: bash` — the runner default has no pipefail, and a piped check reports the pipe's exit code instead of its own"
+    ]
+  },
+  "secretScanning": {
+    "preCommit": "present — core.hooksPath is set to .githooks and the hook runs the repo's own pattern set over the staged diff (2026-08-09)",
+    "pushProtection": "enabled",
+    "verifiedHistorySweep": "on-demand gate, not yet scheduled — scripts/history-sweep.mjs sweeps all reachable history and was run as the pre-publication gate; the scheduled control is fleet-owned and tracked as A-7"
+  },
+  "branchProtection": {
+    "main": "protected by repository ruleset `main-history-integrity` (id 20607202, enforcement active, no bypass actors): deletion and non-fast-forward pushes are both blocked",
+    "note": "No required-review rule: this is a single-contributor repo and requiring pull requests would add friction without adding a reviewer. A deliberate history rewrite now requires disabling the ruleset first, which is the intended friction on an irreversible action."
+  },
+  "errorMonitoring": {
+    "provider": "none",
+    "note": "Nothing runs as a service, so there is nothing to instrument. The drift job's own failures surface as GitHub issues, and an instrument failure is titled as such rather than as a record drift."
+  },
+  "observability": {
+    "driftAlarm": "scheduled reverify job; a red run is the alarm, not a bug",
+    "traffic": "npm run traffic accumulates GitHub's 14-day traffic window into continuity/traffic.json (W-6)"
+  },
+  "knownGaps": [
+    "A-7 — remaining engineering-health items, fleet-coordinated",
+    "W-5 — upstream's own README is outside the mirrored surface, so a record demoted from headline to asterisked is not yet visible to the drift alarm"
+  ],
+  "lastReview": "2026-07-29",
+  "reviewDoc": "docs/engineering-health-review-2026-07-29.md",
+  "manifestCreated": "2026-08-09"
+}

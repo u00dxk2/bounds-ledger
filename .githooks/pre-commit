@@ -1,0 +1,5 @@
+#!/bin/sh
+# A-7 R5 — refuse a commit whose staged diff carries secret-shaped content.
+# Enable in a fresh clone with:  git config core.hooksPath .githooks
+# (hooksPath is per-clone config, so this file is the recipe, not the guarantee.)
+exec node scripts/history-sweep.mjs --staged

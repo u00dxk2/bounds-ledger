@@ -86,6 +86,31 @@ function sweep() {
   return 1;
 }
 
+// The same pattern set, pointed at what is about to be committed instead of at what already was.
+// A-7's R5. Reuse rather than a second scanner is the whole point: two secret matchers drift
+// apart, and the one you are not looking at is the one that goes quiet.
+//
+// SCOPE, stated because it is narrower than it looks: this sees the STAGED DIFF only. It cannot
+// catch a secret already committed (that is `sweep()`), and it is a local hook, so it protects
+// this machine and not the repository — core.hooksPath is per-clone config, never a repo-wide
+// guarantee. It is the cheap first layer of a three-layer stack, not the stack.
+function staged() {
+  const diff = execFileSync("git", ["diff", "--cached", "--no-color"], {
+    encoding: "utf8",
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  const hits = scan(diff, "staged");
+  if (!hits.length) {
+    console.log(`pre-commit sweep — CLEAN (${PATTERNS.length} pattern(s) over the staged diff).`);
+    return 0;
+  }
+  console.log(`pre-commit sweep — COMMIT BLOCKED, ${hits.length} secret-shaped hit(s) staged:`);
+  for (const h of hits) console.log(`  [${h.name}] ${h.file}\n      ${h.line}`);
+  console.log(`Nothing was committed. Credentials come from the operator's environment at run time,`);
+  console.log(`never from a repo file — remove the value and re-stage. This repo is PUBLIC.`);
+  return 1;
+}
+
 // W-4/KP-78: a sweep that has never been shown to FIRE is indistinguishable from a sweep that
 // cannot. Each pattern gets a positive fixture (must match) and the corpus gets a negative one
 // (realistic repo content that must NOT match), so "clean" carries information.
@@ -149,7 +174,8 @@ function selftest() {
 }
 
 try {
-  process.exitCode = process.argv.includes("--selftest") ? selftest() : sweep();
+  const mode = process.argv.includes("--selftest") ? selftest : process.argv.includes("--staged") ? staged : sweep;
+  process.exitCode = mode();
 } catch (err) {
   console.error(`error: ${err.message}`);
   process.exitCode = 2;

@@ -18,6 +18,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      # A-7 R18. The dependency set is empty, so this installs nothing today — which is exactly
+      # the point: `npm ci` fails on a package.json/lockfile mismatch, so the day someone adds a
+      # package it must arrive with its lockfile entry or CI stops. A ratchet is cheapest to fit
+      # while there is nothing to ratchet.
+      - name: Install from the lockfile (frozen)
+        run: npm ci
       - name: Self-test drift detection (no network)
         run: node scripts/reverify.test.mjs
       - name: Self-test claim matcher (no network)
