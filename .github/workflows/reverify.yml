@@ -74,6 +74,19 @@ jobs:
       # behind a result. Also pins seed-reproducibility.
       - name: Self-test 27b round-two grower (no network)
         run: node search/27b/round2-grow.mjs --selftest
+      # Guards the G-2 27b ROUND-THREE seeded search (search/27b/round3-seeded.mjs).
+      # Two instruments, both dangerous if they drift silently. (1) The edge-budget
+      # test decides family members WITHOUT a search, so it must stay silent on
+      # Sulanke's own graph (which is biplanar) and fire on K7+C5 (which is one edge
+      # over) — a budget test that flagged the record would close the family by
+      # arithmetic error. (2) The seeded grower must actually HOLD its seed: the
+      # self-test asserts every one of the 50 seed edges survives into the union and
+      # that a corrupted seed partition is REJECTED rather than quietly grown around,
+      # since a grower that dropped the design would report round two's numbers under
+      # round three's name. Chromatic numbers are computed, never taken from the
+      # r+3 join formula.
+      - name: Self-test 27b round-three seeded search (no network)
+        run: node search/27b/round3-seeded.mjs --selftest
       # Guards the W-6 traffic sampler's MERGE, which is the only part of it that can destroy
       # data. GitHub keeps 14 days; continuity/traffic.json is the only copy of everything
       # older, so a merge that returned just the incoming window would silently delete the

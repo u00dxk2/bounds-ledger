@@ -1,0 +1,357 @@
+{
+  "maxN": 14,
+  "seeds": 40,
+  "generated": "search/27b/round3-seeded.mjs",
+  "family": [
+    {
+      "r": 4,
+      "s": 3,
+      "n": 7,
+      "m": 21,
+      "budget": 30,
+      "over": false,
+      "chi": 7,
+      "chiComputed": true
+    },
+    {
+      "r": 4,
+      "s": 5,
+      "n": 9,
+      "m": 31,
+      "budget": 42,
+      "over": false,
+      "chi": 7,
+      "chiComputed": true
+    },
+    {
+      "r": 4,
+      "s": 7,
+      "n": 11,
+      "m": 41,
+      "budget": 54,
+      "over": false,
+      "chi": 7,
+      "chiComputed": true
+    },
+    {
+      "r": 4,
+      "s": 9,
+      "n": 13,
+      "m": 51,
+      "budget": 66,
+      "over": false,
+      "chi": 7,
+      "chiComputed": true
+    },
+    {
+      "r": 4,
+      "s": 11,
+      "n": 15,
+      "m": 61,
+      "budget": 78,
+      "over": false,
+      "chi": null,
+      "chiComputed": false
+    },
+    {
+      "r": 5,
+      "s": 3,
+      "n": 8,
+      "m": 28,
+      "budget": 36,
+      "over": false,
+      "chi": 8,
+      "chiComputed": true
+    },
+    {
+      "r": 5,
+      "s": 5,
+      "n": 10,
+      "m": 40,
+      "budget": 48,
+      "over": false,
+      "chi": 8,
+      "chiComputed": true
+    },
+    {
+      "r": 5,
+      "s": 7,
+      "n": 12,
+      "m": 52,
+      "budget": 60,
+      "over": false,
+      "chi": 8,
+      "chiComputed": true
+    },
+    {
+      "r": 5,
+      "s": 9,
+      "n": 14,
+      "m": 64,
+      "budget": 72,
+      "over": false,
+      "chi": null,
+      "chiComputed": false
+    },
+    {
+      "r": 5,
+      "s": 11,
+      "n": 16,
+      "m": 76,
+      "budget": 84,
+      "over": false,
+      "chi": null,
+      "chiComputed": false
+    },
+    {
+      "r": 6,
+      "s": 3,
+      "n": 9,
+      "m": 36,
+      "budget": 42,
+      "over": false,
+      "chi": 9,
+      "chiComputed": true
+    },
+    {
+      "r": 6,
+      "s": 5,
+      "n": 11,
+      "m": 50,
+      "budget": 54,
+      "over": false,
+      "chi": 9,
+      "chiComputed": true
+    },
+    {
+      "r": 6,
+      "s": 7,
+      "n": 13,
+      "m": 64,
+      "budget": 66,
+      "over": false,
+      "chi": 9,
+      "chiComputed": true
+    },
+    {
+      "r": 6,
+      "s": 9,
+      "n": 15,
+      "m": 78,
+      "budget": 78,
+      "over": false,
+      "chi": null,
+      "chiComputed": false
+    },
+    {
+      "r": 6,
+      "s": 11,
+      "n": 17,
+      "m": 92,
+      "budget": 90,
+      "over": true,
+      "chi": null,
+      "chiComputed": false
+    },
+    {
+      "r": 7,
+      "s": 3,
+      "n": 10,
+      "m": 45,
+      "budget": 48,
+      "over": false,
+      "chi": 10,
+      "chiComputed": true
+    },
+    {
+      "r": 7,
+      "s": 5,
+      "n": 12,
+      "m": 61,
+      "budget": 60,
+      "over": true,
+      "chi": 10,
+      "chiComputed": true
+    },
+    {
+      "r": 7,
+      "s": 7,
+      "n": 14,
+      "m": 77,
+      "budget": 72,
+      "over": true,
+      "chi": null,
+      "chiComputed": false
+    },
+    {
+      "r": 7,
+      "s": 9,
+      "n": 16,
+      "m": 93,
+      "budget": 84,
+      "over": true,
+      "chi": null,
+      "chiComputed": false
+    },
+    {
+      "r": 7,
+      "s": 11,
+      "n": 18,
+      "m": 109,
+      "budget": 96,
+      "over": true,
+      "chi": null,
+      "chiComputed": false
+    },
+    {
+      "r": 8,
+      "s": 3,
+      "n": 11,
+      "m": 55,
+      "budget": 54,
+      "over": true,
+      "chi": 11,
+      "chiComputed": true
+    },
+    {
+      "r": 8,
+      "s": 5,
+      "n": 13,
+      "m": 73,
+      "budget": 66,
+      "over": true,
+      "chi": 11,
+      "chiComputed": true
+    },
+    {
+      "r": 8,
+      "s": 7,
+      "n": 15,
+      "m": 91,
+      "budget": 78,
+      "over": true,
+      "chi": null,
+      "chiComputed": false
+    },
+    {
+      "r": 8,
+      "s": 9,
+      "n": 17,
+      "m": 109,
+      "budget": 90,
+      "over": true,
+      "chi": null,
+      "chiComputed": false
+    },
+    {
+      "r": 8,
+      "s": 11,
+      "n": 19,
+      "m": 127,
+      "budget": 102,
+      "over": true,
+      "chi": null,
+      "chiComputed": false
+    },
+    {
+      "r": 9,
+      "s": 3,
+      "n": 12,
+      "m": 66,
+      "budget": 60,
+      "over": true,
+      "chi": 12,
+      "chiComputed": true
+    },
+    {
+      "r": 9,
+      "s": 5,
+      "n": 14,
+      "m": 86,
+      "budget": 72,
+      "over": true,
+      "chi": null,
+      "chiComputed": false
+    },
+    {
+      "r": 9,
+      "s": 7,
+      "n": 16,
+      "m": 106,
+      "budget": 84,
+      "over": true,
+      "chi": null,
+      "chiComputed": false
+    },
+    {
+      "r": 9,
+      "s": 9,
+      "n": 18,
+      "m": 126,
+      "budget": 96,
+      "over": true,
+      "chi": null,
+      "chiComputed": false
+    },
+    {
+      "r": 9,
+      "s": 11,
+      "n": 20,
+      "m": 146,
+      "budget": 108,
+      "over": true,
+      "chi": null,
+      "chiComputed": false
+    }
+  ],
+  "rows": [
+    {
+      "n": 11,
+      "bestChi": 9,
+      "m": 50,
+      "budget": 54,
+      "leftover": 5,
+      "prngSeed": 9000,
+      "verified": true,
+      "spread": {
+        "9": 1
+      }
+    },
+    {
+      "n": 12,
+      "bestChi": 9,
+      "m": 57,
+      "budget": 60,
+      "leftover": 9,
+      "prngSeed": 9004,
+      "verified": true,
+      "spread": {
+        "9": 40
+      }
+    },
+    {
+      "n": 13,
+      "bestChi": 9,
+      "m": 64,
+      "budget": 66,
+      "leftover": 14,
+      "prngSeed": 9005,
+      "verified": true,
+      "spread": {
+        "9": 40
+      }
+    },
+    {
+      "n": 14,
+      "bestChi": 9,
+      "m": 70,
+      "budget": 72,
+      "leftover": 21,
+      "prngSeed": 9019,
+      "verified": true,
+      "spread": {
+        "9": 40
+      }
+    }
+  ]
+}
