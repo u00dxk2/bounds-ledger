@@ -1,7 +1,10 @@
 {
   "surface": "teorth/optimizationproblems",
   "subdir": "constants",
+  "rootFiles": [
+    "README.md"
+  ],
   "sha": "dee1660ef081c56f6b6f6e7f40f5a92471c187d6",
-  "fetchedAt": "2026-08-02T19:39:16.934Z",
-  "fileCount": 111
+  "fetchedAt": "2026-08-10T20:56:51.585Z",
+  "fileCount": 112
 }

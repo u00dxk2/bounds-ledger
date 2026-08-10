@@ -4,7 +4,7 @@ Cross-vendor invariants for ANY coding agent (Claude Code, Codex CLI, or other) 
 
 ## What this is
 
-A reproducible, continuously re-verified ledger of drifting mathematical records (bounds / constants / certificates) that alarms when a cited record moves. Node stdlib + `fetch` only; `npm install` is a no-op. **Nothing deploys** — pre-launch, doc/script-only; the only automation is the GitHub Actions drift job.
+A reproducible, continuously re-verified ledger of drifting mathematical records (bounds / constants / certificates) that alarms when a cited record moves. Node stdlib + `fetch` only; `npm install` is a no-op. **Nothing deploys** — doc/script-only; the only automation is the GitHub Actions drift job. The repo is PUBLIC (since 2026-08-08).
 
 ## Commands
 
