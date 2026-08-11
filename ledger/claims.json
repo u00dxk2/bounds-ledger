@@ -71,6 +71,26 @@
     "manual": true
   },
   {
+    "id": "C-10",
+    "statement": "Nothing is listed BELOW the SimpleTES row in Wikipedia's minimum-overlap limit-superior table — i.e. 0.380868 is still the last record there",
+    "url": "https://en.wikipedia.org/w/index.php?title=Minimum_overlap_problem&action=raw",
+    "expect": "|<math>M(n) < (1+o(1)) 0.380868... n</math>||SimpleTES (Ye et al.)||2026",
+    "nothingAfter": "\n|}",
+    "note": "PIN-A-NEGATIVE (A-11 leg b). C-6 pins a value that is PRESENT; this pins the ABSENCE of a row below it, by requiring the last record row to be immediately followed by the wikitext table terminator. Closes the blind class on this source: a presence test can only see a pin DISAPPEAR, so a new record ADDED underneath — this lane's north-star event — would have left C-6 green forever. A break here means a row was inserted: verify against primary sources, then re-pin deliberately. Do NOT read the pinned row as an assertion that 0.380868 is the true record; it asserts LISTING POSITION on this surface, the same discipline the generated pins follow.",
+    "lastHandVerify": "2026-08-11",
+    "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md"
+  },
+  {
+    "id": "C-11",
+    "statement": "Nothing has been appended to problem 36's entry in teorth/erdosproblems data/problems.yaml — it still ends at its tags line, immediately before problem 37",
+    "url": "https://raw.githubusercontent.com/teorth/erdosproblems/main/data/problems.yaml",
+    "expect": "comments: \"minimum overlap problem\"\n  tags: [\"number theory\", \"additive combinatorics\"]",
+    "nothingAfter": "\n\n- number: \"37\"",
+    "note": "PIN-A-NEGATIVE (A-11 leg b), the C-8 half. C-8 pins the head of problem 36's entry (number → prize → informal_status.state) and stops before last_update, so a field APPENDED to the entry — a solved marker, a prize, a new sub-key — is invisible to it. This pins the entry's TAIL: the comments+tags span must be immediately followed by the start of problem 37. Anchored on comments (distinctive to problem 36) rather than tags alone, so deleting entry 36 outright cannot be masked by a neighbour carrying the same tags. Deliberately skips every last_update field, so ordinary bookkeeping edits stay silent — the A-6 rule that an always-red alarm carries no information.",
+    "lastHandVerify": "2026-08-11",
+    "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md"
+  },
+  {
     "id": "pin:10a:U",
     "statement": "Last-listed upper-bound table row for The real Grothendieck constant (10a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10a.md",

@@ -25,18 +25,38 @@ const squash = (s) => s.replace(/\s+/g, " ");
 // A claim holds if its expected string survives in the raw body OR with tags stripped
 // (values split across markup) — both whitespace-collapsed.
 //
-// BLIND CLASS — this is a PRESENCE test, so it can only ever see a pin DISAPPEAR. It is
-// structurally incapable of firing when a source ADDS a new, better bound while leaving the
-// pinned text in place. For the 218 generated pins that is covered: their sources are
-// mirrored, and reverify.mjs sees any added line. It is NOT covered for the six claims whose
-// sources are off-mirror — C-4/C-5 (arXiv), C-6 (Wikipedia), C-7/C-9 (erdosproblems.com),
-// C-8 (teorth/erdosproblems) — where this checker is the ONLY instrument. "A new record
-// appeared alongside the old one" is this lane's north-star event, and on exactly those six
-// surfaces nothing here can report it. Named per the 2026-07-31 P2 rider (A-10); the fix is
-// a design question (mirror those sources vs pin a negative), not a threshold tweak.
+// BLIND CLASS — this is a PRESENCE test, so on its own it can only ever see a pin DISAPPEAR.
+// It is structurally incapable of firing when a source ADDS a new, better bound while leaving
+// the pinned text in place. For the generated pins that is covered: their sources are mirrored,
+// and reverify.mjs sees any added line. Off-mirror sources have no such backstop, and "a new
+// record appeared alongside the old one" is this lane's north-star event.
+//
+// PIN-A-NEGATIVE (A-11 leg b) closes it wherever the source is STRUCTURED: a claim may carry
+// `nothingAfter`, the exact text that must still immediately FOLLOW its expected string. An
+// insertion between the two breaks the pin, so the addition becomes visible. Implemented as
+// plain concatenation — the matcher is unchanged; only what we ask of it is stronger.
+//
+// STILL BLIND, permanently: C-4/C-5 (arXiv prose, no stable structure to anchor a tail on) and
+// C-7/C-9 (erdosproblems.com, the 403 surface, `manual: true` so nothing here fetches it in CI).
+// Those four stay at option (c) — accepted and documented — per A-11.
 function holds(body, expect) {
   const want = squash(expect);
   return squash(body).includes(want) || squash(stripTags(body)).includes(want);
+}
+
+// What a claim actually asserts: its value, plus (for a negative pin) the text that must still
+// follow it. Kept in one place so the run loop and the break message cannot disagree.
+const wanted = (c) => (c.nothingAfter ? c.expect + c.nothingAfter : c.expect);
+
+// The verdict for one fetched body. Exported to the selftest so the branch that ships is the
+// branch that gets tested — a copy of this logic in the test would prove nothing about the run.
+//   "hold"  — the claim still holds
+//   "added" — negative pin only: the value survives but something now sits below it
+//   "gone"  — the pinned value itself is no longer present
+function classify(body, c) {
+  if (holds(body, wanted(c))) return "hold";
+  if (c.nothingAfter && holds(body, c.expect)) return "added";
+  return "gone";
 }
 
 function selftest() {
@@ -46,12 +66,31 @@ function selftest() {
   assert(holds("bound\n  is  0.380868", "bound is 0.380868"), "whitespace-collapsed phrase should hold");
   assert(!holds("the bound is 0.380871", "0.380868"), "absent value must NOT hold");
   assert(!holds("", "0.380868"), "empty body must NOT hold");
-  // Blind class, asserted so it cannot be forgotten: a source that ADDS a better bound below
-  // the pinned one still reads as holding. This test PASSING is the defect, not the fix — it
-  // pins the shape of what this instrument cannot see. See the note on holds().
+  // Blind class, asserted so it cannot be forgotten: on a claim with NO negative pin, a source
+  // that ADDS a better bound below the pinned one still reads as holding. This test PASSING is
+  // the defect, not the fix — it pins what a bare presence test cannot see, which is still the
+  // permanent state of C-4/C-5 (arXiv prose) and C-7/C-9 (the 403 surface). See holds().
   assert(holds("upper bound 0.380868\n| $0.379005$ | [NEW2026] |", "0.380868"),
-    "BLIND CLASS: an added better bound leaves the pin green — this checker cannot see additions");
-  console.log("check-claims selftest: PASS (4 matcher cases + empty-body guard + 1 blind-class pin)");
+    "BLIND CLASS: an added better bound leaves a bare pin green — a presence test cannot see additions");
+
+  // PIN-A-NEGATIVE, both sides demonstrated (W-4 / KP-78). Fixture is the real shape of the
+  // wikitext table C-10 pins: record rows, then the table terminator.
+  const row = (v, who) => `|-\n|<math>M(n) < (1+o(1)) ${v}... n</math>||${who}||2026`;
+  const LAST = row("0.380868", "SimpleTES (Ye et al.)");
+  const table = (...extra) => `{| class="wikitable"\n${row("0.380876", "TTT-Discover")}\n${LAST}${extra.join("")}\n|}`;
+  const neg = { expect: LAST.split("\n")[1], nothingAfter: "\n|}" };
+
+  assert(classify(table(), neg) === "hold",
+    "negative pin must stay SILENT when the pinned row is still last");
+  assert(classify(table("\n" + row("0.380800", "Somebody 2027")), neg) === "added",
+    "negative pin must FIRE when a new record row is inserted below the pinned one");
+  assert(classify(table().replace(neg.expect, row("0.380800", "Somebody 2027").split("\n")[1]), neg) === "gone",
+    "a pinned row that is REPLACED must read as gone, not as an addition");
+  assert(classify("nothing here", { expect: "0.380868" }) === "gone" &&
+         classify("0.380868 and more below", { expect: "0.380868" }) === "hold",
+    "a claim without nothingAfter must behave exactly as before (never 'added')");
+
+  console.log("check-claims selftest: PASS (4 matcher cases + empty-body guard + 1 blind-class pin + negative pin fires on an inserted row, silent when last, and distinguishes added from gone)");
 }
 
 async function run() {
@@ -91,8 +130,15 @@ async function run() {
         continue;
       }
     }
-    if (holds(body, c.expect)) {
+    const verdict = classify(body, c);
+    if (verdict === "hold") {
       held++; // held claims are counted, not listed — a real break must not drown below the fold
+    } else if (verdict === "added") {
+      // The value is still there; what changed is what follows it. On a bounds surface that is
+      // an ADDITION, i.e. the event this lane exists to catch — say so, don't report it as a
+      // vanished pin and send the reader hunting for a deletion that never happened.
+      broken++;
+      rows.push(`BROKEN      ${c.id}  ${c.statement}\n            "${c.expect}" is still present at ${c.url}, but is NO LONGER followed by "${c.nothingAfter}" — SOMETHING WAS ADDED BELOW IT.\n            On a record surface that is the north-star event, not a defect: verify against primary sources, then re-pin deliberately.`);
     } else {
       broken++;
       rows.push(`BROKEN      ${c.id}  ${c.statement}\n            expected "${c.expect}" at ${c.url} — no longer present`);
