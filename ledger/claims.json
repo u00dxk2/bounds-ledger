@@ -238,7 +238,7 @@
     "id": "pin:15a:U",
     "statement": "Last-listed upper-bound table row for Matrix multiplication exponent (15a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/15a.md",
-    "expect": "| $2.371339$ | [ADWXXZ25] |  |",
+    "expect": "| $2.371339$ | [ADVXXZ2024] |  |",
     "asserts": "ledger/teorth-optimizationproblems/constants/15a.md",
     "generated": true
   },
