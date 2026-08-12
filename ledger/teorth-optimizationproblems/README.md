@@ -149,7 +149,7 @@ Bounds for which the level of available verification is currently at minimal lev
 - [3d](https://teorth.github.io/optimizationproblems/constants/3d.html) **solved:** $C_{3d} = 2$ by [H. Lin and S. Li](https://arxiv.org/abs/2607.27199), 29 Jul 2026.
 - [3b](https://teorth.github.io/optimizationproblems/constants/3b.html) **improved lower bound:** $C_{3b} \geq 1.77898884$ by Mosaic Intelligence, [entropy certificate](https://doi.org/10.5281/zenodo.20794135) on a 13-point support.
 - [10a](https://teorth.github.io/optimizationproblems/constants/10a.html) **improved upper and lower bounds:** $\frac{6\pi}{11} \leq C_{10a} \leq \frac{\pi}{2\log(1+\sqrt{2})} - 10^{-4}$ by [R. Saha, A. Li, A. Xue, S. Chaudhuri, A. Klivans, P. K. Kothari, R. Meka](https://arxiv.org/abs/2608.11158), 11 Aug 2026 — determines the tenths digit of $C_{10a}$ to be $7$.
-- [2](https://teorth.github.io/optimizationproblems/constants/2a.html) **solved:** $C_2 = 2$ by [E. Lorist and F. L. Schwenninger](https://arxiv.org/abs/2608.03841), 4 Aug 2026 — proof of Crouzeix's conjecture.
+- [2](https://teorth.github.io/optimizationproblems/constants/2a.html) **solved:** $C_2 = 2$ — proof of Crouzeix's conjecture, independently by [Jin](https://www.preprints.org/manuscript/202607.1919) (July 2026) and [E. Lorist and F. L. Schwenninger](https://arxiv.org/abs/2608.03841), 4 Aug 2026.
 
 ## Maintainers
 

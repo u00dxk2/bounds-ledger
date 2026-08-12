@@ -97,9 +97,50 @@ hours.
 a `npm run check` that exits 0 *after* the last snapshot, read as an exit code and not through a
 pipe. The snapshot's own success line is not that evidence.
 
+## Drift three, an hour later — a second, *earlier* independent proof of the same conjecture
+
+The commit resolving drifts one and two went green in CI. The very next push went **red**:
+upstream had moved again (`19694a8` → `0ffbf1a`), and `pin:2a:U` reported BROKEN. Upstream had
+added a **second, independent** claimed proof of Crouzeix's conjecture — Jin, preprints.org
+`202607.1919`, July 2026 — and rewrote the 2a rows to credit both, noting Jin's appeared
+"very slightly before" Lorist–Schwenninger's.
+
+This is a **priority correction**, a drift class we had not seen: no bound moved, the constant
+was already recorded as settled, and what changed was *who is credited with settling it*.
+
+### The 200 that was not the page
+
+Fetching `preprints.org/manuscript/202607.1919` returned **HTTP 200** — and 2,673 bytes whose
+`<title>` is `&nbsp;` and whose only readable text is "Powered and protected by Privacy". A
+bot-protection interstitial. The word "Crouzeix" appears zero times.
+
+**A naive check would have recorded this as verified.** It is the same trap as the sign-in wall
+that made `check-brief.mjs` blame the orchestrator for four missing blocks
+(`2026-08-02-the-brief-check-blamed-the-porter-for-a-login-wall.md`), and the same trap as
+erdosproblems.com's 403 — except this one fails *upward*, returning a success code. Assert the
+response IS the artifact, never that the status code was 2xx.
+
+### The route that worked, worth keeping
+
+**Crossref content negotiation reaches citation metadata for a bot-walled preprint server,**
+because it never touches that server. `api.crossref.org/works/10.20944/preprints202607.1919.v1`
+returned HTTP 200 with:
+
+- **Title:** *The Numerical Range Is a 2-Spectral Set* — which **is** Crouzeix's conjecture
+  stated as a theorem, so the subject matches even though the word "Crouzeix" is absent
+- **Author:** Shanmu Jin — matches upstream's `[Jin]`
+- **Posted:** 2026-07-27; **Publisher:** MDPI AG (preprints.org's operator); **Type:**
+  posted-content
+
+That independently confirms every checkable part of upstream's citation *including its priority
+claim*: 27 July precedes 4 August by eight days, so "very slightly before" is accurate. We did
+not read the proof and do not vouch for it — upstream still says "claimed", and so do we.
+
+Mirror `19694a8` → `0ffbf1a`, 2 files, **exactly one pin moved** (`pin:2a:U`).
+
 ## State after resolution
 
-`npm test` exit 0; `npm run check` exit 0 — `No drift. 112 files match upstream 19694a8f…`,
+`npm test` exit 0; `npm run check` exit 0 — `No drift. 112 files match upstream 0ffbf1ab…`,
 `231 claim(s): 229 hold, 0 broken/unreachable, 2 unverified (manual)`, brief in sync (4 of 4
 dated blocks). Mirror stays 112 files; **exactly three generated pins moved** — `pin:10a:U`,
 `pin:10a:L`, `pin:2a:U` — confirmed from the `claims.json` diff rather than inferred from the
