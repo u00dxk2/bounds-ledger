@@ -2,7 +2,8 @@
 
 **Date:** 2026-08-12 (MT), morning session
 **Items:** A-2 (drift-resolution log), G-1
-**Upstream:** `teorth/optimizationproblems` `400a9bb` → `fe7bf53` → `19694a8`
+**Upstream:** `teorth/optimizationproblems` `400a9bb` → `fe7bf53` → `19694a8` → `0ffbf1a` → `603052d`
+(five pushes in one day; three resolution cycles on our side)
 
 ## What happened
 
@@ -11,9 +12,10 @@ The overnight scheduled run was green at 09:40Z — `No drift. 112 files match u
 `npm run check` was red on two files. It went red a second time, on two *different* files,
 four minutes after the first resolution was already snapshotted and re-pinned.
 
-Both are **pure record movement** — the fifth and sixth drifts this mirror has seen, and only
-the second and third that are records actually moving rather than editorial or additive change.
-Both are on constants a working mathematician would recognise by name.
+Both are **pure record movement**, on constants a working mathematician would recognise by name.
+Counting by resolution cycle — one commit that returns the mirror to green, which is the
+convention this repo uses — these open cycle six. The day did not stop there: upstream pushed
+five times and cycles seven and eight followed, recorded below.
 
 ## Drift one — `constants/10a.md` + `README.md`: the Grothendieck constant, both ends at once
 
@@ -138,15 +140,71 @@ not read the proof and do not vouch for it — upstream still says "claimed", an
 
 Mirror `19694a8` → `0ffbf1a`, 2 files, **exactly one pin moved** (`pin:2a:U`).
 
+## Drift four — an editing burst, and the near-miss that matters most
+
+Upstream pushed a **fifth** time (`0ffbf1a` → `603052d`), reworking the same paragraph again:
+Jin is now primary, and Lorist–Schwenninger's is described as a second proof "which
+acknowledges Jin".
+
+That last clause is a new, checkable claim about a third party's paper, so it was checked. The
+arXiv abstract page for 2608.03841 does not mention Jin, shows only **v1**, and its comments
+field is just "5 pages". So the next step was the full text via ar5iv.
+
+**ar5iv returned HTTP 200, 38,662 bytes, and no occurrence of "Jin". I was one step from
+writing that upstream's claim is unsupported** — a public accusation, about a real
+mathematician's paper, on a repo we are trying to get taken seriously.
+
+Then the response was checked against the thing it was supposed to be, and it was **the arXiv
+abstract page**: 562 words, "Skip to main content", "Search arXiv", "View a PDF of the paper
+titled…". ar5iv had fallen back. **I had never read the full text. I had read the abstract page
+twice and drawn a conclusion from its silence.**
+
+### What this costs and what it teaches
+
+The correct state is: **upstream's acknowledgement claim is unverified by us — not
+contradicted.** We have not read the paper's body and cannot from here without a PDF parser.
+UNVERIFIED is a legitimate verdict in this lane; that is the whole C-7 discipline, and it
+applies to our own reading as much as to CI's.
+
+Twice in one day a **200 was not the artifact** — first preprints.org's bot wall, then ar5iv's
+fallback. The first was caught because the page was obviously junk (2.6 KB, title `&nbsp;`).
+The second nearly was not, because the fallback page is *real, relevant, correctly titled HTML
+about the right paper* — it just is not the document whose absence-of-a-word I was about to
+rely on.
+
+**Absence of evidence is the dangerous read.** A positive match (`Crossref returned Shanmu Jin`)
+is self-validating: the content you wanted is present. A negative match proves nothing until you
+have separately proven you were looking at the right document. Before concluding "X is not in
+the source", assert the source **is** the source — check for something that must be there. Here
+`numerical range` and `spectral set` were both absent too, which for a paper about the numerical
+range being a spectral set should have been the tell.
+
+### On the burst itself
+
+Five upstream pushes in roughly six hours, three of them iterating one attribution paragraph.
+**A red run during an upstream editing burst is the alarm working, not a defect, and it does not
+oblige us to resolve within the minute.** The mirror's contract is byte-fidelity to the adopted
+surface at a known sha, not at every instant. The 30-day streak is measured on the scheduled
+run. Resolved to `603052d`; if it goes red again today, the next session should record the burst
+rather than chase it.
+
 ## State after resolution
 
-`npm test` exit 0; `npm run check` exit 0 — `No drift. 112 files match upstream 0ffbf1ab…`,
+`npm test` exit 0; `npm run check` exit 0 — `No drift. 112 files match upstream 603052de…`,
 `231 claim(s): 229 hold, 0 broken/unreachable, 2 unverified (manual)`, brief in sync (4 of 4
-dated blocks). Mirror stays 112 files; **exactly three generated pins moved** — `pin:10a:U`,
-`pin:10a:L`, `pin:2a:U` — confirmed from the `claims.json` diff rather than inferred from the
-file count (`pin:10b:U` and `pin:2a:L` appear in the diff as unchanged context, which is how a
-count read off the diff hunk rather than off the changed lines comes out too high). Ledger
-unchanged at 231 claims.
+dated blocks). Mirror stays 112 files throughout.
+
+Pins moved, per cycle, each read off the **changed lines** of the `claims.json` diff rather than
+off the diff hunk — `pin:10b:U` and `pin:2a:L` appear in those hunks as unchanged context, which
+is how a count taken from the hunk comes out too high:
+
+| cycle | upstream | pins moved |
+|---|---|---|
+| six (`ec01082`) | `400a9bb` → `19694a8` | `pin:10a:U`, `pin:10a:L`, `pin:2a:U` |
+| seven (`4d06395`) | `19694a8` → `0ffbf1a` | `pin:2a:U` |
+| eight | `0ffbf1a` → `603052d` | `pin:2a:U` |
+
+Ledger unchanged at 231 claims all day — see the daily report on why that figure misleads.
 
 W-3's two advisory legs read unchanged from this machine: erdosproblems.com/36 still shows
 `0.380876` and is still dated `23 January 2026`. North star unmoved.

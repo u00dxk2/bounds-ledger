@@ -14,7 +14,7 @@ That reconciliation is [`docs/reconciliations/2026-07-22-minimum-overlap.md`](do
 
 ## What it has actually caught
 
-Since the alarm was armed on 2026-07-24, seven upstream drifts — each verified before the mirror was updated, against primary sources where a number moved and against upstream's own content where the change was editorial. One row per resolution cycle, not per changed file:
+Since the alarm was armed on 2026-07-24, eight upstream drifts — each verified before the mirror was updated, against primary sources where a number moved and against upstream's own content where the change was editorial. One row per resolution cycle, not per changed file:
 
 | Drift | What moved |
 |---|---|
@@ -24,7 +24,7 @@ Since the alarm was armed on 2026-07-24, seven upstream drifts — each verified
 | [`da17be3`](../../commit/da17be3) | The first drift that was purely records moving: `5/3 → 7/√17`, `2.625622 → 2.6273856`, `>6.5143 → >6.5218`. Verified by recomputation before snapshot. |
 | [`d30d4e4`](../../commit/d30d4e4) | Upstream re-marked a bound as having minimal available verification. **Every constants file was byte-identical** — the change lived entirely in upstream's README, i.e. in which rows it declares it stands behind. |
 | [`ec01082`](../../commit/ec01082) | Two named constants in one morning. The real **Grothendieck constant**: both ends improved by one paper ([arXiv:2608.11158](https://arxiv.org/abs/2608.11158)), settling its tenths digit as 7. And **Crouzeix's conjecture**, upper bound `1+√2 → 2`, claimed proved ([arXiv:2608.03841](https://arxiv.org/abs/2608.03841)). Both verified against the papers before the mirror moved. |
-| [`2026-08-12`](docs/findings/2026-08-12-two-record-movements-in-one-cycle.md) | A **priority correction** — a class we had not seen. No bound moved: upstream credited a *second, independent* claimed proof of Crouzeix's conjecture, posted eight days earlier. The preprint server returns HTTP 200 for a bot-protection page, so the citation was confirmed through Crossref instead. |
+| [`2026-08-12`](docs/findings/2026-08-12-two-record-movements-in-one-cycle.md) | A **priority correction** — a class we had not seen, and it took two cycles as upstream refined the attribution. No bound moved: upstream credited a *second, independent* claimed proof of Crouzeix's conjecture, posted eight days earlier. The preprint server returns HTTP 200 for a bot-protection page, so the citation was confirmed through Crossref instead. |
 
 It has also caught itself. [`docs/findings/`](docs/findings/) holds both kinds of write-up — the drifts above, and every occasion the *instrument* was the thing that was wrong. The worst of the second kind: **the drift alarm was green-by-construction for its first two days**, because a piped command in CI reported the pipe's exit code instead of the check's ([`2026-07-24-drift-alarm-was-never-armed.md`](docs/findings/2026-07-24-drift-alarm-was-never-armed.md)). A ledger whose alarm cannot fail is decoration; those findings are the evidence that this one can.
 
@@ -32,7 +32,7 @@ It has also caught itself. [`docs/findings/`](docs/findings/) holds both kinds o
 
 Read 2026-08-12. Re-derive it yourself with `npm run check`.
 
-- **112** mirrored files — 111 constant files plus upstream's repo-root `README.md` — byte-identical to upstream [`teorth/optimizationproblems`](https://github.com/teorth/optimizationproblems) at `19694a8`. The README is in scope because it is where upstream declares which bounds it stands behind: a bound demoted to "verification at minimal levels" leaves every constants file unchanged.
+- **112** mirrored files — 111 constant files plus upstream's repo-root `README.md` — byte-identical to upstream [`teorth/optimizationproblems`](https://github.com/teorth/optimizationproblems) at `603052d`. The README is in scope because it is where upstream declares which bounds it stands behind: a bound demoted to "verification at minimal levels" leaves every constants file unchanged.
 - **231 claims — 229 hold, 0 broken, 2 UNVERIFIED by design** (see below)
 - Checks run daily in CI (09:17 UTC), on push, and on demand
 
