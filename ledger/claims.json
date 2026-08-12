@@ -94,7 +94,7 @@
     "id": "pin:10a:U",
     "statement": "Last-listed upper-bound table row for The real Grothendieck constant (10a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10a.md",
-    "expect": "| $< \\dfrac{\\pi}{2\\ln(1+\\sqrt{2})} - 6.039*10^{-5}$ | [LSXCKKM26] | $6.039*10^{-5}$ improvement over Krivine's bound |",
+    "expect": "| $< \\dfrac{\\pi}{2\\ln(1+\\sqrt{2})} - 10^{-4}$ | [SLXCKKM26] | Same team; via the first *asymptotic* Krivine-type rounding scheme (previous works only considered low-dimensional schemes). |",
     "asserts": "ledger/teorth-optimizationproblems/constants/10a.md",
     "generated": true
   },
@@ -102,7 +102,7 @@
     "id": "pin:10a:L",
     "statement": "Last-listed lower-bound table row for The real Grothendieck constant (10a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10a.md",
-    "expect": "| $K_{DR} + 10^{-12}$ | [JM26] | Best known lower bound; strict improvement over the Davie–Reeds bound |",
+    "expect": "| $\\dfrac{6\\pi}{11}\\approx 1.71360$ | [SLXCKKM26] | Major jump over the Davie–Reeds anchor $\\approx 1.67696$; proved by establishing asymptotic limitations of Krivine schemes rather than by constructing explicit gap instances (as all prior lower bounds did).  Together with the upper bound above, this determines the tenths digit of $K_G^{\\mathbb R}$ to be $7$. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/10a.md",
     "generated": true
   },
@@ -622,7 +622,7 @@
     "id": "pin:2a:U",
     "statement": "Last-listed upper-bound table row for The Crouzeix constant (2a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/2a.md",
-    "expect": "| $1+\\sqrt{2} \\approx 2.41421$ | [CP2017] | Best known universal upper bound. Also holds in the completely bounded setting. |",
+    "expect": "| $2$ | [LS2026] | Lorist–Schwenninger: claimed proof of Crouzeix's conjecture, combining previous tools for weaker estimates with a \"simple perturbation lemma for 2-dilations\" applied to the iterates $f^n$ in the double-layer potential representation.  Matches the trivial lower bound, so $C_2 = 2$. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/2a.md",
     "generated": true
   },

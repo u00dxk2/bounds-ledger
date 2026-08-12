@@ -16,7 +16,7 @@ Bounds for which the level of available verification is currently at minimal lev
 | ------ | ----------- | ---------------- | ---------------- |
 | [1a](https://teorth.github.io/optimizationproblems/constants/1a.html) | Sidon set autocorrelation constant | 1.2802 (1.292*) | 1.502862 |
 | [1b](https://teorth.github.io/optimizationproblems/constants/1b.html) | Erdős minimum overlap constant | 0.379005 | 0.380868 |
-| [2](https://teorth.github.io/optimizationproblems/constants/2a.html) | Crouzeix constant | 2 | $1+\sqrt{2} \approx 2.4142$ |
+| [2](https://teorth.github.io/optimizationproblems/constants/2a.html) | Crouzeix constant | 2 | 2 |
 | [3a](https://teorth.github.io/optimizationproblems/constants/3a.html) | Gyarmati-Hennecart-Ruzsa sum-difference constant | 1.1835129324 (1.19102809*) | 1.33333 |
 | [3b](https://teorth.github.io/optimizationproblems/constants/3b.html) | Kakeya sums-differences constant | 1.77898 (1.77898884*) | 1.83333 |
 | [3c](https://teorth.github.io/optimizationproblems/constants/3c.html) | 4-slope Kakeya-type sum-difference constant | 1.67473389 | 1.75 |
@@ -30,7 +30,7 @@ Bounds for which the level of available verification is currently at minimal lev
 | [7b](https://teorth.github.io/optimizationproblems/constants/7b.html) | Irrationality measure of $\Gamma(1/4)$ | 2 | $10^{143}$ |
 | [8](https://teorth.github.io/optimizationproblems/constants/8a.html) | Classical zero-free region constant | 0.755106 | 4.896 |
 | [9](https://teorth.github.io/optimizationproblems/constants/9a.html) | Shannon capacity of the 7-cycle | 3.2578 | 3.3177 |
-| [10a](https://teorth.github.io/optimizationproblems/constants/10a.html) | The real Grothendieck constant | $1.67696 + 10^{-12}$ | 1.78215358819137 |
+| [10a](https://teorth.github.io/optimizationproblems/constants/10a.html) | The real Grothendieck constant | $\frac{6\pi}{11}\approx 1.71360$ | $\frac{\pi}{2\log(1+\sqrt{2})} - 10^{-4} \approx 1.78211$ |
 | [10b](https://teorth.github.io/optimizationproblems/constants/10b.html) | The complex Grothendieck constant | 1.338 | 1.40491 |
 | [10c](https://teorth.github.io/optimizationproblems/constants/10c.html) | Spencer discrepancy constant (“six standard deviations suffice”) | 1.697749 | 3.674235 (3.65*) |
 | [11a](https://teorth.github.io/optimizationproblems/constants/11a.html) | $L^1$ Poincaré constant on the Hamming cube | $\sqrt{\pi/2} \approx 1.2533$ | $\pi/2 - 0.00013 \approx 1.5707$ |
@@ -148,6 +148,8 @@ Bounds for which the level of available verification is currently at minimal lev
 - [3a](https://teorth.github.io/optimizationproblems/constants/3a.html) **improved lower bound (limit value):** $C_{3a} \geq 1.19102809*$ by [L. Kleinwaks](https://github.com/kleinwaks/masked-digit-sum-difference-bound), 24 Jul 2026.
 - [3d](https://teorth.github.io/optimizationproblems/constants/3d.html) **solved:** $C_{3d} = 2$ by [H. Lin and S. Li](https://arxiv.org/abs/2607.27199), 29 Jul 2026.
 - [3b](https://teorth.github.io/optimizationproblems/constants/3b.html) **improved lower bound:** $C_{3b} \geq 1.77898884$ by Mosaic Intelligence, [entropy certificate](https://doi.org/10.5281/zenodo.20794135) on a 13-point support.
+- [10a](https://teorth.github.io/optimizationproblems/constants/10a.html) **improved upper and lower bounds:** $\frac{6\pi}{11} \leq C_{10a} \leq \frac{\pi}{2\log(1+\sqrt{2})} - 10^{-4}$ by [R. Saha, A. Li, A. Xue, S. Chaudhuri, A. Klivans, P. K. Kothari, R. Meka](https://arxiv.org/abs/2608.11158), 11 Aug 2026 — determines the tenths digit of $C_{10a}$ to be $7$.
+- [2](https://teorth.github.io/optimizationproblems/constants/2a.html) **solved:** $C_2 = 2$ by [E. Lorist and F. L. Schwenninger](https://arxiv.org/abs/2608.03841), 4 Aug 2026 — proof of Crouzeix's conjecture.
 
 ## Maintainers
 
