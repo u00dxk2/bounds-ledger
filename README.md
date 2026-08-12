@@ -27,10 +27,10 @@ It has also caught itself. [`docs/findings/`](docs/findings/) holds both kinds o
 
 ## Current state
 
-Read 2026-08-03. Re-derive it yourself with `npm run check`.
+Read 2026-08-11. Re-derive it yourself with `npm run check`.
 
-- **111** mirrored constant files, byte-identical to upstream [`teorth/optimizationproblems`](https://github.com/teorth/optimizationproblems) at `dee1660`
-- **229 claims — 227 hold, 0 broken, 2 UNVERIFIED by design** (see below)
+- **112** mirrored files — 111 constant files plus upstream's repo-root `README.md` — byte-identical to upstream [`teorth/optimizationproblems`](https://github.com/teorth/optimizationproblems) at `400a9bb`. The README is in scope because it is where upstream declares which bounds it stands behind: a bound demoted to "verification at minimal levels" leaves every constants file unchanged.
+- **231 claims — 229 hold, 0 broken, 2 UNVERIFIED by design** (see below)
 - Checks run daily in CI (09:17 UTC), on push, and on demand
 
 ## Run it
@@ -38,7 +38,7 @@ Read 2026-08-03. Re-derive it yourself with `npm run check`.
 No dependencies — Node stdlib and `fetch` only. `npm install` is a no-op.
 
 ```
-npm test         # network-free self-tests (5)
+npm test         # network-free self-tests (11)
 npm run check    # LIVE: re-fetch upstream, diff the mirror, re-verify every claim
 ```
 
@@ -52,11 +52,13 @@ Two complementary checks, because either alone has a blind spot.
 
 **2. Claim pins** (`check-claims.mjs`) — `ledger/claims.json` names, per claim, a source URL and the exact string that must still appear there, **across every surface the ledger cites**: the upstream repo at live HEAD, arXiv abstracts, Wikipedia, the community metadata database behind erdosproblems.com. Cross-surface divergence produced this lane's founding finding; a same-repo mirror diff would never have seen it.
 
-Coverage is 9 hand-written claims plus 220 pins generated from the mirror.
+Coverage is 11 hand-written claims plus 220 pins generated from the mirror — an upper- and a lower-bound pin for each of 110 constant files. The 111th, `1b.md`, is deliberately excluded from generation and hand-pinned as C-1/C-3 instead, so ledger coverage is complete.
 
 ## Four rules that are load-bearing
 
 **A red run is the alarm working, not a bug.** Records are *supposed* to move. Re-snapshotting to silence a red run is the one thing that would make this repo worthless. The discipline is: verify against primary sources → `--snapshot` → regenerate pins → commit deliberately. Editorial drift gets the same treatment as numeric drift; the mirror's contract is byte-fidelity, not just "the numbers still look right".
+
+*Rolling one back:* a `--snapshot` that blessed an upstream change you should not have accepted is reverted like any other commit — `git revert` it (mirror, `claims.json` and `manifest.json` move together in one commit), then re-run `scripts/extract-pins.mjs` and commit that too. Pins do not follow the mirror automatically in either direction, which is what makes both the forward and the backward step deliberate.
 
 **An unverifiable claim reports UNVERIFIED, never green.** Two claims cite a page that serves HTTP 403 to datacenter IPs, so CI can never check them. They stay UNVERIFIED permanently and never count toward a pass. A run from a residential connection prints an *advisory* result that touches neither the counts nor the exit code. Two UNVERIFIED claims are not a gap in the ledger — they are the ledger declining to launder an unverifiable fact into a green.
 

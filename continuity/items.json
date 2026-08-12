@@ -415,6 +415,22 @@
         "083de88",
         "575c01f"
       ]
+    },
+    {
+      "id": "A-14",
+      "created": "2026-08-11",
+      "type": "active",
+      "status": "open",
+      "title": "PROPOSED upstream correction: teorth/optimizationproblems README marks 3b unverified in the table but not on its improvement line (David-gated, not sent)",
+      "note": "Found during the 2026-08-11 evening drift cycle (upstream dee1660 -> 400a9bb), which is also W-5's first fire on a real change. Upstream README states its own convention: bounds whose available verification is at minimal levels are marked with an asterisk in the summary table. The 3b row now reads '1.77898 (1.77898884*)' -- marked. The recent-improvements line announcing the SAME bound (13-point entropy certificate by Mosaic Intelligence, DOI 10.5281/zenodo.20794135) carries neither the asterisk nor the '(unverified)' tag. ENUMERATED, not eyeballed: across all 17 improvement lines against all 111 table rows, 6 of 6 lines tagged '(unverified)' have asterisked rows, 9 untagged lines have unasterisked rows, 3a x2 drop the tag but keep the asterisk on the value -- and 3b alone has an asterisked row with neither mark. ADVERSARIAL PASS APPLIED TO OUR OWN CLAIM: the stated legend scopes the asterisk to 'the table below', so the improvement line is not strictly governed by it and the omission is defensible as a changelog entry carrying no status; the claim therefore rests on departure from upstream's own uniform PRACTICE (6 of 6), not on breach of a stated rule, and the finding says so in those words. We do NOT claim the bound is unverified -- only that the two surfaces are out of step and upstream should pick one. A join artifact was caught en route that would have manufactured a second false exception: the [22] improvement line points at a table row labelled [22a], so a naive id-join falsely reports it unmarked; join on label AND slug. Same shape as the correction that became PR #141: one line, checkable, non-mathematical. Finding: docs/findings/2026-08-11-the-readme-leg-fires-in-anger.md.",
+      "closeWhen": "David rules send or drop. If send: the adversarial review is already in the finding; a PR against teorth/optimizationproblems README.md follows, and an ACCEPTED one is a dated external ack for G-1/W-3. If drop: close with the reason recorded.",
+      "verifyBy": {
+        "method": "re-fetch the upstream README at send time and re-run the 17-line enumeration -- upstream may have fixed it already, in which case there is nothing to send and that is the honest outcome",
+        "owner": "bounds-ledger"
+      },
+      "linkedCommits": [
+        "d30d4e4"
+      ]
     }
   ]
 }
