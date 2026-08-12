@@ -95,6 +95,17 @@ jobs:
       # repo secrets); only the merge logic is guarded here.
       - name: Self-test traffic sampler merge (no network)
         run: node scripts/traffic-snapshot.mjs --selftest
+      # The generator that keeps README's "Current state" honest. Its selftest proves BOTH
+      # answers — no-op on a current block, fires on a stale sha AND a stale count — because a
+      # generator that cannot go red silently agrees with whatever is already written, which is
+      # the exact failure it exists to prevent (KP-78 / W-4).
+      - name: Self-test README state-block generator (no network)
+        run: node scripts/render-state-block.mjs --selftest
+      # Not piped and deliberately network-free: this asserts README's published figures still
+      # match COMMITTED repo state. A stale block is a falsifiable public error on the front
+      # page of a repo whose pitch is that it notices stale numbers.
+      - name: Check README state block matches committed state
+        run: node scripts/render-state-block.mjs --check
       # `shell: bash` is load-bearing: the DEFAULT runner shell is `bash -e {0}` with NO
       # pipefail, so `node ... | tee` reports tee's exit 0 and a drift exits GREEN. Naming
       # the shell gets `-eo pipefail`. Guarded by reverify.test.mjs.
