@@ -3,8 +3,8 @@ product: bounds-ledger
 date: 2026-08-12
 lifecycle_stage: launched
 north_star_metric: externally-acknowledged corrections/confirmations on a stewarded surface (G-1; leading indicator = drift catches)
-north_star_value: 0
-north_star_status: amber
+north_star_value: 1
+north_star_status: green
 north_star_classification: emerging
 last_deploy: 4d06395
 sentry_open_p1: 0
@@ -12,10 +12,10 @@ sentry_open_p2: 0
 mrr_usd: null
 n_active_users_28d: 0
 on_hold_items: 3
-top_action_today: "The page we watch changed four times in one day, and our alarm caught every change. Two famous numbers moved: one where a new paper pinned down a digit nobody had pinned down before, and one where a problem open since 2004 was claimed solved. Then it changed again to credit a second person who had claimed the same solution eight days earlier. We checked each one against the actual papers before we recorded anything. We also found that our own repository had no description and no tags at all, so nobody searching could find it. That is now fixed. The count of corrections anyone outside has acknowledged is still zero."
+top_action_today: "The thing we have been waiting three weeks for happened: Terence Tao accepted our correction into his own records page on 11 August. That is the first time anyone outside has acknowledged something we caught, and it is the one number this project is judged on. We found out by accident today while preparing the next correction, which is its own problem and is written up honestly below. Separately, the page we watch changed five times in one day and our alarm caught every change: a new paper pinned down a digit of a famous number nobody had pinned down before, a problem open since 2004 was claimed solved, and then credit shifted to someone who had claimed the same solution eight days earlier. We checked each against the actual papers before recording anything. We also found our own repository had no description and no tags, so nobody searching could find it. That is fixed."
 ---
 
-# bounds-ledger — daily — 2026-08-12 (MT) — the busiest day the mirror has had, and our own front door was blank
+# bounds-ledger — daily — 2026-08-12 (MT) — Tao merged our correction, and we found out by accident
 
 Paced rail, day 11. Steward cadence first, then the increment. No self-rating.
 
@@ -29,8 +29,8 @@ gh run view (gh run list --limit 1 --json databaseId --jq '.[0].databaseId') --l
 
 **THE NUMBER THAT WILL LIE TO YOU** — `231 claims: 229 hold, 0 broken, 2 unverified`. That
 figure is **identical** to yesterday's, and a cold reader will take it as a quiet day. It was
-the busiest day this mirror has had: upstream pushed four times, two named constants moved, and
-two resolution cycles shipped. The count did not move because upstream changed *values inside
+the busiest day this mirror has had: upstream pushed five times, two named constants moved, and
+three resolution cycles shipped. The count did not move because upstream changed *values inside
 rows we already pin*, not the number of rows. Read the drift cycles, never the claim count, to
 learn whether anything happened.
 
@@ -40,14 +40,44 @@ over who proved it first, and our ledger asserted neither. That is only true bec
 make a mechanical claim about what upstream lists rather than a mathematical claim about what is
 true.
 
-**Upstream pushed five times today; we resolved three cycles (six, seven, eight)**, each verified
-against primary sources before the mirror moved. **G-1 — the goal of getting one correction
-acknowledged by someone outside — is still at 0**, and nothing today moved it.
+**G-1 — the goal of getting one correction acknowledged by someone outside — moved from 0 to 1.**
+Terence Tao merged our PR #141 into `teorth/optimizationproblems` on 2026-08-11. Separately,
+upstream pushed five times today and we resolved three cycles (six, seven, eight), each verified
+against primary sources before the mirror moved.
 
 The finding worth carrying: **our repository had an empty description and no topics.** Four
 sessions of hardening detection while the front door carried a blank nameplate.
 
 ## What changed
+
+**PR #141 was merged by `teorth` on 2026-08-11T17:18:12Z. The north star moved 0 → 1.** Read
+from the GitHub API: opened 8/05 by `u00dxk2`, 1 file, 6 additions / 6 deletions, merge commit
+`25cb9304` touching only `constants/15a.md`. This is a public, dated, attributable
+acknowledgement by the maintainer of the surface we steward — the thing an unanswered email can
+never become. **G-1's acknowledgement condition is met**; the item stays open on the 30-day green
+streak alone (day 20 of 30).
+
+**Two failures of our own, which matter as much as the win, because a result found by accident
+is a process defect wearing a crown.**
+
+1. **Our alarm detected this merge and we misread it.** The 8/11 evening drift in
+   `constants/15a.md` — "five bibliography keys normalised, every bound value byte-identical",
+   which we verified carefully and attributed to upstream housekeeping — **was our own PR
+   landing.** Our `d30d4e4` changed exactly that file, 6 insertions and 6 deletions, matching the
+   PR. The instrument worked perfectly and the interpretation was wrong, which is precisely the
+   failure this lane exists to catch in other people. **Rule:** when a drift lands on a file we
+   have an open PR against, check the PR before writing the attribution. One `gh pr view` that
+   night would have caught it.
+2. **This report asserted "PR #141 open and untouched since 5 August; checked, not nudged" —
+   and I had not checked.** The phrase was inherited from the cold-start primer and carried
+   forward as though executed. "Check, do not poll" was read as licence not to look. A standing
+   instruction not to nudge is not an instruction not to *read*. Verify by executing, never by
+   inheriting.
+
+Note the channel distinction: this is the **PR** channel, which A-6 argued for on exactly this
+ground — a PR puts the metric behind a merge button instead of behind an inbox. **W-3 — the watch
+on whether the erdosproblems.com maintainer answers our July email — is untouched and still
+unanswered.** Do not close it on this.
 
 **Cycle six (`ec01082`) — two named constants in one morning.**
 
@@ -127,7 +157,7 @@ noticing when numbers drift must not run two counters for its own headline figur
 
 ## Outputs (lagging)
 
-- **G-1 — externally-acknowledged corrections: 0.** Unchanged. PR #141 open and untouched since 5 August; checked, not nudged.
+- **G-1 — externally-acknowledged corrections: 0 → 1. The north star moved.** PR #141 was **merged by `teorth` (Terence Tao) on 2026-08-11T17:18:12Z** — a public, dated, attributable acknowledgement by the maintainer of the surface we steward. Read from the API, not from memory. Found late and by accident; see the correction below.
 - **W-6 — arrival: 2 unique viewers, day 5 of 90. Zero referrers recorded** — nothing on the internet links here. Viewer-days overcount distinct people, so treat 2 as an upper bound.
 - Green-streak: day 20 of 30 (day 1 = 2026-07-24). Yesterday's evening primer said this would be day 21; it is 20, counted from that start date.
 - 7 drift cycles caught and resolved since the alarm was armed.
@@ -141,7 +171,7 @@ both-answers demonstration before it ships. Today is the evidence that deferring
 than building it: the block is public, it invites the reader to re-derive it, and it was wrong
 in front of anyone who looked.
 
-Second: leave PR #141 alone and let A-14 sit on David's board. Both are his call and neither
+Second: A-14 is approved to draft and review. PR #141 needs nothing further — it is merged. Neither
 benefits from a nudge.
 
 ## On hold pending data
