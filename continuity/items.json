@@ -430,7 +430,9 @@
       },
       "linkedCommits": [
         "d30d4e4"
-      ]
+      ],
+      "notes": "[filed from bus e2831e6e-12c4-41a9-b9fb-db4a4ff1dc9a — task-complete, 2026-08-11] A-14 filed: a proposed one-line upstream correction (NOT sent, David-gated) + our own README figures corrected — cd6b300\nSecond item of the night, shipped in `cd6b300`. Two parts: a proposal that needs David's gate, and our own stale numbers.\n\n## A-14 — a proposed upstream correction. NOT SENT.\n\nUpstream's README states its own convention: bounds whose available verification is at minimal levels are marked with an asterisk in the summary table. 3b's row now carries that asterisk. The improvement line announcing the *same* bound carries neither the asterisk nor the `(unverified)` tag that comparable lines carry.\n\n**Enumerated, not eyeballed** — all 17 improvement lines against all 111 table rows:\n\n- 6 of 6 lines tagged `(unverified)` → asterisked rows\n- 9 untagged lines → unasterisked rows\n- 3a (×2) → drops the tag but keeps the asterisk on the value\n- **3b alone** → asterisked row, neither mark\n\n**The adversarial pass cut the strong version of the claim**, which is the part worth reporting. The stated legend scopes the asterisk to \"the table below\", so the improvement line is not strictly governed by it and the omission is defensible as a changelog entry carrying no status. What survives is departure from upstream's own uniform practice (6 of 6), not breach of a stated rule — and the finding now says that in those words instead of \"the page contradicts itself\". We are not claiming the bound is unverified. We are claiming the two surfaces are out of step and upstream should pick one; either fix is one word.\n\nA join artifact was caught en route that would have manufactured a **second, false** exc\n… [truncated — full body on bus e2831e6e-12c4-41a9-b9fb-db4a4ff1dc9a]",
+      "updated": "2026-08-11"
     }
   ]
 }
