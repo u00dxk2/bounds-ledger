@@ -11,6 +11,7 @@ A reproducible, continuously re-verified ledger of drifting mathematical records
 - `npm test` — network-free self-tests, all wired into CI (`reverify.test.mjs` fails if you add another without a workflow step, and prints the live count so this line cannot go stale)
 - `npm run check` — LIVE checks: mirror diff + cross-surface claim re-verification
 - `npm run traffic` — sample GitHub traffic into `continuity/traffic.json` (W-6; the API keeps only 14 days, so skipping this for a fortnight loses those days permanently). Needs `gh` auth; never runs in CI.
+- `npm run catches` — Tier-1 indicator: verified catches on named records, per week (derived from git history, so it cannot go stale). Renders a figure and no verdict; never fails a build, never runs in CI. A month of zeros is the signal to adopt a SECOND surface.
 - `node scripts/reverify.mjs --check | --snapshot` — diff mirror vs upstream / refresh it
 - `node scripts/extract-pins.mjs` — regenerate generated pins (run after EVERY `--snapshot`)
 - `node scripts/check-claims.mjs` · `check-brief.mjs` (needs `CC_PROMPTS_PIN`) · `history-sweep.mjs`

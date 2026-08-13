@@ -101,6 +101,13 @@ jobs:
       # the exact failure it exists to prevent (KP-78 / W-4).
       - name: Self-test README state-block generator (no network)
         run: node scripts/render-state-block.mjs --selftest
+      # Guards the catches-per-week indicator's ONE judgment: which claims.json edits count as
+      # a record moving. Fixtures, not git history — `actions/checkout` is depth-1, so a
+      # history-walking self-test would pass locally and be untestable here, which is the
+      # test-it-from-the-environment-that-runs-it rule. The indicator itself never runs in CI:
+      # it renders a figure and no verdict, so there is nothing for a build to fail on.
+      - name: Self-test catch-rate indicator (no network)
+        run: node scripts/catch-rate.mjs --selftest
       # Not piped and deliberately network-free: this asserts README's published figures still
       # match COMMITTED repo state. A stale block is a falsifiable public error on the front
       # page of a repo whose pitch is that it notices stale numbers.
