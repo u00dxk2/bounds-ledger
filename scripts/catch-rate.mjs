@@ -145,7 +145,12 @@ const thisWeek = weekOf(new Date().toISOString().slice(0, 10));
 if (!weeks.has(thisWeek)) weeks.set(thisWeek, []);
 const ordered = [...weeks.entries()].sort((a, b) => a[0].localeCompare(b[0]));
 
-console.log(`# Verified catches on named records, per week — ${new Date().toISOString()}`);
+// Self-describing on purpose (orchestrator feedback 2026-08-13): the figure is a CEILING on
+// catches, and the header has to say so, because a reader who skips the caveat line will quote
+// whatever the header called it. It counts listing-position MOVEMENTS, one of which is our own
+// merged PR. The zero side is unaffected — a zero on an upper bound is a true zero — and the
+// zero side is the only half the decision rule consumes.
+console.log(`# Record-listing MOVEMENTS per week — a CEILING on catches, not a count of them — ${new Date().toISOString()}`);
 for (const [week, moved] of ordered) {
   const distinct = [...new Set(moved)].sort();
   const label = week === thisWeek ? " (current, partial)" : "";
@@ -166,8 +171,10 @@ for (let i = ordered.length - 1; i >= 0; i--) {
   dryWeeks++;
 }
 const total = ordered.reduce((n, [, moved]) => n + new Set(moved).size, 0);
+// QUOTE THE PER-WEEK FIGURE, NEVER THIS TOTAL. The indicator is a rate; the running total
+// answers no question we ask of it and only ever grows, so it reads as progress by construction.
 console.log(
-  `\n${total} distinct record(s) moved across ${ordered.length} week(s); ${dryWeeks} consecutive week(s) with none (the current week counts only once it is already dry).`,
+  `\n${total} movement(s) on distinct pins across ${ordered.length} week(s) — quote the PER-WEEK figure, never this total; ${dryWeeks} consecutive week(s) with none (the current week counts only once it is already dry).`,
 );
 console.log("A month of zeros is the signal to adopt a SECOND surface, not to try harder on this one.");
 // Stated every run rather than filed in a doc nobody re-reads: this figure is an UPPER
