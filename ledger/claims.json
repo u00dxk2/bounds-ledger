@@ -1819,6 +1819,22 @@
     "generated": true
   },
   {
+    "id": "pin:87a:U",
+    "statement": "Last-listed upper-bound table row for Martinet's constant for totally real number fields (87a.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/87a.md",
+    "expect": "| $857.567$ | [HMR2019] | Hajir–Maire–Ramakrishna, \"cutting towers\" via the refined Golod–Shafarevich criterion; explicit example is an $8$-th root class-field tower over the totally real field of [HM2002] with $2$-class group of rank $8$, yielding $\\mathrm{rd} \\le 3^4\\cdot 5^4\\cdot 7^4\\cdot 13^2\\cdot 29^4\\cdot 53^2\\cdot 109^2 \\le 857.5662\\dots$  Current record. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/87a.md",
+    "generated": true
+  },
+  {
+    "id": "pin:87a:L",
+    "statement": "Last-listed lower-bound table row for Martinet's constant for totally real number fields (87a.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/87a.md",
+    "expect": "| $215.333\\dots$ | [Odl1990] | GRH-conditional Odlyzko–Serre lower bound in the totally real signature. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/87a.md",
+    "generated": true
+  },
+  {
     "id": "pin:8a:U",
     "statement": "Last-listed upper-bound table row for Classical zero-free region constant (8a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/8a.md",

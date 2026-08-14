@@ -125,6 +125,7 @@ Bounds for which the level of available verification is currently at minimal lev
 | [84b](https://teorth.github.io/optimizationproblems/constants/84b.html) | Sum-product exponent for the reals | $\frac{4}{3}+\frac{10}{4407}\approx 1.3356$ | $<2$ (1.999281*) |
 | [85](https://teorth.github.io/optimizationproblems/constants/85a.html) | Exponent for commutators close to the identity | 1 | 4 |
 | [86](https://teorth.github.io/optimizationproblems/constants/86a.html) | Schur–Siegel–Smyth trace constant | 1.80203 | 1.8216 |
+| [87](https://teorth.github.io/optimizationproblems/constants/87a.html) | Martinet's constant for totally real number fields | 60.8395 | 857.567 |
 
 
 ## Recent progress
