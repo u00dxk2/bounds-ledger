@@ -78,9 +78,9 @@ Coverage is 11 hand-written claims plus 220 pins generated from the mirror — a
 
 ## Status and limits, stated plainly
 
-- **One correction has been sent upstream** (2026-07-24, by email, after an adversarial review that cut one claim). It has **not** been acknowledged. The metric this project judges itself by — externally-acknowledged corrections — is **0**.
+- **The metric this project judges itself by — externally-acknowledged corrections — is 1.** Five citation keys, submitted as a pull request and merged by the maintainer of the adopted repository on 2026-08-11. A second correction, sent by email to a different site on 2026-07-24 after an adversarial review that cut one claim, is **still unanswered**; the two are separate channels and the merge says nothing about the email.
 - **Two adopted surfaces.** This is not a survey of mathematical records; it is a deep watch on a small, named set.
-- **Known blind spot:** upstream's `README.md` is not mirrored, and it is where upstream states which records it stands behind — including records flagged as not yet peer-reviewed. The alarm is silent on that today.
+- **Known limit:** this ledger checks that a cited record still says what it said, and that the surfaces citing it agree. It does not verify the mathematics behind any record. Where a bound is supported by a claimed proof that has not been refereed, the ledger tracks the row and upstream's own hedging — it does not adjudicate the proof.
 - Bounds do not live in the metadata repository, so a bound correction can never be filed there. Its PR channel covers metadata only.
 
 ## One thing deliberately removed
