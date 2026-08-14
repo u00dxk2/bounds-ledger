@@ -7,6 +7,22 @@
 // IS THE ADOPTED SURFACE STILL ALIVE ENOUGH TO BE WORTH STEWARDING? A month of zeros
 // is the signal to adopt a SECOND surface, not to try harder on this one.
 //
+// AMENDED 2026-08-14 (orchestrator-approved): THE ZEROS DO NOT FIRE ALONE. Before
+// concluding the surface is dry, read docs/findings/ over the same window. Rationale is
+// 2026-08-14 itself: upstream ADDED constants/87a.md, this indicator correctly counted
+// zero (an addition is not a movement, and its selftest asserts that silence), and the
+// same cycle produced the lane's best output in weeks — a verified defect in that new
+// page's record row, found by hand. The zeros measure drift DETECTION only. The lane's
+// single external acknowledgement, G-1 = 1, came from manual error DETECTION this
+// indicator is built not to see. A trigger that consumes only the zeros would therefore
+// read "surface is dry" off an instrument that cannot see the work.
+//   Dry means BOTH reads dry: no movements AND no findings in the window.
+//   And the amendment tightens the EVIDENCE BAR only — adopting a second surface remains
+//   a surfaced decision for David/the orchestrator, never self-approved on a firing rule.
+//   Deliberately NOT built: a counter over docs/findings/. A number we can raise by
+//   writing more files is inflatable exactly like a self-rating, which this lane refuses
+//   for the same reason. A human reads the window; nothing counts it.
+//
 // Derived from git history, never hand-maintained — same reason README's state block is
 // generated. A figure a human retypes weekly is a figure that goes stale between retypes.
 //
@@ -177,6 +193,9 @@ console.log(
   `\n${total} movement(s) on distinct pins across ${ordered.length} week(s) — quote the PER-WEEK figure, never this total; ${dryWeeks} consecutive week(s) with none (the current week counts only once it is already dry).`,
 );
 console.log("A month of zeros is the signal to adopt a SECOND surface, not to try harder on this one.");
+console.log(
+  "The zeros do NOT fire that alone (amended 2026-08-14): read docs/findings/ over the same window first — dry means no movements AND no findings. This counts drift DETECTION only, and G-1's one acknowledgement came from manual error detection it cannot see. Adopting a second surface stays David's call, never self-approved.",
+);
 // Stated every run rather than filed in a doc nobody re-reads: this figure is an UPPER
 // BOUND on records caught moving. Two known inflations, both real in the history above:
 //   - A citation-key rename moves a pin without moving a bound. pin:15a:U (2026-08-11) is
