@@ -102,8 +102,12 @@ function weekOf(isoDate) {
 // table skipped the week of 2026-08-03 entirely rather than printing it as a zero.
 export function fillDryWeeks(weeks, thisWeek) {
   const keys = [...weeks.keys()].sort();
+  const last = keys.length ? keys[keys.length - 1] : thisWeek;
+  // Fill to whichever is later. A future-dated key (author clock skew) would otherwise sit
+  // beyond the fill target with a gap in front of it — F3 of the 2026-08-15 review.
+  const end = last > thisWeek ? last : thisWeek;
   let w = keys.length ? keys[0] : thisWeek;
-  while (w <= thisWeek) {
+  while (w <= end) {
     if (!weeks.has(w)) weeks.set(w, []);
     const d = new Date(`${w}T00:00:00Z`);
     d.setUTCDate(d.getUTCDate() + 7);
@@ -112,15 +116,37 @@ export function fillDryWeeks(weeks, thisWeek) {
   return weeks;
 }
 
-// Trailing zero weeks, newest first. Isolated so the self-test can exercise the counter the
-// decision rule actually consumes, rather than the table a human reads.
-export function trailingDry(ordered) {
+// Trailing COMPLETED dry weeks, newest first. Isolated so the self-test can exercise the
+// counter the decision rule actually consumes, rather than the table a human reads.
+//
+// The current week is excluded, and that exclusion is the whole point (F1 of the 2026-08-15
+// cross-family review). The printed table labels the newest row "(current, partial)", but the
+// label is on the surface a HUMAN reads while the rule acts on this number — so counting the
+// partial week would fire "a month of zeros" up to six days early, on the Monday a drought had
+// completed only three weeks. A month is four COMPLETED weeks. Weeks dated after the current
+// one are excluded for the same reason and because they cannot be complete either.
+//
+// A movement still breaks the streak wherever it lands, current week included: if the surface
+// moved this week it is not dry, whatever the completed-week count would otherwise say.
+export function trailingDry(ordered, currentWeek) {
   let n = 0;
   for (let i = ordered.length - 1; i >= 0; i--) {
-    if (ordered[i][1].length) break;
+    const [week, moved] = ordered[i];
+    if (moved.length) break;
+    if (week >= currentWeek) continue;
     n++;
   }
   return n;
+}
+
+// git's %as is the author-LOCAL date, so "today" has to be the local calendar date as well.
+// A UTC "today" buckets a Sunday-evening commit in a negative-offset zone into the week before
+// the one "now" lands in, and the movement reads as an immediate dry week — F2 of the
+// 2026-08-15 review. One zone on both sides of the comparison.
+function localToday() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
 function show(ref) {
@@ -178,18 +204,35 @@ if (process.argv.includes("--selftest")) {
   assert.equal(weekOf("2026-08-10"), "2026-08-10", "Monday belongs to its own week");
   assert.equal(weekOf("2026-08-09"), "2026-08-03", "Sunday belongs to the week before");
 
-  // FIRES: four calendar weeks with no claims.json commit must read as four dry weeks.
+  // FIRES: four COMPLETED weeks with no claims.json commit must read as four dry weeks.
   // Before fillDryWeeks existed this same input printed two rows and reported dryWeeks 1 —
   // the drought the decision rule consumes was the drought it could not see.
-  const drought = [...fillDryWeeks(new Map([["2026-07-06", ["pin:x:U"]]]), "2026-08-03").entries()].sort();
-  assert.deepEqual(drought.map(([w]) => w), ["2026-07-06", "2026-07-13", "2026-07-20", "2026-07-27", "2026-08-03"]);
-  assert.equal(trailingDry(drought), 4, "four quiet weeks must read as four");
+  const drought = [...fillDryWeeks(new Map([["2026-07-06", ["pin:x:U"]]]), "2026-08-10").entries()].sort();
+  assert.deepEqual(drought.map(([w]) => w), [
+    "2026-07-06", "2026-07-13", "2026-07-20", "2026-07-27", "2026-08-03", "2026-08-10",
+  ]);
+  assert.equal(trailingDry(drought, "2026-08-10"), 4, "four completed quiet weeks must read as four");
+
+  // SILENT — the partial current week is NOT a dry week (F1, 2026-08-15 review). The same
+  // history one week earlier has only THREE completed dry weeks behind it, and counting the
+  // partial would fire the month-of-zeros rule six days early.
+  const early = [...fillDryWeeks(new Map([["2026-07-06", ["pin:x:U"]]]), "2026-08-03").entries()].sort();
+  assert.equal(trailingDry(early, "2026-08-03"), 3, "the current partial week must not be counted");
 
   // SILENT: an unbroken run of weeks gains nothing, and an active newest week is not dry.
   assert.equal(fillDryWeeks(new Map([["2026-08-03", []], ["2026-08-10", ["pin:x:U"]]]), "2026-08-10").size, 2);
-  assert.equal(trailingDry([["2026-08-10", ["pin:x:U"]]]), 0, "an active week must not count as dry");
+  assert.equal(
+    trailingDry([["2026-08-03", []], ["2026-08-10", ["pin:x:U"]]], "2026-08-10"),
+    0,
+    "a movement in the current week breaks the streak wherever the completed weeks stand",
+  );
 
-  console.log("catch-rate.test: PASS (fires on a moved generated pin; silent on unchanged, added, removed, hand-claim, and absent-file; week buckets Monday-anchored; a 4-week drought reads as 4 dry weeks, a full run fills nothing)");
+  // A future-dated key (author clock skew) gets no gap in front of it and is not counted (F3).
+  const skewed = [...fillDryWeeks(new Map([["2026-08-03", ["pin:x:U"]], ["2026-08-24", []]]), "2026-08-10").entries()].sort();
+  assert.deepEqual(skewed.map(([w]) => w), ["2026-08-03", "2026-08-10", "2026-08-17", "2026-08-24"]);
+  assert.equal(trailingDry(skewed, "2026-08-10"), 0, "weeks at or after the current one are not completed");
+
+  console.log("catch-rate.test: PASS (fires on a moved generated pin; silent on unchanged, added, removed, hand-claim, and absent-file; week buckets Monday-anchored; 4 completed dry weeks read as 4, the partial current week is excluded, a full run fills nothing, and a future-dated key neither gaps nor counts)");
   process.exit(0);
 }
 
@@ -200,7 +243,7 @@ for (const c of commits) {
   weeks.get(c.week).push(...c.moved);
 }
 
-const thisWeek = weekOf(new Date().toISOString().slice(0, 10));
+const thisWeek = weekOf(localToday());
 const ordered = [...fillDryWeeks(weeks, thisWeek).entries()].sort((a, b) => a[0].localeCompare(b[0]));
 
 // Self-describing on purpose (orchestrator feedback 2026-08-13): the figure is a CEILING on
@@ -223,12 +266,12 @@ for (const [week, moved] of ordered) {
   );
 }
 
-const dryWeeks = trailingDry(ordered);
+const dryWeeks = trailingDry(ordered, thisWeek);
 const total = ordered.reduce((n, [, moved]) => n + new Set(moved).size, 0);
 // QUOTE THE PER-WEEK FIGURE, NEVER THIS TOTAL. The indicator is a rate; the running total
 // answers no question we ask of it and only ever grows, so it reads as progress by construction.
 console.log(
-  `\n${total} movement(s) on distinct pins across ${ordered.length} week(s) — quote the PER-WEEK figure, never this total; ${dryWeeks} consecutive week(s) with none (the current week counts only once it is already dry).`,
+  `\n${total} movement(s) on distinct pins across ${ordered.length} week(s) — quote the PER-WEEK figure, never this total; ${dryWeeks} COMPLETED consecutive week(s) with none — the current partial week is never counted, and a month is four.`,
 );
 console.log("A month of zeros is the signal to adopt a SECOND surface, not to try harder on this one.");
 console.log(

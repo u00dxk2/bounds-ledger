@@ -41,15 +41,46 @@ weeks printed: 2026-07-06 2026-08-03
 dryWeeks reported: 1   actual quiet weeks: 4
 ```
 
-After the fix, the same input is asserted in the self-test:
+After the fix, the same shape is asserted in the self-test — one active week, then silence up to
+and including the current partial week:
 
 ```
-["2026-07-06","2026-07-13","2026-07-20","2026-07-27","2026-08-03"]   trailingDry = 4
+["2026-07-06","2026-07-13","2026-07-20","2026-07-27","2026-08-03","2026-08-10"]   trailingDry = 4
 ```
 
-and the negative control is asserted alongside it — a run of weeks with no gaps gains no rows
-(`size` stays 2), and a newest week with a movement in it counts as 0 dry, not 1. A gap-filler
+and the negative controls are asserted alongside it — a run of weeks with no gaps gains no rows
+(`size` stays 2), and a movement in the newest week counts as 0 dry, not 1. A gap-filler
 that always inserts would satisfy the first assertion while proving nothing.
+
+## What the cross-family review changed
+
+The branch went through the cross-family review lane armed the same morning, because
+`catch-rate.mjs` is a trusted-print instrument — a script whose printed line a later reader
+believes. The core fix was confirmed correct; three findings landed on top, all three fixed before
+merge.
+
+**F1, material.** `fillDryWeeks` fills up to *and including* the current week, and the first
+version of `trailingDry` counted it. The printed table labels that row `(current, partial)` — but
+the label sits on the surface a **human** reads while the rule acts on the **number**. So on the
+Monday a drought completed its third week, the counter would read 4 and fire *a month of zeros* up
+to six days early. A month is four **completed** weeks. `trailingDry` now takes the current week
+and skips it, and skips anything dated after it for the same reason. A movement still breaks the
+streak wherever it lands, current week included — if the surface moved this week it is not dry,
+whatever the completed-week count says.
+
+This is the caveat-on-the-wrong-surface class, and it is worth naming because this lane keeps
+producing it: the honest hedge went on the table, not on the figure the decision consumes. It is
+the same shape as the header rule on this script's own output, arrived at from the opposite
+direction.
+
+**F2.** Commit weeks came from git's `%as`, which is the author-**local** date, while "today" came
+from a UTC clock. A Sunday-evening commit in a negative-offset zone buckets one week while *now*
+buckets the next, and the movement reads as an immediate dry week. Both sides now use the local
+calendar date.
+
+**F3.** A future-dated key from author clock skew sat beyond the fill target with a gap in front of
+it. The fill now runs to whichever of the current week and the last key is later, and the
+out-of-range weeks are excluded from the count rather than dropped from the table.
 
 Live output now carries the missing week:
 
