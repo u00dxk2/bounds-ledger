@@ -18,8 +18,13 @@
         "83a4368",
         "710c849",
         "6eec1e7",
-        "d4a733d"
-      ]
+        "d4a733d",
+        "60b1820",
+        "c64fcd9",
+        "1179961",
+        "8ca908a"
+      ],
+      "note7": "TIER-1 INDICATOR DEFECT FOUND AND FIXED 2026-08-15, in the instrument shipped two days earlier. FOUND BY READING ITS OWN PRINTED OUTPUT during the steward cadence, not by a check: `npm run catches` showed THREE week rows for a FOUR-week repo. catch-rate.mjs built its week buckets from `git log -- ledger/claims.json`, so a week in which nothing committed that file was ABSENT rather than ZERO -- the week of 2026-08-03 simply did not exist in the table (git log confirms no commit touched the file between da17be3 on 2 Aug and 7018cce on 11 Aug, so that week was genuinely dry). THE COSMETIC HALF IS ONE MISSING ROW; THE LOAD-BEARING HALF IS THE COUNTER. The trailing dry-week count walked those same buckets, so it could only count weeks that were PRESENT -- and in a real drought NOTHING commits claims.json, because that file is rewritten only by extract-pins.mjs after a --snapshot and a snapshot happens only on drift. The quiet weeks never entered the map, the backward walk hit the last ACTIVE week immediately, and the count stopped at 1. The rule this indicator carries is 'a month of zeros is the signal to adopt a SECOND surface'. A month is four. THE COUNTER COULD NOT REACH TWO. This is the lane's founding defect for the third time -- an alarm that could not fire (7/24), a checker that read a sign-in page as a stale brief (8/02), and now a counter whose maximum sat below its own threshold; all three printed something that looked informative. BOTH ANSWERS DEMONSTRATED (KP-78): pre-fix, executed against one active week plus four calendar weeks of silence, 'weeks printed: 2026-07-06 2026-08-03 / dryWeeks reported: 1 / actual quiet weeks: 4'; post-fix the same shape asserts five keys plus the current week with trailingDry 4, with the negative controls asserted beside it (an unbroken run gains no rows; a movement in the newest week reads 0 dry). CROSS-FAMILY REVIEW LANE, first use in this lane and it paid for itself: catch-rate.mjs is a TRUSTED-PRINT INSTRUMENT (a script whose printed line a later reader believes) and also composes stored state across time, so the branch was held from main and the review requested (bus f2cbd000) before merging. Verdict SURVIVES with one pre-merge fix and two P2 edges, all three applied. F1, MATERIAL AND THE MOST INSTRUCTIVE THING TODAY: fillDryWeeks fills up to AND INCLUDING the current week and my trailingDry counted it, so on the Monday a drought completed its THIRD week the counter would read 4 and fire the adopt rule up to six days early. The printed table labels that row '(current, partial)' -- but THE LABEL SITS ON THE SURFACE A HUMAN READS WHILE THE RULE ACTS ON THE NUMBER. I had just shipped a fix whose entire argument was that the caveat was on the wrong surface, and put the next caveat on the wrong surface in the same file. A reviewer who had never seen the decision rule caught it; a self-review of my own rule did not. Fixed: trailingDry now takes the current week and skips it, and skips anything dated after it, so the rule needs four COMPLETED weeks; a movement still breaks the streak wherever it lands, because if the surface moved this week it is not dry whatever the completed-week count would say. F2: commit weeks came from git's %as, the author-LOCAL date, while 'today' came from a UTC clock, so a Sunday-evening commit in a negative-offset zone could read as an immediate dry week -- both sides now use the local calendar date. F3: a future-dated key from author clock skew sat beyond the fill target with a gap in front of it -- the fill now runs to whichever of the current week and the last key is later, and out-of-range weeks are EXCLUDED FROM THE COUNT rather than dropped from the table, because a phantom row is a display problem and silently discarding data would be worse. Commits c64fcd9 (fix) + 1179961 (review findings), merged --no-ff as 8ca908a so c64fcd9 keeps the sha the daily report cites; 13/13 self-tests and CI green on the merge commit. Finding: docs/findings/2026-08-15-the-dry-week-counter-could-not-count-a-drought.md. STANDING CONSEQUENCE: request the review lane for the next in-class diff without being asked -- one posted line and about forty minutes of waiting returned a boundary error in the exact figure a decision rule consumes."
     },
     {
       "id": "A-1",
@@ -350,7 +355,8 @@
       "closeWhen": "David raises it himself and answers send / hold / change (any of the three closes it), or a later session records a deliberate decision to drop the post and says why. NO SESSION RAISES IT UNPROMPTED as of 2026-08-15 — the park is at his discretion and has no date on it.",
       "onTrigger": "Do NOT ask David about this. Do NOT file a board card. Do NOT send anything. The item is dormant by instruction (2026-08-15) and exists so the finished artifact is findable the day he asks: draft docs/decisions/2026-08-13-mathstodon-announcement.md, review docs/findings/2026-08-13-mathstodon-adversarial-review.md.",
       "linkedCommits": [
-        "1f039fb"
+        "1f039fb",
+        "66f3dd4"
       ]
     },
     {
@@ -363,7 +369,9 @@
       "closeWhen": "Either an adversarial review runs and David rules on whether to report it upstream (send / hold / drop closes it), or a later session records a deliberate decision to leave upstream's page alone and says why.",
       "onTrigger": "Gate 1 is CLEARED (docs/decisions/2026-08-15-A16-adversarial-review.md, verdict SURVIVES). What remains is gate 2 only: David's explicit approval. Do NOT open a PR or contact upstream. Do NOT raise it unprompted -- it is not urgent and the error is arithmetic rather than a wrong record. If he raises it, the ask is one sentence and the artifacts are the finding plus the review doc. BEFORE ANY SEND, re-run npm run check: the claim is only reportable while upstream's page still carries the defect.",
       "linkedCommits": [
-        "433091b"
+        "433091b",
+        "00fa1e9",
+        "8b1c018"
       ]
     },
     {
@@ -474,5 +482,17 @@
       "notes": "[filed from bus e2831e6e-12c4-41a9-b9fb-db4a4ff1dc9a — task-complete, 2026-08-11] A-14 filed: a proposed one-line upstream correction (NOT sent, David-gated) + our own README figures corrected — cd6b300\nSecond item of the night, shipped in `cd6b300`. Two parts: a proposal that needs David's gate, and our own stale numbers.\n\n## A-14 — a proposed upstream correction. NOT SENT.\n\nUpstream's README states its own convention: bounds whose available verification is at minimal levels are marked with an asterisk in the summary table. 3b's row now carries that asterisk. The improvement line announcing the *same* bound carries neither the asterisk nor the `(unverified)` tag that comparable lines carry.\n\n**Enumerated, not eyeballed** — all 17 improvement lines against all 111 table rows:\n\n- 6 of 6 lines tagged `(unverified)` → asterisked rows\n- 9 untagged lines → unasterisked rows\n- 3a (×2) → drops the tag but keeps the asterisk on the value\n- **3b alone** → asterisked row, neither mark\n\n**The adversarial pass cut the strong version of the claim**, which is the part worth reporting. The stated legend scopes the asterisk to \"the table below\", so the improvement line is not strictly governed by it and the omission is defensible as a changelog entry carrying no status. What survives is departure from upstream's own uniform practice (6 of 6), not breach of a stated rule — and the finding now says that in those words instead of \"the page contradicts itself\". We are not claiming the bound is unverified. We are claiming the two surfaces are out of step and upstream should pick one; either fix is one word.\n\nA join artifact was caught en route that would have manufactured a **second, false** exc\n… [truncated — full body on bus e2831e6e-12c4-41a9-b9fb-db4a4ff1dc9a]\n\n[filed from bus 4cbc47a2-44ba-4532-a405-576eaa78e5d3 — needs-decision, 2026-08-12] A-14: send the one-character upstream correction as a PR, or hold it behind PR #141?\n## What we want to do\n\nSend a one-character fix to the maths records page we already watch (Terence Tao's constants repo). This would be our second contribution there. The first, PR #141, is still open and untouched.\n\n## What is wrong on their page\n\nThey mark any bound they have only lightly checked with a star, so a reader can tell at a glance which numbers are solid. One entry has the star in the main table but not on the line that announces it. A reader who scrolls to the announcement sees a number that looks fully checked. A reader who looks at the table sees the same number flagged as not.\n\nThe clearest way to see it: the entry directly above it has the same flag, and its announcement line does carry the star.\n\n- 3a announcement: `C_3a >= 1.19102809*`  ← star present\n- 3b announcement: `C_3b >= 1.77898884`   ← star missing, but 3b's table row has it\n\n## How sure we are\n\nChecked again this morning against their live page, because they changed it twice today. All 19 announcement lines against all 111 table rows: 3b is still the only one out of step, and they have not fixed it.\n\nWe are not saying their number is wrong, and we are not checking the maths behind it. We are saying their two surfaces disagree about how well checked it is, and they should pick one.\n\nWe already cut the stronger version of this. Their own wording scopes the star to \"the table below\", so strictly the announcement line is not covered by the rule. The case rests on them doing it the same way everywher\n… [truncated — full body on bus 4cbc47a2-44ba-4532-a405-576eaa78e5d3]",
       "updated": "2026-08-12"
     }
-  ]
+  ],
+  "meta": {
+    "untrackedCommits": [
+      {
+        "sha": "427e17c",
+        "rationale": "2026-08-15 daily report — reports are not item work; the items they describe carry their own commits."
+      },
+      {
+        "sha": "8e9a0c1",
+        "rationale": "2026-08-15 daily report updated after the review verdict landed — same class as 427e17c."
+      }
+    ]
+  }
 }
