@@ -6,13 +6,13 @@ north_star_metric: externally-acknowledged corrections/confirmations on a stewar
 north_star_value: 1
 north_star_status: green
 north_star_classification: emerging
-last_deploy: 8b1c018
+last_deploy: 8ca908a
 sentry_open_p1: 0
 sentry_open_p2: 0
 mrr_usd: null
 n_active_users_28d: 0
-on_hold_items: 3
-top_action_today: "Nothing needs you today. Yesterday's find about the mathematician's self-contradicting page went through an independent review by a different AI model, which was told to tear it apart and could not - it re-did every calculation from scratch and got the same answers, then went further than we had and tested 275 near-miss variations of the number to be sure none of them explains it. The claim survives, so it is now genuinely reportable - but reporting it is still yours to approve, and nobody is asking today. Separately, reading our own weekly indicator's output caught a bug in it: the counter that is supposed to notice when the thing we watch goes quiet could not count past one, so the rule it carries could never have fired. Fixed, and held back from the main branch pending a review."
+on_hold_items: 2
+top_action_today: "Nothing needs you today. Yesterday's find about the mathematician's self-contradicting page went through an independent review by a different AI model, which was told to tear it apart and could not - it re-did every calculation from scratch and got the same answers, then went further than we had and tested 275 near-miss variations of the number to be sure none of them explains it. The claim survives, so it is now genuinely reportable - but reporting it is still yours to approve, and nobody is asking today. Separately, reading our own weekly indicator's output caught a bug in it: the counter that is supposed to notice when the thing we watch goes quiet could not count past one, so the rule it carries could never have fired. Fixed, and then a second reviewer caught a smaller version of the same mistake in my fix before it went in."
 ---
 
 # bounds-ledger — daily — 2026-08-15 (MT) — the counter that could not count to four
@@ -21,11 +21,10 @@ Paced rail, day 14. Steward cadence first, then the increment. No self-rating.
 
 ## BLUF
 
-**FIRST ACTION** — merge the held branch once the cross-family review verdict lands. See what is
-waiting:
+**FIRST ACTION** — the ordinary steward cadence; nothing is pending and nobody is owed an answer.
 
 ```bash
-git -C C:/dev/skylark/bounds-ledger log --oneline main..origin/catch-rate-dry-weeks
+cd C:/dev/skylark/bounds-ledger && npm run check
 ```
 
 **THE NUMBER THAT WILL LIE TO YOU** — the A-16 review reads **SURVIVES, unrefuted on every angle
@@ -60,8 +59,8 @@ what the CI log was read against. The difference did not change any conclusion.
   Independent cross-model refute-it review; verdict SURVIVES.
   `docs/decisions/2026-08-15-A16-adversarial-review.md`.
 - **A-15 — the watch on the parked Mathstodon send — is now dormant by instruction** (`66f3dd4`).
-- **A defect found in our own Tier-1 indicator and fixed** (`c64fcd9`, on branch
-  `catch-rate-dry-weeks`, **pushed but deliberately not merged** — see below).
+- **A defect found in our own Tier-1 indicator, fixed, reviewed, and merged** (`c64fcd9` and
+  `1179961`, merged as `8ca908a` after the cross-family verdict).
   `docs/findings/2026-08-15-the-dry-week-counter-could-not-count-a-drought.md`.
 - **W-6 — the watch on arrivals — sampled** (`66f3dd4`), which yesterday's report said was owed.
 
@@ -125,12 +124,34 @@ came one step from publishing a false claim about a mathematician's paper on the
 fetch that had silently fallen back to an abstract page. Held until a positive control names the
 token proving the document is the right one. The finding stands without it.
 
-**The catch-rate fix is held, not shipped.** Today's dispatch armed a cross-family review gate for
-diffs touching a trusted-print instrument — a script whose printed line a later reader believes —
-and that is exactly what `catch-rate.mjs` is. The branch is pushed with 13/13 self-tests green, the
-review-lane request is posted, and the merge waits for the verdict. Holding it costs nothing: the
-indicator renders a figure and no verdict, so nothing is blocked by the old version staying on
-`main` one more day.
+**The catch-rate fix went through the review gate armed this morning, and the gate paid for
+itself.** `catch-rate.mjs` is a trusted-print instrument — a script whose printed line a later
+reader believes — so the branch was held and the review-lane request posted before merging. Verdict
+SURVIVES with one pre-merge fix and two P2 edges, all three applied in `1179961`.
+
+**The material one, F1, is yesterday's defect from the opposite direction.** `fillDryWeeks` fills
+up to *and including* the current week, and my `trailingDry` counted it. The printed table labels
+that row `(current, partial)` — but the label sits on the surface a **human** reads while the rule
+acts on the **number**. On the Monday a drought completed its third week the counter would read 4
+and fire *a month of zeros* six days early. A month is four **completed** weeks. Fixed: the current
+week and anything after it are excluded, while a movement still breaks the streak wherever it
+lands. I had just written a fix whose whole point was that the caveat was on the wrong surface, and
+put the next caveat on the wrong surface. A reviewer who had never seen the decision rule caught
+what a self-review of my own rule did not.
+
+F2: commit weeks came from git's `%as`, the author-**local** date, while "today" came from a UTC
+clock — a Sunday-evening commit in a negative-offset zone could read as an immediate dry week. Both
+sides use the local date now. F3: a future-dated key from clock skew sat beyond the fill target
+with a gap in front of it; the fill now runs past it and out-of-range weeks are excluded from the
+count rather than dropped from the table.
+
+**One process error of mine, recorded because it was luck that it cost nothing.** I chained the
+merge, the push and the branch deletion into one command. The merge failed — `main` had moved on
+under the branch, so `--ff-only` refused — and the deletion ran anyway, removing the remote branch
+before its commits were on `main`. Nothing was lost, because the local branch still held both
+commits and `git branch -d` refused a branch it could see was unmerged. But the safety came from
+git's own guard, not from me. A destructive step does not belong in the same command as the step it
+depends on. Re-merged with `--no-ff` so `c64fcd9` keeps the sha this report cites.
 
 ## Outputs (lagging)
 
@@ -148,8 +169,9 @@ indicator renders a figure and no verdict, so nothing is blocked by the old vers
 
 ## Recommendation
 
-**Merge `catch-rate-dry-weeks` when the review verdict arrives, and do nothing else with it.** The
-change is small and self-tested; the only reason it is not on `main` is the gate.
+**Request the review lane again for the next in-class diff without being asked.** It cost one
+posted line and about forty minutes of waiting, and it returned a boundary error in the exact
+figure a decision rule consumes. That is a better return than any self-review this lane has run.
 
 **Leave A-16 alone until David raises it.** Gate 1 is cleared, the artifact is written, and the
 error is arithmetic rather than a wrong record — it is exactly as reportable next week. The one
@@ -170,15 +192,15 @@ pass that reviews the items.
 
 - **A-15 — the watch on the parked Mathstodon send.** Dormant by instruction. Not a no.
 - **A-16 — the watch on C_87's self-contradicting record row.** Gate 1 cleared, gate 2 not asked.
-- **The `catch-rate-dry-weeks` branch.** Pushed, green, waiting on the cross-family review verdict.
 
 ## State Appendix
 
-`main` at `8b1c018`, tree clean, local and origin agree, PUBLIC. Two commits pushed to `main` today
-(`66f3dd4` the A-15 park plus the traffic sample, `8b1c018` the A-16 review clearance), plus
-`c64fcd9` on `catch-rate-dry-weeks`, pushed and unmerged.
+`main` at `8ca908a`, tree clean, local and origin agree, PUBLIC. Five commits today: `66f3dd4` the
+A-15 park plus the traffic sample, `8b1c018` the A-16 review clearance, `427e17c` this report,
+`c64fcd9` and `1179961` the indicator fix and its review findings, merged as `8ca908a`. CI green on
+every one of them, `8ca908a` included.
 
-`npm test` exit 0 (13 self-tests, run on the branch, which is `main` plus the held commit).
+`npm test` exit 0 (13 self-tests).
 `npm run check` exit 0 with the pin set: no drift at 113 files against `e70b4a4`; 233 claims, 231
 hold, 0 broken or unreachable, 2 unverified and manual; state block in sync; brief in sync, all 4
 dated blocks present. Overnight scheduled run 31876943028 read from its log at 09:25 MT against the
