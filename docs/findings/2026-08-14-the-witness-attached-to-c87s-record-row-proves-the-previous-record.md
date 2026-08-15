@@ -79,6 +79,23 @@ Two readings survive, and this finding does not choose between them:
 
 Either way the row as published does not support its own number.
 
+## What we would say upstream
+
+Fixed here in advance, so the reportable sentence is not composed at send time (amendment from the
+2026-08-15 adversarial review, `docs/decisions/2026-08-15-A16-adversarial-review.md`, angle 6 —
+the only angle that bit, and it bit on the headline rather than the arithmetic):
+
+> The current-record row of `constants/87a.md` cites an explicit witness whose product is a
+> 24-digit integer, so the inequality `≤ 857.5662` cannot be read literally; and the eighth root
+> the surrounding sentence invites is 913.4927, which to six significant figures is the value on
+> the row above. The row is inconsistent with itself. We have not checked 857.567 against
+> [HMR2019], whose abstract states no numeric value.
+
+That is the whole claim. It is deliberately **not** "the previous record is proved" — that would be
+a statement about Martin's construction, which we have not checked and do not need. A reader who
+quotes only this document's title would inherit the stronger claim, which is why the limited one is
+written out here.
+
 ## Why the drift alarm did not catch this
 
 It is not supposed to. The mirror's contract is byte-fidelity to the adopted surface, and the
