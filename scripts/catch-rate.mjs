@@ -91,6 +91,38 @@ function weekOf(isoDate) {
   return d.toISOString().slice(0, 10);
 }
 
+// A week in which nothing committed claims.json is a DRY week, not an absent one.
+// Until 2026-08-15 the week map held only weeks that touched the file, which was wrong in
+// the one direction that mattered: in a real drought NOTHING commits claims.json (the file
+// is rewritten only by a snapshot, and a snapshot only happens on drift), so the quiet weeks
+// never entered the map, the trailing walk in trailingDry() hit the last ACTIVE week
+// immediately, and `dryWeeks` could never exceed 1. The rule this indicator carries — "a
+// month of zeros is the signal to adopt a second surface" — was resting on a counter that
+// could not count to four. Found by reading this script's own output on 2026-08-15: the
+// table skipped the week of 2026-08-03 entirely rather than printing it as a zero.
+export function fillDryWeeks(weeks, thisWeek) {
+  const keys = [...weeks.keys()].sort();
+  let w = keys.length ? keys[0] : thisWeek;
+  while (w <= thisWeek) {
+    if (!weeks.has(w)) weeks.set(w, []);
+    const d = new Date(`${w}T00:00:00Z`);
+    d.setUTCDate(d.getUTCDate() + 7);
+    w = d.toISOString().slice(0, 10);
+  }
+  return weeks;
+}
+
+// Trailing zero weeks, newest first. Isolated so the self-test can exercise the counter the
+// decision rule actually consumes, rather than the table a human reads.
+export function trailingDry(ordered) {
+  let n = 0;
+  for (let i = ordered.length - 1; i >= 0; i--) {
+    if (ordered[i][1].length) break;
+    n++;
+  }
+  return n;
+}
+
 function show(ref) {
   try {
     return git("show", `${ref}:${CLAIMS}`);
@@ -146,7 +178,18 @@ if (process.argv.includes("--selftest")) {
   assert.equal(weekOf("2026-08-10"), "2026-08-10", "Monday belongs to its own week");
   assert.equal(weekOf("2026-08-09"), "2026-08-03", "Sunday belongs to the week before");
 
-  console.log("catch-rate.test: PASS (fires on a moved generated pin; silent on unchanged, added, removed, hand-claim, and absent-file; week buckets Monday-anchored)");
+  // FIRES: four calendar weeks with no claims.json commit must read as four dry weeks.
+  // Before fillDryWeeks existed this same input printed two rows and reported dryWeeks 1 —
+  // the drought the decision rule consumes was the drought it could not see.
+  const drought = [...fillDryWeeks(new Map([["2026-07-06", ["pin:x:U"]]]), "2026-08-03").entries()].sort();
+  assert.deepEqual(drought.map(([w]) => w), ["2026-07-06", "2026-07-13", "2026-07-20", "2026-07-27", "2026-08-03"]);
+  assert.equal(trailingDry(drought), 4, "four quiet weeks must read as four");
+
+  // SILENT: an unbroken run of weeks gains nothing, and an active newest week is not dry.
+  assert.equal(fillDryWeeks(new Map([["2026-08-03", []], ["2026-08-10", ["pin:x:U"]]]), "2026-08-10").size, 2);
+  assert.equal(trailingDry([["2026-08-10", ["pin:x:U"]]]), 0, "an active week must not count as dry");
+
+  console.log("catch-rate.test: PASS (fires on a moved generated pin; silent on unchanged, added, removed, hand-claim, and absent-file; week buckets Monday-anchored; a 4-week drought reads as 4 dry weeks, a full run fills nothing)");
   process.exit(0);
 }
 
@@ -158,8 +201,7 @@ for (const c of commits) {
 }
 
 const thisWeek = weekOf(new Date().toISOString().slice(0, 10));
-if (!weeks.has(thisWeek)) weeks.set(thisWeek, []);
-const ordered = [...weeks.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+const ordered = [...fillDryWeeks(weeks, thisWeek).entries()].sort((a, b) => a[0].localeCompare(b[0]));
 
 // Self-describing on purpose (orchestrator feedback 2026-08-13): the figure is a CEILING on
 // catches, and the header has to say so, because a reader who skips the caveat line will quote
@@ -181,11 +223,7 @@ for (const [week, moved] of ordered) {
   );
 }
 
-let dryWeeks = 0;
-for (let i = ordered.length - 1; i >= 0; i--) {
-  if (ordered[i][1].length) break;
-  dryWeeks++;
-}
+const dryWeeks = trailingDry(ordered);
 const total = ordered.reduce((n, [, moved]) => n + new Set(moved).size, 0);
 // QUOTE THE PER-WEEK FIGURE, NEVER THIS TOTAL. The indicator is a rate; the running total
 // answers no question we ask of it and only ever grows, so it reads as progress by construction.
