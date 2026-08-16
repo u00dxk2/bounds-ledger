@@ -14,7 +14,7 @@ That reconciliation is [`docs/reconciliations/2026-07-22-minimum-overlap.md`](do
 
 ## What it has actually caught
 
-Since the alarm was armed on 2026-07-24, eight upstream drifts — each verified before the mirror was updated, against primary sources where a number moved and against upstream's own content where the change was editorial. One row per resolution cycle, not per changed file:
+Since the alarm was armed on 2026-07-24, nine upstream drifts — each verified before the mirror was updated, against primary sources where a number moved and against upstream's own content where the change was editorial. One row per resolution *story*, not per changed file and not per cycle — the eight rows below cover nine cycles, because the 2026-08-12 row is two of them. To count them yourself: `git log --oneline -- ledger/teorth-optimizationproblems/manifest.json`, minus the initial-snapshot commit `b5e3ac9` and the mirror-extension commit `3a698b1`, neither of which resolved a drift:
 
 | Drift | What moved |
 |---|---|
@@ -25,8 +25,32 @@ Since the alarm was armed on 2026-07-24, eight upstream drifts — each verified
 | [`d30d4e4`](../../commit/d30d4e4) | Upstream re-marked a bound as having minimal available verification. **Every constants file was byte-identical** — the change lived entirely in upstream's README, i.e. in which rows it declares it stands behind. |
 | [`ec01082`](../../commit/ec01082) | Two named constants in one morning. The real **Grothendieck constant**: both ends improved by one paper ([arXiv:2608.11158](https://arxiv.org/abs/2608.11158)), settling its tenths digit as 7. And **Crouzeix's conjecture**, upper bound `1+√2 → 2`, claimed proved ([arXiv:2608.03841](https://arxiv.org/abs/2608.03841)). Both verified against the papers before the mirror moved. |
 | [`2026-08-12`](docs/findings/2026-08-12-two-record-movements-in-one-cycle.md) | A **priority correction** — a class we had not seen, and it took two cycles as upstream refined the attribution. No bound moved: upstream credited a *second, independent* claimed proof of Crouzeix's conjecture, posted eight days earlier. The preprint server returns HTTP 200 for a bot-protection page, so the citation was confirmed through Crossref instead. |
+| [`433091b`](../../commit/433091b) | Upstream added Martinet's constant for totally real number fields (`constants/87a.md`), taking the mirror to 113 files. An addition is not a movement, and the catches-per-week indicator correctly counted it as zero — which is why that indicator is read alongside [`docs/findings/`](docs/findings/) rather than alone. |
 
 **And one of those catches is now in the source.** A correction we found — five citation keys in `constants/15a.md` that did not match the page's own reference list — was submitted upstream and **merged by the repository's maintainer on 2026-08-11** ([`teorth/optimizationproblems#141`](https://github.com/teorth/optimizationproblems/pull/141)). That is the bar this project set for itself: not "we noticed something", but "someone who owns the record agreed and changed it".
+
+### Check any of that yourself, in about a minute
+
+These three steps re-run the current mirror check, exercise the differ, and open one historical catch. They need Node and a clean clone — no package installation, no account. (Run them from a *fresh* clone: step 2 deliberately edits a mirrored file and then restores it with `git checkout`, which would also discard any other local edits to that file.)
+
+```
+node scripts/reverify.mjs --check && node scripts/check-claims.mjs   # 1. is the ledger green now?
+
+node -e "require('node:fs').appendFileSync('ledger/teorth-optimizationproblems/constants/2a.md','x')"
+node scripts/reverify.mjs --check          # 2a. exit 1, "CHANGED constants/2a.md"
+git checkout -- ledger/teorth-optimizationproblems/constants/2a.md
+node scripts/reverify.mjs --check          # 2b. exit 0, "No drift." — the half that matters
+
+git show da17be3 -- 'ledger/teorth-optimizationproblems/constants/*.md'   # 3. a real catch, verbatim
+```
+
+Step 1 is the two checks that need nothing but a network connection. `npm run check` runs these plus two more, one of which verifies a sign-in-gated page and exits 3 without a `CC_PROMPTS_PIN` you have no reason to have — so it is the wrong entry point for a visitor, though the mirror and claim output still prints before it stops.
+
+Step 2 is the one worth doing, and **2b is the half that matters**: an alarm that fires is easy, an alarm that also goes quiet on its own is the property this repo failed to have for its first two days. It demonstrates the differ, not upstream moving — provided step 1 was green and upstream has not pushed in the meantime, the manifest and live shas stay identical and the only change reported is the one you just made.
+
+Step 3 prints the bounds from the fourth cycle as they actually changed: `5/3 → 7/√17`, `2.625622 → 2.6273856`, `>6.5143 → >6.5218`, each with the certificate text upstream attached to it.
+
+What these steps do *not* do is re-derive the mathematics or re-check the primary sources behind each catch; for that the write-ups in [`docs/findings/`](docs/findings/) name their sources and you are invited to go after them.
 
 It has also caught itself. [`docs/findings/`](docs/findings/) holds both kinds of write-up — the drifts above, and every occasion the *instrument* was the thing that was wrong. The worst of the second kind: **the drift alarm was green-by-construction for its first two days**, because a piped command in CI reported the pipe's exit code instead of the check's ([`2026-07-24-drift-alarm-was-never-armed.md`](docs/findings/2026-07-24-drift-alarm-was-never-armed.md)). A ledger whose alarm cannot fail is decoration; those findings are the evidence that this one can.
 
