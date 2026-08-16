@@ -58,7 +58,7 @@ The recipe was then executed verbatim as published: step 1 exit 0, 2a exit 1 `CH
 
 - **G-1 (the north star — externally-acknowledged corrections) stays at 1.** The 8/11 merge of `teorth/optimizationproblems#141` remains the only acknowledgement. Nothing today moved it, and nothing today was meant to.
 - **Catches indicator: the current partial week shows 4 distinct pins (6 movements); 0 completed consecutive dry weeks.** Quote the per-week figure — the running total only ever grows. The dry-week rule is nowhere near firing.
-- **W-6 (the arrivals watch) has no read worth reporting.** The repo has been public eight days and nobody has been told it exists; a number here would be arithmetic, not a verdict.
+- **W-6 (the arrivals watch): 3 unique viewer-days since the repo went public**, against thresholds of 90 days and 100 unique visitors. Sampled today (21 days now stored in `continuity/traffic.json`; the API forgets past 14, so the file is the only copy). That 3 is an **upper bound** — viewer-days do not dedupe people across days — and the 126 cloner-days are unattributed, including our own clones, CI checkouts and crawlers. Nobody has been told the repo exists, so this is arithmetic, not a verdict.
 
 ## Recommendation
 
