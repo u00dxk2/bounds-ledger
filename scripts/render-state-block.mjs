@@ -121,7 +121,11 @@ if (mode === "--selftest") {
   const readme = await readFile(README, "utf8");
   const next = splice(readme, renderBlock(state));
   if (mode === "--check") {
-    if (next === readme) {
+    // Compare CONTENT, not line endings. The renderer writes LF but Windows checks the file out
+    // as CRLF, so a byte-exact comparison called a CORRECT tree STALE — it fired on 2026-08-16
+    // simply from switching branches, which re-materialised README.md from the index. A red that
+    // means nothing is worse than no alarm: it is the polarity that teaches people to ignore one.
+    if (next.replace(/\r\n/g, "\n") === readme.replace(/\r\n/g, "\n")) {
       console.log(`state block: in sync (${state.fileCount} files @ ${state.sha.slice(0, 7)}, ${state.claims} claims).`);
     } else {
       console.error("state block: STALE — README.md disagrees with committed repo state. Run `node scripts/render-state-block.mjs` and commit.");
