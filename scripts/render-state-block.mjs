@@ -42,20 +42,46 @@ const NON_DRIFT_MANIFEST_COMMITS = {
   "3a698b1d4eb39040e045386e6a23fa636c727c37": "extended the mirror to upstream's README (W-5, 2026-08-10)",
 };
 
+// A shallow clone cannot answer this question. `actions/checkout@v4` is depth-1, so on a runner
+// the path log returns one commit and the count reads 1 instead of 9 — a FALSE RED on a perfectly
+// correct checkout, which is the polarity that teaches people to ignore an alarm. Report UNKNOWN
+// and pass: an unanswerable question is not a failure, and this repo already refuses to launder
+// an unverifiable fact into a green (the `manual: true` claims) or into a red (the brief check).
+// The workflow comment at .github/workflows/reverify.yml already documented this trap for
+// catch-rate.mjs; it did not stop me writing it again here.
 function countResolutionCycles() {
+  const shallow = execFileSync("git", ["rev-parse", "--is-shallow-repository"], { cwd: ROOT, encoding: "utf8" }).trim();
+  if (shallow === "true") return { unknown: true, cycles: null, total: null, excluded: 0 };
+
   const out = execFileSync("git", ["log", "--format=%H", "--", "ledger/teorth-optimizationproblems/manifest.json"], {
     cwd: ROOT,
     encoding: "utf8",
   });
   const shas = out.split("\n").map((s) => s.trim()).filter(Boolean);
   const excluded = shas.filter((s) => s in NON_DRIFT_MANIFEST_COMMITS);
-  return { cycles: shas.length - excluded.length, total: shas.length, excluded: excluded.length };
+  return { unknown: false, cycles: shas.length - excluded.length, total: shas.length, excluded: excluded.length };
+}
+
+// The claim lives in ONE section. Searching the whole README would let the guard pass on a
+// deleted sentence because some unrelated paragraph happened to carry the phrase — a false
+// CLEAN, and the worse polarity of the two.
+const CATCH_HEADING = "## What it has actually caught";
+function catchSection(readme) {
+  const start = readme.indexOf(CATCH_HEADING);
+  if (start === -1) return null;
+  const rest = readme.slice(start + CATCH_HEADING.length);
+  const next = rest.search(/\n## /);
+  return next === -1 ? rest : rest.slice(0, next);
 }
 
 // Asserts the README's own sentence, so the checked thing is the prose a visitor reads — not a
 // machine-readable twin that can silently disagree with it.
 function checkCatchCount(readme, cycles) {
-  const m = readme.match(/(\d+) upstream drifts/);
+  const section = catchSection(readme);
+  if (section === null) {
+    return { ok: false, msg: `catch table: the heading "${CATCH_HEADING}" is GONE from README.md — this guard asserts a sentence inside that section.` };
+  }
+  const m = section.match(/(\d+) upstream drifts/);
   if (!m) {
     return { ok: false, msg: `catch table: the phrase "<N> upstream drifts" is GONE from README.md — this guard asserts that sentence, so either restore it or update scripts/render-state-block.mjs.` };
   }
@@ -154,17 +180,31 @@ async function selftest() {
   if (!crossThrew) throw new Error("selftest FAIL: mirror cross-check did not fire");
 
   // (6) The catch-count guard returns BOTH answers (KP-78), on fixtures rather than on the repo.
-  const catchOk = checkCatchCount("Since the alarm was armed, 9 upstream drifts — one row per story.", 9);
+  const H = "## What it has actually caught\n\n";
+  const catchOk = checkCatchCount(`${H}Since the alarm was armed, 9 upstream drifts — one row per story.`, 9);
   if (!catchOk.ok) throw new Error("selftest FAIL: catch guard fired on a MATCHING count");
-  const catchStale = checkCatchCount("Since the alarm was armed, 8 upstream drifts — one row per story.", 9);
+  const catchStale = checkCatchCount(`${H}Since the alarm was armed, 8 upstream drifts — one row per story.`, 9);
   if (catchStale.ok) throw new Error("selftest FAIL: catch guard stayed silent on a STALE count (8 vs 9)");
   if (!/claims 8 .*has 9/.test(catchStale.msg)) throw new Error("selftest FAIL: stale catch message did not name both figures");
-  const catchGone = checkCatchCount("Since the alarm was armed, several drifts happened.", 9);
+  const catchGone = checkCatchCount(`${H}Since the alarm was armed, several drifts happened.`, 9);
   if (catchGone.ok) throw new Error("selftest FAIL: catch guard passed a README with the asserted sentence REMOVED");
 
-  // (7) The exclusion list is read from git, not assumed: every listed sha must actually be a
+  // (7) The section anchor is load-bearing: the phrase OUTSIDE the catch section must not
+  // satisfy the guard, or a deleted sentence passes because of unrelated prose (false CLEAN).
+  const decoy = "## What it has actually caught\n\nrows here, no count.\n\n## Run it\n\n9 upstream drifts\n";
+  if (checkCatchCount(decoy, 9).ok) throw new Error("selftest FAIL: guard satisfied by the phrase OUTSIDE the catch section");
+  const inSection = "## What it has actually caught\n\n9 upstream drifts — table.\n\n## Run it\n\nunrelated\n";
+  if (!checkCatchCount(inSection, 9).ok) throw new Error("selftest FAIL: guard missed the phrase INSIDE the catch section");
+  if (checkCatchCount("# no such heading\n\n9 upstream drifts\n", 9).ok) throw new Error("selftest FAIL: guard passed a README with the catch heading removed");
+
+  // (8) The exclusion list is read from git, not assumed: every listed sha must actually be a
   // manifest commit, or the subtraction is silently wrong in the direction of a false pass.
-  const { total, excluded, cycles } = countResolutionCycles();
+  // Skipped on a shallow clone, where the question is unanswerable rather than failed.
+  const { total, excluded, cycles, unknown } = countResolutionCycles();
+  if (unknown) {
+    console.log("render-state-block selftest: PASS (block assertions + catch guard on fixtures; history checks SKIPPED — shallow clone)");
+    return;
+  }
   if (excluded !== Object.keys(NON_DRIFT_MANIFEST_COMMITS).length) {
     throw new Error(`selftest FAIL: ${excluded} of ${Object.keys(NON_DRIFT_MANIFEST_COMMITS).length} excluded shas are actually in manifest history — a listed sha that does not match subtracts nothing and inflates the cycle count`);
   }
@@ -197,10 +237,14 @@ if (mode === "--selftest") {
     }
     // The catch count is asserted, never generated: the table's rows carry editorial judgment
     // (eight rows cover nine cycles, because 2026-08-12 is two), so only a human can write them.
-    const { cycles } = countResolutionCycles();
-    const catches = checkCatchCount(readme, cycles);
-    if (catches.ok) console.log(catches.msg);
-    else { console.error(catches.msg); failed = true; }
+    const { cycles, unknown } = countResolutionCycles();
+    if (unknown) {
+      console.log("catch table: UNKNOWN — shallow clone, so mirror history cannot be counted. Not a pass and not a failure; re-run with full history (actions/checkout needs fetch-depth: 0).");
+    } else {
+      const catches = checkCatchCount(readme, cycles);
+      if (catches.ok) console.log(catches.msg);
+      else { console.error(catches.msg); failed = true; }
+    }
     if (failed) process.exit(1);
   } else {
     if (next === readme) console.log("state block: already in sync; nothing written.");
