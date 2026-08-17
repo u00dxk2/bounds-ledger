@@ -110,3 +110,31 @@ One measurement question worth putting on the record rather than acting on: **G-
 - **A-7** — the engineering-health item: open on R7 alone (the scheduled verified history sweep, fleet-owned).
 - **Findings added today:** `docs/findings/2026-08-17-the-alarm-called-a-rate-limit-a-record-movement.md`.
 - **Codex calls today:** 0.
+
+<!-- findings:begin — APPEND ONLY. P3+ findings that arrived after this report was drafted. Never rewrite prose outside this fence. -->
+
+## Findings after drafting (P3, back-patched)
+
+**1. The 2026-08-22 close date is now conditional, and the condition is pre-registered.** The BLUF and
+Outputs sections above say G-1's 30-day leg completes 2026-08-22. That still holds *if* runs 26-30 each
+reach a verdict. A hole I opened in this morning's reword — it said an unreachable-source red does not
+*reset* the streak but never said whether such a day *counts* — became live rather than hypothetical once
+GitHub went critical at 13:40Z with the incident still unresolved. **Pre-registered rule, written before the
+outcome is known: a day counts only if its scheduled run reached a verdict (no-drift or drift-detected). A
+run that could not fetch reached no verdict, so it neither counts nor resets — it PAUSES the clock, one day
+per such day.** Counting would launder an unverifiable into a pass; resetting would punish us for someone
+else's outage. Pause is the only honest reading and it delays our own goal, which is why it is written now
+rather than on 08-22 with an incentive to count generously. Mechanical test recorded in `G-1.streakDayRule`.
+**So: 08-22 if runs 26-30 all verify; later by one day for each that cannot.**
+
+**2. F-2 — the flow that addresses the core problem — was gated on a condition that expired nine days ago.**
+`docs/key-user-flows.md` records the spot-check flow (*"is the number I'm about to cite current?"*) as having
+zero surface because closing it "means a public status surface, which is the public-repo flip — David-gated."
+**David said yes on 2026-08-08.** The gate cleared, the sentence was never re-read, and the highest-value flow
+in that document sat behind a dead blocker for nine days. This is the **second** stale blocker found here in
+two days — A-7's claimed the repo was private and needed paid add-ons, corrected yesterday in `a896dfb`.
+A ledger whose product is noticing stale records has now twice been the thing holding one. Pattern named in
+the doc: **closing a gate must include a sweep for the text that cited it.** F-2 is now ordinary engineering
+work, not a David question; the great version is specified in Rotation 2 and a scoped slice is queued.
+
+<!-- findings:end -->
