@@ -21,4 +21,11 @@ That filter is load-bearing here, because `reverify.yml` **is** the scheduled jo
 
 Both scripts carry `--help` / `--selftest`. Read the exit code by redirect, never through a pipe (`| tail` reports the pipe's 0).
 
+⚠ **`check-ci-status.mjs` reads your LOCAL HEAD, so run it from a `main` checkout or its verdict is about a different commit.** Near-miss 2026-08-17: it printed *"GREEN — 1 completed non-scheduled success(es) for HEAD"* while I was checked out on a feature branch, so the green described that branch's PR run and said nothing about `main`, which was red at the time. The script names the sha it used on its first line (`local HEAD cf1e2786a4`) — read that line, not just the verdict. The prompt's standing rule already says to discriminate with `git rev-parse HEAD origin/main`, but it frames that as the response to an UNKNOWN; this failure produced a confident **GREEN**, which is the direction nobody double-checks. Make the rev-parse unconditional:
+
+```
+git rev-parse --short HEAD origin/main   # must match, else the next read is about the wrong commit
+node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml
+```
+
 **Both answers demonstrated at adoption, 2026-08-16** (KP-78 — ship no detector without showing it can fail): `--workflow reverify.yml` at HEAD `fd70f11` → exit 0, *"GREEN — 1 completed non-scheduled success(es) for HEAD"*; `--workflow nonexistent.yml` at the same HEAD → exit 2, *"UNKNOWN — CI read failed/unparseable — UNKNOWN, not green"*. It distinguishes; it does not blanket-pass.
