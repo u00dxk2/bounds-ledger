@@ -147,13 +147,31 @@ jobs:
           # leaving the alarm silent about its own breakage). A-4, found 2026-07-25 by
           # executing this step's body rather than reading it.
           if [ -s finding.txt ]; then
-            parts=$(grep -hE '^(CHANGED|ADDED|REMOVED) ' finding.txt | sed -E 's/^[A-Z]+ //' | paste -sd', ' - || true)
+            # `paste -sd', '` does NOT join with ", " — -d takes a LIST of delimiters used
+            # CYCLICALLY, so three or more items came out "a,b c,d". Join on a comma, then
+            # space it out. Visible in production as issue #15's title (2026-08-17).
+            join_list() { paste -sd, - | sed 's/,/, /g'; }
+            # A drift is a record MOVING. Two things can move: the mirrored surface (CHANGED /
+            # ADDED / REMOVED) or a cited surface a claim pins (BROKEN).
+            parts=$(grep -hE '^(CHANGED|ADDED|REMOVED) ' finding.txt | sed -E 's/^[A-Z]+ //' | join_list || true)
             if [ -z "$parts" ]; then
-              parts=$(grep -hE '^(BROKEN|UNREACHABLE) ' finding.txt | awk '{print $2}' | paste -sd', ' - || true)
+              parts=$(grep -hE '^BROKEN ' finding.txt | awk '{print $2}' | join_list || true)
               [ -n "$parts" ] && parts="claims $parts"
             fi
+            # UNREACHABLE is NOT in the list above, and that is the whole point. BROKEN means we
+            # read the source and the pinned string was gone — a record moved. UNREACHABLE means
+            # we never read the source at all. Lumping them titled a pure HTTP 429 rate-limit
+            # flake "Drift: claims C-1,pin:12a:U …" on 2026-08-17 (issue #15), asserting that six
+            # records moved when a local run four minutes earlier read 231 hold / 0 broken. That
+            # is A-5's defect exactly — a tool error titled as a record movement — surviving in a
+            # branch A-5's own fix could never reach, because UNREACHABLE won before the `error:`
+            # test could run. A false "Drift:" spends a reader's trust hunting a change that
+            # never happened, and repeated flakes train us to skim past the one that is real.
+            unreachable=$(grep -hcE '^UNREACHABLE ' finding.txt || true)
             if [ -n "$parts" ]; then
               title="Drift: $parts ($(date -u +%F))"
+            elif [ "${unreachable:-0}" -gt 0 ]; then
+              title="Check error: bounds-ledger could not reach ${unreachable} cited source(s) ($(date -u +%F))"
             elif grep -qE '^error:' finding.txt; then
               # A tool error is NOT a drift. Titling it "Drift:" asserts a record moved when
               # none did — and a reader who opens it finds every claim holding, which reads as

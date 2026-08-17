@@ -2,7 +2,7 @@
 // Self-check for reverify.mjs drift detection — no network. Copies the ledger snapshot,
 // verifies a pristine copy reads clean (exit 0) and a tampered digit is flagged (exit 1).
 
-import { cp, readFile, writeFile, rm, readdir } from "node:fs/promises";
+import { cp, readFile, writeFile, rm, readdir, mkdir } from "node:fs/promises";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
@@ -91,7 +91,12 @@ await rm(TMP, { recursive: true, force: true });
 // The script exiting 1 is worthless if the WORKFLOW swallows it. Default runner shell is
 // `bash -e {0}` (no pipefail), so a piped step reports the pipe's last command — a drift
 // exits green. Every piped `run:` must name `shell: bash` (which adds -o pipefail).
-const wf = (await readFile(join(ROOT, ".github", "workflows", "reverify.yml"), "utf8")).replace(/^[ \t]*#.*$/gm, "");
+const wfText = await readFile(join(ROOT, ".github", "workflows", "reverify.yml"), "utf8");
+// Comment-stripped, for the pipefail/CI-coverage scans below. The alarm-title guard further down
+// needs the ORIGINAL lines instead: it extracts a step body by indentation, and blanking comment
+// lines in place would hand it a body full of holes.
+const wfRaw = wfText.replace(/\r\n/g, "\n").split("\n");
+const wf = wfText.replace(/^[ \t]*#.*$/gm, "");
 const steps = wf.split(/^      - name:/m).slice(1);
 // strip the YAML block-scalar indicator (`run: |`) first — it is not a shell pipe
 const runBody = (s) => (s.match(/^\s*run:[\s\S]*/m)?.[0] ?? "").replace(/^\s*run:[ \t]*\|-?[ \t]*$/m, "");
@@ -108,4 +113,105 @@ const testCmds = pkg.scripts.test.split("&&").map((c) => c.trim()).filter(Boolea
 const uncied = testCmds.filter((c) => !wf.includes(c));
 assert.equal(uncied.length, 0, `self-test(s) run by \`npm test\` but absent from the workflow — unguarded in CI:\n${uncied.join("\n")}`);
 
-console.log(`reverify.test: PASS (synthetic drift in ${victim} detected; pristine copy clean; README leg fires on an asterisked row, silent when restored, REMOVED when deleted, and untouched by a constants-only edit; ${steps.length} workflow steps, piped steps pipefail-guarded; ${testCmds.length} self-tests present in CI)`);
+// The alarm's TITLE is the only part of it most readers ever see, so a title that asserts the
+// wrong KIND of event is a defect in the alarm itself. A drift is a record MOVING: the mirrored
+// surface changed, or a claim's cited surface no longer carries its pinned string (BROKEN).
+// UNREACHABLE is not that — it means we never read the source. Lumping the two titled a pure
+// HTTP 429 rate-limit flake `Drift: claims C-1,pin:12a:U …` on 2026-08-17 (issue #15) while a
+// local run four minutes earlier read 231 hold / 0 broken. That is A-5's defect surviving in a
+// branch A-5's fix could not reach, and A-5 was itself caught in production rather than by a
+// test — so this asserts it instead of trusting the prose. The step body is EXTRACTED from the
+// deployed YAML, never retyped: a copy here would test my transcription, not the alarm (A-4).
+let alarmVerdict;
+{
+  const nameIdx = wfRaw.findIndex((l) => l.trim() === "- name: Open finding");
+  assert.notEqual(nameIdx, -1, "the `Open finding` step is GONE from the workflow — this guard asserts its title logic");
+  const runIdx = wfRaw.findIndex((l, i) => i > nameIdx && l.trim() === "run: |");
+  assert.notEqual(runIdx, -1, "the `Open finding` step no longer uses a `run: |` block");
+  const body = [];
+  for (let i = runIdx + 1; i < wfRaw.length; i++) {
+    const l = wfRaw[i];
+    if (l.trim() === "") { body.push(""); continue; }
+    if (!l.startsWith("          ")) break;
+    body.push(l.slice(10));
+  }
+  const raw = body.join("\n");
+  assert.match(raw, /if \[ -s finding\.txt \]/, "extracted Open-finding body does not look like the title logic");
+  // Strip ONLY the side effect; the title logic runs untouched.
+  const harness = raw.replace(/gh issue create \\[\s\S]*?--repo "\$GITHUB_REPOSITORY"/, 'echo "TITLE => $title"');
+  assert.notEqual(harness, raw, "could not strip `gh issue create` — refusing to run the step body with its side effect live");
+
+  // The step is bash, so the guard needs bash. On the runner it is `bash` on PATH; on this
+  // Windows machine it is NOT on the PowerShell PATH but Git ships it, and Git's own location
+  // gives it away. If neither resolves, say SKIPPED out loud and name what went unchecked —
+  // a guard that quietly passes when it could not run is this lane's founding defect, and the
+  // repo already refuses that in three other places (UNVERIFIED, UNVERIFIABLE, UNKNOWN).
+  const resolveBash = () => {
+    const tryRun = (bin) => {
+      try { execFileSync(bin, ["-c", "exit 0"], { stdio: "ignore" }); return bin; } catch { return null; }
+    };
+    if (tryRun("bash")) return "bash";
+    try {
+      const gitDir = dirname(dirname(execFileSync("git", ["--exec-path"], { encoding: "utf8" }).trim()));
+      for (const rel of [join(gitDir, "bin", "bash.exe"), join(gitDir, "..", "bin", "bash.exe")]) {
+        if (tryRun(rel)) return rel;
+      }
+    } catch {}
+    return null;
+  };
+  const BASH = resolveBash();
+
+  const ALARM_TMP = join(ROOT, "tmp", "reverify-test-alarm");
+  await rm(ALARM_TMP, { recursive: true, force: true });
+  await mkdir(ALARM_TMP, { recursive: true });
+  await writeFile(join(ALARM_TMP, "open-finding.sh"), harness + "\n");
+
+  const titleFor = async (finding) => {
+    if (finding === null) await rm(join(ALARM_TMP, "finding.txt"), { force: true });
+    else await writeFile(join(ALARM_TMP, "finding.txt"), finding);
+    let out;
+    try {
+      out = execFileSync(BASH, ["--noprofile", "--norc", "-eo", "pipefail", "open-finding.sh"],
+        { cwd: ALARM_TMP, encoding: "utf8", env: { ...process.env, GITHUB_REPOSITORY: "u00dxk2/bounds-ledger" } });
+    } catch (err) { out = (err.stdout ?? "") + (err.stderr ?? ""); }
+    const m = out.match(/^TITLE => (.*)$/m);
+    // No title at all means the harness never ran — that must fail loudly, not read as "no
+    // Drift: prefix, so the transport assertion passes". An empty string satisfies
+    // doesNotMatch(/^Drift:/) trivially, which is how this guard first fooled itself.
+    assert.ok(m, `the extracted Open-finding body emitted no title (harness did not run):\n${out}`);
+    return m[1].trim();
+  };
+
+  if (!BASH) {
+    alarmVerdict = "alarm title guard SKIPPED — no bash found, so Drift-vs-Check-error went UNCHECKED here (CI runs it)";
+    console.warn(`reverify.test: ${alarmVerdict}`);
+    await rm(ALARM_TMP, { recursive: true, force: true });
+  } else {
+  // Silent on a transport failure: it must NOT claim a record moved. Verbatim shape of the
+  // 2026-08-17 run, including reverify's own `error:` line, which UNREACHABLE used to outrank.
+  const flake = await titleFor(
+    "error: fetch constants/11a.md: 429\nUNREACHABLE C-1  upper bound on the minimum-overlap constant\nUNREACHABLE pin:3c:L  last-listed lower-bound row\n"
+  );
+  assert.doesNotMatch(flake, /^Drift:/, `a transport failure was titled as a record movement: ${flake}`);
+  assert.match(flake, /^Check error: bounds-ledger could not reach 2 cited source\(s\)/, `unexpected flake title: ${flake}`);
+
+  // Fires on each real record movement.
+  assert.match(await titleFor("BROKEN pin:10a:U  pinned string gone\n"), /^Drift: claims pin:10a:U/);
+  assert.match(await titleFor("CHANGED constants/2a.md\n"), /^Drift: constants\/2a\.md/);
+  // A real move outranks a concurrent flake — otherwise a 429 could mask a genuine drift.
+  assert.match(await titleFor("BROKEN pin:10a:U  gone\nUNREACHABLE pin:3c:L  HTTP 429\n"), /^Drift: claims pin:10a:U/);
+  // `paste -sd', '` cycles its delimiters rather than joining with ", ", so three or more items
+  // came out `a,b c`. Visible in issue #15's own title.
+  assert.match(
+    await titleFor("CHANGED constants/2a.md\nCHANGED README.md\nADDED constants/99z.md\n"),
+    /^Drift: constants\/2a\.md, README\.md, constants\/99z\.md/
+  );
+  // The two paths that already worked must not regress.
+  assert.match(await titleFor("error: fetch failed\n"), /^Check error: bounds-ledger re-verification could not complete/);
+  assert.match(await titleFor(null), /^Instrument failure: bounds-ledger self-test/);
+  await rm(ALARM_TMP, { recursive: true, force: true });
+  alarmVerdict = "alarm titles a record movement Drift: and a transport failure Check error:, with the real move outranking a concurrent flake";
+  }
+}
+
+console.log(`reverify.test: PASS (synthetic drift in ${victim} detected; pristine copy clean; README leg fires on an asterisked row, silent when restored, REMOVED when deleted, and untouched by a constants-only edit; ${steps.length} workflow steps, piped steps pipefail-guarded; ${testCmds.length} self-tests present in CI; ${alarmVerdict})`);
