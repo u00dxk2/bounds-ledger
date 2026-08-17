@@ -2,6 +2,8 @@
 
 Cross-vendor invariants for ANY coding agent (Claude Code, Codex CLI, or other) working in this repo. Canonical: portable facts live HERE; Claude-specific behavior lives in `CLAUDE.md` (which imports this file). Fleet convention adopted 2026-08-02.
 
+**Operating principles.** The portfolio's canonical operating principles live at `../skylark-site/docs/skylark-operating-principles.md` and apply here in full. The two that bite this lane most often: **David is never the distribution channel** — any "how do we get people to see this" answer is product-side share-worthiness, not founder outreach; and **ship obvious first-order improvements under authority** — data is for optimising, not for permitting. Neither overrides this repo's outward gate below, which is narrower and wins where they meet.
+
 ## What this is
 
 A reproducible, continuously re-verified ledger of drifting mathematical records (bounds / constants / certificates) that alarms when a cited record moves. Node stdlib + `fetch` only; `npm install` is a no-op. **Nothing deploys** — doc/script-only; the only automation is the GitHub Actions drift job. The repo is PUBLIC (since 2026-08-08).
