@@ -18,7 +18,11 @@ The user is a researcher, writer, or curator who **quotes a record** — a bound
 | F-2 | **Spot-check one claim** — "is the number I'm about to cite current?" | outside researcher | **no surface at all** |
 | F-3 | **Receive a correction** — a curator is told their published record is behind | upstream maintainer | sent once, 2026-07-24 (A-3, David-sent); awaiting reply — tracked as W-3 |
 
-F-2 is where the core problem lives, and it has **zero** surface: the only way to ask "is this current?" is to clone a private repo and run `npm run check`. That is the gap, but closing it means a public status surface, which is the **public-repo flip — David-gated**. Not a micro-fix; do not ship it unasked.
+F-2 is where the core problem lives, and it still has **zero** surface.
+
+> **⚠ STALE BLOCKER, CORRECTED 2026-08-17.** This paragraph read: *"closing it means a public status surface, which is the public-repo flip — David-gated. Not a micro-fix; do not ship it unasked."* **That gate cleared on 2026-08-08** — David said "Yes, make it public" and the repo has been public for nine days ([A-13](../continuity/items.json) closed). The stated reason F-2 had no surface expired, nobody re-read the sentence, and the highest-value flow in this document sat behind a condition that no longer existed. This is the second stale blocker found in this repo in two days — A-7's said the repo was private and needed paid add-ons, corrected 2026-08-16 in `a896dfb`. **A ledger whose product is noticing stale records has now twice been the thing holding a stale record.** The pattern is specific enough to name: a blocker written while a gate was pending does not re-read itself when the gate opens, so *closing a gate must include a sweep for text that cited it.*
+
+What is still true: F-2 needs a surface a stranger can use without cloning anything, and that is more than a micro-fix. What is no longer true: that it needs David first. It is now ordinary engineering work, and it is the one flow that addresses the core problem in the user's own words.
 
 ---
 
@@ -45,6 +49,18 @@ All three are reversible micro-fixes that would normally ship under default auth
 ### Validation status
 
 Not persona-tested. `/persona-friction` drives a **browser** against a URL, and F-1 terminates in a GitHub issue with an audience of one — there is no page to test. The flow that will need persona validation is F-2, and it doesn't exist yet.
+
+---
+
+## Rotation 2 (2026-08-17) — F-2, the spot-check, now that its gate is gone
+
+**The genuinely great version, named first.** A researcher about to cite a constant opens one page, types or clicks the constant they care about, and sees: the current best bound in both directions, the exact upstream row it came from, **the date that row last moved**, and a one-line "this was verified by machine N hours ago" stamp. No account, no clone, no trust required — the page links the primary source beside every number so they can check us in one hop. The delight is not "we have a database"; it is *"I asked a question I could not previously ask cheaply, and got an answer with its provenance attached."* That is F-2 done properly, and it is the only flow that speaks to the core problem in the user's own words.
+
+**The floor (reduce-steps), for contrast.** Today the path is: guess that we mirror `teorth/optimizationproblems` → clone our repo → run `npm run check` → read 233 claim lines → still not know when the row last moved, because our output asserts *current sync*, never *history*. That is not a long flow; it is an absent one. **Named principle: recognition over recall** (Nielsen) — we require the visitor to recall which upstream repo we steward and how our ledger is laid out, when the interface should simply show them the constant they named.
+
+**Scoped shippable slice, and it is deliberately not the great version:** `scripts/lookup.mjs <constant-id>` — prints the pinned upper/lower rows for one constant, the upstream sha they were snapshotted at, and the date that pin last changed (derivable today from `git log -- ledger/claims.json`, which is exactly what `catch-rate.mjs` already walks). Effort ~60 lines plus a self-test proving both answers. It is a trusted-print instrument, so it routes through the cross-family review lane; two of this lane's diffs are already queued there, so this one is **spec'd here and queued, not shipped today**.
+
+**Why the great version is not shrunk to fit today:** a page needs a hosting decision and a generation step, and the ambition is the point — F-2 is the flow that turns this repo from *a record of our own honesty* into *a thing that answers someone else's question*. Surfaced for David rather than quietly reduced to a CLI.
 
 ### Render read (2026-07-24) — P-1/P-2/P-3 confirmed against the LITERAL render
 
