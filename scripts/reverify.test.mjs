@@ -113,6 +113,11 @@ const testCmds = pkg.scripts.test.split("&&").map((c) => c.trim()).filter(Boolea
 const uncied = testCmds.filter((c) => !wf.includes(c));
 assert.equal(uncied.length, 0, `self-test(s) run by \`npm test\` but absent from the workflow — unguarded in CI:\n${uncied.join("\n")}`);
 
+// b1 must STAY. A branch with no path to a runner is how `guard-catch-count` sat unvalidated for a
+// day, and A-8's lesson is that a hand-added workflow line with nothing asserting it stays can be
+// deleted silently. Asserted on the comment-stripped text so a commented-out trigger cannot pass.
+assert.match(wf, /^\s*pull_request:\s*$/m, "reverify.yml no longer triggers on `pull_request` — a feature branch gets NO runner verdict, which is the hold-with-no-release-command defect (b1, 2026-08-17)");
+
 // The alarm's TITLE is the only part of it most readers ever see, so a title that asserts the
 // wrong KIND of event is a defect in the alarm itself. A drift is a record MOVING: the mirrored
 // surface changed, or a claim's cited surface no longer carries its pinned string (BROKEN).
