@@ -2,6 +2,15 @@
 
 **2026-08-17.** Found in production, while validating something else.
 
+> **Where the fix lives.** The code described below — the workflow's title precedence and its guard
+> in `scripts/reverify.test.mjs` — is committed on branch `alarm-title-honesty` (`4153c00`) and was
+> deliberately **not merged on the day it was written**: the alarm's issue title is the most-read
+> line this repository produces, which puts it in the trusted-print class the cross-family review
+> lane exists for. This finding sits on `main` regardless, because a finding is a record and records
+> should not wait on a merge queue. **A-17** tracks the merge and its ordering. So if you are reading
+> this against a `main` that has no `join_list` in `.github/workflows/reverify.yml`, nothing is
+> missing — the branch has not landed yet.
+
 ## What happened
 
 The held `guard-catch-count` branch needed a run on a Linux CI runner before merging — the one
