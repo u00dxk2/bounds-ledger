@@ -101,11 +101,25 @@ repo already refuses to launder an unanswerable question into a pass (`UNVERIFIE
 
 ## Three things I got wrong
 
-1. **I caused the rate limit.** Two dispatches in ten minutes, each issuing roughly 220 fetches
-   against `raw.githubusercontent.com`, on top of the daily scheduled run. Dispatching this
-   workflow is not free: it spends a shared budget that the *scheduled* run — the one G-1's green
-   streak is measured on — depends on. Validate on a runner, but not repeatedly, and not twice in
-   one window when the first run already answered the question.
+1. **I asserted a cause I had not established — and it was the wrong one.** The first version of
+   this finding, of the commit that carried it, of `A-5 note4`, of `CLAUDE.md`'s new gotcha and of
+   two issue-closing comments all said flatly: *"I caused the rate limit"* — two dispatches in ten
+   minutes, ~220 fetches each. **GitHub was in a critical outage from 2026-08-17T13:40:03Z**
+   (githubstatus.com incident API, read directly; Actions degraded from 13:42Z, ~20% error rates,
+   API/Issues/PRs/Actions all majorly impacted). My first dispatch was **14:32Z — fifty-two minutes
+   after the outage began**, and Actions was already degraded before it. Three things I had in hand
+   at the time and did not assemble: a local `npm run check` issuing ~450 raw fetches ran **fully
+   green at 14:28Z**, forty-eight minutes into the outage; a later *local* check 429'd even though
+   my dispatches were runner-side and share no egress with this machine; and the errors included
+   **502 and 503**, which no volume of requests produces. I even wrote "the 502 is not explainable
+   that way" in a bus note and still left the self-blame standing everywhere else.
+   The honest correction, in both directions: the outage is a sufficient and independently
+   confirmed explanation, and my double-dispatch is **not** established as a cause of anything.
+   Two dispatches in ten minutes remains poor practice on its own merits — each run is ~450
+   requests — and the guidance to not do it stands, but it stands as *practice*, not as the
+   diagnosis of this incident. **This is the lane's own failure mode turned inward: a confident
+   causal story attached to a red, published without the positive control the repo's own drift-cycle
+   rule demands.** Self-blame felt like rigour and was simply another unverified attribution.
 2. **I filed a real issue by accident.** A throwaway debug one-liner's escaping failed to strip
    the step's `gh issue create` before executing it, and it filed #16 against the public repo.
    Closed within minutes. The harness in the test asserts the strip succeeded *before* running
@@ -121,6 +135,19 @@ repo already refuses to launder an unanswerable question into a pass (`UNVERIFIE
    GraphQL listing returned 503 (a failed query is not evidence of absence).
 
 ## What this says about the red
+
+Two separate questions, and the outage settles only one of them.
+
+**Was the run's RED correct?** Yes, and it stays correct. An unreachable source means we could not
+verify, and a green there would launder an unverifiable result into a pass. That is a statement
+about our alarm's behaviour and the outage does not touch it.
+
+**Was the run's red a verdict about our CODE?** No — and during the outage window (13:40Z onward)
+no CI conclusion here is a verdict about our code at all. Per the fleet incident guidance, CI reads
+in that window are **UNKNOWN**, never red and never green. The two PR runs that completed
+`success` at 16:11Z did execute every step including the network legs, which is positive evidence
+and self-validating; but they are recorded as UNKNOWN-with-timestamp rather than green, because a
+conclusion drawn from a majorly-degraded Actions service is not one this repo should lean on.
 
 The red run was **correct and stays correct**. An unreachable source means we could not verify,
 and reporting green would launder an unverifiable result into a pass — the one thing this repo
