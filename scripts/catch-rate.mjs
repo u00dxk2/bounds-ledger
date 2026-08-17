@@ -48,9 +48,40 @@
 // traffic-snapshot.mjs and gap-table.mjs, NOT an alarm. It never fails a build.
 
 import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 
 const CLAIMS = "ledger/claims.json";
+const ITEMS = "continuity/items.json";
+
+// --- the candidate-correction queue, companion to the movement rate (2026-08-17) --------------
+//
+// The movement figure above measures whether the adopted SURFACE is still alive. It says nothing
+// about whether WE are still producing correction candidates — which is the input G-1 actually
+// consumes, since G-1 counts externally-acknowledged corrections. The two can move in opposite
+// directions and on 2026-08-17 they did: zero movements this week while one verified defect sat
+// waiting on a gate. Reporting only the first reads "quiet week"; reporting both reads "we found
+// something and cannot act on it", which is strictly truer and points at the real constraint.
+//
+// COUNTED FROM AN EXPLICIT FLAG, never inferred from titles. A trusted-print figure that guesses
+// which items qualify will eventually print a wrong number, and this one prints next to a rate
+// where a wrong number reads as productivity. Set `correctionCandidate: true` on an item only when
+// a defect in a stewarded surface is VERIFIED by us and awaiting a gate or a send — not once its
+// correction has gone out (that is downstream), and not for an announcement rather than a fix.
+//
+// Renders a COUNT and no verdict: no threshold, no decision rule, nothing for a build to fail on.
+export function correctionQueue(itemsJson) {
+  let parsed;
+  try {
+    parsed = JSON.parse(itemsJson);
+  } catch {
+    return null; // unreadable ledger — say so rather than print a confident 0
+  }
+  const rows = Array.isArray(parsed?.items) ? parsed.items : null;
+  if (!rows) return null;
+  const open = rows.filter((i) => i && i.correctionCandidate === true && i.status !== "closed");
+  return { depth: open.length, ids: open.map((i) => i.id) };
+}
 
 // stderr ignored: `show` probes a parent that legitimately predates the file.
 const git = (...args) =>
@@ -200,6 +231,37 @@ if (process.argv.includes("--selftest")) {
   assert.deepEqual(movedPins(null, base), []);
   assert.deepEqual(movedPins("not json", base), []);
 
+  // --- candidate-correction queue: BOTH answers, on fixtures (KP-78) -----------------------
+  const itemsBlob = (...rows) => JSON.stringify({ project: "x", items: rows });
+  // FIRES: an open, flagged item is counted, and its id is named.
+  assert.deepEqual(
+    correctionQueue(itemsBlob({ id: "A-16", status: "open", correctionCandidate: true })),
+    { depth: 1, ids: ["A-16"] },
+    "an open flagged item must be counted",
+  );
+  // SILENT, the three ways an item is NOT in the queue. A counter that counts everything is
+  // as useless as one that counts nothing, and here it would overstate our own productivity.
+  assert.deepEqual(
+    correctionQueue(itemsBlob({ id: "A-16", status: "closed", correctionCandidate: true })),
+    { depth: 0, ids: [] },
+    "a CLOSED flagged item must not be counted",
+  );
+  assert.deepEqual(
+    correctionQueue(itemsBlob({ id: "W-3", status: "open" })),
+    { depth: 0, ids: [] },
+    "an open UNflagged item must not be counted — the flag is opt-in, never inferred",
+  );
+  assert.deepEqual(
+    correctionQueue(itemsBlob({ id: "A-15", status: "open", correctionCandidate: "yes" })),
+    { depth: 0, ids: [] },
+    "only a literal true counts — a truthy string must not slip in",
+  );
+  // An unreadable ledger must report UNREADABLE, not a confident zero. A zero from a dead read is
+  // indistinguishable from a measured zero, and this figure sits beside a decision narrative.
+  assert.equal(correctionQueue("not json"), null, "unparseable items.json must return null, not 0");
+  assert.equal(correctionQueue("{}"), null, "a JSON blob with no items array must return null, not 0");
+  assert.equal(correctionQueue('{"items":"nope"}'), null, "a non-array items field must return null, not 0");
+
   assert.equal(weekOf("2026-08-13"), "2026-08-10");
   assert.equal(weekOf("2026-08-10"), "2026-08-10", "Monday belongs to its own week");
   assert.equal(weekOf("2026-08-09"), "2026-08-03", "Sunday belongs to the week before");
@@ -288,3 +350,26 @@ console.log(
 //   - Our OWN merged PRs land as upstream movement. pin:15a:U is again the case — that was
 //     PR #141 landing, not a catch. Not deducted, because git cannot see whose commit it was.
 console.log("Upper bound: a citation-key rename moves a pin without moving a bound, and our own merged PRs land as upstream movement (both true of pin:15a:U).");
+
+// Companion line: the movements figure is about the SURFACE, this is about US. Read together.
+{
+  let raw = null;
+  try {
+    raw = readFileSync(ITEMS, "utf8");
+  } catch {
+    /* fall through to the unreadable branch */
+  }
+  const q = raw === null ? null : correctionQueue(raw);
+  if (q === null) {
+    console.log(
+      `\nCandidate-correction queue: UNREADABLE — could not parse ${ITEMS}. Not a zero; a zero here and a broken read are different facts and must not print the same.`,
+    );
+  } else {
+    console.log(
+      `\nCandidate-correction queue depth: ${q.depth}${q.ids.length ? `  (${q.ids.join(" ")})` : ""} — verified defects in a stewarded surface awaiting a gate or a send, counted from the explicit correctionCandidate flag in ${ITEMS}.`,
+    );
+    console.log(
+      "Read this WITH the per-week figure, not instead of it: the rate says whether the surface is still moving, this says whether we are still finding things. A zero rate beside a non-zero queue is not a quiet week — it is work found and blocked.",
+    );
+  }
+}

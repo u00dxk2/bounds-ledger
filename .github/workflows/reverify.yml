@@ -5,6 +5,23 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
+  # b1, 2026-08-17. Without this a feature branch got ZERO runs however often it was pushed, so a
+  # branch held pending a runner verdict had no path to one except a `workflow_dispatch --ref` that
+  # nobody remembers exists — and `guard-catch-count` duly sat unvalidated for a day with an
+  # innocuously blank branch page. A hold whose release condition has no executable command
+  # outlives its reason.
+  #
+  # Worth knowing WHICH sha this validates, because it fixes a second defect for free: a
+  # `pull_request` run checks out the MERGE commit (`refs/pull/N/merge`), not the branch tip. That
+  # is exactly the sha we care about. On 2026-08-17 a dispatch validated a branch tip that could
+  # never have landed — main had moved and both sides had fixed the same lines differently — so the
+  # verdict was about code that would not exist. A merge-commit run cannot make that mistake.
+  #
+  # One run per PR, not per push, so this REPLACES manual dispatches rather than adding load. That
+  # matters here: each run issues ~450 requests and two dispatches in ten minutes tripped
+  # raw.githubusercontent secondary rate limiting today.
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: read
