@@ -14,7 +14,7 @@ That reconciliation is [`docs/reconciliations/2026-07-22-minimum-overlap.md`](do
 
 ## What it has actually caught
 
-Since the alarm was armed on 2026-07-24, nine upstream drifts — each verified before the mirror was updated, against primary sources where a number moved and against upstream's own content where the change was editorial. One row per resolution *story*, not per changed file and not per cycle — the eight rows below cover nine cycles, because the 2026-08-12 row is two of them. To count them yourself: `git log --oneline -- ledger/teorth-optimizationproblems/manifest.json`, minus the initial-snapshot commit `b5e3ac9` and the mirror-extension commit `3a698b1`, neither of which resolved a drift:
+Since the alarm was armed on 2026-07-24, 9 upstream drifts — each verified before the mirror was updated, against primary sources where a number moved and against upstream's own content where the change was editorial. One row per resolution *story*, not per changed file and not per cycle — the eight rows below cover nine cycles, because the 2026-08-12 row is two of them. To count them yourself: `git log --oneline -- ledger/teorth-optimizationproblems/manifest.json`, minus the initial-snapshot commit `b5e3ac9` and the mirror-extension commit `3a698b1`, neither of which resolved a drift:
 
 | Drift | What moved |
 |---|---|
