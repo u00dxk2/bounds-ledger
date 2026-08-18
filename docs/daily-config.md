@@ -24,7 +24,7 @@ Both scripts carry `--help` / `--selftest`. Read the exit code by redirect, neve
 ⚠ **`check-ci-status.mjs` reads your LOCAL HEAD, so run it from a `main` checkout or its verdict is about a different commit.** Near-miss 2026-08-17: it printed *"GREEN — 1 completed non-scheduled success(es) for HEAD"* while I was checked out on a feature branch, so the green described that branch's PR run and said nothing about `main`, which was red at the time. The script names the sha it used on its first line (`local HEAD cf1e2786a4`) — read that line, not just the verdict. The prompt's standing rule already says to discriminate with `git rev-parse HEAD origin/main`, but it frames that as the response to an UNKNOWN; this failure produced a confident **GREEN**, which is the direction nobody double-checks. Make the rev-parse unconditional:
 
 ```
-git rev-parse --short HEAD origin/main   # must match, else the next read is about the wrong commit
+git rev-parse HEAD origin/main && [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ]   # prints both; ABORTS on mismatch. No pipe — the exit code is real.
 node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml
 ```
 
