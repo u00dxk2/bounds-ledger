@@ -592,7 +592,8 @@
       "closeWhen": "Either a reviewed retry-with-backoff ships with a test demonstrating both answers, or the idea is declined with a recorded reason.",
       "expectedSignalBy": "2026-09-01",
       "signalDateNote": "Forced-review date, not a ship date; nothing here is urgent while re-runs are cheap and the red is honest.",
-      "linkedCommits": []
+      "linkedCommits": [],
+      "note3": "SECOND DATA POINT THE SAME DAY, 2026-08-18 close-out. The close battery run of npm run check exited 1 with TWO UNREACHABLE pins (pin:57c:U and pin:57c:L, the Univalent Bloch constant page) -- not BROKEN, so nothing moved. A single re-run of check-claims.mjs came back exit 0 with 231 hold and 0 broken/unreachable. That is the second transient transport failure of the day on a different file from the first (the push run on 95c12f1 died on constants/9a.md returning 502, also clean on re-run), and both were absorbed by exactly one retry. Two independent transients in one day, each costing a manual re-run and each briefly presenting as a red alarm, is the concrete case for this item -- and note it is ALSO the case for caution: a retry that had been in place would have hidden two real observations about how flaky the transport is. Whatever ships must LOG that it retried, so the flake rate stays visible rather than being silently smoothed away."
     }
   ],
   "meta": {
