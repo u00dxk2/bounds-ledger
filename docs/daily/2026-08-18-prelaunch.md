@@ -6,12 +6,12 @@ north_star_metric: externally-acknowledged corrections/confirmations on a stewar
 north_star_value: 1
 north_star_status: green
 north_star_classification: emerging
-last_deploy: e351b6b
+last_deploy: fefa8a5
 sentry_open_p1: null
 sentry_open_p2: null
 mrr_usd: null
 n_active_users_28d: 0
-on_hold_items: 3
+on_hold_items: 2
 top_action_today: "Nothing needs you today. The ledger is clean and the overnight check passed, which is streak day 26 of the 30 we need by Saturday. Today's catch was in our own instructions rather than in the mathematics. Yesterday I wrote a safety check into the top of tomorrow's start-up notes - one line that compares the code on this machine against the copy on GitHub, so a session cannot check the wrong version and report all-clear. I never ran it. It had a typo that makes it stop with an error, and because every later command was chained behind it, the whole morning routine would have quietly done nothing at all: no ledger check, no comparison against the source, no claim check. Anyone following the notes would have seen one error message about revisions and no other output. It is fixed, and I proved the new version both passes when the two copies match and stops when they differ. The lesson I am writing down is small and specific: a command written into instructions is only verified by running it."
 ---
 
@@ -21,7 +21,7 @@ Paced rail, day 17. Steward cadence first, then the increment. No self-rating.
 
 ## BLUF
 
-**FIRST ACTION** — the steward cadence, now behind a sync guard that actually runs. Then check whether the cross-family review lane has replied on the held `alarm-title-honesty` branch; if it has, merge that branch **before** the guard branch (A-17 — the item tracking the two held PRs).
+**FIRST ACTION** — the steward cadence, now behind a sync guard that actually runs. Nothing is held any more: A-17 (the item that tracked the two held PRs) closed today, both merged. The open follow-ups are A-19 and A-20, both filed with forced-review dates and neither urgent.
 
 ```bash
 cd C:/dev/skylark/bounds-ledger && git rev-parse HEAD origin/main && [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] && npm run check && node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml
@@ -43,7 +43,17 @@ Three surfaces in two files (`docs/cold-starts/2026-08-18.md` twice, `docs/daily
 
 **Steward cadence, all green.** `npm run check` first, then the overnight log — that order, per `CLAUDE.md`'s rule *"Steward cadence runs `npm run check` FIRST, then reads the overnight CI log"*, which exists because the two answer different questions and a stale green log buys false confidence. No drift, 113 mirror files at upstream `e70b4a4` (an upstream `teorth/optimizationproblems` sha; it does not resolve in this repo). **Positive control: `git cat-file -t e351b6b` returns `commit`, while `git cat-file -t e70b4a4` returns `fatal: Not a valid object name` — the resolver works, so the upstream sha's absence is a fact about the sha and not about a broken command.** The overnight log also carries the expected `advisory fetch failed (HTTP 403)` beside both manual claims — the same 403 named in the BLUF, seen from a datacenter IP. 233 claims: 231 hold, 0 broken, 2 UNVERIFIED by design. State block in sync; hosted brief in sync, all 4 dated blocks present. The **credential-free visitor path** ran as its own step and exits 0 — the README's front door works for someone who is not me.
 
-**A-17 unchanged and correctly still held.** Both branches re-verified as merging clean today (`git merge-tree --write-tree`, exit 0 each) — GitHub reports `mergeable=UNKNOWN` for both, which the local check settles. **No reply from the review lane on PR #21**, so nothing merges: `alarm-title-honesty` touches the alarm's printed verdict, squarely a trusted-print instrument, and the cross-family gate is not mine to waive.
+**A-17 CLOSED later the same day — this section was written while it was still held, and is superseded by the block below.** At the time: both branches re-verified as merging clean (`git merge-tree --write-tree`, exit 0 each) against GitHub's `mergeable=UNKNOWN` for both, and no reply from the review lane, so nothing merged.
+
+**Then the review lane replied APPROVE-WITH-NITS on PR #21 and released its hold, and both PRs merged in the required order: #21 `alarm-title-honesty` → `95c12f1`, #22 `guard-catch-count-v2` → `f362ce7`.** Both remote branches deleted, including the superseded `guard-catch-count` A-17 had flagged; `git ls-remote --heads` returns `refs/heads/main` only. CI green on every push. Continuity close-out in `fefa8a5`.
+
+**The fix proved itself in production within the hour, unprompted.** The push run on `95c12f1` failed on `error: fetch constants/9a.md: 502` — a transport failure, the exact input class #21 was built for. **The alarm titled it `Check error: … could not complete` (issue #25), not `Drift:`.** An hour earlier that same run would have announced that records had moved. I read the log, verified the record independently (local `npm run check` at that commit: no drift, 233 claims, 231 hold, **0 broken/unreachable**), re-ran the failed job once — success, so transient — and checked githubstatus.com: all systems operational, 0 unresolved incidents. **So no cause is attributed to the 502.** Yesterday's lesson was that a flattering-to-admit cause still needs a positive control; an unflattering one is no different, and a lone transient 502 against a green status page supports no story at all. The red was correct and stayed red; only the title was ever the question. Issue #25 closed the same hour naming that evidence.
+
+**It does not touch G-1's streak** — that was a `push` run, and the streak is measured on the **scheduled** run, which reached a verdict at 09:26Z on `afed5e6`. Day 26 stands.
+
+**The sweep the reviewer flagged as not done** — whether anything outside the two changed files keys on the old `Drift: claims …` title shape — found every hit to be prose or history, nothing consuming the title programmatically. It still paid: it surfaced the **retracted rate-limit cause still asserted as fact inside A-17's own note**, six days after that attribution was retracted everywhere else. Fourth instance this month of a fix landing on one surface while the same string stood on another.
+
+Nits filed rather than shipped: **A-19** (the title counts unreachable *claim lines* while saying "cited source(s)"; and the SKIPPED path exits 0 on a bash-less machine, against this repo's own 8/17 lesson) and **A-20** (the 429/502 retry question, with the constraint that a retry may only turn a transient failure into a completed read and must still go red once exhausted). Both touch trusted-print instruments, so both are in-class for the review lane — and riding an unreviewed change on top of a just-reviewed diff is how a reviewed artifact stops being what was reviewed.
 
 ## Inputs (controllable)
 
@@ -69,7 +79,7 @@ For tomorrow's session: the day's work is the cadence plus whichever of A-17's t
 
 ## On hold pending data
 
-- **A-17** — both PRs validated, mergeable, and waiting on the cross-family review lane (request `8ecb03e8`). Not mine to release.
+- **A-17** — no longer on hold: the review lane released it and both PRs merged today. Closed. Its successors **A-19** (the two non-blocking review nits) and **A-20** (the 429/502 retry question) are open with forced-review dates of 2026-08-25 and 2026-09-01, and both are in-class for the review lane when they are picked up.
 - **A-16** — the upstream record row whose cited witness yields the previous record. Gate 2 is David's. Do not raise, do not PR, do not contact upstream.
 - **A-15** — the Mathstodon send, dormant by instruction. Do not ask.
 - **W-3** — the erdosproblems.com/36 correction email, still unanswered. A different channel from the merged PR; it does **not** close on that.
@@ -79,8 +89,8 @@ For tomorrow's session: the day's work is the cadence plus whichever of A-17's t
 
 | Figure | Value | Command |
 |---|---|---|
-| HEAD / origin sync | **`e351b6b` both**, exit 0 | `git rev-parse HEAD origin/main` then a `test` comparison of the two |
-| CI at HEAD | **GREEN**, 1 non-scheduled success | `node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml` (exit 0) |
+| HEAD / origin sync | **`fefa8a5` both**, exit 0 | `git rev-parse HEAD origin/main` then a `test` comparison of the two |
+| CI at HEAD | **GREEN** at `fefa8a5`, and green on every push today (`475f44b`, `95c12f1` after one re-run, `f362ce7`, `fefa8a5`) | `gh run list --workflow reverify.yml` |
 | Overnight scheduled run | **success**, verdict reached — streak day 26 | `gh run view 32121595508 --log` |
 | Mirror | **113 files @ upstream `e70b4a4`**, no drift | `npm run check` |
 | Ledger | **233 claims — 231 hold, 0 broken, 2 UNVERIFIED by design** | `npm run check` |
@@ -89,7 +99,7 @@ For tomorrow's session: the day's work is the cadence plus whichever of A-17's t
 | Self-tests | **13/13**, exit 0 | `npm test` |
 | Dead doc references | **0** across 63 paths | `node ../skylark-site/scripts/check-doc-references.mjs` (exit 0, post-commit) |
 | True open issues | **0** | `gh api` on the issues endpoint, filtered to drop pull requests |
-| Open PRs | **2** (#21 then #22), both merge clean | `git merge-tree --write-tree main origin/<branch>` (exit 0 each) |
-| Open items | **11** of 24 | `continuity/items.json` |
+| Open PRs | **0** — both merged today, both branches deleted | `gh pr list --state open`; `git ls-remote --heads origin` returns `refs/heads/main` only |
+| Open items | **14** of 28 | `continuity/items.json` |
 | Catches | partial week **0**; **0** completed dry weeks; queue depth **1** | `npm run catches` |
 | Arrivals (W-6) | **3 unique viewer-days**, 23 days recorded | `npm run traffic` |
