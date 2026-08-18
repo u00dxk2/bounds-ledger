@@ -534,7 +534,35 @@
         "cf1e278",
         "3f5bdfb"
       ],
-      "onTrigger": "When the cross-family review lane replies: apply any pre-merge findings, then merge alarm-title-honesty (PR #21) FIRST and guard-catch-count-v2 (PR #22) second — that order is load-bearing, because every push to main triggers a network run and until #21 lands main's alarm titles a transport failure as a record movement (it did so seven times on 2026-08-17). After both merge: confirm CI green at each merge commit, delete both feature branches, close A-17. If the reply is a REJECT on #21, do not merge #22 either — it would push a run to main under the dishonest alarm."
+      "onTrigger": "When the cross-family review lane replies: apply any pre-merge findings, then merge alarm-title-honesty (PR #21) FIRST and guard-catch-count-v2 (PR #22) second — that order is load-bearing, because every push to main triggers a network run and until #21 lands main's alarm titles a transport failure as a record movement (it did so seven times on 2026-08-17). After both merge: confirm CI green at each merge commit, delete both feature branches, close A-17. If the reply is a REJECT on #21, do not merge #22 either — it would push a run to main under the dishonest alarm.",
+      "expectedSignalBy": "2026-08-20",
+      "signalDateNote": "Signal date added 2026-08-18 (P2). The item was opened 8/17 waiting on the cross-family review lane with NO date field, so the overdue-signal scan could never flag it and the wait could drift indefinitely while every dashboard read green. 2026-08-20 is not a merge deadline and does NOT license self-approval: on that date, if the lane has still not replied, the action is to surface the LATENCY of the gate to the orchestrator as a question, not to merge unreviewed. Chosen because CLAUDE.md already says a hold whose release condition has no stated command outlives its reason; a hold with no date is the same defect one level up."
+    },
+    {
+      "id": "A-18",
+      "created": "2026-08-18",
+      "type": "active",
+      "status": "open",
+      "title": "Generated STATE block at the top of the cold-start primer (render-state-block.mjs --primer)",
+      "note": "Proposed in the 2026-08-18 P1 retro and APPROVED IN PRINCIPLE by the orchestrator in its ack of msg 45e8a790. Problem it solves: the primer is append-only and multi-session, so today opened with \"Point-in-time as this section was written: main green at 836aa96 ... the authoritative end-of-day HEAD and commit count are in the /close-session section below\". A cold agent must read two close-out sections and reconcile them before it knows what HEAD is, and pays that cost first thing every session. Shape: extend scripts/render-state-block.mjs with a --primer target rather than writing a new script -- it already does exactly this job for the README between HTML-comment markers, with a --check mode that fails when committed state disagrees with the repo. Emit ONE generated block at the top of docs/cold-starts/<date>.md (HEAD, upstream sha, file and claim counts, streak day, open-item count) so the prose below is unambiguously historical. Leans SIMPLER: it deletes a reconciliation step rather than adding a check.",
+      "note2": "SEQUENCING IS A CONSTRAINT, NOT A PREFERENCE (orchestrator, same ack): this does NOT jump the review lane. PR #21 (alarm-title-honesty) lands first. Slot this at the next natural build slot, explicitly NOT the day it was approved. Note also that render-state-block.mjs is a trusted-print instrument, so the diff is itself in-class for the cross-family review gate -- request the lane rather than self-reviewing.",
+      "closeWhen": "Either the --primer target is shipped and a primer carries a generated STATE block, or the proposal is explicitly killed with a recorded reason. Do not let it expire silently -- the 8/15 instrument-audit proposal did exactly that and is now W-7.",
+      "linkedCommits": [],
+      "expectedSignalBy": "2026-08-25",
+      "signalDateNote": "NOT a ship date -- the real precondition is PR #21 merging, which is the review lane timing and not ours. This is a forced-review date: if the work has not been slotted by 2026-08-25, decide whether it is still wanted rather than letting it sit. Added in the same P2 pass that filed W-7, because leaving A-18 undated would have been a fresh instance of exactly the defect W-7 exists to record -- the second one today, filed forty minutes after the first."
+    },
+    {
+      "id": "W-7",
+      "created": "2026-08-18",
+      "type": "watch",
+      "status": "open",
+      "title": "The 2026-08-15 instrument-audit proposal was never tracked and silently expired",
+      "note": "The 8/15 daily report recommended: \"read one instrument own output against what it claims to measure, in the same pass that reviews the items\", explicitly routed to the weekly forced-decision pass rather than shipped that day. Its stated evidence was strong -- two of the last four findings at that point came from reading our own scripts output rather than the record, and both were defects that made a figure look informative while it was structurally incapable of saying anything. Three days later a grep of continuity/, CLAUDE.md, AGENTS.md and docs/lane-brief.md finds NO trace of it: the 8/17 weekly pass ran and did not consider it, because a recommendation that lives only in a daily report is invisible to a pass that reads items.json.",
+      "note2": "This item exists to force the decision, NOT to pre-approve the proposal. The failure being tracked is the routing gap -- \"proposed for the weekly pass\" with no tracker row is indistinguishable from \"dropped\", and today one more proposal (A-18) was routed the same way, which is why this is being filed rather than just noted. Recurrence, for the record: the lane already has a rule that closing a gate must include a sweep for the text that cited it (docs/key-user-flows.md); this is its mirror image -- OPENING a proposal must include the row that will outlive the report.",
+      "closeWhen": "At the next weekly forced-decision pass, the instrument-audit step is either adopted into the steward cadence or killed with a recorded reason. Either outcome closes this; silence does not.",
+      "expectedSignalBy": "2026-08-24",
+      "signalDateNote": "Next weekly forced-decision pass after the 2026-08-17 one (field weeklyPass2026_08_17). Dated so the overdue scan can flag it -- the whole point of the item is that an undated proposal disappeared.",
+      "linkedCommits": []
     }
   ],
   "meta": {
