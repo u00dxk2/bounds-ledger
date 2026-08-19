@@ -594,6 +594,21 @@
       "signalDateNote": "Forced-review date, not a ship date; nothing here is urgent while re-runs are cheap and the red is honest.",
       "linkedCommits": [],
       "note3": "SECOND DATA POINT THE SAME DAY, 2026-08-18 close-out. The close battery run of npm run check exited 1 with TWO UNREACHABLE pins (pin:57c:U and pin:57c:L, the Univalent Bloch constant page) -- not BROKEN, so nothing moved. A single re-run of check-claims.mjs came back exit 0 with 231 hold and 0 broken/unreachable. That is the second transient transport failure of the day on a different file from the first (the push run on 95c12f1 died on constants/9a.md returning 502, also clean on re-run), and both were absorbed by exactly one retry. Two independent transients in one day, each costing a manual re-run and each briefly presenting as a red alarm, is the concrete case for this item -- and note it is ALSO the case for caution: a retry that had been in place would have hidden two real observations about how flaky the transport is. Whatever ships must LOG that it retried, so the flake rate stays visible rather than being silently smoothed away."
+    },
+    {
+      "id": "A-21",
+      "created": "2026-08-19",
+      "type": "active",
+      "status": "open",
+      "title": "The fleet stale-actionable filter cannot see this lane parked dates — proposed upward, not ours to ship",
+      "note": "Found 2026-08-19 by checking the kickoff stale-actionable figure of 5 instead of acting on it. the fleet endpoint helper skylark-site/src/lib/continuity-endpoints.ts (hasFutureDateInCloseWhen, line 523 — that path is skylark-site as it sees itself and does not resolve at our HEAD) scans only closeWhen and item.notes. This lane writes prose into note/note2..note9 (singular, numbered) so item.notes is UNDEFINED on all 14 open items, and parks items in expectedSignalBy which the filter never reads. Measured: all five flagged items return futureDatesInCloseWhen=[] while W-3 carries expectedSignalBy 2026-09-24 and W-6 carries 2026-11-06. filteredCount:0 is therefore structural, not an observation — no item in this lane can ever be excluded as parked.",
+      "note2": "Why it is not cosmetic: the kickoff threshold is >3 = a real P4 forced-decision pass, so an uncorrectable figure sits directly upstream of owed work, and every pass re-derives the same answer (keep waiting). That is the founding defect — an alarm that cannot report the negative teaches the next reader to ignore it.",
+      "note3": "PROPOSED FIX and the half to refuse: add the TYPED expectedSignalBy field to the scanned text, one clause. Do NOT also widen the scan across the note* prose family — those fields are narrative (W-3.signalNote alone names two dates), so any stray future date would park a genuinely neglected item, converting a false positive into a false negative, which is the more dangerous direction. Smaller and strictly more correct than the larger change.",
+      "note4": "SCOPE: that helper belongs to skylark-site and is a trusted-print instrument feeding a threshold, so it is in the cross-family review gate class. Proposed upward in the 2026-08-19 P1 retro; NOT shipped from this lane. This row exists because W-7 rule says a recommendation routed elsewhere gets its tracker row in the same commit as the report proposing it.",
+      "closeWhen": "The orchestrator either ships the expectedSignalBy clause (then this lane re-reads filteredCount and confirms W-3 and W-6 are excluded), or rules the current behaviour intended — either answer closes it. A silent non-response does not.",
+      "expectedSignalBy": "2026-08-26",
+      "signalDateNote": "One week. If nothing has come back by 2026-08-26 the proposal has been dropped rather than declined, which is exactly the failure W-7 was created to catch — do not re-file it silently, surface that it went unanswered.",
+      "linkedCommits": []
     }
   ],
   "meta": {
