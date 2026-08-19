@@ -9,6 +9,8 @@
     "check": "node scripts/reverify.mjs --check && node scripts/check-claims.mjs && node scripts/render-state-block.mjs --check && node scripts/check-brief.mjs",
     "resnap": "node scripts/reverify.mjs --snapshot && node scripts/extract-pins.mjs && node scripts/render-state-block.mjs",
     "traffic": "node scripts/traffic-snapshot.mjs",
-    "catches": "node scripts/catch-rate.mjs"
+    "catches": "node scripts/catch-rate.mjs",
+    "verify:steps": "npm test && npm run check",
+    "verify": "node ../skylark-site/scripts/verify-with-receipt.mjs"
   }
 }
