@@ -21,7 +21,7 @@ Paced rail, day 18. Steward cadence first, then the increment. No self-rating.
 
 ## BLUF
 
-**FIRST ACTION** — the steward cadence behind the sync guard, run verbatim at close and **exit 0**. Nothing is held and nothing is owed to David today; G-1 reaches both its close conditions on Saturday 2026-08-22 and that is his decision, not ours.
+**FIRST ACTION** — the steward cadence behind the sync guard. Run verbatim in the turn that wrote this, against the **final pushed commit** `3eecd37`, and **exit 0** end to end. Nothing is held and nothing is owed to David today; G-1 reaches both its close conditions on Saturday 2026-08-22 and that is his decision, not ours.
 
 ```bash
 cd C:/dev/skylark/bounds-ledger && git rev-parse HEAD origin/main && [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] && npm run check && node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml
@@ -77,8 +77,8 @@ Every figure with the command that produced it. Point-in-time as written.
 
 | Figure | Value | Command (exit) |
 |---|---|---|
-| HEAD / origin sync | `0d00e79` both, at cadence time | `git rev-parse HEAD origin/main` (0) |
-| CI at HEAD | **GREEN** — 1 completed non-scheduled success, 0 failures, 0 pending | `check-ci-status.mjs --workflow reverify.yml` (0) |
+| HEAD / origin sync | `0d00e79` both at cadence time; **`3eecd37` both after today's push** | `git rev-parse HEAD origin/main` (0) |
+| CI at HEAD | **GREEN at both** — 1 completed non-scheduled success, 0 failures, 0 pending, re-read at the **final pushed commit** `3eecd37` | `check-ci-status.mjs --workflow reverify.yml` (0) |
 | Overnight scheduled run | `32237594877`, 09:26Z on `0d00e79`, completed/success — **reached a verdict** | `gh run list --workflow reverify.yml` (0) |
 | G-1 (the north-star goal) — streak leg | **day 27 of 30**; both conditions land 2026-08-22 | derived from the above under `G-1.streakDayRule` |
 | Mirror | **113 files @ upstream `e70b4a4`**, no drift | `npm run check` (0) |
