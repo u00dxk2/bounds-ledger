@@ -43,6 +43,18 @@ That is the **third stale blocker found in this repo**, and it was sitting in th
 
 **Also relevant to the succession question the orchestrator is carrying upward:** `G-1`'s own title is *"become the reproducible steward of at least one drifting record inventory (re-verification CI **+ public status surface**)"*, but its close conditions are only the 30-day armed alarm and one external acknowledgement. **G-1 closes Saturday having never delivered the public status surface named in its own title.** F-2 is that surface. Stated as evidence for David's call, not as a proposal.
 
+### Added at P5 — what actually shipped after the Recommendation was written
+
+The Recommendation says **"Ship nothing further today."** True at P1, not true now. **David ruled mid-day that four fifths of the work must be user-visible product, not instrumentation** — this lane's morning was entirely instrument work, so it landed squarely.
+
+**The day's user-visible ship: `ce25d76`** — the README now answers *"is my number in here?"*, naming twelve recognisable constants and linking each to the bounds table we watch. One click, no clone.
+
+**Approved by David and built the same day: PR #27**, the public spot-check page for all 111 constants ("Yes - build the page"). Runner-validated, **held for the review lane**, Pages deliberately not enabled until that clears.
+
+Also: `aeae6af` corrects F-2 to *partial surface*; `f37b839` removes a retracted cause still asserted inside `reverify.yml` and files **A-24** for the stacked-PR CI gap it hid; `0423ca4` writes tomorrow's primer, which today lacked; `c2f349c` re-points **`W-6`** — the read window for the README report-an-error channel — because 100 unique visitors could never have been reached by its date; `738068f` commits a traffic sample found uncommitted, in the one file that is the only copy of anything older than 14 days; `b5d3fea` gives seven dated items a response procedure instead of just a deadline.
+
+**Read the Recommendation as the P1 position; the day's verdict is here.** Kept at length rather than stubbed because it overrides a live instruction above it and carries the only user-visible ship.
+
 <!-- findings:end -->
 
 ## What changed
