@@ -559,7 +559,8 @@
       "closeWhen": "Either the --primer target is shipped and a primer carries a generated STATE block, or the proposal is explicitly killed with a recorded reason. Do not let it expire silently -- the 8/15 instrument-audit proposal did exactly that and is now W-7.",
       "linkedCommits": [],
       "expectedSignalBy": "2026-08-25",
-      "signalDateNote": "NOT a ship date -- the real precondition is PR #21 merging, which is the review lane timing and not ours. This is a forced-review date: if the work has not been slotted by 2026-08-25, decide whether it is still wanted rather than letting it sit. Added in the same P2 pass that filed W-7, because leaving A-18 undated would have been a fresh instance of exactly the defect W-7 exists to record -- the second one today, filed forty minutes after the first."
+      "signalDateNote": "NOT a ship date -- the real precondition is PR #21 merging, which is the review lane timing and not ours. This is a forced-review date: if the work has not been slotted by 2026-08-25, decide whether it is still wanted rather than letting it sit. Added in the same P2 pass that filed W-7, because leaving A-18 undated would have been a fresh instance of exactly the defect W-7 exists to record -- the second one today, filed forty minutes after the first.",
+      "onTrigger": "On 2026-08-25, first ask whether this is still wanted. The 2026-08-21 primer carries a hand-written first-action that was RUN same-turn with its exit code kept, which is the property the generated block was meant to guarantee. If a week of hand-written primers has held that property, CLOSE this rather than build it. If it has slipped even once, build it — but render-state-block.mjs is a trusted-print instrument, so the diff goes to the cross-family review lane and does not jump it."
     },
     {
       "id": "W-7",
@@ -572,7 +573,8 @@
       "closeWhen": "At the next weekly forced-decision pass, the instrument-audit step is either adopted into the steward cadence or killed with a recorded reason. Either outcome closes this; silence does not.",
       "expectedSignalBy": "2026-08-24",
       "signalDateNote": "Next weekly forced-decision pass after the 2026-08-17 one (field weeklyPass2026_08_17). Dated so the overdue scan can flag it -- the whole point of the item is that an undated proposal disappeared.",
-      "linkedCommits": []
+      "linkedCommits": [],
+      "onTrigger": "At the weekly pass on 2026-08-24, DECIDE the 2026-08-15 instrument-audit recommendation: ship it, defer it with an explicit date, or strike it. Routing it to \"the next pass\" again is the exact failure this watch exists to catch, so that is not an available option. Record which of the three was chosen, in one line, in that day report."
     },
     {
       "id": "A-19",
@@ -585,7 +587,8 @@
       "closeWhen": "N-1 and N-2 are each either fixed behind a review-lane pass or explicitly declined with a recorded reason. N-3 needs no action and closes with them.",
       "expectedSignalBy": "2026-08-25",
       "signalDateNote": "Forced-review date, not a ship date. Dated on filing because W-7 exists to record what happens to proposals that are not.",
-      "linkedCommits": []
+      "linkedCommits": [],
+      "onTrigger": "On 2026-08-25, decide each nit ship-or-strike. N-2 is no longer hypothetical: on 2026-08-20 `bash` was genuinely absent from PATH in PowerShell on this machine and a spawn returned an empty string, which is precisely the bash-less case where a SKIPPED path exiting 0 would report success for a guard that never ran. Treat N-2 as evidenced and weight it accordingly; N-1 (the alarm title counts unreachable claim LINES while saying \"cited source(s)\") stays a wording fix."
     },
     {
       "id": "A-20",
@@ -599,7 +602,8 @@
       "expectedSignalBy": "2026-09-01",
       "signalDateNote": "Forced-review date, not a ship date; nothing here is urgent while re-runs are cheap and the red is honest.",
       "linkedCommits": [],
-      "note3": "SECOND DATA POINT THE SAME DAY, 2026-08-18 close-out. The close battery run of npm run check exited 1 with TWO UNREACHABLE pins (pin:57c:U and pin:57c:L, the Univalent Bloch constant page) -- not BROKEN, so nothing moved. A single re-run of check-claims.mjs came back exit 0 with 231 hold and 0 broken/unreachable. That is the second transient transport failure of the day on a different file from the first (the push run on 95c12f1 died on constants/9a.md returning 502, also clean on re-run), and both were absorbed by exactly one retry. Two independent transients in one day, each costing a manual re-run and each briefly presenting as a red alarm, is the concrete case for this item -- and note it is ALSO the case for caution: a retry that had been in place would have hidden two real observations about how flaky the transport is. Whatever ships must LOG that it retried, so the flake rate stays visible rather than being silently smoothed away."
+      "note3": "SECOND DATA POINT THE SAME DAY, 2026-08-18 close-out. The close battery run of npm run check exited 1 with TWO UNREACHABLE pins (pin:57c:U and pin:57c:L, the Univalent Bloch constant page) -- not BROKEN, so nothing moved. A single re-run of check-claims.mjs came back exit 0 with 231 hold and 0 broken/unreachable. That is the second transient transport failure of the day on a different file from the first (the push run on 95c12f1 died on constants/9a.md returning 502, also clean on re-run), and both were absorbed by exactly one retry. Two independent transients in one day, each costing a manual re-run and each briefly presenting as a red alarm, is the concrete case for this item -- and note it is ALSO the case for caution: a retry that had been in place would have hidden two real observations about how flaky the transport is. Whatever ships must LOG that it retried, so the flake rate stays visible rather than being silently smoothed away.",
+      "onTrigger": "On 2026-09-01, count transient transport failures (429/502/503 on fetch) in scheduled and push runs since 2026-08-18 from the run logs. BRANCH 0 FIRST, N_min = 3: if fewer than three occurred in the window, the count cannot discriminate \"worth a retry\" from \"noise\" and the discriminator is INAPPLICABLE — do not read it as a verdict. In that case extend the window to 2026-10-01 with one line of reason, and say explicitly that the read was thin. Three or more: ship a retry with backoff that LOGS every retry it performs, because a silent retry would have hidden both of the 2026-08-18 observations that motivated this row. Zero, with the window extended once already: close it."
     },
     {
       "id": "A-21",
@@ -641,7 +645,8 @@
       "note5": "BOTH ANSWERS DEMONSTRATED on the linter itself, control pre-registered in the report before the result was known (bus status 2c76b790). FIRES: three WARNs on the retro body, which carried the detector, other-repo and runtime-file relations. SILENT: zero WARNs on the A-22 status body, which named shas without those relations. So the linter is NOT an always-on warning and the fix is NOT to disable it — it is calibrated wrongly on the RELATION, exactly as note2 says, and narrowing it to modification claims keeps a working detector. Recording the outcome here because the control was pre-registered in a posted message and its result would otherwise exist only in one terminal, which is the transcribed-number problem cb4f6f5 shipped a receipt to kill.",
       "note6": "ORCHESTRATOR DISPOSITION 2026-08-20 (P1 management feedback): diagnosis-only posture APPROVED EXPLICITLY — writing a patch to another family trust-boundary instrument from outside would have been the error. A-22 is tracked on their side as a substrate action and the 2026-08-27 date is honored as filed; silence past it is the W-7 failure on THEIR side, as framed. Recorded here because the approval existed only in a bus message, and a decision that lives only on the bus is invisible to the next cold read of this ledger.",
       "note7": "SECOND OCCURRENCE, on the P2 post about this very row (bus 17c12cb6, 2026-08-20T14:30Z), and it adds a FIFTH relation the linter collapses. The flagged sentence said AGENTS.md command list did not carry npm run verify, wired yesterday by cb4f6f5. The WARN reported that cb4f6f5 touches neither AGENTS.md nor CLAUDE.md — which is TRUE and is precisely the defect being reported: the commit and those files are related by ABSENCE, the file that failed to record the commit. So the relation list is now (a) the commit modified the file — the only lintable one; (b) the file is the detector that flagged the commit; (c) the file is in another repo; (d) the file is gitignored and written at runtime; (e) the file is the one that SHOULD have recorded the commit and did not. Case (e) is the sharpest argument for narrowing rather than loosening: a documentation-gap report is a sentence that names a commit beside a file it deliberately does not touch, so the linter fires hardest on reports of exactly the defect it is adjacent to.",
-      "note8": "Frequency now measured rather than guessed: 3 WARNs on the 2026-08-19 retro, 0 on the A-22 status, 0 on the P1 retro, 1 on the P2 post. It is NOT an always-on warning — consistent with note5 both-answers finding — but it recurs whenever a post does careful cross-referencing, which is the posts most worth reading. No re-file; this is evidence on the open row, and the 2026-08-27 date stands unchanged."
+      "note8": "Frequency now measured rather than guessed: 3 WARNs on the 2026-08-19 retro, 0 on the A-22 status, 0 on the P1 retro, 1 on the P2 post. It is NOT an always-on warning — consistent with note5 both-answers finding — but it recurs whenever a post does careful cross-referencing, which is the posts most worth reading. No re-file; this is evidence on the open row, and the 2026-08-27 date stands unchanged.",
+      "onTrigger": "On 2026-08-27, check whether the orchestrator has either narrowed the sha-file-claim linter to modification claims or ruled the current breadth intended. Either answer closes this. SILENCE DOES NOT — surface the silence itself as the W-7 failure mode in that day report, naming this row, and do not silently re-file it under a new id or a fresh date."
     },
     {
       "id": "A-23",
@@ -656,7 +661,8 @@
       "closeWhen": "The 2026-08-21 report carries both the one-sentence classification AND the named shape of a first record-facing catch. Then this converts to a standing convention in CLAUDE.md and closes.",
       "expectedSignalBy": "2026-08-21",
       "signalDateNote": "Tomorrow, because it is a deliverable in the next report rather than a wait on anyone. If the 8/21 report ships without it, that is this row failing in the same way W-7 was created to catch.",
-      "linkedCommits": []
+      "linkedCommits": [],
+      "onTrigger": "On 2026-08-21, the report must carry BOTH the one-sentence record-facing-vs-instrument-facing classification AND the named shape of a first record-facing catch (what record, what class of drift, what would flag it). If the report ships without them, this row has failed in exactly the way W-7 was created to catch — say so in the report rather than rolling the date. If it carries both, convert the classification to a standing convention in CLAUDE.md and close this."
     },
     {
       "id": "A-24",
@@ -671,7 +677,8 @@
       "closeWhen": "Either the trigger is widened and a stacked PR is observed receiving checks automatically, or the hand-dispatch route is ruled the intended workflow. A silent non-response does not close it.",
       "expectedSignalBy": "2026-09-03",
       "signalDateNote": "Two weeks. Not urgent — the release command is documented and works — but an undecided gap in the CI trigger of the workflow the streak is measured on should not sit indefinitely.",
-      "linkedCommits": []
+      "linkedCommits": [],
+      "onTrigger": "On 2026-09-03, ask the orchestrator for the DECISION, not a fix: widen the pull_request base-branch filter so stacked PRs get runs, or rule that stacked PRs are hand-dispatched. Either closes this. Until then any stacked PR is validated with `gh workflow run reverify.yml --ref <branch>` after confirming it still merges — that command is already written into the workflow comment where the next person will look, so this row is not blocking anything."
     }
   ],
   "meta": {
