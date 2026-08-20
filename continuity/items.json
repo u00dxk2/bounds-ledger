@@ -653,6 +653,21 @@
       "expectedSignalBy": "2026-08-21",
       "signalDateNote": "Tomorrow, because it is a deliverable in the next report rather than a wait on anyone. If the 8/21 report ships without it, that is this row failing in the same way W-7 was created to catch.",
       "linkedCommits": []
+    },
+    {
+      "id": "A-24",
+      "created": "2026-08-20",
+      "type": "active",
+      "status": "open",
+      "title": "A STACKED pull request gets zero CI runs — b1 fixed the branch case and left the stacked-base case open",
+      "note": "Found 2026-08-20 by hitting it. reverify.yml declares `pull_request: branches: [main]`, and that filter matches the BASE branch. PR #27 is based on f2-lookup-surface, not main, so it received zero checks — `gh pr checks 27` reports \"no checks reported on the branch\", exactly the innocuously blank page b1 was written to eliminate. PR #26, based on main, got both jobs. Positive control: the same command returned two passing checks for #26 seconds earlier, so the reader was working and #27 genuinely has none.",
+      "note2": "This is b1 own defect in a new shape, and the irony is located precisely: the comment block that documents b1 sits directly above the `branches: [main]` line that reintroduces the gap, and it warns that \"a hold whose release condition has no executable command outlives its reason\". A stacked PR held for review is exactly such a hold.",
+      "note3": "FILED, NOT FIXED, deliberately. Widening the filter is a change to the CI trigger of the workflow the G-1 streak is measured on, and the 2026-08-20 ruling puts substrate behind product inside a 20% budget. The release command exists and is now written into the workflow comment where the next person will find it: `gh workflow run reverify.yml --ref <branch>`. Used once for #27 (run 32393859115) after checking the branch still merges, per the do-not-dispatch-repeatedly rule.",
+      "note4": "DECIDE, do not drift: either widen the pull_request filter so stacked PRs get runs, or rule that stacked PRs are dispatched by hand and keep the command documented. Both are defensible; leaving it undecided is what is not.",
+      "closeWhen": "Either the trigger is widened and a stacked PR is observed receiving checks automatically, or the hand-dispatch route is ruled the intended workflow. A silent non-response does not close it.",
+      "expectedSignalBy": "2026-09-03",
+      "signalDateNote": "Two weeks. Not urgent — the release command is documented and works — but an undecided gap in the CI trigger of the workflow the streak is measured on should not sit indefinitely.",
+      "linkedCommits": []
     }
   ],
   "meta": {

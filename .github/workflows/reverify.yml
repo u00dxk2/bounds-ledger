@@ -18,8 +18,22 @@ on:
   # verdict was about code that would not exist. A merge-commit run cannot make that mistake.
   #
   # One run per PR, not per push, so this REPLACES manual dispatches rather than adding load. That
-  # matters here: each run issues ~450 requests and two dispatches in ten minutes tripped
-  # raw.githubusercontent secondary rate limiting today.
+  # matters here: each run issues ~450 requests, so dispatching casually is expensive.
+  #
+  # RETRACTED 2026-08-20: this comment used to end "and two dispatches in ten minutes tripped
+  # raw.githubusercontent secondary rate limiting today." That cause was wrong. GitHub was in a
+  # CRITICAL OUTAGE from 2026-08-17T13:40Z; the first dispatch was 52 minutes into it. Three pieces
+  # of disconfirming evidence were in hand at the time and unassembled: a local ~450-fetch run was
+  # fully green 48 minutes into the outage; a later LOCAL check failed although the dispatches were
+  # runner-side and share no egress with that machine; and the errors included 502 and 503, which
+  # request volume does not produce. Self-blame feels like rigour and is just another unverified
+  # attribution - the more dangerous kind, because nobody challenges you for it. The guidance above
+  # stands on cost alone and needs no incident to justify it.
+  #
+  # KNOWN GAP, filed not fixed: `branches: [main]` filters the BASE branch, so a STACKED pr - one
+  # whose base is another feature branch - gets zero runs, which is b1's own defect in a new shape.
+  # Hit on 2026-08-20 by PR #27 (base f2-lookup-surface). Release command for such a branch is
+  # `gh workflow run reverify.yml --ref <branch>`; see A-24.
   pull_request:
     branches: [main]
 
