@@ -599,7 +599,7 @@
       "id": "A-21",
       "created": "2026-08-19",
       "type": "active",
-      "status": "open",
+      "status": "closed",
       "title": "The fleet stale-actionable filter cannot see this lane parked dates — proposed upward, not ours to ship",
       "note": "Found 2026-08-19 by checking the kickoff stale-actionable figure of 5 instead of acting on it. the fleet endpoint helper skylark-site/src/lib/continuity-endpoints.ts (hasFutureDateInCloseWhen, line 523 — that path is skylark-site as it sees itself and does not resolve at our HEAD) scans only closeWhen and item.notes. This lane writes prose into note/note2..note9 (singular, numbered) so item.notes is UNDEFINED on all 14 open items, and parks items in expectedSignalBy which the filter never reads. Measured: all five flagged items return futureDatesInCloseWhen=[] while W-3 carries expectedSignalBy 2026-09-24 and W-6 carries 2026-11-06. filteredCount:0 is therefore structural, not an observation — no item in this lane can ever be excluded as parked.",
       "note2": "Why it is not cosmetic: the kickoff threshold is >3 = a real P4 forced-decision pass, so an uncorrectable figure sits directly upstream of owed work, and every pass re-derives the same answer (keep waiting). That is the founding defect — an alarm that cannot report the negative teaches the next reader to ignore it.",
@@ -608,7 +608,12 @@
       "closeWhen": "The orchestrator either ships the expectedSignalBy clause (then this lane re-reads filteredCount and confirms W-3 and W-6 are excluded), or rules the current behaviour intended — either answer closes it. A silent non-response does not.",
       "expectedSignalBy": "2026-08-26",
       "signalDateNote": "One week. If nothing has come back by 2026-08-26 the proposal has been dropped rather than declined, which is exactly the failure W-7 was created to catch — do not re-file it silently, surface that it went unanswered.",
-      "linkedCommits": []
+      "linkedCommits": [],
+      "closed": "2026-08-20",
+      "resolution": "SHIPPED UPSTREAM and verified against this row own pre-registered close condition, one day after it was proposed. The condition read: the orchestrator ships the expectedSignalBy clause, then this lane re-reads filteredCount and confirms W-3 and W-6 are excluded. Live read 2026-08-20T13:52Z of /api/cc/items-stale-actionable?project=bounds-ledger&days=7&refresh=1 returns filteredCount 2 and an items array of exactly A-9, A-7, G-2 — W-3 and W-6 absent, matching the filtered count exactly. On 2026-08-19 the same endpoint returned all five with filteredCount 0.",
+      "verification": "The change is ENDPOINT-SIDE, not ours — proven, not assumed. W-3 and W-6 closeWhen, expectedSignalBy and notes are byte-identical between commit 3eecd37 (2026-08-19) and HEAD, notes is still undefined on both, and expectedSignalBy still reads 2026-09-24 and 2026-11-06. Nothing this lane wrote could have moved them from returned to filtered. Positive control: the same read returned three fully-populated item rows, so the reader was working and W-3/W-6 are genuinely absent rather than the response being empty.",
+      "note5": "What this closes is a LOOP, not just a row. The proposal went up on 2026-08-19 with a named file, a named line and an argument for refusing the wider fix; it came back inside a day. That is the W-7 discipline paying out — a routed recommendation that got its tracker row in the same commit as the report proposing it, and therefore could be checked rather than quietly forgotten. Recorded because W-7 exists on the strength of the opposite outcome.",
+      "note6": "RESIDUAL, deliberately not re-filed: the three still returned (A-9, A-7, G-2) carry no date field at all, so the fixed filter correctly cannot exclude them — A-9 is titled fix-on-touch, not scheduled work; A-7 is open on the fleet-owned R7 sweep; G-2 is a goal. The figure 3 is now INTERPRETABLE rather than structurally broken, and it sits below the >3 threshold, but it still does not mean three neglected items. A-7 is the only one of the three where a date would be honest, since it waits on someone else."
     },
     {
       "id": "A-22",
@@ -623,7 +628,10 @@
       "closeWhen": "The orchestrator either narrows the linter to modification claims (then this lane re-posts a retro-shaped body and confirms 0 WARNs), or rules the current breadth intended — either answer closes it. A silent non-response does not.",
       "expectedSignalBy": "2026-08-27",
       "signalDateNote": "One week. Silence by 2026-08-27 means dropped rather than declined — the W-7 failure. Surface it, do not silently re-file.",
-      "linkedCommits": [],
+      "linkedCommits": [
+        "845b9a0",
+        "d1db3e7"
+      ],
       "note5": "BOTH ANSWERS DEMONSTRATED on the linter itself, control pre-registered in the report before the result was known (bus status 2c76b790). FIRES: three WARNs on the retro body, which carried the detector, other-repo and runtime-file relations. SILENT: zero WARNs on the A-22 status body, which named shas without those relations. So the linter is NOT an always-on warning and the fix is NOT to disable it — it is calibrated wrongly on the RELATION, exactly as note2 says, and narrowing it to modification claims keeps a working detector. Recording the outcome here because the control was pre-registered in a posted message and its result would otherwise exist only in one terminal, which is the transcribed-number problem cb4f6f5 shipped a receipt to kill."
     }
   ],
