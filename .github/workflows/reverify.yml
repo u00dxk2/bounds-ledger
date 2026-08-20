@@ -132,6 +132,11 @@ jobs:
       # and the both-answers behaviour, which are deterministic and offline.
       - name: Self-test next-day primer gate (no network)
         run: node scripts/check-next-primer.mjs --selftest
+      # F-2's spot-check surface. Offline: it reads committed claims + manifest and shells out to
+      # git only for "when did this pin last change", which returns null on a shallow clone rather
+      # than throwing — actions/checkout is depth-1 here, so that path is exercised in CI.
+      - name: Self-test constant lookup (no network)
+        run: node scripts/lookup.mjs --selftest
       # Not piped and deliberately network-free: this asserts README's published figures still
       # match COMMITTED repo state. A stale block is a falsifiable public error on the front
       # page of a repo whose pitch is that it notices stale numbers.
