@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-08-06T15:57:50.760Z",
-  "fileCount": 111,
+  "generatedAt": "2026-08-20T14:34:00.418Z",
+  "fileCount": 112,
   "records": [
     {
       "file": "10a.md",
       "title": "The real Grothendieck constant",
       "upper": {
-        "cell": "$< \\dfrac{\\pi}{2\\ln(1+\\sqrt{2})} - 6.039*10^{-5}$",
+        "cell": "$< \\dfrac{\\pi}{2\\ln(1+\\sqrt{2})} - 10^{-4}$",
         "value": null,
-        "rows": 6,
+        "rows": 7,
         "latestYear": 2011
       },
       "lower": {
-        "cell": "$K_{DR} + 10^{-12}$",
+        "cell": "$\\dfrac{6\\pi}{11}\\approx 1.71360$",
         "value": null,
-        "rows": 5,
+        "rows": 6,
         "latestYear": 2026
       },
       "machineSearched": false,
@@ -189,7 +189,7 @@
         "cell": "$2.371339$",
         "value": 2.371339,
         "rows": 21,
-        "latestYear": 2020
+        "latestYear": 2024
       },
       "lower": {
         "cell": "$2$",
@@ -686,10 +686,10 @@
       "file": "2a.md",
       "title": "The Crouzeix constant",
       "upper": {
-        "cell": "$1+\\sqrt{2} \\approx 2.41421$",
-        "value": 2.41421,
-        "rows": 2,
-        "latestYear": 2017
+        "cell": "$2$",
+        "value": 2,
+        "rows": 4,
+        "latestYear": 2026
       },
       "lower": {
         "cell": "$2$",
@@ -698,8 +698,8 @@
         "latestYear": 2007
       },
       "machineSearched": false,
-      "gap": 0.4142100000000002,
-      "relGap": 0.1715716528388169,
+      "gap": 0,
+      "relGap": 0,
       "parseSuspect": false
     },
     {
@@ -2180,6 +2180,26 @@
       "machineSearched": false,
       "gap": 0.019570000000000087,
       "relGap": 0.010743302591128726,
+      "parseSuspect": false
+    },
+    {
+      "file": "87a.md",
+      "title": "Martinet's constant for totally real number fields",
+      "upper": {
+        "cell": "$857.567$",
+        "value": 857.567,
+        "rows": 4,
+        "latestYear": 2019
+      },
+      "lower": {
+        "cell": "$215.333\\dots$",
+        "value": 215.333,
+        "rows": 3,
+        "latestYear": 1990
+      },
+      "machineSearched": false,
+      "gap": 642.234,
+      "relGap": 0.7489024181201003,
       "parseSuspect": false
     },
     {
