@@ -735,14 +735,15 @@
       "created": "2026-08-20",
       "type": "active",
       "status": "open",
-      "title": "Author docs/evangelism-bar.md and record a loopArchetype — dated, because a gap reported three days running is the stale-blocker pattern in another hat",
+      "title": "Author the evangelism-bar doc this repo lacks and record a loopArchetype — dated, because a gap reported three days running is the stale-blocker pattern in another hat",
       "note": "ORCHESTRATOR 2026-08-20: both gaps confirmed real and worth naming, \"but do not let them sit as a standing note that gets re-reported every day\". Absent from BOTH bounds-ledger/docs/ and ../skylark-site/docs/ (named so the claim is falsifiable); no loopArchetype anywhere in this repo, grepped across *.json and *.md.",
       "note2": "IT IS A CONSOLIDATION, NOT RESEARCH. The material already exists in docs/key-user-flows.md: the core problem in the user own words (\"I cited a number. I have no idea if it is still the current one\") and the would-tell-a-friend moment (\"the ledger caught a drift the field own index missed\"). What is missing is the file the fleet expects and the metric that proves movement.",
       "note3": "Write it against G-3 rather than against a funnel — the Tier-0 goal from G-1 close is whether someone outside uses the ledger, so the bar and the goal should say the same thing in different words.",
-      "closeWhen": "docs/evangelism-bar.md exists carrying the one core problem, the would-tell-a-friend moment and the metric, and a loopArchetype is recorded where the fleet reads it — or a deliberate decision is recorded that this lane has no meaningful loopArchetype and why.",
+      "closeWhen": "the evangelism-bar doc this repo lacks exists carrying the one core problem, the would-tell-a-friend moment and the metric, and a loopArchetype is recorded where the fleet reads it — or a deliberate decision is recorded that this lane has no meaningful loopArchetype and why.",
       "expectedSignalBy": "2026-08-25",
       "onTrigger": "On 2026-08-25 write it or record why not. Do NOT re-report it as a gap a fourth time without doing one or the other — that is precisely the pattern A-25 exists to kill, and re-reporting it while A-25 is open would be this lane demonstrating the defect it is trying to fix.",
-      "linkedCommits": []
+      "linkedCommits": [],
+      "note4": "REFERENCED BY ABSENCE, and the filename is written in prose rather than path form on purpose. check-doc-references extracts path-shaped tokens and resolves them at HEAD, so naming the missing file in path form made THIS ROW a dead reference — the fifth deliberate-absence flag from that checker on 2026-08-20 (three in the primer draft, two here). The tool has no convention for \"named because it does not exist yet\". This is not dodging a false positive: a reader at HEAD genuinely cannot follow that path, so prose is the more accurate form. Adjacent to A-25 and worth raising if that work is picked up."
     }
   ],
   "meta": {
