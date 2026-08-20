@@ -609,6 +609,21 @@
       "expectedSignalBy": "2026-08-26",
       "signalDateNote": "One week. If nothing has come back by 2026-08-26 the proposal has been dropped rather than declined, which is exactly the failure W-7 was created to catch — do not re-file it silently, surface that it went unanswered.",
       "linkedCommits": []
+    },
+    {
+      "id": "A-22",
+      "created": "2026-08-20",
+      "type": "active",
+      "status": "open",
+      "title": "The bus sha-file-claim linter reads sha-to-filename ADJACENCY as a modification claim — 3 false WARNs on one post, proposed upward",
+      "note": "Found 2026-08-20 while posting the 2026-08-19 retro (bus msg 92c994bd-e29f-4ef3-94eb-dd9f99e0ffab). agent-status printed three sha-file-claim WARNs, all false. Verified with git show --stat, the command the WARN itself prescribes: cb4f6f5 touches package.json ONLY (the WARN named check-brief.mjs, verify-with-receipt.mjs, tmp/.verify-receipt.json); dd336d8 touches scripts/render-state-block.mjs (the WARN named check-posted-unpushed.mjs); f362ce7 touches README.md plus scripts/render-state-block.mjs (same WARN). Positive control: all three --stat reads returned NON-EMPTY file lists, so the reader was working and the named files are genuinely absent because they were never claimed to be present.",
+      "note2": "The defect is the RELATION, not the parse. Prose names a commit and a filename near each other for at least four reasons and the linter collapses them to one: (a) the commit MODIFIED the file; (b) the file is the DETECTOR that flagged the commit — check-posted-unpushed.mjs flagged dd336d8, and a detector and its subject are correctly different files; (c) the file lives in ANOTHER REPO and cannot appear in this repo file stat by construction — verify-with-receipt.mjs is at ../skylark-site/scripts/; (d) the file is gitignored and written at RUNTIME — tmp/.verify-receipt.json. Only (a) is a claim worth linting.",
+      "note3": "Why it is not cosmetic here: cb4f6f5 shipped the previous day specifically to stop a WARN firing on every post from this lane, and its own commit body argues that a WARN which fires on every post from this lane forever is how a warning becomes noise — the founding defect in another hat. A retro doc is dense in exactly the (b), (c) and (d) shapes, so this linter fires hardest on the posts that most need reading. Second fleet trusted-print instrument in two days after A-21, and the same class: a scan pointed at the wrong relation.",
+      "note4": "NOT SHIPPED FROM THIS LANE and no fix proposed beyond the diagnosis — the linter belongs to skylark-site agent-status and is a trusted-print instrument, so it sits in the cross-family review gate class. This row exists per the W-7 rule: a recommendation routed elsewhere gets its tracker row in the same commit as the report proposing it. The retro message itself was NOT superseded — its content is correct and the WARNs are wrong.",
+      "closeWhen": "The orchestrator either narrows the linter to modification claims (then this lane re-posts a retro-shaped body and confirms 0 WARNs), or rules the current breadth intended — either answer closes it. A silent non-response does not.",
+      "expectedSignalBy": "2026-08-27",
+      "signalDateNote": "One week. Silence by 2026-08-27 means dropped rather than declined — the W-7 failure. Surface it, do not silently re-file.",
+      "linkedCommits": []
     }
   ],
   "meta": {
@@ -622,6 +637,7 @@
         "rationale": "2026-08-15 daily report updated after the review verdict landed — same class as 427e17c."
       }
     ],
-    "signalDateField": "expectedSignalBy"
+    "signalDateField": "expectedSignalBy",
+    "updated": "2026-08-20"
   }
 }
