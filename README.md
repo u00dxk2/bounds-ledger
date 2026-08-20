@@ -12,6 +12,31 @@ This repo opened on a real discrepancy: TTT-Discover ([arXiv:2601.16175](https:/
 
 That reconciliation is [`docs/reconciliations/2026-07-22-minimum-overlap.md`](docs/reconciliations/2026-07-22-minimum-overlap.md), and it is also this repo's method template: identify the surfaces, date each value, find which one stopped moving.
 
+## Is your number in here?
+
+The short answer for most visitors is "maybe, and you can check in one click". **112 named constants** are tracked. Twelve of them are below, chosen because you may recognise them — each link goes to this repo's mirrored copy, which GitHub renders as the bounds table itself, so you can read the current upper and lower rows **without cloning anything**.
+
+| Constant | The bounds table we watch |
+|---|---|
+| The real Grothendieck constant | [`10a.md`](ledger/teorth-optimizationproblems/constants/10a.md) |
+| Erdős minimum overlap constant | [`1b.md`](ledger/teorth-optimizationproblems/constants/1b.md) |
+| Chromatic number of the plane | [`27a.md`](ledger/teorth-optimizationproblems/constants/27a.md) |
+| Maximum chromatic number of biplanar graphs | [`27b.md`](ledger/teorth-optimizationproblems/constants/27b.md) |
+| The Crouzeix constant | [`2a.md`](ledger/teorth-optimizationproblems/constants/2a.md) |
+| Moving sofa constant | [`41a.md`](ledger/teorth-optimizationproblems/constants/41a.md) |
+| Lehmer's Mahler measure constant | [`40a.md`](ledger/teorth-optimizationproblems/constants/40a.md) |
+| Kissing number in dimension 5 | [`29a.md`](ledger/teorth-optimizationproblems/constants/29a.md) |
+| Sphere packing density in **R**⁴ | [`36a.md`](ledger/teorth-optimizationproblems/constants/36a.md) |
+| Hadwiger covering / illumination number in **R**³ | [`39a.md`](ledger/teorth-optimizationproblems/constants/39a.md) |
+| Bloch's constant | [`57a.md`](ledger/teorth-optimizationproblems/constants/57a.md) |
+| Erdős unit distance exponent | [`84a.md`](ledger/teorth-optimizationproblems/constants/84a.md) |
+
+The full set is [`ledger/teorth-optimizationproblems/constants/`](ledger/teorth-optimizationproblems/constants/) — one file per constant, plus upstream's own README at [`ledger/teorth-optimizationproblems/README.md`](ledger/teorth-optimizationproblems/README.md), which is where upstream declares which rows it stands behind.
+
+**What you are looking at when you click.** Not a live read — a byte-identical copy of upstream at the sha pinned in [`manifest.json`](ledger/teorth-optimizationproblems/manifest.json), which is what makes it checkable: if upstream's file and ours ever differ, the alarm goes red and one of us is out of date. The **last-listed row of each table is pinned verbatim**, so a newly appended record trips the mirror diff. What this cannot tell you is which row is "the record" — that judgement is deliberately not automated, for the reason set out under the four load-bearing rules below.
+
+**If your number is not in the table above, it may still be tracked** — the twelve are a sample, not the set. And if it is not tracked at all, that is worth an issue: the surfaces this project watches are chosen, not exhaustive.
+
 ## What it has actually caught
 
 Since the alarm was armed on 2026-07-24, 9 upstream drifts — each verified before the mirror was updated, against primary sources where a number moved and against upstream's own content where the change was editorial. One row per resolution *story*, not per changed file and not per cycle — the eight rows below cover nine cycles, because the 2026-08-12 row is two of them. To count them yourself: `git log --oneline -- ledger/teorth-optimizationproblems/manifest.json`, minus the initial-snapshot commit `b5e3ac9` and the mirror-extension commit `3a698b1`, neither of which resolved a drift:
