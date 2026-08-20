@@ -239,7 +239,9 @@
       "linkedCommits": [
         "0a29081"
       ],
-      "onTrigger": "When the fleet Stage-0 wave lands here (R7, the scheduled verified history sweep): verify BY EXECUTION, not inspection — a scheduled history-sweep workflow exists AND has completed one green run. Only then close. Do not close on the workflow file merely existing; that is the inspection-not-execution failure this item was opened about."
+      "onTrigger": "When the fleet Stage-0 wave lands here (R7, the scheduled verified history sweep): verify BY EXECUTION, not inspection — a scheduled history-sweep workflow exists AND has completed one green run. Only then close. Do not close on the workflow file merely existing; that is the inspection-not-execution failure this item was opened about.",
+      "expectedSignalBy": "2026-09-03",
+      "signalDateNote": "Added 2026-08-20 in P2. This row waits on R7, the scheduled verified history sweep, which is FLEET-owned — so with no date it could wait forever while showing as an ordinary open item, and it appeared in stale-actionable precisely because nothing here could ever park it. Two weeks is a re-ask interval, not an estimate of their work: on 2026-09-03, either R7 has landed and this closes, or we ask again. The other date-less open rows are deliberately date-less and stay that way — A-9 is titled fix-on-touch, not scheduled work; A-2 and W-4 are STANDING practices; G-2 is a goal; A-15 and A-16 are parked at David discretion and CLAUDE.md forbids re-raising them."
     },
     {
       "id": "A-8",
@@ -632,7 +634,23 @@
         "845b9a0",
         "d1db3e7"
       ],
-      "note5": "BOTH ANSWERS DEMONSTRATED on the linter itself, control pre-registered in the report before the result was known (bus status 2c76b790). FIRES: three WARNs on the retro body, which carried the detector, other-repo and runtime-file relations. SILENT: zero WARNs on the A-22 status body, which named shas without those relations. So the linter is NOT an always-on warning and the fix is NOT to disable it — it is calibrated wrongly on the RELATION, exactly as note2 says, and narrowing it to modification claims keeps a working detector. Recording the outcome here because the control was pre-registered in a posted message and its result would otherwise exist only in one terminal, which is the transcribed-number problem cb4f6f5 shipped a receipt to kill."
+      "note5": "BOTH ANSWERS DEMONSTRATED on the linter itself, control pre-registered in the report before the result was known (bus status 2c76b790). FIRES: three WARNs on the retro body, which carried the detector, other-repo and runtime-file relations. SILENT: zero WARNs on the A-22 status body, which named shas without those relations. So the linter is NOT an always-on warning and the fix is NOT to disable it — it is calibrated wrongly on the RELATION, exactly as note2 says, and narrowing it to modification claims keeps a working detector. Recording the outcome here because the control was pre-registered in a posted message and its result would otherwise exist only in one terminal, which is the transcribed-number problem cb4f6f5 shipped a receipt to kill.",
+      "note6": "ORCHESTRATOR DISPOSITION 2026-08-20 (P1 management feedback): diagnosis-only posture APPROVED EXPLICITLY — writing a patch to another family trust-boundary instrument from outside would have been the error. A-22 is tracked on their side as a substrate action and the 2026-08-27 date is honored as filed; silence past it is the W-7 failure on THEIR side, as framed. Recorded here because the approval existed only in a bus message, and a decision that lives only on the bus is invisible to the next cold read of this ledger."
+    },
+    {
+      "id": "A-23",
+      "created": "2026-08-20",
+      "type": "active",
+      "status": "open",
+      "title": "Classify each window findings as record-facing or instrument-facing, and name what the FIRST record-facing catch would look like",
+      "note": "APPROVED 2026-08-20 as specified in the P1 retro: ONE SENTENCE of human judgment per report, and explicitly NEVER a counter over docs/findings/. A counter is inflatable exactly like a self-rating, which this lane already refused to build; the guard against inflation is that a human reads the window and nothing counts it.",
+      "note2": "Why it was needed: for three consecutive days every catch this lane produced was in the MACHINERY around the ledger — the parked-item filter (A-21), the sha-file-claim linter (A-22), the verify-receipt gate, the retype corruption — and none in the mathematics. npm run catches reads 0 movements while docs/findings/ is not dry, so the 2026-08-14 amendment correctly says we are not in a drought. But that amendment cannot tell a record-facing finding from an instrument-facing one, and a lane that only ever finds defects in its own tooling is maintaining itself rather than stewarding records.",
+      "note3": "ORCHESTRATOR ADDITION, and the part with a deadline: in the NEXT report, name what the FIRST record-facing catch would look like — what record, what class of drift, what would flag it. One sentence. It converts we-would-recognise-one-if-we-saw-it from an assumption into a claim, which is the only form that can be wrong.",
+      "note4": "What it lets us decide that today it cannot: whether adopt-a-second-surface is the right response to a quiet stretch. Four instrument-facing findings beside zero record movements is a different situation from four record-facing findings beside zero movements, and the current dry-week rule treats them identically.",
+      "closeWhen": "The 2026-08-21 report carries both the one-sentence classification AND the named shape of a first record-facing catch. Then this converts to a standing convention in CLAUDE.md and closes.",
+      "expectedSignalBy": "2026-08-21",
+      "signalDateNote": "Tomorrow, because it is a deliverable in the next report rather than a wait on anyone. If the 8/21 report ships without it, that is this row failing in the same way W-7 was created to catch.",
+      "linkedCommits": []
     }
   ],
   "meta": {

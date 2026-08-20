@@ -125,6 +125,13 @@ jobs:
       # it renders a figure and no verdict, so there is nothing for a build to fail on.
       - name: Self-test catch-rate indicator (no network)
         run: node scripts/catch-rate.mjs --selftest
+      # The close-boundary primer gate. Only its SELF-TEST runs here; the gate itself must never
+      # run in CI, because tomorrow's primer legitimately does not exist for most of the day and
+      # the step would be red from midnight until close-session wrote it — a permanently-red
+      # alarm, which is this lane's founding defect. What is guarded here is the date arithmetic
+      # and the both-answers behaviour, which are deterministic and offline.
+      - name: Self-test next-day primer gate (no network)
+        run: node scripts/check-next-primer.mjs --selftest
       # Not piped and deliberately network-free: this asserts README's published figures still
       # match COMMITTED repo state. A stale block is a falsifiable public error on the front
       # page of a repo whose pitch is that it notices stale numbers.
