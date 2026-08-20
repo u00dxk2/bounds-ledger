@@ -31,6 +31,20 @@ cd C:/dev/skylark/bounds-ledger && git rev-parse HEAD origin/main && [ "$(git re
 
 **DON'T-TOUCH** — **the verify-receipt gate, and specifically do not reach for `--no-verify-receipt` or `CC_VERIFY_RECEIPT_DISABLED=1`.** Today it refused a post of mine and printed both overrides in the refusal text, which is the most tempting shape a guard can take. What makes it work is that it compares the receipt's sha against the checkout you actually have — a receipt for another commit says nothing about the code in hand — and complying is what caused today's steward cadence to run at all. The override would have bought a post and lost the cadence.
 
+<!-- findings:begin -->
+
+### Added at P3 — this outranks the BLUF above
+
+**The flow that IS this lane's core problem has been unblocked for two days and nobody noticed.** `docs/key-user-flows.md` records that **F-2** — the spot-check, *"is the number I'm about to cite current?"* — has **zero surface**, and its 2026-08-17 entry deferred the fix because *"two of this lane's diffs are already queued"* in the cross-family review lane. Those were PRs #21 and #22, **both merged 2026-08-18**. Open PRs before today: **zero**. Open issues: **zero**. The stated reason expired two days ago.
+
+That is the **third stale blocker found in this repo**, and it was sitting in the very document that names the pattern and instructs that *"closing a gate must include a sweep for text that cited it."* The first two were F-2's own public-flip blocker (corrected 2026-08-17) and `A-7` — the engineering-health P1 row — claiming the repo was private (corrected 2026-08-16). A ledger whose product is noticing stale records has now been the thing holding a stale record three times.
+
+**Acted on, not just noted:** `scripts/lookup.mjs` gives F-2 its first surface — pinned upper and lower rows for one constant, the date each pin last changed, the primary source beside every number. Held on branch `f2-lookup-surface` as **PR #26** for the review lane, because it is a trusted-print instrument. It refuses to name a record: generated pins assert listing position only, and that refusal is asserted in the self-test rather than left to a comment.
+
+**Also relevant to the succession question the orchestrator is carrying upward:** `G-1`'s own title is *"become the reproducible steward of at least one drifting record inventory (re-verification CI **+ public status surface**)"*, but its close conditions are only the 30-day armed alarm and one external acknowledgement. **G-1 closes Saturday having never delivered the public status surface named in its own title.** F-2 is that surface. Stated as evidence for David's call, not as a proposal.
+
+<!-- findings:end -->
+
 ## What changed
 
 **`A-21` closed — the proposal shipped upstream inside a day, and I verified it rather than accepting it.** Yesterday's finding was that the fleet's `stale-actionable` endpoint scans `closeWhen` and `item.notes`, while this lane writes prose into `note`/`note2`…`note9` and parks items in `expectedSignalBy` — so `filteredCount: 0` was structural and no item here could ever be excluded, whatever its dates said. The row carried its own close condition: *ship the `expectedSignalBy` clause, then re-read `filteredCount` and confirm the two parked watches are excluded* — `W-3` — the erdosproblems.com acknowledgement watch — and `W-6` — the README report-an-error read window. Today's live read returns `filteredCount: 2` and an items array of exactly `A-9`, `A-7`, `G-2`, so both are gone from it. **The change is endpoint-side, proven rather than assumed:** those two watches' `closeWhen`, `expectedSignalBy` and `notes` are byte-identical between commit `3eecd37` and HEAD, `notes` is still `undefined` on both, and the dates still read 2026-09-24 and 2026-11-06. Nothing this lane wrote could have moved them from returned to filtered.
