@@ -501,7 +501,28 @@
         "efac5e6",
         "083de88",
         "575c01f"
-      ]
+      ],
+      "tier": 1,
+      "note9": "DEMOTED TO TIER-1 by David 2026-08-20: \"keep improving a bound ourselves one level down.\" Not deprioritised into nothing — it stays a real goal with the search harness intact and the gap table refreshed the same day. The reason it is not Tier-0 is that its timing is not ours to control: it depends on finding a problem where we can actually do better, which could be next month or next year. See G-3."
+    },
+    {
+      "id": "G-3",
+      "created": "2026-08-20",
+      "type": "goal",
+      "status": "open",
+      "tier": 0,
+      "title": "GOAL (Tier-0 from G-1 close): someone outside Skylark uses the ledger and acts on it",
+      "note": "DAVID-RULED 2026-08-20, his words on card f460cdd1 resolving 230d5f46: \"Yes - make the new top goal whether someone outside uses the ledger, and keep improving a bound ourselves one level down.\" This is his direction verbatim; everything below marked OPERATIONALIZATION is mine and is challengeable.",
+      "note2": "WHY IT IS THE RIGHT NEXT QUESTION. G-1 proved the machine works ONCE — the alarm ran armed for 30 days and a maintainer acted on a correction we found. That establishes capability, not demand. The binding constraint after capability is whether anyone wants it, and we could not have asked that a week ago because there was nothing an outsider could use. Now there is: the README names twelve constants and links each to the rows we watch (ce25d76), and a page answering the question for all 111 is built and held for review (PR #27).",
+      "note3": "OPERATIONALIZATION — the close condition is MINE, not his. Close when TWO distinct people who are not us take an action that depends on this ledger: filing an issue or correction, citing it, using the spot-check surface and telling us, or a maintainer acting on something we surfaced. TWO, not one, deliberately: G-1 already produced exactly one acknowledgement, so a threshold of one would close on a fact that is already true and would prove nothing new. If David wants one, or three, that is a one-line change and this note is where to make it.",
+      "note4": "STATED WEAKNESS, not buried. This may read ZERO for months and that is not a failure of the goal. Twelve days after the repo went public it had roughly four unique viewer-days, and the sampler says that OVERCOUNTS distinct people. A Tier-0 that reads zero is uncomfortable and honest; the alternative — a metric that always moves — is the self-rating this lane already refused to build. Do NOT substitute an activity count for it.",
+      "note5": "LEADING INDICATORS, readable now, none of them a substitute for the goal: W-6 (first unsolicited outside contact, re-pointed 2026-08-20 to a qualitative n=1); the viewer count from npm run traffic — NEVER the clone count, which is mostly our own CI; and whether the public surface actually exists and is findable, which currently means whether PR #27 clears the review lane.",
+      "note6": "TIMING. This becomes Tier-0 when G-1 CLOSES, which is Saturday 2026-08-22 and is David's separate decision — not this one, and not self-approvable. Until then G-1 remains Tier-0 and this row is staged.",
+      "closeWhen": "Two distinct people who are not us have taken an action that depends on this ledger, each recorded with the date and the evidence. A single instance is a note, not a close — G-1 already produced one.",
+      "expectedSignalBy": "2026-09-22",
+      "signalDateNote": "One month, and it is an INSTRUMENT read, not an outcome read. Nobody should expect the goal to have moved by then.",
+      "onTrigger": "On 2026-09-22 do NOT ask \"has an outsider used it yet\" — a zero there is expected and uninformative this early. Ask instead whether we COULD detect it if it happened: is the report-an-error channel reachable, does the public surface exist and render, would an issue or a citation actually reach us, and is npm run traffic still accumulating (the API forgets days older than 14, so a gap is permanent). If any detection path is dead, that is the finding and it is actionable now. The OUTCOME read is 2026-11-06, alongside W-6.",
+      "linkedCommits": []
     },
     {
       "id": "A-14",
