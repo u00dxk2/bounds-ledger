@@ -623,7 +623,8 @@
       "closeWhen": "The orchestrator either narrows the linter to modification claims (then this lane re-posts a retro-shaped body and confirms 0 WARNs), or rules the current breadth intended — either answer closes it. A silent non-response does not.",
       "expectedSignalBy": "2026-08-27",
       "signalDateNote": "One week. Silence by 2026-08-27 means dropped rather than declined — the W-7 failure. Surface it, do not silently re-file.",
-      "linkedCommits": []
+      "linkedCommits": [],
+      "note5": "BOTH ANSWERS DEMONSTRATED on the linter itself, control pre-registered in the report before the result was known (bus status 2c76b790). FIRES: three WARNs on the retro body, which carried the detector, other-repo and runtime-file relations. SILENT: zero WARNs on the A-22 status body, which named shas without those relations. So the linter is NOT an always-on warning and the fix is NOT to disable it — it is calibrated wrongly on the RELATION, exactly as note2 says, and narrowing it to modification claims keeps a working detector. Recording the outcome here because the control was pre-registered in a posted message and its result would otherwise exist only in one terminal, which is the transcribed-number problem cb4f6f5 shipped a receipt to kill."
     }
   ],
   "meta": {
