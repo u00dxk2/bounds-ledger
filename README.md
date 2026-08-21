@@ -27,6 +27,8 @@ That reconciliation is [`docs/reconciliations/2026-07-22-minimum-overlap.md`](do
 
 ## Is your number in here?
 
+**There is now a page for exactly this question: [u00dxk2.github.io/bounds-ledger](https://u00dxk2.github.io/bounds-ledger/).** All 111 tracked constants, filter as you type, and for each one the pinned upper and lower rows, **the date each row last moved**, and a link to the primary source beside every number. No account, no clone, nothing fetched at runtime. It is a snapshot at the sha pinned below, and it says so on the page — for the live verdict, clone and run `npm run check`.
+
 The short answer for most visitors is "maybe, and you can check in one click". **112 named constants** are tracked. Twelve of them are below, chosen because you may recognise them — each link goes to this repo's mirrored copy, which GitHub renders as the bounds table itself, so you can read the current upper and lower rows **without cloning anything**.
 
 | Constant | The bounds table we watch |

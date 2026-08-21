@@ -15,7 +15,7 @@ The user is a researcher, writer, or curator who **quotes a record** — a bound
 | # | Flow | Who | Exists today? |
 |---|---|---|---|
 | F-1 | **Drift alarm** — a tracked record moves, and the steward learns within a day | us (steward) | yes — daily CI, as of today actually armed |
-| F-2 | **Spot-check one claim** — "is the number I'm about to cite current?" | outside researcher | **no surface at all** |
+| F-2 | **Spot-check one claim** — "is the number I'm about to cite current?" | outside researcher | **live surface since 2026-08-21** — https://u00dxk2.github.io/bounds-ledger/ plus `scripts/lookup.mjs` |
 | F-3 | **Receive a correction** — a curator is told their published record is behind | upstream maintainer | sent once, 2026-07-24 (A-3, David-sent); awaiting reply — tracked as W-3 |
 
 F-2 is where the core problem lives. **Partial surface as of 2026-08-20** (`ce25d76`): the README now names twelve tracked constants and links each to its rendered bounds table, so a visitor can read the watched rows in one click with no clone. That answers *"is my number in here, and what does it say?"* for a recognisable subset. It does **not** answer it for an arbitrary constant, and it does not show when a row last moved — `scripts/lookup.mjs` does both and is held on PR #26 for the review lane. Treat F-2 as started, not done.
