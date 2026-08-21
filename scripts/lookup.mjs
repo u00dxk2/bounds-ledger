@@ -22,7 +22,7 @@
 
 import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { join, dirname } from "node:path";
+import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -133,7 +133,18 @@ async function selftest() {
   console.log("lookup selftest: PASS (known id returns both its rows and neither a neighbour's pin nor a hand claim; unknown id reports not-found only after the matcher is proven to return rows; id normalisation survives case and .md; upstream sha glossed; no record-ranking claim emitted)");
 }
 
-if (process.argv.includes("--selftest")) {
+// Run the CLI only when this file IS the entry point. Without this guard, `import`ing the module
+// executes its argv handling in the importer's process — found 2026-08-20 the moment
+// render-site.mjs imported it: `node scripts/render-site.mjs` printed lookup's usage and exited 2,
+// and `--selftest` ran lookup's selftest as a side effect of loading it, so render-site's own
+// selftest "passed" while partly measuring the wrong module. A defect in the PR #26 version of
+// this file, found by using it rather than by reading it.
+const isMain = process.argv[1] &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (!isMain) {
+  // imported as a library — export only
+} else if (process.argv.includes("--selftest")) {
   await selftest();
 } else {
   const id = process.argv[2];

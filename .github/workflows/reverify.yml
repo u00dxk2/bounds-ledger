@@ -151,6 +151,12 @@ jobs:
       # than throwing — actions/checkout is depth-1 here, so that path is exercised in CI.
       - name: Self-test constant lookup (no network)
         run: node scripts/lookup.mjs --selftest
+      # The public spot-check page. Only the SELF-TEST runs here. The generator's --check compares
+      # committed HTML against a regeneration, and the last-changed dates come from git history —
+      # actions/checkout is depth-1, so a --check step would compare against dates CI cannot see.
+      # Freshness is held by the post-snapshot ratchet (npm run resnap) and by npm run check locally.
+      - name: Self-test public page generator (no network)
+        run: node scripts/render-site.mjs --selftest
       # Not piped and deliberately network-free: this asserts README's published figures still
       # match COMMITTED repo state. A stale block is a falsifiable public error on the front
       # page of a repo whose pitch is that it notices stale numbers.

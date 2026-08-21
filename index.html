@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='13'%3E%E2%88%91%3C/text%3E%3C/svg%3E">
+<title>Bounds Ledger — is the number you cited still current?</title>
+<meta name="description" content="A continuously re-verified ledger of mathematical records. Look up a constant and see the bounds rows we watch, when each last moved, and the primary source.">
+<style>
+:root{--bg:#fff;--fg:#16181d;--muted:#5c6370;--line:#e3e6ea;--accent:#0b5fff;--code:#f6f7f9}
+@media(prefers-color-scheme:dark){:root{--bg:#14161a;--fg:#e8eaed;--muted:#9aa1ac;--line:#2b2f36;--accent:#7aa2ff;--code:#1c1f25}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:2.5rem 1.25rem 5rem}
+h1{font-size:1.7rem;line-height:1.25;margin:0 0 .4rem}
+.lede{color:var(--muted);margin:0 0 1.5rem;max-width:62ch}
+a{color:var(--accent)}
+.note{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:6px;padding:.85rem 1rem;margin:0 0 1.5rem;font-size:.92rem;max-width:78ch}
+.note p{margin:.35rem 0}
+label{display:block;font-size:.85rem;color:var(--muted);margin:0 0 .35rem}
+input{width:100%;max-width:26rem;padding:.6rem .7rem;font-size:1rem;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
+.count{font-size:.85rem;color:var(--muted);margin:.6rem 0 1rem}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:56rem}
+th,td{text-align:left;vertical-align:top;padding:.6rem .75rem;border-bottom:1px solid var(--line)}
+thead th{background:var(--bg);font-size:.78rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+tbody th{font-weight:600;min-width:15rem}
+.id{display:block;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+code{display:block;font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--code);padding:.4rem .5rem;border-radius:4px;white-space:pre-wrap;word-break:break-word}
+.when{display:block;font-size:.75rem;color:var(--muted);margin-top:.3rem}
+.none{color:var(--muted);font-style:italic}
+.src{white-space:nowrap}
+footer{margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;max-width:78ch}
+tr[hidden]{display:none}
+</style>
+<div class="wrap">
+<h1>Is the number you cited still current?</h1>
+<p class="lede">Best-known bounds move, and the papers and index pages citing them do not all move at the same time. This is every mathematical constant this ledger watches, with the exact table rows it has pinned.</p>
+
+<div class="note">
+<p><strong>Read this before you trust a number here.</strong> This page is a <em>snapshot</em>, not a live read. It shows our mirror of <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a> at upstream commit <code style="display:inline;padding:.1rem .3rem">e70b4a4</code>, fetched 2026-08-14.</p>
+<p>Every row links to its primary source so you can check us in one hop — and if a row here disagrees with the source, that is a bug worth <a href="https://github.com/u00dxk2/bounds-ledger/issues">reporting</a>.</p>
+<p><strong>These are last-listed table rows, not a claim about which bound is “the record.”</strong> Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.</p>
+</div>
+
+<label for="q">Filter by name or id — try “sofa”, “Grothendieck”, “27b”</label>
+<input id="q" type="search" autocomplete="off" placeholder="Type to filter&hellip;">
+<p class="count" id="count">111 constants</p>
+
+<div class="scroll">
+<table>
+<thead><tr><th scope="col">Constant</th><th scope="col">Upper-bound row (last listed)</th><th scope="col">Lower-bound row (last listed)</th><th scope="col">Primary</th></tr></thead>
+<tbody id="rows">
+<tr data-name="an autocorrelation constant related to sidon sets 1a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/1a.md">An autocorrelation constant related to Sidon sets</a><span class="id">1a</span></th>
+<td><code>| $1.502862$ | [T2026] | TogetherAI</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1.292$ | [PBV2026] | |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1a.md">source</a></td>
+</tr>
+<tr data-name="the crouzeix constant 2a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/2a.md">The Crouzeix constant</a><span class="id">2a</span></th>
+<td><code>| $2$ | [LS2026] | Lorist–Schwenninger: proof of Crouzeix&#39;s conjecture, combining previous tools for weaker estimates with a &quot;simple perturbation lemma for 2-dilations&quot; applied to the iterates $f^n$ in the double-layer potential representation.  The paper acknowledges [Jin2026]. |</code><span class="when">last changed 2026-08-12</span></td>
+<td><code>| $2$ | [C2007] | Achieved by $p(z)=z$ and $A=\begin{pmatrix}0 &amp; 2\\\\ 0 &amp; 0\end{pmatrix}$, for which $W(A)$ is the unit disk. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/2a.md">source</a></td>
+</tr>
+<tr data-name="the gyarmati-hennecart-ruzsa sum-difference constant 3a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/3a.md">The Gyarmati-Hennecart-Ruzsa sum-difference constant</a><span class="id">3a</span></th>
+<td><code>| $4/3 = 1.333\dots$ | [GHR2007] | |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1.19102809$* | [K2026] | Base-$34065$ masked-digit limit construction with $M=\langle1518,1524,1587,2024,2032,2116\rangle\cap[0,17032]$ and a directed-rounding certificate. |</code><span class="when">last changed 2026-08-01</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3a.md">source</a></td>
+</tr>
+<tr data-name="kakeya-type sum-difference constant 3b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/3b.md">Kakeya-type sum-difference constant</a><span class="id">3b</span></th>
+<td><code>| $2 - \frac{1}{6} = 1.83333\dots$ | [KT1999] | |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1.77898884$ | [MI2026] | Entropy construction on a 13-point support. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3b.md">source</a></td>
+</tr>
+<tr data-name="4-slope kakeya-type sum-difference constant 3c">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/3c.md">4-slope Kakeya-type sum-difference constant</a><span class="id">3c</span></th>
+<td><code>| $2 - \frac{1}{4} = 1.75$ | [KT1999] | |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1.6747338950208249$ | [MI2026] | Entropy construction on a 95-point support. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3c.md">source</a></td>
+</tr>
+<tr data-name="single-set sum-difference exponent 3d">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/3d.md">Single-set sum-difference exponent</a><span class="id">3d</span></th>
+<td><code>| $2$ | [Ru96] | $\sigma \le \delta^2$. Attributed to [Ru96, Theorem 4.1] in [GGSWT2025, Problem 6.42]; [Bl26] describes it as a consequence of the Plünnecke–Ruzsa inequalities. |</code><span class="when">last changed 2026-08-01</span></td>
+<td><code>| $2$ | [LiLi26] | Solves the problem: $C\_{3d} = 2$. Explicit family with $\sigma \gg K$ and $\delta \ll K^{1/2}$ for arbitrarily large $K$; [LiLi26] states it as $C(A\_K) &gt; \frac{2K}{K+3}$ for every positive even $K$. |</code><span class="when">last changed 2026-08-01</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3d.md">source</a></td>
+</tr>
+<tr data-name="the cap set constant 4a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/4a.md">The cap set constant</a><span class="id">4a</span></th>
+<td><code>| $2.756$ | [EG2016] | |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $2.2203$ | [ZWLPLZJZZZ2025] |X-evolve</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/4a.md">source</a></td>
+</tr>
+<tr data-name="furstenberg–sárközy exponent for square-difference-free sets 4b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/4b.md">Furstenberg–Sárközy exponent for square-difference-free sets</a><span class="id">4b</span></th>
+<td><code>| $1$ | Trivial |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\frac12\!\left(1+\frac{\log 12}{\log 205}\right)\approx 0.733412$ | [Lew2015] | Improves modulus and residue set in base expansion |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/4b.md">source</a></td>
+</tr>
+<tr data-name="a sidon set constant 5a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/5a.md">A Sidon set constant</a><span class="id">5a</span></th>
+<td><code>| $0.97633$ | Carter, Georgiev, Gomez--Serrano, Hunter, O&#39;Bryant, Tao, Wagner ([unpublished](https://terrytao.wordpress.com/2025/11/05/mathematical-exploration-and-discovery-at-scale/#comment-689052), 2025) | AlphaEvolve |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0$ | [Si38] | |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/5a.md">source</a></td>
+</tr>
+<tr data-name="sidon set density inside (4,5) sets 5b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/5b.md">Sidon set density inside (4,5) sets</a><span class="id">5b</span></th>
+<td><code>| $\frac{4}{7} \approx 0.5714$ | [MT26] | |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\frac{9}{17} \approx 0.5294$ | [MT26] | |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/5b.md">source</a></td>
+</tr>
+<tr data-name="union closed sets conjecture 6a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/6a.md">Union closed sets conjecture</a><span class="id">6a</span></th>
+<td><code>| $1/2 = 0.5$ | [F1995] | Conjectured (in 1976) to be optimal |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0.38271$ | [L2023] |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/6a.md">source</a></td>
+</tr>
+<tr data-name="the irrationality measure of $\pi$ 7a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/7a.md">The irrationality measure of $\pi$</a><span class="id">7a</span></th>
+<td><code>| $7.103205334137$ | [ZZ2020] | Current record bound. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $2$ | [D1842] | Dirichlet&#39;s theorem; holds for every irrational number (in particular for $\pi$). |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/7a.md">source</a></td>
+</tr>
+<tr data-name="the irrationality measure of $\gamma(1/4)$ 7b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/7b.md">The irrationality measure of $\Gamma(1/4)$</a><span class="id">7b</span></th>
+<td><code>| $10^{143}$ | &lt;a href=&quot;#Bru2002&quot;&gt;[Bru2002]&lt;/a&gt; | Bruiltet proves an explicit inequality of the form $h(p/q)\ge 10^{75}\Rightarrow \lvert \Gamma(1/4)-p/q\rvert &gt; (1/(qe))^{10^{143}}$, which implies $\mu(\Gamma(1/4))\le 10^{143}$. &lt;a href=&quot;#Bru2002-cor-gamma14&quot;&gt;[Bru2002-cor-gamma14]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $2$ | Trivial (Dirichlet) | Every irrational number has irrationality exponent at least $2$. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/7b.md">source</a></td>
+</tr>
+<tr data-name="classical zero-free region constant 8a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/8a.md">Classical zero-free region constant</a><span class="id">8a</span></th>
+<td><code>| $4.896$ | [BTY2026] | Bellotti–Trudgian–Yang: $\zeta(\sigma+it)\ne 0$ for $t\ge 3$ and $\sigma &gt; 1 - 1/(4.896\log t)$; extends to $\lvert t\rvert \ge 2$ using verified RH up to $H = 3\cdot 10^{12}$. A companion Theorem 2 sharpens the constant further to $4.8594$ conditionally on unpublished improvements to prior inputs. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $2/\log \gamma_{1} \approx 0.755106$ | - | Optimal assuming RH |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/8a.md">source</a></td>
+</tr>
+<tr data-name="shannon capacity of the 7-cycle 9a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/9a.md">Shannon capacity of the 7-cycle</a><span class="id">9a</span></th>
+<td><code>| $\vartheta({\mathcal C}\_{7}) \approx 3.3177$ | [L1979] | Lovász theta-function bound |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $367^{1/5} \approx 3.2578$ | [PS2018] | |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/9a.md">source</a></td>
+</tr>
+<tr data-name="the real grothendieck constant 10a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/10a.md">The real Grothendieck constant</a><span class="id">10a</span></th>
+<td><code>| $&lt; \dfrac{\pi}{2\ln(1+\sqrt{2})} - 10^{-4}$ | [SLXCKKM26] | Same team; via the first *asymptotic* Krivine-type rounding scheme (previous works only considered low-dimensional schemes). |</code><span class="when">last changed 2026-08-12</span></td>
+<td><code>| $\dfrac{6\pi}{11}\approx 1.71360$ | [SLXCKKM26] | Major jump over the Davie–Reeds anchor $\approx 1.67696$; proved by establishing asymptotic limitations of Krivine schemes rather than by constructing explicit gap instances (as all prior lower bounds did).  Together with the upper bound above, this determines the tenths digit of $K_G^{\mathbb R}$ to be $7$. |</code><span class="when">last changed 2026-08-12</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10a.md">source</a></td>
+</tr>
+<tr data-name="the complex grothendieck constant 10b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/10b.md">The complex Grothendieck constant</a><span class="id">10b</span></th>
+<td><code>| $1.40491$ | [H1987] | Best known general upper bound (Haagerup). |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1.338$ | [D1984] | Best known general lower bound (Davie; cited by Haagerup). |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10b.md">source</a></td>
+</tr>
+<tr data-name="spencer discrepancy constant (“six standard deviations suffice”) 10c">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/10c.md">Spencer discrepancy constant (“six standard deviations suffice”)</a><span class="id">10c</span></th>
+<td><code>| $3\sqrt{3/2}\approx 3.674235$ | [PV2022] | Also gives an algorithmic version. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $7/\sqrt{17}\approx 1.697749$ | [L2026] | A 17 by 17 sign matrix with exact discrepancy $7$ ($16$ distinct rows, one repeated to square it). |</code><span class="when">last changed 2026-08-02</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10c.md">source</a></td>
+</tr>
+<tr data-name="the $l^1$ poincaré constant on the hamming cube 11a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/11a.md">The $L^1$ Poincaré constant on the Hamming cube</a><span class="id">11a</span></th>
+<td><code>| $\pi/2-\delta$ with $\delta\approx 0.00013$ | [IS2024] | Provides an explicit integral expression for $\delta$ and evaluates it numerically (about $1.3\times 10^{-4}$). |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\sqrt{\pi/2} \approx 1.25331$ | [Pisier1986], [ILvHV2019] | Comes from the sharp Gaussian $L^1$-Poincaré inequality (Pisier).|</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/11a.md">source</a></td>
+</tr>
+<tr data-name="the critical exponent for isoperimetric inequality on the hamming cube 11b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/11b.md">The critical exponent for isoperimetric inequality on the hamming cube</a><span class="id">11b</span></th>
+<td><code>| $0.5$ | [DIRX2026] |  Solves the problem by establishing $\beta=0.5$. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0.5$ | [BIM2023] | For every $\beta&lt;1/2$, Hamming ball examples give half-size sets with $\mathbb{E}h_{A}(x)^\beta$ arbitrarily small as $n\to\infty$ |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/11b.md">source</a></td>
+</tr>
+<tr data-name="the beardwood–halton–hammersley constant 12a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/12a.md">The Beardwood–Halton–Hammersley constant</a><span class="id">12a</span></th>
+<td><code>| $&lt;0.90304$ | [YC2023] | Latest computer-aided proof that significantly lowers the upper bound. Uses numerical integration and search over tour patterns. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0.6277$ | [GJ2020] | Improved rigorous lower bound using an approach based on nearest-neighbor distances, correcting and tightening a prior argument of [S2015]. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/12a.md">source</a></td>
+</tr>
+<tr data-name="moser&#39;s convex worm cover constant 13a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/13a.md">Moser&#39;s convex worm cover constant</a><span class="id">13a</span></th>
+<td><code>| $\frac{\pi}{12}=0.2617993878\dots$ | [PW2021] | 30° circular sector of radius 1 (“Wetzel’s sector”). Builds upon [MW2017] |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0.232239$ | [KPS2013] | Min–max estimate for convex hull area of certain forced configurations |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/13a.md">source</a></td>
+</tr>
+<tr data-name="lebesgue universal covering constant 13b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/13b.md">Lebesgue universal covering constant</a><span class="id">13b</span></th>
+<td><code>| $$\le 0.8440935944$$ | [Gib2018] |  |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0.832$ | [BS2005] | Rigorous computer-aided search using a circle, equilateral triangle, and regular pentagon |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/13b.md">source</a></td>
+</tr>
+<tr data-name="smallest $n$ for which the value of $bb(n)$ is undecidable 14a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/14a.md">Smallest $n$ for which the value of $BB(n)$ is undecidable</a><span class="id">14a</span></th>
+<td><code>| 432 | [W2025] | With methods of [O2016] |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| 6 | [BB2025] | By computing $BB(5)$ |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/14a.md">source</a></td>
+</tr>
+<tr data-name="matrix multiplication exponent 15a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/15a.md">Matrix multiplication exponent</a><span class="id">15a</span></th>
+<td><code>| $2.371339$ | [ADVXXZ2024] |  |</code><span class="when">last changed 2026-08-11</span></td>
+<td><code>| $2$ | Trivial | Conjectured to be sharp. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/15a.md">source</a></td>
+</tr>
+<tr data-name="dual matrix multiplication exponent 15b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/15b.md">Dual matrix multiplication exponent</a><span class="id">15b</span></th>
+<td><code>| $1$ | [[CLLZ2025](#CLLZ2025)] | Current best general upper bound. &lt;a href=&quot;#CLLZ2025-ub-1&quot;&gt;[CLLZ2025-ub-1]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0.321334$ | [[WXXZ2024](#WXXZ2024)] | Current best published lower bound. &lt;a href=&quot;#WXXZ2024-alpha-0321334&quot;&gt;[WXXZ2024-alpha-0321334]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/15b.md">source</a></td>
+</tr>
+<tr data-name="brezis–gallouet–wainger remainder constant on the 2d torus 16a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/16a.md">Brezis–Gallouet–Wainger remainder constant on the 2D torus</a><span class="id">16a</span></th>
+<td><code>| $\approx 2.15627$ | [BDZ2013] | Numerical evaluation; maximum achieved at $\delta^{\ast} \approx 3.92888$ |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\frac{\beta + \pi}{\pi} \approx 1.82283$ | [BDZ2013] |  |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/16a.md">source</a></td>
+</tr>
+<tr data-name="exponential growth constant for diagonal ramsey numbers 17a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/17a.md">Exponential growth constant for diagonal Ramsey numbers</a><span class="id">17a</span></th>
+<td><code>| $3.791993699438612 &lt; 3.792$ | [Gri26] | Computer-assisted verification using Theorem 13 and Lemma 14 of [GNNW2024] |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\sqrt{2} = 1.4142135623\dots$ | [Erd1947] | Introduces Erdős’ probabilistic method|</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/17a.md">source</a></td>
+</tr>
+<tr data-name="marton&#39;s conjecture (polynomial freiman-ruzsa) constant 18a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/18a.md">Marton&#39;s conjecture (Polynomial Freiman-Ruzsa) constant</a><span class="id">18a</span></th>
+<td><code>| $9$ | [L2024] | A simplified argument giving $11$ is also provided |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1$ | Trivial | Consider $K$ basis vectors |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/18a.md">source</a></td>
+</tr>
+<tr data-name="the berry–esseen constant 19a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/19a.md">The Berry–Esseen constant</a><span class="id">19a</span></th>
+<td><code>| $0.4690$ | [She2013] |                                    |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $c_{E} := \dfrac{\sqrt{10}+3}{6\sqrt{2\pi}} \approx 0.4097321837$ | [E1956]   | Esseen’s lower bound; achieved asymptotically by (centered/normalized) Bernoulli sums. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/19a.md">source</a></td>
+</tr>
+<tr data-name="the thin shell conjecture (variance of $|x|^2$) 20a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/20a.md">The thin shell conjecture (variance of $|X|^2$)</a><span class="id">20a</span></th>
+<td><code>| $\sigma_n \le O(1)$ (and in fact $\mathrm{Var}(\lvert X\rvert^2)\le C n$) | [KL2025] | **Affirmative resolution** of the thin shell conjecture. The universal constant is not optimized (and is not made explicit). |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $2$ | [KL2025] | Achieved by the standard Gaussian: if $X\sim N(0,\mathrm{Id})$ then $\mathrm{Var}(\lvert X\rvert^2)=2n$, so $C_{20a}\ge 2$. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/20a.md">source</a></td>
+</tr>
+<tr data-name="the isotropic constant of a log-concave probability measure 20b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/20b.md">The isotropic constant of a log-concave probability measure</a><span class="id">20b</span></th>
+<td><code>| $C_{20b}&lt;\infty$ (dimension-free) | [KL2024] | Final dimension-free bound (slicing/hyperplane theorem) |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $C_{20b}\ge 1/\sqrt{12}\approx 0.288675$ | Classical | Achieved by the cube $[-\tfrac12,\tfrac12]^n$ (volume $1$) |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/20b.md">source</a></td>
+</tr>
+<tr data-name="the kls (kannan–lovász–simonovits) constant for log-concave measures 20c">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/20c.md">The KLS (Kannan–Lovász–Simonovits) constant for log-concave measures</a><span class="id">20c</span></th>
+<td><code>| $\psi_n \le C\sqrt{\log n}$ | [K2023] | Current best general bound (Theorem 1.2 of [K2023]). |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\sqrt{\pi/2} \approx 1.25331$ | Classical | For the standard Gaussian measure, isoperimetric minimizers are half-spaces and $h_\gamma=\sqrt{2/\pi}$, hence $\psi_\gamma=\sqrt{\pi/2}$. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/20c.md">source</a></td>
+</tr>
+<tr data-name="de bruijn–newman constant 21a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/21a.md">de Bruijn–Newman constant</a><span class="id">21a</span></th>
+<td><code>| 0.1875 | [MI2026b] | certified record package (window-tiling assembly route); same barrier site; see PR |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| 0 | [RT2020] | Simplified in [D2020] |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/21a.md">source</a></td>
+</tr>
+<tr data-name="tight knot constant 22a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/22a.md">Tight knot constant</a><span class="id">22a</span></th>
+<td><code>| 10.02| [Klotz2026] | $T(24,19)$ knot |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\left(\frac{4\pi}{11}\right)^{3/4}\approx 1.105$ | [BS1999] | Argument based on an &quot;electromagnetic&quot; knot energy. The 11 in the denominator can be replaced by 10.67, bringing the bound to 1.13, but it is always reported as 11. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/22a.md">source</a></td>
+</tr>
+<tr data-name="tight alternating knot constant 22b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/22b.md">Tight alternating knot constant</a><span class="id">22b</span></th>
+<td><code>| 7.31|  [Kim2024] | Asymmetric double helix |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>|$\frac{1}{59.5}\approx 0.017$ | [Diao2024] | First proof of positivity</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/22b.md">source</a></td>
+</tr>
+<tr data-name="smallest unsolved instance of the hadamard conjecture 23a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/23a.md">Smallest unsolved instance of the Hadamard conjecture</a><span class="id">23a</span></th>
+<td><code>| $\infty$ | Trivial | No finite upper bound is known; conjecturally sharp (Hadamard conjecture). |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $668$ | [CP2024] | All orders $n&lt;668$ with $n\equiv 0\pmod4$ are known to admit Hadamard matrices; the smallest currently unresolved order is $668$. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/23a.md">source</a></td>
+</tr>
+<tr data-name="rate at which $\kappa(n)$ approaches $1$ 23b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/23b.md">Rate at which $\kappa(n)$ approaches $1$</a><span class="id">23b</span></th>
+<td><code>| $1$ | &lt;a href=&quot;#AJM2025&quot;&gt;[AJM2025]&lt;/a&gt; | Stated in the discussion of Problem 11. &lt;a href=&quot;#AJM2025-prob11&quot;&gt;[AJM2025-prob11]&lt;/a&gt; (A supporting mechanism is the lower bound $\kappa(n)\ge 1+c\frac{\log n}{n}$ for $n\not\equiv 0 \pmod 4$.) &lt;a href=&quot;#AJM2025-thm6&quot;&gt;[AJM2025-thm6]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $17/92 \approx 0.18478$ | &lt;a href=&quot;#AJM2025&quot;&gt;[AJM2025]&lt;/a&gt; | The authors state that (unconditionally) their method permits $\kappa(n)\le 1+\frac{1}{n^\alpha}$ for all sufficiently large $n$ with $\alpha=17/92-\delta$ for any small $\delta&gt;0$. &lt;a href=&quot;#AJM2025-thm1-alpha&quot;&gt;[AJM2025-thm1-alpha]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/23b.md">source</a></td>
+</tr>
+<tr data-name="asymptotic counting exponent for partial hadamard matrices 23c">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/23c.md">Asymptotic counting exponent for partial Hadamard matrices</a><span class="id">23c</span></th>
+<td><code>| $3$ | &lt;a href=&quot;#Davis2026&quot;&gt;[Davis2026]&lt;/a&gt; | Current best upper bound: the cubic-regime result proves $N_{n,4t} \sim A_{n,4t}$ for $t/n^3 \to \infty$ and shows that a nonvanishing correction survives when $t = \Theta n^3$ with large fixed $\Theta$, so the asymptotics change at the cubic scale. &lt;a href=&quot;#Davis2026-change-cubic&quot;&gt;[Davis2026-change-cubic]&lt;/a&gt; &lt;a href=&quot;#Davis2026-open-below3&quot;&gt;[Davis2026-open-below3]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1$ | &lt;a href=&quot;#DL2010&quot;&gt;[DL2010]&lt;/a&gt; | Admissible exponents cannot be below $1$: for any $\alpha&lt;1$, the regime $t/n^\alpha \to \infty$ still includes widths with $4t&lt;n$, where an $n \times 4t$ partial Hadamard matrix cannot exist. &lt;a href=&quot;#DL2010-linear-obstruction&quot;&gt;[DL2010-linear-obstruction]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/23c.md">source</a></td>
+</tr>
+<tr data-name="komlós discrepancy constant 24a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/24a.md">Komlós discrepancy constant</a><span class="id">24a</span></th>
+<td><code>| $\widetilde{O}(\log^{1/4} n)$ | [BJ2025] | Current best published asymptotic bound (hides polylog factors, e.g. in $\log\log n$). First improvement over $O(\sqrt{\log n})$.  |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1+\sqrt{2}$ | [Kun2023] | Best known lower bound on $C_{24}$.  |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/24a.md">source</a></td>
+</tr>
+<tr data-name="mahler volume product constant 25a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/25a.md">Mahler volume product constant</a><span class="id">25a</span></th>
+<td><code>| $4$ | Trivial | For the cube $B_\infty^n=[-1,1]^n$ one has $\mathrm{Vol}(B_\infty^n)=2^n$ and $\mathrm{Vol}\big((B_\infty^n)^\circ\big)=2^n/n!$, hence $M(B_\infty^n)=4^n$ and $C_{25}\le 4$. Conjecturally, this is sharp (Mahler conjecture). |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\pi \approx 3.1416$ | [K2008] | Best known explicit constant to date (Kuperberg). |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/25a.md">source</a></td>
+</tr>
+<tr data-name="bohnenblust--hille constant on the boolean cube 26a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/26a.md">Bohnenblust--Hille constant on the Boolean cube</a><span class="id">26a</span></th>
+<td><code>| $\infty$ | Trivial | the best general estimate currently available is subexponential growth: $\mathrm{BH}^{\le d}_{\lbrace\pm1\rbrace}\le C^{\sqrt{d \ \log \, d}}$ for an absolute constant $C&gt;1$ [DMP2019]. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $2$ | [ADGP2025] | Degree $d$ address function achieves the bound $2^{\frac{d-1}{d}}$. At present, chasing incremental improvements of lower bounds seems less compelling than establishing any finite uniform upper bound. That said, exhibiting a construction that forces the constant to exceed $100$ would already be a genuinely interesting result. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/26a.md">source</a></td>
+</tr>
+<tr data-name="multilinear bohnenblust--hille constant (real) 26b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/26b.md">Multilinear Bohnenblust--Hille constant (real)</a><span class="id">26b</span></th>
+<td><code>| $\infty$ | Trivial |  The best known general estimates on $B_{\mathbb R,m}$ for each fixed $m$ are sublinear in $m$; for example $B_{\mathbb R,m} &lt; 1.3\ m^{0.365}$ for $m\ge 14$ [CP2018]. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $2$ | [DMPSS2014] | Proves the general lower bound $B_{\mathbb R,m}\ge 2^{1-\frac1m}$ for every $m\ge 2$. Taking $\sup_m$ gives $C_{26b}\ge 2$. (For $m=2$ this is sharp: $B_{\mathbb R,2}=\sqrt{2}$, i.e. Littlewood&#39;s $4/3$ inequality.) |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/26b.md">source</a></td>
+</tr>
+<tr data-name="chromatic number of the plane 27a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/27a.md">Chromatic number of the plane</a><span class="id">27a</span></th>
+<td><code>| $7$ | [Had1945], [CR2017] | A periodic $7$-coloring obtained from a tiling of the plane by small regular hexagons (historically attributed to Isbell, 1950). |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $5$ | [deG2018] | First proof that $\chi(\mathbb R^{2})\ge 5$, via an explicit finite unit-distance graph. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/27a.md">source</a></td>
+</tr>
+<tr data-name="maximum chromatic number of biplanar graphs 27b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/27b.md">Maximum Chromatic Number of Biplanar Graphs</a><span class="id">27b</span></th>
+<td><code>| 12 | Trivial [R1959] | In fact, every biplanar graph has a vertex of degree at most 11.  |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| 9 | Sulanke [G1980] | Constructed as the join of a 6-vertex complete graph and a 5-vertex cycle graph. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/27b.md">source</a></td>
+</tr>
+<tr data-name="smallest dimension in which borsuk’s conjecture fails 28a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/28a.md">Smallest dimension in which Borsuk’s conjecture fails</a><span class="id">28a</span></th>
+<td><code>| $63$ | [[Gri2026](#Gri2026)] | Current best: a $321$-point subset of $\mathbb{R}^{63}$ whose smaller-diameter subsets have size at most $5$, so at least $65&gt;64$ parts are required. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $4$ | [[Per1947](#Per1947)], [[Egg1955](#Egg1955)], [[Gru1957](#Gru1957)] | Borsuk’s conjecture is true for $n\le 3$. After the $63$-dimensional construction, the first possible failing dimension remains open for $4\le n \le 62$. &lt;a href=&quot;#WX2022-lb-nle3&quot;&gt;[WX2022-lb-nle3]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/28a.md">source</a></td>
+</tr>
+<tr data-name="kissing number in dimension 5 29a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/29a.md">Kissing number in dimension 5</a><span class="id">29a</span></th>
+<td><code>| $44$ | [[MV2009](#MV2009)] |  &lt;a href=&quot;#MV2009-range-40-44&quot;&gt;[MV2009-range-40-44]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $40$ | [[KZ1873](#KZ1873)] | Achieved by the $D_5$ root system (40 points), giving a kissing configuration of size $40$ in $\mathbb{R}^5$. &lt;a href=&quot;#CR2024-lb-40-D5&quot;&gt;[CR2024-lb-40-D5]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/29a.md">source</a></td>
+</tr>
+<tr data-name="stanley–wilf limit for the permutation pattern 1324 30a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/30a.md">Stanley–Wilf limit for the permutation pattern 1324</a><span class="id">30a</span></th>
+<td><code>| $13.5$ | [[BBEPP2017](#BBEPP2017)] | Current best rigorous upper bound. &lt;a href=&quot;#BBEPP2017-t1-thiswork&quot;&gt;[BBEPP2017-t1-thiswork]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $10.27$ | [[BBEPP2017](#BBEPP2017)] | Current best rigorous lower bound. &lt;a href=&quot;#BBEPP2017-t1-thiswork&quot;&gt;[BBEPP2017-t1-thiswork]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/30a.md">source</a></td>
+</tr>
+<tr data-name="chvátal–sankoff constant for a binary alphabet 31a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/31a.md">Chvátal–Sankoff constant for a binary alphabet</a><span class="id">31a</span></th>
+<td><code>| $0.826280$ | [L2009] | Computer assisted |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0.79970$ | [AA2026] | AI and computer assisted (unverified) |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/31a.md">source</a></td>
+</tr>
+<tr data-name="constant term of one-shot channel simulation 32a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/32a.md">Constant term of one-shot channel simulation</a><span class="id">32a</span></th>
+<td><code>| $\sum_{k=1}^{\infty}2^{-k-1}k\log_{2}k-\log_{2}\log_{2}e \approx 0.76$ | [Li25] | |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $-\log_{2}\log_{2}e\approx-0.53$ | [Li25] | |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/32a.md">source</a></td>
+</tr>
+<tr data-name="ihara constant over $\mathbf{f}_2$ 33a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/33a.md">Ihara constant over $\mathbf{F}_2$</a><span class="id">33a</span></th>
+<td><code>| $\sqrt2-1 \approx 0.41421$ | [DV1983](#DV1983) | Drinfeld--Vlăduţ (Ihara) bound: $A(q)\le \sqrt q-1$ for every prime power $q$. &lt;a href=&quot;#DM2013-dv-bound&quot;&gt;[DM2013-dv-bound]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0.316999\ldots$ | [DM2013](#DM2013) | Lower bound from [DM2013](#DM2013) (also listed in [Bee2022](#Bee2022)). &lt;a href=&quot;#DM2013-thm1.1&quot;&gt;[DM2013-thm1.1]&lt;/a&gt; &lt;a href=&quot;#Bee2022-lb-best&quot;&gt;[Bee2022-lb-best]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/33a.md">source</a></td>
+</tr>
+<tr data-name="falconer distance problem in $\mathbf{r}^2$ 34a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/34a.md">Falconer distance problem in $\mathbf{R}^2$</a><span class="id">34a</span></th>
+<td><code>| $5/4=1.25$ | [[GIOW2018](#GIOW2018)] | Guth–Iosevich–Ou–Wang proved that if $\dim_H(E)&gt;5/4$ then $\lvert\Delta(E)\rvert&gt;0$. &lt;a href=&quot;#GIOW2018-thm-5-4&quot;&gt;[GIOW2018-thm-5-4]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1$ | [[Fal1986](#Fal1986)] | Falconer gave examples showing (in general dimension $d$) that one cannot expect $\lvert\Delta(E)\rvert&gt;0$ below the threshold $d/2$; in $d=2$ this yields $s_\Delta(\mathbb{R}^2)\ge 1$. [&lt;a href=&quot;#GIOW2018-lb-d-2&quot;&gt;[GIOW2018-lb-d-2]&lt;/a&gt;] |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/34a.md">source</a></td>
+</tr>
+<tr data-name="gradient descent exponent 35a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/35a.md">Gradient Descent Exponent</a><span class="id">35a</span></th>
+<td><code>| 2 | Folklore | See, e.g., [N2014] |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\log_2(1+\sqrt{2}) \approx 1.271$ | [AP24] | Obtained by the &quot;silver stepsize schedule&quot;. Conjecturally optimal. Appeared on arXiv concurrently with [GSW23]. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/35a.md">source</a></td>
+</tr>
+<tr data-name="sphere packing density in $\mathbf{r}^4$ 36a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/36a.md">Sphere packing density in $\mathbf{R}^4$</a><span class="id">36a</span></th>
+<td><code>| $0.644421\ldots$ | [dLOV2014](#dLOV2014) | [dLOV2014](#dLOV2014) lists the dimension-$4$ **center density** upper bound $\delta_4\le 0.130587$ (Table 1). Converting via $\Delta_4=\operatorname{vol}(B)\,\delta_4$ gives $\Delta_4\le \operatorname{vol}(B)\cdot 0.130587 = (\pi^2/2)\cdot 0.130587\approx 0.644421$. &lt;a href=&quot;#dLOV2014-table1-d4-row&quot;&gt;[dLOV2014-table1-d4-row]&lt;/a&gt; &lt;a href=&quot;#dLOV2014-center-density&quot;&gt;[dLOV2014-center-density]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\pi^2/16 \approx 0.616850$ | [dLOV2014](#dLOV2014) | [dLOV2014](#dLOV2014) lists the dimension-$4$ **center density** lower bound $\delta_4\ge 0.12500$ (Table 1). Converting via $\Delta_4=\operatorname{vol}(B)\,\delta_4$ gives $\Delta_4\ge \operatorname{vol}(B)\cdot 0.12500 = (\pi^2/2)\cdot (1/8)=\pi^2/16\approx 0.616850$. &lt;a href=&quot;#dLOV2014-table1-d4-row&quot;&gt;[dLOV2014-table1-d4-row]&lt;/a&gt; &lt;a href=&quot;#dLOV2014-center-density&quot;&gt;[dLOV2014-center-density]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/36a.md">source</a></td>
+</tr>
+<tr data-name="the degree--sensitivity exponent 37a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/37a.md">The degree--sensitivity exponent</a><span class="id">37a</span></th>
+<td><code>| $2$ | [P2021] | Improves the *constant factor* in the quadratic bound: $bs(f)\le \deg(f)^2/(\sqrt{10}-2)$, hence $s(f)\le \deg(f)^2/(\sqrt{10}-2)\approx 0.8604\,\deg(f)^2$ (still exponent $2$). |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\log_3 6 \approx 1.63093$ | [HKP2011] | Kushilevitz function $h$ on $6$ bits has $s(h)=6$ and $\deg(h)=3$, and  hence exponent $\log_3 6$. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/37a.md">source</a></td>
+</tr>
+<tr data-name="square-lattice self-avoiding walk connective constant $\mu_{\mathbb{z}^2}$ 38a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/38a.md">Square-lattice self-avoiding walk connective constant $\mu_{\mathbb{Z}^2}$</a><span class="id">38a</span></th>
+<td><code>| $2.679193$ | &lt;a href=&quot;#FV2017&quot;&gt;[FV2017]&lt;/a&gt; | Reported as a rigorous upper bound in &lt;a href=&quot;#FV2017&quot;&gt;[FV2017]&lt;/a&gt; (attributed there to &lt;a href=&quot;#PT2000&quot;&gt;[PT2000]&lt;/a&gt;). &lt;a href=&quot;#FV2017-bounds-square&quot;&gt;[FV2017-bounds-square]&lt;/a&gt; &lt;a href=&quot;#FV2017-ref-277&quot;&gt;[FV2017-ref-277]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $2.6273856$ | [Num2026] | Kesten irreducible-bridge renewal exactly as in [Jen2004-lb], extended two span levels past the 2004 computation (span $L=17$, series length $N=260$) by an exact cell-by-cell finite-lattice transfer matrix (CRT big-integer arithmetic); the certificate is a single exact big-integer inequality (self-contained checker included), and secondary certificates at Jensen&#39;s own span ($L=15$, $N=260$ gives $2.6256270$) and at $L=16$ ($2.6265705$) independently also exceed $2.625622$. &lt;a href=&quot;#Num2026-bound&quot;&gt;[Num2026-bound]&lt;/a&gt; |</code><span class="when">last changed 2026-08-02</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/38a.md">source</a></td>
+</tr>
+<tr data-name="hadwiger covering / illumination number in $\mathbb{r}^3$ 39a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/39a.md">Hadwiger covering / illumination number in $\mathbb{R}^3$</a><span class="id">39a</span></th>
+<td><code>| $14$ | &lt;a href=&quot;#Pry2023&quot;&gt;[Pry2023]&lt;/a&gt; | Best known general upper bound: $H_3 \le 14$ (attributed to Prymak). &lt;a href=&quot;#ABP2024-ub-H3-14&quot;&gt;[ABP2024-ub-H3-14]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $8$ | Classical (cube) | $H_3 \ge 2^3 = 8$ (already forced by the cube / parallelotope). &lt;a href=&quot;#ABP2024-lb-cube&quot;&gt;[ABP2024-lb-cube]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/39a.md">source</a></td>
+</tr>
+<tr data-name="lehmer’s mahler measure constant 40a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/40a.md">Lehmer’s Mahler measure constant</a><span class="id">40a</span></th>
+<td><code>| $1.176280\ldots$ | &lt;a href=&quot;#BDM2007&quot;&gt;[BDM2007]&lt;/a&gt; &lt;a href=&quot;#Leh1933&quot;&gt;[Leh1933]&lt;/a&gt; | The value $1.176280\ldots$ (the Mahler measure of $\ell$) “remains the smallest known measure $&gt;1$ for an integer polynomial,” i.e. it is the best currently known explicit upper bound for $L$. &lt;a href=&quot;#BDM2007-smallest-known&quot;&gt;[BDM2007-smallest-known]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1$ | Trivial (Kronecker) | For $f\in\mathbb{Z}[x]$, one has $M(f)\ge 1$, with $M(f)=1$ precisely in the cyclotomic/monomial case; hence $L\ge 1$. &lt;a href=&quot;#BDM2007-kronecker&quot;&gt;[BDM2007-kronecker]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/40a.md">source</a></td>
+</tr>
+<tr data-name="asymptotic dobrowolski constant for lehmer’s problem 40b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/40b.md">Asymptotic Dobrowolski constant for Lehmer’s problem</a><span class="id">40b</span></th>
+<td><code>| $\infty$ |  |  |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $9/4$ |  &lt;a href=&quot;#Lou1983&quot;&gt;[Lou1983]&lt;/a&gt; | Louboutin improves the coefficient to $(\tfrac94-\epsilon)$ (as reported by Voutier), hence $C_{40b}\ge 9/4$. &lt;a href=&quot;#Vou1996-cs-lou&quot;&gt;[Vou1996-cs-lou]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/40b.md">source</a></td>
+</tr>
+<tr data-name="moving sofa constant 41a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/41a.md">Moving Sofa Constant</a><span class="id">41a</span></th>
+<td><code>| 2.2195 | [Baek2024] | Announced bound, matching the Gerver construction |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| 2.2195 | [Gerver1992] | The Gerver sofa |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/41a.md">source</a></td>
+</tr>
+<tr data-name="ambidextrous moving sofa constant 41b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/41b.md">Ambidextrous Moving Sofa Constant</a><span class="id">41b</span></th>
+<td><code>| 2.2195 | [Baek2024] | Naive bound from $C\_{41a}$ |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| 1.64495521 | [Romik2016] |  |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/41b.md">source</a></td>
+</tr>
+<tr data-name="turan&#39;s pure power sum constant 42a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/42a.md">Turan&#39;s pure power sum constant</a><span class="id">42a</span></th>
+<td><code>| 0.6906538* | Griego [Gri26] | Proposed asymptotic two-block certificate with exact rational interval verification of the limiting inequality. No explicit finite threshold $N$ is supplied. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| &gt;1/2 | Biró [Bir00b] | Biró&#39;s proof delivers some computable constant $1/2&lt;c&lt;1/\sqrt{2}$, but it is not computed there exactly which. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/42a.md">source</a></td>
+</tr>
+<tr data-name="gilbert-pollak conjecture (steiner ratio) 43a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/43a.md">Gilbert-Pollak conjecture (Steiner ratio)</a><span class="id">43a</span></th>
+<td><code>| $\sqrt{3}/2 \approx 0.866$ | [GP1968] | equilateral triangle |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0.8559$ | [KHSHGW2026] | New improvement, preprint |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/43a.md">source</a></td>
+</tr>
+<tr data-name="maximal number of relevant variables in degree-$d$ boolean functions 44a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/44a.md">Maximal number of relevant variables in degree-$d$ Boolean functions</a><span class="id">44a</span></th>
+<td><code>| $4.394$ | [Wel2022] | Best published bound found (Theorem 1.1). |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $3/2$ | [CHS2020] | Construction with $R_d \ge 3\cdot 2^{d-1}-2$, hence $\sup_d R_d/2^d \ge 3/2$. (Also observed by Shinkar and Tal.) |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/44a.md">source</a></td>
+</tr>
+<tr data-name="romanoff&#39;s constant 45a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/45a.md">Romanoff&#39;s constant</a><span class="id">45a</span></th>
+<td><code>| $0.490180063290061$ | [Y2026] | |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0.107648$ | [CE2018] |  |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/45a.md">source</a></td>
+</tr>
+<tr data-name="restriction exponent for the 2-sphere (stein&#39;s $l^\infty$ extension problem) 46a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/46a.md">Restriction exponent for the 2-sphere (Stein&#39;s $L^\infty$ extension problem)</a><span class="id">46a</span></th>
+<td><code>| $\frac{22}{7}\approx 3.142857$ | [WW2024] | |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $3$ | Stationary phase / explicit computation | Take $f=1$.  Conjectured to be sharp [Ste1979] |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/46a.md">source</a></td>
+</tr>
+<tr data-name="centered hardy–littlewood maximal constant in dimension $2$ 47a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/47a.md">Centered Hardy–Littlewood maximal constant in dimension $2$</a><span class="id">47a</span></th>
+<td><code>| $9$ | [Tao2006] | The standard covering-lemma proof gives an explicit constant $3^d$ in the weak-type $(1,1)$ inequality, and the same argument applies to cubes; hence $c_2\le 3^2=9$. [Tao2006-weak-3d] [Tao2006-cubes] |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\dfrac{11+\sqrt{61}}{12}\approx 1.5675208$ | &lt;a href=&quot;#Mel2003&quot;&gt;[Mel2003]&lt;/a&gt;, &lt;a href=&quot;#Ald2011&quot;&gt;[Ald2011]&lt;/a&gt; | Melas proved $c_1=\dfrac{11+\sqrt{61}}{12}$. Since $c_{d+1}\ge c_d$, we get $c_2\ge c_1$. &lt;a href=&quot;#Mel2003-c1-formula&quot;&gt;[Mel2003-c1-formula]&lt;/a&gt; &lt;a href=&quot;#Ald2011-monotone&quot;&gt;[Ald2011-monotone]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/47a.md">source</a></td>
+</tr>
+<tr data-name="one-dimensional convex sub-gaussian comparison constant 48a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/48a.md">One-dimensional convex sub-Gaussian comparison constant</a><span class="id">48a</span></th>
+<td><code>| $c_0^2 \approx 5.33386$ | &lt;a href=&quot;#DP2026&quot;&gt;[DP2026]&lt;/a&gt; | Solves the one-dimensional problem exactly. &lt;a href=&quot;#DP2026-thm1-sharp&quot;&gt;[DP2026-thm1-sharp]&lt;/a&gt; &lt;a href=&quot;#DP2026-rem2-num&quot;&gt;[DP2026-rem2-num]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $c_0^2 \approx 5.33386$ | &lt;a href=&quot;#DP2026&quot;&gt;[DP2026]&lt;/a&gt; | The sharpness part of Theorem 1 shows that no smaller constant works. &lt;a href=&quot;#DP2026-thm1-sharp&quot;&gt;[DP2026-thm1-sharp]&lt;/a&gt; &lt;a href=&quot;#DP2026-rem2-num&quot;&gt;[DP2026-rem2-num]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/48a.md">source</a></td>
+</tr>
+<tr data-name="erdős–szemerédi $3$-sunflower-free capacity 49a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/49a.md">Erdős–Szemerédi $3$-sunflower-free capacity</a><span class="id">49a</span></th>
+<td><code>| $\frac{3}{2^{2/3}} \approx 1.8898815748$ | [NS2017] | They prove $\lvert\mathcal{F}\rvert \le 3(n+1) \sum\_{k=0}^{\lfloor n/3\rfloor} \binom{n}{k} \le \left(\frac{3}{2^{2/3}}\right)^{n(1+o(1))}$ for sunflower-free $\mathcal{F}\subseteq 2^{[n]}$. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\ge 1.554$ (unpublished) | [NS2017] | The arXiv preprint version of [NS2017] records $\mu^{\mathrm S}\_3\ge 1.554$, citing an unpublished manuscript of the first author. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/49a.md">source</a></td>
+</tr>
+<tr data-name="approximation ratio for quantum max cut. 50a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/50a.md">Approximation ratio for quantum Max Cut.</a><span class="id">50a</span></th>
+<td><code>| 0.5   | [GP19]    | best possible product state approximation</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| 0.614 | [BBKL26]  | Proves monogamy conjecture from [ALMPS25]</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/50a.md">source</a></td>
+</tr>
+<tr data-name="erdős maximum-term constant 51a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/51a.md">Erdős maximum-term constant</a><span class="id">51a</span></th>
+<td><code>| $\frac{2}{\pi}\approx 0.6366197724$ | [CH1964] |  |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0.5850788$ | [S2026] | Used GPT 5.2.  Discussed [here](https://www.erdosproblems.com/forum/thread/513#post-4532) |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/51a.md">source</a></td>
+</tr>
+<tr data-name="the complexity threshold of random 3-sat 52a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/52a.md">The complexity threshold of random 3-SAT</a><span class="id">52a</span></th>
+<td><code>| 4.490 | [DKMP2009] ||</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| 3.52| [HS2003], [KKL2003]||</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/52a.md">source</a></td>
+</tr>
+<tr data-name="davenport constant for $c_n^3$ 53a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/53a.md">Davenport constant for $C_n^3$</a><span class="id">53a</span></th>
+<td><code>| $20369$ | &lt;a href=&quot;#Zak2019&quot;&gt;[Zak2019]&lt;/a&gt; | From Corollary 3.11: $D(C_n^3)\le 20369(n-1)+1$ for all $n\ge 2$, hence $C_{53}\le 20369$. &lt;a href=&quot;#Zak2019-cor3.11&quot;&gt;[Zak2019-cor3.11]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $3$ | &lt;a href=&quot;#GG2006&quot;&gt;[GG2006]&lt;/a&gt; | Using $d(C_n^3)\ge d^*(C_n^3)=3(n-1)$ and $D(G)=1+d(G)$ gives $D(C_n^3)\ge 3(n-1)+1$, hence $C_{53}\ge 3$. &lt;a href=&quot;#GG2006-d-ge-dstar&quot;&gt;[GG2006-d-ge-dstar]&lt;/a&gt; &lt;a href=&quot;#GG2006-D-equals-1-plus-d&quot;&gt;[GG2006-D-equals-1-plus-d]&lt;/a&gt; &lt;a href=&quot;#GG2006-def-dstar&quot;&gt;[GG2006-def-dstar]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/53a.md">source</a></td>
+</tr>
+<tr data-name="beurling–ahlfors transform constant 54a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/54a.md">Beurling–Ahlfors transform constant</a><span class="id">54a</span></th>
+<td><code>| $1.575$ | &lt;a href=&quot;#BJ2008&quot;&gt;[BJ2008]&lt;/a&gt; | Bañuelos–Janakiraman proved $\lVert B\rVert_p \le 1.575(p^*-1)$ for all $1&lt;p&lt;\infty$. &lt;a href=&quot;#BJ2008-abs-ub1575&quot;&gt;[BJ2008-abs-ub1575]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1$ | &lt;a href=&quot;#Leh1965&quot;&gt;[Leh1965]&lt;/a&gt; | Lehto proved $\lVert B\rVert_p \ge p^*-1$, which implies $C_{54}\ge 1$. &lt;a href=&quot;#BJ2008-Lehto-lb&quot;&gt;[BJ2008-Lehto-lb]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/54a.md">source</a></td>
+</tr>
+<tr data-name="the coefficient of the acyclic chromatic index 55a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/55a.md">The coefficient of the acyclic chromatic index</a><span class="id">55a</span></th>
+<td><code>|3.142|[KLS2026]||</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| 1 | Trivial | conjectured to be sharp |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/55a.md">source</a></td>
+</tr>
+<tr data-name="$\mathrm{gl}_2$ ramanujan conjecture exponent 56a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/56a.md">$\mathrm{GL}_2$ Ramanujan conjecture exponent</a><span class="id">56a</span></th>
+<td><code>| $\tfrac{7}{64}=0.109375$ | [KS2003] (over $\mathbb Q$), extended uniformly to all number fields by [BB2011] | **Best known general bound.** In Sarnak’s notation, this controls both finite-place Satake parameters and archimedean spectral parameters for $\mathrm{GL}_2(\mathbb A_{\mathbb Q})$ (and Blomer–Brumley extend it to arbitrary number fields). |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0$ | Trivial | Conjectured to be sharp (Generalized Ramanujan / Selberg). |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/56a.md">source</a></td>
+</tr>
+<tr data-name="bloch’s constant 57a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/57a.md">Bloch’s constant</a><span class="id">57a</span></th>
+<td><code>| $\dfrac{1}{\sqrt{1+\sqrt{3}}}\,\dfrac{\Gamma(1/3)\Gamma(11/12)}{\Gamma(1/4)}\approx 0.4719$ | &lt;a href=&quot;#AG1937&quot;&gt;[AG1937]&lt;/a&gt; | Ahlfors–Grunsky bound; conjectured sharp. &lt;a href=&quot;#BS2023-AG-conj-B&quot;&gt;[BS2023-AG-conj-B]&lt;/a&gt; &lt;a href=&quot;#BS2023-bounds-B&quot;&gt;[BS2023-bounds-B]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\dfrac{\sqrt{3}}{4}+2\times 10^{-4}$ | &lt;a href=&quot;#CG1996&quot;&gt;[CG1996]&lt;/a&gt; | Best recorded lower bound (as quoted in the survey literature). &lt;a href=&quot;#BS2023-bounds-B&quot;&gt;[BS2023-bounds-B]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/57a.md">source</a></td>
+</tr>
+<tr data-name="landau&#39;s constant 57b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/57b.md">Landau&#39;s constant</a><span class="id">57b</span></th>
+<td><code>| $\dfrac{\Gamma(1/3)\Gamma(5/6)}{\Gamma(1/6)}\approx 0.5433$ | &lt;a href=&quot;#Rad1943&quot;&gt;[Rad1943]&lt;/a&gt; | Upper bound attributed to Rademacher (as summarized in &lt;a href=&quot;#BS2023&quot;&gt;[BS2023]&lt;/a&gt;). &lt;a href=&quot;#BS2023-bounds-L&quot;&gt;[BS2023-bounds-L]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\dfrac{1}{2}+10^{-335}$ | &lt;a href=&quot;#Yan1995&quot;&gt;[Yan1995]&lt;/a&gt; | Lower bound attributed to Yanagihara (as summarized in &lt;a href=&quot;#BS2023&quot;&gt;[BS2023]&lt;/a&gt;). &lt;a href=&quot;#BS2023-bounds-L&quot;&gt;[BS2023-bounds-L]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/57b.md">source</a></td>
+</tr>
+<tr data-name="univalent bloch constant 57c">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/57c.md">Univalent Bloch constant</a><span class="id">57c</span></th>
+<td><code>| $1$ | Trivial | The identity function $f(z)=z$ is univalent with $f&#39;(0)=1$ and has $B_f=1$, hence $B_u\le 1$. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0.5708858$ | &lt;a href=&quot;#Skin2009&quot;&gt;[Skin2009]&lt;/a&gt; | Best recorded lower bound (as summarized in &lt;a href=&quot;#BS2023&quot;&gt;[BS2023]&lt;/a&gt;). &lt;a href=&quot;#BS2023-latest-Bu-lb&quot;&gt;[BS2023-latest-Bu-lb]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/57c.md">source</a></td>
+</tr>
+<tr data-name="zaremba’s conjecture constant 58a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/58a.md">Zaremba’s conjecture constant</a><span class="id">58a</span></th>
+<td><code>| $+\infty$ |  | Trivial. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $5$ | &lt;a href=&quot;#Kan2021&quot;&gt;[Kan2021]&lt;/a&gt; | The $A=4$ version fails (counterexamples $d=54,150$), so any universal bound must satisfy $A_{\mathrm{Zar}}\ge 5$. &lt;a href=&quot;#Kan2021-A4-counterexamples&quot;&gt;[Kan2021-A4-counterexamples]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/58a.md">source</a></td>
+</tr>
+<tr data-name="bohr radius for the bidisc 59a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/59a.md">Bohr radius for the bidisc</a><span class="id">59a</span></th>
+<td><code>| $0.3174541$ | &lt;a href=&quot;#G2026&quot;&gt;[G2026]&lt;/a&gt; | Degree-$(250,250)$ polynomial from a rational-inner Fejer averaging certificate. Exact integer verification gives $B\_{3174541/10000000}(p)&gt;1$. &lt;a href=&quot;#G2026-ub-K2-0-3174541&quot;&gt;[G2026-ub-K2-0-3174541]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0.3006$ | &lt;a href=&quot;#Kne2025&quot;&gt;[Kne2025]&lt;/a&gt; | Lower bound for the bidisc: $K_2\ge 0.3006$. &lt;a href=&quot;#Kne2025-lb-K2-0-3006&quot;&gt;[Kne2025-lb-K2-0-3006]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/59a.md">source</a></td>
+</tr>
+<tr data-name="favard-length decay exponent 60a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/60a.md">Favard-length decay exponent</a><span class="id">60a</span></th>
+<td><code>| $1$ | &lt;a href=&quot;#BV2010&quot;&gt;[BV2010]&lt;/a&gt; | Bateman–Volberg prove $\mathrm{Fav}(K_n)\ge c\,\frac{\log n}{n}$, which rules out any estimate $\mathrm{Fav}(K_n)\le C n^{-\alpha}$ with $\alpha&gt;1$. &lt;a href=&quot;#BV2010-thm1-lb-logn-over-n&quot;&gt;[BV2010-thm1-lb-logn-over-n]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1/6$ | &lt;a href=&quot;#NPV2011&quot;&gt;[NPV2011]&lt;/a&gt; | Nazarov–Peres–Volberg prove $\mathrm{Fav}(K_n)\le C n^{-1/6+\delta}$ (equivalently, $\mathrm{Fav}(K_n)\le C n^{\delta-1/6}$) for every $\delta&gt;0$. &lt;a href=&quot;#NPV2011-thm1-powerlaw&quot;&gt;[NPV2011-thm1-powerlaw]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/60a.md">source</a></td>
+</tr>
+<tr data-name="selberg congruence spectral-gap constant 61a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/61a.md">Selberg congruence spectral-gap constant</a><span class="id">61a</span></th>
+<td><code>| $7/64$ | &lt;a href=&quot;#KRS2003&quot;&gt;[KRS2003]&lt;/a&gt; | Derived from the uniform bound $\lambda_1(\Gamma)\ge 975/4096$. &lt;a href=&quot;#KRS2003-975-4096&quot;&gt;[KRS2003-975-4096]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0$ |  | Trivial from the definition $C_{61}\ge 0$. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/61a.md">source</a></td>
+</tr>
+<tr data-name="lindelof (pointwise growth) exponent for the riemann zeta function 62a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/62a.md">Lindelof (pointwise growth) exponent for the Riemann zeta function</a><span class="id">62a</span></th>
+<td><code>| $13/84$ | &lt;a href=&quot;#Bou2017&quot;&gt;[Bou2017]&lt;/a&gt; | Bourgain&#39;s pointwise bound for $\lvert\zeta(1/2+it)\rvert$. &lt;a href=&quot;#Bou2017-13-84&quot;&gt;[Bou2017-13-84]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0$ |  | Trivial from the definition $C_{62a}\ge 0$. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/62a.md">source</a></td>
+</tr>
+<tr data-name="burgess-quality subconvexity exponent for dirichlet $l$-functions 62b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/62b.md">Burgess-quality subconvexity exponent for Dirichlet $L$-functions</a><span class="id">62b</span></th>
+<td><code>| $3/16$ | &lt;a href=&quot;#Bur1963&quot;&gt;[Bur1963]&lt;/a&gt; | Burgess bound (as quoted in modern sources). &lt;a href=&quot;#PY2020-burgess-3-16&quot;&gt;[PY2020-burgess-3-16]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0$ |  | Trivial from the definition $C_{62b}\ge 0$. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/62b.md">source</a></td>
+</tr>
+<tr data-name="dirichlet divisor problem exponent 63a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/63a.md">Dirichlet divisor problem exponent</a><span class="id">63a</span></th>
+<td><code>| $131/416$ | &lt;a href=&quot;#Hux2003&quot;&gt;[Hux2003]&lt;/a&gt; | Record exponent (as stated in survey literature). &lt;a href=&quot;#Tsa2010-ub-131-416&quot;&gt;[Tsa2010-ub-131-416]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1/4$ | &lt;a href=&quot;#Tsa2010&quot;&gt;[Tsa2010]&lt;/a&gt; | Omega results imply $\alpha\ge 1/4$. &lt;a href=&quot;#Tsa2010-omega-1-4&quot;&gt;[Tsa2010-omega-1-4]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/63a.md">source</a></td>
+</tr>
+<tr data-name="gauss circle problem exponent 64a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/64a.md">Gauss circle problem exponent</a><span class="id">64a</span></th>
+<td><code>| $131/208$ | &lt;a href=&quot;#Hux2003&quot;&gt;[Hux2003]&lt;/a&gt; | Huxley&#39;s bound (long-standing record). &lt;a href=&quot;#CRM2023-ub-131-208&quot;&gt;[CRM2023-ub-131-208]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0$ |  | Trivial from the definition $C_{64}\ge 0$. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/64a.md">source</a></td>
+</tr>
+<tr data-name="linnik&#39;s constant 65a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/65a.md">Linnik&#39;s constant</a><span class="id">65a</span></th>
+<td><code>| $5$ | [[XylDiss2011](#XylDiss2011)] | Attributed in modern literature to Xylouris&#39;s 2011 dissertation. &lt;a href=&quot;#MMT2024-ub-5&quot;&gt;[MMT2024-ub-5]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1$ |  | Trivial: $P(1,q)\ge q+1$. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/65a.md">source</a></td>
+</tr>
+<tr data-name="elliott-halberstam level-of-distribution exponent 66a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/66a.md">Elliott-Halberstam level-of-distribution exponent</a><span class="id">66a</span></th>
+<td><code>| $1$ |  | Trivial ceiling in the standard level-of-distribution formulation. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1/2$ | [[Ked2007](#Ked2007)] | Bombieri-Vinogradov range $Q=x^{1/2}(\log x)^{-B}$. &lt;a href=&quot;#Ked2007-BV&quot;&gt;[Ked2007-BV]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/66a.md">source</a></td>
+</tr>
+<tr data-name="brennan&#39;s conjecture exponent 67a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/67a.md">Brennan&#39;s conjecture exponent</a><span class="id">67a</span></th>
+<td><code>| $4$ | [[HC2015](#HC2015)] | Conjectured endpoint. &lt;a href=&quot;#HC2015-conjecture-range&quot;&gt;[HC2015-conjecture-range]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $3.422$ | [[HC2015](#HC2015)] | Historical summary attributes this threshold to Bertilsson&#39;s dissertation. &lt;a href=&quot;#HC2015-best-known-3-422&quot;&gt;[HC2015-best-known-3-422]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/67a.md">source</a></td>
+</tr>
+<tr data-name="korenblum&#39;s constant 68a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/68a.md">Korenblum&#39;s constant</a><span class="id">68a</span></th>
+<td><code>| $0.6778994$ | [[Wang2008](#Wang2008)] | Published numerical upper bound recorded in the survey literature. &lt;a href=&quot;#CS2015-best-range&quot;&gt;[CS2015-best-range]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0.3554$ | [[Wang2025](#Wang2025)] | Published numerical lower bound.</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/68a.md">source</a></td>
+</tr>
+<tr data-name="sendov radius constant 69a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/69a.md">Sendov radius constant</a><span class="id">69a</span></th>
+<td><code>| $2$ |  | Trivial geometric bound since all zeroes of $f$ and $f&#39;$ lie in the closed unit disk. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1$ | [[Tao2022](#Tao2022)] | Example $f(z)=z^n-1$, $\lambda_0=1$: the critical points are at $0$ and lie on $\partial D(\lambda_0,1)$. &lt;a href=&quot;#Tao2022-example-zn1&quot;&gt;[Tao2022-example-zn1]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/69a.md">source</a></td>
+</tr>
+<tr data-name="reverse brunn-minkowski constant 70a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/70a.md">Reverse Brunn-Minkowski constant</a><span class="id">70a</span></th>
+<td><code>| $&lt;\infty$ | [[Mil1986](#Mil1986)], [[Bas1995](#Bas1995)] | Existence of a dimension-free constant in Milman&#39;s theorem. &lt;a href=&quot;#Bas1995-milman-statement&quot;&gt;[Bas1995-milman-statement]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1$ |  | Trivial scaling lower bound. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/70a.md">source</a></td>
+</tr>
+<tr data-name="fourier entropy-influence constant 71a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/71a.md">Fourier Entropy-Influence constant</a><span class="id">71a</span></th>
+<td><code>| $\infty$ |  | No finite universal constant is currently known. &lt;a href=&quot;#ODWZ2011-open-problem&quot;&gt;[ODWZ2011-open-problem]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $&gt;6.521845710923046575$ | [[Num2026](#Num2026)] | Explicit balanced **logic-monotone** function on 18 variables via the [[OT2013](#OT2013)] amplification rule $C \ge H/(I-1)$; exact influence $261/128$; obtained from the [[MI2026b](#MI2026b)] function by equalising the auxiliary-variable action (the single 4-cell auxiliary is split 2+2 with the new 18th variable), raising $H$ by exactly twice the moved spectral weight at identical influence — certified gain exactly $1/133$; exact-rational spectrum + interval arithmetic; replayable single-file certificate. The function is monotone, so the same bound holds even restricted to monotone functions. &lt;a href=&quot;#Num2026-bound&quot;&gt;[Num2026-bound]&lt;/a&gt; |</code><span class="when">last changed 2026-08-02</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/71a.md">source</a></td>
+</tr>
+<tr data-name="polya-vinogradov best constant (squarefree asymptotic) 72a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/72a.md">Polya-Vinogradov best constant (squarefree asymptotic)</a><span class="id">72a</span></th>
+<td><code>| $\dfrac{1}{2\pi^2}$ | [[BK2020](#BK2020)] | Squarefree moduli, even characters. &lt;a href=&quot;#BK2020-main-constants&quot;&gt;[BK2020-main-constants]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0$ |  | Trivial from nonnegativity of the defining infimum. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/72a.md">source</a></td>
+</tr>
+<tr data-name="flatness constant in dimension 3 73a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/73a.md">Flatness constant in dimension 3</a><span class="id">73a</span></th>
+<td><code>| $3.972$ | [[ACMS2021](#ACMS2021)] | Published explicit upper bound $\mathrm{Flt}(3)&lt;3.972$. &lt;a href=&quot;#ACMS2021-ub-3-972&quot;&gt;[ACMS2021-ub-3-972]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $2+\sqrt{2}$ | [[CS2019](#CS2019)] | Achieved by an explicit hollow non-lattice tetrahedron in dimension $3$. &lt;a href=&quot;#CS2019-thm-1-1&quot;&gt;[CS2019-thm-1-1]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/73a.md">source</a></td>
+</tr>
+<tr data-name="10-point multi-point seshadri constant on $\mathbb{p}^2$ 74a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/74a.md">10-point multi-point Seshadri constant on $\mathbb{P}^2$</a><span class="id">74a</span></th>
+<td><code>| $\frac{1}{\sqrt{10}}$ | [[Gal2025](#Gal2025)] | This is the general bound $\epsilon(S,D,x_1,\dots,x_r)\le \sqrt{D^2/r}$ applied to $S=\mathbb{P}^2$, $D=\mathcal O_{\mathbb{P}^2}(1)$, and $r=10$. &lt;a href=&quot;#Gal2025-upper-submax&quot;&gt;[Gal2025-upper-submax]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\frac{117}{370}$ | [[Eck2011](#Eck2011)] | Eckl’s improvement on the earlier $55/174$ bound. &lt;a href=&quot;#Eck2011-lb-117-370&quot;&gt;[Eck2011-lb-117-370]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/74a.md">source</a></td>
+</tr>
+<tr data-name="metric tsp subtour-lp integrality-gap constant 75a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/75a.md">Metric TSP subtour-LP integrality-gap constant</a><span class="id">75a</span></th>
+<td><code>| $3/2 - 2.18 \cdot 10^{-34}$ | [[GKL2024](#GKL2024)] | Applying the stated LP-relative guarantee to an optimal subtour-LP solution yields the best currently established general upper bound. &lt;a href=&quot;#GKL2024-ub-2p18e-34&quot;&gt;[GKL2024-ub-2p18e-34]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $4/3$ | [[Hou2014](#Hou2014)] | Classical asymptotic lower bound: there exists a family of metric TSP instances whose integrality ratios converge to $4/3$. &lt;a href=&quot;#Hou2014-gap-4over3&quot;&gt;[Hou2014-gap-4over3]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/75a.md">source</a></td>
+</tr>
+<tr data-name="asymptotic line-count constant for smooth degree-$d$ surfaces in $\mathbb p^3$ in characteristic $0$ 76a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/76a.md">Asymptotic line-count constant for smooth degree-$d$ surfaces in $\mathbb P^3$ in characteristic $0$</a><span class="id">76a</span></th>
+<td><code>| $\ell_0(d) \le 11d^2 - 30d + 18$ | &lt;a href=&quot;#BR2023&quot;&gt;[BR2023]&lt;/a&gt; | Current best general upper bound in characteristic $0$, valid for $d \ge 3$. &lt;a href=&quot;#BR2023-ub-11d2&quot;&gt;[BR2023-ub-11d2]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\ell_0(d) \ge 3d^2$ | &lt;a href=&quot;#BS2007&quot;&gt;[BS2007]&lt;/a&gt; | Achieved by the classical family $\varphi(x,y)-\psi(z,t)=0$; within that family the exact count is $3d^2$ except for the finitely many exceptional degrees $4,6,8,12,20$. Therefore $C_{76} \ge 3$. &lt;a href=&quot;#BS2007-lb-3d2&quot;&gt;[BS2007-lb-3d2]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/76a.md">source</a></td>
+</tr>
+<tr data-name="3d critical bochner–riesz exponent 77a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/77a.md">3D critical Bochner–Riesz exponent</a><span class="id">77a</span></th>
+<td><code>| $\frac{13}{4}=3.25$ | [[Wu2023](#Wu2023)], [[GOWWZ2025](#GOWWZ2025)] | Wu proved this range, and Guo–Oh–Wang–Wu–Zhang later recovered it by a different argument. &lt;a href=&quot;#Wu2023-thm-3.25&quot;&gt;[Wu2023-thm-3.25]&lt;/a&gt; &lt;a href=&quot;#GOWWZ2025-r3-recover&quot;&gt;[GOWWZ2025-r3-recover]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $3$ | [[Wu2023](#Wu2023)] | Immediate from the definition of $C_{77}$; conjectured to be sharp. &lt;a href=&quot;#Wu2023-conj-formula&quot;&gt;[Wu2023-conj-formula]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/77a.md">source</a></td>
+</tr>
+<tr data-name="conway thrackle constant 78a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/78a.md">Conway thrackle constant</a><span class="id">78a</span></th>
+<td><code>| $1.393$ | &lt;a href=&quot;#KSTZ2025&quot;&gt;[KSTZ2025]&lt;/a&gt; | Current best upper bound: Xu&#39;s $m\le 1.393(n-1)$ bound, as recorded in recent literature, gives $C_{78}\le 1.393$. &lt;a href=&quot;#KSTZ2025-current-best-special&quot;&gt;[KSTZ2025-current-best-special]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1$ | &lt;a href=&quot;#FP2011&quot;&gt;[FP2011]&lt;/a&gt; | Any cycle of length at least five can be drawn as a thrackle, and such a cycle has $\lvert E\rvert/\lvert V\rvert=1$. &lt;a href=&quot;#FP2011-open-sharp&quot;&gt;[FP2011-open-sharp]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/78a.md">source</a></td>
+</tr>
+<tr data-name="asymptotic essential-dimension ratio of the symmetric groups 79a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/79a.md">Asymptotic essential-dimension ratio of the symmetric groups</a><span class="id">79a</span></th>
+<td><code>| $1$ | &lt;a href=&quot;#BR1997&quot;&gt;[BR1997]&lt;/a&gt; | Follows from $ed_{\mathbb C}(S_n)\le n-3$ for all $n\ge 5$, hence $C_{79}\le \limsup_{n\to\infty}(n-3)/n = 1$. &lt;a href=&quot;#BR1997-sym-bounds&quot;&gt;[BR1997-sym-bounds]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1/2$ | &lt;a href=&quot;#BR1997&quot;&gt;[BR1997]&lt;/a&gt;, &lt;a href=&quot;#ER2024&quot;&gt;[ER2024]&lt;/a&gt; | In characteristic $0$, Buhler–Reichstein proved $ed_k(S_n)\ge \lfloor n/2 \rfloor$, and Duncan improved this to $ed_k(S_n)\ge \lfloor (n+1)/2 \rfloor$ for $n\ge 7$; ER2024 notes the $\lfloor n/2 \rfloor$ argument also works for $\mathrm{char}(k)\ne 2$. In particular, over $\mathbb C$ either estimate yields $C_{79}\ge 1/2$. &lt;a href=&quot;#ER2024-intro-bounds-open&quot;&gt;[ER2024-intro-bounds-open]&lt;/a&gt; &lt;a href=&quot;#BR1997-sym-bounds&quot;&gt;[BR1997-sym-bounds]&lt;/a&gt; |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/79a.md">source</a></td>
+</tr>
+<tr data-name="ising perceptron capacity threshold 80a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/80a.md">Ising perceptron capacity threshold</a><span class="id">80a</span></th>
+<td><code>| $\alpha_{\star} \approx 0.833$ | [H2024] | Conditional on an explicit numerical maximization hypothesis for a two-variable function $\mathscr{S}_{\star}(\lambda_1,\lambda_2)$. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\alpha_{\star} \approx 0.833$ | [DS2025], [NS2023] | Conditional on an explicit numerical maximization hypothesis for a one-variable function $\mathscr{S}\_{\star}(\lambda)$; Ding–Sun prove the lower bound with positive probability, and the sharp-threshold theory of Nakajima–Sun upgrades this to with high probability for every $\alpha &lt; \alpha_{\star}$. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/80a.md">source</a></td>
+</tr>
+<tr data-name="brun&#39;s constant 81a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/81a.md">Brun&#39;s Constant</a><span class="id">81a</span></th>
+<td><code>| 2.288513               | [PT2018]       |                                               |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| 1.840503               | [PT2018]       |                                               |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/81a.md">source</a></td>
+</tr>
+<tr data-name="essential minimum of the zhang-zagier height 82a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/82a.md">Essential minimum of the Zhang-Zagier height</a><span class="id">82a</span></th>
+<td><code>| 0.2536331090204145 | [Gri26] | Computation based on Doche&#39;s polynomials |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| 0.24874 | [F18] | $h_Z=\log \zeta$ in her notation, best known lower bound |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/82a.md">source</a></td>
+</tr>
+<tr data-name="the wirsing constant 83a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/83a.md">The Wirsing Constant</a><span class="id">83a</span></th>
+<td><code>| $0.30366300289873265859\!\ldots\!6424297 + 10^{-175}$ | [GKW2026] | Certified spectral enclosure for the infinite-dimensional GKW operator; 175 digits |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $0.30366300289873265859\!\ldots\!6424297 - 10^{-175}$ | [GKW2026] | Certified spectral enclosure for the infinite-dimensional GKW operator; 175 digits |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/83a.md">source</a></td>
+</tr>
+<tr data-name="erdős unit distance exponent 84a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/84a.md">Erdős unit distance exponent</a><span class="id">84a</span></th>
+<td><code>| $4/3 = 1.333\dots$ | [SST1984] | Spencer, Szemerédi and Trotter; via the Szemerédi–Trotter incidence theorem. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1.03583\dots$ | [MO511514] | Naslund, revised (≈25 May 2026); replaces the sphere-packing estimate by a covolume bound on the ideal lattice (asserted to be essentially optimal for this part of the argument), re-optimizing to $\lvert T\rvert = 39$.  Hybrid ChatGPT 5.5 Pro / human work.  Current best.  Unverified. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/84a.md">source</a></td>
+</tr>
+<tr data-name="sum-product exponent for the reals 84b">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/84b.md">Sum-product exponent for the reals</a><span class="id">84b</span></th>
+<td><code>| $1.999281$ | [Al26], [EPF52] | Althoefer (28 May 2026), posted on the Erdős Problems forum [EPF52]; a ChatGPT 5.5 long-thinking optimization of the explicit constant of [BSSZ2026, §5] giving $c \ge 0.000719$.  Unverified. |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $\tfrac{4}{3} + \tfrac{10}{4407} \approx 1.335602$ | [Cu25] | Cushman; current record. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/84b.md">source</a></td>
+</tr>
+<tr data-name="exponent for commutators close to the identity 85a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/85a.md">Exponent for commutators close to the identity</a><span class="id">85a</span></th>
+<td><code>| $4$ | [Bil26] | Same nonlinear system as [Tao19], with a sharper *point-source Green function* estimate on the right inverse (norm $O(n)$ on scalar point sources, versus $O(n^2)$ in the worst case), proved by interpreting iterated Cuntz block coefficients as a killed walk and comparing them with binomial incidence matrices.  This upgrades the fixed-point scale from $\delta \asymp n^{-5}$ to $\delta \asymp n^{-4}$ and improves the exponent from $5$ to $4$.  Result and Lean 4 formalization produced autonomously by GPT-5.6 Sol High (13 min for the proof, ${&lt;}3$ h for the formalization). |</code><span class="when">last changed 2026-07-24</span></td>
+<td><code>| $1$ | [Pop82] | Popa&#39;s quantitative Wintner–Wielandt bound $m_H(\varepsilon) \ge \tfrac{1}{2}\log(1/\varepsilon)$; see [Tao19, Theorem 0.1] for a short reproduction.  Conjectured to be sharp. |</code><span class="when">last changed 2026-07-24</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/85a.md">source</a></td>
+</tr>
+<tr data-name="schur–siegel–smyth trace constant 86a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/86a.md">Schur–Siegel–Smyth trace constant</a><span class="id">86a</span></th>
+<td><code>| $1.8216$ | [SO24] | Explicit measures satisfying the conditions of [Smi24], optimized by gradient descent. Corollary 1.10 of [SO24] gives $\lvert \Lambda\_A - 1.8215998 \rvert \le 10^{-7}$ for $A = \\{x,\ 1-x,\ x^2-3x+1,\ x^3-5x^2+6x-1\\}$, and $C\_{86} \le \Lambda\_A$. Intermediate values in the same family: $\Lambda\_{\\{x\\}} \approx 1.898302$ (Serre&#39;s constant), then $1.84701204$ and $1.8224798$. Preprint; not listed as journal-published as of this writing. |</code><span class="when">last changed 2026-07-28</span></td>
+<td><code>| $1.80203$ | [OSS25] | Adds constraints coming from the logarithmic energy of the limiting measure to Smyth&#39;s linear program, sharply reducing the number of variables required. The authors prove existence and uniqueness of an optimal solution, characterize it in terms of polynomials, and solve numerically by gradient descent. Schur&#39;s and Siegel&#39;s bounds are recovered as the two simplest cases. |</code><span class="when">last changed 2026-07-28</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/86a.md">source</a></td>
+</tr>
+<tr data-name="martinet&#39;s constant for totally real number fields 87a">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/87a.md">Martinet&#39;s constant for totally real number fields</a><span class="id">87a</span></th>
+<td><code>| $857.567$ | [HMR2019] | Hajir–Maire–Ramakrishna, &quot;cutting towers&quot; via the refined Golod–Shafarevich criterion; explicit example is an $8$-th root class-field tower over the totally real field of [HM2002] with $2$-class group of rank $8$, yielding $\mathrm{rd} \le 3^4\cdot 5^4\cdot 7^4\cdot 13^2\cdot 29^4\cdot 53^2\cdot 109^2 \le 857.5662\dots$  Current record. |</code><span class="when">last changed 2026-08-14</span></td>
+<td><code>| $215.333\dots$ | [Odl1990] | GRH-conditional Odlyzko–Serre lower bound in the totally real signature. |</code><span class="when">last changed 2026-08-14</span></td>
+<td class="src"><a href="https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/87a.md">source</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<footer>
+<p>Generated from <code style="display:inline;padding:.1rem .3rem">ledger/claims.json</code> by <code style="display:inline;padding:.1rem .3rem">scripts/render-site.mjs</code>. For the live verdict — whether every claim still holds right now — clone the repo and run <code style="display:inline;padding:.1rem .3rem">npm run check</code>.</p>
+<p>2 claims cite a page that refuses automated requests from data-centre addresses, so they report UNVERIFIED permanently and never count toward a pass. That is the ledger declining to launder an unverifiable fact into a green.</p>
+<p><a href="https://github.com/u00dxk2/bounds-ledger">Source, method and every catch it has made &rarr;</a></p>
+</footer>
+</div>
+<script>
+(function(){
+  var q=document.getElementById('q'),rows=document.getElementById('rows'),count=document.getElementById('count');
+  var trs=[].slice.call(rows.getElementsByTagName('tr'));
+  q.addEventListener('input',function(){
+    var v=q.value.trim().toLowerCase(),n=0;
+    for(var i=0;i<trs.length;i++){
+      var hit=!v||trs[i].getAttribute('data-name').indexOf(v)>-1;
+      trs[i].hidden=!hit; if(hit)n++;
+    }
+    count.textContent=n+(n===1?' constant':' constants')+(v?' matching “'+v+'”':'');
+  });
+})();
+</script>
+</html>
