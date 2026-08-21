@@ -22,7 +22,7 @@
 // instantly; revisit only if the mirror grows by an order of magnitude.
 
 import { readFileSync, writeFileSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pinsFor, lastChanged } from "./lookup.mjs";
 
@@ -69,11 +69,36 @@ export function buildRows(claims, { withDates = true, root = ROOT } = {}) {
 
 function cell(row, changed) {
   if (!row) return `<td class="none">not pinned</td>`;
-  const when = changed ? `<span class="when">last changed ${esc(changed)}</span>` : "";
+  // Second half of review finding F1. Omitting the element when the date is null made "we could
+  // not compute a date" indistinguishable from "this page does not date rows" — the zero-versus-
+  // absent confusion this repo exists to police, on the page's own headline promise. Say it
+  // explicitly instead. With the escaped-needle fix all 222 pins now date, so this path should be
+  // unreachable in practice; it stays because the day it becomes reachable is the day it matters.
+  const when = changed
+    ? `<span class="when">last changed ${esc(changed)}</span>`
+    : `<span class="when">date unknown</span>`;
   return `<td><code>${esc(row)}</code>${when}</td>`;
 }
 
-export function renderHtml(rows, manifest, generatedOn) {
+// manualCount is DERIVED and passed in, never hard-coded — review finding F5. The footer used to
+// say "Two claims", a roster count baked into a generated page, which drifts silently the day a
+// third manual claim joins. Same class as the README state block this repo already generates
+// rather than types. Defaults to null so an omitted count prints a countless sentence instead of
+// a wrong number.
+export function renderHtml(rows, manifest, generatedOn, manualCount = null) {
+  const manualPhrase = manualCount === null
+    ? "Some claims cite"
+    : manualCount === 1
+      ? "One claim cites"
+      : `${manualCount} claims cite`;
+  // NOTE on the CSS below, review finding F4: thead th deliberately carries NO position:sticky.
+  // It was there and was inert — sticky binds to the nearest SCROLLING ancestor, which is the
+  // .scroll overflow-x wrapper, so at scrollY 2000 the header sat 1450px above the viewport.
+  // Removed rather than repaired by giving .scroll a max-height, because that trades a header
+  // nobody sees for a vertical scroll region on mobile, and the render check that would settle
+  // which is better is one I cannot run here. Dead CSS promising behaviour the page lacks is worse
+  // than no promise. This note lives in the SOURCE, not in a CSS comment: the first version of it
+  // sat inside the style template literal and shipped the whole explanation to every visitor.
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr data-name="${esc((r.title + " " + r.id).toLowerCase())}">
 <th scope="row"><a href="ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><span class="id">${esc(r.id)}</span></th>
@@ -86,6 +111,7 @@ ${cell(r.lower, r.lowerChanged)}
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='13'%3E%E2%88%91%3C/text%3E%3C/svg%3E">
 <title>Bounds Ledger — is the number you cited still current?</title>
 <meta name="description" content="A continuously re-verified ledger of mathematical records. Look up a constant and see the bounds rows we watch, when each last moved, and the primary source.">
 <style>
@@ -105,7 +131,7 @@ input{width:100%;max-width:26rem;padding:.6rem .7rem;font-size:1rem;border:1px s
 .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
 table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:56rem}
 th,td{text-align:left;vertical-align:top;padding:.6rem .75rem;border-bottom:1px solid var(--line)}
-thead th{position:sticky;top:0;background:var(--bg);font-size:.78rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+thead th{background:var(--bg);font-size:.78rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
 tbody th{font-weight:600;min-width:15rem}
 .id{display:block;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
 code{display:block;font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--code);padding:.4rem .5rem;border-radius:4px;white-space:pre-wrap;word-break:break-word}
@@ -140,7 +166,7 @@ ${body}
 
 <footer>
 <p>Generated from <code style="display:inline;padding:.1rem .3rem">ledger/claims.json</code> by <code style="display:inline;padding:.1rem .3rem">scripts/render-site.mjs</code>. For the live verdict — whether every claim still holds right now — clone the repo and run <code style="display:inline;padding:.1rem .3rem">npm run check</code>.</p>
-<p>Two claims cite a page that refuses automated requests from data-centre addresses, so they report UNVERIFIED permanently and never count toward a pass. That is the ledger declining to launder an unverifiable fact into a green.</p>
+<p>${manualPhrase} a page that refuses automated requests from data-centre addresses, so they report UNVERIFIED permanently and never count toward a pass. That is the ledger declining to launder an unverifiable fact into a green.</p>
 <p><a href="https://github.com/u00dxk2/bounds-ledger">Source, method and every catch it has made &rarr;</a></p>
 </footer>
 </div>
@@ -206,7 +232,17 @@ async function selftest() {
   console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; no third-party asset referenced)");
 }
 
-if (process.argv.includes("--selftest")) {
+// Entry-point guard — review finding F2. Without it, ANY importer of renderHtml/buildRows runs the
+// selftest or WRITES index.html as an import side effect. Latent today because nothing imports this
+// module, but the defect class is proven live in this codebase: the commit that introduced this
+// file also had to add this same guard to lookup.mjs after import-executes-CLI bit it, and the new
+// module repeated the shape it had just fixed. Guarding it now rather than after it bites twice.
+const isMain = process.argv[1] &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (!isMain) {
+  // imported as a library — export only
+} else if (process.argv.includes("--selftest")) {
   await selftest();
 } else {
   const claims = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
@@ -218,7 +254,8 @@ if (process.argv.includes("--selftest")) {
   // as a permanently-green one and is this repo's founding defect. Keyed to fetchedAt, the page is
   // stable until the mirror itself moves, which is exactly when it SHOULD be regenerated.
   const on = String(manifest.fetchedAt || "").slice(0, 10) || "an unrecorded date";
-  const html = renderHtml(buildRows(claims), manifest, on);
+  const manualCount = (claims.claims || claims).filter((c) => c.manual === true).length;
+  const html = renderHtml(buildRows(claims), manifest, on, manualCount);
 
   if (process.argv.includes("--check")) {
     let current = "";
