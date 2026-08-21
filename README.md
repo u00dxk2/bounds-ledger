@@ -6,6 +6,19 @@ Best-known bounds, constants and certificates move. The papers, repositories and
 
 It is not a record-search engine. It does not try to find better bounds. It watches records that already exist, re-checks them on a schedule, and goes red when one moves.
 
+## One catch, verbatim
+
+On **2026-08-02** the alarm went red on the [Fourier Entropy-Influence constant](ledger/teorth-optimizationproblems/constants/71a.md). Upstream had replaced its record: a certificate on 17 variables superseded by one on 18. This is the actual diff our mirror produced, copied out of the commit rather than retyped (the ` ` is upstream's own LaTeX spacing) —
+
+```diff
+-C_{71}\ >\ 6.514326913930565372,
++C_{71}\ >\ 6.521845710923046575,
+```
+
+— from [`da17be3`](../../commit/da17be3), the first drift here that was purely records moving. Two other constants moved in the same cycle. Each was verified against the primary source **before** the mirror was updated, because a red alarm is the signal working, not a bug to be silenced.
+
+If you had cited `6.5143…` the week before, nothing would have told you. That is the whole product, and everything below is detail.
+
 ## The problem, concretely
 
 This repo opened on a real discrepancy: TTT-Discover ([arXiv:2601.16175](https://arxiv.org/abs/2601.16175)) reported the Erdős minimum-overlap constant as **0.380876**, while Tao's optimization-constants repository listed **0.380868**. Neither was wrong. They were *consecutive entries in a fast-moving record sequence*, and the surface that was actually stale was a third one — the widely-cited index page at erdosproblems.com/36.
