@@ -43,9 +43,20 @@ export function pinsFor(id, claims) {
 // where a fabricated date would not be.
 export function lastChanged(expect, root = ROOT) {
   try {
+    // Search the JSON-ENCODED form, not the decoded string. claims.json holds escaped bytes, so a
+    // decoded expect containing " or \ — i.e. most LaTeX-bearing rows — occurs in NO revision's raw
+    // bytes and `-S` silently finds nothing. That dated only the 63 escape-free pins of 222 and
+    // returned null for the other 159, while the CLI blamed the checkout. Found by the cross-family
+    // review lane, 2026-08-21. claims.json is written by JSON.stringify, so this escaping is
+    // byte-identical across history. Proven: pin:2a:U (Crouzeix — en-dash, quotes, backslashes)
+    // goes null -> 2026-08-12 under this needle.
+    // ASSUMPTION, currently true and worth stating: expect strings are unique across pins, so a
+    // count-change of this needle is a change to THIS row. Verified 2026-08-21 — 0 expect strings
+    // are shared. If two constants ever pin identical rows, one's change would re-date the other.
+    const needle = JSON.stringify(expect).slice(1, -1);
     const out = execFileSync(
       "git",
-      ["log", "-1", "--format=%ad", "--date=short", `-S${expect}`, "--", "ledger/claims.json"],
+      ["log", "-1", "--format=%ad", "--date=short", `-S${needle}`, "--", "ledger/claims.json"],
       { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }
     ).trim();
     return out || null;
@@ -69,7 +80,10 @@ function render(id, claims, manifest, root = ROOT) {
     const when = lastChanged(p.expect, root);
     lines.push(`  last-listed ${side}-bound row:`);
     lines.push(`    ${p.expect}`);
-    lines.push(`    pin last changed: ${when || "unknown (no history available in this checkout)"}`);
+    // Do not assert a REASON we cannot know. The old text said "no history available in this
+    // checkout", which was a false diagnosis on a full clone and made a code defect read as an
+    // environment fact. A trusted-print instrument may say it does not know; it may not invent why.
+    lines.push(`    pin last changed: ${when || "unknown"}`);
     lines.push(`    primary source:   ${p.url}`);
     lines.push("");
   }
