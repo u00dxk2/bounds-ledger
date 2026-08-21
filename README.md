@@ -8,7 +8,7 @@ It is not a record-search engine. It does not try to find better bounds. It watc
 
 ## One catch, verbatim
 
-On **2026-08-02** the alarm went red on the [Fourier Entropy-Influence constant](ledger/teorth-optimizationproblems/constants/71a.md). Upstream had replaced its record: a certificate on 17 variables superseded by one on 18. This is the actual diff our mirror produced, copied out of the commit rather than retyped (the ` ` is upstream's own LaTeX spacing) —
+On **2026-08-02** the alarm went red on the [Fourier Entropy-Influence constant](ledger/teorth-optimizationproblems/constants/71a.md). Upstream had replaced its record: a certificate on 17 variables superseded by one on 18. This is the actual diff our mirror produced, copied out of the commit rather than retyped, so the spacing marks inside it are upstream's own LaTeX —
 
 ```diff
 -C_{71}\ >\ 6.514326913930565372,
