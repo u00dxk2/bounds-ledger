@@ -65,3 +65,43 @@ Not persona-tested. `/persona-friction` drives a **browser** against a URL, and 
 ### Render read (2026-07-24) — P-1/P-2/P-3 confirmed against the LITERAL render
 
 The three proposals above were written from the code's intent, before the alarm could fire. On 2026-07-24 the alarm was fired for real (synthetic drift, issue #1, GitHub GFM API render captured) and the render is **worse than proposed**: the diff's `+/-` direction is destroyed (renders as bullet + nested sub-bullet, no removed/added marker), `$…$` numbers render as italic math, two H1s, 12 irrelevant HOLDS below-fold. Details in `docs/findings/2026-07-24-peak-moment-render.md`. **SHIPPED 2026-07-24 (David greenlit): code-fence + P-1 (title names the drift), both verified against GitHub's own GFM render.** P-2 (verdict-first) and P-3 (one rolling issue) deferred — polish that only pays on a multi-day real drift.
+
+## Rotation 3 (2026-08-22) — F-2 again, the step AFTER the number is read
+
+**The genuinely great version, named first.** A researcher spots a row that disagrees with the
+paper in front of them, and telling us costs one click *from that row* — the report arrives already
+naming the constant and the mirror sha, so the steward acts without a round-trip and the researcher
+never has to explain which of 111 rows they meant. The delight is that doubting the ledger is as
+cheap as reading it; a ledger whose product is honesty should make being told it is wrong the
+easiest thing on the page.
+
+**The step that was worst.** Reporting. The only path was a single link in the intro box, and a
+reader deep in the table had scrolled roughly 700 lines past it — then had to reconstruct and retype
+which row they were looking at. Named principle: **Nielsen heuristic 6, recognition rather than
+recall.** The page already knows the row; making the user re-derive it is the classic violation.
+
+**⚠ The premise this rotation started from was FALSE and was corrected before shipping.** Today''s
+primer said the reporting link sat "in the footer, below all 111 rows". It did not — it was at
+`index.html:41`, *above* the table, and the footer had no such link at all. Verified against the
+artifact and against the served page, with a positive control on the absence claim. The conclusion
+survived (above the fold is not beside the data); the premise did not, and shipping the sentence as
+written would have been a no-op that looked like success. Full note in
+`docs/cold-starts/2026-08-22.md`.
+
+### Shipped
+
+`before →` one reporting link for the whole page, in the intro, carrying no context.
+`after  →` every row carries **"looks wrong?"** beside its source link, opening a GitHub issue
+pre-filled with the constant name, its id and the upstream mirror sha, plus empty prompts for what
+the source says and where they saw it. 111 rows, 111 links.
+
+Encoding order is load-bearing and is pinned by the selftest: `encodeURIComponent` before `esc`.
+Both KP-78 answers demonstrated at write time — the guard fires when encoding is removed (rc=1) and
+is silent when restored (rc=0), with the mutation proven to land before the run.
+
+### Validation status
+
+Not persona-tested. `/persona-friction` drives a browser, and the change is one anchor per row on a
+page whose render was already reviewed on 2026-08-21; the encoding risk it introduces is offline-
+testable and is tested. **Below the traffic floor** — 4 unique viewers in the trailing 14 days
+against a 30-arrivals/7-day bar — so there is no readable cohort and none is claimed.

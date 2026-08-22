@@ -49,6 +49,33 @@ export function constantIds(claims) {
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
+const REPO = "https://github.com/u00dxk2/bounds-ledger";
+
+// A visitor who doubts a row can tell us from THAT row, and the report arrives already naming the
+// constant and the mirror sha. Nielsen heuristic 6, recognition rather than recall: the page knows
+// which row they were looking at, so it must not make them reconstruct and retype it. Before this,
+// the only reporting path was one link in the intro box — above the table, and therefore hundreds
+// of rows behind a reader who is deep in it.
+//
+// ENCODING ORDER IS LOAD-BEARING and is what the selftest pins: encodeURIComponent FIRST (so any
+// markup, quote or ampersand in a title becomes %XX and can never break out of the attribute),
+// then esc() for the HTML attribute itself, which only has the '&' query separators left to fix.
+// Reversing the two would percent-encode the entity text and emit a URL carrying "&amp;amp;".
+// Deliberately does NOT interpolate the pinned row values: they can be long LaTeX and would push
+// the URL toward GitHub's length ceiling for no gain, since the constant id already identifies them.
+export function flagUrl(r, sha) {
+  const title = `Row looks wrong: ${r.title} (${r.id})`;
+  const body = [
+    `Constant: ${r.title} (${r.id})`,
+    `Ledger mirror: upstream ${String(sha).slice(0, 7)}`,
+    "",
+    "What the source says:",
+    "",
+    "Where you saw it (link or citation):",
+  ].join("\n");
+  return `${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+}
+
 export function buildRows(claims, { withDates = true, root = ROOT } = {}) {
   return constantIds(claims).map((id) => {
     const pins = pinsFor(id, claims);
@@ -104,7 +131,7 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null) {
 <th scope="row"><a href="ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><span class="id">${esc(r.id)}</span></th>
 ${cell(r.upper, r.upperChanged)}
 ${cell(r.lower, r.lowerChanged)}
-<td class="src"><a href="${esc(r.url)}">source</a></td>
+<td class="src"><a href="${esc(r.url)}">source</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a></td>
 </tr>`).join("\n");
 
   return `<!doctype html>
@@ -224,12 +251,40 @@ async function selftest() {
   assert.doesNotMatch(html, /\| 2 \| <script>/, "cell content must be escaped, not injected");
   assert.match(html, /&lt;script&gt;x&lt;\/script&gt;/, "the escaped form must be what appears");
 
+  // --- Per-row report link, added 2026-08-22. Both KP-78 answers. ---
+  // FIRES: every row carries its OWN prefilled link. One link for the whole page was the defect;
+  // a test that only asserted "an /issues link exists" would have passed against that too.
+  const flagLinks = html.match(/looks wrong\?<\/a>/g) || [];
+  assert.equal(flagLinks.length, rows.length, "every row must carry its own report link");
+  assert.match(html, /issues\/new\?title=Row%20looks%20wrong%3A/, "the link must PREFILL, not merely point at /issues");
+  // NB: encodeURIComponent leaves parentheses literal — they are legal in a query string. The
+  // first draft of this assertion expected %2810a%29 and failed, which is the test earning its keep.
+  assert.match(html, /title=Row%20looks%20wrong%3A%20The%20real%20Grothendieck%20constant%20\(10a\)/, "the prefilled title must name the constant the visitor was reading");
+
+  // A constant name carrying markup, a quote and an ampersand. This is what pins the encoding
+  // ORDER: encodeURIComponent must run before esc, or a name can break out of the href attribute.
+  const hostile = [{
+    id: "pin:3a:U",
+    statement: 'Last-listed upper-bound table row for Tea & "q" <b>x</b> (3a.md)',
+    url: "https://example.invalid/3a.md",
+    expect: "| 3 | X |",
+  }];
+  const hostileHtml = renderHtml(buildRows(hostile, { withDates: false }), manifest, "2026-08-20");
+  assert.ok(hostileHtml.length > 2000, "positive control: the hostile page must render before any absence is asserted");
+  const href = hostileHtml.match(/href="(https:\/\/github\.com\/[^"]*issues\/new[^"]*)"/)[1];
+  assert.match(href, /%3Cb%3E/, "markup in a constant name must arrive percent-encoded");
+  assert.match(href, /Tea%20%26%20/, "a literal ampersand in a name must be percent-encoded, not left as a separator");
+  assert.match(href, /&amp;body=/, "the real query separator must be HTML-escaped in the attribute");
+  // SILENT half, asserted only after the positive control above.
+  assert.doesNotMatch(href, /<b>|<\/b>/, "raw markup must never reach the href");
+  assert.doesNotMatch(href, /%26amp%3B/, "esc must not have run before encodeURIComponent");
+
   // Self-contained: no third-party asset can be fetched at render time.
   const externals = html.match(/(?:src|href)="https?:\/\/[^"]+"/g) || [];
   const badHost = externals.filter((h) => !/github\.com|example\.invalid/.test(h));
   assert.deepEqual(badHost, [], `page must fetch nothing at runtime; found ${badHost.join(", ")}`);
 
-  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; no third-party asset referenced)");
+  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced)");
 }
 
 // Entry-point guard — review finding F2. Without it, ANY importer of renderHtml/buildRows runs the
