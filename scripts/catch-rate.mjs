@@ -1,4 +1,15 @@
 #!/usr/bin/env node
+// RULEBOOK DERIVATION (relocated from CLAUDE.md Layout): A catch is a GENERATED
+// pin whose `expect` changed. Count DISTINCT records per week, never movements;
+// 2026-08-12's three edits to pin:2a:U show why. Positive counts are an UPPER
+// BOUND/activity ceiling: citation-key edits and our merged PRs move pins without
+// proving a bound moved (pin:15a:U did both), and symbolic cells prevent safe value
+// parsing. Zero is exact. Quote the PER-WEEK figure, never the running total. A
+// month of zeros calls for a second surface only after reading docs/findings/ over
+// the same window (amended 2026-08-14, when
+// ledger/teorth-optimizationproblems/constants/87a.md was added); adoption is
+// David's call, never automatic.
+// The dated cases, exclusions, outward deduction, and full rationale follow.
 // Tier-1 leading indicator: VERIFIED CATCHES ON NAMED RECORDS, PER WEEK.
 //
 // Approved 2026-08-12, built 2026-08-13. It exists because G-1 has no gradient — the
