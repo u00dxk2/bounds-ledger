@@ -6,7 +6,7 @@ north_star_metric: someone outside Skylark uses the ledger and acts on it (G-3; 
 north_star_value: 0
 north_star_status: expected-zero
 north_star_classification: expected-zero
-last_deploy: 8469903
+last_deploy: b7f5f3c
 sentry_open_p1: null
 sentry_open_p2: null
 mrr_usd: null
@@ -63,10 +63,10 @@ cd C:/dev/skylark/bounds-ledger && npm run verify && node ../skylark-site/script
 
 ## State Appendix
 
-- **HEAD** `8469903`, tree clean, CI GREEN, `origin/main` in sync.
+- **HEAD** `b7f5f3c`, tree clean, `origin/main` in sync. **CI is RED at the final commit and the red is correct.** `pin:78a:U` (Conway thrackle constant) returned HTTP 503 from `raw.githubusercontent.com`: 230 hold, **1 unreachable, 0 BROKEN**. Zero broken means no cited surface moved; the run stays red because unreachable means unverified, and a green there would launder an unverifiable into a pass. The same commit is green locally, which is the evidence that it is transport and not drift. Alarm titled it **`Check error:`**, not `Drift:` — the 2026-08-17 titling defect proven fixed in production. Open issue **#28**, to be closed naming the run that next reaches a verdict. The four earlier commits today (`a0df316`, `1995839`, `8469903`, `7fba042`) were each CI GREEN.
 - **Mirror**: 113 files at upstream `e70b4a4` (an upstream sha; it does not resolve in this repo).
 - **Claims**: 233 total — 231 hold, 0 broken/unreachable, 2 UNVERIFIED (`C-7` and `C-9`, the two `manual: true` erdosproblems pins, correct by design).
-- **Engineering zero-state**: 0 open Dependabot alerts, 0 open issues (pull requests excluded from the count — `gh` counts them as issues), 0 open pull requests, 0 open drift issues. No Sentry project exists for this lane because nothing here deploys. No waiver needed.
+- **Engineering zero-state**: 0 open Dependabot alerts, 0 open pull requests. **1 open issue — #28, the `Check error:` filed by the close-of-day transport red described above**, which did not exist when this section was first written and is the alarm working rather than residue. No Sentry project exists for this lane because nothing here deploys. No waiver needed: #28 closes when the next run reaches a verdict. (Pull requests are excluded from the issue count — `gh` counts them as issues.)
   **Positive control:** the identical issue query run with `--state all` returned 5 rows (closed `Drift:` and `Check error:` issues from 08-17 and 08-18), and a `--search "Drift:"` read returned 3 — so the issue reader works and today's zero is measured, not a dead probe. A search for the new `Row looks wrong:` prefix returned 0 against that same working reader.
 - **The 403 cited in the BLUF** is erdosproblems.com refusing automated fetches from datacenter addresses while serving residential ones — the asymmetry that makes `C-7` and `C-9` permanently `manual: true`. Full account, including the day it was wrongly declared stale: `docs/findings/2026-07-25-the-403-that-wasnt.md`.
   **Positive control:** today's local advisory fetch of that same page returned HTTP 200 with both pinned strings present, which is what proves the 403 is IP-dependent rather than the page being gone — and it still moved no count.
