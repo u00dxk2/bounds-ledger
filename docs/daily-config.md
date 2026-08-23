@@ -55,8 +55,11 @@ and drifts in the flattering direction — it under-states what we check. Count 
 `onTrigger` says the 2026-09-22 read is *could we DETECT an outsider*, not *has one arrived*; the
 outcome read is 2026-11-06. A cold reader must be able to tell "zero because nobody has arrived
 yet, which is expected" from "zero because the detector is dead", and only the second is
-actionable. The four detection paths are `G-3.readCommand` — run it; a green chain means we could
-detect an outsider and says nothing about whether one came.
+actionable. The detection paths ARE `G-3.readCommand` — run it; a green chain means we could
+detect an outsider and says nothing about whether one came. (This sentence said "the four detection
+paths" until 2026-08-23. The count above it was corrected first and this one was missed by twelve
+lines — a correction that reaches one copy is not a correction, and the second copy was in the same
+file as the first.)
 
 **Do NOT substitute an arrival count.** The traffic sampler read 4 unique viewers against 183
 unique cloners on 2026-08-22; the clones are largely our own CI, which checks the repo out daily,
