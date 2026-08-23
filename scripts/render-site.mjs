@@ -435,6 +435,12 @@ async function selftest() {
   assert.match(askEl.href, /%3Cimg/, "positive control: the term must arrive percent-encoded");
   assert.equal(emptyqEl.textContent, '“<img src=x onerror=alert(1)>”',
     "the term is set as TEXT — assigning it as markup would make the filter box an injection point");
+  // HONEST LIMIT on the line above. The stub is a plain object, so it does not PARSE markup the way
+  // a browser would; swapping textContent for innerHTML fails this assertion because textContent is
+  // then never written, not because the stub observed an injection. The detector fires either way,
+  // which is what a guard needs to do — but it is evidence that the code still assigns text, not
+  // proof that a browser is safe. The real guarantee is that the value never touches an HTML string
+  // on any path, which is readable in the four lines above and is why they are kept that short.
 
   // SILENT half: a search that matches something must hide the empty state again.
   qEl.value = "aug14";
