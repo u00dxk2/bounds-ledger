@@ -238,7 +238,7 @@
     "id": "pin:15a:U",
     "statement": "Last-listed upper-bound table row for Matrix multiplication exponent (15a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/15a.md",
-    "expect": "| $2.371339$ | [ADVXXZ2024] |  |",
+    "expect": "| $2.371177$ | [DEKMRSZAWB2026] |  |",
     "asserts": "ledger/teorth-optimizationproblems/constants/15a.md",
     "generated": true
   },
@@ -806,7 +806,7 @@
     "id": "pin:3a:L",
     "statement": "Last-listed lower-bound table row for The Gyarmati-Hennecart-Ruzsa sum-difference constant (3a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3a.md",
-    "expect": "| $1.19102809$* | [K2026] | Base-$34065$ masked-digit limit construction with $M=\\langle1518,1524,1587,2024,2032,2116\\rangle\\cap[0,17032]$ and a directed-rounding certificate. |",
+    "expect": "| $1.19102809$ ($1.19519192$*) | [K2026b] | Lean-formalized proof of $1.19519192$* via controlled-carry masked-digit limit construction with $M=\\langle1971,2016,2100,2628,2688,2800\\rangle\\cap[0,26972]$ in base $27022$ and Lean-formalized explicit finite construction of $1.19102809$ with $M=\\langle1518,1524,1587,2024,2032,2116\\rangle\\cap[0,17032]$ in base $34065$ using $10^{13}$ digits. Also includes formalization of necessary results from [GHR2007]. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/3a.md",
     "generated": true
   },
@@ -1710,7 +1710,7 @@
     "id": "pin:81a:U",
     "statement": "Last-listed upper-bound table row for Brun's Constant (81a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/81a.md",
-    "expect": "| 2.288513               | [PT2018]       |                                               |",
+    "expect": "| 2.1594                 | [D2025]        | **Conditional on the Generalised Riemann Hypothesis**, and the best conditional bound known.  Theorem 1.1: \"Assume GRH.  Then, $B < 2.1594$.\"  Dunn describes this as \"the first mathematically rigorous upper bound on $B$ assuming GRH\", the earlier [K2007] bound being unpublished and resting on numerical integration. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/81a.md",
     "generated": true
   },
@@ -1718,7 +1718,7 @@
     "id": "pin:81a:L",
     "statement": "Last-listed lower-bound table row for Brun's Constant (81a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/81a.md",
-    "expect": "| 1.840503               | [PT2018]       |                                               |",
+    "expect": "| 1.840503               | [PT2018]       | Unconditional, and the value carried in the README table. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/81a.md",
     "generated": true
   },
@@ -1822,7 +1822,7 @@
     "id": "pin:87a:U",
     "statement": "Last-listed upper-bound table row for Martinet's constant for totally real number fields (87a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/87a.md",
-    "expect": "| $857.567$ | [HMR2019] | Hajir–Maire–Ramakrishna, \"cutting towers\" via the refined Golod–Shafarevich criterion; explicit example is an $8$-th root class-field tower over the totally real field of [HM2002] with $2$-class group of rank $8$, yielding $\\mathrm{rd} \\le 3^4\\cdot 5^4\\cdot 7^4\\cdot 13^2\\cdot 29^4\\cdot 53^2\\cdot 109^2 \\le 857.5662\\dots$  Current record. |",
+    "expect": "| $857.567$ | [HMR2019] | Hajir–Maire–Ramakrishna, \"cutting towers\" via the refined Golod–Shafarevich criterion.  The totally real example [HMR2019, §3.3.3] is a *degree-$12$* field $\\mathrm{K}$ with $\\mathrm{rd}\\_{\\mathrm{K}} < 770.6432$, cut at a single prime above $13$ of norm $13$, giving $\\mathrm{rd}\\_{\\mathrm{K}\\_S^{[1]}} = \\mathrm{rd}\\_{\\mathrm{K}}\\cdot 13^{\\frac{1}{12}(1-\\frac{1}{2})} < 857.5662\\dots$ — a saving of a factor $13^{1/24}$.  Current record. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/87a.md",
     "generated": true
   },
