@@ -354,12 +354,43 @@ async function selftest() {
   // The page must not upgrade "our pin text changed" into "the record moved on this date".
   assert.doesNotMatch(dated, /moved on|changed upstream on|record moved/i, "the date means our pin changed, and the page must not claim more");
 
+  // The glue, EXECUTED rather than read. The four assertions above prove the reorder shipped; they
+  // cannot prove it works, and "assert the source contains appendChild" is exactly the shape this
+  // repo calls a detector that has never been shown to fire. So: pull the script out of the page it
+  // actually generated — never a retyped copy, per the 2026-08-21 rule — and run it against a stub
+  // DOM. No browser needed, and it guards the ordering permanently rather than once.
+  const script = dated.match(/<script>([\s\S]*?)<\/script>/)[1];
+  assert.ok(/appendChild/.test(script), "positive control: the extracted script must be the reorder, not an empty match");
+
+  const tr = (id, changed) => ({ id, hidden: false, getAttribute: (k) => (k === "data-changed" ? changed : id) });
+  const order = [];
+  const trs = [tr("aug14", "2026-08-14"), tr("jul24", "2026-07-24"), tr("undated", ""), tr("aug02", "2026-08-02")];
+  const el = (extra = {}) => ({ addEventListener(ev, fn) { this["on" + ev] = fn; }, ...extra });
+  const sortEl = el({ value: "id" });
+  const rowsEl = el({ getElementsByTagName: () => trs, appendChild: (n) => order.push(n.id) });
+  const stub = { getElementById: (i) => ({ q: el({ value: "" }), sort: sortEl, rows: rowsEl, count: el({ textContent: "" }) }[i]) };
+
+  new Function("document", script)(stub);
+  sortEl.value = "recent";
+  sortEl.onchange();
+
+  // FIRES: newest first, and the undated row lands LAST rather than leading as an empty string would.
+  assert.deepEqual(order, ["aug14", "aug02", "jul24", "undated"],
+    "ordering by most recent must put the newest date first and an undated row last");
+
+  // SILENT half: switching back to id order restores the document order exactly.
+  order.length = 0;
+  sortEl.value = "id";
+  sortEl.onchange();
+  assert.deepEqual(order, ["aug14", "jul24", "undated", "aug02"],
+    "switching back to id order must restore the original row order, not a re-sorted one");
+
   // Self-contained: no third-party asset can be fetched at render time.
   const externals = html.match(/(?:src|href)="https?:\/\/[^"]+"/g) || [];
   const badHost = externals.filter((h) => !/github\.com|example\.invalid/.test(h));
   assert.deepEqual(badHost, [], `page must fetch nothing at runtime; found ${badHost.join(", ")}`);
 
-  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the ordering control ships wired)");
+  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order)");
 }
 
 // Entry-point guard — review finding F2. Without it, ANY importer of renderHtml/buildRows runs the
