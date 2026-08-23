@@ -38,11 +38,18 @@ G-1 closed 2026-08-22 with `north_star_value: 1` / `green`; carrying that forwar
 CLOSED goal's value as the headline while the live Tier-0 goal reads zero.
 
 ```yaml
-north_star_metric: someone outside Skylark uses the ledger and acts on it (G-3; leading indicator = are all four detection paths live)
+north_star_metric: someone outside Skylark uses the ledger and acts on it (G-3; leading indicator = every detection path in G-3.readCommand is live)
 north_star_value: 0
 north_star_status: expected-zero
 north_star_classification: expected-zero
 ```
+
+**The metric line carries NO path COUNT, and that is deliberate — corrected 2026-08-23.** It said
+"all four detection paths" while `G-3.readCommand` had five legs, and yesterday's report said five;
+a sixth landed on 08-23 when the empty-state ship created a new observable. A hand-typed count in a
+config that another file is the source of truth for drifts silently every time the command grows,
+and drifts in the flattering direction — it under-states what we check. Count the legs of
+`G-3.readCommand` if you need a number; do not re-introduce one here.
 
 **`expected-zero` is a real status, not a red.** G-3 legitimately reads 0 for months — its own
 `onTrigger` says the 2026-09-22 read is *could we DETECT an outsider*, not *has one arrived*; the
