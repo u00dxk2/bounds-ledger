@@ -857,7 +857,8 @@
       "note5": "INSTRUMENT CAVEAT, found the same day this row was created and worth more than the row. My first onTrigger pointed at docs/findings/, which is where the fleet's dry-week rule also points — and that directory had been empty for four days while the lane was actively finding things, because the standing files the classification in the daily REPORT and only the larger findings get their own file. A watch whose instrument under-reports produces a confident false negative, which is the exact failure this lane exists to police. AGENTS.md's catches entry was corrected the same day.",
       "linkedCommits": [
         "123dd12"
-      ]
+      ],
+      "note6": "FIRST DATA POINT, same day the row was created — and it lands on the other side of the question. A real drift arrived at close 2026-08-23 (8a4192a) carrying TWO verified record movements: 15a's matrix multiplication exponent 2.371339 -> 2.371177, and 3a's Gyarmati-Hennecart-Ruzsa lower bound 1.1835129324 -> 1.19102809. The mirror diff caught both within hours, on a routine gate run, exactly as designed. SO THE INSTRUMENTS DO FIND MOVEMENTS, RELIABLY AND SAME-DAY. What they have never yet found is a DEFECT in a record - a cited certificate that proves a different value - which is what the standing prediction is about. Keep those two apart when reading this row on 2026-09-22: 'our detection method works' and 'our detection method finds the thing the lane exists to find' are different claims, and today only settled the first."
     },
     {
       "id": "W-10",
