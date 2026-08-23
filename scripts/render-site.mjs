@@ -169,6 +169,10 @@ input,select{width:100%;padding:.6rem .7rem;font-size:1rem;border:1px solid var(
 .ctl.grow{flex:1 1 18rem;max-width:26rem}
 .count{font-size:.85rem;color:var(--muted);margin:.9rem 0 .3rem}
 .hint{font-size:.8rem;color:var(--muted);margin:0 0 1.1rem;max-width:72ch}
+.empty{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:6px;padding:.85rem 1rem;margin:0 0 1.5rem;font-size:.92rem;max-width:78ch}
+.empty p{margin:.35rem 0}
+#emptyq{font-weight:600}
+.empty[hidden]{display:none}
 .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
 table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:56rem}
 th,td{text-align:left;vertical-align:top;padding:.6rem .75rem;border-bottom:1px solid var(--line)}
@@ -208,6 +212,12 @@ tr[hidden]{display:none}
 <p class="count" id="count">${rows.length} constants</p>
 <p class="hint">Each date is when that row&rsquo;s pinned text last changed <em>in this ledger</em>. Most rows share the day the ledger first pinned them, so anything dated later is a row that has moved since &mdash; order by most recently updated to bring those to the top.</p>
 
+<div class="empty" id="empty" hidden>
+<p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the ${rows.length} constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
+<p>Filtering matches the constant&rsquo;s name and its id, so a constant listed under a name you do not use will hide from a search that is otherwise correct. Worth clearing the box and scanning once before concluding it is absent.</p>
+<p><a id="emptyask" href="${esc(REPO)}/issues/new">Tell us what you were looking for &rarr;</a> — it arrives naming your search term, and a constant someone actually asked for is the best evidence we have about what to watch next.</p>
+</div>
+
 <div class="scroll">
 <table>
 <thead><tr><th scope="col">Constant</th><th scope="col">Upper-bound row (last listed)</th><th scope="col">Lower-bound row (last listed)</th><th scope="col">Primary</th></tr></thead>
@@ -226,15 +236,26 @@ ${body}
 <script>
 (function(){
   var q=document.getElementById('q'),s=document.getElementById('sort'),
-      rows=document.getElementById('rows'),count=document.getElementById('count');
+      rows=document.getElementById('rows'),count=document.getElementById('count'),
+      empty=document.getElementById('empty'),emptyq=document.getElementById('emptyq'),
+      ask=document.getElementById('emptyask');
   var trs=[].slice.call(rows.getElementsByTagName('tr'));
   function filter(){
-    var v=q.value.trim().toLowerCase(),n=0;
+    var raw=q.value.trim(),v=raw.toLowerCase(),n=0;
     for(var i=0;i<trs.length;i++){
       var hit=!v||trs[i].getAttribute('data-name').indexOf(v)>-1;
       trs[i].hidden=!hit; if(hit)n++;
     }
     count.textContent=n+(n===1?' constant':' constants')+(v?' matching “'+v+'”':'');
+    // A search that matches nothing used to leave an empty table and no explanation, so a visitor
+    // could not tell "we do not track this" from "you spelled it differently". textContent, never
+    // innerHTML — the term is visitor input and must never become markup.
+    empty.hidden=n>0;
+    if(!n){
+      emptyq.textContent='“'+raw+'”';
+      ask.href='${REPO}/issues/new?title='+encodeURIComponent('Constant not tracked: '+raw)+
+        '&body='+encodeURIComponent('I searched the ledger for: '+raw+'\\n\\nWhat I was trying to check:\\n\\nWhere the record lives (link or citation):\\n');
+    }
   }
   function order(){
     var seq=trs.slice();
@@ -316,7 +337,11 @@ async function selftest() {
   }];
   const hostileHtml = renderHtml(buildRows(hostile, { withDates: false }), manifest, "2026-08-20");
   assert.ok(hostileHtml.length > 2000, "positive control: the hostile page must render before any absence is asserted");
-  const href = hostileHtml.match(/href="(https:\/\/github\.com\/[^"]*issues\/new[^"]*)"/)[1];
+  // Match the ROW link by its prefilled title, not by being the first issues/new href on the page.
+  // It was positional, and adding the empty state's plain /issues/new link above the table made
+  // this grab that one instead — the assertion then failed against a URL it was never about.
+  // A test that identifies its subject by position breaks when anything is inserted above it.
+  const href = hostileHtml.match(/href="(https:\/\/github\.com\/[^"]*issues\/new\?title=Row%20looks%20wrong[^"]*)"/)[1];
   assert.match(href, /%3Cb%3E/, "markup in a constant name must arrive percent-encoded");
   assert.match(href, /Tea%20%26%20/, "a literal ampersand in a name must be percent-encoded, not left as a separator");
   assert.match(href, /&amp;body=/, "the real query separator must be HTML-escaped in the attribute");
@@ -367,8 +392,13 @@ async function selftest() {
   const trs = [tr("aug14", "2026-08-14"), tr("jul24", "2026-07-24"), tr("undated", ""), tr("aug02", "2026-08-02")];
   const el = (extra = {}) => ({ addEventListener(ev, fn) { this["on" + ev] = fn; }, ...extra });
   const sortEl = el({ value: "id" });
+  const qEl = el({ value: "" });
+  const emptyEl = el({ hidden: true });
+  const emptyqEl = el({ textContent: "" });
+  const askEl = el({ href: "" });
   const rowsEl = el({ getElementsByTagName: () => trs, appendChild: (n) => order.push(n.id) });
-  const stub = { getElementById: (i) => ({ q: el({ value: "" }), sort: sortEl, rows: rowsEl, count: el({ textContent: "" }) }[i]) };
+  const nodes = { q: qEl, sort: sortEl, rows: rowsEl, count: el({ textContent: "" }), empty: emptyEl, emptyq: emptyqEl, emptyask: askEl };
+  const stub = { getElementById: (i) => nodes[i] };
 
   new Function("document", script)(stub);
   sortEl.value = "recent";
@@ -385,12 +415,41 @@ async function selftest() {
   assert.deepEqual(order, ["aug14", "jul24", "undated", "aug02"],
     "switching back to id order must restore the original row order, not a re-sorted one");
 
+  // --- Empty state, added 2026-08-23. Both KP-78 answers, executed not read. ---
+  // A search matching nothing used to leave an empty table under a "0 constants" line, which
+  // cannot distinguish "we do not watch this constant" from "you typed a name we file differently".
+  assert.match(dated, /id="empty"[^>]*hidden/, "the empty state must ship hidden, not shown by default");
+
+  qEl.value = "not-a-constant";
+  qEl.oninput();
+  // FIRES: a miss explains itself and offers a route that names what they searched for.
+  assert.equal(emptyEl.hidden, false, "a search matching nothing must reveal the empty state");
+  assert.equal(emptyqEl.textContent, "“not-a-constant”", "the empty state must quote the term back");
+  assert.match(askEl.href, /issues\/new\?title=Constant%20not%20tracked%3A%20not-a-constant/,
+    "the ask link must prefill with the visitor's own search term");
+
+  // A term carrying markup must reach the link percent-encoded and the page as text, never markup.
+  qEl.value = '<img src=x onerror=alert(1)>';
+  qEl.oninput();
+  assert.doesNotMatch(askEl.href, /<img/, "a hostile term must never reach the href as raw markup");
+  assert.match(askEl.href, /%3Cimg/, "positive control: the term must arrive percent-encoded");
+  assert.equal(emptyqEl.textContent, '“<img src=x onerror=alert(1)>”',
+    "the term is set as TEXT — assigning it as markup would make the filter box an injection point");
+
+  // SILENT half: a search that matches something must hide the empty state again.
+  qEl.value = "aug14";
+  qEl.oninput();
+  assert.equal(emptyEl.hidden, true, "a search that matches must hide the empty state");
+  qEl.value = "";
+  qEl.oninput();
+  assert.equal(emptyEl.hidden, true, "an empty search shows every row, so the empty state stays hidden");
+
   // Self-contained: no third-party asset can be fetched at render time.
   const externals = html.match(/(?:src|href)="https?:\/\/[^"]+"/g) || [];
   const badHost = externals.filter((h) => !/github\.com|example\.invalid/.test(h));
   assert.deepEqual(badHost, [], `page must fetch nothing at runtime; found ${badHost.join(", ")}`);
 
-  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order)");
+  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match)");
 }
 
 // Entry-point guard — review finding F2. Without it, ANY importer of renderHtml/buildRows runs the

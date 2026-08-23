@@ -23,6 +23,10 @@ input,select{width:100%;padding:.6rem .7rem;font-size:1rem;border:1px solid var(
 .ctl.grow{flex:1 1 18rem;max-width:26rem}
 .count{font-size:.85rem;color:var(--muted);margin:.9rem 0 .3rem}
 .hint{font-size:.8rem;color:var(--muted);margin:0 0 1.1rem;max-width:72ch}
+.empty{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:6px;padding:.85rem 1rem;margin:0 0 1.5rem;font-size:.92rem;max-width:78ch}
+.empty p{margin:.35rem 0}
+#emptyq{font-weight:600}
+.empty[hidden]{display:none}
 .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
 table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:56rem}
 th,td{text-align:left;vertical-align:top;padding:.6rem .75rem;border-bottom:1px solid var(--line)}
@@ -61,6 +65,12 @@ tr[hidden]{display:none}
 </div>
 <p class="count" id="count">111 constants</p>
 <p class="hint">Each date is when that row&rsquo;s pinned text last changed <em>in this ledger</em>. Most rows share the day the ledger first pinned them, so anything dated later is a row that has moved since &mdash; order by most recently updated to bring those to the top.</p>
+
+<div class="empty" id="empty" hidden>
+<p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the 111 constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
+<p>Filtering matches the constant&rsquo;s name and its id, so a constant listed under a name you do not use will hide from a search that is otherwise correct. Worth clearing the box and scanning once before concluding it is absent.</p>
+<p><a id="emptyask" href="https://github.com/u00dxk2/bounds-ledger/issues/new">Tell us what you were looking for &rarr;</a> — it arrives naming your search term, and a constant someone actually asked for is the best evidence we have about what to watch next.</p>
+</div>
 
 <div class="scroll">
 <table>
@@ -745,15 +755,26 @@ tr[hidden]{display:none}
 <script>
 (function(){
   var q=document.getElementById('q'),s=document.getElementById('sort'),
-      rows=document.getElementById('rows'),count=document.getElementById('count');
+      rows=document.getElementById('rows'),count=document.getElementById('count'),
+      empty=document.getElementById('empty'),emptyq=document.getElementById('emptyq'),
+      ask=document.getElementById('emptyask');
   var trs=[].slice.call(rows.getElementsByTagName('tr'));
   function filter(){
-    var v=q.value.trim().toLowerCase(),n=0;
+    var raw=q.value.trim(),v=raw.toLowerCase(),n=0;
     for(var i=0;i<trs.length;i++){
       var hit=!v||trs[i].getAttribute('data-name').indexOf(v)>-1;
       trs[i].hidden=!hit; if(hit)n++;
     }
     count.textContent=n+(n===1?' constant':' constants')+(v?' matching “'+v+'”':'');
+    // A search that matches nothing used to leave an empty table and no explanation, so a visitor
+    // could not tell "we do not track this" from "you spelled it differently". textContent, never
+    // innerHTML — the term is visitor input and must never become markup.
+    empty.hidden=n>0;
+    if(!n){
+      emptyq.textContent='“'+raw+'”';
+      ask.href='https://github.com/u00dxk2/bounds-ledger/issues/new?title='+encodeURIComponent('Constant not tracked: '+raw)+
+        '&body='+encodeURIComponent('I searched the ledger for: '+raw+'\n\nWhat I was trying to check:\n\nWhere the record lives (link or citation):\n');
+    }
   }
   function order(){
     var seq=trs.slice();
