@@ -105,3 +105,59 @@ Not persona-tested. `/persona-friction` drives a browser, and the change is one 
 page whose render was already reviewed on 2026-08-21; the encoding risk it introduces is offline-
 testable and is tested. **Below the traffic floor** — 4 unique viewers in the trailing 14 days
 against a 30-arrivals/7-day bar — so there is no readable cohort and none is claimed.
+
+---
+
+## Rotation 4 (2026-08-23) — F-2 again, finding what MOVED without reading all 111
+
+**The genuinely great version, named first.** A researcher who relies on a handful of constants
+asks *"has anything I cite moved lately?"* and the page answers in one action, newest first, with
+the date beside each row and the primary source one hop away. The delight is that the ledger stops
+being a thing you consult about a number you already suspect, and becomes a thing that tells you
+which of your numbers to suspect.
+
+**The step that was worst.** Every row already carried the date its pinned text last changed —
+that shipped with the page — but the dates were readable only one row at a time. Finding what had
+moved meant scanning all 111 rows and holding a comparison in your head. The data was present and
+the affordance was absent, which is the more expensive kind of gap: it looks finished.
+
+**⚠ The obvious design was wrong, and the distribution is why.** The intended ship was a
+"changed in the last 90 days" filter. **208 of 222 pins carry `2026-07-24`** — the day the ledger
+first pinned them, not a day anything moved. Today minus 90 days reaches back past that, so the
+filter would have matched all 111 rows: a control that looks like it is narrowing and is not. Even
+a 30-day window lands within a day of the bootstrap date and will silently swallow it as the
+calendar advances. **Shipped a sort instead** — no threshold to justify, none to re-tune, and it
+degrades correctly as more rows move. Ten rows have moved since bootstrap; those are the ten the
+sort surfaces.
+
+### Shipped
+
+`before →` 111 rows in id order, each dated, no way to ask which dates are recent.
+`after  →` an **Order** control beside the filter: *by constant id* (default) or *most recently
+updated first*. Each row publishes its date — the later of its two sides — as a sort key. The two
+controls compose, so a filter on "Grothendieck" can also be ordered by recency.
+
+**The default is deliberately still id order.** A page headlining "every constant this ledger
+watches" that opens showing ten of 111 misrepresents the ledger, and at ~4 viewers/14 days there is
+no usage signal that would justify the trade. The recency view is one action away, not the front
+door.
+
+**What the date means is stated on the page, not implied.** It is when *our pin* changed, which is
+bounded by our snapshot cadence — not when the record moved in the world. The selftest asserts the
+page never upgrades the one into the other, and that an undated row sorts **last**: could-not-date
+is not changed-longest-ago.
+
+### Validation status
+
+**The reorder is executed, not read.** The selftest extracts the script from the page it generated
+and runs it against a stub DOM — newest first, undated last, id order restored on switching back.
+Four negative controls, each proven to land before its run: control removed, date taken from the
+earlier side, undated sorted first, and id order left re-sorted; all four fired on their own
+assertion, and the restored tree was silent.
+
+**Not browser-verified.** The Chrome extension was not connected this session, so no live render
+was captured. The stub-DOM run covers the ordering logic; it does not cover layout of the new
+control at narrow widths, which remains unverified and is the honest gap in this rotation.
+
+**Below the traffic floor** — ~4 unique viewers in the trailing 14 days against a 30-arrivals/7-day
+bar. No readable cohort, none claimed; shipped on judgment.
