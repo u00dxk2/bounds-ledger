@@ -91,7 +91,17 @@ export function buildRows(claims, { withDates = true, root = ROOT } = {}) {
       upperChanged: withDates && upper ? lastChanged(upper.expect, root) : null,
       lowerChanged: withDates && lower ? lastChanged(lower.expect, root) : null,
     };
-  });
+  }).map((r) => ({ ...r, changed: newerOf(r.upperChanged, r.lowerChanged) }));
+}
+
+// A row's date is the later of its two sides: a constant whose upper bound moved last week has
+// moved, whatever its lower-bound row says. ISO dates compare correctly as strings, so no Date
+// parsing is needed — and none is wanted, since `new Date("2026-07-24")` would drag timezone
+// interpretation into a value that is already a plain calendar day.
+export function newerOf(a, b) {
+  if (!a) return b || null;
+  if (!b) return a;
+  return a >= b ? a : b;
 }
 
 function cell(row, changed) {
@@ -127,7 +137,7 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null) {
   // than no promise. This note lives in the SOURCE, not in a CSS comment: the first version of it
   // sat inside the style template literal and shipped the whole explanation to every visitor.
   const sha = String(manifest.sha);
-  const body = rows.map((r) => `<tr data-name="${esc((r.title + " " + r.id).toLowerCase())}">
+  const body = rows.map((r) => `<tr data-name="${esc((r.title + " " + r.id).toLowerCase())}" data-changed="${esc(r.changed || "")}">
 <th scope="row"><a href="ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><span class="id">${esc(r.id)}</span></th>
 ${cell(r.upper, r.upperChanged)}
 ${cell(r.lower, r.lowerChanged)}
@@ -153,8 +163,12 @@ a{color:var(--accent)}
 .note{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:6px;padding:.85rem 1rem;margin:0 0 1.5rem;font-size:.92rem;max-width:78ch}
 .note p{margin:.35rem 0}
 label{display:block;font-size:.85rem;color:var(--muted);margin:0 0 .35rem}
-input{width:100%;max-width:26rem;padding:.6rem .7rem;font-size:1rem;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
-.count{font-size:.85rem;color:var(--muted);margin:.6rem 0 1rem}
+input,select{width:100%;padding:.6rem .7rem;font-size:1rem;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
+.controls{display:flex;flex-wrap:wrap;gap:.9rem 1.5rem;align-items:flex-end}
+.ctl{flex:0 0 auto}
+.ctl.grow{flex:1 1 18rem;max-width:26rem}
+.count{font-size:.85rem;color:var(--muted);margin:.9rem 0 .3rem}
+.hint{font-size:.8rem;color:var(--muted);margin:0 0 1.1rem;max-width:72ch}
 .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
 table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:56rem}
 th,td{text-align:left;vertical-align:top;padding:.6rem .75rem;border-bottom:1px solid var(--line)}
@@ -178,9 +192,21 @@ tr[hidden]{display:none}
 <p><strong>These are last-listed table rows, not a claim about which bound is “the record.”</strong> Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.</p>
 </div>
 
+<div class="controls">
+<div class="ctl grow">
 <label for="q">Filter by name or id — try “sofa”, “Grothendieck”, “27b”</label>
 <input id="q" type="search" autocomplete="off" placeholder="Type to filter&hellip;">
+</div>
+<div class="ctl">
+<label for="sort">Order</label>
+<select id="sort">
+<option value="id">By constant id</option>
+<option value="recent">Most recently updated first</option>
+</select>
+</div>
+</div>
 <p class="count" id="count">${rows.length} constants</p>
+<p class="hint">Each date is when that row&rsquo;s pinned text last changed <em>in this ledger</em>. Most rows share the day the ledger first pinned them, so anything dated later is a row that has moved since &mdash; order by most recently updated to bring those to the top.</p>
 
 <div class="scroll">
 <table>
@@ -199,16 +225,35 @@ ${body}
 </div>
 <script>
 (function(){
-  var q=document.getElementById('q'),rows=document.getElementById('rows'),count=document.getElementById('count');
+  var q=document.getElementById('q'),s=document.getElementById('sort'),
+      rows=document.getElementById('rows'),count=document.getElementById('count');
   var trs=[].slice.call(rows.getElementsByTagName('tr'));
-  q.addEventListener('input',function(){
+  function filter(){
     var v=q.value.trim().toLowerCase(),n=0;
     for(var i=0;i<trs.length;i++){
       var hit=!v||trs[i].getAttribute('data-name').indexOf(v)>-1;
       trs[i].hidden=!hit; if(hit)n++;
     }
     count.textContent=n+(n===1?' constant':' constants')+(v?' matching “'+v+'”':'');
-  });
+  }
+  function order(){
+    var seq=trs.slice();
+    if(s.value==='recent'){
+      // Array.prototype.sort is stable (ES2019), so rows sharing a date keep their id order and
+      // no tiebreak is needed. A row with no date sorts LAST, never first: "we could not date it"
+      // is not "it changed longest ago".
+      seq.sort(function(a,b){
+        var x=a.getAttribute('data-changed')||'',y=b.getAttribute('data-changed')||'';
+        if(x===y)return 0;
+        if(!x)return 1;
+        if(!y)return -1;
+        return x<y?1:-1;
+      });
+    }
+    for(var i=0;i<seq.length;i++)rows.appendChild(seq[i]);
+  }
+  q.addEventListener('input',filter);
+  s.addEventListener('change',order);
 })();
 </script>
 </html>
@@ -279,12 +324,42 @@ async function selftest() {
   assert.doesNotMatch(href, /<b>|<\/b>/, "raw markup must never reach the href");
   assert.doesNotMatch(href, /%26amp%3B/, "esc must not have run before encodeURIComponent");
 
+  // --- Order-by-most-recently-updated, added 2026-08-23. Both KP-78 answers. ---
+  // The date CHOICE is the real logic and is exported so it can be tested for real; the reorder
+  // itself is four lines of DOM glue in the inlined script, which this suite can only assert is
+  // wired, not execute. Saying which is which matters: an assertion that a <script> contains a
+  // string is evidence the code SHIPPED, not evidence it WORKS.
+  assert.equal(newerOf("2026-07-24", "2026-08-14"), "2026-08-14", "a row's date is the later of its two sides");
+  assert.equal(newerOf("2026-08-14", "2026-07-24"), "2026-08-14", "argument order must not matter");
+  assert.equal(newerOf(null, "2026-08-14"), "2026-08-14", "one dated side is enough to date the row");
+  assert.equal(newerOf("2026-08-14", null), "2026-08-14", "one dated side is enough, either side");
+  assert.equal(newerOf(null, null), null, "no dated side leaves the row undated, never today's date");
+
+  // FIRES: a dated row publishes the LATER date, so ordering can reach it without re-deriving.
+  const dated = renderHtml([
+    { id: "10a", title: "Grothendieck", url: "https://example.invalid/10a.md", upper: "| 1.78 | K |", lower: "| 1.67 | D |", upperChanged: "2026-07-24", lowerChanged: "2026-08-14", changed: newerOf("2026-07-24", "2026-08-14") },
+    { id: "2a", title: "Crouzeix", url: "https://example.invalid/2a.md", upper: "| 2 | X |", lower: null, upperChanged: null, lowerChanged: null, changed: null },
+  ], manifest, "2026-08-20");
+  assert.ok(dated.length > 2000, "positive control: the dated page must render before any absence is asserted");
+  assert.match(dated, /data-changed="2026-08-14"/, "a moved row must carry its later date as sortable data");
+  assert.match(dated, /<select id="sort"/, "the page must offer an ordering control");
+  assert.match(dated, /value="recent"/, "the ordering control must offer most-recently-updated");
+  assert.match(dated, /rows\.appendChild/, "the reorder must actually be wired into the page script");
+
+  // SILENT half, asserted only after the positive control above. An undated row must publish an
+  // EMPTY data-changed — not today, not the bootstrap date, not omitted-and-guessed-at. This is
+  // the zero-versus-absent line the repo polices, now on a sort key.
+  assert.match(dated, /data-changed=""/, "an undated row must publish an empty date, not a fabricated one");
+  assert.doesNotMatch(dated, /data-changed="20\d\d-\d\d-\d\dT/, "dates must stay plain calendar days, never timestamps");
+  // The page must not upgrade "our pin text changed" into "the record moved on this date".
+  assert.doesNotMatch(dated, /moved on|changed upstream on|record moved/i, "the date means our pin changed, and the page must not claim more");
+
   // Self-contained: no third-party asset can be fetched at render time.
   const externals = html.match(/(?:src|href)="https?:\/\/[^"]+"/g) || [];
   const badHost = externals.filter((h) => !/github\.com|example\.invalid/.test(h));
   assert.deepEqual(badHost, [], `page must fetch nothing at runtime; found ${badHost.join(", ")}`);
 
-  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced)");
+  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the ordering control ships wired)");
 }
 
 // Entry-point guard — review finding F2. Without it, ANY importer of renderHtml/buildRows runs the
