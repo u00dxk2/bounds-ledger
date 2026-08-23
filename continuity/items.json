@@ -850,6 +850,25 @@
       "onTrigger": "On 2026-09-22, read the CLASSIFICATION SENTENCES in the daily reports over the window since 2026-08-14 — not docs/findings/, which holds only the findings big enough to earn a writeup and on 2026-08-23 held nothing newer than 08-19 while the reports classified eight. Then run npm run catches for the movement count, and pick exactly one branch in closeWhen. Do not extend the date without naming which branch was inapplicable and why.",
       "closeWhen": "(a) A record-facing catch has landed: close, recording HOW it was found — and if an instrument flagged it rather than a human, the standing prediction was WRONG and the close says so. (b) Still none: close by CONVERTING the observation into a finding about detection method, which is the whole point of the clock. (c) Upstream itself went quiet over the window: close as INAPPLICABLE, saying the window was empty rather than reading it as a detection failure — check the movement count first, since zero movements and zero record-facing catches are the same fact, not two.",
       "note5": "INSTRUMENT CAVEAT, found the same day this row was created and worth more than the row. My first onTrigger pointed at docs/findings/, which is where the fleet's dry-week rule also points — and that directory had been empty for four days while the lane was actively finding things, because the standing files the classification in the daily REPORT and only the larger findings get their own file. A watch whose instrument under-reports produces a confident false negative, which is the exact failure this lane exists to police. AGENTS.md's catches entry was corrected the same day."
+    },
+    {
+      "id": "W-10",
+      "created": "2026-08-23",
+      "type": "watch",
+      "status": "open",
+      "title": "reverify.test.mjs alarm-title leg failed once and would not reproduce",
+      "expectedSignalBy": "2026-09-22",
+      "note": "Seen once during a routine gate run on 2026-08-23: the alarm-title assertion expected /^Drift: constants/2a.md/ and got the generic fallback 'Re-verification failed: bounds-ledger (2026-08-23)'. npm run verify exited 1, correctly. Not reproduced in 10 consecutive runs immediately after (2 by hand, 8 looped), tree clean throughout.",
+      "note2": "NOT the 2026-08-17 failure mode. That one had the guard spawn bash, fail, and return an empty string, so an absence assertion passed against nothing. Here the title was a real, well-formed fallback, meaning the alarm path RAN and chose the generic branch. Recorded because that distinction is the useful half and would be lost by next month.",
+      "note3": "CAUSE NOT DIAGNOSED, deliberately. The fitting story is that the synthetic mutation into 2a.md did not land — the CRLF trap this repo keeps hitting — which would leave no per-file drift and produce exactly this fallback. It fits and it has precedent, which is why it is not written down as the cause: the 2026-08-17 incident put a plausible self-blaming story into six surfaces before anyone checked it, and it was wrong.",
+      "note4": "WHY IT MATTERS ENOUGH TO TRACK. The alarm's title is what a steward reads in the first three seconds, and this lane already has a finding about a mistitled alarm (2026-08-17, a transport failure titled as a record movement). This guard is part of what was built to stop that recurring, so it flickering is not noise. A flaky test costs a retry; a flaky TITLE costs a missed record movement.",
+      "onTrigger": "On 2026-09-22, check whether it recurred. If it did, the finding names the three steps: capture the failing state BEFORE re-running, check with git diff --numstat whether the synthetic mutation landed, then decide test-defect vs alarm-defect.",
+      "closeWhen": "(a) It recurred and was diagnosed: close naming the cause and the fix. (b) It never recurred: close as 'seen once, never again' — a legitimate outcome that must be RECORDED as that rather than the row quietly deleted, because a second sighting a year from now needs this one to exist.",
+      "links": [
+        "docs/findings/2026-08-23-the-alarm-title-test-failed-once-and-then-would-not-reproduce.md",
+        "docs/findings/2026-08-17-the-alarm-called-a-rate-limit-a-record-movement.md",
+        "W-4"
+      ]
     }
   ],
   "meta": {
