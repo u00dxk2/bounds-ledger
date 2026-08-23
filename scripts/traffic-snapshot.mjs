@@ -119,10 +119,18 @@ function main() {
   console.log(`${Object.keys(store.days).length} day(s) recorded in ${STORE.slice(ROOT.length + 1)}; latest 14-day window: ${views.uniques} unique viewer(s), ${clones.uniques} unique cloner(s).`);
   console.log(`Since the repo went public (${FLIP}, day ${elapsed}): ${visitors} unique viewer-day(s), ${cloners} unique cloner-day(s).`);
   // Stated every run because it is the number someone will otherwise misread. Summing per-day
-  // uniques counts a returning visitor once per day, so this is an UPPER BOUND on distinct
-  // people — which is the useful direction for W-6: an upper bound under 100 settles that the
-  // threshold is not met, while a sum over 100 does NOT settle that it is.
-  console.log(`W-6 thresholds are 90 days AND 100 unique visitors. Viewer-days OVERCOUNT distinct people (no cross-day dedup beyond 14 days), so treat ${visitors} as an upper bound.`);
+  // uniques counts a returning visitor once per day, so this is an UPPER BOUND on distinct people.
+  //
+  // THIS LINE USED TO PRINT "W-6 thresholds are 90 days AND 100 unique visitors" AND THAT WAS
+  // RETIRED ON 2026-08-20 — corrected here 2026-08-23. W-6 was re-pointed under the waits gate
+  // because the denominator could not fill: reaching 100 distinct people by the read date needed
+  // about four times the observed rate. The watch now reads a qualitative n=1 — the first
+  // unsolicited outside contact of any kind — and these figures are CONTEXT, not a gate. The
+  // retired number outlived its retirement in an instrument that prints it to every reader, which
+  // is this repo's A-11 class exactly: a threshold from the old regime still reading as
+  // authoritative after the regime changed.
+  console.log(`Viewer-days OVERCOUNT distinct people (no cross-day dedup beyond 14 days), so treat ${visitors} as an upper bound, never an estimate.`);
+  console.log(`W-6 no longer has a visitor threshold — re-pointed 2026-08-20 to the first unsolicited outside contact (n=1). These figures are context for that read, not a gate on it.`);
   // Our own clones and CI are in these figures; the repo was private for most of the window.
   console.log(`Not deducted: our own clones, CI checkouts, and GitHub's crawlers. Treat clone figures as unattributed.`);
 }
