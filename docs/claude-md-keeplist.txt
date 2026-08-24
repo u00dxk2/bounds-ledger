@@ -1,0 +1,82 @@
+# Keep-list for the 2026-08-24 CLAUDE.md compression.
+# Every string below MUST survive verbatim. These are the domain constants and the
+# structural understanding — the two categories the cut order protects LAST.
+# Chosen by the session that wrote today's changes, not by the compressor.
+
+# --- Domain constants: figures and identifiers everything else depends on ---
+teorth/optimizationproblems
+erdosproblems.com
+raw.githubusercontent
+C-1…C-11
+pin:<file>:U|L
+manual: true
+UNVERIFIED
+UNREACHABLE
+BROKEN
+
+# --- The rules that were load-bearing THIS MONTH; cutting these re-buys an incident ---
+# generated pins assert listing position — defended for a month, load-bearing 2026-08-23
+# (Brun's constant GRH-conditional row) and again 2026-08-24 (escaping-only pin breaks)
+LISTING POSITION
+never "the record"
+
+# the founding defect: a pipe eats the exit code
+shell: bash
+pipefail
+
+# the alarm must not title an unreachable source as a record movement
+UNREACHABLE` is not `BROKEN
+
+# the 403 is IP-dependent — a local 200 proves nothing about CI
+403s datacenter IPs
+only evidence that counts is a green CI run
+
+# CRLF: a \n pattern silently no-ops, so a mutation must be proven to land
+CRLF
+git diff --numstat
+
+# the drift cycle and its three-step ratchet
+npm run resnap
+Never snapshot to silence
+
+# both-answers rule for every detector
+KP-78
+
+# absence claims need a named positive control
+Positive control before any absence claim
+
+# an HTTP 200 is not evidence you fetched the artifact
+HTTP 200
+
+# upstream shas and paths do not resolve locally
+an upstream sha; it does not exist in this repo
+
+# the outward gate and David's ruling on declined content
+Outward gate
+David-gated
+
+# today's shipped cadence step
+Read one instrument against its own claim
+
+# the report contract
+canonical H2 set
+record-facing or instrument-facing
+numeric or BYTE-ONLY
+
+# the brief check cannot run in CI
+CC_PROMPTS_PIN
+
+# dates
+MT for human labels
+
+# --- Provenance ---
+# Written 2026-08-24 by the session that made that day's CLAUDE.md changes, to
+# govern the 44,660 -> 40,354 byte compression (commit b76585c). Removed passages
+# are archived verbatim in docs/claude-md-archive.md.
+#
+# Any future compression should START from this file rather than re-deriving it:
+#   node ../skylark-site/scripts/compress-to-budget.mjs --file CLAUDE.md \
+#     --target 42000 --keep docs/claude-md-keeplist.txt
+# It lived in tmp/ on the day it was written, which is gitignored -- caught at
+# close by agent-status's own WARN. A keep-list nobody can read is a keep-list
+# that has to be guessed at next time.
