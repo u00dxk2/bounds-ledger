@@ -1142,7 +1142,7 @@
     "id": "pin:53a:L",
     "statement": "Last-listed lower-bound table row for Davenport constant for $C_n^3$ (53a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/53a.md",
-    "expect": "| $3$ | <a href=\"#GG2006\">[GG2006]</a> | Using $d(C_n^3)\\ge d^*(C_n^3)=3(n-1)$ and $D(G)=1+d(G)$ gives $D(C_n^3)\\ge 3(n-1)+1$, hence $C_{53}\\ge 3$. <a href=\"#GG2006-d-ge-dstar\">[GG2006-d-ge-dstar]</a> <a href=\"#GG2006-D-equals-1-plus-d\">[GG2006-D-equals-1-plus-d]</a> <a href=\"#GG2006-def-dstar\">[GG2006-def-dstar]</a> |",
+    "expect": "| $3$ | <a href=\"#GG2006\">[GG2006]</a> | Using $d(C_n^3)\\ge d^\\*(C_n^3)=3(n-1)$ and $D(G)=1+d(G)$ gives $D(C_n^3)\\ge 3(n-1)+1$, hence $C_{53}\\ge 3$. <a href=\"#GG2006-d-ge-dstar\">[GG2006-d-ge-dstar]</a> <a href=\"#GG2006-D-equals-1-plus-d\">[GG2006-D-equals-1-plus-d]</a> <a href=\"#GG2006-def-dstar\">[GG2006-def-dstar]</a> |",
     "asserts": "ledger/teorth-optimizationproblems/constants/53a.md",
     "generated": true
   },
@@ -1182,7 +1182,7 @@
     "id": "pin:56a:U",
     "statement": "Last-listed upper-bound table row for $\\mathrm{GL}_2$ Ramanujan conjecture exponent (56a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/56a.md",
-    "expect": "| $\\tfrac{7}{64}=0.109375$ | [KS2003] (over $\\mathbb Q$), extended uniformly to all number fields by [BB2011] | **Best known general bound.** In Sarnak’s notation, this controls both finite-place Satake parameters and archimedean spectral parameters for $\\mathrm{GL}_2(\\mathbb A_{\\mathbb Q})$ (and Blomer–Brumley extend it to arbitrary number fields). |",
+    "expect": "| $\\tfrac{7}{64}=0.109375$ | [KS2003] (over $\\mathbb Q$), extended uniformly to all number fields by [BB2011] | **Best known general bound.** In Sarnak’s notation, this controls both finite-place Satake parameters and archimedean spectral parameters for $\\mathrm{GL}\\_2(\\mathbb A\\_{\\mathbb Q})$ (and Blomer–Brumley extend it to arbitrary number fields). |",
     "asserts": "ledger/teorth-optimizationproblems/constants/56a.md",
     "generated": true
   },
