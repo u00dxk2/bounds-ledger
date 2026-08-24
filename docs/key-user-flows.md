@@ -186,7 +186,7 @@ Named principle: Nielsen's **match between system and the real world**. One syst
 for three distinct real events is not concision, it is a mismatch the reader has to resolve without
 the information to do it.
 
-### Shipped
+### Shipped — `a7bf5ff`
 
 `before →` every row: `last changed 2026-08-24`, for all three cases alike.
 `after  →` three honest labels, decided per row:
