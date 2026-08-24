@@ -161,3 +161,75 @@ control at narrow widths, which remains unverified and is the honest gap in this
 
 **Below the traffic floor** — ~4 unique viewers in the trailing 14 days against a 30-arrivals/7-day
 bar. No readable cohort, none claimed; shipped on judgment.
+
+---
+
+## Rotation 5 (2026-08-24) — F-2 again, the word the page uses for two different events
+
+**The genuinely great version, named first.** A researcher opens the page, orders by most recently
+updated, and the top of the list is *only* the things that actually moved. Not the things someone
+retyped. The ledger's whole claim on a reader's attention is that it knows the difference between a
+record moving and a page being edited — so the page itself has to know it out loud, or the claim is
+just a sentence in a README.
+
+**The step that was worst, and today produced the proof.** Every row said `last changed <date>`.
+That one phrase covered three different real-world events: a bound actually moved, someone edited
+the text around a bound that did not move, and the row has never changed since the day we started
+tracking it. This morning upstream escaped the markdown-active characters inside inline math on six
+pages (`5c4aeee`, an upstream sha; it does not resolve in this repo). Two pinned rows broke on a
+backslash. **No number changed anywhere** — and the page then dated `53a` and `56a` to today, so a
+reader using yesterday's new Order control met two records at the top that had not moved. The
+README promised "the date each row last moved" and that promise was false for two rows within
+twenty-four hours of the control that made it visible.
+
+Named principle: Nielsen's **match between system and the real world**. One system word standing
+for three distinct real events is not concision, it is a mismatch the reader has to resolve without
+the information to do it.
+
+### Shipped
+
+`before →` every row: `last changed 2026-08-24`, for all three cases alike.
+`after  →` three honest labels, decided per row:
+
+- `value changed 2026-08-23` — the numerals in the bound cell differ from the previous version.
+- `text edited 2026-08-24 — bound unchanged` — the row changed byte-wise and the bound did not.
+- `first pinned 2026-07-24 — unchanged since` — this row has never changed since tracking began.
+
+Live distribution across 222 pins: **208 first-pinned, 8 value changed, 6 text edited.**
+
+**The third label is the bigger win and it was nearly missed.** 208 of 222 pins carry `2026-07-24`,
+and yesterday's rotation named that as *the thing that will mislead you first* — the bootstrap date
+reading as a change date. It cost one extra branch to retire, because the same comparison that
+distinguishes value from text also distinguishes *there was no previous version*.
+
+**What it does NOT claim, deliberately.** `value changed` says the numerals in the bound cell are a
+different multiset than before. It does not say the bound improved, does not rank rows, and does
+not name a record — the same restraint the generated pins observe. Confining the comparison to the
+first cell is why: a changed citation year is not a moved bound, and comparing whole rows would
+have called `87a`'s degree-8-to-degree-12 correction a value change. It reads `text` instead, and
+an assertion pins that so a future simplification to whole-row comparison fails a test rather than
+a reader.
+
+**Ordering was left alone.** A text edit still sorts as recent. Changing sort semantics is a
+different decision with no usage signal behind it, and the label already tells the reader what they
+are looking at.
+
+### Validation status
+
+**Both KP-78 answers, on production data and on fixtures.** The classifier was run against the real
+ledger before it was wired in: today's two escaping edits read `text`, yesterday's two genuine
+movements (`15a` `2.371339 → 2.371177`, `3a` `1.1835129324 → 1.19102809`) read `value`, and `87a`'s
+citation correction reads `text`. Negative control: `changeKind` forced to return `"value"`
+unconditionally — the selftest failed on *"an escaping-only edit must read as a text edit"*, exit 1.
+Restored, exit 0. The mutation was proven to take effect by that exit-code flip, not by a diff
+count, and the file was restored from a copy rather than `git checkout` because the tree was dirty.
+
+**Not browser-verified.** Same honest gap as Rotation 4: no live render captured this session, so
+the label's appearance at narrow widths is unverified. The wording, the classification and the CSS
+class are covered by assertions; the layout is not.
+
+**Observable, stated in the sub-floor shape.** The surface is at 3 unique viewers in the trailing
+14 days, far below the 30-arrivals-in-7-days floor, so this carries no instrument read. What would
+be observed if it worked: a `looks wrong?` report disputing a row we labelled *text edited* would
+mean the classifier mis-called it, and would arrive as a titled GitHub issue. **Nothing observable
+yet at N=3; shipped on judgment.**

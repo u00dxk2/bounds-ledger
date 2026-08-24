@@ -65,6 +65,112 @@ export function lastChanged(expect, root = ROOT) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Was the last change to the VALUE, or only to the text around it?
+//
+// The page's headline promise is "the date each row last moved". On 2026-08-24 that promise went
+// false for two rows: upstream escaped the markdown-active characters inside inline math, two
+// generated pins broke on the backslash alone, and the page then dated 53a and 56a to that day —
+// so a reader sorting by "most recently updated" saw two records at the top that had not moved.
+// Editorial drift is real drift and the alarm is right to fire; what was wrong was publishing it
+// to a reader in the same words as a record movement.
+//
+// What this decides, precisely: whether the numerals in the row's BOUND cell — the first cell of
+// the pinned table row — are the same multiset as they were before the change. Nothing more. It
+// does NOT rank rows, does not say which is the record, and does not say a bound improved. That
+// restraint is the same one the generated pins themselves observe (they assert listing position,
+// never "the record"), and it is why the comparison is confined to the bound cell: comparing the
+// whole row would call a changed citation year a value change, which overclaims in exactly the
+// direction that misleads.
+//
+// ponytail: set-equality on digit strings, no parsing of mathematics. A symbolic cell that stays
+// symbolic reads as unchanged, which is correct — and a cell we cannot interpret is never given a
+// verdict we cannot support.
+
+// The first cell of a pipe table row. A row that is not a pipe table falls back to the whole
+// string rather than to an empty one: comparing everything is a weaker claim than comparing
+// nothing, and "nothing" would silently report every such row as text-only.
+export function boundCell(row) {
+  const s = String(row == null ? "" : row);
+  if (!s.trimStart().startsWith("|")) return s;
+  const parts = s.split("|");
+  return parts.length > 1 ? parts[1] : s;
+}
+
+export function numbersIn(text) {
+  const m = String(text == null ? "" : text).match(/\d+(?:\.\d+)?/g);
+  return (m || []).slice().sort();
+}
+
+// null means "we cannot say" — a pin appearing for the first time has nothing to be compared
+// against, and inventing "value" or "text" there would be a verdict with no evidence under it.
+export function changeKind(prevExpect, nowExpect) {
+  if (prevExpect == null) return null;
+  const before = numbersIn(boundCell(prevExpect)).join(",");
+  const after = numbersIn(boundCell(nowExpect)).join(",");
+  return before === after ? "text" : "value";
+}
+
+// One `git log` per pin, same as before — the sha rides along on the call that was already being
+// made for the date. Rendering 222 pins costs ~26s at one call each and would cost twice that at
+// two, which is why this is folded in rather than added beside.
+export function lastChangeMeta(expect, root = ROOT) {
+  try {
+    const needle = JSON.stringify(expect).slice(1, -1);
+    const out = execFileSync(
+      "git",
+      ["log", "-1", "--format=%H %ad", "--date=short", `-S${needle}`, "--", "ledger/claims.json"],
+      { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }
+    ).trim();
+    if (!out) return { date: null, sha: null };
+    const bits = out.split(/\s+/);
+    return { sha: bits[0] || null, date: bits[1] || null };
+  } catch {
+    return { date: null, sha: null };
+  }
+}
+
+// Keyed by sha because a single cycle moves many pins in one commit: 222 pins resolve to a couple
+// of dozen distinct commits, so the parent blob is read once per commit rather than once per pin.
+const parentClaimsCache = new Map();
+
+function claimsAtParent(sha, root) {
+  if (!sha) return null;
+  const key = `${root}@${sha}`;
+  if (parentClaimsCache.has(key)) return parentClaimsCache.get(key);
+  let parsed = null;
+  try {
+    const raw = execFileSync("git", ["show", `${sha}^:ledger/claims.json`], {
+      cwd: root,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+      maxBuffer: 64 * 1024 * 1024,
+    });
+    parsed = JSON.parse(raw);
+  } catch {
+    parsed = null;
+  }
+  parentClaimsCache.set(key, parsed);
+  return parsed;
+}
+
+// The one call a renderer needs: date, and what kind of change that date records.
+export function changeFor(pin, root = ROOT) {
+  const meta = lastChangeMeta(pin.expect, root);
+  if (!meta.sha) return { date: meta.date, sha: null, kind: null };
+  const prevClaims = claimsAtParent(meta.sha, root);
+  if (!Array.isArray(prevClaims)) return { date: meta.date, sha: meta.sha, kind: null };
+  const prev = prevClaims.find((c) => c && c.id === pin.id);
+  // The parent read fine and this pin was not in it, so the commit that "changed" the row is the
+  // commit that CREATED it. That distinction carries the page's single worst misreading: 203 of
+  // 222 pins date to 2026-07-24, the day tracking started and not a day anything moved, and the
+  // 2026-08-23 primer names it as the first thing that will mislead a reader. It is only sayable
+  // because the null case above is kept separate: a shallow clone that cannot read the parent
+  // returns null and gets the neutral wording, never a "never changed" we did not establish.
+  if (!prev) return { date: meta.date, sha: meta.sha, kind: "first" };
+  return { date: meta.date, sha: meta.sha, kind: changeKind(prev.expect, pin.expect) };
+}
+
 function render(id, claims, manifest, root = ROOT) {
   const pins = pinsFor(id, claims);
   const lines = [];

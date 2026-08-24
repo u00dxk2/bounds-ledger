@@ -24,7 +24,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { pinsFor, lastChanged } from "./lookup.mjs";
+import { pinsFor, lastChanged, changeFor, changeKind, boundCell } from "./lookup.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "index.html");
@@ -82,14 +82,19 @@ export function buildRows(claims, { withDates = true, root = ROOT } = {}) {
     const upper = pins.find((p) => p.id.endsWith(":U"));
     const lower = pins.find((p) => p.id.endsWith(":L"));
     const any = upper || lower;
+    const none = { date: null, kind: null };
+    const uc = withDates && upper ? changeFor(upper, root) : none;
+    const lc = withDates && lower ? changeFor(lower, root) : none;
     return {
       id,
       title: titleFrom(any && any.statement),
       url: any && any.url,
       upper: upper && upper.expect,
       lower: lower && lower.expect,
-      upperChanged: withDates && upper ? lastChanged(upper.expect, root) : null,
-      lowerChanged: withDates && lower ? lastChanged(lower.expect, root) : null,
+      upperChanged: uc.date,
+      lowerChanged: lc.date,
+      upperKind: uc.kind,
+      lowerKind: lc.kind,
     };
   }).map((r) => ({ ...r, changed: newerOf(r.upperChanged, r.lowerChanged) }));
 }
@@ -104,7 +109,20 @@ export function newerOf(a, b) {
   return a >= b ? a : b;
 }
 
-function cell(row, changed) {
+// The words a reader actually sees, and the reason this function exists at all. "last changed" was
+// true and misleading: on 2026-08-24 two rows carried that day's date because upstream escaped a
+// backslash, and a reader sorting by most-recently-updated met two records that had not moved.
+// "value changed" and "text edited" are the same fact split along the only line this lane cares
+// about. `kind === null` keeps the old neutral wording, which is the honest answer when the pin is
+// new and there is nothing to compare it against.
+export function whenLabel(changed, kind) {
+  if (kind === "value") return `value changed ${esc(changed)}`;
+  if (kind === "text") return `text edited ${esc(changed)} — bound unchanged`;
+  if (kind === "first") return `first pinned ${esc(changed)} — unchanged since`;
+  return `last changed ${esc(changed)}`;
+}
+
+function cell(row, changed, kind) {
   if (!row) return `<td class="none">not pinned</td>`;
   // Second half of review finding F1. Omitting the element when the date is null made "we could
   // not compute a date" indistinguishable from "this page does not date rows" — the zero-versus-
@@ -112,7 +130,7 @@ function cell(row, changed) {
   // explicitly instead. With the escaped-needle fix all 222 pins now date, so this path should be
   // unreachable in practice; it stays because the day it becomes reachable is the day it matters.
   const when = changed
-    ? `<span class="when">last changed ${esc(changed)}</span>`
+    ? `<span class="when ${kind === "text" ? "text-only" : ""}">${whenLabel(changed, kind)}</span>`
     : `<span class="when">date unknown</span>`;
   return `<td><code>${esc(row)}</code>${when}</td>`;
 }
@@ -139,8 +157,8 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null) {
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr data-name="${esc((r.title + " " + r.id).toLowerCase())}" data-changed="${esc(r.changed || "")}">
 <th scope="row"><a href="ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><span class="id">${esc(r.id)}</span></th>
-${cell(r.upper, r.upperChanged)}
-${cell(r.lower, r.lowerChanged)}
+${cell(r.upper, r.upperChanged, r.upperKind)}
+${cell(r.lower, r.lowerChanged, r.lowerKind)}
 <td class="src"><a href="${esc(r.url)}">source</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a></td>
 </tr>`).join("\n");
 
@@ -150,7 +168,7 @@ ${cell(r.lower, r.lowerChanged)}
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='13'%3E%E2%88%91%3C/text%3E%3C/svg%3E">
 <title>Bounds Ledger — is the number you cited still current?</title>
-<meta name="description" content="A continuously re-verified ledger of mathematical records. Look up a constant and see the bounds rows we watch, when each last moved, and the primary source.">
+<meta name="description" content="A continuously re-verified ledger of mathematical records. Look up a constant and see the bounds rows we watch, when each last changed and whether the bound moved, and the primary source.">
 <style>
 :root{--bg:#fff;--fg:#16181d;--muted:#5c6370;--line:#e3e6ea;--accent:#0b5fff;--code:#f6f7f9}
 @media(prefers-color-scheme:dark){:root{--bg:#14161a;--fg:#e8eaed;--muted:#9aa1ac;--line:#2b2f36;--accent:#7aa2ff;--code:#1c1f25}}
@@ -181,6 +199,7 @@ tbody th{font-weight:600;min-width:15rem}
 .id{display:block;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
 code{display:block;font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--code);padding:.4rem .5rem;border-radius:4px;white-space:pre-wrap;word-break:break-word}
 .when{display:block;font-size:.75rem;color:var(--muted);margin-top:.3rem}
+.when.text-only{font-style:italic}
 .none{color:var(--muted);font-style:italic}
 .src{white-space:nowrap}
 footer{margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;max-width:78ch}
@@ -450,12 +469,58 @@ async function selftest() {
   qEl.oninput();
   assert.equal(emptyEl.hidden, true, "an empty search shows every row, so the empty state stays hidden");
 
+  // --- Value-vs-text change labelling, added 2026-08-24. Both KP-78 answers, on the shape that
+  // caused it. Upstream escaped a backslash in six pages, two pinned rows changed byte-wise, no
+  // number moved, and the page dated both to that day in the same words it uses for a record
+  // movement. These assertions are what stop that wording coming back.
+  const rowAt = (bound, tail) => `| ${bound} | ${tail} |`;
+
+  // FIRES: the bound cell's numerals changed, so this is a value change.
+  assert.equal(
+    changeKind(rowAt("$2.371339$", "[Prev2024]"), rowAt("$2.371177$", "[Prev2024]")),
+    "value",
+    "a changed bound must read as a value change"
+  );
+
+  // SILENT: escaping around the mathematics moved and no numeral did — 2026-08-24's actual case.
+  assert.equal(
+    changeKind(rowAt("$3$", "$d^*(C_n^3)$"), rowAt("$3$", "$d^\*(C_n^3)$")),
+    "text",
+    "an escaping-only edit must read as a text edit, not a value change"
+  );
+
+  // The reason the comparison is confined to the FIRST cell, asserted so a future simplification to
+  // whole-row comparison fails here rather than on the page. A changed citation year is not a moved
+  // bound, and calling it one overclaims in the direction that misleads a reader.
+  assert.equal(
+    changeKind(rowAt("$857.567$", "[HMR2019] degree 8"), rowAt("$857.567$", "[HMR2019] degree 12")),
+    "text",
+    "a changed citation detail with a fixed bound must stay a text edit"
+  );
+
+  // A pin with no previous version gets no verdict at all — the honest answer, and separate from
+  // the "first pinned" case, which is decided in changeFor where the parent read actually succeeded.
+  assert.equal(changeKind(null, rowAt("$3$", "x")), null, "a pin with no prior version gets no verdict");
+
+  // A non-pipe row falls back to comparing everything rather than nothing: comparing nothing would
+  // silently report every such row as unchanged.
+  assert.equal(boundCell("0.380868"), "0.380868", "a non-table row compares whole");
+  assert.equal(boundCell("| $3$ | src |").trim(), "$3$", "a table row compares its first cell");
+
+  // The three wordings a reader sees. The `first pinned` case is the page's single worst documented
+  // misreading — 208 of 222 pins carry the bootstrap date, which is when tracking started and not a
+  // day anything moved.
+  assert.match(whenLabel("2026-08-23", "value"), /^value changed 2026-08-23$/, "value wording");
+  assert.match(whenLabel("2026-08-24", "text"), /bound unchanged$/, "text wording must say the bound held");
+  assert.match(whenLabel("2026-07-24", "first"), /^first pinned 2026-07-24 — unchanged since$/, "first-pinned wording");
+  assert.match(whenLabel("2026-08-01", null), /^last changed 2026-08-01$/, "an unknown kind keeps the neutral wording");
+
   // Self-contained: no third-party asset can be fetched at render time.
   const externals = html.match(/(?:src|href)="https?:\/\/[^"]+"/g) || [];
   const badHost = externals.filter((h) => !/github\.com|example\.invalid/.test(h));
   assert.deepEqual(badHost, [], `page must fetch nothing at runtime; found ${badHost.join(", ")}`);
 
-  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match)");
+  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match; a changed bound reads as a value change while an escaping-only edit and a changed citation detail both read as text edits with the bound held, a pin with no prior version gets no verdict, and all four reader-facing wordings are pinned)");
 }
 
 // Entry-point guard — review finding F2. Without it, ANY importer of renderHtml/buildRows runs the
