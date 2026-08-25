@@ -166,6 +166,13 @@ jobs:
       # existence would be the permanently-red alarm this lane was founded on).
       - name: Self-test deferral expiry gate (no network)
         run: node scripts/check-deferrals.mjs --selftest
+      # G-3's leading indicator: outside report arrivals via the per-row "looks wrong?" link.
+      # Only its SELF-TEST runs here. The live read needs `gh` credentials this job does not
+      # carry, and it exits 2 rather than 0 when it cannot fetch — because a zero from a dead
+      # probe is indistinguishable from a measured zero, which is the whole point of the script.
+      # It renders a figure and no verdict, so it is an indicator and never a gate.
+      - name: Self-test outside-report arrival counter (no network)
+        run: node scripts/report-rate.mjs --selftest
       # Not piped and deliberately network-free: this asserts README's published figures still
       # match COMMITTED repo state. A stale block is a falsifiable public error on the front
       # page of a repo whose pitch is that it notices stale numbers.
