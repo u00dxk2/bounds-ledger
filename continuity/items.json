@@ -578,7 +578,8 @@
         "9208ff3",
         "0698ab3",
         "4714e32",
-        "5e8b5da"
+        "5e8b5da",
+        "a548f1c"
       ],
       "note7": "LINKED 2026-08-22 during close-out, after the continuity check flagged 7 commits from the 2026-08-21 session in no item. Mapped by what each commit TOUCHED rather than by its subject line: 2443b55 built the page (index.html, render-site.mjs, the workflow and .nojekyll), 10e1db3 turned Pages on and updated the README and flow map, f421ea6 put a real catch on the README first screen, 883e108 recorded David's succession ruling (also linked on G-2). The remaining three went to the rows whose work they actually were — b63391b to A-27, and cdb6746 plus 1fb5c85 to A-16, whose upstream correction they sent and drafted. Nothing was filed under meta.untrackedCommits: every one had an unambiguous owner once the file stats were read, and guessing from subject lines would have put a false claim in the ledger.",
       "note8": "HOW TO REPORT THIS GOAL ZERO, and it will be zero for a while. A fleet rule adopted 2026-08-20 (canonical in skylark-site operating principles, not restated here): a clean zero with no considered-and-declined beside it is a QUESTION, not an ANSWER — a zero you never deliberated is an absence of a record, not evidence of judgment. G-3 is the lane most exposed to this, because its honest reading is expected to be zero for months and a bare \"0\" every week would look identical whether the instruments were live or dead. So every G-3 zero states WHICH KIND it is: measured (the detection paths were checked and nobody acted) or unexamined (nobody looked). The 2026-09-22 onTrigger already forces the first kind by asking whether we COULD detect an outside use rather than whether one happened.",
@@ -937,7 +938,9 @@
       "signalDateNote": "The weekly forced-decision pass, which is a Monday (checked, not assumed: 2026-08-31 is a Monday, as were 08-17 and 08-24). Deliberately NOT dated 2026-08-25 — four gates already come due that day and CLAUDE.md is within 340 bytes of its size budget, so adding a fifth would guarantee the shallowest of the five gets the least thought.",
       "readCommand": "grep -n \"231 claims\\|~230 pinned\\|eight upstream changes\" docs/decisions/2026-08-13-mathstodon-announcement.md — each hit is a figure that was true on 2026-08-13 and is not true now; an empty result means the draft has been refreshed. Cross-check the live values with `node scripts/render-state-block.mjs --check` (claim and file counts) and `git log --oneline -- ledger/teorth-optimizationproblems/manifest.json` minus the two non-drift commits named in README's catch table (cycle count). Then read the board for a card: the search is `curl -s -H \"x-cc-pin: $CC_PROMPTS_PIN\" https://skylarkcreations.com/api/cc/david-board` filtered for \"bounds-ledger\", and it MUST be run with a positive control (filter for \"skylark\" and expect a non-zero count) or a zero proves nothing about the board.",
       "onTrigger": "On 2026-08-31, do ONE of two things and record which. (a) Refresh the three stale figures against live reads, re-run the adversarial review ONLY if the refresh materially changed the argument rather than the arithmetic — W-8 is the watch that governs that judgment — and card it for David with the send as the ask. (b) Strike the arrival move with a recorded reason. Do not card the draft as-is: it currently asserts three numbers that are no longer true, and this lane exists to notice exactly that class of defect.",
-      "linkedCommits": []
+      "linkedCommits": [
+        "bcb9b52"
+      ]
     },
     {
       "id": "A-29",
@@ -970,27 +973,29 @@
       "onTrigger": "On 2026-09-01 either adopt it or close this as declined with a reason. Run the release command first: if the generator has moved again, re-verify the fix is an ancestor of the local checkout before running it against a real primer, and dry-run --check (read-only since 04b9ef42) before any write.",
       "releaseTest": "node ../skylark-site/scripts/gen-primer-first-action.mjs --repo . --check --out docs/cold-starts/2026-08-26.md ; echo EXIT=$? — --check is read-only since 04b9ef42, so this is safe to run for information. Confirm the fix is still in the checkout with: git -C ../skylark-site merge-base --is-ancestor 04b9ef42 HEAD ; echo EXIT=$? (0 = present; verified 0 on 2026-08-25).",
       "readCommand": "grep -c 'hand:begin' docs/cold-starts/*.md — 0 across all primers means the generator has never been adopted here. Positive control that the probe can match a marker in those files: grep -c '^## Session close-out' on the same glob returns non-zero for every multi-session primer.",
-      "linkedCommits": []
+      "linkedCommits": [
+        "d016af6"
+      ]
     }
   ],
   "meta": {
-    "untrackedCommits": [
-      {
-        "sha": "427e17c",
-        "rationale": "2026-08-15 daily report — reports are not item work; the items they describe carry their own commits."
-      },
-      {
-        "sha": "8e9a0c1",
-        "rationale": "2026-08-15 daily report updated after the review verdict landed — same class as 427e17c."
-      },
-      {
-        "sha": "acadb9e",
-        "rationale": "2026-08-25 daily report + tomorrow's primer + the traffic sample that dated the evangelism bar — reports and primers are not item work; the items they describe carry their own commits (1ba80fc)."
-      }
-    ],
+    "untrackedCommits": {
+      "427e17c": "2026-08-15 daily report — reports are not item work; the items they describe carry their own commits.",
+      "8e9a0c1": "2026-08-15 daily report updated after the review verdict landed — same class as 427e17c.",
+      "acadb9e": "2026-08-25 daily report + tomorrow's primer + the traffic sample that dated the evangelism bar — reports and primers are not item work; the items they describe carry their own commits (1ba80fc).",
+      "4f4d249": "2026-08-25 cold-start primer edit — rail bookkeeping; the instrument it describes carries its own commit (a548f1c).",
+      "e06027e": "2026-08-25 hygiene pass — rail bookkeeping; doc-only, and the items it touches carry their own commits.",
+      "467b608": "2026-08-24 close-out note — rail bookkeeping from the prior session.",
+      "81cef39": "2026-08-24 compression keep-list — rail bookkeeping from the prior session; the keep-list is an input to a future compression, not item work.",
+      "b76585c": "2026-08-24 CLAUDE.md compression — rail bookkeeping from the prior session.",
+      "519a20a": "2026-08-24 hygiene pass — rail bookkeeping from the prior session.",
+      "a7bf5ff": "2026-08-24 user-visible ship: the public page now says WHICH kind of change a row's last change was (value moved / text edited / first pinned). RECORDED HERE AS A GAP, not as an exemption: this was a real feature and NO open row owned it, so it is invisible to linkedCommits by omission rather than by design. Its account is the 2026-08-24 daily report and that day's primer. If a row is opened later for the page's change-labelling, move this sha onto it.",
+      "892c25b": "2026-08-24 P2 continuity pass from the prior session — read commands for the four gates due 08-25 plus a correction to a mechanism claim. Rail bookkeeping; the gates it prepared carry their own commits (1ba80fc)."
+    },
     "signalDateField": "expectedSignalBy",
     "updated": "2026-08-25",
     "loopArchetype": "citation-check",
-    "loopArchetypeNote": "Recorded 2026-08-25 (A-26). The user comes back when they are writing, refereeing or revising — a cadence of weeks to months, triggered by their calendar and not by ours. This is the most decision-relevant field in the evangelism bar, because it DISQUALIFIES the metrics the portfolio reaches for by default: a tool used at citation time SHOULD have a poor D7-return-rate, and optimising that number would push toward engagement mechanics that make the product worse. Share-rate and quarter-scale repeat visits are the right shape. Kept in items.json rather than health.json because health.json is GENERATED and a regeneration would silently drop it. Full reasoning in the evangelism bar doc under docs/."
+    "loopArchetypeNote": "Recorded 2026-08-25 (A-26). The user comes back when they are writing, refereeing or revising — a cadence of weeks to months, triggered by their calendar and not by ours. This is the most decision-relevant field in the evangelism bar, because it DISQUALIFIES the metrics the portfolio reaches for by default: a tool used at citation time SHOULD have a poor D7-return-rate, and optimising that number would push toward engagement mechanics that make the product worse. Share-rate and quarter-scale repeat visits are the right shape. Kept in items.json rather than health.json because health.json is GENERATED and a regeneration would silently drop it. Full reasoning in the evangelism bar doc under docs/.",
+    "untrackedCommitsShapeNote": "SHA-KEYED OBJECT, not an array — the shape continuity-check actually reads. It calls Object.entries() on this value and keeps only keys matching /^[0-9a-f]{7,40}$/, so an ARRAY of {sha, rationale} yields keys \"0\",\"1\",... which all fail that test and every entry is silently discarded. This file carried the array form from 2026-08-15 until 2026-08-25, so the documented escape hatch never suppressed anything; the two entries it held also aged out of the 48h window, which is why nobody could tell. Do not 'tidy' this back into an array."
   }
 }
