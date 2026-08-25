@@ -157,6 +157,15 @@ jobs:
       # Freshness is held by the post-snapshot ratchet (npm run resnap) and by npm run check locally.
       - name: Self-test public page generator (no network)
         run: node scripts/render-site.mjs --selftest
+      # A-25's deferral gate: a deferral must carry an expiry and a runnable release command.
+      # Only its SELF-TEST runs here. The items leg is deterministic, but the --prs leg needs gh
+      # credentials this job does not carry, and that leg exits 2 rather than 0 when it cannot
+      # run — so wiring the live gate into CI would convert a could-not-run into a red every
+      # scheduled night. The behaviour guarded here is that it fires on expiry and on a
+      # malformed deferral, and stays SILENT on a well-formed unexpired one (firing on mere
+      # existence would be the permanently-red alarm this lane was founded on).
+      - name: Self-test deferral expiry gate (no network)
+        run: node scripts/check-deferrals.mjs --selftest
       # Not piped and deliberately network-free: this asserts README's published figures still
       # match COMMITTED repo state. A stale block is a falsifiable public error on the front
       # page of a repo whose pitch is that it notices stale numbers.
@@ -220,7 +229,12 @@ jobs:
             if [ -n "$parts" ]; then
               title="Drift: $parts ($(date -u +%F))"
             elif [ "${unreachable:-0}" -gt 0 ]; then
-              title="Check error: bounds-ledger could not reach ${unreachable} cited source(s) ($(date -u +%F))"
+              # A-19 N-1: the count is of UNREACHABLE CLAIM LINES, not of distinct sources. Six
+              # claims pinning the same file that 429s produced "could not reach 6 cited
+              # source(s)" when exactly one source was unreachable — honest in KIND (it never
+              # asserts drift) but wrong in count-referent, which is pointed in an alarm whose
+              # whole job is to be precise about what moved. Title the thing actually counted.
+              title="Check error: bounds-ledger could not verify ${unreachable} claim(s) (cited source unreachable) ($(date -u +%F))"
             elif grep -qE '^error:' finding.txt; then
               # A tool error is NOT a drift. Titling it "Drift:" asserts a record moved when
               # none did — and a reader who opens it finds every claim holding, which reads as

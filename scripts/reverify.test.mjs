@@ -128,6 +128,9 @@ assert.match(wf, /^\s*pull_request:\s*$/m, "reverify.yml no longer triggers on `
 // test — so this asserts it instead of trusting the prose. The step body is EXTRACTED from the
 // deployed YAML, never retyped: a copy here would test my transcription, not the alarm (A-4).
 let alarmVerdict;
+// A-19 N-2: set when the alarm-title guard could not run at all. It must not be possible to
+// reach a PASS line with this true — see the exit-2 branch at the bottom of this file.
+let alarmCouldNotRun = false;
 {
   const nameIdx = wfRaw.findIndex((l) => l.trim() === "- name: Open finding");
   assert.notEqual(nameIdx, -1, "the `Open finding` step is GONE from the workflow — this guard asserts its title logic");
@@ -188,7 +191,8 @@ let alarmVerdict;
   };
 
   if (!BASH) {
-    alarmVerdict = "alarm title guard SKIPPED — no bash found, so Drift-vs-Check-error went UNCHECKED here (CI runs it)";
+    alarmVerdict = "alarm title guard COULD NOT RUN — no bash found, so Drift-vs-Check-error went UNCHECKED here";
+    alarmCouldNotRun = true;
     console.warn(`reverify.test: ${alarmVerdict}`);
     await rm(ALARM_TMP, { recursive: true, force: true });
   } else {
@@ -198,7 +202,12 @@ let alarmVerdict;
     "error: fetch constants/11a.md: 429\nUNREACHABLE C-1  upper bound on the minimum-overlap constant\nUNREACHABLE pin:3c:L  last-listed lower-bound row\n"
   );
   assert.doesNotMatch(flake, /^Drift:/, `a transport failure was titled as a record movement: ${flake}`);
-  assert.match(flake, /^Check error: bounds-ledger could not reach 2 cited source\(s\)/, `unexpected flake title: ${flake}`);
+  // A-19 N-1: the fixture pins TWO UNREACHABLE claim lines against ONE unreachable source
+  // (constants/11a.md, whose 429 is on the line above them). The old title said "could not
+  // reach 2 cited source(s)" — counting claim lines while naming sources, which is why the
+  // wording changed. This assertion is what makes the count-referent a tested property rather
+  // than a comment: it caught the wording change on the first run after it was made.
+  assert.match(flake, /^Check error: bounds-ledger could not verify 2 claim\(s\) \(cited source unreachable\)/, `unexpected flake title: ${flake}`);
 
   // Fires on each real record movement.
   assert.match(await titleFor("BROKEN pin:10a:U  pinned string gone\n"), /^Drift: claims pin:10a:U/);
@@ -219,4 +228,20 @@ let alarmVerdict;
   }
 }
 
-console.log(`reverify.test: PASS (synthetic drift in ${victim} detected; pristine copy clean; README leg fires on an asterisked row, silent when restored, REMOVED when deleted, and untouched by a constants-only edit; ${steps.length} workflow steps, piped steps pipefail-guarded; ${testCmds.length} self-tests present in CI; ${alarmVerdict})`);
+const summary = `synthetic drift in ${victim} detected; pristine copy clean; README leg fires on an asterisked row, silent when restored, REMOVED when deleted, and untouched by a constants-only edit; ${steps.length} workflow steps, piped steps pipefail-guarded; ${testCmds.length} self-tests present in CI; ${alarmVerdict}`;
+
+// A-19 N-2. Previously the bash-less path printed PASS and exited 0, so on a machine without
+// bash this file reported success for a guard that never ran — the precise shape this repo
+// ruled against on 2026-08-17 ("prove non-firing means the CONDITION is absent, not the
+// INSTRUMENT"), sitting in the test that guards the drift alarm. It stopped being hypothetical
+// on 2026-08-20, when bash was genuinely absent from PATH under PowerShell here and a spawn
+// returned an empty string. House convention elsewhere on the rail is that could-not-run gets
+// its own exit code, distinct from both pass and fail; 2 is that code.
+// CI always has bash, so this changes nothing there — which is the point: it only speaks up in
+// the environment that was silently under-testing.
+if (alarmCouldNotRun) {
+  console.log(`reverify.test: COULD NOT RUN (${summary})`);
+  console.log("reverify.test: exiting 2 — a guard that did not run must not report success");
+  process.exit(2);
+}
+console.log(`reverify.test: PASS (${summary})`);
