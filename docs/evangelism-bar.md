@@ -90,11 +90,16 @@ they then acted on. That is the moment above, counted.
 **The honest status: we cannot read it, and we are not going to pretend otherwise.**
 
 What exists today is a static page on GitHub Pages with no analytics of any kind, and the
-arrival figures we do have are close to unusable: the trailing 14-day sample reads roughly 3
-unique viewers against 180 unique cloner-days, and the clone figure is largely our own CI, which
-checks out on a schedule and on every push and PR. Number-provenance rule 2 — *is this number
-mine?* — disqualifies the clone count outright. The viewer count is the only arrival figure here
-that is not mostly ours, and 3 is not a denominator you can compute a rate against.
+arrival figures we do have are close to unusable. **Sampled 2026-08-25** (`npm run traffic`;
+re-run it rather than quoting this line later): the trailing 14-day window reads **3 unique
+viewers against 194 unique cloners**. The clone figure is largely our own CI, which checks out
+on a schedule and on every push and every PR, so number-provenance rule 2 — *is this number
+mine?* — disqualifies it outright. The viewer count is the only arrival figure here that is not
+mostly ours, and 3 is not a denominator you can compute a rate against.
+
+The date stamp on that paragraph is deliberate. A ledger whose product is noticing stale cited
+numbers must not carry undated ones of its own; the first draft of this section quoted a
+figure lifted from yesterday's primer and was already a day behind when it was written.
 
 **So the highest-leverage move is to stand up the instrument, not to write a retention target
 against a number nobody can read.** The smallest honest instrument, in order:
