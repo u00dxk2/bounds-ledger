@@ -954,6 +954,23 @@
       "linkedCommits": [
         "93d220b"
       ]
+    },
+    {
+      "id": "A-30",
+      "created": "2026-08-25",
+      "type": "active",
+      "status": "open",
+      "deferral": true,
+      "expiresOn": "2026-09-01",
+      "expectedSignalBy": "2026-09-01",
+      "title": "Adopt gen-primer-first-action.mjs so the primer's mechanical sections are re-derived instead of inherited",
+      "note": "ORCHESTRATOR-OFFERED 2026-08-25 as the structural remedy for the morning's primer contradiction: two close-out sections gave OPPOSITE instructions about the day's first move (compression first / the constraint is gone, do not compress), both correct as history, and the session read roughly 4,000 words before it knew what its day was. The argument for the generator is that a generated block cannot carry two contradicting conventions, because it is not appended to. Prose is preserved inside hand:begin markers.",
+      "note2": "NOT ADOPTED TODAY, and the reason is scope rather than doubt. The engineering-health rider plus the P2 continuity work had already spent the ~20% Section B frame, and swapping the primer's generation path is a change whose failure mode is losing a primer — the very artifact tomorrow's cold start depends on. It had a destructive bug earlier today (a sibling lane found it), FIXED on skylark-site as 04b9ef42, and I verified that fix is an ancestor of my checkout rather than merely present in the object database, so the blocker is not safety. Deferred in the machine-readable form rather than as a prose note, per A-25.",
+      "note3": "PARTIAL CREDIT ALREADY TAKEN, so do not read this row as nothing having been done: the (a1) change shipped in ce23254 puts READ THE GATE READCOMMANDS BEFORE THIS PROSE as the primer's own first line, which addresses the ordering half of the same problem by hand. The generator addresses the contradiction half, which the hand fix cannot.",
+      "onTrigger": "On 2026-09-01 either adopt it or close this as declined with a reason. Run the release command first: if the generator has moved again, re-verify the fix is an ancestor of the local checkout before running it against a real primer, and dry-run --check (read-only since 04b9ef42) before any write.",
+      "releaseTest": "node ../skylark-site/scripts/gen-primer-first-action.mjs --repo . --check --out docs/cold-starts/2026-08-26.md ; echo EXIT=$? — --check is read-only since 04b9ef42, so this is safe to run for information. Confirm the fix is still in the checkout with: git -C ../skylark-site merge-base --is-ancestor 04b9ef42 HEAD ; echo EXIT=$? (0 = present; verified 0 on 2026-08-25).",
+      "readCommand": "grep -c 'hand:begin' docs/cold-starts/*.md — 0 across all primers means the generator has never been adopted here. Positive control that the probe can match a marker in those files: grep -c '^## Session close-out' on the same glob returns non-zero for every multi-session primer.",
+      "linkedCommits": []
     }
   ],
   "meta": {
