@@ -364,7 +364,12 @@ async function selftest() {
   // The prefix is load-bearing: a bare id like "10a" starts with a digit, which is a legal HTML id
   // but cannot be written as a bare CSS selector — :target styling would silently not apply.
   assert.match(html, /<tr id="c-10a"/, "row ids must carry the c- prefix so a numeric-leading constant id stays selectable");
-  assert.match(html, /tr:target/, "the page must visibly mark the row a permalink landed on");
+  // Both :target rules are asserted SEPARATELY and by their declaration, not by the bare string
+  // "tr:target". The first version of this assertion matched /tr:target/ and a negative control
+  // proved it could not fail: deleting either rule left the other one matching, so an assertion
+  // that read as "the landed row is marked" actually checked only that the words appeared once.
+  assert.match(html, /tr:target th\{box-shadow/, "the landed row must carry an edge marker");
+  assert.match(html, /tr:target>\*\{background/, "the landed row must carry a background fill");
 
   // A constant name carrying markup, a quote and an ampersand. This is what pins the encoding
   // ORDER: encodeURIComponent must run before esc, or a name can break out of the href attribute.
