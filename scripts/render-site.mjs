@@ -155,8 +155,8 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null) {
   // than no promise. This note lives in the SOURCE, not in a CSS comment: the first version of it
   // sat inside the style template literal and shipped the whole explanation to every visitor.
   const sha = String(manifest.sha);
-  const body = rows.map((r) => `<tr data-name="${esc((r.title + " " + r.id).toLowerCase())}" data-changed="${esc(r.changed || "")}">
-<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><span class="id">${esc(r.id)}</span></th>
+  const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-name="${esc((r.title + " " + r.id).toLowerCase())}" data-changed="${esc(r.changed || "")}">
+<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a></th>
 ${cell(r.upper, r.upperChanged, r.upperKind)}
 ${cell(r.lower, r.lowerChanged, r.lowerKind)}
 <td class="src"><a href="${esc(r.url)}">source</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a></td>
@@ -196,7 +196,10 @@ table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:56rem}
 th,td{text-align:left;vertical-align:top;padding:.6rem .75rem;border-bottom:1px solid var(--line)}
 thead th{background:var(--bg);font-size:.78rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
 tbody th{font-weight:600;min-width:15rem}
-.id{display:block;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+.id{display:block;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);text-decoration:none;width:max-content}
+.id:hover,.id:focus{text-decoration:underline}
+tr:target th{box-shadow:inset 3px 0 0 var(--accent)}
+tr:target>*{background:var(--code)}
 code{display:block;font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--code);padding:.4rem .5rem;border-radius:4px;white-space:pre-wrap;word-break:break-word}
 .when{display:block;font-size:.75rem;color:var(--muted);margin-top:.3rem}
 .when.text-only{font-style:italic}
@@ -212,6 +215,7 @@ tr[hidden]{display:none}
 <div class="note">
 <p><strong>Read this before you trust a number here.</strong> This page is a <em>snapshot</em>, not a live read. It shows our mirror of <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a> at upstream commit <code style="display:inline;padding:.1rem .3rem">${esc(sha.slice(0, 7))}</code>, fetched ${esc(generatedOn)}.</p>
 <p>Every row links to its primary source so you can check us in one hop — and if a row here disagrees with the source, that is a bug worth <a href="https://github.com/u00dxk2/bounds-ledger/issues">reporting</a>.</p>
+<p><strong>Every row has its own link.</strong> Click a row&rsquo;s short id — the grey code under the constant&rsquo;s name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred.</p>
 <p><strong>These are last-listed table rows, not a claim about which bound is “the record.”</strong> Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.</p>
 </div>
 
@@ -345,6 +349,22 @@ async function selftest() {
   // NB: encodeURIComponent leaves parentheses literal — they are legal in a query string. The
   // first draft of this assertion expected %2810a%29 and failed, which is the test earning its keep.
   assert.match(html, /title=Row%20looks%20wrong%3A%20The%20real%20Grothendieck%20constant%20\(10a\)/, "the prefilled title must name the constant the visitor was reading");
+
+  // --- Per-row permalinks, added 2026-08-26. A reader cannot tell a colleague about ONE constant
+  // when the only address is the whole 222-row page, and "send them a link" is how this ledger gets
+  // told to a friend at all. The row's id attribute and the anchor pointing at it are generated in
+  // two different places, so they can drift apart silently — and a permalink targeting an id that
+  // does not exist scrolls nowhere, which reads to a visitor as the page ignoring the click rather
+  // than as a bug. Assert they agree row by row, not merely that both exist.
+  const rowIds = [...html.matchAll(/<tr id="([^"]+)"/g)].map((m) => m[1]);
+  const permalinks = [...html.matchAll(/<a class="id" href="#([^"]+)"/g)].map((m) => m[1]);
+  assert.equal(rowIds.length, rows.length, "positive control: every rendered row must carry an id before any linkage is asserted");
+  assert.equal(permalinks.length, rows.length, "every row must expose its own permalink");
+  assert.deepEqual(permalinks, rowIds, "each row's permalink must target that row's own id, in document order");
+  // The prefix is load-bearing: a bare id like "10a" starts with a digit, which is a legal HTML id
+  // but cannot be written as a bare CSS selector — :target styling would silently not apply.
+  assert.match(html, /<tr id="c-10a"/, "row ids must carry the c- prefix so a numeric-leading constant id stays selectable");
+  assert.match(html, /tr:target/, "the page must visibly mark the row a permalink landed on");
 
   // A constant name carrying markup, a quote and an ampersand. This is what pins the encoding
   // ORDER: encodeURIComponent must run before esc, or a name can break out of the href attribute.
@@ -520,7 +540,7 @@ async function selftest() {
   const badHost = externals.filter((h) => !/github\.com|example\.invalid/.test(h));
   assert.deepEqual(badHost, [], `page must fetch nothing at runtime; found ${badHost.join(", ")}`);
 
-  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match; a changed bound reads as a value change while an escaping-only edit and a changed citation detail both read as text edits with the bound held, a pin with no prior version gets no verdict, and all four reader-facing wordings are pinned)");
+  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match; a changed bound reads as a value change while an escaping-only edit and a changed citation detail both read as text edits with the bound held, a pin with no prior version gets no verdict, and all four reader-facing wordings are pinned; every row carries a c-prefixed id and a permalink that targets that row's OWN id in document order, with the landed row visibly marked)");
 }
 
 // Entry-point guard — review finding F2. Without it, ANY importer of renderHtml/buildRows runs the
