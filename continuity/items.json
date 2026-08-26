@@ -1018,6 +1018,22 @@
         "8a35eaf",
         "e391be7"
       ]
+    },
+    {
+      "id": "A-32",
+      "created": "2026-08-26",
+      "type": "active",
+      "status": "open",
+      "title": "docs/lane-brief.md fails its voice check and predates the G-3 evidence — the one artifact written FOR David is the stalest thing we own",
+      "note": "TWO DEFECTS ON ONE FILE, found in P5 hygiene 2026-08-26. (1) VOICE: node ../skylark-site/scripts/check-david-voice.mjs docs/lane-brief.md exits 3 with three BLOCKING unglossed terms — 'drift', 'claim' and 'bound' — plus two advisory compounds ('session-scoped', 'last-edited'). This is PRE-EXISTING, not a regression from today: the file was not touched on 2026-08-26. CLAUDE.md is explicit that lane-brief.md is WHOLLY David-facing and the WHOLE file is in scope, unlike daily reports where only the BLUF line is linted. So this has been failing quietly on the single artifact written for him.",
+      "note2": "(2) CONTENT: the brief predates the G-3 evidence found today — an outside contributor fixed a mathematical record citing our report, and the maintainer closed it completed. That is the most interesting thing this lane has ever had to tell David and the brief does not mention it. NOTE THE ORDERING TRAP: check-brief.mjs reports 'in sync — all 4 dated blocks present', which is TRUE and says nothing about whether the content is current. A sync checker answers 'did the porter copy it', never 'is it worth reading'. Do not read that green as coverage.",
+      "note3": "WHY THESE ARE ONE ITEM AND NOT TWO: fixing the voice defects means rewriting the sentences that carry 'drift', 'claim' and 'bound', and those are exactly the sentences that must change anyway to say what happened on 2026-08-23. Doing them separately would rewrite the same paragraphs twice.",
+      "closeWhen": "check-david-voice.mjs exits 0 on docs/lane-brief.md AND the brief states the G-3 outcome in plain English, with a bus note posted so the orchestrator re-ports it to https://skylarkcreations.com/t/lanes/bounds-ledger.",
+      "expectedSignalBy": "2026-08-31",
+      "signalDateNote": "Short deliberately, and it is coupled: A-28 (the Mathstodon draft) is dated the same day and also needs its decayed figures refreshed. Both are 'tell an outside audience what happened', and the G-3 evidence is the thing that makes either worth sending.",
+      "onTrigger": "On 2026-08-31, rewrite the brief once — voice and content together — and post the bus note. If David has answered the G-3 card by then, his ruling governs what the brief says the goal's status IS; if not, the brief reports the evidence and says the question is with him, never that the goal is closed.",
+      "readCommand": "node ../skylark-site/scripts/check-david-voice.mjs docs/lane-brief.md ; echo EXIT=$? — literal output 2026-08-26: '3 blocking, 2 advisory', exit 3, naming drift/claim/bound. Exit 0 closes the voice half. POSITIVE CONTROL that the checker reads this file rather than erroring silently: the same run prints the resolved path 'C:/dev/skylark/bounds-ledger/docs/lane-brief.md' in its header line; a run naming no path did not read the file and its verdict is void. The CONTENT half is not machine-checkable — grep -c '857.567' docs/lane-brief.md returns 0 today and a non-zero result is evidence the G-3 outcome reached the brief, but a rewrite could describe it without that figure, so treat the grep as a hint and read the file.",
+      "linkedCommits": []
     }
   ],
   "meta": {
