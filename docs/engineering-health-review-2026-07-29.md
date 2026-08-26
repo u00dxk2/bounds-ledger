@@ -108,9 +108,34 @@ Smallest fix: commit the empty-tree `package-lock.json` (`npm install --package-
 | Secret scanning | *held privately* | secret-scanning API |
 | Dependabot alerts | **enabled**, inbox **empty** | `GET /vulnerability-alerts` → 204; `GET /dependabot/alerts` → `[]` |
 | Dependabot security updates | *held privately* | automated-security-fixes API |
-| Auto-deploy on push | **no — this repo does not deploy.** No Render/Vercel service, no hosting target. Push to `main` triggers only the `reverify` workflow (CI alarm). | `.github/workflows/reverify.yml` is the only workflow; no deploy config in repo |
+| Auto-deploy on push | ⚠ **TRUE ON 2026-07-29, FALSE SINCE 2026-08-21 — see the note below.** As written: *"no — this repo does not deploy. No Render/Vercel service, no hosting target. Push to `main` triggers only the `reverify` workflow (CI alarm)."* | `.github/workflows/reverify.yml` is the only workflow; no deploy config in repo |
 | CI health | last 5 runs all `success` (latest 2026-07-29T21:08Z) | `gh run list` |
 | Frozen surfaces | none | — |
+
+## Superseded fact — added 2026-08-26
+
+**The "Auto-deploy on push" row above was correct when this review ran and has been wrong since
+2026-08-21.** `10e1db3` turned GitHub Pages on that day. Since then **every push to `main`
+publishes** — `build_type: legacy`, source `main` at `/`, serving
+`https://u00dxk2.github.io/bounds-ledger/` — and doc-only commits publish along with the rest.
+
+**Read the observable, not a config field or this table:**
+
+```
+gh api repos/u00dxk2/bounds-ledger/pages/builds
+```
+
+It returns one build row per commit. On 2026-08-26 that was 30 consecutive rows with no gaps.
+
+**The row is annotated rather than rewritten**, because a dated review is a record of what was
+established on its date and silently correcting it would destroy the evidence that the claim went
+stale. What was missing was never the original finding — it was a sweep when the gate opened.
+
+**This is the FIFTH time a closed gate left stale text behind in this repo**, after F-2's
+public-flip blocker, A-7's private-repo claim, F-2's review-lane deferral and A-16's `onTrigger`.
+The rule those produced — *closing a gate must include a sweep for text that cited it* — did not
+fire here because turning Pages **on** did not feel like closing a gate. It was one: a condition
+several documents depended on stopped holding, and nothing re-read them.
 
 ## Redaction note — added 2026-08-06
 

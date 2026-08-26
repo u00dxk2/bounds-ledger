@@ -18,6 +18,41 @@ That is the whole lesson of the first finding: **an absence check licenses only 
 A stronger, differently-worded version of the same false claim sat one grep away, and the control run
 purely to validate the instrument is what surfaced it.
 
+### The corrected sweep found four more, and one was in TODAY'S primer
+
+The orchestrator re-issued a wider pattern an hour later, having measured that the first one scored
+**0 matches on a file carrying two live instances**. Their sentence for it is the keeper: **an
+instance-shaped check is satisfied by the one instance it was built from.**
+
+Re-run on the three named files, this lane was clean — the only hits were my own corrected lines. But
+**the named file list was itself instance-shaped.** Widened to every doc an agent here actually
+reads, it found the claim alive in:
+
+- **`docs/cold-starts/2026-08-26.md` — today's primer**, the document a cold agent reads first.
+- **`docs/engineering-health-review-2026-07-29.md`** — the capability table, asserting *"Auto-deploy
+  on push: no — this repo does not deploy"* as an evidenced finding.
+- `docs/cold-starts/2026-08-18.md`, which goes further and tells a future session **not to go looking
+  for a deploy row** — the exact diagnostic step that would have caught this.
+- Several daily reports, left as written.
+
+**The dividing line is a date, and it is verifiable.** `10e1db3`, 2026-08-21, *"the spot-check page
+is LIVE — review cleared, both PRs merged, Pages on."* Before it, "nothing deploys" was **true**.
+After it, false. Every instance predating 08-21 was honest when written; the four that outlived it
+were not swept.
+
+**So this is the FIFTH gate-sweep failure in this repo**, after F-2's public-flip blocker, A-7's
+private-repo claim, F-2's review-lane deferral and A-16's `onTrigger`. The rule those produced —
+*closing a gate must include a sweep for text that cited it* — **did not fire because turning Pages
+ON did not feel like closing a gate.** It was one: a condition several documents depended on stopped
+holding, and nothing re-read them. The rule should be read as covering any change in a standing
+condition, not only the closing of something labelled a gate.
+
+**Treatment, which differs by document class and is deliberate:** today's primer and the standing
+review are corrected in place with dated as-of notes, because they are read as current state. The
+daily reports are **left exactly as written** — they are the record of what this lane believed on
+each day, and silently repairing them would erase the evidence that the claim went stale at all.
+That distinction is this morning's as-of rule applied to its own first real case.
+
 Measured via the builds API rather than read off a config field — learn-the-dao's transferable rule,
 that the deploys API is the only observable and the question is whether a build ROW exists:
 
