@@ -6,7 +6,13 @@ Cross-vendor invariants for ANY coding agent (Claude Code, Codex CLI, or other) 
 
 ## What this is
 
-A reproducible, continuously re-verified ledger of drifting mathematical records (bounds / constants / certificates) that alarms when a cited record moves. Node stdlib + `fetch` only; `npm install` is a no-op. **Nothing deploys** — doc/script-only; the only automation is the GitHub Actions drift job. The repo is PUBLIC (since 2026-08-08).
+A reproducible, continuously re-verified ledger of drifting mathematical records (bounds / constants / certificates) that alarms when a cited record moves. Node stdlib + `fetch` only; `npm install` is a no-op. The repo is PUBLIC (since 2026-08-08).
+
+**EVERY push to `main` PUBLISHES, doc-only commits included — this line used to say "Nothing deploys" and that was false in the reassuring direction (corrected 2026-08-26).** GitHub Pages (`build_type: legacy`, source `main` at `/`) builds on every commit and serves `index.html` at `https://u00dxk2.github.io/bounds-ledger/`. So there are **two** automations, not one: the Actions drift job and the Pages build.
+
+**Measured, not read off a config field** — the transferable rule from learn-the-dao's 2026-08-26 finding is that the deploys API is the only observable, so ask whether a build ROW exists for the commit: `gh api repos/u00dxk2/bounds-ledger/pages/builds`. It returned **30 consecutive rows, one per commit**, doc-only commits included. The positive control is unusually clean: `1b0f85e` touched only `CLAUDE.md`, `continuity/items.json` and a cold-start primer — no script, no `index.html` — and it produced a build row that **FAILED** (`Page build failed.`), the first error in those 30. A commit that supposedly could not deploy broke the deploy.
+
+**Why the old wording was dangerous:** it is the fact an agent reaches for while diagnosing a possibly-missing publish. "Nothing deploys" turns a stale public page into a non-event, and this lane's only user-visible surface — the 222-row page whose per-row report links are G-3's detection path — is published by exactly this mechanism.
 
 ## Commands
 
