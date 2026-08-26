@@ -32,7 +32,7 @@ node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml
 
 **Both answers demonstrated at adoption, 2026-08-16** (KP-78 — ship no detector without showing it can fail): `--workflow reverify.yml` at HEAD `fd70f11` → exit 0, *"GREEN — 1 completed non-scheduled success(es) for HEAD"*; `--workflow nonexistent.yml` at the same HEAD → exit 2, *"UNKNOWN — CI read failed/unparseable — UNKNOWN, not green"*. It distinguishes; it does not blanket-pass.
 
-## North-star frontmatter — RE-POINTED 2026-08-22 at G-1's close (b4)
+## North-star frontmatter — RE-POINTED 2026-08-26 at G-3's close (previously 2026-08-22 at G-1's)
 
 Every `docs/daily/<date>-prelaunch.md` carries these four fields. **Copy them from HERE, never from
 yesterday's report** — that copy-forward is exactly how a closed goal's flattering number survives.
@@ -40,24 +40,27 @@ G-1 closed 2026-08-22 with `north_star_value: 1` / `green`; carrying that forwar
 CLOSED goal's value as the headline while the live Tier-0 goal reads zero.
 
 ```yaml
-north_star_metric: someone outside Skylark uses the ledger and acts on it (G-3; leading indicator = every detection path in G-3.readCommand is live)
+north_star_metric: an outside party acts on a watched record WITHOUT us filing the report (G-4; primary indicator = npm run reports, arrivals through the per-row links)
 north_star_value: 0
 north_star_status: expected-zero
 north_star_classification: expected-zero
 ```
 
 **The metric line carries NO path COUNT, and that is deliberate — corrected 2026-08-23.** It said
-"all four detection paths" while `G-3.readCommand` had five legs, and yesterday's report said five;
+"all four detection paths" while the goal's readCommand had five legs, and yesterday's report said five;
 a sixth landed on 08-23 when the empty-state ship created a new observable. A hand-typed count in a
 config that another file is the source of truth for drifts silently every time the command grows,
 and drifts in the flattering direction — it under-states what we check. Count the legs of
-`G-3.readCommand` if you need a number; do not re-introduce one here.
+the live goal's `readCommand` if you need a number; do not re-introduce one here.
 
-**`expected-zero` is a real status, not a red.** G-3 legitimately reads 0 for months — its own
-`onTrigger` says the 2026-09-22 read is *could we DETECT an outsider*, not *has one arrived*; the
-outcome read is 2026-11-06. A cold reader must be able to tell "zero because nobody has arrived
+**`expected-zero` is a real status, not a red.** G-4 legitimately reads 0 for months — its own
+`onTrigger` says the 2026-09-26 read is *could we DETECT an outsider*, not *has one arrived*; the
+outcome read is 2026-11-06. (This block named G-3 until 2026-08-26, when David closed G-3 as MET on
+the 08-23 upstream correction and set G-4 in its place. **G-4 is the harder question**, because it
+removes our own outbound effort — G-3's single instance ran entirely through an issue we wrote — so a
+zero here is even more expected than a zero there was.) A cold reader must be able to tell "zero because nobody has arrived
 yet, which is expected" from "zero because the detector is dead", and only the second is
-actionable. The detection paths ARE `G-3.readCommand` — run it; a green chain means we could
+actionable. The detection paths ARE the live goal's `readCommand` — run it; a green chain means we could
 detect an outsider and says nothing about whether one came. (This sentence said "the four detection
 paths" until 2026-08-23. The count above it was corrected first and this one was missed by twelve
 lines — a correction that reaches one copy is not a correction, and the second copy was in the same

@@ -2,10 +2,11 @@
 product: bounds-ledger
 date: 2026-08-26
 lifecycle_stage: launched
-north_star_metric: someone outside Skylark uses the ledger and acts on it (G-3; leading indicator = every detection path in G-3.readCommand is live)
-north_star_value: 2
-north_star_status: condition-met-awaiting-david-ruling
-north_star_classification: measured
+north_star_metric: an outside party acts on a watched record WITHOUT us filing the report (G-4; primary indicator = npm run reports, arrivals through the per-row links)
+north_star_value: 0
+north_star_status: expected-zero
+north_star_classification: expected-zero
+prior_north_star: G-3 (someone outside Skylark uses the ledger and acts on it) — CLOSED MET 2026-08-26 on David's ruling, value 2; re-pointed in the same commit per the close procedure so a closed goal's number never rides as the headline
 last_deploy: c25cecd
 sentry_open_p1: null
 sentry_open_p2: null
