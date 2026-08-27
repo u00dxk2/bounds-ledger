@@ -2,4 +2,44 @@
 # A-7 R5 — refuse a commit whose staged diff carries secret-shaped content.
 # Enable in a fresh clone with:  git config core.hooksPath .githooks
 # (hooksPath is per-clone config, so this file is the recipe, not the guarantee.)
-exec node scripts/history-sweep.mjs --staged
+node scripts/history-sweep.mjs --staged || exit 1
+
+# --- Primer checks at COMMIT time (2026-08-26, skylark-site check-primer-hook-coverage) ----
+# On 2026-08-26 the primer checks REFUSED 7 of 10 primer regenerations, every refusal on
+# prose the lane had ALREADY COMMITTED (bare hexes, count-deixis, a cd-compound, a count
+# with no command) — because in 21 of 24 lanes no hook ran them; they ran the morning
+# after, when the cold agent had already read the broken line. Each STAGED
+# docs/cold-starts/*.md is graded ON THE FILE (the generator's --check grades only a
+# skeleton when the file carries no hand: markers). Waivers are each check's own:
+# a same-line `# primer-command-ok: <reason>` (first-command); a noun beside the hex and
+# the producing command beside the count for the other two — never a softer flag here.
+# An absent ../skylark-site REFUSES rather than skipping: a check that cannot run is not
+# a check that passed.
+primer_files=$(git diff --cached --name-only --diff-filter=ACM | grep '^docs/cold-starts/.*\.md$')
+if [ -n "$primer_files" ]; then
+  SKY_SCRIPTS=../skylark-site/scripts
+  if [ ! -f "$SKY_SCRIPTS/check-cold-readability.mjs" ]; then
+    echo ""
+    echo "✗ pre-commit: $SKY_SCRIPTS not found — the primer checks cannot run, so the commit is refused (not skipped)."
+    exit 1
+  fi
+  # shellcheck disable=SC2086
+  if ! node "$SKY_SCRIPTS/check-primer-first-command.mjs" $primer_files; then
+    echo ""
+    echo "✗ pre-commit: a staged primer hands the next agent a broken first command (check-primer-first-command)."
+    exit 1
+  fi
+  # shellcheck disable=SC2086
+  if ! node "$SKY_SCRIPTS/check-primer-warn-counts.mjs" $primer_files; then
+    echo ""
+    echo "✗ pre-commit: a staged primer carries a warn/finding COUNT without the command that produced it (check-primer-warn-counts)."
+    exit 1
+  fi
+  for primer_file in $primer_files; do
+    if ! node "$SKY_SCRIPTS/check-cold-readability.mjs" "$primer_file"; then
+      echo ""
+      echo "✗ pre-commit: $primer_file fails cold-readability (bare hex / count-deixis / rule-deixis) — label the reference or drop it."
+      exit 1
+    fi
+  done
+fi
