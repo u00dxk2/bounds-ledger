@@ -58,3 +58,21 @@ if [ -n "$blame_files" ]; then
     exit 1
   fi
 fi
+
+# --- A staged index.html must be the page render-site would produce (2026-08-27, A-31) ---
+# GitHub Pages builds on PUSH and waits for nothing: measured 2026-08-26, the Pages build for
+# c25cecd was created 23:06:53Z and its CI run started 23:06:55Z -- the publish is created TWO
+# SECONDS BEFORE CI begins. So render-site --check in CI reports a malformed page AFTER it is
+# already live. On 2026-08-26 commit 784e4f4 shipped an index.html whose first 45 bytes were
+# clobbered, and the only reason no visitor saw it is that Pages was erroring in an unrelated
+# outage -- which is luck, not a gate. This closes the window at COMMIT time instead, where it
+# costs nothing. It does NOT gate the publish; that question stays open as A-31 on 2026-09-09.
+if git diff --cached --name-only --diff-filter=ACM | grep -qx 'index.html'; then
+  if ! node scripts/render-site.mjs --check; then
+    echo ""
+    echo "x pre-commit: staged index.html is not what render-site.mjs would produce."
+    echo "  Pages publishes on push with no gate, so a malformed page here reaches visitors."
+    echo "  Run: node scripts/render-site.mjs   then re-stage index.html."
+    exit 1
+  fi
+fi
