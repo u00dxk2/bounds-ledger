@@ -31,6 +31,21 @@ npm run verify > tmp/verify-out.txt 2>&1
 node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml
 ```
 
+**THE NUMBER THAT WILL LIE TO YOU** — `npm run catches` reads **3** for the current partial week.
+A cold reader takes that as three records moving. Two of the three moved on **bytes only**:
+`pin:2a:U` changed because upstream rewrote an attribution sentence with `$C_2 = 2$ `byte-identical
+either side. The script is honest — its own stdout leads with "a CEILING on catches, not a count of
+them" — and the seam it cannot close is a report or bus line quoting the bare figure. Quote it with
+the byte-only clause attached or do not quote it.
+
+**DON'T-TOUCH** — the `manual: true` discipline on `C-7` and `C-9`, the two erdosproblems.com/36
+claims that report UNVERIFIED and never green. What makes it work is that it refuses exactly the
+evidence that feels most convincing: this machine reaches that page fine — today's `npm run check`
+printed `advisory fetch from THIS machine: HTTP 200, expected "0.380876" still present` under `C-7`
+and still held the claim at UNVERIFIED — and twice that local success has tempted an automation
+which CI disproved within minutes, because the block is datacenter-IP-dependent. The rule is
+load-bearing precisely because it overrides a passing local read.
+
 ## What changed
 
 **The drift cycle — twelfth resolution, and the first retraction in the catch table.** Mirror
@@ -94,8 +109,9 @@ Nothing for David. The lane did today what it is for.
 ## On hold pending data
 
 - `W-3` — the watch for acknowledgement of the erdosproblems.com/36 correction. Both legs still need
-  David; today's local advisory read shows the page unchanged (`0.380876` present, last edited 23
-  January 2026).
+  David; today's local advisory read returned HTTP 200 with the page unchanged (`0.380876` present,
+  last edited 23 January 2026) — and the claim stays UNVERIFIED anyway, which is the point of the
+  DON'T-TOUCH line above.
 - `A-28` — the watch on the Mathstodon announcement, ready-and-unsent, figures now further stale.
   Today's retraction is materially better material than what that draft carries.
 
