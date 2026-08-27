@@ -62,3 +62,24 @@ node ../skylark-site/scripts/gen-primer-first-action.mjs --repo . --target-date 
 ```
 
 Generated: the banner slot, the first-action block (the fence under `<!-- primer:first-action -->` in `docs/daily-config.md`, copied verbatim — re-point it by moving that marker, never by editing the primer), the owed-gates LIST, what shipped (from git log), and State rows as `value · as of <stamp> — release: <command>`. Hand prose goes ONLY inside `<!-- hand:begin narrative -->` … `<!-- hand:end narrative -->` (the banner/INVARIANT inside `hand:begin banner`, rewritten in place, never appended under); everything outside the markers is replaced on the next run, and a dropped region is printed, never silent. A file that already holds prose with no markers makes the generator REFUSE — wrap that prose in the narrative markers and re-run; it merges back. `--check` exits 3 on a failed generation-time check: fix the flagged line and re-run. Why (8/26 retro, 11 of 14 lanes): the hand-authored half of a primer drifts, the generated half does not. Fleet read: `node ../skylark-site/scripts/check-primer-generated.mjs`.
+
+## Tomorrow's primer is generated at P2, not at close (approved 2026-08-27)
+
+First step of P2, every day — `<MT-date>` is TOMORROW's Mountain-Time date:
+
+```
+node ../skylark-site/scripts/gen-primer-first-action.mjs --repo . --out docs/cold-starts/<MT-date>.md
+node ../skylark-site/scripts/gen-primer-first-action.mjs --repo . --check --out docs/cold-starts/<MT-date>.md
+```
+
+**Why it moved off close.** On 2026-08-27, the day the generator was adopted, running it against
+TODAY's primer at midday made it REFUSE at exit 2 — the file held prose with no `hand:` markers, so
+nothing in it would have survived. Wrapping the banner and narrative took four minutes at midday. The
+same discovery at 20:00, mid close-out, is a scramble against a gate that is already red. The
+success signal for the rule is that the close-out generate exits 0 on its FIRST run; it did on
+2026-08-27, from P2.
+
+Generalised, and worth applying past this one script: **a newly adopted tool gets its first run
+against a file that already exists, at a moment when failing is cheap.** A tool first exercised at
+the boundary it was adopted to protect is a tool whose first real test is also its first
+emergency.

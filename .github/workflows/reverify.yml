@@ -173,6 +173,12 @@ jobs:
       # It renders a figure and no verdict, so it is an indicator and never a gate.
       - name: Self-test outside-report arrival counter (no network)
         run: node scripts/report-rate.mjs --selftest
+      # Self-test only. It reads PROSE, so it can only run against files a commit stages --
+      # enforcement lives in .githooks/pre-commit, not here. Its trigger list was measured
+      # against this repo's whole corpus of reports and findings before it shipped: `exhausted`
+      # was dropped for producing the only false positives.
+      - name: Self-test self-attributed-cause control check (no network)
+        run: node scripts/check-self-attribution.mjs --selftest
       # Not piped and deliberately network-free: this asserts README's published figures still
       # match COMMITTED repo state. A stale block is a falsifiable public error on the front
       # page of a repo whose pitch is that it notices stale numbers.
