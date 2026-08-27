@@ -43,3 +43,18 @@ if [ -n "$primer_files" ]; then
     fi
   done
 fi
+
+# --- Self-attributed cause carries its control (2026-08-27, orchestrator refine of (a)3) ---
+# The 2026-08-17 rule ("a flattering cause still needs a positive control") missed three times.
+# Moving it from a discipline note to the line where the claim is written. Trigger list is
+# MEASURED against this corpus, not guessed: `exhausted` was dropped for producing the only
+# false positives. See scripts/check-self-attribution.mjs header.
+blame_files=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^docs/(daily|findings)/.*\.md$')
+if [ -n "$blame_files" ]; then
+  if ! node scripts/check-self-attribution.mjs $blame_files; then
+    echo ""
+    echo "x pre-commit: a self-attributed cause has no control beside it (check-self-attribution)."
+    echo "  Name the command or observation that would show the cause is NOT ours, on the same line."
+    exit 1
+  fi
+fi
