@@ -170,7 +170,9 @@ async function main() {
   console.log(`So ${c.outsideArrivals.length} is a MEASURED figure: the probe demonstrably sees ${c.raw} issue(s) and accounts for every one.`);
   console.log("This counts ARRIVALS, never clicks — the page is static and we are not adding an analytics stack.");
   console.log("A click measures curiosity; a filed report measures someone who read a row, disbelieved it, and acted.");
-  console.log("G-3 asks for n=1. This is its leading indicator, and it renders no verdict.");
+  console.log("G-4 asks for n=1, and this stopped being a LEADING indicator when G-3 closed 2026-08-26:");
+  console.log("an issue arriving through a per-row link has no artifact we authored in its causal path,");
+  console.log("which is G-4's whole condition — so this is the thing itself. It renders no verdict.");
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
