@@ -20,6 +20,8 @@
 // information as a permanently-green one, which is this lane's founding defect. It runs in
 // `npm run check` (every local/live run) and joins CI the run after the page first reads
 // green. G-1's green streak measures the LEDGER; a stale brief must not silently consume it.
+// (G-1 CLOSED MET 2026-08-22; the reasoning holds for whichever goal is Tier-0 — G-4 as of 08-26.
+// Dated 2026-08-27 by the sibling sweep for the same stale-goal shape found in report-rate.mjs.)
 
 import { readFile } from "node:fs/promises";
 import { join, dirname } from "node:path";

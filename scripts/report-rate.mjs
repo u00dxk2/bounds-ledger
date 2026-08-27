@@ -1,4 +1,11 @@
 #!/usr/bin/env node
+// STATUS 2026-08-27: G-3 CLOSED MET 2026-08-26 (value 2, David's ruling). G-4 is Tier-0 now.
+// Everything below that speaks of G-3 in the present tense is HISTORICAL RATIONALE for why this
+// script was built; read it that way. What changed materially: with G-3 closed this stopped being
+// a LEADING indicator and became the thing itself, because an issue arriving through a per-row
+// link has no artifact we authored in its causal path — which is G-4's entire condition.
+// Found by the sibling sweep the fix-then-grep rule demands: I corrected this file's OUTPUT line
+// earlier today and left this header, which is the same incomplete-correction shape the fix was for.
 // G-3's missing leading indicator: has anyone OUTSIDE Skylark used the ledger and acted on it?
 //
 // WHY THIS EXISTS. G-3 reads 0 and will keep reading 0 for reasons that carry no information,

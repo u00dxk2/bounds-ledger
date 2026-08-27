@@ -10,6 +10,11 @@
 // ledger/teorth-optimizationproblems/constants/87a.md was added); adoption is
 // David's call, never automatic.
 // The dated cases, exclusions, outward deduction, and full rationale follow.
+// STATUS 2026-08-27: G-1 CLOSED MET 2026-08-22, and G-3 CLOSED MET 2026-08-26. The G-1 sentences
+// below are HISTORICAL RATIONALE for why this indicator was built, not a live reading. The
+// argument still holds under G-4 — a north-star that sits at 0 then jumps to 1 has no gradient,
+// and this answers the question that count cannot — so the script is unchanged and only its
+// framing is dated here.
 // Tier-1 leading indicator: VERIFIED CATCHES ON NAMED RECORDS, PER WEEK.
 //
 // Approved 2026-08-12, built 2026-08-13. It exists because G-1 has no gradient — the
