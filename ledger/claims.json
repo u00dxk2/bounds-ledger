@@ -622,7 +622,7 @@
     "id": "pin:2a:U",
     "statement": "Last-listed upper-bound table row for The Crouzeix constant (2a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/2a.md",
-    "expect": "| $2$ | [LS2026] | Lorist–Schwenninger: proof of Crouzeix's conjecture, combining previous tools for weaker estimates with a \"simple perturbation lemma for 2-dilations\" applied to the iterates $f^n$ in the double-layer potential representation.  The paper acknowledges [Jin2026]. |",
+    "expect": "| $2$ | [LS2026] | Lorist–Schwenninger: independent proof by a different route, combining previous tools for weaker estimates with a \"simple perturbation lemma for 2-dilations\" applied to the iterates $f^n$ in the double-layer potential representation.  See the note on priority below. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/2a.md",
     "generated": true
   },
