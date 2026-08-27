@@ -7,7 +7,7 @@ north_star_value: 0
 north_star_status: expected-zero
 north_star_classification: expected-zero
 prior_north_star: G-3 (someone outside Skylark uses the ledger and acts on it) — CLOSED MET 2026-08-26 on David's ruling, value 2; copied from docs/daily-config.md, never from yesterday's report
-last_deploy: 7547c01
+last_deploy: a4558ed
 sentry_open_p1: null
 sentry_open_p2: null
 mrr_usd: null
@@ -148,3 +148,40 @@ run; it just did not discriminate. Same shape as the 2026-08-23 premise-check fi
 **Ledger.** 21 open items before today's close of `A-30` — the deferral on adopting the primer
 generator; `G-4` — the Tier-0 goal that an outside party acts on a watched record without us filing
 the report — is at 0.
+
+<!-- findings:begin -->
+
+## P3 back-patch — the page under-reported its own diligence (`a4558ed`)
+
+Appended after the report was drafted. It does **not** outrank the BLUF — upstream's retraction is
+still the day's headline — but it is the day's user-visible ship and a cold reader should not have
+to reconstruct it from the git log.
+
+The public page's freshness stamp read `fetched <date>`, taken from the mirror's `fetchedAt`. That
+field only moves on a `--snapshot`, and a snapshot only happens when something **drifted** — so a
+day the alarm runs and finds nothing moved leaves it untouched. The stamp therefore tracked
+*upstream's* activity, not ours.
+
+Measured over mirror history rather than assumed: 10 distinct `fetchedAt` dates since 2026-07-23,
+longest frozen window **nine days** (2026-08-14 → 2026-08-23), during which the scheduled job
+verified all 222 pinned rows daily while the page told visitors "fetched 2026-08-14".
+
+This is the **inverse of the founding defect**. That one was an alarm permanently green, claiming
+safety it had not checked. This one is a page under-claiming: a nine-day-old date on a records
+ledger reads as abandoned, and "we notice when your number moves" is the entire product claim. The
+honest answer during those nine days was *steady*, and the page could not say it.
+
+The fix states what it can prove (the date the mirror last changed), says plainly that a quiet
+stretch leaves that date alone, gives the measured nine-day figure so a reader can calibrate, and
+links the run history as the live read. It deliberately does **not** bake in a "last checked"
+value, which would go stale the moment it published — the same reason `render-site` keys on
+`fetchedAt` and not on `now`.
+
+`[reached: unknown]` — the page is static GitHub Pages with no analytics, by deliberate choice
+(a click measures curiosity; a filed report measures someone who acted). The nearest proxy,
+`npm run traffic` at 2026-08-27T20:27:55Z, reads **2 unique viewers** in the latest 14-day window
+against 183 unique cloners, and the cloner figure is mostly our own CI checking out the repo on a
+schedule. At N=2 nothing about this change is observable yet; it ships on judgment, which the
+sub-floor rule permits.
+
+<!-- findings:end -->
