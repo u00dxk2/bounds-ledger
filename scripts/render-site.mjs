@@ -213,7 +213,8 @@ tr[hidden]{display:none}
 <p class="lede">Best-known bounds move, and the papers and index pages citing them do not all move at the same time. This is every mathematical constant this ledger watches, with the exact table rows it has pinned.</p>
 
 <div class="note">
-<p><strong>Read this before you trust a number here.</strong> This page is a <em>snapshot</em>, not a live read. It shows our mirror of <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a> at upstream commit <code style="display:inline;padding:.1rem .3rem">${esc(sha.slice(0, 7))}</code>, fetched ${esc(generatedOn)}.</p>
+<p><strong>Read this before you trust a number here.</strong> This page is a <em>snapshot</em>, not a live read. It shows our mirror of <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a> at upstream commit <code style="display:inline;padding:.1rem .3rem">${esc(sha.slice(0, 7))}</code>.</p>
+<p><strong>${esc(generatedOn)} is the date this mirror last CHANGED &mdash; not the last time it was checked.</strong> Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date means the records have been <em>steady</em>, not that nobody has looked. The longest such quiet stretch so far was nine days. To see the actual last check and its verdict, read the <a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a> &mdash; that is the live read, and this page is deliberately not.</p>
 <p>Every row links to its primary source so you can check us in one hop — and if a row here disagrees with the source, that is a bug worth <a href="https://github.com/u00dxk2/bounds-ledger/issues">reporting</a>.</p>
 <p><strong>Every row has its own link.</strong> Click a row&rsquo;s short id — the grey code under the constant&rsquo;s name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred.</p>
 <p><strong>These are last-listed table rows, not a claim about which bound is “the record.”</strong> Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.</p>
@@ -326,6 +327,18 @@ async function selftest() {
   assert.match(html, /Krivine/, "must render the pinned upper row");
   assert.match(html, /Davie/, "must render the pinned lower row");
   assert.match(html, /e70b4a4/, "must state the upstream sha it is a snapshot of");
+
+  // The snapshot date must be labelled as LAST CHANGED, never as last checked. Measured 2026-08-27:
+  // fetchedAt only moves on a --snapshot, which only happens when something drifted, so a quiet
+  // stretch freezes it -- the longest so far was NINE days (2026-08-14 -> 2026-08-23), during which
+  // the scheduled job verified every row daily. Reading that date as "last looked at" makes a
+  // diligently-checked ledger look abandoned -- the inverse of this repo's founding defect, and it
+  // costs exactly the trust this page exists to earn.
+  assert.match(html, /last CHANGED/, "must label the snapshot date as last-changed, not last-checked");
+  assert.match(html, /actions[/]workflows[/]reverify[.]yml/, "must hand the reader a live read for the last actual check");
+  // NEGATIVE CONTROL: the old phrasing implied the date was when we last looked. It must be GONE,
+  // not merely outnumbered by the new sentence.
+  assert.doesNotMatch(html, /[<][/]code[>], fetched /, "the bare fetched-date phrasing must not survive");
 
   // A missing side must be shown as missing, never silently blank — 2a has no lower pin here.
   assert.match(html, /not pinned/, "a constant with only one pinned side must say so");
