@@ -4,6 +4,36 @@ project: bounds-ledger
 
 # daily-config — bounds-ledger
 
+## The first action — DECLARED, and what the primer generator copies
+
+<!-- primer:first-action -->
+```
+git rev-parse HEAD origin/main
+git rev-list --count origin/main...HEAD
+npm run verify > tmp/verify-out.txt 2>&1
+node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml
+```
+
+Run from the repo root, one command per line, **no leading `cd`** and no `&&` chain — a compound the
+permission classifier cannot statically resolve parks the pane at a silent prompt that reads exactly
+like a hang. Read each exit code directly; never through a pipe (`| tail` reports the pager's `0`,
+which is this lane's founding defect).
+
+**Line 2 MUST print `0`.** Any other number means your HEAD is not the commit CI read, so line 4's
+verdict — green or red — describes a different tree. Both polarities demonstrated on 2026-08-27 at
+adoption (KP-78): with two unpushed commits it printed `2`; after the push, `0`.
+
+**Line 3 is the day's first real command and the reason this fence exists** — `npm run verify` writes
+`tmp/.verify-receipt.json` at the current HEAD, and `agent-status` refuses the day's first bus post
+without one. A bare `npm run check` leaves you refused later, at a worse moment. Its output goes to a
+file because piping it is refused by the pre-commit corruption guard, correctly.
+
+**Why this fence and not the CI-truth fence below** (declared 2026-08-27): the orchestrator's two
+candidates were both CI-truth reads, and neither is what a cold agent runs first. `npm run verify` is,
+per `AGENTS.md`. Declaring a CI read as the first action would have mechanically installed a wrong
+instruction into every generated primer from here on — the CI read answers *may I claim green*, which
+is a question you reach after the gate has run, not before.
+
 **CI truth (R-2, 2026-08-15):** before any "shipped and verified" / "CI green" claim, run
 
 ```
@@ -26,9 +56,12 @@ Both scripts carry `--help` / `--selftest`. Read the exit code by redirect, neve
 ⚠ **`check-ci-status.mjs` reads your LOCAL HEAD, so run it from a `main` checkout or its verdict is about a different commit.** Near-miss 2026-08-17: it printed *"GREEN — 1 completed non-scheduled success(es) for HEAD"* while I was checked out on a feature branch, so the green described that branch's PR run and said nothing about `main`, which was red at the time. The script names the sha it used on its first line (`local HEAD cf1e2786a4`) — read that line, not just the verdict. The prompt's standing rule already says to discriminate with `git rev-parse HEAD origin/main`, but it frames that as the response to an UNKNOWN; this failure produced a confident **GREEN**, which is the direction nobody double-checks. Make the rev-parse unconditional:
 
 ```
-git rev-parse HEAD origin/main && [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ]   # prints both; ABORTS on mismatch. No pipe — the exit code is real.
+git rev-parse HEAD origin/main
+git rev-list --count origin/main...HEAD
 node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml
 ```
+
+**Line 2 MUST print `0`.** Any other number means your HEAD is not the commit CI read, so line 3's verdict — green or red — is about a different tree. Demonstrated both ways on 2026-08-27 at adoption (KP-78): with two unpushed commits it printed `2`; after the push, `0`. This replaced a one-line `&&` chain containing a `$(...)` comparison, which was correct as shell and could not be auto-approved by the permission classifier, so it PARKED the pane at a silent prompt that reads as a hang. One command per line; each exit code is read directly, never through a pipe.
 
 **Both answers demonstrated at adoption, 2026-08-16** (KP-78 — ship no detector without showing it can fail): `--workflow reverify.yml` at HEAD `fd70f11` → exit 0, *"GREEN — 1 completed non-scheduled success(es) for HEAD"*; `--workflow nonexistent.yml` at the same HEAD → exit 2, *"UNKNOWN — CI read failed/unparseable — UNKNOWN, not green"*. It distinguishes; it does not blanket-pass.
 

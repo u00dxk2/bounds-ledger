@@ -51,3 +51,14 @@ commit, or the receipt is stale before you post. Never reach for `--no-verify-re
 No `carry-forward.md`, no `current-state.md`, no `report-caches.json`. The cold-start primer plus
 `continuity/items.json` carry that role, which is the documented layout — their absence is by design
 and should not be read as a gap.
+
+## Tomorrow's primer — GENERATED first, prose second (added 2026-08-26)
+
+At close, BEFORE writing a word of tomorrow's primer, run both — the first WRITES the mechanical sections, the second GRADES them. `<MT-date>` is tomorrow's Mountain-Time date, the day the primer is READ:
+
+```bash
+node ../skylark-site/scripts/gen-primer-first-action.mjs --repo . --target-date <MT-date> --out docs/cold-starts/<MT-date>.md
+node ../skylark-site/scripts/gen-primer-first-action.mjs --repo . --target-date <MT-date> --check --out docs/cold-starts/<MT-date>.md
+```
+
+Generated: the banner slot, the first-action block (the fence under `<!-- primer:first-action -->` in `docs/daily-config.md`, copied verbatim — re-point it by moving that marker, never by editing the primer), the owed-gates LIST, what shipped (from git log), and State rows as `value · as of <stamp> — release: <command>`. Hand prose goes ONLY inside `<!-- hand:begin narrative -->` … `<!-- hand:end narrative -->` (the banner/INVARIANT inside `hand:begin banner`, rewritten in place, never appended under); everything outside the markers is replaced on the next run, and a dropped region is printed, never silent. A file that already holds prose with no markers makes the generator REFUSE — wrap that prose in the narrative markers and re-run; it merges back. `--check` exits 3 on a failed generation-time check: fix the flagged line and re-run. Why (8/26 retro, 11 of 14 lanes): the hand-authored half of a primer drifts, the generated half does not. Fleet read: `node ../skylark-site/scripts/check-primer-generated.mjs`.
