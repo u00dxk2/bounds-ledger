@@ -143,3 +143,32 @@ Everything else was ours to do and is done.
   `6ef0afca` as superseded.
 - **Codex:** 0 dispatches. No self-probe was run this session, so no GREEN is claimed; calibration put
   every phase on Sonnet-direct (warm context, sub-30-minute mechanical scopes, taste-heavy choices).
+
+<!-- findings:begin -->
+
+## Back-patch — 15:45 MT, after this report was written
+
+**David answered card `878ba107` and the answer supersedes the Recommendation above.** His words
+verbatim: *"Let's make this an uncaged-minds post - please send all the details to the orchestrator
+to send to the uncaged-minds agent for a draft."*
+
+Everything outside this fence was true when written and is deliberately not rewritten. What changed:
+
+- **The Mathstodon post will not be sent, and never was.** Fifteen days written, reviewed and
+  unsent, and it closes without a single thing being posted anywhere — which was the entire purpose
+  of the gate. `A-15` closes as the third outcome its own `closeWhen` provided for: not yes, not no,
+  **changed** — a different channel.
+- **The material is routed, not authored here.** David named the uncaged-minds agent as the drafter.
+  Drafting it in this lane would be scope creep past an explicit instruction, so this lane's job
+  ends at a complete, accurate, correctly-caveated hand-off. `A-37` tracks it to acknowledgement.
+- **The Recommendation above is discharged.** "Read the card" was the right ask at write time; he
+  read it and answered within the hour. **Nothing now needs David from this lane today.**
+- **The constraints travel with the material and get stronger, not weaker.** A Substack post is a
+  louder surface than a Mastodon instance: name nobody, keep the erdosproblems.com/36 story out per
+  his 2026-08-02 decision, let no figure decay, and do not trim the honest limits for length — the
+  ledger did **not** catch the retraction, and two claims report UNVERIFIED forever.
+
+**The classification sentence above is unchanged.** This is a routing decision, not a finding; today
+remains instrument-facing with a consecutive count of 1.
+
+<!-- findings:end -->
