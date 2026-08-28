@@ -485,7 +485,8 @@
         "f0b58d5",
         "56a8586",
         "137255f",
-        "22fae49"
+        "22fae49",
+        "cea25f3"
       ],
       "expectedSignalBy": "2026-11-06",
       "signalDateNote": "Date UNCHANGED deliberately — the gate forbids re-dating a wait that cannot fill, and this is a re-point of what is read, not a postponement of when. A zero on 2026-11-06 will now mean something readable (\"no outside contact in 90 days\") instead of something arithmetic (\"we did not reach a threshold that was never reachable\").",
@@ -1159,7 +1160,9 @@
         "c698c10"
       ],
       "expectedSignalBy": "2026-08-28",
-      "signalDateNote": "Same P2 scan, same class, one row later. A-35 carried expiresOn (which check-deferrals reads) but no expectedSignalBy (which the item date sweep reads), so it was half-visible: one instrument could see it and the other could not. Dated to match expiresOn so both read the same day. THE TRANSFERABLE POINT, and it is why this is written down rather than just fixed: two date fields serving two different instruments is a place where an item can be simultaneously tracked and untracked, and nothing reports the disagreement."
+      "signalDateNote": "Same P2 scan, same class, one row later. A-35 carried expiresOn (which check-deferrals reads) but no expectedSignalBy (which the item date sweep reads), so it was half-visible: one instrument could see it and the other could not. Dated to match expiresOn so both read the same day. THE TRANSFERABLE POINT, and it is why this is written down rather than just fixed: two date fields serving two different instruments is a place where an item can be simultaneously tracked and untracked, and nothing reports the disagreement.",
+      "readCommand": "git cat-file -s HEAD:CLAUDE.md — prints the LF-normalized byte size of the committed CLAUDE.md, which is the exact quantity the trigger is about. Under 45000 means the P5 compression landed; 49202 (the value at filing) or anything above 45000 means it has not. POSITIVE CONTROL that this cheap command measures the same property as the fleet tool that raised the finding: on 2026-08-28 both returned 49202, and git stores blobs LF-normalized, which is the unit `check-claude-md-sizes.mjs` declares (utf8-bytes-lf). DO NOT substitute that fleet script as the read: it exits 1 if ANY of the 32 lanes is over budget and two others are, so its exit code can never go green on our action alone — a pass condition that cannot be reached.",
+      "note4": "THE MISSING readCommand WAS THE SAME DEFECT AS THIS MORNING'S, ONE FIELD TO THE LEFT — orchestrator-caught 2026-08-28, and worth recording rather than quietly filling in. This row was filed carrying a `releaseTest` whose value is the exact command a reader needs, so it was FULLY COMPLIANT with `check-deferrals` and CRITICAL under `continuity-check`, which reads `readCommand`. The command existed; the field the second instrument reads was empty. That is the identical shape written up in the P2 task-complete hours earlier — A-35 carrying `expiresOn` but not `expectedSignalBy`, 'two date fields serving two instruments, and nothing reports the disagreement' — and I then reproduced it on the same row in a different pair of fields. THIRD INSTANCE TODAY of one thing being simultaneously tracked and untracked. Also worth noting plainly: P2 declared its gates clean and `continuity-check` was not in that battery, so the phase that diagnosed the class shipped a fresh instance of it behind a green board."
     },
     {
       "id": "A-36",
@@ -1176,7 +1179,8 @@
       "readCommand": "Run mcp__claude-in-chrome__tabs_context_mcp from this lane. Connected means the check is available and this item is actionable; 'Browser extension is not connected' means it is still blocked and the item rolls forward with that recorded. POSITIVE CONTROL that a connected extension would actually answer the question: resize_window to 390x844 (iPhone-class width) against https://u00dxk2.github.io/bounds-ledger/ and screenshot — the reads that matter are whether the .scroll container scrolls the table rather than the page body, and whether the filter and Order controls stack legibly rather than overflowing.",
       "onTrigger": "On 2026-09-04 either run the narrow-width check (if the extension is connected) and record BOTH what held and what did not, or record that it is still blocked and say so in one line. Do NOT close this by reasoning from the CSS: reading min-width and overflow-x and concluding the page is fine is precisely the non-verification these three rotations already performed, and a fourth would be the same act with more confidence.",
       "linkedCommits": [
-        "888a1e5"
+        "888a1e5",
+        "87991df"
       ]
     }
   ],
@@ -1202,7 +1206,10 @@
       "f59c907": "2026-08-26 pre-commit wiring so the primer checks run when the primer is COMMITTED rather than the morning after. Hook plumbing for the primer gate; no item owns the hook itself.",
       "476243c": "2026-08-26 close-out primer section — primer bookkeeping, exempt class, recorded for completeness.",
       "7baa3f6": "2026-08-26 hygiene pass (report, primer, A-32, the run-vs-job rule). Report/primer bookkeeping.",
-      "52283c3": "2026-08-26 CORRECTION to 7baa3f6 — the sibling sweep claimed there had never been run and was wrong. Kept as its own untracked entry ON PURPOSE: it is the anchor instance of the composed-measurement family and should stay findable beside the commit it corrects."
+      "52283c3": "2026-08-26 CORRECTION to 7baa3f6 — the sibling sweep claimed there had never been run and was wrong. Kept as its own untracked entry ON PURPOSE: it is the anchor instance of the composed-measurement family and should stay findable beside the commit it corrects.",
+      "4179f1e": "2026-08-28 first-action fence change — a RAIL/PROCESS improvement with no item of its own: it adds the David's-board read to docs/daily-config.md so a session cannot run its cadence past a live answer. Shipped from a P1 retro proposal the orchestrator approved the same morning; the proposal is the record, and creating an item to own a one-line prompt change would be ledger bureaucracy. Deliberately NOT attached to A-15 — that row is the Mathstodon decision, and borrowing it as a host would misfile the commit to make a checker quiet.",
+      "c71b8c5": "2026-08-27 P5 hygiene from the PRIOR session — rail bookkeeping, and outside this session's window of responsibility. Same class as the 467b608/81cef39 entries already recorded here.",
+      "c62bfe4": "2026-08-27 close-out from the PRIOR session — rail bookkeeping. Note the shape: it is the commit that cleared the previous continuity WARN, and it is itself now an untracked commit. That recursion is why this suppression list exists rather than a rule that every commit must own an item."
     },
     "signalDateField": "expectedSignalBy",
     "updated": "2026-08-27",
