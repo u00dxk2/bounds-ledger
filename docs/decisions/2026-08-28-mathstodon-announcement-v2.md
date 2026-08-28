@@ -39,27 +39,42 @@ The sharpest sentence is the new one: *for those fifteen days a reader of the so
 believed it; a reader of the ledger saw "unverified".* That is the product, stated without
 overclaiming.
 
+**Amended the same day, after the orchestrator's kickoff pointed at a story the first draft had
+left out.** The first cut of v2 told only the retraction — an episode in which the ledger did not
+act — and that is a weak note to close an invitation on. The lane's strongest evidence is four days
+older and was sitting in `A-33`: on 2026-08-20 we filed issue #150 upstream, on 2026-08-23 an
+outside contributor fixed the record citing that report (`7848802`, *"Reported in issue 150."*), and
+the maintainer closed it completed the same afternoon. That is `G-3`'s closing evidence, and
+`A-33`'s own note calls it *"the most interesting thing this lane has ever had to tell David"*.
+
+It now appears as one line before the invitation, and it is the line that makes the invitation
+credible: *"tell me it's wrong"* is a request, but *"a stranger did exactly that and the maintainer
+merged it"* is proof the request goes somewhere. **The two stories are not alternatives** — the
+retraction carries the thesis, the report carries the evidence that acting on it works.
+
 ## The post, verbatim
 
-Send this text exactly, or don't send it. **1706 characters** as Mastodon counts them, against
+Send this text exactly, or don't send it. **1697 characters** as Mastodon counts them, against
 Mathstodon's limit of **1729** — both read live from `mathstodon.xyz/api/v2/instance` on 2026-08-28,
-not assumed (`max_characters: 1729`, `characters_reserved_per_url: 23`). Margin is 23 characters, so
+not assumed (`max_characters: 1729`, `characters_reserved_per_url: 23`). Margin is 32 characters, so
 an edit at send time will not fit and has not been reviewed.
 
 ```
-Best-known bounds and constants move. So do the claims attached to them: who proved what, and independently of whom. A number you looked up last month can be stale, and nothing tells you.
+Best-known bounds and constants move, and so do the claims attached to them. A number you looked up last month can be stale, and nothing tells you.
 
-bounds-ledger is the boring half of that: a byte-level mirror of one curated source (teorth/optimizationproblems) plus ~230 pinned claims, all but two re-checked daily and on every push. When a pinned row changes the build goes red and files what moved. It doesn't look for better bounds — it watches records that already exist.
+bounds-ledger is the boring half of that: a byte-level mirror of one curated source (teorth/optimizationproblems) plus ~230 pinned claims, all but two re-checked daily and on every push. When a pinned row changes the build goes red and files what moved. It doesn't look for better bounds; it watches records that exist.
 
-Between 24 July and 27 August 2026 the alarm fired on twelve upstream changes. The last is worth showing.
+Between 24 July and 27 August 2026 the alarm fired on twelve upstream changes; the last is worth showing.
 
-Upstream withdrew an attribution it had carried for fifteen days, writing that the old text "read a citation of prior public posting as a statement of dependence, and was incorrect". No number moved; the constant is byte-identical either side.
+Upstream withdrew an attribution it had carried for fifteen days, writing that the old text "read a citation of prior public posting as a statement of dependence, and was incorrect". No number moved — the constant is byte-identical either side.
 
-The ledger did less than that sounds. It did not catch the error — upstream corrected itself, and nobody told them. What it did was decline to repeat the claim: when it appeared, the fetch available returned an abstract page rather than the paper body, so it went in as "unverified by us, not contradicted". For those fifteen days a reader of the source would have believed it; a reader of the ledger saw "unverified".
+The ledger did less than that sounds. It did not catch the error: upstream corrected itself, and nobody told them. What it did was decline to repeat the claim. The fetch available returned an abstract page, not the paper, so it went in as "unverified". For those fifteen days a reader of the source would have believed it; a reader of the ledger saw "unverified".
 
-A change with no number in it is invisible to every numeric check; this surfaced as a byte diff. The only defence against being confidently wrong is refusing to assert what you can't check: those two report UNVERIFIED forever rather than green.
+A change with no number in it is invisible to every numeric check; this surfaced as a byte diff. Two claims can't be checked from CI at all; they report UNVERIFIED forever, never green.
 
-Built with AI agents, human-gated before anything goes outward.
+It runs the other way too: I reported that a record cited the wrong witness, a stranger fixed it upstream citing that report, and the maintainer closed it.
+
+Built with AI agents, human-gated before anything goes out.
 
 The most useful thing you can do is tell me it's wrong — issues welcome.
 
@@ -93,10 +108,15 @@ the post by putting one back.
   is the A-28 defect designed out rather than patched: a ledger about staleness must not announce
   itself with a decaying number.
 - **Any @-mention.** Outward contact, out of bounds regardless of the gate.
-- **The merged PR #141.** Dropped, not forgotten — it was v1's lead and is the only outside
-  acceptance this lane has. It cost budget the retraction story uses better, and "we also got a
-  small fix merged" reads as a weaker second brag. If David wants it back it is a real change and
-  goes back through review.
+- **The merged PR #141.** Dropped, not forgotten — it was v1's lead. It cost budget the retraction
+  story uses better, and "we also got a small fix merged" reads as a weaker second brag. The
+  outward-contribution slot is now held by **issue #150** instead, which is the stronger of the two:
+  #141 was us fixing upstream's citation keys, while #150 is a stranger acting on our report. If
+  David wants #141 back it is a real change and goes back through review.
+- **The contributor's name, and the maintainer's.** The post says "a stranger" and "the maintainer".
+  Same rule as everywhere else here: the repository can be named, the person need not be. Naming an
+  outside volunteer in our own announcement borrows their standing for our pitch, and they
+  contributed to a maths repo, not to our marketing.
 
 ## Conditions on the send — for David, not for us
 

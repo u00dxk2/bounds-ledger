@@ -2,7 +2,9 @@
 
 **Date:** 2026-08-28 (MT)
 **Artifact:** `docs/decisions/2026-08-28-mathstodon-announcement-v2.md`
-**Verdict:** SURVIVES, with five amendments applied before the draft was recorded.
+**Verdict:** SURVIVES. Five amendments in the first pass, plus one added paragraph in a second pass
+the same day (see the final section — the figures in Angle 9 are the first pass's and are superseded
+there: the shipped post is **1697** characters, margin **32**).
 **Gate:** this is gate 1 of 2 (the standing rule: at least one adversarial review on everything this
 project produces that might touch the public). Gate 2 is David's send and is NOT given.
 
@@ -136,3 +138,47 @@ of a live instrument needs its own read, which is this repo's own standing rule.
 3. Added the value sentence the draft was missing: *for those fifteen days a reader of the source would have believed it; a reader of the ledger saw "unverified"* (Angle 8's counter)
 4. `the fetch available to us` to `the fetch available` — removed a first-person clash with the closing `tell me it's wrong` (minor, register)
 5. Trimmed 1723 to 1706 characters for a workable send margin (Angle 9)
+
+---
+
+## Second pass, same day — the paragraph the first draft was missing
+
+The orchestrator's `/daily` kickoff named a different story than the one I built: the outside
+contributor who fixed a record citing our report. I had read the kickoff's phrasing as a factual
+error and it was not — the event is real, dated and evidenced, and my draft had simply left the
+lane's strongest material out. Recording that because the reflex to defend a finished artifact
+against a late input is exactly what would have shipped the weaker post.
+
+**What was added**, one line before the invitation: *"It runs the other way too: I reported that a
+record cited the wrong witness, a stranger fixed it upstream citing that report, and the maintainer
+closed it."*
+
+**Angle 1 re-run on the new clause — the method sentence, which is where this lane's outward
+artifacts always break.** Every claim in it checked against the record rather than from memory:
+
+| Clause | Evidence |
+|---|---|
+| "I reported that a record cited the wrong witness" | issue #150 filed 2026-08-20T22:38Z, titled *"constants/87a.md: the current-record row quotes Martin's degree-8 discriminant, not the degree-12 construction that gives 857.5662"* |
+| "a stranger fixed it upstream citing that report" | commit `7848802`, 2026-08-23T15:14:02Z, *"Attach the right witness to the 857.567 record in 87a"*, message ending **"Reported in issue 150."** |
+| "and the maintainer closed it" | #150 closed completed 2026-08-23T17:15:35Z |
+
+No clause overstates. Note what it does **not** say: it does not claim the contributor found the
+repo on their own, because they did not — the causal path ran through a report we wrote and sent.
+That is `G-3`, which is closed, and it is explicitly **not** `G-4`. A post implying otherwise would
+be this lane's own goal definition broken in its own announcement.
+
+**Angle 3 re-run — naming.** "A stranger" and "the maintainer", no names. The grep was re-run over
+the final text with the contributor's handle and the cited author added to the pattern: **zero
+hits**, against a **positive control** of 8 hits in the mirrored `87a.md` and 20 in `2a.md`, so the
+extended pattern demonstrably matches where those names actually live. Naming an outside volunteer in our own announcement borrows their standing for our pitch, and
+they contributed to a maths repo, not to our marketing.
+
+**Angle 8 is materially weakened, which is the point of the amendment.** The objection was that the
+post's centrepiece is an episode where the ledger did not act. That objection stands for the
+retraction — and the post no longer ends there. The closing invitation *"tell me it's wrong"* is now
+preceded by evidence that someone did exactly that and it reached a maintained record. A request
+followed by proof the request goes somewhere is a different artifact from a request alone.
+
+**Recount after the amendment:** 1697 of 1729 characters, margin 32 — verified by the same counter,
+and the embedded block was again extracted back out of the decision file and diffed against the
+counted text (identical). Angle 9's requirement survives the edit.
