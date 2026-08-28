@@ -1189,7 +1189,8 @@
       "linkedCommits": [
         "888a1e5",
         "87991df"
-      ]
+      ],
+      "closeWhen": "A narrow-width render of the published page has been captured and what it showed is RECORDED — both what held and what did not — or the check is recorded as permanently unavailable with a reason. **Reading the CSS and concluding the page is probably fine does NOT close this**: that is exactly the non-verification three consecutive flow-rotations already performed, and a fourth would be the same act with more confidence."
     },
     {
       "id": "A-37",
@@ -1205,7 +1206,8 @@
       "readCommand": "node ../skylark-site/scripts/agent-status.mjs --project bounds-ledger --list 2>&1 | grep -i uncaged — or read the bus for any reply referencing the hand-off message id recorded in this row's linkedCommits commit body. A reply from the orchestrator or the uncaged-minds agent means the hand-off landed and this row closes. NO reply by the signal date means it did not land, and the action is ONE follow-up on the bus to the orchestrator — never a second card to David, who has already answered.",
       "onTrigger": "On 2026-09-02: if the hand-off has been acknowledged, close this and record where the draft lives. If not, post ONE bus follow-up to the orchestrator naming the original message id. Do NOT draft the post, do NOT card David, and do NOT re-open the Mathstodon question — he answered it.",
       "linkedCommits": [],
-      "note4": "HAND-OFF SENT 2026-08-28, bus messageId 10086869-8913-407b-99d4-ef49f3b2e903 (task-complete, superseding the resolved needs-decision 83def607). That id is the thing to search for when checking whether this landed — the readCommand above says so. Board card 878ba107 dismissed against the executed work, audit row posted, so David's board carries nothing outstanding from this lane. WHAT WENT IN THE HAND-OFF: both stories with dates and the upstream retraction quoted verbatim; the reviewed Mathstodon post embedded by CONCATENATION and then extracted back out and diffed against the committed draft (identical), never retyped; seven candidate angles ranked by transferability, explicitly the drafter's to choose from; five hard constraints; and the source file paths. It states in its own first lines that it is material and not a draft, and that the publish gate now sits at the Uncaged Minds end."
+      "note4": "HAND-OFF SENT 2026-08-28, bus messageId 10086869-8913-407b-99d4-ef49f3b2e903 (task-complete, superseding the resolved needs-decision 83def607). That id is the thing to search for when checking whether this landed — the readCommand above says so. Board card 878ba107 dismissed against the executed work, audit row posted, so David's board carries nothing outstanding from this lane. WHAT WENT IN THE HAND-OFF: both stories with dates and the upstream retraction quoted verbatim; the reviewed Mathstodon post embedded by CONCATENATION and then extracted back out and diffed against the committed draft (identical), never retyped; seven candidate angles ranked by transferability, explicitly the drafter's to choose from; five hard constraints; and the source file paths. It states in its own first lines that it is material and not a draft, and that the publish gate now sits at the Uncaged Minds end.",
+      "closeWhen": "The orchestrator or the uncaged-minds agent acknowledges the hand-off (bus 10086869-8913-407b-99d4-ef49f3b2e903) and this row records where the draft lives — OR the hand-off is recorded as not landed and re-sent ONCE on the bus. Publication is NOT the close condition: the draft is the uncaged-minds agent's to write and the publish is David's, so waiting on either would make this row outlive the only part we own."
     }
   ],
   "meta": {
