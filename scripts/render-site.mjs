@@ -215,7 +215,7 @@ tr[hidden]{display:none}
 <div class="note">
 <p><strong>Read this before you trust a number here.</strong> This page is a <em>snapshot</em>, not a live read. It shows our mirror of <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a> at upstream commit <code style="display:inline;padding:.1rem .3rem">${esc(sha.slice(0, 7))}</code>.</p>
 <p><strong>${esc(generatedOn)} is the date this mirror last CHANGED &mdash; not the last time it was checked.</strong> Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date means the records have been <em>steady</em>, not that nobody has looked. The longest such quiet stretch so far was nine days. To see the actual last check and its verdict, read the <a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a> &mdash; that is the live read, and this page is deliberately not.</p>
-<p>Every row links to its primary source so you can check us in one hop — and if a row here disagrees with the source, that is a bug worth <a href="https://github.com/u00dxk2/bounds-ledger/issues">reporting</a>.</p>
+<p>Every row links to its primary source so you can check us in one hop — and if a row disagrees with its source, that is a bug worth reporting. Use the <strong>looks wrong?</strong> link on that row: the report arrives already naming the constant and the exact mirror commit, so you never have to work out how to describe which of ${rows.length} rows you meant.</p>
 <p><strong>Every row has its own link.</strong> Click a row&rsquo;s short id — the grey code under the constant&rsquo;s name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred.</p>
 <p><strong>These are last-listed table rows, not a claim about which bound is “the record.”</strong> Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.</p>
 </div>
@@ -362,6 +362,21 @@ async function selftest() {
   // NB: encodeURIComponent leaves parentheses literal — they are legal in a query string. The
   // first draft of this assertion expected %2810a%29 and failed, which is the test earning its keep.
   assert.match(html, /title=Row%20looks%20wrong%3A%20The%20real%20Grothendieck%20constant%20\(10a\)/, "the prefilled title must name the constant the visitor was reading");
+
+  // --- No UNCLASSIFIABLE report path, added 2026-08-28. ---
+  // The intro used to close with "that is a bug worth [reporting]" pointing at the bare issues
+  // LIST. That link outlived the per-row control shipped 2026-08-22 and quietly competed with it:
+  // report-rate.mjs classifies an arrival by the prefilled title (/^Row looks wrong:/) or the
+  // "Ledger mirror: upstream" body marker, so an issue opened from the bare list has
+  // arrivalKind() === null and lands in outsideOther, NOT in outsideArrivals. Nothing lies — the
+  // sum-check still reconciles — but the page's most prominent reporting call-to-action steered a
+  // visitor OFF the one path G-4 is measured on, and made them retype which of 222 rows they meant.
+  // The assertion is deliberately about the bare LIST url, not about the word "reporting": the
+  // prefilled /issues/new links must keep passing.
+  assert.ok(!/href="[^"]*\/issues"/.test(html),
+    "no link may point at the bare issues LIST — a report filed there is unclassifiable by report-rate.mjs (outsideOther, not an arrival)");
+  assert.match(html, /Use the <strong>looks wrong\?<\/strong> link on that row/,
+    "the intro must send a doubting reader to the per-row control, which is the path G-4 is measured on");
 
   // --- Per-row permalinks, added 2026-08-26. A reader cannot tell a colleague about ONE constant
   // when the only address is the whole 222-row page, and "send them a link" is how this ledger gets
