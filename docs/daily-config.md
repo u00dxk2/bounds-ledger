@@ -8,6 +8,7 @@ project: bounds-ledger
 
 <!-- primer:first-action -->
 ```
+node ../skylark-site/scripts/update-david-board.mjs --list --json --full-ids --project bounds-ledger
 git rev-parse HEAD origin/main
 git rev-list --count origin/main...HEAD
 npm run verify > tmp/verify-out.txt 2>&1
@@ -19,11 +20,20 @@ permission classifier cannot statically resolve parks the pane at a silent promp
 like a hang. Read each exit code directly; never through a pipe (`| tail` reports the pager's `0`,
 which is this lane's founding defect).
 
-**Line 2 MUST print `0`.** Any other number means your HEAD is not the commit CI read, so line 4's
+**Line 1 is new on 2026-08-28 and it is first on purpose.** Every other line in this block asks *is
+the code green*; none can answer *does David want something*, and those are different questions. On
+2026-08-28 David answered a board card at 02:27Z and the only reason this pane saw it is that a bus
+dispatch happened to carry it — with a quiet bus the whole cadence would have run past a live answer
+and the day would have closed reporting no blockers. Read the `state` field: `waiting` means he has
+ALREADY replied and the ball is with us. Needs `CC_PROMPTS_PIN`; if it is missing the command fails
+loudly, which is correct — an unread board is not an empty board.
+
+**Line 3 MUST print `0`.** Any other number means your HEAD is not the commit CI read, so line 5's
 verdict — green or red — describes a different tree. Both polarities demonstrated on 2026-08-27 at
 adoption (KP-78): with two unpushed commits it printed `2`; after the push, `0`.
 
-**Line 3 is the day's first real command and the reason this fence exists** — `npm run verify` writes
+**Line 4 is the day's first GATE command and the reason this fence exists** (it was "the first real
+command" until line 1 went in above it on 2026-08-28) — `npm run verify` writes
 `tmp/.verify-receipt.json` at the current HEAD, and `agent-status` refuses the day's first bus post
 without one. A bare `npm run check` leaves you refused later, at a worse moment. Its output goes to a
 file because piping it is refused by the pre-commit corruption guard, correctly.
