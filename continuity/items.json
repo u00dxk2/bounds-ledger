@@ -1160,6 +1160,24 @@
       ],
       "expectedSignalBy": "2026-08-28",
       "signalDateNote": "Same P2 scan, same class, one row later. A-35 carried expiresOn (which check-deferrals reads) but no expectedSignalBy (which the item date sweep reads), so it was half-visible: one instrument could see it and the other could not. Dated to match expiresOn so both read the same day. THE TRANSFERABLE POINT, and it is why this is written down rather than just fixed: two date fields serving two different instruments is a place where an item can be simultaneously tracked and untracked, and nothing reports the disagreement."
+    },
+    {
+      "id": "A-36",
+      "created": "2026-08-28",
+      "type": "active",
+      "status": "open",
+      "title": "The public page has NEVER been checked at phone width, and three rotations absorbed that in prose instead of tracking it",
+      "note": "FILED 2026-08-28 as P3 Section B. THE GAP IS NOT A DEFECT — IT IS A MISSING READ, and the distinction is the whole point: nothing here claims the page is broken at narrow widths. index.html puts the table inside a .scroll container with overflow-x:auto and the table itself carries min-width:56rem, which is the correct pattern and will most likely hold. It has simply never been LOOKED AT. Unverified is not passing and it is not failing.",
+      "note2": "WHY IT IS AN ITEM RATHER THAN ANOTHER PARAGRAPH. docs/key-user-flows.md closes Rotation 4 (2026-08-23) with 'Not browser-verified ... layout of the new control at narrow widths, which remains unverified and is the honest gap in this rotation', and Rotation 5 (2026-08-24) with 'Same honest gap as Rotation 4 ... the label's appearance at narrow widths is unverified'. Rotation 6 today makes three. Each one was honest, each one was written INSIDE a rotation write-up, and nothing that reads items could see any of them — which is exactly the pattern W-7 was opened for and closed on: a known thing living only as prose inside another document is invisible to every pass that reads the ledger. Three consecutive honest disclosures added up to zero tracking. Naming it here is the fix; the prose stays where it is.",
+      "note3": "WHAT BLOCKS IT, stated so it is falsifiable. The Claude Chrome extension is not connected from this pane: mcp__claude-in-chrome__tabs_context_mcp returns 'Browser extension is not connected. Please ensure the Claude browser extension is installed and running ... you may need to restart Chrome'. Tried once today and NOT retried, per the standing do-not-rabbit-hole rule. This is a DAVID action and a small one — connect or restart the extension — and it is deliberately NOT carded: he already has one live card (878ba107, the Mathstodon send) and a second card asking him to restart a browser would compete with a decision that matters more. The orchestrator can promote it if they disagree.",
+      "note4": "WHY IT MATTERS MORE THAN IT LOOKS. index.html is this lane's ONLY user-visible surface, and its per-row 'looks wrong?' links are G-4's detection path — the Tier-0 goal that an outside party acts on a watched record without us filing the report. A reader on a phone who cannot reach those links is a reader who cannot trigger the goal, and at 3 unique viewers per 14 days we would never see it in the numbers. This is the one visitor class we are structurally blind to.",
+      "expectedSignalBy": "2026-09-04",
+      "signalDateNote": "One week. Not sooner because it needs David to connect an extension and that is not worth interrupting him for; not later because every further rotation that writes \"not browser-verified\" makes the phrase read as a permanent disclaimer rather than an open gap, which is how the last three got absorbed.",
+      "readCommand": "Run mcp__claude-in-chrome__tabs_context_mcp from this lane. Connected means the check is available and this item is actionable; 'Browser extension is not connected' means it is still blocked and the item rolls forward with that recorded. POSITIVE CONTROL that a connected extension would actually answer the question: resize_window to 390x844 (iPhone-class width) against https://u00dxk2.github.io/bounds-ledger/ and screenshot — the reads that matter are whether the .scroll container scrolls the table rather than the page body, and whether the filter and Order controls stack legibly rather than overflowing.",
+      "onTrigger": "On 2026-09-04 either run the narrow-width check (if the extension is connected) and record BOTH what held and what did not, or record that it is still blocked and say so in one line. Do NOT close this by reasoning from the CSS: reading min-width and overflow-x and concluding the page is fine is precisely the non-verification these three rotations already performed, and a fourth would be the same act with more confidence.",
+      "linkedCommits": [
+        "888a1e5"
+      ]
     }
   ],
   "meta": {
