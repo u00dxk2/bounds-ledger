@@ -76,6 +76,37 @@ export function flagUrl(r, sha) {
   return `${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
 }
 
+const SITE = "https://u00dxk2.github.io/bounds-ledger/";
+
+// The page is TITLED "Is the number you cited still current?" and, until this shipped, gave the
+// reader nothing to cite with. The visitor this lane is built for is someone who QUOTES a record —
+// that is the core problem in their own words — so the one action the page never supported was the
+// one they came to perform. Five rotations of F-2 all improved READING a row.
+//
+// WHY THE CAVEAT IS INSIDE THE CITATION AND NOT JUST ON THE PAGE, which is the whole design:
+// a citation is the only artifact here that LEAVES the page. Every honesty the page provides in
+// context — that these are last-listed table rows and not a claim about the record, that this is a
+// snapshot at a pinned sha and not a live read — is stripped the instant the text is pasted
+// somewhere else. So the caveat travels in the text or it does not travel at all, and a ledger
+// whose product is other people's mis-citations must not become a source of them.
+//
+// PLAIN TEXT, escaped only at embed time — the same encode-then-escape order flagUrl pins, for the
+// same reason: a constant title carrying & or < must reach the reader's clipboard as itself.
+export function citation(r, sha) {
+  const side = (label, row, changed, kind) => {
+    if (!row) return `${label} bound: not pinned`;
+    const when = changed ? ` (${whenLabel(changed, kind)})` : "";
+    return `${label} bound: ${boundCell(row).trim()}${when}`;
+  };
+  return [
+    `Bounds Ledger — ${r.title} (${r.id})`,
+    side("upper", r.upper, r.upperChanged, r.upperKind),
+    side("lower", r.lower, r.lowerChanged, r.lowerKind),
+    `Mirrored from teorth/optimizationproblems@${String(sha).slice(0, 7)}. These are the last-listed rows of that constant's bounds table — a listing position, not a statement that this bound is the strongest or most recent. A snapshot at that sha, not a live read.`,
+    `${SITE}#c-${r.id}`,
+  ].join("\n");
+}
+
 export function buildRows(claims, { withDates = true, root = ROOT } = {}) {
   return constantIds(claims).map((id) => {
     const pins = pinsFor(id, claims);
@@ -159,7 +190,7 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null) {
 <th scope="row"><a href="ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a></th>
 ${cell(r.upper, r.upperChanged, r.upperKind)}
 ${cell(r.lower, r.lowerChanged, r.lowerKind)}
-<td class="src"><a href="${esc(r.url)}">source</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a></td>
+<td class="src"><a href="${esc(r.url)}">source</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(r.title)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
 </tr>`).join("\n");
 
   return `<!doctype html>
@@ -205,6 +236,9 @@ code{display:block;font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
 .when.text-only{font-style:italic}
 .none{color:var(--muted);font-style:italic}
 .src{white-space:nowrap}
+.cite{display:inline-block;vertical-align:top}
+.cite summary{cursor:pointer;color:var(--accent)}
+.cite code{display:block;white-space:pre-wrap;margin-top:.4rem;padding:.5rem;background:var(--code);font-size:.8rem;line-height:1.45;max-width:40rem;user-select:all}
 footer{margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;max-width:78ch}
 tr[hidden]{display:none}
 </style>
@@ -420,6 +454,43 @@ async function selftest() {
   // SILENT half, asserted only after the positive control above.
   assert.doesNotMatch(href, /<b>|<\/b>/, "raw markup must never reach the href");
   assert.doesNotMatch(href, /%26amp%3B/, "esc must not have run before encodeURIComponent");
+
+  // --- Per-row citation, added 2026-08-29. Both KP-78 answers. ---
+  // The load-bearing property is NOT that a citation renders: it is that the citation carries its
+  // own caveat, because a citation is the only artifact on this page that travels away from the
+  // context that qualifies it. A citation naming a bound with no "not a claim about the current
+  // record" beside it is this lane manufacturing exactly the mis-citation it exists to catch.
+  const citeRow = buildRows([{
+    id: "pin:15a:U",
+    statement: "Last-listed upper-bound table row for A test constant (15a.md)",
+    url: "https://example.invalid/15a.md",
+    expect: "| $2.371177$ | [XYZ] | prose |",
+  }], { withDates: false })[0];
+  const cite = citation(citeRow, "abcdef1234567890");
+  assert.ok(cite.length > 80, "positive control: the citation must render before any absence is asserted");
+  assert.match(cite, /A test constant \(15a\)/, "the citation must name the constant and its id");
+  assert.match(cite, /upper bound: \$2\.371177\$/, "the citation must carry the pinned bound, not just a link");
+  assert.match(cite, /lower bound: not pinned/, "a missing side must say so rather than be omitted");
+  assert.match(cite, /teorth\/optimizationproblems@abcdef1/, "the citation must name the upstream sha it was mirrored at");
+  // THE CAVEAT MUST TRAVEL. Worth recording how this wording was reached: the first draft said
+  // "not a claim about the current record", and the page's own standing guard — doesNotMatch
+  // /is the record|current record|best known bound is/ — fired on it. The guard cannot parse
+  // negation, so it read a DISCLAIMER as the claim. The fix was to reword the caveat, never to
+  // loosen the guard: a page one edit away from asserting a record is exactly what it is for, and
+  // "weaken the verifier so the candidate passes" is the move this repo forbids everywhere else.
+  assert.match(cite, /a listing position, not a statement that this bound is the strongest or most recent/,
+    "a citation without its caveat invites the mis-citation this ledger exists to catch");
+  assert.match(cite, /A snapshot at that sha, not a live read/, "the citation must say it is a snapshot");
+  assert.match(cite, /https:\/\/u00dxk2\.github\.io\/bounds-ledger\/#c-15a/, "the citation must carry the row's own permalink");
+  // The row must never be described in a way the generated pins do not support (header point 2).
+  assert.doesNotMatch(cite, /\bbest known\b|\brecord is\b|\bcurrent best\b/i,
+    "a citation must not upgrade a listing-position pin into a record claim");
+  // Rendered form: escaped at embed, never double-escaped, and reachable without JS.
+  const hostileCite = hostileHtml.match(/<details class="cite">.*?<\/details>/s)[0];
+  assert.match(hostileCite, /<summary[^>]*>cite<\/summary>/, "the citation must be revealed by native details/summary, not script");
+  assert.match(hostileCite, /Tea &amp; &quot;q&quot; &lt;b&gt;x&lt;\/b&gt;/, "a hostile constant name must be HTML-escaped in the citation block");
+  assert.doesNotMatch(hostileCite, /&amp;amp;/, "esc must run once — a double-escaped citation would paste as &amp;amp;");
+  assert.doesNotMatch(hostileCite, /<b>x<\/b>/, "raw markup must never reach the citation block");
 
   // --- Order-by-most-recently-updated, added 2026-08-23. Both KP-78 answers. ---
   // The date CHOICE is the real logic and is exported so it can be tested for real; the reorder
