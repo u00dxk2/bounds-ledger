@@ -5,3 +5,4 @@ finding.txt
 issue-body.md
 .playwright-mcp/
 continuity/health.json
+.playwright-cli/
