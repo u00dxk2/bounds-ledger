@@ -112,3 +112,38 @@ file as the first.)
 **Do NOT substitute an arrival count.** The traffic sampler read 4 unique viewers against 183
 unique cloners on 2026-08-22; the clones are largely our own CI, which checks the repo out daily,
 on every push and every PR.
+
+## Reading `tmp/.bus-listen.err` — two bounded calls, never a bare `Read`
+
+```
+Grep '^--- restart' -n   (on tmp/.bus-listen.err)
+Read offset=<line number of the LAST hit> limit=12
+```
+
+**Why this is a declared recipe and not a preference.** The `/listen` skill's verification step says
+`tail -n 30`, and this lane cannot follow that — file reads go through Read/Grep/Glob here, and `Read`
+has no tail affordance. On 2026-08-29 the obvious substitute (a bare `Read` of the file) returned lines
+1–386 of 1365 and consumed the entire ~25k-token read cap on the **first tool call of the session**. The
+file is append-only *by design* — `listen.mjs` keeps prior sessions above the newest `--- restart`
+marker (S-20260827-08) — so it only grows, and the cost recurs every session, larger each time. The
+only region anyone ever needs is the one below the newest marker.
+
+**ESCALATE-IF: the newest `--- restart` hit is not the last line-numbered hit Grep returns.** That means
+the file rotated or two listeners are writing to it — stop and read the whole marker list before
+trusting any line under it. (The fleet-side half — the `/listen` skill's own `tail -n 30` instruction —
+is the orchestrator's, routed 2026-08-29 as a fleet-skill defect.)
+
+## P2 gate battery
+
+```
+node ../skylark-site/scripts/continuity-check.mjs
+```
+
+Run it **inside P2**, and read its own RESULT line rather than inferring from a clean commit.
+
+**Why it is pinned here.** On 2026-08-28 P2 diagnosed the tracked-and-untracked class — `A-35` carrying
+`expiresOn` but no `expectedSignalBy`, visible to one instrument and invisible to another — and then
+shipped a fresh instance of that same class on the same row, `releaseTest` present and `readCommand`
+empty, **behind a green board, because `continuity-check` was not in that phase's battery**. The phase
+that names a defect class is the phase most likely to ship one, and the only thing that would have
+caught it was the checker nobody had wired in. Approved 2026-08-29.
