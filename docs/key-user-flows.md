@@ -233,3 +233,110 @@ class are covered by assertions; the layout is not.
 be observed if it worked: a `looks wrong?` report disputing a row we labelled *text edited* would
 mean the classifier mis-called it, and would arrive as a titled GitHub issue. **Nothing observable
 yet at N=3; shipped on judgment.**
+
+---
+
+## Rotation 6 (2026-08-28) — F-2, the report link that competed with its own measurement
+
+Shipped `888a1e5`; the write-up lives in `docs/daily/2026-08-28-prelaunch.md` and was never copied
+here, which is why this heading exists. In one line: the intro's *"that is a bug worth reporting"*
+pointed at the bare GitHub issues list, and `report-rate.mjs` classifies an arrival by the prefilled
+title or body marker — so an issue filed from the page's loudest link scored `arrivalKind() === null`
+and never counted. The intro now names the per-row **looks wrong?** control.
+
+---
+
+## Rotation 7 (2026-08-29) — F-2, the one thing the page is named after and never supported
+
+**The genuinely great version, named first.** A researcher who has just satisfied themselves that a
+bound is what they thought copies a single block of text into their paper, their talk, or the forum
+thread they are arguing in — and that block carries the constant, both pinned bounds, the upstream
+commit it was mirrored from, the date each side last moved, a permalink back to the exact row, and,
+travelling with it, the honest statement of what the numbers are and are not. The delight is that
+the ledger stops being a thing you *consult* and becomes a thing you can *quote*, with its
+provenance already attached, so the person reading your paper can check you the same way you checked
+us.
+
+**The step that was worst, and it is the page's own title.** The page is called *"Is the number you
+cited still current?"*, the core problem is stated in the user's words as *"I cited a number"*, and
+the visitor is defined in this document as someone who **quotes a record** — and until today the
+page offered nothing to quote. Rotations 2 through 6 all improved *reading* a row: finding it,
+dating it, ordering it, labelling it, disputing it. Every one of them served the check; none served
+the citation, which is the action the reader came to perform and the action that carries this
+ledger's work to anyone else. Named principle: **Nielsen heuristic 7, flexibility and efficiency of
+use** — the page supported the diagnostic path and left the accelerator for the frequent, expert
+task entirely unbuilt.
+
+**It is also the only arrival shape we do nothing for.** `G-4` names three qualifying shapes, and
+*"someone cites the public page in a paper, a forum post or an upstream discussion"* is the one that
+requires no GitHub account, no issue, and no contact with us at all. It was the shape with zero
+affordance behind it.
+
+### Shipped — `b1a73bd`
+
+`before →` a row you can read, check and dispute, and nothing you can quote. A reader who wanted to
+cite it retyped the constant, the number and a bare link by hand, dropping the sha and the caveats.
+`after  →` every row carries a **cite** disclosure beside `source` and `looks wrong?`, revealing a
+ready-made block:
+
+```
+Bounds Ledger — The real Grothendieck constant (10a)
+upper bound: $< \dfrac{\pi}{2\ln(1+\sqrt{2})} - 10^{-4}$ (value changed 2026-08-12)
+lower bound: $\dfrac{6\pi}{11}\approx 1.71360$ (value changed 2026-08-12)
+Mirrored from teorth/optimizationproblems@3a14910. These are the last-listed rows of that
+constant's bounds table — a listing position, not a statement that this bound is the strongest
+or most recent. A snapshot at that sha, not a live read.
+https://u00dxk2.github.io/bounds-ledger/#c-10a
+```
+
+**The caveat is inside the citation, and that is the whole design.** A citation is the only artifact
+on this page that *leaves* the page. Every honesty the page provides in context — that these are
+last-listed table rows and not a ranking, that this is a snapshot at a pinned sha rather than a live
+read — is stripped the instant the text is pasted somewhere else. So it travels in the text or it
+does not travel at all. A ledger whose product is catching other people's stale citations must not
+become a source of them.
+
+**Native `<details>`, no JavaScript.** The block is revealed by the element the platform already
+provides and the `<code>` carries `user-select:all`, so one click selects the whole citation. A
+clipboard button was considered and declined: it needs a permissions path, an insecure-context
+fallback and a test for each, which is gold-plating at 3 viewers per fortnight. The lazy version is
+also the one that works with JS off.
+
+**Deliberately NOT included: a "retrieved on" date.** It is the most conventional line in any
+citation and it would have been the dishonest one — the page is regenerated on commit, so it cannot
+know when it was last read, and the page says so directly two paragraphs above the table. A citation
+implying a retrieval date the artifact cannot support would be this lane's own defect, printed 111
+times.
+
+### Validation status
+
+**Both KP-78 answers, on the assertion that actually matters.** The load-bearing property is not
+that a citation renders — it is that the caveat travels. Negative control: the caveat line deleted
+from `citation()`, the mutation proven to land by `diff` against a file copy (not `git diff`, which
+showed 72 lines of unrelated new work and could not isolate it), selftest exit 1 failing by name on
+*"a citation without its caveat invites the mis-citation this ledger exists to catch"*. Restored
+from the copy — `git checkout --` would have discarded the uncommitted fix — exit 0. Escaping is
+pinned the same way as `flagUrl`: plain text built first, `esc` at embed, with a hostile constant
+name asserted to arrive escaped once and never double-escaped.
+
+**The page's own record-claim guard caught the first draft, and it was right to.** The caveat
+originally read *"not a claim about the current record"*; the standing
+`doesNotMatch(/is the record|current record|best known bound is/i)` fired on it, reading a
+disclaimer as a claim because a substring guard cannot parse negation. **The fix was to reword the
+caveat, not to loosen the guard.** Weakening a verifier so a candidate passes is the move this repo
+forbids everywhere else, and a page one edit away from asserting a record is exactly what that
+assertion is for.
+
+**Not browser-verified — fourth consecutive rotation, and now tracked.** The Chrome extension is
+still not connected (`tabs_context_mcp` → *"Browser extension is not connected"*, tried once, not
+retried). Unlike Rotations 4 and 5 this is no longer only a paragraph here: it is `A-36`, due
+2026-09-04, whose `onTrigger` forbids closing it by reasoning from the CSS. The `<details>` element
+collapses to the word *cite* and the revealed block is `max-width:40rem` with `pre-wrap`, so the
+narrow-width risk is real and unmeasured.
+
+**Below the traffic floor** — 3 unique viewers in the trailing 14 days against a 30-arrivals-in-7-days
+bar. No instrument read is claimed. What would be observed if it worked: an inbound link or a
+citation naming `u00dxk2.github.io/bounds-ledger/#c-<id>` with a row anchor — the anchor is the tell,
+because it can only come from someone who used this control rather than the bare page URL. It would
+surface as a GitHub referrer row in `npm run traffic`, or in the text of an issue or upstream
+discussion. **Nothing observable yet at N=3; shipped on judgment.**
