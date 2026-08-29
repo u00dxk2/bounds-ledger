@@ -1195,7 +1195,9 @@
         "888a1e5",
         "87991df",
         "b1a73bd",
-        "ed1b369"
+        "ed1b369",
+        "8f4a7ff",
+        "8bcacd0"
       ],
       "closeWhen": "A narrow-width render of the published page has been captured and what it showed is RECORDED — both what held and what did not — or the check is recorded as permanently unavailable with a reason. **Reading the CSS and concluding the page is probably fine does NOT close this**: that is exactly the non-verification three consecutive flow-rotations already performed, and a fourth would be the same act with more confidence.",
       "closed": "2026-08-29",
@@ -1240,7 +1242,8 @@
       "closeWhen": "The looks-wrong? control is reachable at 390px without a horizontal scroll gesture -- flagLinkVisibleNow reads true, or the control has moved somewhere a phone reader meets it -- AND the desktop layout is re-verified unregressed, with both numbers recorded.",
       "linkedCommits": [
         "b1a73bd",
-        "1830c45"
+        "1830c45",
+        "8f4a7ff"
       ]
     }
   ],
