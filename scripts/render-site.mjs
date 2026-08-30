@@ -153,8 +153,12 @@ export function whenLabel(changed, kind) {
   return `last changed ${esc(changed)}`;
 }
 
-function cell(row, changed, kind) {
-  if (!row) return `<td class="none">not pinned</td>`;
+// `label` is rendered as a data-label attribute and surfaced by CSS ::before ONLY below the
+// card-stacking breakpoint, where <thead> is hidden. Without it a phone reader meets two code
+// blocks with no way to tell the upper bound from the lower one — the column header is the only
+// thing that distinguishes them, and stacking is what takes it away.
+function cell(row, changed, kind, label) {
+  if (!row) return `<td class="none" data-label="${esc(label)}">not pinned</td>`;
   // Second half of review finding F1. Omitting the element when the date is null made "we could
   // not compute a date" indistinguishable from "this page does not date rows" — the zero-versus-
   // absent confusion this repo exists to police, on the page's own headline promise. Say it
@@ -163,7 +167,7 @@ function cell(row, changed, kind) {
   const when = changed
     ? `<span class="when ${kind === "text" ? "text-only" : ""}">${whenLabel(changed, kind)}</span>`
     : `<span class="when">date unknown</span>`;
-  return `<td><code>${esc(row)}</code>${when}</td>`;
+  return `<td data-label="${esc(label)}"><code>${esc(row)}</code>${when}</td>`;
 }
 
 // manualCount is DERIVED and passed in, never hard-coded — review finding F5. The footer used to
@@ -188,8 +192,8 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null) {
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-name="${esc((r.title + " " + r.id).toLowerCase())}" data-changed="${esc(r.changed || "")}">
 <th scope="row"><a href="ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a></th>
-${cell(r.upper, r.upperChanged, r.upperKind)}
-${cell(r.lower, r.lowerChanged, r.lowerKind)}
+${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)")}
+${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)")}
 <td class="src"><a href="${esc(r.url)}">source</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(r.title)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
 </tr>`).join("\n");
 
@@ -241,6 +245,18 @@ code{display:block;font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
 .cite code{display:block;white-space:pre-wrap;margin-top:.4rem;padding:.5rem;background:var(--code);font-size:.8rem;line-height:1.45;max-width:40rem;user-select:all}
 footer{margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;max-width:78ch}
 tr[hidden]{display:none}
+@media(max-width:56rem){
+.scroll{overflow-x:visible;border:0;border-radius:0}
+table{min-width:0;display:block}
+thead{display:none}
+tbody{display:block}
+tr{display:block;border:1px solid var(--line);border-radius:8px;margin:0 0 .75rem}
+th,td{display:block;border-bottom:0;padding:.45rem .8rem}
+tbody th{min-width:0;padding-top:.7rem}
+td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+.src{white-space:normal;padding-bottom:.7rem}
+.cite code{max-width:none}
+}
 </style>
 <div class="wrap">
 <h1>Is the number you cited still current?</h1>
