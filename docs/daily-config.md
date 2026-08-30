@@ -38,6 +38,14 @@ command" until line 1 went in above it on 2026-08-28) — `npm run verify` write
 without one. A bare `npm run check` leaves you refused later, at a worse moment. Its output goes to a
 file because piping it is refused by the pre-commit corruption guard, correctly.
 
+**Line 4 takes ≈3 minutes (~450 network requests; measured 2026-08-30, 15:04→15:07Z) — give the call a
+10-minute tool timeout.** That is longer than the common 120-second default, so a run left on the
+default can be cut off before it finishes. Do NOT background it instead: on this machine a
+backgrounded run's exit code is only knowable from a completion notification, and the presence of
+`tmp/.verify-receipt.json` is not its verdict — the receipt records an exit code, so read the code,
+not the file's existence. What a foreground run returns when the timeout does cut it off has NOT been
+measured here; do not assert a failure mode for it.
+
 **Why this fence and not the CI-truth fence below** (declared 2026-08-27): the orchestrator's two
 candidates were both CI-truth reads, and neither is what a cold agent runs first. `npm run verify` is,
 per `AGENTS.md`. Declaring a CI read as the first action would have mechanically installed a wrong

@@ -18,6 +18,10 @@ top_action_today: "Nothing needs you today. Our public page of tracked mathemati
 
 # Daily report — bounds-ledger — 2026-08-29
 
+> **The § State Appendix below is SUPERSEDED — read the correction fence at the foot of this file.**
+> Three of its values (HEAD, the CI sha, the open-item count) were stale before this file was even
+> committed. Everything outside the fence is left standing as written.
+
 ## BLUF
 
 Our public page now gives readers a ready made citation for every row.
@@ -173,3 +177,35 @@ command away the whole time. It is closed on the read.
   not resolve in this repo). No drift today.
 - **Engineering zero-state:** 0 Sentry issues and 0 Dependabot alerts — this lane has neither
   instrument by design, so both render not-applicable rather than zero.
+
+<!-- findings:begin -->
+
+## Correction — 2026-08-30 P2, three stale values in § State Appendix
+
+**Nothing above is rewritten.** Every line of the appendix was true at some point on 2026-08-29 and is
+left standing; this fence carries the values a cold reader should use instead, each with the time it
+was read and the command that re-reads it.
+
+| Appendix said | Correct value | As of | Release command |
+| --- | --- | --- | --- |
+| HEAD `8f4a7ff` | HEAD `a8a6344` | 2026-08-30T15:04Z | `git -C . rev-parse HEAD origin/main` |
+| CI GREEN at `1830c45` | CI GREEN at `a8a6344` | 2026-08-30T15:04Z | `node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml` |
+| Ledger: 51 items, 20 open | 51 items, **19 open, 32 closed** | 2026-08-30T15:07Z | `node ../skylark-site/scripts/gen-primer-first-action.mjs --repo . --target-date <today> --json` |
+
+**Four commits landed after `8f4a7ff`, not three** — `8bcacd0`, `0258da4`, `c278854`, `a8a6344`
+(`git log --since` at 15:00Z). The P1 retro that opened this correction named three; it missed
+`8bcacd0`, and `8bcacd0` is the interesting one.
+
+**The appendix was stale at its own commit.** `8bcacd0` is the commit that *created this file*
+(`git show --stat 8bcacd0` → `docs/daily/2026-08-29-prelaunch.md | 175 +`), and it lands one commit
+after the `8f4a7ff` the appendix names as HEAD. So the staleness is not a discipline lapse that a more
+careful author would have avoided: **a report cannot name the commit that lands it**, and a bare
+`HEAD = <sha>` in a State Appendix is therefore stale by construction at the moment it is written.
+That is the argument for the as-of-plus-release-command form — the value is allowed to age, but only
+if it says when it was read and how to re-read it.
+
+The open-item count moved for an ordinary reason: `A-37` closed in `c278854`, three hours after this
+report was written. The appendix's "Closed today: `A-36`" is likewise incomplete — `A-37` closed the
+same day.
+
+<!-- findings:end -->
