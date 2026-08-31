@@ -51,6 +51,25 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
 
 const REPO = "https://github.com/u00dxk2/bounds-ledger";
 
+// The row's two document links are for a HUMAN to read, and until 2026-08-31 neither of them
+// rendered. `claims.json` holds the CHECKER's fetch URL — raw.githubusercontent, `text/plain` — and
+// the page handed that same URL to the reader; our own mirror copy was served off Pages as
+// `text/markdown`, which browsers also do not render. Measured in a real browser: the bound tables
+// arrived as one run-on line of pipe characters and LaTeX source. That defeats the page's own
+// promise, "every row links to its primary source so you can check us in one hop" — you cannot
+// compare a row against a wall of text. `readable()` maps a raw URL to GitHub's blob view, which
+// renders the table, and leaves anything else untouched. It is display-only: the pin's `url` is
+// still what the checker fetches, and must stay raw.
+// CEILING, named rather than fixed: upstream publishes its OWN typeset pages at
+// teorth.github.io/optimizationproblems/constants/<id>.html (verified 111 of 111, with a fabricated
+// id 404ing as the negative control), and those are nicer than a blob view. Linking there would
+// need the self-contained-page assertion below to separate an ASSET fetch from a NAVIGATION link,
+// which is a guard change and does not belong inside a product ship.
+export const readable = (u) =>
+  typeof u === "string"
+    ? u.replace(/^https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/(.+)$/, "https://github.com/$1/$2/blob/$3")
+    : u;
+
 // A visitor who doubts a row can tell us from THAT row, and the report arrives already naming the
 // constant and the mirror sha. Nielsen heuristic 6, recognition rather than recall: the page knows
 // which row they were looking at, so it must not make them reconstruct and retype it. Before this,
@@ -191,10 +210,10 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null) {
   // sat inside the style template literal and shipped the whole explanation to every visitor.
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-name="${esc((r.title + " " + r.id).toLowerCase())}" data-changed="${esc(r.changed || "")}">
-<th scope="row"><a href="ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a></th>
+<th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a></th>
 ${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)")}
 ${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)")}
-<td class="src"><a href="${esc(r.url)}">source</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(r.title)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
+<td class="src"><a href="${esc(readable(r.url))}">source</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(r.title)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
 </tr>`).join("\n");
 
   return `<!doctype html>
@@ -358,8 +377,10 @@ ${body}
 async function selftest() {
   const assert = (await import("node:assert/strict")).default;
   const claims = [
-    { id: "pin:10a:U", statement: "Last-listed upper-bound table row for The real Grothendieck constant (10a.md)", url: "https://example.invalid/10a.md", expect: "| 1.7822 | Krivine |" },
-    { id: "pin:10a:L", statement: "Last-listed lower-bound table row for The real Grothendieck constant (10a.md)", url: "https://example.invalid/10a.md", expect: "| 1.6769 | Davie |" },
+    // 10a carries the REAL raw-URL shape so the rendered page proves the rewrite in situ; 2a keeps an
+    // example.invalid URL so the same render proves the pass-through leg. Both polarities, one fixture.
+    { id: "pin:10a:U", statement: "Last-listed upper-bound table row for The real Grothendieck constant (10a.md)", url: "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10a.md", expect: "| 1.7822 | Krivine |" },
+    { id: "pin:10a:L", statement: "Last-listed lower-bound table row for The real Grothendieck constant (10a.md)", url: "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10a.md", expect: "| 1.6769 | Davie |" },
     { id: "pin:2a:U", statement: "Last-listed upper-bound table row for The Crouzeix constant (2a.md)", url: "https://example.invalid/2a.md", expect: "| 2 | <script>x</script> |" },
     { id: "C-7", statement: "hand claim", url: "https://example.invalid/36", expect: "0.380876" },
   ];
@@ -654,6 +675,25 @@ async function selftest() {
   assert.match(whenLabel("2026-08-24", "text"), /bound unchanged$/, "text wording must say the bound held");
   assert.match(whenLabel("2026-07-24", "first"), /^first pinned 2026-07-24 — unchanged since$/, "first-pinned wording");
   assert.match(whenLabel("2026-08-01", null), /^last changed 2026-08-01$/, "an unknown kind keeps the neutral wording");
+
+  // Both document links a reader can click must land on something that RENDERS. Fires when either
+  // reverts to a raw/relative form; silent on the blob form. The pass-through leg matters as much as
+  // the rewrite: readable() is display-only and must not touch a hand claim's arbitrary URL.
+  assert.equal(readable("https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1a.md"),
+    "https://github.com/teorth/optimizationproblems/blob/main/constants/1a.md", "raw source URL must become the rendered blob view");
+  assert.equal(readable("https://en.wikipedia.org/wiki/Chromatic_number"),
+    "https://en.wikipedia.org/wiki/Chromatic_number", "a non-raw URL passes through untouched");
+  assert.equal(readable(null), null, "a row with no pinned URL must not crash the transform");
+  assert.ok(!/href="ledger\/teorth-optimizationproblems/.test(html),
+    "the constant-name link must not point at the Pages-served .md, which browsers show as raw text");
+  assert.ok(!/href="https:\/\/raw\.githubusercontent\.com[^"]*">source/.test(html),
+    "the source link must not hand a reader the checker's raw URL");
+  assert.equal((html.match(/href="https:\/\/github\.com\/u00dxk2\/bounds-ledger\/blob\/main\/ledger\/[^"]*">/g) || []).length, rows.length,
+    "every row's name must link to our mirror copy in a form that renders");
+  assert.ok(html.includes('href="https://github.com/teorth/optimizationproblems/blob/main/constants/10a.md">source'),
+    "a raw-URL row must render its source link as the blob view");
+  assert.ok(html.includes('href="https://example.invalid/2a.md">source'),
+    "a non-raw URL must reach the page untouched — readable() is a rewrite, not a rule about hosts");
 
   // Self-contained: no third-party asset can be fetched at render time.
   const externals = html.match(/(?:src|href)="https?:\/\/[^"]+"/g) || [];
