@@ -680,6 +680,7 @@
     },
     {
       "id": "A-18",
+  "prestage2026_08_31": "PRE-STAGED at P4 the day before its 2026-09-01 gate, so tomorrow reads a decision rather than starting a dig. VERDICT AVAILABLE NOW: closeWhen branch 1 IS SATISFIED and this item is ready to CLOSE. Evidence, both commands run 2026-08-31: grep -l on the generator stamp returns four primers carrying the generated block (2026-08-27, 08-28, 08-29, 08-31), and grep -c on today primer for the State header returns 1. The --primer target shipped and a primer carries a generated STATE block. BUT THE readCommand ON THIS ROW DOES NOT TEST THAT. It runs grep -L for the string exit 0 over a primer window and calls EMPTY the passing answer; run today it returns TWO files (2026-08-28, 2026-08-29), which read literally says the property failed, while the actual close condition is met. The command tests whether a primer first-action quotes an exit code; the closeWhen asks whether a primer carries a generated STATE block. Those are different properties. This is the 2026-08-25 defect in a new coat -- that finding was about a verification note recording a result its command could not produce, and this is a readCommand that cannot answer its own closeWhen. Fix the field or close on the evidence above and record why; do not let the mismatched command decide it.",
       "created": "2026-08-18",
       "type": "active",
       "status": "open",
@@ -740,6 +741,7 @@
     },
     {
       "id": "A-20",
+  "prestage2026_08_31": "PRE-STAGED at P4 the day before its 2026-09-01 gate. READ RUN 2026-08-31, both legs: grep -n -i -E retry|backoff|429|502 over scripts/reverify.mjs returns NO MATCHES (exit 1), and the positive control grep -c -i fetch on the same path returns 10, so the probe can match in that file and the empty result is a real absence rather than a wrong path. NOTHING HAS SHIPPED, so the question is still open exactly as posed and the gate is a genuine decision, not a status read. WHAT TOMORROW DECIDES, framed now: a retry layer would make an UNREACHABLE less likely, and the standing invariant is that UNREACHABLE stays RED because unverified must never launder into a pass. Those do not conflict -- retrying is about how hard we try to READ, not about what a failed read reports -- but a retry that swallows a persistent 429 into an eventual success WOULD convert an unverified into a green, which is the thing the invariant forbids. So the shippable form is bounded retry plus unchanged red on final failure, with the KP-78 both-answers test the closeWhen already demands. The alternative is to decline it and record that the daily scheduled run already absorbs transient failure by re-running tomorrow.",
       "created": "2026-08-18",
       "type": "active",
       "status": "open",
