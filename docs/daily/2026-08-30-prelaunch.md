@@ -213,7 +213,8 @@ the commit that lands it, so a bare present-tense value here is stale by constru
 - **Next dated gates:** `A-2` (the standing drift-resolution log) and `A-32` (the lane brief's voice
   check) 2026-08-31 · `A-18` (a generated state block in the primer) and `A-20` (fetch-layer retry
   with backoff) 2026-09-01 · `A-33` (a two-leg classifier for report-state and causal-event changes)
-  and `A-34` (a ranked second-surface proposal for David to rule on) 2026-09-02 — as of **16:05Z** —
+  and `A-34` (a ranked second-surface proposal for David to rule on) 2026-09-02 — as of **16:05Z** — <!-- prose-ruling-ok: a listing of upcoming gate DATES, not a rule-request; A-34's own onTrigger dates the board card to 2026-09-02 and carding it early ships the thinner version the item forbids. Dispositioned 2026-08-31, recorded on A-34.dispositionProseRulings2026_08_31. -->
+
   release: `node ../skylark-site/scripts/check-due-gates-dispositioned.mjs --print`.
 - **Mirror** 113 files at upstream `3a14910` (an upstream `teorth/optimizationproblems` sha; it does
   not resolve in this repo), no drift — as of **16:06Z** — release: `node scripts/reverify.mjs --check`.
