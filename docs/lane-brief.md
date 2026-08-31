@@ -4,8 +4,9 @@
 
 > **Source of truth for the hosted brief.** This file is the source; the orchestrator ports it to
 > <https://skylarkcreations.com/t/lanes/bounds-ledger> (noindexed). Edit here, then post a bus note
-> so it gets re-ported. Never hand David an artifact link - those are session-scoped and don't
-> resolve in his browser (learned 2026-07-24, the hard way).
+> so it gets re-ported. Never hand David an artifact link - those only work inside the
+> chat window they were made in, so they open to nothing in his browser (learned 2026-07-24, the
+> hard way).
 
 > ## Sent - 24 July 2026
 >
@@ -13,7 +14,7 @@
 >
 > The wording that went out is the corrected version below - with the false "and the source-paper abstracts" clause removed, which *he* caught at his pre-send read.
 >
-> **What we're waiting for, and it isn't the same thing as being done:** sending is not acknowledgement. The lane's one real metric - externally-acknowledged corrections - is **still 0**. It moves only when the maintainer replies, or the page's bound changes to 0.380868, or its last-edited date moves.
+> **What we're waiting for, and it isn't the same thing as being done:** sending is not acknowledgement. The lane's one real metric - externally-acknowledged corrections - is **still 0**. It moves only when the maintainer replies, or the page's ceiling value - the upper end of the bracket it publishes - changes to 0.380868, or the date at the foot of the page saying when it was last touched moves.
 >
 > **One thing to send my way** - forward any reply from the maintainer. Tracked as **W-3**. (Separately, one *decision* stays his: whether we ever comment publicly if the email goes unanswered. See the update below.)
 >
@@ -33,7 +34,8 @@
 
 > ## Update - 28 July 2026: the alarm went off for real, twice
 >
-> Until this week the watcher had only ever been tested by us - it caught drift in a fake file we planted to
+> Until this week the watcher had only ever been tested by us - it caught drift, meaning a published number
+> quietly changing after other people have already cited it, in a fake file we planted to
 > prove it worked. On 28 July the real thing happened: the curated table we mirror was edited upstream, and
 > the alarm caught it within the hour. Then it happened again twenty minutes later.
 >
@@ -75,6 +77,49 @@
 > acknowledgement that cannot sit in an inbox. Which contribution to build toward is the subject of the
 > research question David is running now; nothing outward happens without the usual adversarial review and
 > his gate.
+
+> ## Update - 31 August 2026: the number that was zero is now two, and neither of them found us
+>
+> **Everything below this line was written in July, when the honest answer to "has anyone outside
+> confirmed we're right?" was zero. That answer has changed, so read the July material as history.**
+>
+> **What happened, with dates.** On 20 August we filed a public issue on the curated table - the
+> reviewed list of these constants that Terence Tao and two colleagues maintain - saying that one
+> record's supporting evidence didn't actually support it. The record was the value 857.567 on the
+> entry the table calls 87a, and the worked example printed beside it did not produce that number.
+> Three days later, on 23 August, two different people acted on it:
+>
+> - **A stranger fixed it.** Someone with no connection to us, posting as Chessing234, opened a
+>   change request on the table and wrote the fix. Their note ending that change says, in their own
+>   words, *"Reported in issue 150."* That is them citing our issue as the reason they did it - we
+>   are not inferring it from timing.
+> - **Tao closed our issue as done** the same afternoon and committed the correction himself.
+>
+> **So the count is two, and this lane's founding question is answered.** The premise was that a
+> machine watching continuously would find real errors that people who care would then fix. That is
+> no longer an argument; it happened, in public, with dates and names attached. You ruled the goal
+> met on 26 August.
+>
+> **The honest limit, and it's the interesting part.** *Neither of them found us.* The path ran
+> through an issue a person here wrote and posted - not through anyone discovering our work on their
+> own. In the same fortnight the public page had **3 unique visitors**. So we have proved the work
+> is useful and have not yet proved anyone can find it. That gap is the new top goal: an outsider
+> acting on a record we watch **without us filing the report for them**. It currently reads zero,
+> and that zero is measured rather than assumed - we check the paths an arrival would come through.
+> Expect it to stay zero for a while; 3 visitors a fortnight cannot produce much.
+>
+> **Also since the July notes.** The repository has been public since 8 August. There is now a page
+> listing all 111 constants we watch, with a "looks wrong?" link on every row so a stranger who
+> spots an error can tell us in one click. Today we fixed both document links on every row: they had
+> been handing readers the raw file, which a browser shows as one run-on line of symbols instead of a
+> readable table - which defeated the one thing the page is for.
+>
+> **The July email is still unanswered** after five weeks. That is not a rejection; it is a personal
+> site with its own cadence. Still the only thing to send my way if it ever arrives.
+>
+> **Nothing is needed from you.**
+
+---
 
 The most-used index of Erdős problems lists a number that two later results have beaten. Below is everything behind the correction that was sent, including what we did *not* check.
 
@@ -135,9 +180,9 @@ Sure about the disagreement. Not sure about the mathematics - and the difference
 >
 > **We have not checked the mathematics behind 0.380868.** We did not reproduce the construction or read the proof. We are trusting the authors' paper and Tao's curation of it.
 >
-> So the claim we can actually stand behind is *"your page disagrees with the field's curated table, and the table is newer"* - not *"we proved this number."* The draft below is worded to claim only the first. If it ever drifted toward the second, it would be overclaiming and I'd pull it.
+> So what we can actually stand behind is *"your page disagrees with the field's curated table, and the table is newer"* - not *"we proved this number."* The draft below is worded to say only the first. If it ever drifted toward the second, it would be overclaiming and I'd pull it.
 >
-> **This nearly went wrong.** The draft said "cross-checked against the curated table *and the source-paper abstracts*" right up to the moment of sending. It isn't true: none of the three cited abstracts (SimpleTES 2604.19341, White 2201.05704, TTT-Discover 2601.16175) state their numeric bounds - verified 2026-07-24. The phrase was carried over from the Haugland work on 7/23, where the abstract *did* carry the value, and no one re-examined it. The adversarial review attacked the claim from five angles and never audited the evidence sentence. **Our verification of 0.380868 rests on Tao's curated table alone.** Caught at David's pre-send check; clause removed.
+> **This nearly went wrong.** The draft said "cross-checked against the curated table *and the source-paper abstracts*" right up to the moment of sending. It isn't true: none of the three cited abstracts (SimpleTES 2604.19341, White 2201.05704, TTT-Discover 2601.16175) state their numeric bounds - verified 2026-07-24. The phrase was carried over from the Haugland work on 7/23, where the abstract *did* carry the value, and no one re-examined it. The adversarial review attacked the finding from five angles and never audited the evidence sentence. **Our verification of 0.380868 rests on Tao's curated table alone.** Caught at David's pre-send check; clause removed.
 
 The evidence was one day old when it went out - David's screenshot on 23 July, sent 24 July - so the expiry condition we'd set (re-check by hand if the gate opened after 30 July) never came into play.
 
@@ -159,7 +204,7 @@ Standing rule: nothing goes outward until someone has genuinely tried to break i
 
 **Held up.** Has 0.380868 itself been superseded since? No - re-verified clean on 24 July.
 
-**Landed - cut the 0.380871 line.** The earlier draft cited it too. Its source turns out to be a GitHub README rather than a paper - and naming the project attached to it would point the recipient at a public leaderboard showing an even lower, *unvetted* number we don't stand behind. We'd have broken our own rule about never mixing verified records with unverified claims, in our first outward message. It's also redundant: 0.380868 supersedes it anyway.
+**Landed - cut the 0.380871 line.** The earlier draft cited it too. Its source turns out to be a GitHub README rather than a paper - and naming the project attached to it would point the recipient at a public leaderboard showing an even lower, *unvetted* number we don't stand behind. We'd have broken our own rule about never mixing checked numbers with unchecked ones, in our first outward message. It's also redundant: 0.380868 supersedes it anyway.
 
 **Landed - rewrote the subject line.** It read "upper bound is two curated improvements out of date" - asserting error at someone about their own field. Now it offers information and lets them judge.
 
