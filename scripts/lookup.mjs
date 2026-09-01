@@ -161,10 +161,18 @@ export function changeFor(pin, root = ROOT) {
   const prevClaims = claimsAtParent(meta.sha, root);
   if (!Array.isArray(prevClaims)) return { date: meta.date, sha: meta.sha, kind: null };
   const prev = prevClaims.find((c) => c && c.id === pin.id);
-  // `prevExpect` is returned so the page can say what the row USED TO say. It was already being
-  // computed and discarded, which is why this costs no extra git call. It is only ever surfaced
-  // where kind === "value": on a "text" change the numbers are identical and a "was" line would
-  // show a reader two indistinguishable strings and imply a movement that did not happen.
+  // `prevExpect` is returned so a previously-pinned value stays SEARCHABLE on the public page. It
+  // is never displayed there — it is the row that used to be last-listed, which is not the same
+  // thing as a superseded record, and rendering the two side by side asserts a movement that
+  // often did not happen (Brun's constant, 2026-09-01: upstream appended a GRH-conditional row
+  // below the unconditional one and both are still in the table). It was already computed and
+  // discarded, so this costs no extra git call.
+  //
+  // UNTESTED, SAID PLAINLY: the kind === "value" restriction below has no assertion behind it.
+  // No test in this repo invokes changeFor — every selftest calls buildRows with withDates:false
+  // — so removing the restriction would ship silently. It is narrowing, not load-bearing: a
+  // "text" change would add a byte-variant of an identical number to the haystack, which is
+  // harmless. The guarantee that matters (never displayed) is asserted in render-site's selftest.
   // The parent read fine and this pin was not in it, so the commit that "changed" the row is the
   // commit that CREATED it. That distinction carries the page's single worst misreading: 203 of
   // 222 pins date to 2026-07-24, the day tracking started and not a day anything moved, and the

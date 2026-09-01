@@ -178,12 +178,27 @@ export function whenLabel(changed, kind) {
 // card-stacking breakpoint, where <thead> is hidden. Without it a phone reader meets two code
 // blocks with no way to tell the upper bound from the lower one — the column header is the only
 // thing that distinguishes them, and stacking is what takes it away.
-// `prev` is the row as it stood before the change `changed`/`kind` describe, and is non-null only
-// when kind === "value". THE WORDING IS LOAD-BEARING and is deliberately about OUR PIN, not about
-// the record: "our pinned row read" says what this ledger held, which is a fact we can stand
-// behind, where "the bound was" would be a mathematical claim about a superseded record that
-// nobody here verified. Same discipline as never naming a row "the record".
-function cell(row, changed, kind, label, prev = null) {
+// THE PREVIOUS PINNED ROW IS DELIBERATELY NOT DISPLAYED, and this is the load-bearing decision on
+// this page. It was displayed for one commit (3145ed9) as "our pinned row read X until then" and
+// an adversarial review refuted it before the push, on a live case:
+//
+//   Brun's constant. Upstream APPENDED a row conditional on the Generalised Riemann Hypothesis
+//   ($2.1594$, [D2025]) BELOW the unconditional $2.288513$ ([PT2018]). Both are still in the
+//   table — 81a.md:13-14 — and upstream says in terms that they are not comparable. Our pin
+//   tracks the LAST-LISTED row, so the pin changed while nothing was superseded. The page then
+//   showed a reader who had cited $2.288513$ that it "read 2.288513 until then", which reads as
+//   an improvement to a conditional bound nobody has proved unconditionally.
+//
+// The wording was not the defect and no rewording fixes it: a current value, a "value changed"
+// date and a previous value form a from-to pair, and a from-to pair IS a movement claim whatever
+// noun sits in the sentence. `prevExpect` is a LISTING POSITION we used to pin, never a
+// superseded record, and the two coincide only sometimes — 8 of 8 live cases on 2026-09-01 were
+// appends or restructures, not replacements. Commit 8a4192a refused this exact inference on this
+// exact row; displaying it here would have published what that commit declined to.
+//
+// It stays in the SEARCH HAYSTACK (see findKey), because matching asserts nothing. A visitor who
+// pastes $2.288513$ still lands on the row and reads the live table for themselves.
+function cell(row, changed, kind, label) {
   if (!row) return `<td class="none" data-label="${esc(label)}">not pinned</td>`;
   // Second half of review finding F1. Omitting the element when the date is null made "we could
   // not compute a date" indistinguishable from "this page does not date rows" — the zero-versus-
@@ -193,10 +208,7 @@ function cell(row, changed, kind, label, prev = null) {
   const when = changed
     ? `<span class="when ${kind === "text" ? "text-only" : ""}">${whenLabel(changed, kind)}</span>`
     : `<span class="when">date unknown</span>`;
-  const was = prev
-    ? `<span class="was">our pinned row read <code>${esc(boundCell(prev).trim())}</code> until then</span>`
-    : "";
-  return `<td data-label="${esc(label)}"><code>${esc(row)}</code>${when}${was}</td>`;
+  return `<td data-label="${esc(label)}"><code>${esc(row)}</code>${when}</td>`;
 }
 
 // The haystack the filter searches. It carries the constant's name and id AND the bound cells,
@@ -234,8 +246,8 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null) {
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}">
 <th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a></th>
-${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)", r.upperPrev)}
-${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)", r.lowerPrev)}
+${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)")}
+${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)")}
 <td class="src"><a href="${esc(readable(r.url))}">source</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(r.title)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
 </tr>`).join("\n");
 
@@ -280,8 +292,6 @@ tr:target>*{background:var(--code)}
 code{display:block;font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--code);padding:.4rem .5rem;border-radius:4px;white-space:pre-wrap;word-break:break-word}
 .when{display:block;font-size:.75rem;color:var(--muted);margin-top:.3rem}
 .when.text-only{font-style:italic}
-.was{display:block;font-size:.75rem;color:var(--muted);margin-top:.25rem}
-.was code{font-size:.95em;opacity:.85}
 .none{color:var(--muted);font-style:italic}
 .src{white-space:nowrap}
 .cite{display:inline-block;vertical-align:top}
@@ -332,7 +342,7 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 
 <div class="empty" id="empty" hidden>
 <p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the ${rows.length} constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
-<p>Filtering matches the constant&rsquo;s name, its id, and the bound rows themselves &mdash; including what a row read <em>before</em> it moved. So you can paste the number you cited: if it was superseded, the row that replaced it is what comes back. A partial number works, since matching is on substrings. What is still not matched is a name we do not list the constant under, so it is worth clearing the box and scanning once before concluding a constant is absent.</p>
+<p>Filtering matches the constant&rsquo;s name, its id, and the <em>bound value</em> of each row we pin &mdash; including values this ledger pinned earlier and no longer does. So you can paste a number you cited and land on its constant, then read the current table yourself. A partial number works, since matching is on substrings. Two things are <em>not</em> matched: the reference and comment cells beside a bound (an author tag or a bracketed citation key will find nothing), and a name we do not list the constant under. Both are worth a scan of the full list before concluding a constant is absent.</p>
 <p><a id="emptyask" href="${esc(REPO)}/issues/new">Tell us what you were looking for &rarr;</a> — it arrives naming your search term, and a constant someone actually asked for is the best evidence we have about what to watch next.</p>
 </div>
 
@@ -661,7 +671,11 @@ async function selftest() {
   // value, the reader most likely to have found something worth telling us, was the reader the
   // search could not serve.
 
-  // FIRES: the haystack carries the current bound cells AND the superseded one.
+  // FIRES: the haystack carries the current bound cells AND the previously-pinned one.
+  // NOTE the word: PREVIOUSLY PINNED, not superseded. `prevExpect` is the row that used to be
+  // last-listed. Upstream appending a row below the one we pin changes it while superseding
+  // nothing — 8 of 8 live cases on 2026-09-01 were appends or restructures. That distinction is
+  // why this value is searchable and never displayed.
   const moved = {
     id: "71a", title: "Fourier Entropy-Influence",
     upper: "| $C_{71} > 6.521845710923046575$ | [New] |",
@@ -672,47 +686,50 @@ async function selftest() {
   const key = findKey(moved);
   assert.ok(key.length > 20, "positive control: the haystack must be built before any absence is asserted");
   assert.ok(key.includes("6.521845710923046575"), "the current pinned value must be searchable");
-  assert.ok(key.includes("6.514326913930565372"), "the SUPERSEDED value must be searchable — the whole point");
+  assert.ok(key.includes("6.514326913930565372"), "the previously-pinned value must be searchable — the whole point");
   assert.ok(key.includes("6.5143"), "a truncated citation must hit, since matching is on substrings");
   assert.ok(key.includes("fourier entropy-influence") && key.includes("71a"),
     "name and id must keep working — this extends the haystack, it does not replace it");
 
-  // SILENT: a row with nothing superseded contributes no phantom previous value.
+  // SILENT: a row with no earlier pin contributes no phantom previous value.
   const still = findKey({ id: "2a", title: "Crouzeix", upper: "| $2$ | [X] |", lower: null, upperPrev: null, lowerPrev: null });
   assert.ok(still.includes("crouzeix") && still.includes("2a"), "positive control: the unmoved row still builds a haystack");
   assert.doesNotMatch(still, /undefined|null/, "an absent previous value must contribute nothing, not the word null");
 
-  // FIRES: a value change renders what our pin used to read.
+  // THE SEAM, and it is the assertion that actually protects the feature. Everything above tests
+  // findKey in isolation; the review of 3145ed9 showed that reverting the row template to the old
+  // name-and-id expression left every one of those assertions passing while no visitor could
+  // search by any number at all. So parse the attribute back OUT of the rendered page — never
+  // re-derive it by calling findKey again, which is what made the first version blind.
   const wasPage = renderHtml([{
     ...moved, url: "https://example.invalid/71a.md",
     upperChanged: "2026-08-02", lowerChanged: null, upperKind: "value", lowerKind: null, changed: "2026-08-02",
   }], manifest, "2026-09-01");
   assert.ok(wasPage.length > 2000, "positive control: the page must render before any absence is asserted");
-  assert.match(wasPage, /our pinned row read/, "a moved row must show what it used to say");
-  assert.match(wasPage, /6\.514326913930565372/, "the superseded value must reach the page, not just the haystack");
-  // The wording is about OUR PIN, never about the record. "the bound was" would be a mathematical
-  // claim about a superseded value nobody here verified — the same line the page holds when it
-  // refuses to name any row "the record".
-  assert.doesNotMatch(wasPage, /the bound was|previously the record|used to be the record/i,
-    "the page must not upgrade our pin history into a claim about the record");
+  const emitted = wasPage.match(/<tr id="c-71a" data-find="([^"]*)"/);
+  assert.ok(emitted, "the rendered row must carry a data-find attribute — the filter reads this and nothing else");
+  assert.ok(emitted[1].includes("6.521845710923046575"), "the emitted attribute must carry the current value");
+  assert.ok(emitted[1].includes("6.514326913930565372"),
+    "the emitted attribute must carry the previously-pinned value — the whole point, and the half a findKey-only test cannot see");
 
-  // SILENT: a text-only change must render NO previous value. buildRows nulls prevExpect off
-  // kind !== "value", and this is the assertion that keeps it nulled — showing a reader two
-  // byte-different but numerically identical strings would imply a movement that did not happen.
-  const textOnly = renderHtml([{
-    id: "3a", title: "Escaped", url: "https://example.invalid/3a.md",
-    upper: "| $7/64$ | [R] |", lower: null, upperPrev: null, lowerPrev: null,
-    upperChanged: "2026-08-24", lowerChanged: null, upperKind: "text", lowerKind: null, changed: "2026-08-24",
-  }], manifest, "2026-09-01");
-  assert.match(textOnly, /text edited 2026-08-24/, "positive control: the text-only row rendered its own label");
-  assert.doesNotMatch(textOnly, /our pinned row read/, "a text-only change must show no previous value");
+  // THE PREVIOUS VALUE MUST NOT BE VISIBLE. It is a listing position we used to pin, not a
+  // superseded record, and displaying it beside the current value asserts a movement. Refuted on
+  // Brun's constant before 3145ed9 was pushed: both values are still in upstream's table and are
+  // explicitly not comparable. Strip the attribute before looking, or this assertion trivially
+  // fails on the haystack it is not talking about.
+  const visible = wasPage.replace(/ data-find="[^"]*"/g, "");
+  assert.ok(visible.includes("6.521845710923046575"), "positive control: the CURRENT value is visible on the page");
+  assert.ok(!visible.includes("6.514326913930565372"),
+    "a previously-pinned value must never be rendered as text — searchable, never displayed");
+  assert.doesNotMatch(visible, /used to read|until then|was previously|the bound was/i,
+    "the page must make no claim that a pinned row was superseded");
 
   // The filter glue, EXECUTED against the page's own script rather than read — same discipline as
-  // the ordering test above. A stale-number search must reach the row that replaced it.
+  // the ordering test above, and now fed from the EMITTED attribute rather than from findKey.
   const findScript = wasPage.match(/<script>([\s\S]*?)<\/script>/)[1];
   assert.ok(/data-find/.test(findScript), "positive control: the extracted script must be the filter, not an empty match");
   const findTr = (id, hay) => ({ id, hidden: false, getAttribute: (k) => (k === "data-find" ? hay : "") });
-  const findTrs = [findTr("71a", key), findTr("2a", still)];
+  const findTrs = [findTr("71a", emitted[1]), findTr("2a", still)];
   const fNodes = {
     q: el({ value: "" }), sort: el({ value: "id" }),
     rows: el({ getElementsByTagName: () => findTrs, appendChild: () => {} }),
@@ -795,7 +812,7 @@ async function selftest() {
   const badHost = externals.filter((h) => !/github\.com|example\.invalid/.test(h));
   assert.deepEqual(badHost, [], `page must fetch nothing at runtime; found ${badHost.join(", ")}`);
 
-  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match; a changed bound reads as a value change while an escaping-only edit and a changed citation detail both read as text edits with the bound held, a pin with no prior version gets no verdict, and all four reader-facing wordings are pinned; every row carries a c-prefixed id and a permalink that targets that row's OWN id in document order, with the landed row visibly marked; the filter haystack carries current AND superseded bound values so a truncated stale citation matches, an unmoved row contributes no phantom previous value, a value change renders what our pin used to read while a text-only edit renders none, and the page's own filter script, extracted and executed against a stub DOM, reveals the replacing row for a superseded number and hides the rest)");
+  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match; a changed bound reads as a value change while an escaping-only edit and a changed citation detail both read as text edits with the bound held, a pin with no prior version gets no verdict, and all four reader-facing wordings are pinned; every row carries a c-prefixed id and a permalink that targets that row's OWN id in document order, with the landed row visibly marked; the filter haystack carries current AND previously-pinned bound values so a truncated stale citation matches, a row with no earlier pin contributes no phantom value, the attribute is read back OUT of the rendered row rather than re-derived, a previously-pinned value is proven searchable and proven ABSENT from the visible page, and the page's own filter script, extracted and executed against the emitted attribute, reveals the right row and hides the rest)");
 }
 
 // Entry-point guard — review finding F2. Without it, ANY importer of renderHtml/buildRows runs the
