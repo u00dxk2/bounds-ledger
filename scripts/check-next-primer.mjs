@@ -40,7 +40,9 @@ export function primerPath(dateStr, root = ROOT) {
 }
 
 // ponytail: existence only, no content check. A primer that exists but is empty is a different
-// defect and this gate deliberately does not claim to catch it — see A-18 for the content leg.
+// defect and this gate deliberately does not claim to catch it. The content leg is NOT tracked
+// here any more: A-18 held it and closed 2026-09-01, killed because skylark-site's
+// gen-primer-first-action.mjs already generates the block from the fleet side.
 export function missingPrimer(dateStr, root = ROOT) {
   return !existsSync(primerPath(dateStr, root));
 }
@@ -181,7 +183,8 @@ if (process.argv.includes("--selftest")) {
     process.exit(1);
   }
   // Content leg: the primer exists, so now check the ONE thing that has actually gone wrong
-  // five times. This is deliberately not a general content check — that is A-18's job.
+  // five times. This is deliberately not a general content check — that belongs to the fleet
+  // generator (skylark-site gen-primer-first-action.mjs), not to a closed row on this ledger.
   const broken = brokenFirstAction(readFileSync(primerPath(tomorrow), "utf8"));
   if (broken.length) {
     console.error(`RESULT: FAIL — tomorrow's primer (${tomorrow} MT) carries a first action that cannot run.`);
