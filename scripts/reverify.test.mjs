@@ -7,6 +7,8 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import assert from "node:assert";
+import { fetchWithRetry } from "./reverify.mjs";
+import { run as runClaims } from "./check-claims.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LEDGER = join(ROOT, "ledger", "teorth-optimizationproblems");
@@ -29,6 +31,65 @@ const freshLive = async () => {
   await cp(LEDGER, TMP, { recursive: true });
   await rm(join(TMP, "manifest.json"), { force: true });
 };
+
+const captureStdout = async (action) => {
+  const lines = [];
+  const originalLog = console.log;
+  console.log = (...values) => {
+    lines.push(values.join(" "));
+    originalLog(...values);
+  };
+  try {
+    return { result: await action(), lines };
+  } finally {
+    console.log = originalLog;
+  }
+};
+
+// ---- A-20: bounded retry extends reach without softening the verdict --------
+// Both cases inject fetch and a zero-time wait, so this exercises the production
+// helper and claim run without making a network request or waiting two seconds.
+const transientUrl = "https://example.invalid/a20-transient";
+let transientAttempts = 0;
+const transientWaits = [];
+const { result: transientResponse, lines: transientLogs } = await captureStdout(() =>
+  fetchWithRetry(transientUrl, {}, {
+    fetchImpl: async () => {
+      transientAttempts++;
+      if (transientAttempts === 1) return { ok: false, status: 502 };
+      return { ok: true, status: 200, text: async () => "read completed after retry" };
+    },
+    wait: async (ms) => { transientWaits.push(ms); },
+  }));
+assert.equal(transientAttempts, 2, "one HTTP 502 should cause exactly one retry");
+assert.equal(await transientResponse.text(), "read completed after retry",
+  "a transient HTTP 502 should complete the read on retry");
+assert.deepEqual(transientWaits, [500], "the first retry should wait roughly 500ms");
+assert.deepEqual(transientLogs, [
+  `Retrying ${transientUrl}: attempt 2/3 after HTTP 502`,
+], "the retry must be visible on stdout with URL, attempt, and status");
+console.log("A-20 transient recovery assertion: PASS (injected HTTP 502, read completed on attempt 2, retry logged)");
+
+const persistentUrl = "https://example.invalid/a20-persistent";
+let persistentAttempts = 0;
+const persistentWaits = [];
+const { result: persistentExit, lines: persistentOutput } = await captureStdout(() =>
+  runClaims({
+    claims: [{ id: "A-20-test", statement: "persistent transport failure", url: persistentUrl, expect: "never read" }],
+    fetchImpl: async () => {
+      persistentAttempts++;
+      return { ok: false, status: 503 };
+    },
+    wait: async (ms) => { persistentWaits.push(ms); },
+  }));
+assert.equal(persistentAttempts, 3, "persistent HTTP 503 should stop after three total attempts");
+assert.deepEqual(persistentWaits, [500, 1500], "the two retries should use the bounded 500ms/1500ms backoff");
+assert.equal(persistentExit, 1, "an exhausted transient failure must keep the claim run RED");
+assert.match(persistentOutput.join("\n"), /^UNREACHABLE A-20-test/m,
+  "an exhausted source was never read and must be UNREACHABLE");
+assert.doesNotMatch(persistentOutput.join("\n"), /^BROKEN\s+A-20-test/m,
+  "an exhausted source must never be mislabeled BROKEN");
+console.log("A-20 persistent failure assertion: PASS (injected HTTP 503 three times, UNREACHABLE, exit 1)");
 
 await freshLive();
 
@@ -228,7 +289,7 @@ let alarmCouldNotRun = false;
   }
 }
 
-const summary = `synthetic drift in ${victim} detected; pristine copy clean; README leg fires on an asterisked row, silent when restored, REMOVED when deleted, and untouched by a constants-only edit; ${steps.length} workflow steps, piped steps pipefail-guarded; ${testCmds.length} self-tests present in CI; ${alarmVerdict}`;
+const summary = `synthetic drift in ${victim} detected; pristine copy clean; README leg fires on an asterisked row, silent when restored, REMOVED when deleted, and untouched by a constants-only edit; A-20 retry recovers after one 502 with a visible retry and exhausts three 503 attempts as UNREACHABLE/exit 1; ${steps.length} workflow steps, piped steps pipefail-guarded; ${testCmds.length} self-tests present in CI; ${alarmVerdict}`;
 
 // A-19 N-2. Previously the bash-less path printed PASS and exited 0, so on a machine without
 // bash this file reported success for a guard that never ran — the precise shape this repo

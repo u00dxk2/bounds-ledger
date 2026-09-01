@@ -14,7 +14,8 @@
 
 import { readFile } from "node:fs/promises";
 import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { fetchWithRetry } from "./reverify.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CLAIMS = join(ROOT, "ledger", "claims.json");
@@ -93,8 +94,12 @@ function selftest() {
   console.log("check-claims selftest: PASS (4 matcher cases + empty-body guard + 1 blind-class pin + negative pin fires on an inserted row, silent when last, and distinguishes added from gone)");
 }
 
-async function run() {
-  const claims = JSON.parse(await readFile(CLAIMS, "utf8"));
+export async function run({
+  claims: suppliedClaims,
+  fetchImpl = globalThis.fetch,
+  wait,
+} = {}) {
+  const claims = suppliedClaims ?? JSON.parse(await readFile(CLAIMS, "utf8"));
   const rows = [];
   let broken = 0, unverified = 0, held = 0;
   const bodies = new Map(); // many pins share a source URL — fetch each once
@@ -106,7 +111,7 @@ async function run() {
       // IPs). Whatever happens here, the claim stays UNVERIFIED and the exit code is untouched.
       let advisory;
       try {
-        const res = await fetch(c.url);
+        const res = await fetchWithRetry(c.url, {}, { fetchImpl, wait });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         advisory = holds(await res.text(), c.expect)
           ? `advisory fetch from THIS machine: HTTP 200, expected "${c.expect}" still present — page unchanged (stays UNVERIFIED; CI cannot see this)`
@@ -120,7 +125,7 @@ async function run() {
     let body = bodies.get(c.url);
     if (body === undefined) {
       try {
-        const res = await fetch(c.url, { headers: { "user-agent": "bounds-ledger-claims" } });
+        const res = await fetchWithRetry(c.url, { headers: { "user-agent": "bounds-ledger-claims" } }, { fetchImpl, wait });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         body = await res.text();
         bodies.set(c.url, body);
@@ -152,10 +157,12 @@ async function run() {
   return broken ? 1 : 0;
 }
 
-try {
-  if (process.argv.includes("--selftest")) selftest();
-  else process.exitCode = await run();
-} catch (err) {
-  console.error(`error: ${err.message}`);
-  process.exitCode = 2;
+if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
+  try {
+    if (process.argv.includes("--selftest")) selftest();
+    else process.exitCode = await run();
+  } catch (err) {
+    console.error(`error: ${err.message}`);
+    process.exitCode = 2;
+  }
 }

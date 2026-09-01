@@ -23,7 +23,7 @@
 
 import { mkdir, readFile, writeFile, readdir, rm } from "node:fs/promises";
 import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const REPO = "teorth/optimizationproblems";
 const SUBDIR = "constants";
@@ -41,8 +41,51 @@ if (process.env.GITHUB_TOKEN) UA.authorization = `Bearer ${process.env.GITHUB_TO
 
 const norm = (s) => s.replace(/\r\n/g, "\n");
 
+const RETRYABLE_STATUSES = new Set([429, 502, 503, 504]);
+const RETRY_DELAYS_MS = [500, 1500];
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const fetchErrorText = (err) => {
+  const message = err?.message ?? String(err);
+  const code = err?.code ?? err?.cause?.code;
+  return code && !message.includes(code) ? `${message} (${code})` : message;
+};
+
+const isTransientFetchError = (err) => {
+  const code = err?.code ?? err?.cause?.code;
+  return [
+    "ECONNRESET",
+    "ETIMEDOUT",
+    "UND_ERR_CONNECT_TIMEOUT",
+    "UND_ERR_HEADERS_TIMEOUT",
+    "UND_ERR_BODY_TIMEOUT",
+    "UND_ERR_SOCKET",
+  ].includes(code) || /ECONNRESET|socket hang up|timed?\s*out|timeout/i.test(fetchErrorText(err));
+};
+
+// Retry extends reach; it never converts the final response or error into success.
+// Callers still classify an exhausted HTTP response or transport error exactly as before.
+export async function fetchWithRetry(url, options = {}, {
+  fetchImpl = globalThis.fetch,
+  wait = sleep,
+} = {}) {
+  const totalAttempts = RETRY_DELAYS_MS.length + 1;
+  for (let attempt = 1; attempt <= totalAttempts; attempt++) {
+    try {
+      const res = await fetchImpl(url, options);
+      if (!RETRYABLE_STATUSES.has(res.status) || attempt === totalAttempts) return res;
+      console.log(`Retrying ${url}: attempt ${attempt + 1}/${totalAttempts} after HTTP ${res.status}`);
+      try { await res.body?.cancel(); } catch { /* best effort: release this failed response */ }
+    } catch (err) {
+      if (!isTransientFetchError(err) || attempt === totalAttempts) throw err;
+      console.log(`Retrying ${url}: attempt ${attempt + 1}/${totalAttempts} after ${fetchErrorText(err)}`);
+    }
+    await wait(RETRY_DELAYS_MS[attempt - 1]);
+  }
+}
+
 async function getJson(url) {
-  const res = await fetch(url, { headers: UA });
+  const res = await fetchWithRetry(url, { headers: UA });
   if (!res.ok) throw new Error(`GET ${url}: ${res.status}`);
   return res.json();
 }
@@ -59,7 +102,7 @@ async function fetchUpstream() {
   for (let i = 0; i < paths.length; i += CHUNK) {
     await Promise.all(
       paths.slice(i, i + CHUNK).map(async (p) => {
-        const res = await fetch(`https://raw.githubusercontent.com/${REPO}/${sha}/${p}`, { headers: { "user-agent": UA["user-agent"] } });
+        const res = await fetchWithRetry(`https://raw.githubusercontent.com/${REPO}/${sha}/${p}`, { headers: { "user-agent": UA["user-agent"] } });
         if (!res.ok) throw new Error(`fetch ${p}: ${res.status}`);
         files.set(p, norm(await res.text()));
       })
@@ -146,16 +189,18 @@ async function check(liveDir) {
   return 1;
 }
 
-const args = process.argv.slice(2);
-const liveDirIdx = args.indexOf("--live-dir");
-try {
-  if (args.includes("--snapshot")) await snapshot();
-  else if (args.includes("--check")) process.exitCode = await check(liveDirIdx >= 0 ? args[liveDirIdx + 1] : null);
-  else {
-    console.error("usage: reverify.mjs --snapshot | --check [--live-dir <dir>]");
+if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
+  const args = process.argv.slice(2);
+  const liveDirIdx = args.indexOf("--live-dir");
+  try {
+    if (args.includes("--snapshot")) await snapshot();
+    else if (args.includes("--check")) process.exitCode = await check(liveDirIdx >= 0 ? args[liveDirIdx + 1] : null);
+    else {
+      console.error("usage: reverify.mjs --snapshot | --check [--live-dir <dir>]");
+      process.exitCode = 2;
+    }
+  } catch (err) {
+    console.error(`error: ${err.message}`);
     process.exitCode = 2;
   }
-} catch (err) {
-  console.error(`error: ${err.message}`);
-  process.exitCode = 2;
 }
