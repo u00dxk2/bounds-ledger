@@ -161,14 +161,19 @@ export function changeFor(pin, root = ROOT) {
   const prevClaims = claimsAtParent(meta.sha, root);
   if (!Array.isArray(prevClaims)) return { date: meta.date, sha: meta.sha, kind: null };
   const prev = prevClaims.find((c) => c && c.id === pin.id);
+  // `prevExpect` is returned so the page can say what the row USED TO say. It was already being
+  // computed and discarded, which is why this costs no extra git call. It is only ever surfaced
+  // where kind === "value": on a "text" change the numbers are identical and a "was" line would
+  // show a reader two indistinguishable strings and imply a movement that did not happen.
   // The parent read fine and this pin was not in it, so the commit that "changed" the row is the
   // commit that CREATED it. That distinction carries the page's single worst misreading: 203 of
   // 222 pins date to 2026-07-24, the day tracking started and not a day anything moved, and the
   // 2026-08-23 primer names it as the first thing that will mislead a reader. It is only sayable
   // because the null case above is kept separate: a shallow clone that cannot read the parent
   // returns null and gets the neutral wording, never a "never changed" we did not establish.
-  if (!prev) return { date: meta.date, sha: meta.sha, kind: "first" };
-  return { date: meta.date, sha: meta.sha, kind: changeKind(prev.expect, pin.expect) };
+  if (!prev) return { date: meta.date, sha: meta.sha, kind: "first", prevExpect: null };
+  const kind = changeKind(prev.expect, pin.expect);
+  return { date: meta.date, sha: meta.sha, kind, prevExpect: kind === "value" ? prev.expect : null };
 }
 
 function render(id, claims, manifest, root = ROOT) {
