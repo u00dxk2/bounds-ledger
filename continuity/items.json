@@ -1029,7 +1029,7 @@
       "note3": "LIKELY CAUSE, STATED AS A HYPOTHESIS AND NOT AS A FINDING: validity checks are part of GitHub Secret Protection / Advanced Security. Public repos get secret scanning alerts free; validity checks are a paid add-on. That would explain a 200 with a silently ignored field. NOT VERIFIED — no positive control was available, because there is no second repo on this account known to have the feature ON against which the same call could be shown to succeed. Do not repeat the hypothesis as established without that control.",
       "expectedSignalBy": "2026-09-08",
       "onTrigger": "On 2026-09-08 either confirm the entitlement hypothesis with a positive control, or close this as not-available-on-this-plan. If it turns out to cost money, that is David's decision and not a self-approved purchase — surface it as a decision with the price, never as a blocker to be cleared.",
-      "readCommand": "gh api repos/u00dxk2/bounds-ledger --jq '.security_and_analysis.secret_scanning_validity_checks.status' — returns disabled while unshipped, enabled when done. Positive control that the probe reads a real field: the same query with .secret_scanning.status returns enabled, so a disabled reading is the setting's state and not a missing key or a silent jq failure.",
+      "readCommand": "gh api repos/u00dxk2/bounds-ledger --jq '.security_and_analysis.secret_scanning_validity_checks.status' # SEPARATOR CONVERTED 2026-09-02, em dash to hash, because this gate fires 2026-09-08 and the runner would otherwise execute the whole 900-byte field instead of the command. Returns disabled while unshipped, enabled when done. Positive control that the probe reads a real field: the same query with .secret_scanning.status returns enabled, so a disabled reading is the setting's state and not a missing key or a silent jq failure.",
       "linkedCommits": [
         "93d220b"
       ],
@@ -1075,7 +1075,7 @@
       "expectedSignalBy": "2026-09-09",
       "signalDateNote": "Two weeks, deliberately not sooner: the decision needs Pages out of degraded_performance first, and there is no urgency while local npm run verify is the floor and every commit passes it before push.",
       "onTrigger": "On 2026-09-09 decide rather than re-date. If Pages is healthy, either implement build_type workflow with a demonstrated refusal, or close declined citing note3's trade. If a malformed page has reached a visitor in the meantime, that outranks the trade and the answer is gate it.",
-      "readCommand": "gh api repos/u00dxk2/bounds-ledger/pages --jq '.build_type' — returns 'legacy' while ungated, 'workflow' once gated. Literal output 2026-08-26: legacy. POSITIVE CONTROL that the endpoint is live rather than erroring silently: the same object's .html_url returns https://u00dxk2.github.io/bounds-ledger/ and .status returns a build state; an empty or null build_type means the read failed, not that no gate exists.",
+      "readCommand": "gh api repos/u00dxk2/bounds-ledger/pages --jq '.build_type' # SEPARATOR CONVERTED 2026-09-02, em dash to hash, because this gate fires 2026-09-09. Returns 'legacy' while ungated, 'workflow' once gated. Literal output 2026-08-26: legacy. POSITIVE CONTROL that the endpoint is live rather than erroring silently: the same object's .html_url returns https://u00dxk2.github.io/bounds-ledger/ and .status returns a build state; an empty or null build_type means the read failed, not that no gate exists.",
       "linkedCommits": [
         "ff164fa",
         "b1c7295",
