@@ -13,8 +13,8 @@
 // Renders a figure and a list. No verdict, no exit code above 0 for findings — this is a
 // diagnostic, not a gate, and it must never become a permanently-red alarm.
 
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { readFileSync, realpathSync } from "node:fs";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
 import assert from "node:assert/strict";
 
@@ -74,4 +74,17 @@ function main() {
   console.log(`Convert a row when its gate comes due, or at pre-stage — not in a sweep, so the rows that run get the attention.`);
 }
 
-process.argv.includes("--selftest") ? selftest() : main();
+// Entry guard. Without it, importing `separatorIsBroken` RUNS the live read as a side effect —
+// which it did, the first time anything imported this file. `realpathSync` on argv[1] is the
+// load-bearing part: Node realpaths the ESM main entry but leaves argv[1] as the caller typed it,
+// so a plain `pathToFileURL(argv[1]).href === import.meta.url` comparison silently fails whenever
+// the checkout is reached through a symlink or junction — no output, no error, exit 0. That is
+// A-20's F1 finding, and this is the shape it prescribes: else-branch says COULD NOT RUN and
+// exits 2, the house code, so a guard that cannot run never reads as a guard that passed.
+const entry = process.argv[1] ? pathToFileURL(realpathSync(process.argv[1])).href : null;
+if (entry === import.meta.url) {
+  process.argv.includes("--selftest") ? selftest() : main();
+} else if (process.argv[1]?.endsWith("check-readcommand-separators.mjs")) {
+  console.error("check-readcommand-separators: COULD NOT RUN — invoked as main but module identity did not match");
+  process.exit(2);
+}
