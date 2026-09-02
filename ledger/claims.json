@@ -859,6 +859,22 @@
     "generated": true
   },
   {
+    "id": "pin:3e:U",
+    "statement": "Last-listed upper-bound table row for Unnormalized single-set sum-difference exponent (3e.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3e.md",
+    "expect": "| $\\frac{4}{3} = 1.3333\\dots$ | [FrPi73] | The classical Freiman–Pigaev inequality $\\lvert A+A\\rvert^{3/4} \\le \\lvert A-A\\rvert \\le \\lvert A+A\\rvert^{4/3}$. Quoted in this form by [GGSWT2025, Problem 6.43] and by [PeWe13, §4]. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/3e.md",
+    "generated": true
+  },
+  {
+    "id": "pin:3e:L",
+    "statement": "Last-listed lower-bound table row for Unnormalized single-set sum-difference exponent (3e.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3e.md",
+    "expect": "| $\\approx 1.21$ | [GGSWT2025] | AlphaEvolve, given no human hints, did not recover the simplex construction within a few hours and reached only about $1.21$ — one of the cases [GGSWT2025] records as *not* matching the literature. Inferior to [HRY1999]. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/3e.md",
+    "generated": true
+  },
+  {
     "id": "pin:40a:U",
     "statement": "Last-listed upper-bound table row for Lehmer’s Mahler measure constant (40a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/40a.md",

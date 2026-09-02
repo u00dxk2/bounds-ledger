@@ -90,4 +90,15 @@ Written last, from live commands run at 2026-09-02T16:25Z. Every value here is a
 - **Sizes**: `CLAUDE.md` 44,966 · loaded 59,998 against the ruled 60,000 — release: `node ../skylark-site/scripts/check-claude-md-sizes.mjs --project bounds-ledger`
 
 <!-- findings:begin -->
+**Appended after the report was written — the mirror moved at 17:45Z.** Everything above stands as of its own stamps; this is new, not a correction.
+
+**Upstream added a constant.** `reverify.mjs --check` went red on two files: `README.md` gained a row and `constants/3e.md` was ADDED. Verified against the primary source before any snapshot — upstream commit `f215d414` (an upstream `teorth/optimizationproblems` sha), authored **2026-09-02T17:43:37Z, two minutes before our check ran**, touching exactly the two files our differ named. That exact match is the positive control that the alarm read the right document rather than reporting a plausible shape.
+
+`C_3e` is the unnormalized single-set sum-difference exponent — the least `C` with `|A−A| ≤ |A+A|^C`, Problem 6.43 of arXiv:2511.02864 — bounded `1.27155 ≤ C_3e ≤ 1.33333`, the upper bound the classical Freiman–Pigaev inequality and the lower the Hennecart–Robert–Yudin simplex.
+
+**This is an ADDITION, not a movement, and the distinction decides the day's classification.** No existing record moved, so `npm run catches` still reads 0 for the current partial week — it is silent on added pins by construction — and the day stays **instrument-facing at 6 consecutive**. The BLUF's "no bound moved anywhere today" remains true as written.
+
+**It does put the standing prediction's clock on a live subject.** That prediction names *a witness-value mismatch on a constant upstream added within ~30 days, found by a human recomputing a cited certificate*. `C_3e` is now exactly that class of row, added today, and its bounds carry named classical results a human can check. If the prediction is going to be tested, this is the kind of row that tests it.
+
+Mirror refreshed deliberately through the full ratchet: 114 files at `f215d41`, 224 generated pins across 112 files plus 11 hand claims, 235 total.
 <!-- findings:end -->
