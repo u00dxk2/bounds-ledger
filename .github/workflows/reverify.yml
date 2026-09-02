@@ -185,6 +185,11 @@ jobs:
       # hash) reports 9, and the inflated figure had been carried through three retros.
       - name: Self-test readCommand separator predicate (no network)
         run: node scripts/check-readcommand-separators.mjs --selftest
+      # The per-constant pages carry the same refusal the table does — a pin is a listing
+      # position, never a record — so the selftest asserts the page says so and that no
+      # record-claiming wording reaches it. Generation itself is checked by `npm run check`.
+      - name: Self-test per-constant page renderer (no network)
+        run: node scripts/render-constant-pages.mjs --selftest
       # Not piped and deliberately network-free: this asserts README's published figures still
       # match COMMITTED repo state. A stale block is a falsifiable public error on the front
       # page of a repo whose pitch is that it notices stale numbers.
