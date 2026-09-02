@@ -1,0 +1,19 @@
+{
+  "note": "Outward artifacts WE authored and sent upstream, keyed by the upstream path each concerns. Two consumers, and the difference between them is the whole point. (1) render-site.mjs DISCLOSES on the public page that we filed against a row, so a reader judging that row can see our own hand in it and go read the report. That is a FACT and asserts nothing about cause. (2) check-upstream-reports.mjs (A-33 leg 1) treats a change in `state` since the value recorded here as a CANDIDATE CAUSAL EVENT worth looking at — output is 'go look', never a verdict, because deciding a change was CAUSED by our report is a judgment (A-33 note3).",
+  "note2": "`state` and `closedAt` are the RECORDED baseline, not a live read. A-33 note4: a check that fires on 'a filed report is closed' fires every day forever once #150 closes, which is this lane's founding defect in a new hat. It must fire on the TRANSITION, so the baseline lives here in the repo and is updated deliberately when a finding is dispositioned. If you update it, say in the commit what you verified.",
+  "note3": "NOT a G-4 arrival source, and building it must not blur that line. G-4 requires a causal path containing NO artifact we authored and sent; every row in this file is such an artifact by construction, so a hit here is G-3's shape and can never satisfy G-4. If anything this makes the line easier to hold, because it names our own artifacts instead of leaving them unlabelled in the drift stream.",
+  "repo": "teorth/optimizationproblems",
+  "reports": [
+    {
+      "path": "constants/87a.md",
+      "issue": 150,
+      "url": "https://github.com/teorth/optimizationproblems/issues/150",
+      "title": "constants/87a.md: the current-record row quotes Martin's degree-8 discriminant, not the degree-12 construction that gives 857.5662",
+      "filed": "2026-08-20T22:38:32Z",
+      "state": "CLOSED",
+      "closedAt": "2026-08-23T17:15:35Z",
+      "baselineRecordedAt": "2026-09-02",
+      "baselineSource": "gh issue view 150 --repo teorth/optimizationproblems --json number,createdAt,closedAt,state,title,url — run 2026-09-02, every field above copied from its output rather than recalled"
+    }
+  ]
+}

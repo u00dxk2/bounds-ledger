@@ -21,7 +21,7 @@
 // framework, no search index. 111 constants is small enough that the browser filters it
 // instantly; revisit only if the mirror grows by an order of magnitude.
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pinsFor, lastChanged, changeFor, changeKind, boundCell } from "./lookup.mjs";
@@ -126,7 +126,44 @@ export function citation(r, sha) {
   ].join("\n");
 }
 
-export function buildRows(claims, { withDates = true, root = ROOT } = {}) {
+/**
+ * The report WE filed upstream against this constant's file, or null.
+ *
+ * DISCLOSURE, NOT ATTRIBUTION. This renders "we reported this row" and links the issue. It must
+ * never render a claim that our report caused anything — A-33 note3: "the output is 'go look',
+ * never a verdict, because deciding that a change was CAUSED by our report is a judgment." The
+ * selftest pins that by asserting the emitted markup carries no causal wording.
+ *
+ * Why a reader is owed it: the page's whole promise is check us in one hop. A row we have
+ * ourselves reported against is the one row where our own involvement is part of what a reader
+ * needs in order to judge it, and until today the page was silent about that.
+ */
+export function reportFor(id, reports) {
+  if (!Array.isArray(reports)) return null;
+  return reports.find((r) => r && r.path === `constants/${id}.md`) || null;
+}
+
+/**
+ * The reader-facing label for a filed report. Deliberately flat: what we did, and where it
+ * stands. No verb here may imply that upstream acted BECAUSE of us — "closed" is the issue's
+ * own state, reported as such.
+ */
+export function reportLabel(report) {
+  const state = String(report.state || "").toUpperCase();
+  const when = state === "CLOSED" && report.closedAt ? ` ${String(report.closedAt).slice(0, 10)}` : "";
+  return `we reported this row · ${state === "CLOSED" ? `closed${when}` : "open"}`;
+}
+
+/** Load the filed-report record. Absent file means no disclosures, never a crash. */
+export function loadReports(root = ROOT) {
+  const p = join(root, "ledger", "upstream-reports.json");
+  if (!existsSync(p)) return [];
+  const parsed = JSON.parse(readFileSync(p, "utf8"));
+  return Array.isArray(parsed.reports) ? parsed.reports : [];
+}
+
+export function buildRows(claims, { withDates = true, root = ROOT, reports = null } = {}) {
+  const filed = reports ?? loadReports(root);
   return constantIds(claims).map((id) => {
     const pins = pinsFor(id, claims);
     const upper = pins.find((p) => p.id.endsWith(":U"));
@@ -147,6 +184,7 @@ export function buildRows(claims, { withDates = true, root = ROOT } = {}) {
       lowerKind: lc.kind,
       upperPrev: uc.prevExpect || null,
       lowerPrev: lc.prevExpect || null,
+      report: reportFor(id, filed),
     };
   }).map((r) => ({ ...r, changed: newerOf(r.upperChanged, r.lowerChanged) }));
 }
@@ -245,7 +283,7 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null) {
   // sat inside the style template literal and shipped the whole explanation to every visitor.
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}">
-<th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a></th>
+<th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}</th>
 ${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)")}
 ${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)")}
 <td class="src"><a href="${esc(readable(r.url))}">source</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(r.title)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
@@ -286,6 +324,7 @@ th,td{text-align:left;vertical-align:top;padding:.6rem .75rem;border-bottom:1px 
 thead th{background:var(--bg);font-size:.78rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
 tbody th{font-weight:600;min-width:15rem}
 .id{display:block;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);text-decoration:none;width:max-content}
+.ours{display:block;margin-top:.25rem;font-size:12px;color:var(--muted);width:max-content;max-width:100%}
 .id:hover,.id:focus{text-decoration:underline}
 tr:target th{box-shadow:inset 3px 0 0 var(--accent)}
 tr:target>*{background:var(--code)}
@@ -320,6 +359,7 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 <p><strong>Read this before you trust a number here.</strong> This page is a <em>snapshot</em>, not a live read. It shows our mirror of <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a> at upstream commit <code style="display:inline;padding:.1rem .3rem">${esc(sha.slice(0, 7))}</code>.</p>
 <p><strong>${esc(generatedOn)} is the date this mirror last CHANGED &mdash; not the last time it was checked.</strong> Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date means the records have been <em>steady</em>, not that nobody has looked. The longest such quiet stretch so far was nine days. To see the actual last check and its verdict, read the <a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a> &mdash; that is the live read, and this page is deliberately not.</p>
 <p>Every row links to its primary source so you can check us in one hop — and if a row disagrees with its source, that is a bug worth reporting. Use the <strong>looks wrong?</strong> link on that row: the report arrives already naming the constant and the exact mirror commit, so you never have to work out how to describe which of ${rows.length} rows you meant.</p>
+<p>Some rows carry a <strong>we reported this row</strong> link. That means we ourselves filed a report upstream about that row, and the link goes to it so you can read what we said and judge it. We show it because our own involvement in a row is part of what you need in order to weigh the row — and <strong>it is not a claim that anything upstream changed because of us</strong>. The state shown is the report's own; whether it caused anything is a separate question this page does not answer.</p>
 <p><strong>Every row has its own link.</strong> Click a row&rsquo;s short id — the grey code under the constant&rsquo;s name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred.</p>
 <p><strong>These are last-listed table rows, not a claim about which bound is “the record.”</strong> Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.</p>
 </div>
@@ -504,6 +544,64 @@ async function selftest() {
   // that read as "the landed row is marked" actually checked only that the words appeared once.
   assert.match(html, /tr:target th\{box-shadow/, "the landed row must carry an edge marker");
   assert.match(html, /tr:target>\*\{background/, "the landed row must carry a background fill");
+
+  // --- The filed-report disclosure: fires on a mapped row, silent on every other, and NEVER
+  // --- says our report caused anything. The last of those is the one worth a test: a causal
+  // --- claim here would be this lane publishing exactly the kind of unverified statement it
+  // --- exists to catch in other people (A-33 note3).
+  const discloseClaims = [
+    { id: "pin:87a:U", statement: "Last-listed upper-bound table row for Widget (87a.md)", url: "https://example.invalid/87a.md", expect: "| 857.5662 |" },
+    { id: "pin:10a:U", statement: "Last-listed upper-bound table row for Gadget (10a.md)", url: "https://example.invalid/10a.md", expect: "| 4 |" },
+  ];
+  const filedFixture = [{
+    path: "constants/87a.md",
+    issue: 150,
+    url: "https://example.invalid/issues/150",
+    state: "CLOSED",
+    closedAt: "2026-08-23T17:15:35Z",
+  }];
+  const disclosed = renderHtml(buildRows(discloseClaims, { withDates: false, reports: filedFixture }), manifest, "2026-09-02");
+  // Positive control FIRST: both rows must actually be on the page, or "absent" below proves nothing.
+  assert.match(disclosed, /<tr id="c-87a"/, "positive control: the mapped row must render before its disclosure is asserted");
+  assert.match(disclosed, /<tr id="c-10a"/, "positive control: the unmapped row must render before its silence is asserted");
+
+  // FIRES: the mapped row carries the link, pointing at the report we filed.
+  const ours = disclosed.match(/<a class="ours"[^>]*>([^<]*)<\/a>/);
+  assert.ok(ours, "the mapped row must disclose the report we filed against it");
+  assert.match(ours[0], /href="https:\/\/example\.invalid\/issues\/150"/, "the disclosure must link the report itself, not the repo");
+  assert.equal(ours[1], "we reported this row · closed 2026-08-23");
+
+  // SILENT: exactly one disclosure on a two-row page, so the unmapped row carries none.
+  assert.equal((disclosed.match(/class="ours"/g) || []).length, 1, "a row we filed nothing against must carry no disclosure");
+
+  // Negative control on the SILENCE: with the fixture removed the count drops to zero, proving
+  // the assertion above tracks the map rather than counting a string that is always there once.
+  const undisclosed = renderHtml(buildRows(discloseClaims, { withDates: false, reports: [] }), manifest, "2026-09-02");
+  assert.equal((undisclosed.match(/class="ours"/g) || []).length, 0, "the disclosure must disappear when nothing is filed");
+
+  // NO CAUSAL CLAIM anywhere in the emitted disclosure or the prose that explains it.
+  for (const forbidden of [/caused/i, /because of us/i, /candidate causal/i, /thanks to/i, /led to/i, /our report fixed/i]) {
+    assert.ok(!forbidden.test(ours[0]), `the disclosure must assert no cause — matched ${forbidden}`);
+  }
+  assert.match(disclosed, /it is not a claim that anything upstream changed because of us/,
+    "the page must say in words that the disclosure asserts no cause");
+
+  // An OPEN report reads "open" and gets no date — a closed-on date on an open report would be
+  // a fabricated fact, and the label builds that date from state rather than from presence.
+  assert.equal(reportLabel({ state: "OPEN", closedAt: null }), "we reported this row · open");
+  assert.equal(reportLabel({ state: "OPEN", closedAt: "2026-08-23T17:15:35Z" }), "we reported this row · open");
+
+  // reportFor keys on the exact upstream path, so a neighbouring id never inherits a disclosure.
+  assert.equal(reportFor("87a", filedFixture).issue, 150);
+  assert.equal(reportFor("7a", filedFixture), null);
+  assert.equal(reportFor("87a", []), null);
+  assert.equal(reportFor("87a", null), null);
+
+  // A hostile url in the record is attribute-escaped rather than breaking out of the href.
+  const hostileFiled = [{ path: "constants/87a.md", issue: 1, url: 'https://example.invalid/"><script>x</script>', state: "OPEN" }];
+  const hostileDisclosed = renderHtml(buildRows(discloseClaims, { withDates: false, reports: hostileFiled }), manifest, "2026-09-02");
+  assert.ok(hostileDisclosed.length > 2000, "positive control: the hostile-disclosure page must render before any absence is asserted");
+  assert.ok(!/<script>x<\/script>/.test(hostileDisclosed), "a url in the filed-report record reached the page as markup");
 
   // A constant name carrying markup, a quote and an ampersand. This is what pins the encoding
   // ORDER: encodeURIComponent must run before esc, or a name can break out of the href attribute.
@@ -812,7 +910,7 @@ async function selftest() {
   const badHost = externals.filter((h) => !/github\.com|example\.invalid/.test(h));
   assert.deepEqual(badHost, [], `page must fetch nothing at runtime; found ${badHost.join(", ")}`);
 
-  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match; a changed bound reads as a value change while an escaping-only edit and a changed citation detail both read as text edits with the bound held, a pin with no prior version gets no verdict, and all four reader-facing wordings are pinned; every row carries a c-prefixed id and a permalink that targets that row's OWN id in document order, with the landed row visibly marked; the filter haystack carries current AND previously-pinned bound values so a truncated stale citation matches, a row with no earlier pin contributes no phantom value, the attribute is read back OUT of the rendered row rather than re-derived, a previously-pinned value is proven searchable and proven ABSENT from the visible page, and the page's own filter script, extracted and executed against the emitted attribute, reveals the right row and hides the rest)");
+  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match; a changed bound reads as a value change while an escaping-only edit and a changed citation detail both read as text edits with the bound held, a pin with no prior version gets no verdict, and all four reader-facing wordings are pinned; every row carries a c-prefixed id and a permalink that targets that row's OWN id in document order, with the landed row visibly marked; the filter haystack carries current AND previously-pinned bound values so a truncated stale citation matches, a row with no earlier pin contributes no phantom value, the attribute is read back OUT of the rendered row rather than re-derived, a previously-pinned value is proven searchable and proven ABSENT from the visible page, and the page's own filter script, extracted and executed against the emitted attribute, reveals the right row and hides the rest; a row we filed an upstream report against discloses it and links the report, an unfiled row carries none and the count drops to zero when the record is emptied, the label reads open with no date for an open report, a neighbouring id inherits nothing, a hostile url reaches the page escaped, and neither the disclosure nor its explanatory prose claims our report caused anything)");
 }
 
 // Entry-point guard — review finding F2. Without it, ANY importer of renderHtml/buildRows runs the
