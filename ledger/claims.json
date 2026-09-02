@@ -1851,6 +1851,38 @@
     "generated": true
   },
   {
+    "id": "pin:88a:U",
+    "statement": "Last-listed upper-bound table row for Bounded prime gap constant (88a.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/88a.md",
+    "expect": "| $240$ | [Sta26] | Stadlmann: \"the Bombieri–Vinogradov theorem can be combined with newer equidistribution estimates for smooth moduli\", the latter being the exponent of distribution $\\tfrac12 + \\tfrac1{40}$ of [Sta25]. Preprint of 31 August 2026. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/88a.md",
+    "generated": true
+  },
+  {
+    "id": "pin:88a:L",
+    "statement": "Last-listed lower-bound table row for Bounded prime gap constant (88a.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/88a.md",
+    "expect": "| $2$ | Trivial | $p\\_{n+1} - p\\_n \\ge 2$ for every $n \\ge 2$. Equality, $H\\_1 = 2$, is the twin prime conjecture. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/88a.md",
+    "generated": true
+  },
+  {
+    "id": "pin:88b:U",
+    "statement": "Last-listed upper-bound table row for Exponent for bounded gaps between many primes (88b.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/88b.md",
+    "expect": "| $3.8075$ | [Sta25] | Stadlmann: $H\\_m = O(\\exp(3.8075\\,m))$, deduced from an exponent of distribution $\\tfrac12 + \\tfrac1{40}$ for the primes in arithmetic progressions to smooth moduli, improving Polymath's $\\tfrac12 + \\tfrac7{300}$. The new ingredient is a modification of the $q$-van der Corput process. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/88b.md",
+    "generated": true
+  },
+  {
+    "id": "pin:88b:L",
+    "statement": "Last-listed lower-bound table row for Exponent for bounded gaps between many primes (88b.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/88b.md",
+    "expect": "| $0$ | Trivial | No positive lower bound is known, and none is expected: see below. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/88b.md",
+    "generated": true
+  },
+  {
     "id": "pin:8a:U",
     "statement": "Last-listed upper-bound table row for Classical zero-free region constant (8a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/8a.md",
