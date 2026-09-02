@@ -179,6 +179,12 @@ jobs:
       # was dropped for producing the only false positives.
       - name: Self-test self-attributed-cause control check (no network)
         run: node scripts/check-self-attribution.mjs --selftest
+      # Diagnostic, never a gate: the LIVE run renders a figure and no verdict, so only its
+      # predicate is tested here. The predicate is the whole point — counting em dashes anywhere
+      # in a readCommand reported 17 where the deciding question (does the dash precede the first
+      # hash) reports 9, and the inflated figure had been carried through three retros.
+      - name: Self-test readCommand separator predicate (no network)
+        run: node scripts/check-readcommand-separators.mjs --selftest
       # Not piped and deliberately network-free: this asserts README's published figures still
       # match COMMITTED repo state. A stale block is a falsifiable public error on the front
       # page of a repo whose pitch is that it notices stale numbers.
