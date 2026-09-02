@@ -55,6 +55,26 @@ export function sumSince(days, from, key) {
     .reduce((n, [, v]) => n + (v[key] ?? 0), 0);
 }
 
+/**
+ * Average days-present per DISTINCT viewer across GitHub's own 14-day window.
+ *
+ * Numerator: per-day `viewUniques` summed over the window — unique viewer-DAYS, which
+ * overcount people. Denominator: the window rollup's `viewUniques`, which GitHub dedups
+ * ACROSS the window and is therefore the honest head-count. 1.0 means every viewer appeared
+ * on exactly one day; above 1.0 means somebody came back.
+ *
+ * Returns null rather than a number whenever it cannot be computed, because a plausible-looking
+ * ratio is worse than an absent one. Note the identity that makes the third guard a real check
+ * and not defensive noise: viewer-days can never be FEWER than distinct viewers, so a sub-1.0
+ * result means our day rows do not cover the window the rollup was taken over.
+ */
+export function returnRate(days, rollup, windowStart) {
+  if (!rollup || !(rollup.viewUniques > 0)) return null;
+  const viewerDays = sumSince(days ?? {}, windowStart, "viewUniques");
+  if (viewerDays < rollup.viewUniques) return null;
+  return { viewerDays, viewers: rollup.viewUniques, ratio: viewerDays / rollup.viewUniques };
+}
+
 function selftest() {
   // Positive: history OLDER than the incoming window survives the merge.
   const history = { "2026-07-01": { views: 5, viewUniques: 3 } };
@@ -94,7 +114,34 @@ function selftest() {
   assert.equal(sumSince(restated, "2026-07-01", "viewUniques"), 5);
   assert.equal(sumSince(restated, "2027-01-01", "viewUniques"), 0);
 
-  console.log("traffic-snapshot selftest: PASS (pre-window history survives merge and a truncating merge is caught; views/clones share a row; no day invented; restatement updates in place; sumSince boundary inclusive)");
+  // --- returnRate: both polarities, then every way it must refuse to answer. ---
+  // FIRES: 5 viewer-days over 3 distinct people means somebody came back.
+  const returning = {
+    "2026-08-20": { viewUniques: 2 },
+    "2026-08-21": { viewUniques: 2 },
+    "2026-08-22": { viewUniques: 1 },
+  };
+  const rr = returnRate(returning, { viewUniques: 3 }, "2026-08-20");
+  assert.equal(rr.viewerDays, 5);
+  assert.equal(rr.viewers, 3);
+  assert.ok(rr.ratio > 1, "returnRate did not rise above 1 on a window where a viewer returned");
+
+  // SILENT: three people, one day each, deduped to three — reads exactly 1.00 and never above it.
+  const once = { "2026-08-20": { viewUniques: 1 }, "2026-08-21": { viewUniques: 1 }, "2026-08-22": { viewUniques: 1 } };
+  assert.equal(returnRate(once, { viewUniques: 3 }, "2026-08-20").ratio, 1);
+
+  // Proof the two fixtures are actually different inputs and not the same one read twice —
+  // without this, both assertions above could pass against one accidental object.
+  assert.notDeepEqual(returning, once);
+
+  // Refuses rather than guessing: no rollup sampled, nobody in the window, and day rows that do
+  // not cover the rollup's window (viewer-days below the head-count is arithmetically impossible,
+  // so it means our coverage is short, not that people un-visited).
+  assert.equal(returnRate(returning, null, "2026-08-20"), null);
+  assert.equal(returnRate(returning, { viewUniques: 0 }, "2026-08-20"), null);
+  assert.equal(returnRate({ "2026-08-22": { viewUniques: 1 } }, { viewUniques: 3 }, "2026-08-20"), null);
+
+  console.log("traffic-snapshot selftest: PASS (pre-window history survives merge and a truncating merge is caught; views/clones share a row; no day invented; restatement updates in place; sumSince boundary inclusive; return-rate rises above 1 when a viewer returns, reads exactly 1 when none do on a proven-different fixture, and refuses on a missing rollup, an empty window and day rows short of the rollup's window)");
 }
 
 function main() {
@@ -133,6 +180,27 @@ function main() {
   console.log(`W-6 no longer has a visitor threshold — re-pointed 2026-08-20 to the first unsolicited outside contact (n=1). These figures are context for that read, not a gate on it.`);
   // Our own clones and CI are in these figures; the repo was private for most of the window.
   console.log(`Not deducted: our own clones, CI checkouts, and GitHub's crawlers. Treat clone figures as unattributed.`);
+
+  // C2 (orchestrator-assigned 2026-09-02): a return-rate proxy out of figures we already hold.
+  // It is readable at n=3 in a way G-4's arrival count is not — at three viewers it still separates
+  // "three people looked once" from "three people came back", which are different worlds. It renders
+  // a figure and NO verdict, and it carries no threshold: attaching one is David's call.
+  // The window boundary is READ from the response's own first bucket, never computed as
+  // today-minus-N. Computing it got this wrong on the first live run: `today - 13` started at
+  // 2026-08-20 and excluded the 2026-08-19 bucket that held the third viewer, so the numerator
+  // came out at 2 against a denominator of 3 and the guard below correctly refused an
+  // arithmetically impossible ratio. GitHub is the only authority on which days its rollup covers.
+  const windowStart = views.views?.length ? dayOf(views.views[0].timestamp) : null;
+  const rr = windowStart ? returnRate(store.days, { viewUniques: views.uniques }, windowStart) : null;
+  if (rr) {
+    console.log(`Return-rate proxy, ${windowStart} to today: ${rr.viewerDays} viewer-day(s) over ${rr.viewers} distinct viewer(s) = ${rr.ratio.toFixed(2)} day(s) present per viewer. Exactly 1.00 means nobody came back twice.`);
+  } else {
+    console.log(`Return-rate proxy: NOT READY — needs a non-zero 14-day viewer count and day rows covering ${windowStart ?? "the reported window"} onward. Not zero, and not a low ratio: it is unmeasured.`);
+  }
+  // The caveat is part of the figure, not a footnote to it: GitHub's traffic API counts the
+  // REPOSITORY on github.com. The published Pages site has no analytics at all (G-4 note4), so
+  // this says nothing about how many people READ the ledger — only about repo visitors.
+  console.log(`Scope: this ratio is REPO views on github.com. The published page has no analytics, so page readership stays unmeasured and no figure here is a proxy for it.`);
 }
 
 process.argv.includes("--selftest") ? selftest() : main();
