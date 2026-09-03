@@ -177,7 +177,16 @@ function main({ check = false } = {}) {
     const onDisk = existsSync(OUTDIR) ? readdirSync(OUTDIR).filter((f) => f.endsWith(".html")) : [];
     const missing = [...pages.keys()].filter((f) => !onDisk.includes(f));
     const extra = onDisk.filter((f) => !pages.has(f));
-    const stale = [...pages].filter(([f, html]) => onDisk.includes(f) && readFileSync(join(OUTDIR, f), "utf8") !== html).map(([f]) => f);
+    // Compare CONTENT, not line endings — the same normalisation render-site.mjs's --check already
+    // does, and for the same measured reason: the renderer writes LF while a Windows checkout
+    // materialises these files as CRLF, so a byte-exact comparison calls a CORRECT tree stale. That
+    // fired on README.md on 2026-08-16 simply from switching branches; this comparison was the last
+    // one in the repo still unnormalised (cold-review finding, 2026-09-03). A red that means nothing
+    // is worse than no alarm — it is the polarity that teaches people to ignore one.
+    const lf = (s) => s.replace(/\r\n/g, "\n");
+    const stale = [...pages]
+      .filter(([f, html]) => onDisk.includes(f) && lf(readFileSync(join(OUTDIR, f), "utf8")) !== lf(html))
+      .map(([f]) => f);
     if (missing.length || extra.length || stale.length) {
       console.log(`RESULT: FAIL — ${missing.length} missing, ${extra.length} orphaned, ${stale.length} stale constant page(s)`);
       for (const f of [...missing, ...extra, ...stale].slice(0, 10)) console.log(`  ${f}`);

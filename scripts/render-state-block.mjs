@@ -101,8 +101,14 @@ const COVERAGE_CLAIMS = [
   { re: /\*\*(\d+) named constants\*\* are tracked/, what: '"**<N> named constants** are tracked"' },
 ];
 
+// Scoped to the TABLE, not the whole document: `<tr id="c-` appearing in a comment or in the
+// page's inlined script would otherwise count as a row (cold-review finding, 2026-09-03). No table
+// means zero, which the caller reports as UNREADABLE rather than as stale prose.
 export function countPageRows(indexHtml) {
-  return [...indexHtml.matchAll(/<tr id="c-/g)].length;
+  const start = indexHtml.indexOf("<table");
+  const end = indexHtml.indexOf("</table>", start === -1 ? 0 : start);
+  if (start === -1 || end === -1) return 0;
+  return [...indexHtml.slice(start, end).matchAll(/<tr id="c-[^"]+"/g)].length;
 }
 
 export function checkCoverageCounts(readme, rows) {
@@ -113,13 +119,22 @@ export function checkCoverageCounts(readme, rows) {
   if (sec === null) {
     return { ok: false, msg: `coverage counts: the heading "${COVERAGE_HEADING}" is GONE from README.md — this guard asserts sentences inside that section.` };
   }
+  // EVERY occurrence is checked, not the first (cold-review finding, 2026-09-03): a correct first
+  // sentence would otherwise conceal a stale duplicate further down the same section — which is
+  // precisely the shape that shipped here, two sentences three lines apart disagreeing with each
+  // other. And the digits are compared as a STRING, so "0115" is a finding rather than silently
+  // coerced to 115 by Number().
   const problems = [];
   for (const claim of COVERAGE_CLAIMS) {
-    const m = sec.match(claim.re);
-    if (!m) {
+    const found = [...sec.matchAll(new RegExp(claim.re.source, "g"))];
+    if (found.length === 0) {
       problems.push(`${claim.what} is GONE from that section — restore it or update scripts/render-state-block.mjs`);
-    } else if (Number(m[1]) !== rows) {
-      problems.push(`${claim.what} says ${m[1]}, but the page renders ${rows} rows`);
+      continue;
+    }
+    for (const m of found) {
+      if (m[1] !== String(rows)) {
+        problems.push(`${claim.what} says ${m[1]}, but the page renders ${rows} rows`);
+      }
     }
   }
   if (problems.length) return { ok: false, msg: `coverage counts: STALE — ${problems.join("; ")}.` };
@@ -275,9 +290,22 @@ async function selftest() {
   const unreadable = checkCoverageCounts(good, 0);
   if (unreadable.ok) throw new Error("selftest FAIL: coverage guard passed on an unreadable page");
   if (!/UNREADABLE/.test(unreadable.msg)) throw new Error("selftest FAIL: a zero row count was reported as stale prose rather than as an unreadable page");
+  // A stale DUPLICATE later in the same section must fire even though the first occurrence is
+  // correct — the exact shape that shipped here (two sentences, three lines apart, disagreeing).
+  const dupStale = `${C}All 115 tracked constants, filter as you type. Elsewhere: All 111 tracked constants.\n\n**115 named constants** are tracked.\n\n## Next\n`;
+  if (checkCoverageCounts(dupStale, 115).ok) throw new Error("selftest FAIL: coverage guard read only the FIRST occurrence and missed a stale duplicate");
+  // A leading-zero spelling is a finding, not a silent numeric coercion.
+  const padded = good.replace("All 115 tracked", "All 0115 tracked");
+  if (padded === good) throw new Error("selftest FAIL: leading-zero mutation did not land");
+  if (checkCoverageCounts(padded, 115).ok) throw new Error("selftest FAIL: coverage guard accepted 0115 as 115");
   // countPageRows itself, both answers: it counts real rows and returns 0 on a page without them.
-  if (countPageRows('<tr id="c-1b" x><tr id="c-10a">') !== 2) throw new Error("selftest FAIL: countPageRows miscounted rendered rows");
+  if (countPageRows('<table><tr id="c-1b" x><tr id="c-10a" y></table>') !== 2) throw new Error("selftest FAIL: countPageRows miscounted rendered rows");
   if (countPageRows("<table><tr><td>no ids</td></tr></table>") !== 0) throw new Error("selftest FAIL: countPageRows invented rows on a page that has none");
+  // Scoped to the table: an identical string in a comment or inlined script is not a row.
+  if (countPageRows('<table><tr id="c-1b" x></table><script>var s = \'<tr id="c-99z"\';</script>') !== 1) {
+    throw new Error("selftest FAIL: countPageRows counted a row-shaped string OUTSIDE the table");
+  }
+  if (countPageRows('<!-- <tr id="c-1b" --><p>no table</p>') !== 0) throw new Error("selftest FAIL: countPageRows counted rows on a page with no table at all");
 
   // (8) The exclusion list is read from git, not assumed: every listed sha must actually be a
   // manifest commit, or the subtraction is silently wrong in the direction of a false pass.
@@ -292,7 +320,7 @@ async function selftest() {
   }
   if (cycles !== total - excluded) throw new Error("selftest FAIL: cycle arithmetic disagrees with itself");
 
-  console.log(`render-state-block selftest: PASS (no-op on a current block; fires on a stale sha AND a stale count; missing markers raise; mirror cross-check fires; stale mutations proven to land; catch guard fires on a stale count, on a removed sentence, and stays silent on a match; the coverage guard fires on EITHER front-door sentence going stale, on a removed sentence, on a removed heading and on the phrases appearing outside its section, calls a zero row count UNREADABLE rather than stale, and countPageRows both counts real rows and invents none; all ${excluded} exclusion shas verified present in manifest history, ${cycles} cycles)`);
+  console.log(`render-state-block selftest: PASS (no-op on a current block; fires on a stale sha AND a stale count; missing markers raise; mirror cross-check fires; stale mutations proven to land; catch guard fires on a stale count, on a removed sentence, and stays silent on a match; the coverage guard fires on EITHER front-door sentence going stale, on a removed sentence, on a removed heading and on the phrases appearing outside its section, catches a STALE DUPLICATE behind a correct first occurrence, rejects a leading-zero spelling rather than coercing it, and calls a zero row count UNREADABLE rather than stale; countPageRows counts real rows, invents none, ignores a row-shaped string outside the table and reads a page with no table as zero; all ${excluded} exclusion shas verified present in manifest history, ${cycles} cycles)`);
 }
 
 const mode = process.argv[2];

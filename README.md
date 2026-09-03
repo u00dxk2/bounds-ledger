@@ -131,7 +131,9 @@ Two complementary checks, because either alone has a blind spot.
 
 **2. Claim pins** (`check-claims.mjs`) — `ledger/claims.json` names, per claim, a source URL and the exact string that must still appear there, **across every surface the ledger cites**: the upstream repo at live HEAD, arXiv abstracts, Wikipedia, the community metadata database behind erdosproblems.com. Cross-surface divergence produced this lane's founding finding; a same-repo mirror diff would never have seen it.
 
-Coverage is 11 hand-written claims plus 220 pins generated from the mirror — an upper- and a lower-bound pin for each of 110 constant files. The 111th, `1b.md`, is deliberately excluded from generation and hand-pinned as C-1/C-3 instead, so ledger coverage is complete.
+Coverage is every constant file in the mirror — an upper- and a lower-bound pin generated for each — plus the hand-written claims, which sit *beside* the generated pins rather than in place of them. The exact inventory is in **Current state** below, which is generated; this sentence deliberately carries no count, because the counts that used to sit here went stale twice and the claim built on them was wrong in a way no number would have revealed.
+
+*What it used to say, kept because the mistake is the instructive part:* "220 pins … for each of 110 constant files. The 111th, `1b.md`, is deliberately excluded from generation and hand-pinned as C-1/C-3 instead, **so ledger coverage is complete**." Ledger coverage *was* complete. **Page** coverage was not: the published page builds its rows from generated pins alone, so excluding a file from generation removed it from the page entirely — and the excluded file was `1b`, the Erdős minimum overlap constant this repo opened on, the one in the opening paragraph above. Corrected 2026-09-03: nothing is excluded from generation.
 
 ## Four rules that are load-bearing
 
