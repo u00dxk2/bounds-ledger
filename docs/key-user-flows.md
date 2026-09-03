@@ -433,6 +433,15 @@ the heading removed, the phrases appearing outside their section, and a zero row
 **UNREADABLE rather than stale** — a guard that reads a broken selector as a content failure sends
 the next reader to rewrite correct prose.
 
+**Verified on the LIVE PUBLISHED PAGE, not on local bytes**, because identical-input is not the
+same claim as measured-output and this lane has been bitten by the difference. Pages build row for
+the push tip `3b08874` reports `built` at 2026-09-03T21:23:18Z; fetched immediately after.
+Positive control first — the page's own title string is present — then: **115 rows**, `id="c-1b"`
+present, **0** anchor-form cite URLs, **115** canonical cite URLs, **115** row permalinks still
+`href="#c-"`. `c/1b.html` serves **200**, declares itself canonical, carries both pinned bounds, and
+its cite block ends at its own address. Before, on the same probe: 114 rows, no `c-1b`, 114
+anchor-form cite URLs.
+
 **Reader reach is unknown and that is the honest answer, not a gap.** GitHub Pages hands us no
 request log and client-side analytics are refused by an enforced selftest
 (`docs/evangelism-bar.md` § Reader reach). `npm run traffic` counts repo views and `npm run reports`
