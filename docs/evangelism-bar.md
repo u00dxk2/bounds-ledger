@@ -120,6 +120,31 @@ It is not a launch metric, not a funnel, and not a self-rating. This lane has re
 self-rating contract on purpose, and an evangelism bar that quietly became a score would be the
 same thing wearing a different hat.
 
+## Reader reach is unmeasured, and that absence is CONSIDERED
+
+Approved 2026-09-03. The orchestrator's ruling is the reason this section exists in words rather
+than as a shrug: **a clean absence with nothing considered-and-declined reads as a question rather
+than an answer.** So the two options are named, and both are dead.
+
+**(a) Client-side analytics on the published page — refused by an enforced invariant.**
+`render-site.mjs`'s selftest asserts the page references no third-party asset and fetches nothing
+at runtime. That invariant is load-bearing for a public mathematics ledger, and it is checked, not
+merely intended.
+
+**(b) A server-side request log — NOT forbidden by that invariant, and this is the correction
+worth holding.** The no-fetch rule says nothing about the server. What actually kills this option
+is that **GitHub Pages hands us no request log at all.** Anyone re-deriving this will otherwise
+conclude the selftest is the whole blocker and propose a server-side read as the way around it.
+
+**Consequences, so they are not re-derived each session:**
+
+- `[reached: …]` on a page ship reads `unknown` with that reason. That is the honest answer, not a
+  gap awaiting an instrument.
+- `npm run traffic` (repo views) and `npm run reports` (report arrivals) both count github.com,
+  **never page readers.** Neither may be quoted as readership.
+- Standing up a reach instrument is **not** a substrate task to self-approve. Whether to move to a
+  surface that can be measured is `A-34`'s breadth-versus-depth question, and it is David's.
+
 ## Review
 
 Re-read this whenever coverage changes materially, when an arrival instrument first produces a
