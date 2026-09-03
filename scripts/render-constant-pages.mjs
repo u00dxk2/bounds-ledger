@@ -55,15 +55,16 @@ function side(label, row, changed, kind) {
 }
 
 /**
- * The shared `citation()` ends with the TABLE anchor, because that was the only citable URL when
- * it was written. On a per-constant page that is the one line that must change: a page whose own
- * cite block sends the reader back to a row in a 114-row table has not made the row citable, which
- * is the entire point of the page. Swapped here rather than in `citation()` so the table's
- * citation is untouched — the table's shape is out of scope for this change.
+ * `pageCitation()` IS GONE (A-40, 2026-09-03) and its absence is the ship.
+ *
+ * It existed for two days as a `.replace()` that swapped the shared citation's table anchor for
+ * this page's own URL, on the reasoning that "the table's shape is out of scope for this change".
+ * That reasoning left the site handing out TWO addresses for one constant — the table's cite block
+ * gave `#c-<id>` while this page declared `c/<id>.html` canonical in a `<link rel=canonical>` two
+ * lines from the same citation. A ledger whose product is citation accuracy cannot publish a
+ * second-best address for its own records, so `citation()` now emits the canonical page URL itself
+ * and both surfaces quote the same block, byte for byte. One object, one address.
  */
-export function pageCitation(r, sha) {
-  return citation(r, sha).replace(`${SITE}#c-${r.id}`, `${SITE}c/${r.id}.html`);
-}
 
 export function renderPage(r, sha) {
   const upstream = `${REPO}/blob/main/ledger/teorth-optimizationproblems/constants/${encodeURIComponent(r.id)}.md`;
@@ -88,7 +89,7 @@ ${side("Lower", r.lower, r.lowerChanged, r.lowerKind)}
 <a href="${esc(r.url || upstream)}">upstream source</a> &middot;
 <a href="${esc(flagUrl(r, sha))}">looks wrong?</a>
 </div>
-<div class="cite"><strong>Cite this row</strong><code>${esc(pageCitation(r, sha))}</code></div>
+<div class="cite"><strong>Cite this row</strong><code>${esc(citation(r, sha))}</code></div>
 <footer><p>${esc(DISCLAIMER)}</p>
 <p>Mirrored from <code style="display:inline;padding:.1rem .3rem">teorth/optimizationproblems@${esc(String(sha).slice(0, 7))}</code> — a snapshot at that commit, not a live read.</p></footer>
 </html>`;
@@ -127,9 +128,16 @@ function selftest() {
   assert.match(citeBlock, /bounds-ledger\/c\/9z\.html/, "the page's cite block must cite the page, not the table row");
   assert.ok(!citeBlock.includes(`${SITE}#c-9z`), "the table anchor must not survive in the page's citation");
   assert.match(html, new RegExp(`href="${SITE}#c-9z"`), "positive control: the back-link DOES use the anchor, so the absence above is about the cite block alone");
-  // Negative control: the SHARED citation still ends at the anchor, so the assertion above is
-  // testing pageCitation's substitution rather than a change in citation() itself.
-  assert.ok(citation(row, "abc1234def").includes(`${SITE}#c-9z`));
+  // A-40: the SHARED citation now carries the canonical page URL, so this page quotes it unmodified
+  // and the table quotes the same bytes. Asserted here as well as in render-site's own suite, on
+  // purpose: this file is where the divergence was introduced, so this is where a reintroduction
+  // would be silent. If someone re-adds a local substitution, the equality below fails.
+  assert.ok(
+    citeBlock.includes(esc(citation(row, "abc1234def"))),
+    "the page must quote the shared citation unchanged — one object, one address, on both surfaces",
+  );
+  assert.ok(citation(row, "abc1234def").includes(`${SITE}c/9z.html`),
+    "the shared citation itself must carry the canonical page URL, not a form this file patches afterwards");
 
   // A missing side reads as "not pinned" rather than vanishing.
   const [oneSided] = buildRows([claims[0]], { withDates: false, reports: [] });
@@ -156,7 +164,7 @@ function selftest() {
   assert.match(withReport, /we reported this row/);
   assert.ok(!/we reported this row/.test(html), "a constant we filed nothing against must carry no disclosure");
 
-  console.log(`render-constant-pages selftest: PASS (renders title, both pinned rows and the upstream sha after proving the page is non-empty; carries a canonical URL; states its pins are a listing position and asserts no record; a missing side reads "not pinned"; a hostile title is escaped, with the raw fixture proven to contain the markup so the check tests the renderer; the filed-report disclosure appears only for a mapped constant)`);
+  console.log(`render-constant-pages selftest: PASS (renders title, both pinned rows and the upstream sha after proving the page is non-empty; carries a canonical URL, and its cite block quotes the SHARED citation unchanged — so the table and the page hand out the same address for the same constant, and a re-added local substitution fails here; a missing side reads "not pinned"; a hostile title is escaped, with the raw fixture proven to contain the markup so the check tests the renderer; the filed-report disclosure appears only for a mapped constant)`);
 }
 
 function main({ check = false } = {}) {

@@ -27,9 +27,9 @@ That reconciliation is [`docs/reconciliations/2026-07-22-minimum-overlap.md`](do
 
 ## Is your number in here?
 
-**There is now a page for exactly this question: [u00dxk2.github.io/bounds-ledger](https://u00dxk2.github.io/bounds-ledger/).** All 111 tracked constants, filter as you type, and for each one the pinned upper and lower rows, **the date each row last changed and whether that change moved the bound or only the text around it**, and a link to the primary source beside every number. No account, no clone, nothing fetched at runtime. It is a snapshot at the sha pinned below, and it says so on the page — for the live verdict, clone and run `npm run check`.
+**There is now a page for exactly this question: [u00dxk2.github.io/bounds-ledger](https://u00dxk2.github.io/bounds-ledger/).** All 115 tracked constants, filter as you type, and for each one the pinned upper and lower rows, **the date each row last changed and whether that change moved the bound or only the text around it**, and a link to the primary source beside every number. No account, no clone, nothing fetched at runtime. It is a snapshot at the sha pinned below, and it says so on the page — for the live verdict, clone and run `npm run check`.
 
-The short answer for most visitors is "maybe, and you can check in one click". **112 named constants** are tracked. Twelve of them are below, chosen because you may recognise them — each link goes to this repo's mirrored copy, which GitHub renders as the bounds table itself, so you can read the current upper and lower rows **without cloning anything**.
+The short answer for most visitors is "maybe, and you can check in one click". **115 named constants** are tracked. Twelve of them are below, chosen because you may recognise them — each link goes to this repo's mirrored copy, which GitHub renders as the bounds table itself, so you can read the current upper and lower rows **without cloning anything**.
 
 | Constant | The bounds table we watch |
 |---|---|
@@ -107,7 +107,7 @@ Generated from committed state by `scripts/render-state-block.mjs`. For the **li
 whether every claim still holds right now — run `npm run check` and read its exit code.
 
 - **116** mirrored files — 115 constant files plus upstream's repo-root `README.md` — byte-identical to upstream [`teorth/optimizationproblems`](https://github.com/teorth/optimizationproblems) at `01a0bc8` (an upstream sha; it does not exist in this repo). The README is in scope because it is where upstream declares which bounds it stands behind: a bound demoted to "verification at minimal levels" leaves every constants file unchanged.
-- **239 pinned claims** — 228 generated (one per bounds table, asserting the last-listed row's **position**, never "the record") and 11 hand-written. 2 are `manual: true` and therefore report UNVERIFIED by design: their source blocks automated fetch from CI runners.
+- **241 pinned claims** — 230 generated (one per bounds table, asserting the last-listed row's **position**, never "the record") and 11 hand-written. 2 are `manual: true` and therefore report UNVERIFIED by design: their source blocks automated fetch from CI runners.
 - Checks run daily in CI (09:17 UTC), on push, and on demand
 
 <!-- state-block:end -->

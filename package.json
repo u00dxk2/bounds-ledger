@@ -10,7 +10,7 @@
     "check": "node scripts/reverify.mjs --check && node scripts/check-claims.mjs && node scripts/render-state-block.mjs --check && node scripts/render-site.mjs --check && node scripts/render-constant-pages.mjs --check && node scripts/check-deferrals.mjs && node scripts/check-brief.mjs",
     "deferrals": "node scripts/check-deferrals.mjs --prs",
     "reports": "node scripts/report-rate.mjs",
-    "resnap": "node scripts/reverify.mjs --snapshot && node scripts/extract-pins.mjs && node scripts/render-state-block.mjs && node scripts/render-site.mjs",
+    "resnap": "node scripts/reverify.mjs --snapshot && node scripts/extract-pins.mjs && node scripts/render-state-block.mjs && node scripts/render-site.mjs && node scripts/render-constant-pages.mjs",
     "traffic": "node scripts/traffic-snapshot.mjs",
     "catches": "node scripts/catch-rate.mjs",
     "verify:steps": "npm test && npm run check",

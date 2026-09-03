@@ -66,12 +66,64 @@ function countResolutionCycles() {
 // deleted sentence because some unrelated paragraph happened to carry the phrase — a false
 // CLEAN, and the worse polarity of the two.
 const CATCH_HEADING = "## What it has actually caught";
-function catchSection(readme) {
-  const start = readme.indexOf(CATCH_HEADING);
+function section(readme, heading) {
+  const start = readme.indexOf(heading);
   if (start === -1) return null;
-  const rest = readme.slice(start + CATCH_HEADING.length);
+  const rest = readme.slice(start + heading.length);
   const next = rest.search(/\n## /);
   return next === -1 ? rest : rest.slice(0, next);
+}
+function catchSection(readme) {
+  return section(readme, CATCH_HEADING);
+}
+
+// --- the page-coverage count guard (added 2026-09-03) ----------------------------------------
+//
+// WHAT IT IS FOR. The README's front-door section promises the visitor the page carries every
+// constant we track. On 2026-09-03 that sentence said 111 and a second sentence three lines below
+// said 112, while the page rendered 114 — and worse than either number being stale, the promise
+// itself was FALSE: 1b, the Erdős minimum overlap constant this repo opened on and the subject of
+// the paragraph directly above, had no row at all, because extract-pins skipped the file. Two
+// hand-typed counts, both wrong, guarding a claim that was wrong for a third reason nobody had
+// checked. This is the lane's founding defect aimed at its own front page.
+//
+// WHY IT COUNTS THE PAGE AND NOT THE LEDGER. The sentence is a promise about what a VISITOR sees,
+// so the guard reads the artifact the visitor loads. index.html is generated, and
+// `render-site.mjs --check` already asserts it matches claims.json, so the chain from ledger to
+// prose is closed by two checks that each assert one link rather than one check asserting both.
+//
+// UNREADABLE IS NOT ZERO. If the row pattern matches nothing, this reports that it cannot SEE the
+// page rather than reporting the README as stale by 115 — a guard that reads a broken selector as
+// a content failure sends the next reader to rewrite correct prose.
+const COVERAGE_HEADING = "## Is your number in here?";
+const COVERAGE_CLAIMS = [
+  { re: /All (\d+) tracked constants/, what: '"All <N> tracked constants"' },
+  { re: /\*\*(\d+) named constants\*\* are tracked/, what: '"**<N> named constants** are tracked"' },
+];
+
+export function countPageRows(indexHtml) {
+  return [...indexHtml.matchAll(/<tr id="c-/g)].length;
+}
+
+export function checkCoverageCounts(readme, rows) {
+  if (rows === 0) {
+    return { ok: false, msg: `coverage counts: UNREADABLE — no \`<tr id="c-\` rows found in index.html, so this guard cannot see the page. Not a stale README: fix the read before touching the prose.` };
+  }
+  const sec = section(readme, COVERAGE_HEADING);
+  if (sec === null) {
+    return { ok: false, msg: `coverage counts: the heading "${COVERAGE_HEADING}" is GONE from README.md — this guard asserts sentences inside that section.` };
+  }
+  const problems = [];
+  for (const claim of COVERAGE_CLAIMS) {
+    const m = sec.match(claim.re);
+    if (!m) {
+      problems.push(`${claim.what} is GONE from that section — restore it or update scripts/render-state-block.mjs`);
+    } else if (Number(m[1]) !== rows) {
+      problems.push(`${claim.what} says ${m[1]}, but the page renders ${rows} rows`);
+    }
+  }
+  if (problems.length) return { ok: false, msg: `coverage counts: STALE — ${problems.join("; ")}.` };
+  return { ok: true, msg: `coverage counts: the page renders ${rows} rows and both README sentences say ${rows}.` };
 }
 
 // Asserts the README's own sentence, so the checked thing is the prose a visitor reads — not a
@@ -197,12 +249,42 @@ async function selftest() {
   if (!checkCatchCount(inSection, 9).ok) throw new Error("selftest FAIL: guard missed the phrase INSIDE the catch section");
   if (checkCatchCount("# no such heading\n\n9 upstream drifts\n", 9).ok) throw new Error("selftest FAIL: guard passed a README with the catch heading removed");
 
+  // (9) The coverage guard returns BOTH answers, on fixtures rather than on the repo.
+  const C = "## Is your number in here?\n\n";
+  const good = `${C}All 115 tracked constants, filter as you type.\n\nThe short answer is maybe. **115 named constants** are tracked.\n\n## Next\n\ntail\n`;
+  if (!checkCoverageCounts(good, 115).ok) throw new Error("selftest FAIL: coverage guard fired on MATCHING counts");
+  const oneStale = good.replace("All 115 tracked", "All 111 tracked");
+  if (oneStale === good) throw new Error("selftest FAIL: coverage mutation did not land");
+  const staleRes = checkCoverageCounts(oneStale, 115);
+  if (staleRes.ok) throw new Error("selftest FAIL: coverage guard stayed silent on a STALE count (111 vs 115)");
+  if (!/says 111.*renders 115/.test(staleRes.msg)) throw new Error("selftest FAIL: stale coverage message did not name both figures");
+  // The SECOND sentence is guarded independently — a guard that only reads the first would have
+  // passed the 2026-09-03 README, which carried 111 in one sentence and 112 in the next.
+  const otherStale = good.replace("**115 named constants**", "**112 named constants**");
+  if (otherStale === good) throw new Error("selftest FAIL: second-sentence mutation did not land");
+  if (checkCoverageCounts(otherStale, 115).ok) throw new Error("selftest FAIL: coverage guard read only the first sentence");
+  // A deleted sentence is a failure, not a silent pass.
+  if (checkCoverageCounts(`${C}All the constants, filter as you type.\n\n**115 named constants** are tracked.\n`, 115).ok) {
+    throw new Error("selftest FAIL: coverage guard passed a README with an asserted sentence REMOVED");
+  }
+  // Section anchoring, same reason as the catch guard: the phrase outside the section must not satisfy it.
+  const coverageDecoy = `${C}no counts here.\n\n## Run it\n\nAll 115 tracked constants — **115 named constants** are tracked.\n`;
+  if (checkCoverageCounts(coverageDecoy, 115).ok) throw new Error("selftest FAIL: coverage guard satisfied by phrases OUTSIDE its section");
+  if (checkCoverageCounts("# no such heading\n\nAll 115 tracked constants\n", 115).ok) throw new Error("selftest FAIL: coverage guard passed a README with its heading removed");
+  // UNREADABLE is not STALE. A zero row count must accuse the read, never the prose.
+  const unreadable = checkCoverageCounts(good, 0);
+  if (unreadable.ok) throw new Error("selftest FAIL: coverage guard passed on an unreadable page");
+  if (!/UNREADABLE/.test(unreadable.msg)) throw new Error("selftest FAIL: a zero row count was reported as stale prose rather than as an unreadable page");
+  // countPageRows itself, both answers: it counts real rows and returns 0 on a page without them.
+  if (countPageRows('<tr id="c-1b" x><tr id="c-10a">') !== 2) throw new Error("selftest FAIL: countPageRows miscounted rendered rows");
+  if (countPageRows("<table><tr><td>no ids</td></tr></table>") !== 0) throw new Error("selftest FAIL: countPageRows invented rows on a page that has none");
+
   // (8) The exclusion list is read from git, not assumed: every listed sha must actually be a
   // manifest commit, or the subtraction is silently wrong in the direction of a false pass.
   // Skipped on a shallow clone, where the question is unanswerable rather than failed.
   const { total, excluded, cycles, unknown } = countResolutionCycles();
   if (unknown) {
-    console.log("render-state-block selftest: PASS (block assertions + catch guard on fixtures; history checks SKIPPED — shallow clone)");
+    console.log("render-state-block selftest: PASS (block assertions + catch guard + coverage guard on fixtures; history checks SKIPPED — shallow clone)");
     return;
   }
   if (excluded !== Object.keys(NON_DRIFT_MANIFEST_COMMITS).length) {
@@ -210,7 +292,7 @@ async function selftest() {
   }
   if (cycles !== total - excluded) throw new Error("selftest FAIL: cycle arithmetic disagrees with itself");
 
-  console.log(`render-state-block selftest: PASS (no-op on a current block; fires on a stale sha AND a stale count; missing markers raise; mirror cross-check fires; stale mutations proven to land; catch guard fires on a stale count, on a removed sentence, and stays silent on a match; all ${excluded} exclusion shas verified present in manifest history, ${cycles} cycles)`);
+  console.log(`render-state-block selftest: PASS (no-op on a current block; fires on a stale sha AND a stale count; missing markers raise; mirror cross-check fires; stale mutations proven to land; catch guard fires on a stale count, on a removed sentence, and stays silent on a match; the coverage guard fires on EITHER front-door sentence going stale, on a removed sentence, on a removed heading and on the phrases appearing outside its section, calls a zero row count UNREADABLE rather than stale, and countPageRows both counts real rows and invents none; all ${excluded} exclusion shas verified present in manifest history, ${cycles} cycles)`);
 }
 
 const mode = process.argv[2];
@@ -244,6 +326,19 @@ if (mode === "--selftest") {
       const catches = checkCatchCount(readme, cycles);
       if (catches.ok) console.log(catches.msg);
       else { console.error(catches.msg); failed = true; }
+    }
+    // The front-door coverage promise, asserted against the page a visitor actually loads. A
+    // missing index.html FAILS rather than skipping: the file is committed, so its absence is a
+    // broken tree, and "the guard did not run" must never render as "the guard passed".
+    let indexHtml = null;
+    try { indexHtml = await readFile(join(ROOT, "index.html"), "utf8"); } catch { indexHtml = null; }
+    if (indexHtml === null) {
+      console.error("coverage counts: UNREADABLE — index.html could not be read, so the README's coverage promise was NOT checked. Not a pass.");
+      failed = true;
+    } else {
+      const coverage = checkCoverageCounts(readme, countPageRows(indexHtml));
+      if (coverage.ok) console.log(coverage.msg);
+      else { console.error(coverage.msg); failed = true; }
     }
     if (failed) process.exit(1);
   } else {

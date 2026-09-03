@@ -347,6 +347,22 @@
     "generated": true
   },
   {
+    "id": "pin:1b:U",
+    "statement": "Last-listed upper-bound table row for Erdős minimum overlap constant (1b.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1b.md",
+    "expect": "| $0.380868$ | [YLTLYSTYLLGDHZSWZSHMELCZX2026] | SimpleTES |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/1b.md",
+    "generated": true
+  },
+  {
+    "id": "pin:1b:L",
+    "statement": "Last-listed lower-bound table row for Erdős minimum overlap constant (1b.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1b.md",
+    "expect": "| $0.379005$ | [W2022] |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/1b.md",
+    "generated": true
+  },
+  {
     "id": "pin:20a:U",
     "statement": "Last-listed upper-bound table row for The thin shell conjecture (variance of $|X|^2$) (20a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/20a.md",

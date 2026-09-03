@@ -16,6 +16,8 @@ The user is a researcher, writer, or curator who **quotes a record** — a bound
 |---|---|---|---|
 | F-1 | **Drift alarm** — a tracked record moves, and the steward learns within a day | us (steward) | yes — daily CI, as of today actually armed |
 | F-2 | **Spot-check one claim** — "is the number I'm about to cite current?" | outside researcher | **live surface since 2026-08-21** — https://u00dxk2.github.io/bounds-ledger/ plus `scripts/lookup.mjs` |
+
+**Already ships, read 2026-09-03 out of the code rather than out of this document.** One row per tracked constant with both pinned bounds, a change-kind label, filter, order-by-recency, a per-row `looks wrong?` report link, a per-constant page at `c/<id>.html`, and a `cite` block carrying that page's canonical address. Reads: `node -e "..."` counting `<tr id=` in `index.html` → **115**, equal to the mirror's constant-file count, with `grep -c 'bounds-ledger/c/' index.html` → 115 canonical cite URLs and `grep -c 'bounds-ledger/#c-' index.html` → **0**. Both figures are now ASSERTED rather than remembered: `render-site.mjs --selftest` fails if a cite block emits the anchor form, and `render-state-block.mjs --check` fails if the README's coverage sentences disagree with the page's row count.
 | F-3 | **Receive a correction** — a curator is told their published record is behind | upstream maintainer | sent once, 2026-07-24 (A-3, David-sent); awaiting reply — tracked as W-3 |
 
 F-2 is where the core problem lives. **Partial surface as of 2026-08-20** (`ce25d76`): the README now names twelve tracked constants and links each to its rendered bounds table, so a visitor can read the watched rows in one click with no clone. That answers *"is my number in here, and what does it say?"* for a recognisable subset. It does **not** answer it for an arbitrary constant, and it does not show when a row last moved — `scripts/lookup.mjs` does both and is held on PR #26 for the review lane. Treat F-2 as started, not done.
@@ -330,7 +332,7 @@ assertion is for.
 **Not browser-verified — fourth consecutive rotation, and now tracked.** The Chrome extension is
 still not connected (`tabs_context_mcp` → *"Browser extension is not connected"*, tried once, not
 retried). Unlike Rotations 4 and 5 this is no longer only a paragraph here: it is `A-36`, due
-2026-09-04, whose `onTrigger` forbids closing it by reasoning from the CSS. The `<details>` element
+2026-09-03, whose `onTrigger` forbids closing it by reasoning from the CSS. The `<details>` element
 collapses to the word *cite* and the revealed block is `max-width:40rem` with `pre-wrap`, so the
 narrow-width risk is real and unmeasured.
 
@@ -340,3 +342,101 @@ citation naming `u00dxk2.github.io/bounds-ledger/#c-<id>` with a row anchor — 
 because it can only come from someone who used this control rather than the bare page URL. It would
 surface as a GitHub referrer row in `npm run traffic`, or in the text of an issue or upstream
 discussion. **Nothing observable yet at N=3; shipped on judgment.**
+
+> **The tell named above is now WRONG, corrected 2026-09-03 rather than left to rot.** Rotation 8
+> repointed the citation at `c/<id>.html`, so a citation arriving from this control no longer carries
+> `#c-<id>`. The observable is the same shape at a different address: an inbound link or citation
+> naming `u00dxk2.github.io/bounds-ledger/c/<id>.html`. This is the stale-blocker pattern this repo
+> keeps catching, caught this time in the same session that caused it.
+
+---
+
+## Rotation 8 (2026-09-03) — F-2, the two promises the page made about itself
+
+**The genuinely great version, named first.** A researcher who has satisfied themselves that a bound
+is what they thought copies one block out of the table, and the address inside it is the page that
+exists for that one constant — the same address we declare canonical, the one that still resolves
+when the table is reordered and the row moves. Nobody reading their paper is dropped into the middle
+of a long table to hunt for the row being cited, and every constant this ledger tracks is actually
+on the page they land on. The delight is that quoting us is as trustworthy as reading us: a ledger
+whose entire product is catching other people's stale citations must not publish a second-best
+address for its own records, nor promise a coverage it does not have.
+
+**The step that was worst, and there were two of them — both were the page describing ITSELF.**
+Rotations 2 through 7 all improved what the page says about the mathematics. Nothing had audited what
+it says about itself, and both statements were false.
+
+1. **Two addresses for one object.** Every row's `cite` block emitted `<SITE>#c-<id>` — an anchor
+   into the table. Since 2026-09-02 each constant also has its own page at `c/<id>.html` which
+   declares itself `rel="canonical"`. So for two days the site handed a reader one address while
+   telling search engines a different one was authoritative. Filed as `A-40` earlier the same day,
+   whose `onTrigger` dated the ship 2026-09-04; this session ran a day early on spare capacity, so
+   the row closes on 09-03 rather than slipping. Named principle:
+   **Nielsen's consistency and standards** — one object, one name.
+2. **The founding record was not on the page at all, and the README said it was.** `constantIds()`
+   returned 114 while the mirror carried 115 constant files. The absent one was `1b`, the Erdős
+   minimum overlap constant — the discrepancy this repo opened on, the subject of reconciliation #1,
+   and the number in the README's own first paragraph. Three lines under that paragraph the README
+   promised "All 111 tracked constants" (and, three lines later again, "112 named constants are
+   tracked" — two hand-typed numbers, both stale, guarding a promise that was false for a third
+   reason nobody had checked). **A visitor who read the opening story and clicked through could not
+   find the number the story was about.**
+
+**Why the second one was invisible.** `extract-pins.mjs` carried `SKIP = new Set(["1b.md"])` from
+2026-07-22, when 1b *was* the whole ledger and a generated pin beside hand claims C-1/C-3 would have
+been pure duplication. The public page shipped 2026-08-21 and builds its rows from `pin:` ids alone,
+so from that day a de-duplication silently became a coverage hole. Nothing reported it, and the
+reason is worth keeping: **every instrument here checks the rows that EXIST against upstream, and
+none asks which rows are ABSENT.** That is the founding defect in a new hat — an alarm that cannot
+fire on the thing that is missing.
+
+### Shipped
+
+`before →` a `cite` block handing out `<SITE>#c-<id>`; 114 rows; a README promising 111 in one
+sentence and 112 in the next; `1b` nowhere on the page.
+`after  →` every row's citation carries that constant's canonical `c/<id>.html`; the table and the
+per-constant page now quote the **same citation, byte for byte** (`pageCitation()`, a local
+`.replace()` substitution, is deleted — the divergence it papered over is gone rather than patched);
+115 rows including `1b`; both README sentences read 115 and are **asserted**, not typed.
+
+**The count was fixed by making the claim true, not by rewording it.** "All N tracked constants" was
+wrong in two ways at once, and only one of them was the number. Editing 111 to 114 would have
+produced a true sentence about a page that still omitted the record this repo exists because of.
+
+**The two generated pins added for `1b` assert a LISTING POSITION and nothing more** —
+`| $0.380868$ | [...] | SimpleTES |` and `| $0.379005$ | [W2022] |` — which is the same refusal the
+other 228 observe. They do **not** replace or duplicate C-1/C-3: those are human-verified RECORD
+claims ("the current best known upper bound is 0.380868"), a statement the table's own guard forbids
+it from carrying. Different claims about the same file, re-verified independently. If they ever
+disagree, that disagreement is exactly the kind of finding this ledger exists to produce, and holding
+only one of them would have hidden it.
+
+**The absent-row class got an instrument, because the judgment that found it will not recur on
+schedule.** `render-state-block.mjs --check` now asserts the README's coverage sentences against the
+number of rows in `index.html` — the artifact a visitor actually loads, not the ledger it came from,
+with `render-site --check` already closing the ledger-to-page link. A future skip is therefore not
+merely discouraged by a comment: it turns the front-door promise red until someone reword it to say
+something true.
+
+### Validation status
+
+**Both KP-78 answers, three times, each proving the assertion it actually tripped.** (1) Anchor form
+restored in `citation()` → `render-site --selftest` exit 1 on *"row 2a's citation must carry that
+constant's canonical page URL"*. (2) The same mutation with the per-row loop neutralised → exit 1 on
+the unit-level assertion instead, so both levels are proven live rather than one shadowing the other
+— the 2026-09-02 lesson that a mutation proves the assertion it TRIPPED, not the one you meant.
+(3) The same mutation against `render-constant-pages --selftest` → exit 1 on *"the page's cite block
+must cite the page, not the table row"*, which is the assertion that now catches a re-added local
+substitution. Restored, all silent. Every mutation was proven to land by grep before its verdict was
+read. The coverage guard carries six fixture cases including both sentences failing independently,
+the heading removed, the phrases appearing outside their section, and a zero row count reported as
+**UNREADABLE rather than stale** — a guard that reads a broken selector as a content failure sends
+the next reader to rewrite correct prose.
+
+**Reader reach is unknown and that is the honest answer, not a gap.** GitHub Pages hands us no
+request log and client-side analytics are refused by an enforced selftest
+(`docs/evangelism-bar.md` § Reader reach). `npm run traffic` counts repo views and `npm run reports`
+counts issue arrivals; neither is readership. Latest read 2026-09-03: ≤6 distinct viewers in 26 days,
+2 in the trailing 14. **Nothing observable yet; shipped on judgment.** What would be observed if it
+worked: a citation or inbound link naming `c/<id>.html` — the path is the tell, because it can only
+come from someone who used the cite control.

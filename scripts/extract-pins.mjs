@@ -18,7 +18,8 @@
 //
 // usage: extract-pins.mjs [--selftest]
 // Rewrites ledger/claims.json in place: hand claims (no `generated` flag) preserved
-// verbatim, generated pins replaced wholesale. 1b.md is skipped — C-1/C-3 hand-pin it.
+// verbatim, generated pins replaced wholesale. EVERY constant file is pinned — see the
+// no-skip-list note below before excluding one.
 
 import { readFile, writeFile, readdir } from "node:fs/promises";
 import { join, dirname } from "node:path";
@@ -28,7 +29,30 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MIRROR = join(ROOT, "ledger", "teorth-optimizationproblems", "constants");
 const CLAIMS = join(ROOT, "ledger", "claims.json");
 const RAW_BASE = "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants";
-const SKIP = new Set(["1b.md"]); // hand-pinned as C-1 (upper) / C-3 (lower)
+// THERE IS NO SKIP LIST, and its removal on 2026-09-03 is the ship — recorded here rather than in
+// a commit body alone, because the shape of the mistake is what stops it being re-made.
+//
+// This file carried `SKIP = new Set(["1b.md"]) // hand-pinned as C-1 (upper) / C-3 (lower)` from
+// 2026-07-22, when 1b WAS the whole ledger and a generated pin beside the hand claims would have
+// been pure duplication. On 2026-08-21 the public page shipped, and it builds its rows from `pin:`
+// ids alone — so from that day the skip stopped being a de-duplication and became a COVERAGE HOLE
+// on the only user-visible surface this lane has. The Erdős minimum overlap constant is the record
+// this repo opened on, it is the subject of reconciliation #1 and of the README's first paragraph,
+// and it was the one constant of 115 with no row on the page. Nothing reported it: every instrument
+// here checks the rows that EXIST against upstream, and none asks which rows are ABSENT.
+//
+// THE TWO CLAIM KINDS ARE NOT DUPLICATES, which is why removing the skip is safe rather than a
+// weakening. A generated pin asserts a LISTING POSITION — "this is the last row of that table",
+// nothing about the mathematics. C-1 and C-3 assert a RECORD — "the current best known upper bound
+// is 0.380868" — which only a human may write here, and which the page's own guard forbids the
+// table from carrying. They are different statements about the same file, they re-verify
+// independently, and both should hold. If they ever disagree that disagreement is a finding of
+// exactly the kind this ledger exists to produce, and carrying only one of them would hide it.
+//
+// So: do not re-add a skip for a file because a hand claim already mentions it. Any future
+// exclusion must be one the PAGE can live with, and the README's "all N tracked constants"
+// sentence — asserted by scripts/render-state-block.mjs — goes red until it is reworded to say
+// something true.
 
 // Last data row of the section's table: last |-line that isn't the header (first
 // |-line) or a separator. Returned verbatim — cells are never parsed, so escaped
@@ -103,7 +127,7 @@ function selftest() {
 }
 
 async function run() {
-  const files = (await readdir(MIRROR)).filter((f) => f.endsWith(".md") && !SKIP.has(f)).sort();
+  const files = (await readdir(MIRROR)).filter((f) => f.endsWith(".md")).sort();
   const generated = [];
   const noted = [];
   for (const f of files) {

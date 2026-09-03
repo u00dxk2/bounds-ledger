@@ -111,6 +111,20 @@ const SITE = "https://u00dxk2.github.io/bounds-ledger/";
 //
 // PLAIN TEXT, escaped only at embed time — the same encode-then-escape order flagUrl pins, for the
 // same reason: a constant title carrying & or < must reach the reader's clipboard as itself.
+//
+// THE ADDRESS IT HANDS OUT IS THE CONSTANT'S OWN PAGE, not the table anchor (A-40, 2026-09-03).
+// It ended at `<SITE>#c-<id>` from 2026-08-29 until then because that was the only citable URL in
+// existence; `c/<id>.html` shipped 2026-09-02 and each of those pages declares ITSELF canonical.
+// So for two days this site handed a reader one address and told search engines a different one was
+// authoritative — a ledger whose product is citation accuracy publishing two names for one object.
+// The anchor is also the weaker of the two on its own merits: it drops whoever follows it into the
+// middle of a long table with no context for the row under their cursor, and it is a position in a
+// document rather than a document about the constant. (No row count is written here on purpose —
+// `--check` prints the live figure and the mirror grows whenever upstream adds a constant.)
+// WHAT DID NOT CHANGE, and must not: the row PERMALINK (`<a class="id" href="#c-<id>">`) still
+// targets the in-page anchor, which is what a reader wants when pointing a colleague at a row of the
+// table they are already reading. Two addresses for two different jobs is fine; two addresses for
+// the same job is the defect.
 export function citation(r, sha) {
   const side = (label, row, changed, kind) => {
     if (!row) return `${label} bound: not pinned`;
@@ -122,7 +136,7 @@ export function citation(r, sha) {
     side("upper", r.upper, r.upperChanged, r.upperKind),
     side("lower", r.lower, r.lowerChanged, r.lowerKind),
     `Mirrored from teorth/optimizationproblems@${String(sha).slice(0, 7)}. These are the last-listed rows of that constant's bounds table — a listing position, not a statement that this bound is the strongest or most recent. A snapshot at that sha, not a live read.`,
-    `${SITE}#c-${r.id}`,
+    `${SITE}c/${r.id}.html`,
   ].join("\n");
 }
 
@@ -535,6 +549,24 @@ async function selftest() {
   assert.equal(rowIds.length, rows.length, "positive control: every rendered row must carry an id before any linkage is asserted");
   assert.equal(permalinks.length, rows.length, "every row must expose its own permalink");
   assert.deepEqual(permalinks, rowIds, "each row's permalink must target that row's own id, in document order");
+  // --- The two address forms, whole-page (A-40, 2026-09-03). ---
+  // The permalinks asserted above are the anchor form and are CORRECT: a reader pointing a colleague
+  // at a row of the table they are both reading wants the row, in the table. The citation is the
+  // other job — it leaves the page — and owes the constant's own canonical page. So this is not
+  // "the anchor is banned"; it is that the two jobs must not swap. Scoped to the cite blocks for
+  // exactly that reason: a page-wide absence assertion would fire on a perfectly correct page.
+  const citeBlocks = [...html.matchAll(/<details class="cite">.*?<\/details>/gs)].map((m) => m[0]);
+  assert.equal(citeBlocks.length, rows.length, "positive control: every row must render a cite block before their contents are asserted");
+  for (const [i, block] of citeBlocks.entries()) {
+    assert.ok(block.includes(`/bounds-ledger/c/${rows[i].id}.html`),
+      `row ${rows[i].id}'s citation must carry that constant's canonical page URL`);
+    assert.ok(!block.includes("/bounds-ledger/#c-"),
+      `row ${rows[i].id}'s citation emits the in-table anchor — the site would hand out one address and declare another canonical`);
+  }
+  // Positive control that the anchor form DOES still exist on this page, so the absence above is a
+  // statement about cite blocks and not about a page that quietly lost its permalinks.
+  assert.match(html, /<a class="id" href="#c-/, "positive control: the anchor form must still be present as the row permalink");
+
   // The prefix is load-bearing: a bare id like "10a" starts with a digit, which is a legal HTML id
   // but cannot be written as a bare CSS selector — :target styling would silently not apply.
   assert.match(html, /<tr id="c-10a"/, "row ids must carry the c- prefix so a numeric-leading constant id stays selectable");
@@ -651,7 +683,14 @@ async function selftest() {
   assert.match(cite, /a listing position, not a statement that this bound is the strongest or most recent/,
     "a citation without its caveat invites the mis-citation this ledger exists to catch");
   assert.match(cite, /A snapshot at that sha, not a live read/, "the citation must say it is a snapshot");
-  assert.match(cite, /https:\/\/u00dxk2\.github\.io\/bounds-ledger\/#c-15a/, "the citation must carry the row's own permalink");
+  // THE ADDRESS MUST BE THE CANONICAL ONE (A-40). Both polarities, because the failure this pins is
+  // a silent REGRESSION to the anchor form rather than a broken render: a citation ending at
+  // `#c-15a` still looks like a working citation, and the only thing wrong with it is that the site
+  // declares a different URL authoritative for the same object.
+  assert.match(cite, /https:\/\/u00dxk2\.github\.io\/bounds-ledger\/c\/15a\.html/,
+    "the citation must carry the constant's own canonical page, which is the address this site declares authoritative");
+  assert.doesNotMatch(cite, /bounds-ledger\/#c-/,
+    "a citation must not hand out the in-table anchor: the site would then publish two addresses for one constant");
   // The row must never be described in a way the generated pins do not support (header point 2).
   assert.doesNotMatch(cite, /\bbest known\b|\brecord is\b|\bcurrent best\b/i,
     "a citation must not upgrade a listing-position pin into a record claim");
@@ -921,7 +960,7 @@ async function selftest() {
   const badHost = externals.filter((h) => !/github\.com|example\.invalid/.test(h));
   assert.deepEqual(badHost, [], `page must fetch nothing at runtime; found ${badHost.join(", ")}`);
 
-  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match; a changed bound reads as a value change while an escaping-only edit and a changed citation detail both read as text edits with the bound held, a pin with no prior version gets no verdict, and all four reader-facing wordings are pinned; every row carries a c-prefixed id and a permalink that targets that row's OWN id in document order, with the landed row visibly marked; the filter haystack carries current AND previously-pinned bound values so a truncated stale citation matches, a row with no earlier pin contributes no phantom value, the attribute is read back OUT of the rendered row rather than re-derived, a previously-pinned value is proven searchable and proven ABSENT from the visible page, and the page's own filter script, extracted and executed against the emitted attribute, reveals the right row and hides the rest; a row we filed an upstream report against discloses it and links the report, an unfiled row carries none and the count drops to zero when the record is emptied, the label reads open with no date for an open report, a neighbouring id inherits nothing, a hostile url reaches the page escaped, and neither the disclosure nor its explanatory prose claims our report caused anything; every row links to its OWN constant page, so a one-href-fits-all template passes the count and fails the per-id check)");
+  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match; a changed bound reads as a value change while an escaping-only edit and a changed citation detail both read as text edits with the bound held, a pin with no prior version gets no verdict, and all four reader-facing wordings are pinned; every row carries a c-prefixed id and a permalink that targets that row's OWN id in document order, with the landed row visibly marked; the filter haystack carries current AND previously-pinned bound values so a truncated stale citation matches, a row with no earlier pin contributes no phantom value, the attribute is read back OUT of the rendered row rather than re-derived, a previously-pinned value is proven searchable and proven ABSENT from the visible page, and the page's own filter script, extracted and executed against the emitted attribute, reveals the right row and hides the rest; a row we filed an upstream report against discloses it and links the report, an unfiled row carries none and the count drops to zero when the record is emptied, the label reads open with no date for an open report, a neighbouring id inherits nothing, a hostile url reaches the page escaped, and neither the disclosure nor its explanatory prose claims our report caused anything; every row links to its OWN constant page, so a one-href-fits-all template passes the count and fails the per-id check; and every row's citation hands out that constant's canonical c/<id>.html address while the in-table anchor is proven absent from the cite blocks and proven still present as the row permalink, so the two address forms cannot swap jobs)");
 }
 
 // Entry-point guard — review finding F2. Without it, ANY importer of renderHtml/buildRows runs the
