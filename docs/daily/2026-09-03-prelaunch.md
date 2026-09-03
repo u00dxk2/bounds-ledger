@@ -1,0 +1,97 @@
+---
+product: bounds-ledger
+date: 2026-09-03
+lifecycle_stage: launched
+north_star_metric: an outside party acts on a watched record WITHOUT us filing the report (G-4; primary indicator = npm run reports, arrivals through the per-row links)
+north_star_value: 0
+north_star_status: expected-zero
+north_star_classification: expected-zero
+prior_north_star: G-3 (someone outside Skylark uses the ledger and acts on it) — CLOSED MET 2026-08-26 on David's ruling, value 2; copied from docs/daily-config.md, never from yesterday's report
+last_deploy: 28eebf4
+sentry_open_p1: null
+sentry_open_p2: null
+mrr_usd: null
+n_active_users_28d: 0
+on_hold_items: 2
+top_action_today: "Nothing needs you today. Yesterday we built a separate page for each of the 114 constants we track, so that anyone can point at one of them directly instead of at a row buried in a long table — and then linked to none of them, which meant the only way to reach one was to already know its address. That is fixed: every row now links to its own page. The thing worth your attention is not today's work but a question already sitting with you for 09-05, about where else this ledger could matter. The reason it keeps mattering more: two people looked at the repository in the last fortnight. Everything we ship is real and almost nobody is there to see it, and no amount of building changes that number."
+---
+
+# Daily report — bounds-ledger — 2026-09-03
+
+## BLUF
+
+The 114 pages we built yesterday could not be reached from anywhere, and now every row links to its own.
+
+A scheduled secret-sweep nearly went in against two standing prohibitions, and reading the file before editing it is the only thing that stopped it.
+
+**FIRST ACTION** — the declared block, five lines, from the repo root, one command per line.
+
+```
+node ../skylark-site/scripts/update-david-board.mjs --list --json --full-ids --project bounds-ledger
+git rev-parse HEAD origin/main
+git rev-list --count origin/main...HEAD
+npm run verify > tmp/verify-out.txt 2>&1
+node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml
+```
+
+Line 4 takes about three minutes because it goes to the network for everything: it re-fetches every mirrored file and re-checks every claim against its cited source. **Launch it FIRST, in the background, before reading anything** — it needs no context and its whole answer is a receipt keyed to a sha. **This block deliberately names no file or claim COUNT**, which is a change from yesterday: yesterday's block named a mirror-file count and a claim count, and both were false by the same evening, because that night's cycle moved them. If you want the live figures, they are in `tmp/verify-out.txt` once line 4 finishes, or from `node scripts/reverify.mjs --check` alone. Line 2 is written without `--short` on purpose: two revisions plus `--short` exits non-zero.
+
+**THE NUMBER THAT WILL LIE TO YOU** — **unique viewers reading 2, where yesterday's report said 3.** The misread is that a reader was lost. Nothing was lost: this is a rolling 14-day window, and the 2026-08-19 bucket that held the third viewer aged out of it overnight. The same figure is also scope-limited in a way that is welded to it in the output rather than footnoted — these are **repo views on github.com, not readers of the published page.** The page carries no analytics, so page readership is not measured, and no figure in this report is a proxy for it.
+
+**DON'T-TOUCH** — **the `manual: true` handling on `C-7` and `C-9`** — the two claims pinned to erdosproblems.com, which blocks automated fetch. Today's run printed, for both, `advisory fetch from THIS machine: HTTP 200 … (stays UNVERIFIED; CI cannot see this)`. What makes it work is that the flag separates what we *read* from what the alarm may *conclude*: a residential-IP success is information for a human and never a green, because CI gets a 403 from the same URL and must not be handed a pass it did not earn. It was "fixed" once, on 2026-07-25, and CI went red four minutes later.
+
+**Findings classification, one sentence of human judgment:** today's findings are **instrument-facing, all five of them** — a kickoff body delivered twice by the harness, a primer banner whose truncation cut exactly the clauses that govern the day, a fleet Step 0.7 command that names a flag its script rejects and has no subject on this lane anyway, yesterday's copy-paste block carrying counts that went stale inside its own day, and a scheduled sweep nearly shipped against two prohibitions — **and none is record-facing, because no bound moved anywhere today.**
+
+On the numeric-versus-byte-only clause, this week produces a **third answer the clause did not anticipate, and it matters more than either.** `npm run catches` reads **0 for the current partial week** — but a real record improvement landed in that week: **H₁ on the bounded prime gap constant went 246 → 240 (Stadlmann)** on 09-02. The counter cannot see it. A catch is defined as a generated pin whose `expect` CHANGED, and upstream recorded this improvement by **adding** constants `88a` and `88b` rather than editing an existing row — `git diff --numstat` across both of this week's drift commits shows claims.json at **32 additions / 0 deletions** and **16 additions / 0 deletions**, so nothing was replaced and no `expect` moved. The counter is honest by its own definition and its stdout warns that it is "a CEILING on catches, not a count" — but **every caveat it lists is about over-counting, and it is silent about under-counting.** This is decision-bearing: the dry-week rule reads a run of zeros as the signal to consider a second surface, and a zero can now contain a genuine bound improvement.
+
+**Consecutive instrument-facing days: 7.** Written by hand, not by a counter, which is the point of it. **The standing prediction, restated because a prediction never checked is decoration:** the next record-facing catch will be a witness-value mismatch on a constant upstream added within ~30 days, found by a human recomputing a cited certificate and by no instrument we run. It has held once (20 August). If the next one arrives via an alarm instead, say so and correct the claim.
+
+## What changed
+
+- **Every constant row now links to that constant's own page** (`938854b`, live). Yesterday's bonus cycle generated one page per constant and linked to none of them, which is close to not having shipped them: the only route in was typing the URL. Read live from the rendered file rather than recalled — **114 rows, 114 page links**, targets present on disk. The label is `page` for two reasons that are not stylistic: not `record`, because this lane's pins assert a **listing position** and never a record, so that word on a link into the pinned rows would import the exact claim the pages refuse to make; and not `details`, because the cite control beside it is already a `<details>` disclosure.
+- **The new check was proven to fail before it was trusted to pass** (KP-78 — the standing rule that a detector ships only after both answers are demonstrated). The mutation, stated here because the throwaway script that applied it lives in gitignored `tmp/` and a cold agent cannot read it: **replace the template's `c/${esc(r.id)}.html` with the literal `c/10a.html`**, so every row links to one constant's page. Condition present → `npm test` **exit 1**, `row 2a must link to c/2a.html, not to another row's page`. Condition absent, restored from a file copy → **exit 0**. Positive control: `grep -c` returned 1 for the mutated string on the mutated file and 1 for the original template after the restore, so each state was proven present rather than assumed — an absent mutation would have made either verdict meaningless. That mutation was chosen deliberately to show *which* leg catches it: a one-href-fits-all template keeps the link COUNT correct, so the count assertion alone would have waved it through and only the per-id loop fails. The restore used a backup copy rather than `git checkout --`, because the fix under test was uncommitted.
+- **A real bound improvement landed this week that `npm run catches` cannot count.** Upstream improved H₁ on the bounded prime gap constant from 246 to 240 (Stadlmann) on 09-02, and it arrived as two **new** constant files, `88a` and `88b`, rather than as an edit to an existing row. A catch is defined as a generated pin whose `expect` changed, so nothing registered. The evidence is the shape of the diffs: `git diff --numstat` on the two drift commits shows `ledger/claims.json` at 32 insertions and 0 deletions for the prime-gap cycle, and 16 insertions and 0 deletions for the `C_3e` cycle — nothing was replaced, so no `expect` moved. Positive control: the same command reports non-zero deletions elsewhere in those commits (`index.html` at 248 insertions / 228 deletions), so it does report replacements when they exist and the zeros are real rather than a flag that never fires.
+- **Both dated gates dispositioned, neither closed** (`28eebf4`). `A-7` — the engineering-health P1s, open on R7 alone — and `A-9` — the fix-on-touch P2 backlog — both reproduce their pre-staged literal output exactly, so neither state moved. Both re-dated to 2026-09-17. `check-due-gates-dispositioned --print` now reads 0 due.
+- **`A-7`'s R7 was nearly shipped locally against two standing prohibitions, and that near-miss is the day's most useful finding.** Shipping it looked correct: `note4` (2026-08-09) set this lane's own precedent that a stalled fleet wave gets taken per-repo, the wave is **36 days old**, and the implementation is a schedule plus `fetch-depth: 0` over a full-history `sweep()` mode `history-sweep.mjs` already carries — no new code. It was stopped by reading the workflow file before editing it: `reverify.yml`'s own comment (`44e313f`, 2026-08-02) says the scheduled sweep "is fleet-owned and must not be solved locally ahead of that wave", and `note8`, filed the **same day** as note4, records R7 as deliberately excluded from the four controls note4 licensed. The later ruling does not override the earlier one — they agree, and overriding both is a fleet decision rather than a lane one. So this is the third ask, and the ask now carries its age.
+- **Recorded on the row so nobody re-derives it:** `actions/checkout` is depth-1 here, which `reverify.yml` states in three separate step comments. A scheduled sweep added without `fetch-depth: 0` would scan ONE commit, print CLEAN, and be a detector that cannot fail — the exact shape this repo exists to catch. Whoever ships R7, the run log must name the true reachable-commit count; `sweep()` already prints it, and the positive control is `git rev-list --all --count`.
+- **The absence of a readership instrument is now written down as a considered absence, with its declined options named** (`CLAUDE.md`, this commit). Approved by the orchestrator today on the grounds that a clean absence with nothing considered-and-declined reads as a question rather than an answer. Two options, both dead, and the second correction is the one worth holding: client-side analytics are killed by an **enforced invariant** (`render-site.mjs`'s selftest asserts the page references no third-party asset and fetches nothing); a **server-side** read is *not* forbidden by that invariant, and what actually kills it is that **GitHub Pages hands us no request log at all.** Whether to move to a measurable surface is `A-34`'s question and is David's.
+
+## Inputs (controllable)
+
+- **Three commits, all pushed**: `938854b` (the row links), `28eebf4` (both gate dispositions), and this report's commit. `npm run verify` exit 0 at `938854b`; everything after it is doc-shaped, and the fleet receipt reader confirmed that in words rather than by assumption — quoted verbatim: `receipt is behind HEAD by doc-only commits (exit 0 on 938854b5, HEAD 28eebf4f; 1 changed path(s), all docs/*.md/continuity/tmp) — the gate's verdict still describes the code you have.`
+- **`A-20` verified and deliberately NOT advanced today** — the row asking whether the fetch layer should retry on 429/502. It is `open`, dated 2026-09-08, and the 09-01 cross-family review verdict (`6ee1a050`, DO-NOT-SHIP as-is) is unretracted. Two reads settle its state: the branch is **unmerged** (`git branch --contains 8a4c2b8` names only `a20-fetch-retry-backoff`), so **there is no merge-without-F1 finding to file** — positive control: that command returned a non-empty list naming both `a20-fetch-retry-backoff` and its remote, so it does report containment, and `main`'s absence from a working list is the actual read; and it **still merges cleanly** (`git merge-tree --write-tree main a20-fetch-retry-backoff` → `178a2fa`, exit 0), so no held-branch conflict has accumulated. F1 — a main-module guard that exits 0 with no output through a junction path — is still blocking, and F2 — the non-retryable-status leg — is still untested. **Not started today by choice:** its date is five days out, the substrate budget went to the two gates that were owed TODAY, and beginning a DO-NOT-SHIP fix late is how 09-02's delegated regression happened.
+- **Step 0.7 is NOTHING SWEPT here, not a pass.** The fleet's `check-deployed-sha-drift.mjs --project <slug>` exits 1 on `unknown flag --project`; a correction went out at 09:22 MT naming `--service`. The deeper half stands: this is a GitHub Pages lane with **no Render service**, so that sweep has no subject here and a green must not be manufactured from it. The documented Pages equivalent was run instead — `gh api repos/u00dxk2/bounds-ledger/pages/builds` — showing the published build at the then-HEAD, status `built`.
+- **Codex: GREEN (probe 2026-09-03T14:38:46.015Z), `codexCalls: 0`, reason `probed-declined`.** Against the rewritten calibration: no to question (1) — there was no boilerplate under the judgment, the day's two diffs are a one-line template change plus two ledger notes, nowhere near the 5-file/mass-rename bulk the question names; and no to question (2) — the checker built today was also run today, in the same turn, both polarities, rather than built and left.
+
+## Outputs (lagging)
+
+- **`G-4` = 0 outside arrivals, and it is a MEASURED zero.** `npm run reports` fetched 27 issues, excluded 27 as ours by author, and the parts reconcile 27 + 0 + 0 = 27 — so the probe demonstrably sees issues and accounts for every one, which is what separates this from a zero out of a dead probe. Day 26 since the public flip.
+- **2 unique viewers in the trailing 14 days; 6 unique viewer-days since the flip.** The pre-committed threshold for `G-4`'s zero to mean anything about the product is **30 unique viewers**. The return-rate proxy reads **1.00** — 2 viewer-days over 2 distinct viewers, so nobody came back twice. 170 unique cloners in the window and 414 cloner-days since the flip, both of which are mostly our own CI checking out the repo and are deducted for nothing, deliberately.
+- **`npm run catches`: 0 for the current partial week**, 3 for the last completed week (2026-08-24), 16 movements across 7 weeks. Read the classification paragraph in the BLUF before quoting the 0 — this week's zero contains a real bound improvement the counter is structurally unable to see.
+- **The mirror is in sync**: no drift, 116 files matching upstream `01a0bc8`, 239 claims of which 237 hold and 2 are the `manual: true` pair that reports UNVERIFIED by design — this machine gets HTTP 200 from erdosproblems.com while a CI runner gets 403 from the same URL, which is the entire reason that pair is flagged rather than automated. CI GREEN at HEAD.
+
+## Recommendation
+
+**Ship the `A-20` F1 fix as tomorrow's substrate leg, and do it before its 09-08 date rather than on it.** Everything needed is in hand and verified today: the branch merges cleanly, the review verdict is unretracted and specific, and the preserved dispatch output at `tmp/codex-*.mjs` holds a usable F1 guard and F2 test — from which the primer's standing instruction is to take the guard and the test and **never** the retry, because that reimplementation was the 09-02 regression. F1 is the higher-value half and it is this lane's own founding defect in a new shape: a guard that exits 0 with no output is an alarm that is not armed.
+
+**Do not let this week's `catches` zero enter a second-surface conversation unqualified.** The dry-week rule fires on a run of zeros, and today established that a zero can contain a genuine record movement. Either the counter learns to see an added-constant movement, or the rule's zeros need reading by hand against the drift log — and which of those is right is a judgment, not a patch, so it belongs in a retro rather than in a commit.
+
+## On hold pending data
+
+- **`A-34`** — David's own question about where else this ledger can have the kind of impact it has had, dated 2026-09-05 and already re-dated twice. Its substance is the arithmetic in Outputs above: at 2 viewers per fortnight against a 30-viewer threshold, no product signal on this lane is readable, and that is a breadth-versus-depth question rather than a build task. Nothing is owed from us before 09-05 except not letting it slip a third time.
+- **`A-7` R7** — waiting on the fleet wave, day 36, re-asked today with the age attached. The lane is explicitly prohibited from solving it locally by two concurring rulings, so this is a genuine external block rather than a deferred choice.
+
+## State Appendix
+
+Written last, from live commands, because a report cannot name the commit that lands it — every line below was read at 2026-09-03 ~09:40 MT and the sha that carries this file is not among them.
+
+- **HEAD**: `28eebf4` — `git rev-parse HEAD origin/main`; equal to `origin/main`, 0 ahead.
+- **Verify receipt**: exit 0 at `938854b`, written 2026-09-03T15:29:11Z — `tmp/.verify-receipt.json`. Commits after it are doc-shaped; the fleet reader's doc-only carve-out line is quoted verbatim in Inputs.
+- **CI**: GREEN at HEAD — `node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml`, 1 completed non-scheduled success, 0 failures, 0 pending.
+- **Published page**: GitHub Pages build `built` — `gh api repos/u00dxk2/bounds-ledger/pages/builds`. Every push publishes; a multi-commit push publishes only its tip.
+- **Mirror**: 116 files @ upstream `01a0bc8`, no drift — `npm run check`.
+- **Claims**: 239 total, 237 hold, 0 broken/unreachable, 2 unverified (`C-7`, `C-9`, both `manual: true`).
+- **Dated gates**: 0 due on/before today, 52 rows swept — `node ../skylark-site/scripts/check-due-gates-dispositioned.mjs --print`, exit 0.
+- **Traffic**: 2 unique viewers / 170 unique cloners in the trailing 14 days; 6 viewer-days / 414 cloner-days since the 2026-08-08 flip — `npm run traffic`.
+- **Arrivals**: 0 outside, 27 raw issues fetched, parts reconcile — `npm run reports`.
+- **Catches**: 0 current partial week, 3 last completed week — `npm run catches`.
