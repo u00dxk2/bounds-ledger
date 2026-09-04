@@ -21,7 +21,8 @@
 // framework, no search index. 111 constants is small enough that the browser filters it
 // instantly; revisit only if the mirror grows by an order of magnitude.
 
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdtempSync, mkdirSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pinsFor, lastChanged, changeFor, changeKind, boundCell } from "./lookup.mjs";
@@ -199,6 +200,7 @@ export function buildRows(claims, { withDates = true, root = ROOT, reports = nul
       upperPrev: uc.prevExpect || null,
       lowerPrev: lc.prevExpect || null,
       report: reportFor(id, filed),
+      tableValues: tableValuesFor(id, root),
     };
   }).map((r) => ({ ...r, changed: newerOf(r.upperChanged, r.lowerChanged) }));
 }
@@ -263,6 +265,38 @@ function cell(row, changed, kind, label) {
   return `<td data-label="${esc(label)}"><code>${esc(row)}</code>${when}</td>`;
 }
 
+// Every value cell in the constant's mirrored bound tables — not only the two rows we pin.
+//
+// WHY THIS EXISTS, measured 2026-09-04: the pinned pair plus prevExpect covers values that moved
+// WHILE WE WATCHED. It does not cover a value already superseded in upstream's table when we first
+// pinned it, and that is most of them. Two live misses, both of them the exact reader this page is
+// for: "0.380876" — the Erdős minimum overlap value erdosproblems.com has shown since January,
+// which C-7 pins as three records stale — returned ZERO matches, although it sits in 1b.md line 24,
+// two rows above the row we pin. "246" for the bounded prime gap returned zero the same way:
+// upstream ADDED 88a.md on 2026-09-02 with 240 already listed, so 246 was never a pin of ours.
+// Same blind spot as npm run catches on an ADDED constant — every instrument keyed to our pin
+// history is blind to a constant's past when we arrived after it.
+//
+// This asserts NOTHING. It is the search haystack, and the note above cell() already settles why
+// that differs in kind from displaying a from-to pair: matching a string is not a claim that one
+// number superseded another. Nothing here is pinned, dated, or displayed as a value — a visitor
+// who pastes an old number lands on the row and reads the live table for themselves.
+export function tableValuesFor(id, root = ROOT) {
+  const f = join(root, "ledger", "teorth-optimizationproblems", "constants", `${id}.md`);
+  let text;
+  try { text = readFileSync(f, "utf8"); } catch { return []; }
+  const out = new Set();
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.trimStart().startsWith("|")) continue;
+    const cell = boundCell(line).trim();
+    // Separator rows (---), header rows and empty cells carry no digit and are dropped. A header
+    // that happens to contain one is harmless: it can only make a row findable, never assert.
+    if (!cell || !/\d/.test(cell)) continue;
+    out.add(cell.toLowerCase());
+  }
+  return [...out];
+}
+
 // The haystack the filter searches. It carries the constant's name and id AND the bound cells,
 // current and superseded — because the page's own headline asks "is the number you cited still
 // current?" and until today it could not be searched by a number at all. A reader holding a stale
@@ -273,7 +307,7 @@ export function findKey(r) {
   const cells = [r.upper, r.lower, r.upperPrev, r.lowerPrev]
     .filter(Boolean)
     .map((s) => boundCell(s).trim());
-  return [r.title, r.id, ...cells].filter(Boolean).join(" ").toLowerCase();
+  return [r.title, r.id, ...cells, ...(r.tableValues || [])].filter(Boolean).join(" ").toLowerCase();
 }
 
 // manualCount is DERIVED and passed in, never hard-coded — review finding F5. The footer used to
@@ -380,7 +414,7 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 
 <div class="controls">
 <div class="ctl grow">
-<label for="q">Filter by name or id — try “sofa”, “Grothendieck”, “27b”</label>
+<label for="q">Filter by name, id, or a bound value — paste a number you are about to cite, or try “sofa”, “Grothendieck”, “27b”</label>
 <input id="q" type="search" autocomplete="off" placeholder="Type to filter&hellip;">
 </div>
 <div class="ctl">
@@ -396,7 +430,7 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 
 <div class="empty" id="empty" hidden>
 <p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the ${rows.length} constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
-<p>Filtering matches the constant&rsquo;s name, its id, and the <em>bound value</em> of each row we pin &mdash; including values this ledger pinned earlier and no longer does. So you can paste a number you cited and land on its constant, then read the current table yourself. A partial number works, since matching is on substrings. Two things are <em>not</em> matched: the reference and comment cells beside a bound (an author tag or a bracketed citation key will find nothing), and a name we do not list the constant under. Both are worth a scan of the full list before concluding a constant is absent.</p>
+<p>Filtering matches the constant&rsquo;s name, its id, and <em>every value cell in the bound tables we mirror for it</em> &mdash; not only the two rows we pin, and including values this ledger pinned earlier and no longer does. A number sitting higher up a constant&rsquo;s table still finds it, which is where most numbers already in circulation sit. So you can paste a number you cited and land on its constant, then read the current table yourself. A partial number works, since matching is on substrings. Two things are <em>not</em> matched: the reference and comment cells beside a bound (an author tag or a bracketed citation key will find nothing), and a name we do not list the constant under. Both are worth a scan of the full list before concluding a constant is absent.</p>
 <p><a id="emptyask" href="${esc(REPO)}/issues/new">Tell us what you were looking for &rarr;</a> — it arrives naming your search term, and a constant someone actually asked for is the best evidence we have about what to watch next.</p>
 </div>
 
@@ -849,6 +883,65 @@ async function selftest() {
   assert.ok(emitted[1].includes("6.514326913930565372"),
     "the emitted attribute must carry the previously-pinned value — the whole point, and the half a findKey-only test cannot see");
 
+  // --- Search by a value we never pinned, added 2026-09-04. Both KP-78 answers.
+  // The 09-01 work above covers values that moved WHILE WE WATCHED. It missed the commoner case:
+  // a value already superseded in upstream's table when we first pinned the constant. Measured
+  // that morning against the live page, "0.380876" (Erdős minimum overlap, the value
+  // erdosproblems.com has shown since January) and "246" (bounded prime gap) each returned ZERO
+  // rows, although both sit in tables this ledger mirrors. Those are the readers the page exists
+  // for, and it turned them away with a not-tracked message.
+  //
+  // Fixtured rather than read from the live mirror on purpose: an assertion keyed to upstream's
+  // current bytes would fail the day upstream edits a table, which is a fact about them and not
+  // a regression here. The live values were verified by hand and recorded in the commit body.
+  const tmpRoot = mkdtempSync(join(tmpdir(), "bl-tv-"));
+  try {
+    mkdirSync(join(tmpRoot, "ledger", "teorth-optimizationproblems", "constants"), { recursive: true });
+    writeFileSync(join(tmpRoot, "ledger", "teorth-optimizationproblems", "constants", "fx.md"), [
+      "# Fixture constant",
+      "",
+      "| Bound | Reference |",
+      "| --- | --- |",
+      "| $0.380876$ | [Old2026] |",
+      "| $0.380868$ | [New2026] |",
+      "",
+      "Prose mentioning 12345 outside any table.",
+    ].join("\n"));
+
+    // FIRES: a value two rows above the pinned one is extracted.
+    const vals = tableValuesFor("fx", tmpRoot);
+    assert.ok(vals.length > 0, "positive control: the extractor must return something before any absence is asserted");
+    assert.ok(vals.some((v) => v.includes("0.380876")), "a value we never pinned must still be extracted — the whole point");
+    assert.ok(vals.some((v) => v.includes("0.380868")), "the pinned value must survive extraction too");
+
+    // SILENT: the separator row, the header row and prose outside the table contribute nothing.
+    assert.ok(!vals.some((v) => v.includes("---")), "a separator row must not enter the haystack");
+    assert.ok(!vals.some((v) => v === "bound"), "a header cell must not enter the haystack");
+    assert.ok(!vals.some((v) => v.includes("12345")), "prose outside a table row must not enter the haystack");
+    assert.deepEqual(tableValuesFor("no-such-constant", tmpRoot), [],
+      "a constant with no mirrored file must yield an empty list, never throw");
+  } finally {
+    rmSync(tmpRoot, { recursive: true, force: true });
+  }
+
+  // THE SEAM again, for this half: read the value back OUT of the rendered attribute. findKey
+  // passing in isolation is exactly what the 3145ed9 review showed can coexist with a template
+  // that emits none of it.
+  const withTable = { ...moved, tableValues: ["$9.991234$"], url: "https://example.invalid/71a.md",
+    upperChanged: "2026-08-02", lowerChanged: null, upperKind: "value", lowerKind: null, changed: "2026-08-02" };
+  const tablePage = renderHtml([withTable], manifest, "2026-09-04");
+  assert.ok(tablePage.length > 2000, "positive control: the page must render before any absence is asserted");
+  const tableEmitted = tablePage.match(/<tr id="c-71a" data-find="([^"]*)"/);
+  assert.ok(tableEmitted, "the rendered row must still carry a data-find attribute");
+  assert.ok(tableEmitted[1].includes("9.991234"),
+    "the emitted attribute must carry a table value we never pinned — the half a findKey-only test cannot see");
+
+  // AND IT MUST NOT BE VISIBLE, for the same reason a previously-pinned value must not be: it is
+  // a row in upstream's table, not a record we assert anything about. Searchable, never displayed.
+  const tableVisible = tablePage.replace(/ data-find="[^"]*"/g, "");
+  assert.ok(!tableVisible.includes("9.991234"),
+    "a table value must never be rendered as text — the haystack asserts nothing, the page would");
+
   // THE PREVIOUS VALUE MUST NOT BE VISIBLE. It is a listing position we used to pin, not a
   // superseded record, and displaying it beside the current value asserts a movement. Refuted on
   // Brun's constant before 3145ed9 was pushed: both values are still in upstream's table and are
@@ -960,7 +1053,7 @@ async function selftest() {
   const badHost = externals.filter((h) => !/github\.com|example\.invalid/.test(h));
   assert.deepEqual(badHost, [], `page must fetch nothing at runtime; found ${badHost.join(", ")}`);
 
-  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match; a changed bound reads as a value change while an escaping-only edit and a changed citation detail both read as text edits with the bound held, a pin with no prior version gets no verdict, and all four reader-facing wordings are pinned; every row carries a c-prefixed id and a permalink that targets that row's OWN id in document order, with the landed row visibly marked; the filter haystack carries current AND previously-pinned bound values so a truncated stale citation matches, a row with no earlier pin contributes no phantom value, the attribute is read back OUT of the rendered row rather than re-derived, a previously-pinned value is proven searchable and proven ABSENT from the visible page, and the page's own filter script, extracted and executed against the emitted attribute, reveals the right row and hides the rest; a row we filed an upstream report against discloses it and links the report, an unfiled row carries none and the count drops to zero when the record is emptied, the label reads open with no date for an open report, a neighbouring id inherits nothing, a hostile url reaches the page escaped, and neither the disclosure nor its explanatory prose claims our report caused anything; every row links to its OWN constant page, so a one-href-fits-all template passes the count and fails the per-id check; and every row's citation hands out that constant's canonical c/<id>.html address while the in-table anchor is proven absent from the cite blocks and proven still present as the row permalink, so the two address forms cannot swap jobs)");
+  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match; a changed bound reads as a value change while an escaping-only edit and a changed citation detail both read as text edits with the bound held, a pin with no prior version gets no verdict, and all four reader-facing wordings are pinned; every row carries a c-prefixed id and a permalink that targets that row's OWN id in document order, with the landed row visibly marked; the filter haystack carries current AND previously-pinned bound values so a truncated stale citation matches, a row with no earlier pin contributes no phantom value, it also carries every value cell in the constant's mirrored tables — proven on a fixture where a value two rows above the pinned one is extracted while separators, headers and prose outside the table are not, and proven ABSENT from the visible page — the attribute is read back OUT of the rendered row rather than re-derived, a previously-pinned value is proven searchable and proven ABSENT from the visible page, and the page's own filter script, extracted and executed against the emitted attribute, reveals the right row and hides the rest; a row we filed an upstream report against discloses it and links the report, an unfiled row carries none and the count drops to zero when the record is emptied, the label reads open with no date for an open report, a neighbouring id inherits nothing, a hostile url reaches the page escaped, and neither the disclosure nor its explanatory prose claims our report caused anything; every row links to its OWN constant page, so a one-href-fits-all template passes the count and fails the per-id check; and every row's citation hands out that constant's canonical c/<id>.html address while the in-table anchor is proven absent from the cite blocks and proven still present as the row permalink, so the two address forms cannot swap jobs)");
 }
 
 // Entry-point guard — review finding F2. Without it, ANY importer of renderHtml/buildRows runs the
