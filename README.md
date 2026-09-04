@@ -106,7 +106,7 @@ It has also caught itself. [`docs/findings/`](docs/findings/) holds both kinds o
 Generated from committed state by `scripts/render-state-block.mjs`. For the **live** verdict —
 whether every claim still holds right now — run `npm run check` and read its exit code.
 
-- **116** mirrored files — 115 constant files plus upstream's repo-root `README.md` — byte-identical to upstream [`teorth/optimizationproblems`](https://github.com/teorth/optimizationproblems) at `01a0bc8` (an upstream sha; it does not exist in this repo). The README is in scope because it is where upstream declares which bounds it stands behind: a bound demoted to "verification at minimal levels" leaves every constants file unchanged.
+- **116** mirrored files — 115 constant files plus upstream's repo-root `README.md` — byte-identical to upstream [`teorth/optimizationproblems`](https://github.com/teorth/optimizationproblems) at `a463efd` (an upstream sha; it does not exist in this repo). The README is in scope because it is where upstream declares which bounds it stands behind: a bound demoted to "verification at minimal levels" leaves every constants file unchanged.
 - **241 pinned claims** — 230 generated (one per bounds table, asserting the last-listed row's **position**, never "the record") and 11 hand-written. 2 are `manual: true` and therefore report UNVERIFIED by design: their source blocks automated fetch from CI runners.
 - Checks run daily in CI (09:17 UTC), on push, and on demand
 
