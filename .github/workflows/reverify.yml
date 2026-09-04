@@ -190,6 +190,14 @@ jobs:
       # record-claiming wording reaches it. Generation itself is checked by `npm run check`.
       - name: Self-test per-constant page renderer (no network)
         run: node scripts/render-constant-pages.mjs --selftest
+      # Guards A-33 leg 1's differ. The danger it exists to prevent is the one note4 names: a
+      # check that fires on 'a filed report is CLOSED' fires every day once #150 closes, and an
+      # alarm that cannot go quiet is this lane's founding defect. The self-test asserts it stays
+      # SILENT on an unchanged state and fires on a transition in BOTH directions. Network-free:
+      # it diffs fixtures and reads the committed baseline, never gh (the live run needs auth for
+      # someone else's repo and stays out of CI, like npm run traffic and npm run reports).
+      - name: Self-test upstream-report transition differ (no network)
+        run: node scripts/check-upstream-reports.mjs --selftest
       # Not piped and deliberately network-free: this asserts README's published figures still
       # match COMMITTED repo state. A stale block is a falsifiable public error on the front
       # page of a repo whose pitch is that it notices stale numbers.
