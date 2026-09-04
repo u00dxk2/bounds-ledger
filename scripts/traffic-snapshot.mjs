@@ -68,11 +68,22 @@ export function sumSince(days, from, key) {
  * and not defensive noise: viewer-days can never be FEWER than distinct viewers, so a sub-1.0
  * result means our day rows do not cover the window the rollup was taken over.
  */
+// N_min for the ratio, copied from A-20's branch: below this the figure is COMPUTED but not
+// READABLE, and printing a bare number would let a two-viewer artefact be quoted as a retention
+// read. 3 is where the header comment above already says it starts separating
+// "they looked once" from "they came back".
+export const RETURN_RATE_N_MIN = 3;
+
 export function returnRate(days, rollup, windowStart) {
   if (!rollup || !(rollup.viewUniques > 0)) return null;
   const viewerDays = sumSince(days ?? {}, windowStart, "viewUniques");
   if (viewerDays < rollup.viewUniques) return null;
-  return { viewerDays, viewers: rollup.viewUniques, ratio: viewerDays / rollup.viewUniques };
+  return {
+    viewerDays,
+    viewers: rollup.viewUniques,
+    ratio: viewerDays / rollup.viewUniques,
+    inapplicable: rollup.viewUniques < RETURN_RATE_N_MIN,
+  };
 }
 
 function selftest() {
@@ -137,11 +148,16 @@ function selftest() {
   // Refuses rather than guessing: no rollup sampled, nobody in the window, and day rows that do
   // not cover the rollup's window (viewer-days below the head-count is arithmetically impossible,
   // so it means our coverage is short, not that people un-visited).
+  // The N_min floor, both polarities. Below it the ratio is computed and must not be READ;
+  // at it the flag must be off, or the floor would suppress every reading this repo will ever take.
+  assert.equal(returnRate(returning, { viewUniques: 2 }, "2026-08-20").inapplicable, true);
+  assert.equal(returnRate(returning, { viewUniques: 3 }, "2026-08-20").inapplicable, false);
+  assert.ok(returnRate(returning, { viewUniques: 2 }, "2026-08-20").ratio > 0, "the floor must not blank the arithmetic it refuses to have read");
   assert.equal(returnRate(returning, null, "2026-08-20"), null);
   assert.equal(returnRate(returning, { viewUniques: 0 }, "2026-08-20"), null);
   assert.equal(returnRate({ "2026-08-22": { viewUniques: 1 } }, { viewUniques: 3 }, "2026-08-20"), null);
 
-  console.log("traffic-snapshot selftest: PASS (pre-window history survives merge and a truncating merge is caught; views/clones share a row; no day invented; restatement updates in place; sumSince boundary inclusive; return-rate rises above 1 when a viewer returns, reads exactly 1 when none do on a proven-different fixture, and refuses on a missing rollup, an empty window and day rows short of the rollup's window)");
+  console.log("traffic-snapshot selftest: PASS (pre-window history survives merge and a truncating merge is caught; views/clones share a row; no day invented; restatement updates in place; sumSince boundary inclusive; return-rate rises above 1 when a viewer returns, reads exactly 1 when none do on a proven-different fixture, and refuses on a missing rollup, an empty window and day rows short of the rollup's window; and the N_min floor flags a 2-viewer read INAPPLICABLE while leaving a 3-viewer read readable, without blanking the arithmetic)");
 }
 
 function main() {
@@ -193,7 +209,11 @@ function main() {
   const windowStart = views.views?.length ? dayOf(views.views[0].timestamp) : null;
   const rr = windowStart ? returnRate(store.days, { viewUniques: views.uniques }, windowStart) : null;
   if (rr) {
-    console.log(`Return-rate proxy, ${windowStart} to today: ${rr.viewerDays} viewer-day(s) over ${rr.viewers} distinct viewer(s) = ${rr.ratio.toFixed(2)} day(s) present per viewer. Exactly 1.00 means nobody came back twice.`);
+    console.log(
+      rr.inapplicable
+        ? `Return-rate proxy: INAPPLICABLE at n=${rr.viewers} distinct viewer(s), below the N_min of ${RETURN_RATE_N_MIN}. The arithmetic ran and is printed so the figure that replaces it stays auditable: ${rr.viewerDays} viewer-day(s) over ${rr.viewers}, ratio ${rr.ratio.toFixed(2)}. At this n the ratio can take only a couple of values, so it cannot separate nobody-came-back from noise. Not zero and not a low ratio: unreadable at this count.`
+        : `Return-rate proxy, ${windowStart} to today: ${rr.viewerDays} viewer-day(s) over ${rr.viewers} distinct viewer(s) = ${rr.ratio.toFixed(2)} day(s) present per viewer. Exactly 1.00 means nobody came back twice.`,
+    );
   } else {
     console.log(`Return-rate proxy: NOT READY — needs a non-zero 14-day viewer count and day rows covering ${windowStart ?? "the reported window"} onward. Not zero, and not a low ratio: it is unmeasured.`);
   }

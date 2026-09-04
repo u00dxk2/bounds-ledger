@@ -11,7 +11,7 @@ last_deploy: 28eebf4
 sentry_open_p1: null
 sentry_open_p2: null
 mrr_usd: null
-n_active_users_28d: 0
+n_active_users_28d: null
 on_hold_items: 2
 top_action_today: "Nothing needs you today. Yesterday we built a separate page for each of the 114 constants we track, so that anyone can point at one of them directly instead of at a row buried in a long table — and then linked to none of them, which meant the only way to reach one was to already know its address. That is fixed: every row now links to its own page. The thing worth your attention is not today's work but a question already sitting with you for 09-05, about where else this ledger could matter. The reason it keeps mattering more: two people looked at the repository in the last fortnight. Everything we ship is real and almost nobody is there to see it, and no amount of building changes that number."
 ---
@@ -19,6 +19,8 @@ top_action_today: "Nothing needs you today. Yesterday we built a separate page f
 # Daily report — bounds-ledger — 2026-09-03
 
 ## BLUF
+
+**LATER THAT DAY:** canonical per-constant citations on all 115 rows, and the Erdos minimum overlap constant reached the public page for the first time after a generation skip had kept it off since 2026-08-21 - b2aa427, 3b08874, 9710655, f5f54c0 (bus 6d20ab83). Shipped by a product-love sub-agent AFTER this report was written; nothing below reflects it, and last_deploy above names the commit this report closed at, not the day tip.
 
 The 114 pages we built yesterday could not be reached from anywhere, and now every row links to its own.
 
