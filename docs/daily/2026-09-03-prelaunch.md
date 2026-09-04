@@ -20,7 +20,7 @@ top_action_today: "Nothing needs you today. Yesterday we built a separate page f
 
 ## BLUF
 
-**LATER THAT DAY:** canonical per-constant citations on all 115 rows, and the Erdos minimum overlap constant reached the public page for the first time after a generation skip had kept it off since 2026-08-21 - b2aa427, 3b08874, 9710655, f5f54c0 (bus 6d20ab83). Shipped by a product-love sub-agent AFTER this report was written; nothing below reflects it, and last_deploy above names the commit this report closed at, not the day tip.
+**LATER THAT DAY:** canonical per-constant citations on every row, and the Erdos minimum overlap constant reached the public page for the first time after a generation skip had kept it off since 2026-08-21 - shipped in b2aa427 through f5f54c0 (bus 6d20ab83). Shipped by a product-love sub-agent AFTER this report was written; nothing below reflects it, and last_deploy above names the commit this report closed at, not the day tip.
 
 The 114 pages we built yesterday could not be reached from anywhere, and now every row links to its own.
 

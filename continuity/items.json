@@ -772,7 +772,8 @@
       "linkedCommits": [
         "d3df477",
         "a3c8fe1",
-        "f96ba43"
+        "f96ba43",
+        "a962921"
       ],
       "note3": "SECOND DATA POINT THE SAME DAY, 2026-08-18 close-out. The close battery run of npm run check exited 1 with TWO UNREACHABLE pins (pin:57c:U and pin:57c:L, the Univalent Bloch constant page) -- not BROKEN, so nothing moved. A single re-run of check-claims.mjs came back exit 0 with 231 hold and 0 broken/unreachable. That is the second transient transport failure of the day on a different file from the first (the push run on 95c12f1 died on constants/9a.md returning 502, also clean on re-run), and both were absorbed by exactly one retry. Two independent transients in one day, each costing a manual re-run and each briefly presenting as a red alarm, is the concrete case for this item -- and note it is ALSO the case for caution: a retry that had been in place would have hidden two real observations about how flaky the transport is. Whatever ships must LOG that it retried, so the flake rate stays visible rather than being silently smoothed away.",
       "note4": "PRE-STAGED 2026-08-26 (P2) so that 2026-09-01 is a decision rather than the start of a dig. Counting failed reverify.yml runs since 2026-08-18 and classifying each by the alarm-title convention shipped in A-19 N-1 (Check error = transport, Drift = a record moved): TWO are unambiguously in-window transient transport — issue 28 on 2026-08-22 (could not reach 1 cited source) and issue 30 on 2026-08-25 (could not verify 2 claims, cited source unreachable; both pins are on the SAME Wikipedia article and the next run was green). ONE in-window failure is NOT transport and must not be counted: issue 29 on 2026-08-24 was a real Drift across six constants files. THE COUNT THEREFORE STANDS AT 2 AGAINST N_min = 3, which is branch 0 — EXCEPT for one unresolved row that sits exactly on the discriminator. Issue 25 was filed 2026-08-18T15:57:50Z with a transport-shaped title (re-verification could not complete), but NO failed run appears on 2026-08-18 in gh run list --status failure over a window reaching back to 2026-07-25. Until that is explained the count is 2-or-3, so DO NOT read either branch as settled on the day. Resolving issue 25's originating run IS the decision; everything else is already counted. Left unresolved deliberately: it is A-20's question and the row is not due until 2026-09-01.",
@@ -1159,7 +1160,8 @@
       "linkedCommits": [
         "d189dff",
         "4c2fd97",
-        "096e126"
+        "096e126",
+        "7e741c8"
       ],
       "readCommandLastRun": "2026-09-02T15:23:51.843Z",
       "readCommandLastCommand": "gh issue list --repo teorth/optimizationproblems --author u00dxk2 --state all --limit 20 --json number,state,closedAt,title",
@@ -1373,7 +1375,10 @@
       "signalDateNote": "Four days, not same-day and not a week. Not same-day because nothing is mechanically blocked — the P1 task-complete posted normally against a receipt recording exitCode 3, so this is corrosion rather than an outage. Not a week because the corrosion is the whole problem: every day the leg stays permanently red is a day the next agent learns to read exit 3 as noise, and that habit is what the founding defect is made of.",
       "onTrigger": "On 2026-09-08 decide between the three closeWhen branches rather than re-dating. If the answer is the manual: true exclusion, the design constraint from note3 is the thing to get right and it is NOT the exit code — it is that the UNVERIFIED line must stay in the output where a human reads it, exactly as C-7 and C-9's advisory lines do. Check first whether skylark-site has restored a script-usable route, because that would make the whole question moot; if it has, this row closes with a one-line reason and no code.",
       "readCommand": "node scripts/check-brief.mjs # exits 3 BRIEF UNVERIFIABLE for as long as the Google-session wall stands. A 0 means the auth model changed back or the leg was re-scoped, and either way the question in this row has moved. POSITIVE CONTROL that the script reached the network rather than failing early: its output names the redirect target /t/signin?next=%2Ft%2Flanes%2Fbounds-ledger, a string it can only print from a real response — an early failure prints no redirect at all.",
-      "updated": "2026-09-04"
+      "updated": "2026-09-04",
+      "linkedCommits": [
+        "a962921"
+      ]
     },
     {
       "id": "A-42",
@@ -1390,7 +1395,10 @@
       "signalDateNote": "A week. Not sooner because nothing here is false and the page is not misleading anyone today at 2 viewers a fortnight; not later because this is the THIRD and FOURTH instance of one root cause found in two days, and the first two were both found by accident rather than by looking.",
       "onTrigger": "On 2026-09-11 decide both readers separately, because they fail differently: the label is a wording question about what we may assert, the sort key is a ranking question about what the control means. Do NOT bundle them into one fix. If the label changes, the replacement must still disclose the first-pin date — deleting the disclosure to avoid the reassurance would trade an over-read for a silence, which is worse.",
       "readCommand": "node -e \"const t=require('fs').readFileSync('index.html','utf8');const i=t.indexOf('id=\\\"c-1b\\\"');const s=t.slice(i,i+900);console.log(s.match(/first pinned[^<]*/g), s.match(/data-changed=\\\"[^\\\"]*\\\"/)[0])\" # prints the founding record's live date label and sort key. On 2026-09-04 it printed [ 'first pinned 2026-09-03 — unchanged since' ] and data-changed=\"2026-09-03\", which IS the finding. POSITIVE CONTROL that the probe reads a real row rather than an empty slice: it must print a non-null match for both; a null on either means the id or the offset is wrong, not that the label is gone.",
-      "updated": "2026-09-04"
+      "updated": "2026-09-04",
+      "linkedCommits": [
+        "f6192e2"
+      ]
     }
   ],
   "meta": {
