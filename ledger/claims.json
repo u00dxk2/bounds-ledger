@@ -926,7 +926,7 @@
     "id": "pin:41a:U",
     "statement": "Last-listed upper-bound table row for Moving Sofa Constant (41a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/41a.md",
-    "expect": "| 2.2195 | [Baek2024] | Announced bound, matching the Gerver construction |",
+    "expect": "| 2.2195* | [Baek2024] | Announced (unverified) bound, matching the Gerver construction |",
     "asserts": "ledger/teorth-optimizationproblems/constants/41a.md",
     "generated": true
   },
@@ -982,7 +982,7 @@
     "id": "pin:43a:L",
     "statement": "Last-listed lower-bound table row for Gilbert-Pollak conjecture (Steiner ratio) (43a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/43a.md",
-    "expect": "| $0.8559$ | [KHSHGW2026] | New improvement, preprint |",
+    "expect": "| $0.860$* | [S2026] | Certificate layer, independently verified; same lemma set as [KHSHGW2026].  Asterisked: the source is a self-archived preprint, and the bound is conditional on the [KHSHGW2026] lemma layer. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/43a.md",
     "generated": true
   },
@@ -1038,7 +1038,7 @@
     "id": "pin:47a:U",
     "statement": "Last-listed upper-bound table row for Centered Hardy–Littlewood maximal constant in dimension $2$ (47a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/47a.md",
-    "expect": "| $9$ | [Tao2006] | The standard covering-lemma proof gives an explicit constant $3^d$ in the weak-type $(1,1)$ inequality, and the same argument applies to cubes; hence $c_2\\le 3^2=9$. [Tao2006-weak-3d] [Tao2006-cubes] |",
+    "expect": "| $4$ | [Tao2010] | The Vitali-covering proof can be sharpened from $3^d$ to $2^d$ by covering centers with $(2+\\varepsilon)$-dilates of a disjoint subcollection and letting $\\varepsilon\\downarrow 0$. The same argument applies to $\\ell_\\infty$ balls, i.e. axis-parallel cubes; hence $c_2\\le 2^2=4$. [Tao2010-ex42] |",
     "asserts": "ledger/teorth-optimizationproblems/constants/47a.md",
     "generated": true
   },
@@ -1118,7 +1118,7 @@
     "id": "pin:50a:U",
     "statement": "Last-listed upper-bound table row for Approximation ratio for quantum Max Cut. (50a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/50a.md",
-    "expect": "| 0.5   | [GP19]    | best possible product state approximation",
+    "expect": "| $< 1$ | [P25] | There exists $\\alpha<1$, such that it is NP-hard to compute a value approximating QMC to within approximation ratio $\\alpha$. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/50a.md",
     "generated": true
   },
@@ -1166,7 +1166,7 @@
     "id": "pin:53a:U",
     "statement": "Last-listed upper-bound table row for Davenport constant for $C_n^3$ (53a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/53a.md",
-    "expect": "| $20369$ | <a href=\"#Zak2019\">[Zak2019]</a> | From Corollary 3.11: $D(C_n^3)\\le 20369(n-1)+1$ for all $n\\ge 2$, hence $C_{53}\\le 20369$. <a href=\"#Zak2019-cor3.11\">[Zak2019-cor3.11]</a> |",
+    "expect": "| $4$ | <a href=\"#Grinsztajn2026\">[Grinsztajn2026]</a> | From the pointwise estimate $D(C_n^3)\\le 4n-P(n)-2$, where $P(n)=\\max_{p^a\\parallel n}p^a$. Since $P(n)\\ge2$, this gives $C_{53}\\le4$. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/53a.md",
     "generated": true
   },
@@ -1870,7 +1870,7 @@
     "id": "pin:88a:U",
     "statement": "Last-listed upper-bound table row for Bounded prime gap constant (88a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/88a.md",
-    "expect": "| $240$ | [Sta26] | Stadlmann: \"the Bombieri–Vinogradov theorem can be combined with newer equidistribution estimates for smooth moduli\", the latter being the exponent of distribution $\\tfrac12 + \\tfrac1{40}$ of [Sta25]. Preprint of 31 August 2026. |",
+    "expect": "| $186$ | [OAI26] | Establishes $\\mathrm{DHL}[40,2]$: every admissible $40$-tuple has infinitely many translates containing at least two primes.  Combines the equidistribution estimates of [Pol14a] and [Sta25] with factorization conditions making suitable least common multiples of divisor products *triply* densely divisible, which widens the support of the multidimensional Selberg sieve, together with an improved numerical optimization.  Applied to the admissible $40$-tuple $\\\\{0, 2, 6, \\dots, 182, 186\\\\}$ of diameter $186$.  Preprint of 30 August 2026, one day before [Sta26], which it describes as independent concurrent work; the proof is attributed to the model GPT 6 Astra.  See the note on its formalization below. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/88a.md",
     "generated": true
   },
@@ -1910,7 +1910,7 @@
     "id": "pin:8a:L",
     "statement": "Last-listed lower-bound table row for Classical zero-free region constant (8a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/8a.md",
-    "expect": "| $2/\\log \\gamma_{1} \\approx 0.755106$ | - | Optimal assuming RH |",
+    "expect": "| $2/\\log \\gamma\\_{1} \\approx 0.755106$ | - | Unconditional: $\\gamma\\_{1} = 14.1347\\dots$ is the ordinate of the lowest zero of $\\zeta$, and that zero has $\\sigma = 1/2$, so any admissible $R$ must satisfy $1/2 \\leq 1 - 1/(R\\log\\gamma\\_{1})$. Optimal assuming RH. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/8a.md",
     "generated": true
   },
