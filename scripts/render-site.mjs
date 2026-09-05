@@ -21,10 +21,10 @@
 // framework, no search index. 111 constants is small enough that the browser filters it
 // instantly; revisit only if the mirror grows by an order of magnitude.
 
-import { readFileSync, writeFileSync, existsSync, mkdtempSync, mkdirSync, rmSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdtempSync, mkdirSync, rmSync, realpathSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join, dirname } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { pinsFor, lastChanged, changeFor, changeKind, boundCell } from "./lookup.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -201,6 +201,7 @@ export function buildRows(claims, { withDates = true, root = ROOT, reports = nul
       lowerPrev: lc.prevExpect || null,
       report: reportFor(id, filed),
       tableValues: tableValuesFor(id, root),
+      aliases: aliasesFor(id, claims),
     };
   }).map((r) => ({ ...r, changed: newerOf(r.upperChanged, r.lowerChanged) }));
 }
@@ -297,6 +298,29 @@ export function tableValuesFor(id, root = ROOT) {
   return [...out];
 }
 
+// Hand-curated search aliases for a constant: values a reader may arrive HOLDING that no longer
+// appear anywhere the haystack above can reach. The tableValues haystack reads the CURRENT mirrored
+// table and upperPrev/lowerPrev come from GENERATED pin history, so a value that lived only in a
+// hand claim's superseded `expect` disappears from the page the instant upstream rewrites the cell.
+// That happened on 2026-09-05: upstream changed 1b's Haugland row from 0.380927 to 0.380926 and the
+// older figure — still cited nine times in arXiv:2601.16175 — became unsearchable here the same day.
+//
+// Like tableValues, this ASSERTS NOTHING. It is not displayed, not pinned and not dated; it is a
+// string the filter matches so a reader holding an old number lands on the row and reads the live
+// table for themselves. Deliberately HAND-curated rather than derived from git history: deriving it
+// would mean shelling `git log -S` per value per render, and the population worth carrying is a
+// judgement about which numbers a reader plausibly holds, not every byte a cell has ever contained.
+export function aliasesFor(id, claims) {
+  const all = Array.isArray(claims) ? claims : claims.claims || [];
+  const out = new Set();
+  for (const c of all) {
+    if (!c || !Array.isArray(c.searchAliases)) continue;
+    if (!(c.url || "").includes(`constants/${id}.md`)) continue;
+    for (const a of c.searchAliases) if (typeof a === "string" && a.trim()) out.add(a.trim().toLowerCase());
+  }
+  return [...out];
+}
+
 // The haystack the filter searches. It carries the constant's name and id AND the bound cells,
 // current and superseded — because the page's own headline asks "is the number you cited still
 // current?" and until today it could not be searched by a number at all. A reader holding a stale
@@ -307,7 +331,8 @@ export function findKey(r) {
   const cells = [r.upper, r.lower, r.upperPrev, r.lowerPrev]
     .filter(Boolean)
     .map((s) => boundCell(s).trim());
-  return [r.title, r.id, ...cells, ...(r.tableValues || [])].filter(Boolean).join(" ").toLowerCase();
+  return [r.title, r.id, ...cells, ...(r.tableValues || []), ...(r.aliases || [])]
+    .filter(Boolean).join(" ").toLowerCase();
 }
 
 // manualCount is DERIVED and passed in, never hard-coded — review finding F5. The footer used to
@@ -862,6 +887,44 @@ async function selftest() {
   assert.ok(key.includes("fourier entropy-influence") && key.includes("71a"),
     "name and id must keep working — this extends the haystack, it does not replace it");
 
+  // --- Hand-curated aliases, added 2026-09-05. Both KP-78 answers, and a real fixture.
+  // The case that motivated it: upstream rewrote 1b's Haugland cell from 0.380927 to 0.380926, so
+  // the older value — which the mirrored table no longer contains and which was never a GENERATED
+  // pin — left the haystack the same day. A reader holding it got the empty state.
+  const aliasClaims = [
+    { id: "C-2", url: "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1b.md", searchAliases: ["0.380927"] },
+    { id: "C-9", url: "https://www.erdosproblems.com/36" },
+    { id: "C-3", url: "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/2a.md", searchAliases: ["9.99887766"] },
+  ];
+  const alias1b = aliasesFor("1b", aliasClaims);
+  assert.deepEqual(alias1b, ["0.380927"],
+    "the alias must be collected for the constant its claim's URL names");
+  assert.deepEqual(aliasesFor("2a", aliasClaims), ["9.99887766"],
+    "positive control: a DIFFERENT constant collects its own alias, so the match is on the url and not on returning the first list it finds");
+  assert.deepEqual(aliasesFor("47a", aliasClaims), [],
+    "a constant with no aliased claim collects nothing — no phantom value");
+
+  // FIRES: the alias reaches the haystack.
+  const aliased = findKey({ id: "1b", title: "Erdos minimum overlap", upper: "| $0.380926$ | [H2016] |", lower: null, upperPrev: null, lowerPrev: null, aliases: alias1b });
+  assert.ok(aliased.includes("0.380926"), "positive control: the CURRENT value is in the haystack before any claim about the old one");
+  assert.ok(aliased.includes("0.380927"), "the aliased value a reader is holding must be searchable — the whole point");
+
+  // SILENT: a row with no aliases contributes nothing, and never the word undefined.
+  const unaliased = findKey({ id: "2a", title: "Crouzeix", upper: "| $2$ | [X] |", lower: null, upperPrev: null, lowerPrev: null, aliases: [] });
+  assert.ok(unaliased.includes("crouzeix"), "positive control: the unaliased row still builds a haystack");
+  assert.doesNotMatch(unaliased, /undefined|null/, "an absent alias list must contribute nothing, not the word undefined");
+
+  // THE SEAM: an alias is a SEARCH string and must never become a displayed value. If it leaked
+  // into the visible row a reader would read 0.380927 as something this ledger asserts, which it
+  // is not — nobody pinned it and upstream no longer lists it.
+  const aliasPage = renderHtml(
+    [{ id: "1b", title: "Erdos minimum overlap", url: "https://example.invalid/1b.md", upper: "| $0.380926$ | [H2016] |", lower: null, upperChanged: null, lowerChanged: null, upperKind: null, lowerKind: null, upperPrev: null, lowerPrev: null, changed: null, report: null, tableValues: [], aliases: ["0.380927"] }],
+    { commit: "deadbee", fetchedAt: "2026-09-05" }, "2026-09-05", 1);
+  const visible1b = aliasPage.replace(/<[^>]*>/g, " ");
+  assert.ok(aliasPage.includes("0.380927"), "positive control: the alias IS emitted, into the search attribute");
+  assert.ok(!visible1b.includes("0.380927"),
+    "an alias must never reach the visible page — it is a search string, not a value this ledger publishes");
+
   // SILENT: a row with no earlier pin contributes no phantom previous value.
   const still = findKey({ id: "2a", title: "Crouzeix", upper: "| $2$ | [X] |", lower: null, upperPrev: null, lowerPrev: null });
   assert.ok(still.includes("crouzeix") && still.includes("2a"), "positive control: the unmoved row still builds a haystack");
@@ -1061,36 +1124,39 @@ async function selftest() {
 // module, but the defect class is proven live in this codebase: the commit that introduced this
 // file also had to add this same guard to lookup.mjs after import-executes-CLI bit it, and the new
 // module repeated the shape it had just fixed. Guarding it now rather than after it bites twice.
-const isMain = process.argv[1] &&
-  resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+const entry = process.argv[1] ? pathToFileURL(realpathSync(process.argv[1])).href : null;
+const isMain = entry === import.meta.url;
 
-if (!isMain) {
-  // imported as a library — export only
-} else if (process.argv.includes("--selftest")) {
-  await selftest();
-} else {
-  const claims = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
-  const manifest = JSON.parse(readFileSync(join(ROOT, "ledger", "teorth-optimizationproblems", "manifest.json"), "utf8"));
-  // The date shown is the MIRROR's fetch date, not "now". Two reasons, and the second is the
-  // load-bearing one. (1) It is what the reader actually needs: the page reflects upstream as of
-  // when we fetched it, not as of when the HTML was rendered. (2) "now" would make `--check` fail
-  // the day after any regeneration — a permanently-red alarm, which carries as much information
-  // as a permanently-green one and is this repo's founding defect. Keyed to fetchedAt, the page is
-  // stable until the mirror itself moves, which is exactly when it SHOULD be regenerated.
-  const on = String(manifest.fetchedAt || "").slice(0, 10) || "an unrecorded date";
-  const manualCount = (claims.claims || claims).filter((c) => c.manual === true).length;
-  const html = renderHtml(buildRows(claims), manifest, on, manualCount);
-
-  if (process.argv.includes("--check")) {
-    let current = "";
-    try { current = readFileSync(OUT, "utf8"); } catch { /* missing counts as stale */ }
-    if (current.replace(/\r\n/g, "\n") !== html.replace(/\r\n/g, "\n")) {
-      console.error("RESULT: FAIL — index.html is stale. Re-run `node scripts/render-site.mjs` and commit it.");
-      process.exit(1);
-    }
-    console.log(`RESULT: PASS — index.html matches committed state (${buildRows(claims, { withDates: false }).length} constants @ ${String(manifest.sha).slice(0, 7)})`);
+if (isMain) {
+  if (process.argv.includes("--selftest")) {
+    await selftest();
   } else {
-    writeFileSync(OUT, html);
-    console.log(`wrote index.html — ${buildRows(claims, { withDates: false }).length} constants @ ${String(manifest.sha).slice(0, 7)}`);
+    const claims = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
+    const manifest = JSON.parse(readFileSync(join(ROOT, "ledger", "teorth-optimizationproblems", "manifest.json"), "utf8"));
+    // The date shown is the MIRROR's fetch date, not "now". Two reasons, and the second is the
+    // load-bearing one. (1) It is what the reader actually needs: the page reflects upstream as of
+    // when we fetched it, not as of when the HTML was rendered. (2) "now" would make `--check` fail
+    // the day after any regeneration — a permanently-red alarm, which carries as much information
+    // as a permanently-green one and is this repo's founding defect. Keyed to fetchedAt, the page is
+    // stable until the mirror itself moves, which is exactly when it SHOULD be regenerated.
+    const on = String(manifest.fetchedAt || "").slice(0, 10) || "an unrecorded date";
+    const manualCount = (claims.claims || claims).filter((c) => c.manual === true).length;
+    const html = renderHtml(buildRows(claims), manifest, on, manualCount);
+
+    if (process.argv.includes("--check")) {
+      let current = "";
+      try { current = readFileSync(OUT, "utf8"); } catch { /* missing counts as stale */ }
+      if (current.replace(/\r\n/g, "\n") !== html.replace(/\r\n/g, "\n")) {
+        console.error("RESULT: FAIL — index.html is stale. Re-run `node scripts/render-site.mjs` and commit it.");
+        process.exit(1);
+      }
+      console.log(`RESULT: PASS — index.html matches committed state (${buildRows(claims, { withDates: false }).length} constants @ ${String(manifest.sha).slice(0, 7)})`);
+    } else {
+      writeFileSync(OUT, html);
+      console.log(`wrote index.html — ${buildRows(claims, { withDates: false }).length} constants @ ${String(manifest.sha).slice(0, 7)}`);
+    }
   }
+} else if (process.argv[1]?.endsWith("render-site.mjs")) {
+  console.error("render-site: COULD NOT RUN — invoked as main but module identity did not match");
+  process.exit(2);
 }

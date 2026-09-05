@@ -11,6 +11,8 @@
     "statement": "Tao's curated table lists Haugland's 2016 bound as 0.380926 — the TRUNCATION, which is strictly below the proved 0.3809268534330870 and so is not a valid upper bound at the precision shown. Upstream changed this on 2026-09-05 from the round-to-nearest 0.380927; W-2's 2026-07-23 verdict that the repo was right is reversed by that change, not by a new reading.",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1b.md",
     "expect": "$0.380926$ | [H2016]",
+    "searchAliases": ["0.380927"],
+    "searchAliasesWhy": "A reader arriving with 0.380927 is holding the value upstream's table carried until 2026-09-05, and the value arXiv:2601.16175 still cites nine times. It vanished from the page's search haystack the moment upstream changed the cell, because the haystack carries the CURRENT mirrored table plus previously-pinned GENERATED values, and this one lived only in a hand claim's superseded expect. An alias ASSERTS NOTHING — it is a string the filter matches so the reader lands on the row and reads the live table themselves, which is the same standing the tableValues haystack already has.",
     "asserts": "docs/findings/2026-07-23-haugland-final-digit.md"
   },
   {
