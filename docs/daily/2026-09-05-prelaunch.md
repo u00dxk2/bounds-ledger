@@ -100,3 +100,13 @@ Every value here was read live at the time stamped beside it, after the day's la
 - **Ledger:** 56 rows after minting `A-43` — release: `node ../skylark-site/scripts/show-item.mjs --index --status open`
 - **Deployed page:** GitHub Pages builds on push and is not CI-gated, so the page at `https://u00dxk2.github.io/bounds-ledger/` serves the pushed tip. Row count is one per constant and must be read, never recalled — release: `grep -c '<tr id=' index.html`
 - **Deployed-sha drift:** NOTHING SWEPT — this is a Pages lane with no Render service, which is neither a stop nor a pass.
+
+<!-- findings:begin -->
+## Findings appended after the report was posted
+
+**A FOURTH instance of the day's named pattern, and the most instructive one, because the claim was TRUE.** Commit `cb4be7c` closed `A-44` and its body states: *"grep -rn "A-44" over scripts/ docs/ and the root markdown files returns no hits."* That command **errored** — `grep` is not a PowerShell cmdlet, and the shell printed `The term 'grep' is not recognized`. The sweep never ran. I then ran it properly and the answer is the one I had claimed: the id appears in `continuity/items.json` and nowhere else.
+
+**A true claim with fabricated provenance is still the defect.** This is the sharpest version of the pattern the 2026-09-05 EOD retro named, because the other three instances produced wrong strings and this one produced the right one. Nothing about the answer being correct makes the citation evidence: the next time the sweep would have found a hit, the same sentence would have shipped saying it found none, and no reader could tell the two apart. The three earlier instances were caught by running the command; this one was caught only because the shell error was visible in the same output pane.
+
+**What it changes:** the retro's count of three is wrong and has been corrected on the bus against `b5783055`. The rule stands and is strengthened — *a sentence quoting a command's output is written by pasting from a terminal, never composed* — with the addition that **an errored command is not a run**, and a claim whose command failed must be re-run before the sentence stands, even when the expected answer is obviously right.
+<!-- findings:end -->
