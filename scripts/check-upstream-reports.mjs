@@ -21,10 +21,10 @@
 //
 // Needs `gh`; never runs in CI (the reports live in someone else's repo and the auth is local).
 
-import { readFileSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { fileURLToPath } from "node:url";
-import { dirname, join, resolve } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { dirname, join } from "node:path";
 import assert from "node:assert/strict";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -165,8 +165,12 @@ function selftest() {
   console.log("check-upstream-reports selftest: PASS (silent on the permanent fact that a closed report is closed — the thing that would make it a permanently-red alarm; fires on a close and on a reopen, carrying when; surfaces an unrecorded report of ours without counting it as a transition; treats a recorded row missing from the listing as a query suspicion rather than a deletion; empty in, empty out; and the committed baseline is proven readable with the fields the differ reads)");
 }
 
-const isMain = process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url));
+const entry = process.argv[1] ? pathToFileURL(realpathSync(process.argv[1])).href : null;
+const isMain = entry === import.meta.url;
 if (isMain) {
   if (process.argv.includes("--selftest")) selftest();
   else main();
+} else if (process.argv[1]?.endsWith("check-upstream-reports.mjs")) {
+  console.error("check-upstream-reports: COULD NOT RUN — invoked as main but module identity did not match");
+  process.exit(2);
 }

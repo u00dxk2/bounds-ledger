@@ -27,9 +27,9 @@
 // lesson — a guard that cannot run must not read as a pass — applied here rather than only
 // written down.
 
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, realpathSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -226,6 +226,10 @@ async function main() {
 // from the PR #26 review (the same omission in render-site.mjs), and it recurred here in new
 // code written the same week; caught because the PR-leg demo imported the predicate and the
 // check's own output appeared above the demo's.
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+const entry = process.argv[1] ? pathToFileURL(realpathSync(process.argv[1])).href : null;
+if (entry === import.meta.url) {
   await main();
+} else if (process.argv[1]?.endsWith("check-deferrals.mjs")) {
+  console.error("check-deferrals: COULD NOT RUN — invoked as main but module identity did not match");
+  process.exit(2);
 }

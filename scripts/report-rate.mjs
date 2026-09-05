@@ -30,7 +30,8 @@
 // separately, exactly as the traffic sampler's clone count should have been and was not.
 
 import { execFileSync } from "node:child_process";
-import { fileURLToPath } from "node:url";
+import { realpathSync } from "node:fs";
+import { pathToFileURL } from "node:url";
 
 export const OWNER = "u00dxk2";
 export const REPO = "u00dxk2/bounds-ledger";
@@ -182,6 +183,10 @@ async function main() {
   console.log("which is G-4's whole condition — so this is the thing itself. It renders no verdict.");
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+const entry = process.argv[1] ? pathToFileURL(realpathSync(process.argv[1])).href : null;
+if (entry === import.meta.url) {
   await main();
+} else if (process.argv[1]?.endsWith("report-rate.mjs")) {
+  console.error("report-rate: COULD NOT RUN — invoked as main but module identity did not match");
+  process.exit(2);
 }

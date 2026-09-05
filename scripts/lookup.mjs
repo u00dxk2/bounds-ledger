@@ -20,10 +20,10 @@
 // ponytail: reads committed state only, no network. A visitor who wants live truth runs
 // `npm run verify`; this answers the cheaper question of what we last verified and when.
 
-import { readFileSync } from "node:fs";
+import { readFileSync, realpathSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { join, dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join, dirname } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -258,22 +258,25 @@ async function selftest() {
 // and `--selftest` ran lookup's selftest as a side effect of loading it, so render-site's own
 // selftest "passed" while partly measuring the wrong module. A defect in the PR #26 version of
 // this file, found by using it rather than by reading it.
-const isMain = process.argv[1] &&
-  resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+const entry = process.argv[1] ? pathToFileURL(realpathSync(process.argv[1])).href : null;
+const isMain = entry === import.meta.url;
 
-if (!isMain) {
-  // imported as a library — export only
-} else if (process.argv.includes("--selftest")) {
-  await selftest();
-} else {
-  const id = process.argv[2];
-  if (!id) {
-    console.error("usage: node scripts/lookup.mjs <constant-id>       e.g. 27b, 1b, 87a");
-    process.exit(2);
+if (isMain) {
+  if (process.argv.includes("--selftest")) {
+    await selftest();
+  } else {
+    const id = process.argv[2];
+    if (!id) {
+      console.error("usage: node scripts/lookup.mjs <constant-id>       e.g. 27b, 1b, 87a");
+      process.exit(2);
+    }
+    const claims = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
+    const manifest = JSON.parse(readFileSync(join(ROOT, "ledger", "teorth-optimizationproblems", "manifest.json"), "utf8"));
+    const { lines, found } = render(id, claims, manifest);
+    console.log(lines.join("\n"));
+    process.exit(found ? 0 : 1);
   }
-  const claims = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
-  const manifest = JSON.parse(readFileSync(join(ROOT, "ledger", "teorth-optimizationproblems", "manifest.json"), "utf8"));
-  const { lines, found } = render(id, claims, manifest);
-  console.log(lines.join("\n"));
-  process.exit(found ? 0 : 1);
+} else if (process.argv[1]?.endsWith("lookup.mjs")) {
+  console.error("lookup: COULD NOT RUN — invoked as main but module identity did not match");
+  process.exit(2);
 }
