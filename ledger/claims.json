@@ -8,9 +8,9 @@
   },
   {
     "id": "C-2",
-    "statement": "Tao's curated table lists Haugland's 2016 bound as 0.380927 (round-to-nearest, bound-safe)",
+    "statement": "Tao's curated table lists Haugland's 2016 bound as 0.380926 — the TRUNCATION, which is strictly below the proved 0.3809268534330870 and so is not a valid upper bound at the precision shown. Upstream changed this on 2026-09-05 from the round-to-nearest 0.380927; W-2's 2026-07-23 verdict that the repo was right is reversed by that change, not by a new reading.",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1b.md",
-    "expect": "0.380927",
+    "expect": "$0.380926$ | [H2016]",
     "asserts": "docs/findings/2026-07-23-haugland-final-digit.md"
   },
   {
