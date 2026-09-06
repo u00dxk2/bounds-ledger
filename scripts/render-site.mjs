@@ -1092,13 +1092,16 @@ async function selftest() {
   // anything moved — and it was reworded 2026-09-06 (A-42 instance 3) to claim only what we saw.
   assert.match(whenLabel("2026-08-23", "value"), /^value changed 2026-08-23$/, "value wording");
   assert.match(whenLabel("2026-08-24", "text"), /bound unchanged$/, "text wording must say the bound held");
-  assert.match(whenLabel("2026-07-24", "first"), /^tracked since 2026-07-24 — no movement seen yet$/, "first-pin wording claims only our watching");
-  // The two halves that carry the fix, asserted SEPARATELY so neither can regress silently behind
-  // the other: the date must survive (deleting the disclosure would be worse than the over-read),
-  // and the sentence must not say "unchanged", which is the word that made it a claim about the
-  // RECORD. A rewording that drops the date passes the "unchanged" leg and still fails here.
+  // The two halves that CARRY the fix go FIRST, and the exact-match pin goes last. Order is
+  // load-bearing here and it cost a red-arm to learn: with the equality assertion first, EVERY
+  // mutation trips it and short-circuits, so the two semantic guards below could never fire — they
+  // would have been decorative, the "pass condition that cannot be reached" defect, shipped inside
+  // the very commit that fixes an unsupportable claim. Semantic first means a mutation that drops
+  // the date trips the date guard by name, and one that reintroduces "unchanged" trips that guard by
+  // name, each saying WHICH property broke rather than only that the string differs.
   assert.match(whenLabel("2026-07-24", "first"), /2026-07-24/, "the first-pin date must still be disclosed");
   assert.ok(!/unchanged/.test(whenLabel("2026-07-24", "first")), "the first-pin label must not assert the RECORD was unchanged");
+  assert.match(whenLabel("2026-07-24", "first"), /^tracked since 2026-07-24 — no movement seen yet$/, "first-pin wording claims only our watching");
   assert.match(whenLabel("2026-08-01", null), /^last changed 2026-08-01$/, "an unknown kind keeps the neutral wording");
 
   // Both document links a reader can click must land on something that RENDERS. Fires when either
