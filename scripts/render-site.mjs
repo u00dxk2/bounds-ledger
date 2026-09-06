@@ -222,10 +222,24 @@ export function newerOf(a, b) {
 // "value changed" and "text edited" are the same fact split along the only line this lane cares
 // about. `kind === null` keeps the old neutral wording, which is the honest answer when the pin is
 // new and there is nothing to compare it against.
+//
+// The `first` wording changed 2026-09-06 (A-42 instance 3), from "first pinned <d> — unchanged
+// since" to "tracked since <d> — no movement seen yet". Both sentences are TRUE about our pinning;
+// only the second is true about the RECORD. The old one asserted a property of the constant we have
+// no standing to assert — we know nothing about what it did before we arrived — and on 2026-09-04
+// it was live on constant 1b, the founding record, reading "unchanged since" at ONE DAY OLD while
+// upstream's own 1b.md listed two superseded values as separate rows. It was also the page's most
+// common sentence (418 of the rendered rows carried it), so the single most-repeated claim on our
+// only user-visible surface was the one claim we could not support. The replacement keeps the date
+// — deleting the disclosure to avoid the over-read would trade it for a silence, which is worse —
+// and moves the subject from the record to our watching of it, which is the only thing we observed.
+// Deliberately NOT fixed here: the data-changed sort key, which has the same root cause and is a
+// RANKING question rather than a wording one. A-42 is explicit that they fail differently and are
+// decided separately; its 09-11 gate still owns the sort key.
 export function whenLabel(changed, kind) {
   if (kind === "value") return `value changed ${esc(changed)}`;
   if (kind === "text") return `text edited ${esc(changed)} — bound unchanged`;
-  if (kind === "first") return `first pinned ${esc(changed)} — unchanged since`;
+  if (kind === "first") return `tracked since ${esc(changed)} — no movement seen yet`;
   return `last changed ${esc(changed)}`;
 }
 
@@ -451,7 +465,7 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 </div>
 </div>
 <p class="count" id="count">${rows.length} constants</p>
-<p class="hint">Each date is when that row&rsquo;s pinned text last changed <em>in this ledger</em>. Most rows share the day the ledger first pinned them, so anything dated later is a row that has moved since &mdash; order by most recently updated to bring those to the top.</p>
+<p class="hint">Each date is when that row&rsquo;s pinned text last changed <em>in this ledger</em> &mdash; or, for a row that has never changed here, the day this ledger started tracking it. Most rows share that bootstrap date. Anything dated later either moved since, <em>or</em> was added to the mirror later: the ordering cannot yet tell those apart, so a constant we simply started watching recently sorts alongside one whose record actually moved. Neither date says anything about what a constant did before we began watching it.</p>
 
 <div class="empty" id="empty" hidden>
 <p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the ${rows.length} constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
@@ -1073,12 +1087,18 @@ async function selftest() {
   assert.equal(boundCell("0.380868"), "0.380868", "a non-table row compares whole");
   assert.equal(boundCell("| $3$ | src |").trim(), "$3$", "a table row compares its first cell");
 
-  // The three wordings a reader sees. The `first pinned` case is the page's single worst documented
-  // misreading — 208 of 222 pins carry the bootstrap date, which is when tracking started and not a
-  // day anything moved.
+  // The three wordings a reader sees. The `first` case WAS the page's single worst documented
+  // misreading — most pins carry the bootstrap date, which is when tracking started and not a day
+  // anything moved — and it was reworded 2026-09-06 (A-42 instance 3) to claim only what we saw.
   assert.match(whenLabel("2026-08-23", "value"), /^value changed 2026-08-23$/, "value wording");
   assert.match(whenLabel("2026-08-24", "text"), /bound unchanged$/, "text wording must say the bound held");
-  assert.match(whenLabel("2026-07-24", "first"), /^first pinned 2026-07-24 — unchanged since$/, "first-pinned wording");
+  assert.match(whenLabel("2026-07-24", "first"), /^tracked since 2026-07-24 — no movement seen yet$/, "first-pin wording claims only our watching");
+  // The two halves that carry the fix, asserted SEPARATELY so neither can regress silently behind
+  // the other: the date must survive (deleting the disclosure would be worse than the over-read),
+  // and the sentence must not say "unchanged", which is the word that made it a claim about the
+  // RECORD. A rewording that drops the date passes the "unchanged" leg and still fails here.
+  assert.match(whenLabel("2026-07-24", "first"), /2026-07-24/, "the first-pin date must still be disclosed");
+  assert.ok(!/unchanged/.test(whenLabel("2026-07-24", "first")), "the first-pin label must not assert the RECORD was unchanged");
   assert.match(whenLabel("2026-08-01", null), /^last changed 2026-08-01$/, "an unknown kind keeps the neutral wording");
 
   // Both document links a reader can click must land on something that RENDERS. Fires when either
