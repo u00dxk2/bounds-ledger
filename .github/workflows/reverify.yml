@@ -198,6 +198,16 @@ jobs:
       # someone else's repo and stays out of CI, like npm run traffic and npm run reports).
       - name: Self-test upstream-report transition differ (no network)
         run: node scripts/check-upstream-reports.mjs --selftest
+      # A-45's stale-value resolvability indicator. Only its SELF-TEST runs here: the live read
+      # shells `git log`/`git show` over the whole history of ledger/claims.json, and CI checks out
+      # at fetch-depth 1, so a live run on a runner would read a truncated history and report a
+      # denominator that is smaller for a reason having nothing to do with coverage. The self-test
+      # is network-free and history-free — it runs against inline fixtures — and proves both
+      # polarities: a value absent from every haystack is a MISS, the same value aliased in clears
+      # it, a decorated value resolves on its digits, and an empty denominator never renders as
+      # full coverage.
+      - name: Self-test stale-value resolvability indicator (no network, no git history)
+        run: node scripts/check-resolvability.mjs --selftest
       # Not piped and deliberately network-free: this asserts README's published figures still
       # match COMMITTED repo state. A stale block is a falsifiable public error on the front
       # page of a repo whose pitch is that it notices stale numbers.
