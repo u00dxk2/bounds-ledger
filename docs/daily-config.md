@@ -83,6 +83,39 @@ node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml
 
 **Both answers demonstrated at adoption, 2026-08-16** (KP-78 — ship no detector without showing it can fail): `--workflow reverify.yml` at HEAD `fd70f11` → exit 0, *"GREEN — 1 completed non-scheduled success(es) for HEAD"*; `--workflow nonexistent.yml` at the same HEAD → exit 2, *"UNKNOWN — CI read failed/unparseable — UNKNOWN, not green"*. It distinguishes; it does not blanket-pass.
 
+## Deployed-sha drift (Section 0 Step 0.7, second leg) — this lane reads NOTHING SWEPT
+
+Step 0.7 is a P0 hard stop with two legs. The CI leg is above. The second leg is
+`node ../skylark-site/scripts/check-deployed-sha-drift.mjs`, and it is written down here because the
+fleet's Section 0 is its only other carrier: a lane that never records the read re-derives it every
+morning from a 33-service table.
+
+**AS OF 2026-09-06, `bounds-ledger` owns no Render service and this leg reads NOTHING SWEPT — neither
+a stop nor a pass.** This lane publishes through GitHub Pages (`build_type: legacy`, source `main` at
+`/`), so it is absent from the checker's population by construction, and **the fleet run's own exit 0
+is a verdict about 33 other services, not about us.** Say NOTHING SWEPT in words; never report the
+fleet's PASS as this lane's.
+
+Read command, and the only thing that settles it:
+
+```
+node ../skylark-site/scripts/check-deployed-sha-drift.mjs
+```
+
+**WHAT WOULD FALSIFY THE LINE ABOVE — check this, do not assume it.** The claim is *no Render service
+exists for this lane*, and the evidence for it is an ABSENCE from a table, which is the one inference
+this repo has a standing rule against. So the as-of matters and the falsifier is explicit: if
+`bounds-ledger` ever appears in that run's population — in the `checksPass` block, the `autoDeploy:
+off` block, or the other-trigger block — this section is STALE and the drift read becomes a real P0
+gate for this lane. A lane that silently LOSES a service reads identically to one that never had one,
+and nothing in the output distinguishes them; only re-running it does. Re-read on any change to how
+the page is published, and re-state the as-of date when you do.
+
+Measured 2026-09-06: `RESULT: PASS — 0 finding(s) across 33 service(s)`, population `33 checksPass
+Render service(s)`, and `bounds-ledger` appears in none of the three blocks. (`--service <name>` is
+the only narrowing flag; there is deliberately **no** `--project`, so a lane with no service has no
+way to ask the script about itself — proposed upstream as a `--lane <slug>` selector on 2026-09-06.)
+
 ## North-star frontmatter — RE-POINTED 2026-08-26 at G-3's close (previously 2026-08-22 at G-1's)
 
 Every `docs/daily/<date>-prelaunch.md` carries these four fields. **Copy them from HERE, never from
