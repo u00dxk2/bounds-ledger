@@ -8,6 +8,7 @@ project: bounds-ledger
 
 <!-- primer:first-action -->
 ```
+git pull --ff-only
 node scripts/sky.mjs update-david-board.mjs --list --json --full-ids --project bounds-ledger
 git rev-parse HEAD origin/main
 git rev-list --count origin/main...HEAD
@@ -20,8 +21,20 @@ permission classifier cannot statically resolve parks the pane at a silent promp
 like a hang. Read each exit code directly; never through a pipe (`| tail` reports the pager's `0`,
 which is this lane's founding defect).
 
-**Line 1 is new on 2026-08-28 and it is first on purpose.** Every other line in this block asks *is
-the code green*; none can answer *does David want something*, and those are different questions. On
+**`git pull --ff-only` leads, added 2026-09-07, and the reason is that the two loudest instructions in
+the primer's banner contradicted each other whenever origin had moved overnight.** The banner says to
+start the gate before reading the document, and it also says never to carry a receipt across a code
+change. On 2026-09-07 this checkout was 13 files behind — including `scripts/gates.mjs`, which IS
+`npm run verify` — so obeying the first instruction literally would have spent a three-minute,
+~450-request run on a tree the same banner then forbade trusting. One line, and the conflict is gone.
+**Refer to these lines by COMMAND, never by position.** This paragraph used to open "Line 1 is new on
+2026-08-28 and it is first on purpose", and inserting the pull above it made that sentence false —
+a line-number reference into a block that a different file edits is a stale-reference generator, and
+it broke on the very edit that fixed the thing it described.
+
+**The board read (`update-david-board.mjs`) is new on 2026-08-28 and sits above the gate on purpose.**
+Every other line in this block asks *is the code green*; none can answer *does David want something*,
+and those are different questions. On
 2026-08-28 David answered a board card at 02:27Z and the only reason this pane saw it is that a bus
 dispatch happened to carry it — with a quiet bus the whole cadence would have run past a live answer
 and the day would have closed reporting no blockers. Read the `state` field: `waiting` means he has
