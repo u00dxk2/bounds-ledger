@@ -341,12 +341,30 @@ export function aliasesFor(id, claims) {
 // value is the reader most likely to have a problem worth telling us about, and they were the one
 // reader the search could not serve. Substring matching means a truncated citation finds the full
 // pinned value: "6.5143" hits "6.514326913930565372".
+// A reader types a fraction the way the paper prints it — 117/370 — never the way LaTeX spells
+// it, so every \frac{a}{b} and \dfrac{a}{b} in the haystack also enters it in the slash form.
+// Without this the search serves the reader holding OUR MARKUP rather than the reader holding
+// the number, which is the one reader the page exists for. Measured 2026-09-07 before the fix:
+// 13 of 115 rows carried at least one fraction the plain form could not find — 74a's 117/370,
+// 46a's 22/7, 12a's 19/10368 among them. Deliberately digits-only: \frac{\sqrt{3}}{4} has no
+// slash form a reader would type, and inventing one would put a string in the haystack that
+// matches nothing anybody holds.
+export function fractionAliases(hay) {
+  const out = [];
+  for (const m of hay.matchAll(/\\d?frac\s*\{\s*(-?\d+)\s*\}\s*\{\s*(-?\d+)\s*\}/g)) {
+    out.push(`${m[1]}/${m[2]}`);
+  }
+  return out;
+}
+
 export function findKey(r) {
   const cells = [r.upper, r.lower, r.upperPrev, r.lowerPrev]
     .filter(Boolean)
     .map((s) => boundCell(s).trim());
-  return [r.title, r.id, ...cells, ...(r.tableValues || []), ...(r.aliases || [])]
+  const base = [r.title, r.id, ...cells, ...(r.tableValues || []), ...(r.aliases || [])]
     .filter(Boolean).join(" ").toLowerCase();
+  const fracs = fractionAliases(base).filter((f) => !base.includes(f));
+  return fracs.length ? `${base} ${fracs.join(" ")}` : base;
 }
 
 // manualCount is DERIVED and passed in, never hard-coded — review finding F5. The footer used to
@@ -959,6 +977,31 @@ async function selftest() {
   assert.ok(emitted[1].includes("6.521845710923046575"), "the emitted attribute must carry the current value");
   assert.ok(emitted[1].includes("6.514326913930565372"),
     "the emitted attribute must carry the previously-pinned value — the whole point, and the half a findKey-only test cannot see");
+
+  // --- Search by the SLASH form of a fraction, added 2026-09-07. Both KP-78 answers, and read
+  // back out of the rendered attribute for the same reason the seam above exists.
+  // Measured on the live page before the fix: 13 of 115 rows carried a \frac{a}{b} whose plain
+  // a/b form was absent from data-find, so a reader holding 117/370 off Gal2025 and typing it
+  // into the filter got the empty state while the value sat in that very row.
+  const fracRow = {
+    id: "74a", title: "10-point multi-point Seshadri constant",
+    upper: String.raw`| $\frac{1}{\sqrt{10}}$ | [Gal2025] |`,
+    lower: String.raw`| $\frac{117}{370}$ | [Gal2025] |`,
+    upperPrev: null, lowerPrev: null, url: "https://example.invalid/74a.md",
+    upperChanged: null, lowerChanged: null, upperKind: "value", lowerKind: "value", changed: "",
+  };
+  const fracPage = renderHtml([fracRow], manifest, "2026-09-07");
+  assert.ok(fracPage.length > 2000, "positive control: the page must render before any absence is asserted");
+  const fracEmitted = fracPage.match(/<tr id="c-74a" data-find="([^"]*)"/);
+  assert.ok(fracEmitted, "positive control: the fraction row must carry a data-find attribute at all");
+  assert.ok(fracEmitted[1].includes("117/370"),
+    "the emitted attribute must carry the SLASH form a reader types — this is the whole fix, and " +
+    "it is the half that a test reading only the LaTeX cell cannot see");
+  // The negative half: a fraction with no digits-only slash form must NOT invent one. \frac{1}{\sqrt{10}}
+  // has no form a reader would type, and emitting "1/sqrt{10}" would put a string in the haystack
+  // that matches nothing anybody holds.
+  assert.ok(!/1\/\\?sqrt/.test(fracEmitted[1]),
+    "a non-numeric fraction must not be given a fabricated slash form");
 
   // --- Search by a value we never pinned, added 2026-09-04. Both KP-78 answers.
   // The 09-01 work above covers values that moved WHILE WE WATCHED. It missed the commoner case:
