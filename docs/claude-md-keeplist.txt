@@ -75,7 +75,7 @@ MT for human labels
 # are archived verbatim in docs/claude-md-archive.md.
 #
 # Any future compression should START from this file rather than re-deriving it:
-#   node ../skylark-site/scripts/compress-to-budget.mjs --file CLAUDE.md \
+#   node scripts/sky.mjs compress-to-budget.mjs --file CLAUDE.md \
 #     --target 42000 --keep docs/claude-md-keeplist.txt
 # It lived in tmp/ on the day it was written, which is gitignored -- caught at
 # close by agent-status's own WARN. A keep-list nobody can read is a keep-list

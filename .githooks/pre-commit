@@ -4,6 +4,42 @@
 # (hooksPath is per-clone config, so this file is the recipe, not the guarantee.)
 node scripts/history-sweep.mjs --staged || exit 1
 
+# ── WHERE THE SHARED skylark-site SCRIPTS LIVE (S-20260906-75, 2026-09-06) ──
+# `../skylark-site/scripts` is correct from the lane ROOT and WRONG from every linked worktree,
+# where `..` is `<lane>/.claude/worktrees/`. There the path is simply absent and `node <missing>.mjs`
+# exits 1 with MODULE_NOT_FOUND — an honest exit code attached to a completely wrong story (this
+# lane paid for it on 2026-09-05, CLAUDE.md § sha-class gloss). Git's COMMON dir is `<lane>/.git`
+# from the main checkout AND from any linked worktree, so TWO levels up from it is the fleet
+# parent. Resolve it once, here.
+# ⚠ A `skylark-site` directory JUNCTION beside the worktree is NOT the fix: node resolves reparse
+# points when it loads a module, so `import.meta.url` (realpath) stops matching `process.argv[1]`
+# (as typed), the ESM main guard reads FALSE, and every one of these scripts exits 0 having run
+# NOTHING (S-20260906-63).
+# This lane's secret scan is LOCAL (history-sweep above), so there is deliberately no
+# unconditional top-of-hook refusal here — each block that reaches for the sibling keeps its own.
+SKY_SCRIPTS="$(git rev-parse --path-format=absolute --git-common-dir)/../../skylark-site/scripts"
+
+# --- Staged SHAs must resolve (2026-09-06, rail gate `shas-hook-coverage`) -----------------
+# A sha copied by hand into a report, a primer or the ledger and mistyped points at nothing, and a
+# cold agent cannot tell that from a real one. The checker derives its own scope per lane; for this
+# lane it prints:
+#   scope: docs/reports/* + docs/cold-starts/* + docs/daily/{date}-prelaunch.md + continuity/items.json
+# ADDED LINES ONLY — a token already in HEAD is never judged, so existing debt blocks nothing.
+# ⚠ UPSTREAM shas are the expected finding here: a `teorth/optimizationproblems` sha does not exist
+# in this repo or any portfolio sibling (CLAUDE.md § "Gloss the sha CLASS"), so a NEW daily report
+# citing one needs a trailing ` pragma: allowlist sha` on that line. That is the same gloss the
+# prose rule already asks for, now enforced where it is written.
+if [ ! -f "$SKY_SCRIPTS/check-staged-shas-resolve.mjs" ]; then
+  echo ""
+  echo "✗ pre-commit: $SKY_SCRIPTS not found — the staged-sha check cannot run, so the commit is refused (not skipped)."
+  exit 1
+fi
+if ! node "$SKY_SCRIPTS/check-staged-shas-resolve.mjs"; then
+  echo ""
+  echo "✗ pre-commit: a staged report/primer/ledger line cites a sha that resolves nowhere (check-staged-shas-resolve). Re-copy it from git log, or append \` pragma: allowlist sha\` to a deliberate non-git token."
+  exit 1
+fi
+
 # --- Primer checks at COMMIT time (2026-08-26, skylark-site check-primer-hook-coverage) ----
 # On 2026-08-26 the primer checks REFUSED 7 of 10 primer regenerations, every refusal on
 # prose the lane had ALREADY COMMITTED (bare hexes, count-deixis, a cd-compound, a count
@@ -13,11 +49,10 @@ node scripts/history-sweep.mjs --staged || exit 1
 # skeleton when the file carries no hand: markers). Waivers are each check's own:
 # a same-line `# primer-command-ok: <reason>` (first-command); a noun beside the hex and
 # the producing command beside the count for the other two — never a softer flag here.
-# An absent ../skylark-site REFUSES rather than skipping: a check that cannot run is not
+# An absent sibling REFUSES rather than skipping: a check that cannot run is not
 # a check that passed.
 primer_files=$(git diff --cached --name-only --diff-filter=ACM | grep '^docs/cold-starts/.*\.md$')
 if [ -n "$primer_files" ]; then
-  SKY_SCRIPTS=../skylark-site/scripts
   if [ ! -f "$SKY_SCRIPTS/check-cold-readability.mjs" ]; then
     echo ""
     echo "✗ pre-commit: $SKY_SCRIPTS not found — the primer checks cannot run, so the commit is refused (not skipped)."

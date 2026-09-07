@@ -8,11 +8,11 @@ project: bounds-ledger
 
 <!-- primer:first-action -->
 ```
-node ../skylark-site/scripts/update-david-board.mjs --list --json --full-ids --project bounds-ledger
+node scripts/sky.mjs update-david-board.mjs --list --json --full-ids --project bounds-ledger
 git rev-parse HEAD origin/main
 git rev-list --count origin/main...HEAD
 npm run verify > tmp/verify-out.txt 2>&1
-node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml
+node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml
 ```
 
 Run from the repo root, one command per line, **no leading `cd`** and no `&&` chain — a compound the
@@ -55,8 +55,8 @@ is a question you reach after the gate has run, not before.
 **CI truth (R-2, 2026-08-15):** before any "shipped and verified" / "CI green" claim, run
 
 ```
-node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml
-node ../skylark-site/scripts/check-posted-unpushed.mjs --project bounds-ledger
+node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml
+node scripts/sky.mjs check-posted-unpushed.mjs --project bounds-ledger
 ```
 
 Exit 0 GREEN (a completed run's headSha matches YOUR HEAD) · **2 UNKNOWN (never a pass)** · 3 RED. The second finds task-completes citing commits absent from origin >3h (exit 3 = findings).
@@ -76,7 +76,7 @@ Both scripts carry `--help` / `--selftest`. Read the exit code by redirect, neve
 ```
 git rev-parse HEAD origin/main
 git rev-list --count origin/main...HEAD
-node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml
+node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml
 ```
 
 **Line 2 MUST print `0`.** Any other number means your HEAD is not the commit CI read, so line 3's verdict — green or red — is about a different tree. Demonstrated both ways on 2026-08-27 at adoption (KP-78): with two unpushed commits it printed `2`; after the push, `0`. This replaced a one-line `&&` chain containing a `$(...)` comparison, which was correct as shell and could not be auto-approved by the permission classifier, so it PARKED the pane at a silent prompt that reads as a hang. One command per line; each exit code is read directly, never through a pipe.
@@ -86,7 +86,7 @@ node ../skylark-site/scripts/check-ci-status.mjs --workflow reverify.yml
 ## Deployed-sha drift (Section 0 Step 0.7, second leg) — this lane reads NOTHING SWEPT
 
 Step 0.7 is a P0 hard stop with two legs. The CI leg is above. The second leg is
-`node ../skylark-site/scripts/check-deployed-sha-drift.mjs`, and it is written down here because the
+`node scripts/sky.mjs check-deployed-sha-drift.mjs`, and it is written down here because the
 fleet's Section 0 is its only other carrier: a lane that never records the read re-derives it every
 morning from a 33-service table.
 
@@ -99,7 +99,7 @@ fleet's PASS as this lane's.
 Read command, and the only thing that settles it:
 
 ```
-node ../skylark-site/scripts/check-deployed-sha-drift.mjs
+node scripts/sky.mjs check-deployed-sha-drift.mjs
 ```
 
 **WHAT WOULD FALSIFY THE LINE ABOVE — check this, do not assume it.** The claim is *no Render service
@@ -177,7 +177,7 @@ is the orchestrator's, routed 2026-08-29 as a fleet-skill defect.)
 ## P2 gate battery
 
 ```
-node ../skylark-site/scripts/continuity-check.mjs
+node scripts/sky.mjs continuity-check.mjs
 ```
 
 Run it **inside P2**, and read its own RESULT line rather than inferring from a clean commit.

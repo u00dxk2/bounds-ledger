@@ -34,7 +34,7 @@
 //   node search/27b/round3-seeded.mjs --selftest
 
 import { readFileSync, writeFileSync } from "node:fs";
-import { pathToFileURL } from "node:url";
+import { isEntryModule } from "../../scripts/lib/entry-module.mjs";
 import { isPlanar, chromaticNumber, verifyCertificate, normalizeEdges, completeGraph, ekey } from "./verifier.mjs";
 
 const RECORD = 9;   // Sulanke 1980, the lower bound we would have to beat
@@ -167,7 +167,7 @@ function selftest() {
 
 // ---------- main ----------
 
-const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+const isMain = isEntryModule(import.meta.url);
 if (!isMain) { /* imported for its exports; do nothing */ } else {
 
 const args = process.argv.slice(2);

@@ -32,7 +32,7 @@
 //   node search/27b/round2-grow.mjs --selftest
 
 import { writeFileSync } from "node:fs";
-import { pathToFileURL } from "node:url";
+import { isEntryModule } from "../../scripts/lib/entry-module.mjs";
 import { isPlanar, chromaticNumber, verifyCertificate, normalizeEdges, completeGraph } from "./verifier.mjs";
 
 function rng(seed) {
@@ -128,7 +128,7 @@ function selftest() {
 // silently launches a full multi-minute search — observed 2026-08-07 while
 // cross-checking a result, which is exactly when a stray side effect is most
 // likely to be mistaken for the answer.
-const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+const isMain = isEntryModule(import.meta.url);
 if (!isMain) { /* imported for its exports; do nothing */ } else {
 
 const args = process.argv.slice(2);
