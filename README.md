@@ -92,7 +92,9 @@ node scripts/reverify.mjs --check          # 2b. exit 0, "No drift." — the hal
 git show da17be3 -- 'ledger/teorth-optimizationproblems/constants/*.md'   # 3. a real catch, verbatim
 ```
 
-Step 1 is the two checks that need nothing but a network connection. `npm run check` runs these plus two more, one of which verifies a sign-in-gated page and exits 3 without a `CC_PROMPTS_PIN` you have no reason to have — so it is the wrong entry point for a visitor, though the mirror and claim output still prints before it stops.
+Step 1 is the two checks that need nothing but a network connection, and it is the fastest read. `npm run check` runs those two plus six more (an entry-point guard, the README state block, the rendered page, the per-constant pages, the deferral gate, and a check on our own David-facing brief) — it needs no account either, and **its exit code means what it says**: 0 is green, non-zero is a real finding.
+
+One leg is reported but deliberately not counted. The brief check verifies a page on `skylarkcreations.com` that went Google-session-only on 2026-09-04, so it cannot be read by any script, ours included — it prints `BRIEF UNVERIFIABLE` on every run and says so. It is excluded from the exit code on the same rule as the two `manual: true` claims above: **reported every run, never green, never counted.** A brief that is genuinely *stale* still fails the gate — only unreachability is excused, and `scripts/check-brief-advisory.mjs --selftest` asserts both halves. Run `npm run check:brief:strict` for that leg's own unexcused verdict.
 
 Step 2 is the one worth doing, and **2b is the half that matters**: an alarm that fires is easy, an alarm that also goes quiet on its own is the property this repo failed to have for its first two days. It demonstrates the differ, not upstream moving — provided step 1 was green and upstream has not pushed in the meantime, the manifest and live shas stay identical and the only change reported is the one you just made.
 

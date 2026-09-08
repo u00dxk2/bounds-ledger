@@ -92,8 +92,10 @@ function assess(md, page, redirectedTo, noPin) {
     lines.push(`BRIEF UNVERIFIABLE — the response from ${URL} is not the brief.`);
     lines.push(`  the source's title ("${title}") is absent from what came back`);
     if (redirectedTo) lines.push(`  the request was REDIRECTED to ${redirectedTo} — a wall, not a stale port`);
-    if (noPin) lines.push(`  CC_PROMPTS_PIN was NOT set, so the request went out anonymous — /t/* has been`);
-    if (noPin) lines.push(`  gated since 2026-08-02 and an anonymous probe cannot see this page. Set it and re-run.`);
+    if (noPin) lines.push(`  CC_PROMPTS_PIN was NOT set, so the request went out anonymous — but SETTING IT`);
+    if (noPin) lines.push(`  WOULD NOT HELP: /t/* went Google-session-only on 2026-09-04 and the cc_pin`);
+    if (noPin) lines.push(`  cookie was retired, so an x-cc-pin header no longer signs anyone in. There is`);
+    if (noPin) lines.push(`  no credential that makes this leg pass today; that is A-41, not your setup.`);
     lines.push(``);
     lines.push(`This is NOT evidence that the re-port is behind: staleness cannot be assessed from`);
     lines.push(`a page we never received. Check whether the route is gated or renamed first.`);

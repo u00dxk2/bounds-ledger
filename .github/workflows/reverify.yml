@@ -70,6 +70,13 @@ jobs:
       # orchestrator's re-port, and that adding that gate did not swallow the stale verdict.
       - name: Self-test brief checker (no network)
         run: node scripts/check-brief.mjs --selftest
+      # Guards the A-41 exclusion, both ways. The brief leg is UNVERIFIABLE forever (the /t/*
+      # Google-session wall, 2026-09-04) and is excluded from `npm run check`'s exit code on the
+      # manual:true pattern. This asserts the exclusion is exactly one exit code wide: a STALE
+      # brief must still red the gate, only unreachability is excused. Network-free — it drives
+      # the real check-brief.mjs through --page-file, never a retyped copy of its logic.
+      - name: Self-test brief advisory exclusion (no network)
+        run: node scripts/check-brief-advisory.mjs --selftest
       # Guards the SECRET-PATTERN SET, not the sweep itself. The sweep is a one-time pre-flip
       # gate (A-13) and stays out of CI; the scheduled history-sweep control is A-7's R7, which
       # is fleet-owned and must not be solved locally ahead of that wave. But the patterns rot
