@@ -357,14 +357,50 @@ export function fractionAliases(hay) {
   return out;
 }
 
+// The same reader, the same defect, the other two notations they actually type. The fraction
+// fix on 2026-09-07 served the reader holding 117/370; it left the reader holding sqrt(2) or
+// 10^-335 with the empty state, because those forms exist on the page ONLY as LaTeX.
+// Measured 2026-09-08 before this fix, from the BUILT page's own data-find attributes:
+// 28 of 115 rows carried a radical or a power with no form a reader could type — 22 radical
+// (1b, 2a, 3e, 6a, 10a, 10c, 17a, 18a, 19a, 20b, 24a, 35a, 41a, 41b, 43a, 47a, 57a, 59a, 73a,
+// 74a, 82a, 83a) and 10 power (7b, 10a, 12a, 17a, 21a, 57a, 57b, 57c, 75a, 83a), four in both.
+//
+// SAME DISCIPLINE AS THE FRACTIONS, AND IT IS THE LOAD-BEARING PART: digits only, and pure
+// TRANSLITERATION — never arithmetic. \sqrt{2} enters as sqrt(2), never as 2.414. Computing a
+// decimal would put a number in the haystack that no source asserts and that no pin backs,
+// which is the auto-asserting-a-record trap this repo refuses everywhere else. \sqrt{x} and
+// \sqrt{\log n} get nothing, for the reason the fraction rule gives: inventing a form that
+// matches nothing anybody holds is worse than the gap.
+//
+// BOTH SPELLINGS, because the filter is a substring match: a reader types sqrt(2) or sqrt2 and
+// neither contains the other.
+export function radicalAliases(hay) {
+  const out = [];
+  for (const m of hay.matchAll(/\\sqrt\s*\{\s*(\d+)\s*\}/g)) {
+    out.push(`sqrt(${m[1]})`, `sqrt${m[1]}`);
+  }
+  return out;
+}
+
+// 10^{-335} is typed 10^-335. Negative exponents are the common case here — they are how this
+// corpus writes a bound just above a threshold — so the sign is part of the alias, not stripped.
+export function powerAliases(hay) {
+  const out = [];
+  for (const m of hay.matchAll(/(\d+)\s*\^\s*\{\s*(-?\d+)\s*\}/g)) {
+    out.push(`${m[1]}^${m[2]}`);
+  }
+  return out;
+}
+
 export function findKey(r) {
   const cells = [r.upper, r.lower, r.upperPrev, r.lowerPrev]
     .filter(Boolean)
     .map((s) => boundCell(s).trim());
   const base = [r.title, r.id, ...cells, ...(r.tableValues || []), ...(r.aliases || [])]
     .filter(Boolean).join(" ").toLowerCase();
-  const fracs = fractionAliases(base).filter((f) => !base.includes(f));
-  return fracs.length ? `${base} ${fracs.join(" ")}` : base;
+  const typed = [...fractionAliases(base), ...radicalAliases(base), ...powerAliases(base)];
+  const extra = [...new Set(typed)].filter((f) => !base.includes(f));
+  return extra.length ? `${base} ${extra.join(" ")}` : base;
 }
 
 // manualCount is DERIVED and passed in, never hard-coded — review finding F5. The footer used to
@@ -940,6 +976,29 @@ async function selftest() {
   const aliased = findKey({ id: "1b", title: "Erdos minimum overlap", upper: "| $0.380926$ | [H2016] |", lower: null, upperPrev: null, lowerPrev: null, aliases: alias1b });
   assert.ok(aliased.includes("0.380926"), "positive control: the CURRENT value is in the haystack before any claim about the old one");
   assert.ok(aliased.includes("0.380927"), "the aliased value a reader is holding must be searchable — the whole point");
+
+  // --- Typed-notation aliases: radicals and powers, added 2026-09-08. The fraction fix served
+  // the reader holding 117/370 and left the reader holding sqrt(2) or 10^-335 on the empty
+  // state. Both KP-78 answers, plus the two things that must NOT happen.
+  //
+  // FIRES: a radical and a power both reach the haystack in the form a reader types.
+  const radicalRow = findKey({ id: "24a", title: "Komlos discrepancy", upper: null, lower: "| $1+\\sqrt{2}$ | [B1981] |", upperPrev: null, lowerPrev: null, aliases: [] });
+  assert.ok(radicalRow.includes("\\sqrt{2}"), "positive control: the LaTeX radical is in the haystack before any claim about its ascii form");
+  assert.ok(radicalRow.includes("sqrt(2)"), "a reader typing sqrt(2) must find the row — the whole point");
+  assert.ok(radicalRow.includes("sqrt2"), "and a reader typing sqrt2, since the filter is a substring match and neither spelling contains the other");
+
+  const powerRow = findKey({ id: "57b", title: "Bloch", upper: null, lower: "| $\\dfrac{1}{2}+10^{-335}$ | [X] |", upperPrev: null, lowerPrev: null, aliases: [] });
+  assert.ok(powerRow.includes("10^{-335}"), "positive control: the LaTeX power is in the haystack first");
+  assert.ok(powerRow.includes("10^-335"), "a reader typing 10^-335 must find the row, sign included");
+
+  // SILENT — and this is the half that keeps the page honest. A radical whose argument is not
+  // digits gets NO alias: inventing a form nobody holds is worse than the gap (the fraction
+  // rule's own reasoning). And NO ARITHMETIC: 1+sqrt(2) must never enter as 2.414, a number no
+  // source asserts and no pin backs.
+  const symbolicRow = findKey({ id: "20c", title: "Symbolic", upper: "| $\\psi_n \\le c\\sqrt{\\log n}$ | [X] |", lower: null, upperPrev: null, lowerPrev: null, aliases: [] });
+  assert.ok(symbolicRow.includes("\\sqrt{\\log n}"), "positive control: the symbolic radical IS in the haystack, so the silence below is about the alias and not a missing fixture");
+  assert.doesNotMatch(symbolicRow, /sqrt\(/, "a non-numeric radical must contribute no ascii alias — it would match nothing anybody holds");
+  assert.doesNotMatch(radicalRow, /2\.41|3\.41/, "NO ARITHMETIC: the alias transliterates notation, it never computes a decimal the ledger does not assert");
 
   // SILENT: a row with no aliases contributes nothing, and never the word undefined.
   const unaliased = findKey({ id: "2a", title: "Crouzeix", upper: "| $2$ | [X] |", lower: null, upperPrev: null, lowerPrev: null, aliases: [] });
