@@ -77,6 +77,13 @@ jobs:
       # the real check-brief.mjs through --page-file, never a retyped copy of its logic.
       - name: Self-test brief advisory exclusion (no network)
         run: node scripts/check-brief-advisory.mjs --selftest
+      # Guards the TYPED-NOTATION coverage of the published page: every numeric radical and power
+      # must also carry the form a reader types. The gap it protects was 28 of 115 rows (df460f0).
+      # Its load-bearing half is the CONTROL, not the count — a corpus whose backslashes were
+      # destroyed reads as zero gaps while failing the control, which is the exact shape that
+      # nearly shipped a half-fix on 2026-09-08.
+      - name: Self-test typed-notation coverage (no network)
+        run: node scripts/check-notation-coverage.mjs --selftest
       # Guards the SECRET-PATTERN SET, not the sweep itself. The sweep is a one-time pre-flip
       # gate (A-13) and stays out of CI; the scheduled history-sweep control is A-7's R7, which
       # is fleet-owned and must not be solved locally ahead of that wave. But the patterns rot
