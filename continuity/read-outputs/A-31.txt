@@ -1,0 +1,7 @@
+# read-output sidecar for A-31 — written by check-due-gates-dispositioned --run
+# readCommand: gh api repos/u00dxk2/bounds-ledger/pages --jq .build_type
+# ran: 2026-09-10T05:36:28.538Z · exit: 0
+# lines: 1 · sha256: c49fea7425fa7f86 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+legacy

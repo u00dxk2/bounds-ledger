@@ -1111,7 +1111,7 @@
       "expectedSignalBy": "2026-09-09",
       "signalDateNote": "Two weeks, deliberately not sooner: the decision needs Pages out of degraded_performance first, and there is no urgency while local npm run verify is the floor and every commit passes it before push.",
       "onTrigger": "On 2026-09-09 decide rather than re-date. If Pages is healthy, either implement build_type workflow with a demonstrated refusal, or close declined citing note3's trade. If a malformed page has reached a visitor in the meantime, that outranks the trade and the answer is gate it.",
-      "readCommand": "gh api repos/u00dxk2/bounds-ledger/pages --jq '.build_type' # SEPARATOR CONVERTED 2026-09-02, em dash to hash, because this gate fires 2026-09-09. Returns 'legacy' while ungated, 'workflow' once gated. Literal output 2026-08-26: legacy. POSITIVE CONTROL that the endpoint is live rather than erroring silently: the same object's .html_url returns https://u00dxk2.github.io/bounds-ledger/ and .status returns a build state; an empty or null build_type means the read failed, not that no gate exists.",
+      "readCommand": "gh api repos/u00dxk2/bounds-ledger/pages --jq .build_type # QUOTES REMOVED 2026-09-09 and that is the whole fix: the gate runner strips the # comment and hands the rest to the win32 shell, which does not honor the single quotes around the jq expression -- the first execution through the runner, on this row's own due date, died with `failed to parse jq expression (line 1, column 1) ... unexpected token \"'\"` and STAMPED that parse error as if it were the gate's reading. The command had never been run through the runner in the 14 days it sat here, so nobody had learned it could not be. Unquoted it runs: literal output 2026-09-09, `legacy`, exit 0. SEPARATOR CONVERTED 2026-09-02, em dash to hash, because this gate fires 2026-09-09. Returns 'legacy' while ungated, 'workflow' once gated. Literal output 2026-08-26: legacy. POSITIVE CONTROL that the endpoint is live rather than erroring silently: the same object's .html_url returns https://u00dxk2.github.io/bounds-ledger/ and .status returns a build state; an empty or null build_type means the read failed, not that no gate exists.",
       "linkedCommits": [
         "ff164fa",
         "b1c7295",
@@ -1120,7 +1120,13 @@
         "e391be7",
         "a3c8fe1"
       ],
-      "note4": "P4 2026-08-27 — EXPLICITLY HELD on its stated date 2026-09-09, not silently re-carried, and the hold is now cheaper because the concrete risk was mitigated today by other means. WHAT SHIPPED INSTEAD: .githooks/pre-commit now runs `node scripts/render-site.mjs --check` on a staged index.html and refuses the commit if the page is not what render-site would produce. That closes the window at COMMIT time, where it costs nothing, instead of at publish time, where it costs a publish-path rewrite. KP-78 both ways, at the hook layer: prepended a CLOBBERED line to index.html, proved the mutation landed (`git diff --cached --numstat` -> 1 line), and the commit was REFUSED at exit 1 with 'index.html is stale'; restoring the good file left the stage clean. WHY THE BIG QUESTION STILL WAITS: switching Pages to build_type=workflow changes the publish path of the ONLY surface a visitor sees, AGENTS.md says not to attempt it while Pages is degraded, and Pages was erroring in a GitHub outage as recently as 2026-08-26. The residual risk after today is narrow and named: a malformed page can still reach main via a route that bypasses the hook (a direct push from a clone with hooksPath unset, or a merge commit), and CI still reports it only after publish. That is the real remaining case A-31 must answer on 09-09."
+      "note4": "P4 2026-08-27 — EXPLICITLY HELD on its stated date 2026-09-09, not silently re-carried, and the hold is now cheaper because the concrete risk was mitigated today by other means. WHAT SHIPPED INSTEAD: .githooks/pre-commit now runs `node scripts/render-site.mjs --check` on a staged index.html and refuses the commit if the page is not what render-site would produce. That closes the window at COMMIT time, where it costs nothing, instead of at publish time, where it costs a publish-path rewrite. KP-78 both ways, at the hook layer: prepended a CLOBBERED line to index.html, proved the mutation landed (`git diff --cached --numstat` -> 1 line), and the commit was REFUSED at exit 1 with 'index.html is stale'; restoring the good file left the stage clean. WHY THE BIG QUESTION STILL WAITS: switching Pages to build_type=workflow changes the publish path of the ONLY surface a visitor sees, AGENTS.md says not to attempt it while Pages is degraded, and Pages was erroring in a GitHub outage as recently as 2026-08-26. The residual risk after today is narrow and named: a malformed page can still reach main via a route that bypasses the hook (a direct push from a clone with hooksPath unset, or a merge commit), and CI still reports it only after publish. That is the real remaining case A-31 must answer on 09-09.",
+      "readCommandLastRun": "2026-09-10T05:36:28.538Z",
+      "readCommandLastExit": 0,
+      "readCommandLastOutputRef": {
+        "lines": 1,
+        "sha256": "c49fea7425fa7f86"
+      }
     },
     {
       "id": "A-32",
@@ -1148,6 +1154,7 @@
     },
     {
       "id": "A-39",
+      "runnerCannotStampThisRow2026_09_09": "THIS ROW'S CORRECT ANSWER IS UNSTAMPABLE BY THE RUNNER, found 2026-09-09 on its own due date by running it rather than reading it. `check-due-gates-dispositioned --run A-39` returned [UNRUNNABLE] FAST_FAIL_EMPTY: 'exit 1 with ZERO bytes of output in 41ms (under the 200ms floor) — too fast to have read anything', and stamped NOTHING but a spawn-error marker.\n\nThe runner is not wrong to be suspicious, and this is not a bug report against it. It is a COLLISION: `git grep -c` returns exit 1 and no output when there are no matches, which is precisely what this row documents as its own answer — 'Against HEAD: no output at all, exit 1 — the retry is NOT in main'. So while the honest answer is 'not merged', the read is indistinguishable from a spawn that failed, and the row can never record a successful read. It becomes stampable only when the answer FLIPS, because a match prints a count.\n\nCONSEQUENCE, and it is the part worth carrying: for as long as the retry stays out of main, this row will read NEVER-RUN to every instrument that asks, however many times it is genuinely run. A gate that cannot record its own negative answer looks identical to a gate nobody ran — which is the exact confusion the READ_NEVER_RUN warning exists to surface, arriving here as a false positive that no amount of diligence clears.\n\nMANUAL READ, done by hand the same day because the runner could not: `git grep -c RETRY_DELAYS_MS HEAD -- scripts/reverify.mjs` printed nothing, exit 1. POSITIVE CONTROL, the one this row already documents, re-run to prove the pattern still matches when the thing is present: the same command against `a20-fetch-retry-backoff` printed `a20-fetch-retry-backoff:scripts/reverify.mjs:3` at exit 0. So exit 1 means absent-from-main, not a broken pattern. The retry is NOT merged.\n\nNOT FIXED HERE, deliberately. Making the command always emit output (a `|| echo` tail, a wrapper that prints a zero) would clear the marker, and it would also convert a command whose exit code IS its answer into one whose exit code is always 0 — trading a false NEVER-RUN for a read that cannot fail. That is the worse trade and it is this repo's founding defect. Which way to go is a judgment for the gate's disposition, not a repair to make at the moment of discovery.",
       "created": "2026-09-02",
       "type": "active",
       "status": "open",
@@ -1162,7 +1169,13 @@
       "readCommand": "git grep -c RETRY_DELAYS_MS HEAD -- scripts/reverify.mjs # Asks ONE question: has the retry merged into committed main yet? COMMIT-SCOPED ON PURPOSE. The obvious form, a plain grep over scripts/reverify.mjs, reads the WORKING TREE and was actively misleading on the day this row was filed: an uncommitted Codex edit had the retry constants in the tree while committed main had none, so the plain grep printed three hits and the honest answer was zero. LITERAL OUTPUTS, both run 2026-09-02 at this row's creation. Against HEAD: no output at all, exit 1 — the retry is NOT in main. POSITIVE CONTROL, the same command against the branch that has it: git grep -c RETRY_DELAYS_MS a20-fetch-retry-backoff -- scripts/reverify.mjs prints a20-fetch-retry-backoff:scripts/reverify.mjs:3 at exit 0. So exit 1 here means absent-from-main, NOT a broken pattern or a wrong path — the control proves the pattern matches when the thing is there. When this command starts printing a count against HEAD, the retry has merged and this row is live.",
       "linkedCommits": [
         "096e126"
-      ]
+      ],
+      "readCommandLastSpawnError": {
+        "at": "2026-09-10T05:35:55.879Z",
+        "code": "FAST_FAIL_EMPTY",
+        "reason": "exit 1 with ZERO bytes of output in 41ms (under the 200ms floor) — too fast to have read anything",
+        "command": "git grep -c RETRY_DELAYS_MS HEAD -- scripts/reverify.mjs"
+      }
     },
     {
       "id": "A-33",
