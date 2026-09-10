@@ -73,6 +73,40 @@ export function gateCode(briefCode) {
   return briefCode === UNVERIFIABLE ? 0 : briefCode;
 }
 
+// THE RECEIPT COULD NOT SEE THIS LEG AT ALL. `tmp/.verify-receipt.json` carries a
+// `resultVerdicts` slot per gate, and this leg's was `null` on every run while
+// `check:deferrals` filled its own with `PASS`. The fleet writer populates that slot from a
+// `RESULT: <VERDICT> ... (exit N)` line in a step's output (skylark-site's
+// `src/lib/cc-verify-receipt.mjs`, RESULT_LINE_RE) and this script printed no such line, so a
+// mapped 3 and a genuine 0 were byte-identical in the artifact the cold-start banner tells the
+// next reader to trust — "read failedGates, never infer it". That banner also says a 0 from
+// check-brief.mjs means the auth model changed and A-41 reopens, which is a transition the
+// receipt was structurally unable to show. This function closes that, and closes ONLY that.
+//
+// IT DOES NOT TOUCH THE EXCLUSION. `gateCode` is unchanged and `main`'s return values are
+// unchanged; the process gains one line of stdout and nothing else. The exclusion stays exactly
+// one exit code wide.
+//
+// THE EXIT NUMBER IN THE LINE IS `gateCode(briefCode)`, NEVER the child's code. The fleet
+// parser flags a contradiction when the number on the RESULT line differs from the process's
+// real exit, so on the UNVERIFIABLE branch the honest line reads `(exit 0)` — the process really
+// does exit 0 — while the VERDICT TOKEN carries the fact that nothing was verified. The token is
+// deliberately not PASS: the parser treats PASS/GREEN/CLEAN as a pass verdict, and laundering an
+// unverifiable into one is the exact thing A-41 refused.
+export function resultLine(briefCode) {
+  const exit = gateCode(briefCode);
+  if (briefCode === UNVERIFIABLE) {
+    return `RESULT: UNVERIFIABLE — the brief was never read, so it is neither stale nor in sync; excluded from this gate's exit code per A-41, reported every run and never counted as a pass (exit ${exit})`;
+  }
+  if (briefCode === 0) {
+    return `RESULT: PASS — the hosted brief matches docs/lane-brief.md (exit ${exit})`;
+  }
+  if (briefCode === 1) {
+    return `RESULT: FAIL — the hosted brief is STALE against docs/lane-brief.md, and a stale brief still reds this gate (exit ${exit})`;
+  }
+  return `RESULT: COULD_NOT_RUN — check-brief.mjs exited ${briefCode}, which is neither a verdict nor unreachability (exit ${exit})`;
+}
+
 function main(argv) {
   const { code } = runBrief(argv);
   if (code === UNVERIFIABLE) {
@@ -84,8 +118,10 @@ function main(argv) {
     console.log("  A stale brief (exit 1) still fails this gate. Only unreachability is excused.");
     console.log("  Re-check the premise: node scripts/check-brief.mjs — a 0 means the auth model");
     console.log("  changed and A-41 should be reopened.");
+    console.log(resultLine(code));
     return 0;
   }
+  console.log(resultLine(code));
   return code;
 }
 
@@ -205,11 +241,56 @@ function selftest() {
     }
   }
 
+  // THE RESULT LINE, asserted against the REAL fleet regex rather than a retyped idea of it.
+  // This copy is pinned by the assertion below: if skylark-site changes RESULT_LINE_RE, this
+  // selftest keeps passing while the receipt slot silently goes null again — so the pin is
+  // recorded as a known limit, not claimed as coupling.
+  const FLEET_RESULT_RE = /^\s*(RESULT:\s+([A-Z][A-Z0-9_-]*)\b.*\(exit\s+(-?\d+)\)\s*)$/i;
+
+  // ORDER IS DELIBERATE — the guards that carry the MEANING run first and the exact-string pin
+  // runs LAST. With the pin first, every mutation trips the pin and short-circuits, and these
+  // three properties become dead code inside the commit that adds them (2026-09-06).
+  for (const c of [0, 1, 2, 3, 4]) {
+    const line = resultLine(c);
+    const m = line.match(FLEET_RESULT_RE);
+
+    // (1) The line must be PARSEABLE. An unparseable line leaves the slot null, which is the
+    // exact defect being fixed — a line that merely looks right fixes nothing.
+    if (!m) {
+      console.error(`check-brief-advisory selftest FAIL: resultLine(${c}) does not match the fleet RESULT_LINE_RE — the receipt slot would stay null: ${line}`);
+      return 1;
+    }
+
+    // (2) The exit number must be the PROCESS's exit, not the child's. A mismatch is flagged by
+    // the fleet writer as a contradiction between the verdict and the real exit.
+    if (Number(m[3]) !== gateCode(c)) {
+      console.error(`check-brief-advisory selftest FAIL: resultLine(${c}) says (exit ${m[3]}) but the process exits ${gateCode(c)} — that is a receipt contradiction`);
+      return 1;
+    }
+
+    // (3) THE ONE THAT MATTERS. On the excused branch the verdict token must NOT be one the
+    // fleet writer reads as a pass. This is the laundering A-41 refused, and it is the assertion
+    // that would survive if someone "simplified" the excused branch to RESULT: PASS.
+    if (c === UNVERIFIABLE && ["PASS", "GREEN", "CLEAN"].includes(m[2].toUpperCase())) {
+      console.error(`check-brief-advisory selftest FAIL: the UNVERIFIABLE branch reports verdict ${m[2]}, which the fleet writer reads as a PASS — an unverifiable leg must never launder into one`);
+      return 1;
+    }
+  }
+
+  // LAST: the equality pin, so a wording change is caught but never masks the three above.
+  const WALL_LINE = "RESULT: UNVERIFIABLE — the brief was never read, so it is neither stale nor in sync; excluded from this gate's exit code per A-41, reported every run and never counted as a pass (exit 0)";
+  if (resultLine(UNVERIFIABLE) !== WALL_LINE) {
+    console.error(`check-brief-advisory selftest FAIL: the UNVERIFIABLE result line changed wording:\n  got:  ${resultLine(UNVERIFIABLE)}\n  want: ${WALL_LINE}`);
+    return 1;
+  }
+
   console.log(
     "check-brief-advisory selftest: PASS (positive control reads in-sync at 0 before any absence " +
       "is asserted; a dropped dated block produces BRIEF STALE and STILL reds the gate; a sign-in " +
-      "wall produces BRIEF UNVERIFIABLE, prints its finding, and does NOT red the gate; and the " +
-      "exclusion is exactly one exit code wide — 0/1/2/4 all pass through unchanged)"
+      "wall produces BRIEF UNVERIFIABLE, prints its finding, and does NOT red the gate; the " +
+      "exclusion is exactly one exit code wide — 0/1/2/4 all pass through unchanged; and every " +
+      "resultLine parses under the fleet RESULT_LINE_RE, carries the PROCESS exit rather than the " +
+      "child's, and never reports the excused branch as a pass verdict)"
   );
   return 0;
 }
