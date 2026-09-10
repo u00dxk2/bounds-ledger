@@ -143,7 +143,14 @@ conclude the selftest is the whole blocker and propose a server-side read as the
 - `npm run traffic` (repo views) and `npm run reports` (report arrivals) both count github.com,
   **never page readers.** Neither may be quoted as readership.
 - Standing up a reach instrument is **not** a substrate task to self-approve. Whether to move to a
-  surface that can be measured is `A-34`'s breadth-versus-depth question, and it is David's.
+  surface that can be measured was `A-34`'s breadth-versus-depth question, and **David answered it on
+  2026-09-09: depth.** His words: *"Go with depth — start reading our own 543 records against their
+  sources on a schedule, and bring me the second-area comparison when it is ready."* So the answer is
+  not "wait for a measurable surface" — the ruled work is on the corpus we already hold, which is
+  auditable offline at any audience size. The scheduled reading is `A-47`; the comparison he still
+  expects is `A-48`, dated 2026-09-16. **What his ruling did NOT settle:** adopting a second surface
+  is still his call, and so is re-pointing `G-4`, whose 2026-11-06 outcome read inherits a
+  denominator that cannot fill. Neither is self-approvable here.
 
 ## Review
 
