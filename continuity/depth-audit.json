@@ -1,0 +1,74 @@
+{
+  "project": "bounds-ledger",
+  "item": "A-47",
+  "purpose": "The depth audit David ruled on 2026-09-09 (\"start reading our own 543 records against their sources on a schedule\") and made this project's interim yardstick on 2026-09-10 (\"judge the project meanwhile on how much of our own material stands up when we check it\").",
+  "meta": {
+    "created": "2026-09-10",
+    "recordedAt": "2026-09-10T20:47:58.622Z",
+    "readCommand": "node scripts/depth-audit.mjs",
+    "verdicts": {
+      "SOUND": "the cited source was read and it supports the row",
+      "DEFECTIVE": "the cited source was read and it does NOT support the row",
+      "UNRESOLVED": "the source was reached but could not settle the question (a truncated section, an abstract that cannot prove absence). NOT a defect and NOT a pass.",
+      "UNREACHABLE": "the source could not be read at all (paywall, 403, dead link)"
+    },
+    "denominatorProvenance": "The corpus is 543 cited bound rows across 115 constant files (763 rows total, 220 uncited), measured 2026-09-09 and recorded at A-47.note2 with its partition control. This store deliberately does NOT enumerate those 543: the 2026-09-10 primer banner says do not build a coverage figure before auditing anything, so rows arrive here as they are audited.",
+    "samplingRule": "NOT random, and the read must say so. Slice 1 was chosen as: two rows from 10a whose stated values differed from the figures in their cited papers' TITLES (a deliberate hunt for discrepancy), plus one row from 87a that the mirror's own contribution note flags as bibliographically unverified. A sample selected for suspicion cannot be projected onto the 543 as a rate."
+  },
+  "audits": [
+    {
+      "id": "A-47-0001",
+      "constant": "10a",
+      "constantName": "The real Grothendieck constant",
+      "leg": "value-vs-source",
+      "citedRef": "SLXCKKM26",
+      "rowFile": "ledger/teorth-optimizationproblems/constants/10a.md",
+      "rowLine": 33,
+      "rowText": "| $< \\dfrac{\\pi}{2\\ln(1+\\sqrt{2})} - 10^{-4}$ | [SLXCKKM26] | Same team; via the first *asymptotic* Krivine-type rounding scheme (previous works only considered low-dimensional schemes). |",
+      "rowTextSha256": "b4e85d43cbe91734",
+      "source": "https://arxiv.org/abs/2608.11158",
+      "sourceRead": "abstract",
+      "fetchedAt": "2026-09-10, in the same session and minutes before recordedAt — the exact per-fetch stamp was not captured, and is not invented here",
+      "verdict": "SOUND",
+      "evidence": "The abstract states the bound verbatim: \"We establish new bounds on the Grothendieck constant $K_G$: \\[ \\frac{6\\pi}{11} \\le K_G \\le \\frac{\\pi}{2\\log(1+\\sqrt2)} - 10^{-4}. \\]\" The mirror row attributes exactly $-10^{-4}$ to this reference. Match.",
+      "positiveControl": "The same fetch returned \"these bounds determine the previously unknown tenths digit of $K_G$ to be $7$\" and the lower bound $6\\pi/11$ — tokens specific to this paper, so the artifact is the right one and not a bot page or a neighbouring abstract.",
+      "notes": ""
+    },
+    {
+      "id": "A-47-0002",
+      "constant": "10a",
+      "constantName": "The real Grothendieck constant",
+      "leg": "value-vs-source",
+      "citedRef": "LSXCKKM26",
+      "rowFile": "ledger/teorth-optimizationproblems/constants/10a.md",
+      "rowLine": 32,
+      "rowText": "| $< \\dfrac{\\pi}{2\\ln(1+\\sqrt{2})} - 6.039\\times 10^{-5}$ | [LSXCKKM26] | $6.039\\times 10^{-5}$ improvement over Krivine's bound |",
+      "rowTextSha256": "4e142e1f379a4b5d",
+      "source": "https://arxiv.org/abs/2606.03991",
+      "sourceRead": "body (Theorem 1.1, via ar5iv) after the abstract proved insufficient",
+      "fetchedAt": "2026-09-10, in the same session and minutes before recordedAt — the exact per-fetch stamp was not captured, and is not invented here",
+      "verdict": "SOUND",
+      "evidence": "Theorem 1.1 states \"The Grothendieck constant K_G satisfies: K_G <= pi/(2log(1+sqrt2)) - 6.039*10^-5\", matching the mirror row.",
+      "positiveControl": "The body fetch returned the token 6.039, which the ABSTRACT does not contain — a wrong or truncated document could not have produced it. Title also confirmed.",
+      "notes": "THE METHOD FINDING OF THIS SLICE, worth more than the verdict. The paper is TITLED \"... - 10^{-5}\" and its ABSTRACT claims only $10^{-5}$. Read from the abstract alone this row looks WRONG, and I would have filed a defect against upstream for a bound the paper proves in its own Theorem 1.1. The title is the paper rounding its own sharper result. CONSEQUENCE FOR THE AUDIT: an abstract can never settle a value-vs-source row NEGATIVELY, only positively. A row whose abstract disagrees is UNRESOLVED until the body is read — never DEFECTIVE. This is the lane's standing HTTP-200 rule arriving through a new door: the document was genuine, complete and on-topic, and still could not answer the question asked of it."
+    },
+    {
+      "id": "A-47-0003",
+      "constant": "87a",
+      "constantName": "Martinet's constant for totally real number fields",
+      "leg": "citation-well-formed",
+      "citedRef": "Mar2006",
+      "rowFile": "ledger/teorth-optimizationproblems/constants/87a.md",
+      "rowLine": 44,
+      "rowText": "- [Mar2006] Martin, John S. *Improved root-discriminant bounds via ramification-restricted class-field towers.* (2006). Cited as \"Martin [25]\" in [HMR2019]; specific bibliographic details should be verified.",
+      "rowTextSha256": "9d36b07ca4df7a0f",
+      "source": "https://arxiv.org/abs/1901.04354",
+      "sourceRead": "body section 3.3.1 (via ar5iv); the References section did not render",
+      "fetchedAt": "2026-09-10, in the same session and minutes before recordedAt — the exact per-fetch stamp was not captured, and is not invented here",
+      "verdict": "UNRESOLVED",
+      "evidence": "HMR2019 section 3.3.1 is titled \"An example of J. Martin\" and reads \"In his Ph.D. thesis, [25], Martin found a degree 8 totally real number field\". So the citing source DOES specify the work type: a Ph.D. thesis. Our entry records a title and a year but not the type, and its own contribution note already says the bibliographic details should be verified. The bibliography itself did not render, so the TITLE we state is still unverified — I can establish what the entry is missing, not that what it says is wrong.",
+      "positiveControl": "The same fetch returned the title \"Cutting towers of number fields\" and all three authors (Hajir, Maire, Ramakrishna), so the artifact is the cited paper.",
+      "notes": "FOUND, NOT FILED. This is a row in UPSTREAM's file, which we mirror. Any correction sent upstream is outward contact and needs an adversarial review plus David's explicit gate (AGENTS.md outward gate). The audit RECORDS it; it does not send it, and nothing here is a decision to send. NEXT STEP if this is ever pursued: fetch the published version's bibliography (the arXiv HTML truncated before it) to establish the full entry before claiming ours is wrong."
+    }
+  ]
+}

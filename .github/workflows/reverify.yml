@@ -222,6 +222,15 @@ jobs:
       # full coverage.
       - name: Self-test stale-value resolvability indicator (no network, no git history)
         run: node scripts/check-resolvability.mjs --selftest
+      # A-47 is the interim yardstick David set on 2026-09-10 ("judge the project meanwhile on
+      # how much of our own material stands up when we check it"), so its reader must not be able
+      # to drift unnoticed. Both polarities: a populated store reads clean, while a missing, empty
+      # or unparseable store REFUSES rather than reporting a zero, and an unrecognised verdict
+      # trips the sum-check. Not piped, no network. The indicator ITSELF never gates a build --
+      # only this selftest runs here, because an indicator wired to a gate becomes a permanently
+      # red alarm the moment the audit pauses.
+      - name: Self-test depth-audit reader (no network; refuses a bare zero in both polarities)
+        run: node scripts/depth-audit.mjs --selftest
       # Not piped and deliberately network-free: this asserts README's published figures still
       # match COMMITTED repo state. A stale block is a falsifiable public error on the front
       # page of a repo whose pitch is that it notices stale numbers.
