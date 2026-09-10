@@ -203,7 +203,12 @@ export function buildRows(claims, { withDates = true, root = ROOT, reports = nul
       tableValues: tableValuesFor(id, root),
       aliases: aliasesFor(id, claims),
     };
-  }).map((r) => ({ ...r, changed: newerOf(r.upperChanged, r.lowerChanged) }));
+  }).map((r) => ({
+    ...r,
+    changed: newerOf(r.upperChanged, r.lowerChanged),
+    moved: hasMoved(r.upperKind, r.lowerKind),
+    movedDate: movementDate(r.upperChanged, r.upperKind, r.lowerChanged, r.lowerKind),
+  }));
 }
 
 // A row's date is the later of its two sides: a constant whose upper bound moved last week has
@@ -214,6 +219,55 @@ export function newerOf(a, b) {
   if (!a) return b || null;
   if (!b) return a;
   return a >= b ? a : b;
+}
+
+// A-42 INSTANCE 4, THE SORT KEY — the ranking half of the same root cause instance 3 fixed in
+// wording. `data-changed` is the later of a row's two sides, and for a constant we ADDED rather
+// than watched through a move that date is the day WE started watching. So "Most recently updated
+// first" answered "what did we start watching recently" to a reader asking "what moved recently",
+// on the exact question this lane exists to answer.
+//
+// WHY THIS AND NOT THE OTHER BRANCH. closeWhen offers two shapes: exclude first-pin dates from the
+// key, or disclose that they are in it. Excluding is the worse trade — it would sink every
+// never-moved row to the bottom of the one control a reader uses to survey the ledger, which is
+// the same "trade an over-read for a silence" the instance-3 note refused. And disclosure ALONE is
+// already shipped: the hint under the control has said since 2026-08-24 that the ordering cannot
+// tell the two apart. A paragraph explaining that a control misranks is not a fixed control.
+//
+// So the fix uses what the page ALREADY KNOWS and does not act on. Every cell is rendered with a
+// `kind` — `value`, `text`, or `first` — and every row already displays "no movement seen yet" for
+// the last of those. The ordering ignored it. Now a row that this ledger has actually observed
+// changing ranks above one it has only ever watched sit still, and inside each group the date
+// orders as before. NOTHING IS HIDDEN and no row leaves the table: the never-moved rows follow the
+// moved ones, still dated, still carrying their own label.
+//
+// `text` counts as moved. An editorial edit IS something we observed happen to the row, and this
+// repo's standing position is that editorial drift is real drift; the row's own cell already says
+// "bound unchanged", so the reader is told which kind it was.
+export function hasMoved(upperKind, lowerKind) {
+  return [upperKind, lowerKind].some((k) => k === "value" || k === "text");
+}
+
+// THE SAME DEFECT ONE LEVEL IN, found by adversarial review on this diff BEFORE it was committed,
+// and it is worth recording because the first fix was half a fix. Grouping by `moved` is not
+// enough: a row joins the moved group if EITHER side changed, but `changed` is the newer of BOTH
+// sides, so a first pin on the OTHER side becomes the row's sort date. Concretely — upper bound
+// changed 2026-08-14, lower bound first pinned 2026-09-09: the row is genuinely a movement, and it
+// would still rank above a real 2026-09-08 movement on the strength of a date that is just the day
+// we started watching its other half. Inside the group, the original bug survived.
+//
+// So a moved row is ordered by the newest date among the sides that ACTUALLY moved, and first-pin
+// dates never contribute. Never-moved rows keep ordering by `changed`, which for them is the only
+// date there is and is honestly labelled as the tracking date.
+//
+// Deliberately a SEPARATE attribute rather than redefining `data-changed`: that one is documented
+// and pinned as "the later of the row's two dates", A-42's own readCommand quotes it, and silently
+// changing what a published attribute means is the kind of move this row exists to police.
+export function movementDate(upperChanged, upperKind, lowerChanged, lowerKind) {
+  let out = null;
+  if (upperKind === "value" || upperKind === "text") out = newerOf(out, upperChanged || null);
+  if (lowerKind === "value" || lowerKind === "text") out = newerOf(out, lowerChanged || null);
+  return out;
 }
 
 // The words a reader actually sees, and the reason this function exists at all. "last changed" was
@@ -423,7 +477,7 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null) {
   // than no promise. This note lives in the SOURCE, not in a CSS comment: the first version of it
   // sat inside the style template literal and shipped the whole explanation to every visitor.
   const sha = String(manifest.sha);
-  const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}">
+  const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
 <th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}</th>
 ${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)")}
 ${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)")}
@@ -514,12 +568,12 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 <label for="sort">Order</label>
 <select id="sort">
 <option value="id">By constant id</option>
-<option value="recent">Most recently updated first</option>
+<option value="recent">Rows we have seen move, most recent first</option>
 </select>
 </div>
 </div>
 <p class="count" id="count">${rows.length} constants</p>
-<p class="hint">Each date is when that row&rsquo;s pinned text last changed <em>in this ledger</em> &mdash; or, for a row that has never changed here, the day this ledger started tracking it. Most rows share that bootstrap date. Anything dated later either moved since, <em>or</em> was added to the mirror later: the ordering cannot yet tell those apart, so a constant we simply started watching recently sorts alongside one whose record actually moved. Neither date says anything about what a constant did before we began watching it.</p>
+<p class="hint">Each date is when that row&rsquo;s pinned text last changed <em>in this ledger</em> &mdash; or, for a row that has never changed here, the day this ledger started tracking it. Most rows share that bootstrap date. Ordering by movement puts the rows we have actually seen change first, most recent first; rows we have only ever watched sit still follow, still dated, each saying so in its own cell. That distinction is the one the date alone cannot make, because a later date can mean a bound changed here <em>or</em> that we only started watching it later. Neither date says anything about what a constant did before we began watching it, and a row we have never seen move may well have moved before we arrived.</p>
 
 <div class="empty" id="empty" hidden>
 <p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the ${rows.length} constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
@@ -572,8 +626,16 @@ ${body}
       // Array.prototype.sort is stable (ES2019), so rows sharing a date keep their id order and
       // no tiebreak is needed. A row with no date sorts LAST, never first: "we could not date it"
       // is not "it changed longest ago".
+      //
+      // Movement first, then date. See hasMoved() in the source for why; this comment stays short
+      // because everything in this block SHIPS to every visitor inside the page.
       seq.sort(function(a,b){
-        var x=a.getAttribute('data-changed')||'',y=b.getAttribute('data-changed')||'';
+        var am=a.getAttribute('data-moved')==='1',bm=b.getAttribute('data-moved')==='1';
+        if(am!==bm)return am?-1:1;
+        // Inside the moved group, rank by the date something ACTUALLY moved -- never by a first
+        // pin on the row's other bound. Never-moved rows have only their tracking date.
+        var k=am?'data-moved-date':'data-changed';
+        var x=a.getAttribute(k)||'',y=b.getAttribute(k)||'';
         if(x===y)return 0;
         if(!x)return 1;
         if(!y)return -1;
@@ -866,7 +928,17 @@ async function selftest() {
   const script = dated.match(/<script>([\s\S]*?)<\/script>/)[1];
   assert.ok(/appendChild/.test(script), "positive control: the extracted script must be the reorder, not an empty match");
 
-  const tr = (id, changed) => ({ id, hidden: false, getAttribute: (k) => (k === "data-changed" ? changed : id) });
+  // `moved` defaults TRUE and `movedDate` defaults to `changed`, so the pre-existing date-ordering
+  // cases stay in one group and keep testing exactly what they tested before A-42 instance 4.
+  const tr = (id, changed, moved = true, movedDate = changed) => ({
+    id,
+    hidden: false,
+    getAttribute: (k) =>
+      k === "data-changed" ? changed
+      : k === "data-moved" ? (moved ? "1" : "0")
+      : k === "data-moved-date" ? movedDate
+      : id,
+  });
   const order = [];
   const trs = [tr("aug14", "2026-08-14"), tr("jul24", "2026-07-24"), tr("undated", ""), tr("aug02", "2026-08-02")];
   const el = (extra = {}) => ({ addEventListener(ev, fn) { this["on" + ev] = fn; }, ...extra });
@@ -893,6 +965,82 @@ async function selftest() {
   sortEl.onchange();
   assert.deepEqual(order, ["aug14", "jul24", "undated", "aug02"],
     "switching back to id order must restore the original row order, not a re-sorted one");
+
+  // --- A-42 instance 4: the ordering must rank by MOVEMENT, not by the day we arrived. ---
+  // The pure predicate first, both polarities, before anything about the DOM.
+  assert.equal(hasMoved("value", "first"), true, "a moved upper bound makes the row a movement");
+  assert.equal(hasMoved("first", "value"), true, "either side counts — a moved lower bound is a movement");
+  assert.equal(hasMoved("text", "first"), true,
+    "an editorial edit IS something we observed; this repo treats editorial drift as real drift");
+  assert.equal(hasMoved("first", "first"), false,
+    "a row we have only ever watched sit still has not moved, however recently we pinned it");
+  assert.equal(hasMoved(null, null), false, "no kind on either side is not a movement");
+
+  // THE DECISIVE CASE, executed against the real page script. A row we merely STARTED WATCHING
+  // today must not outrank a row whose bound actually moved earlier — that inversion is the whole
+  // defect, and a date-only key gets it exactly backwards. Before this change the expected order
+  // here was ["justAdded", "reallyMoved"].
+  const order2 = [];
+  const trs2 = [
+    tr("justAdded", "2026-09-09", false),
+    tr("reallyMoved", "2026-08-14", true),
+    tr("alsoAdded", "2026-09-08", false),
+  ];
+  const sortEl2 = el({ value: "id" });
+  const rowsEl2 = el({ getElementsByTagName: () => trs2, appendChild: (n) => order2.push(n.id) });
+  const nodes2 = { q: el({ value: "" }), sort: sortEl2, rows: rowsEl2, count: el({ textContent: "" }),
+    empty: el({ hidden: true }), emptyq: el({ textContent: "" }), emptyask: el({ href: "" }) };
+  new Function("document", script)({ getElementById: (i) => nodes2[i] });
+  sortEl2.value = "recent";
+  sortEl2.onchange();
+  assert.equal(order2[0], "reallyMoved",
+    "a row we have SEEN move must lead, even though two never-moved rows carry later dates");
+  assert.deepEqual(order2, ["reallyMoved", "justAdded", "alsoAdded"],
+    "never-moved rows follow the moved one, still present and still ordered by date among themselves");
+
+  // THE ADVERSARIAL-REVIEW REGRESSION, 2026-09-09, needs-attention finding on this very diff.
+  // Grouping alone left the original bug alive INSIDE the moved group: a row joins it if either
+  // side changed, but its `changed` date is the newer of BOTH sides, so a first pin on the other
+  // bound could still outrank a genuine movement. The reviewer's own fixture, kept verbatim.
+  assert.equal(movementDate("2026-08-14", "value", "2026-09-09", "first"), "2026-08-14",
+    "a first pin on the OTHER bound must not become a moved row's movement date");
+  assert.equal(movementDate("2026-08-14", "value", "2026-09-09", "text"), "2026-09-09",
+    "when both sides really moved, the later of them wins");
+  assert.equal(movementDate("2026-09-09", "first", null, null), null,
+    "a row that never moved has no movement date at all — not its tracking date");
+
+  const order3 = [];
+  const trs3 = [
+    // upper moved 08-14, lower FIRST-PINNED 09-09: moved, but its movement is the older one.
+    tr("mixedBound", "2026-09-09", true, "2026-08-14"),
+    tr("genuine0908", "2026-09-08", true, "2026-09-08"),
+  ];
+  const sortEl3 = el({ value: "id" });
+  const rowsEl3 = el({ getElementsByTagName: () => trs3, appendChild: (n) => order3.push(n.id) });
+  const nodes3 = { q: el({ value: "" }), sort: sortEl3, rows: rowsEl3, count: el({ textContent: "" }),
+    empty: el({ hidden: true }), emptyq: el({ textContent: "" }), emptyask: el({ href: "" }) };
+  new Function("document", script)({ getElementById: (i) => nodes3[i] });
+  sortEl3.value = "recent";
+  sortEl3.onchange();
+  assert.deepEqual(order3, ["genuine0908", "mixedBound"],
+    "a real 09-08 movement must outrank a row whose only later date is a first pin on its other bound");
+
+  // The rendered page must actually PUBLISH the attribute the ordering reads, in both states —
+  // an ordering keyed on an attribute nobody emits would pass every assertion above and do nothing.
+  const movedPage = renderHtml([
+    { id: "10a", title: "Moved", url: "https://example.invalid/10a.md", upper: "| 1.78 | K |", lower: null,
+      upperChanged: "2026-08-14", lowerChanged: null, upperKind: "value", lowerKind: null,
+      changed: "2026-08-14", moved: hasMoved("value", null) },
+    { id: "2a", title: "Only watched", url: "https://example.invalid/2a.md", upper: "| 2 | X |", lower: null,
+      upperChanged: "2026-09-09", lowerChanged: null, upperKind: "first", lowerKind: null,
+      changed: "2026-09-09", moved: hasMoved("first", null) },
+  ], manifest, "2026-09-09");
+  assert.ok(movedPage.length > 2000, "positive control: the page must render before any attribute claim");
+  assert.match(movedPage, /id="c-10a"[^>]*data-moved="1"/, "a row we saw move must publish data-moved=1");
+  assert.match(movedPage, /id="c-2a"[^>]*data-moved="0"/, "a row we only started watching must publish data-moved=0");
+  // The control must describe what it now does; the old label promised recency alone.
+  assert.doesNotMatch(movedPage, /Most recently updated first/,
+    "the ordering no longer ranks by date alone, so the control must not still promise that");
 
   // --- Empty state, added 2026-08-23. Both KP-78 answers, executed not read. ---
   // A search matching nothing used to leave an empty table under a "0 constants" line, which
