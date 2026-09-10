@@ -151,8 +151,14 @@ and drifts in the flattering direction — it under-states what we check. Count 
 the live goal's `readCommand` if you need a number; do not re-introduce one here.
 
 **`expected-zero` is a real status, not a red.** G-4 legitimately reads 0 for months — its own
-`onTrigger` says the 2026-09-26 read is *could we DETECT an outsider*, not *has one arrived*; the
-outcome read is 2026-11-06. (This block named G-3 until 2026-08-26, when David closed G-3 as MET on
+`onTrigger` says the 2026-09-26 read is *could we DETECT an outsider*, not *has one arrived*, and
+that is now the ONLY dated read this goal has: **David dropped the 2026-11-06 outcome verdict date
+on 2026-09-10** (`G-4.davidRuled2026_09_10`; retired text kept at `noteRetiredOutcomeRead2026_09_10`),
+keeping the goal itself unchanged and directing that the project be judged meanwhile on how much of
+our own material stands up when we check it — `A-47`, the depth audit. `W-6` keeps its own
+2026-11-06 date; his ruling named this goal.
+
+(This block named G-3 until 2026-08-26, when David closed G-3 as MET on
 the 08-23 upstream correction and set G-4 in its place. **G-4 is the harder question**, because it
 removes our own outbound effort — G-3's single instance ran entirely through an issue we wrote — so a
 zero here is even more expected than a zero there was.) A cold reader must be able to tell "zero because nobody has arrived

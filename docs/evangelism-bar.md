@@ -148,9 +148,13 @@ conclude the selftest is the whole blocker and propose a server-side read as the
   sources on a schedule, and bring me the second-area comparison when it is ready."* So the answer is
   not "wait for a measurable surface" — the ruled work is on the corpus we already hold, which is
   auditable offline at any audience size. The scheduled reading is `A-47`; the comparison he still
-  expects is `A-48`, dated 2026-09-16. **What his ruling did NOT settle:** adopting a second surface
-  is still his call, and so is re-pointing `G-4`, whose 2026-11-06 outcome read inherits a
-  denominator that cannot fill. Neither is self-approvable here.
+  expects is `A-48`, dated 2026-09-16. **What his 09-09 ruling did NOT settle:** adopting a second
+  surface is still his call, and so was `G-4`, whose 2026-11-06 outcome read inherited a denominator
+  that cannot fill. **He settled the `G-4` half on 2026-09-10** — *"keep the goal as it is, drop the
+  November verdict date, and judge the project meanwhile on how much of our own material stands up
+  when we check it"* — so that outcome read is dropped rather than re-dated, the goal is untouched,
+  and `A-47` carries the interim judgment (argued, and open to challenge, at
+  `G-4.meanwhileJudgment2026_09_10`). Adopting a second surface remains not self-approvable here.
 
 ## Review
 
