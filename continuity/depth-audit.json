@@ -4,7 +4,7 @@
   "purpose": "The depth audit David ruled on 2026-09-09 (\"start reading our own 543 records against their sources on a schedule\") and made this project's interim yardstick on 2026-09-10 (\"judge the project meanwhile on how much of our own material stands up when we check it\").",
   "meta": {
     "created": "2026-09-10",
-    "recordedAt": "2026-09-10T20:47:58.622Z",
+    "recordedAt": "2026-09-11T14:55:46.129Z",
     "readCommand": "node scripts/depth-audit.mjs",
     "verdicts": {
       "SOUND": "the cited source was read and it supports the row",
@@ -12,17 +12,53 @@
       "UNRESOLVED": "the source was reached but could not settle the question (a truncated section, an abstract that cannot prove absence). NOT a defect and NOT a pass.",
       "UNREACHABLE": "the source could not be read at all (paywall, 403, dead link)"
     },
-    "denominatorProvenance": "The corpus is 543 cited bound rows across 115 constant files (763 rows total, 220 uncited), measured 2026-09-09 and recorded at A-47.note2 with its partition control. This store deliberately does NOT enumerate those 543: the 2026-09-10 primer banner says do not build a coverage figure before auditing anything, so rows arrive here as they are audited.",
-    "samplingRule": "NOT random, and the read must say so. Slice 1 was chosen as: two rows from 10a whose stated values differed from the figures in their cited papers' TITLES (a deliberate hunt for discrepancy), plus one row from 87a that the mirror's own contribution note flags as bibliographically unverified. A sample selected for suspicion cannot be projected onto the 543 as a rate.",
+    "denominatorProvenance": "COMPUTED, not remembered, since 2026-09-11: `node scripts/depth-audit.mjs --corpus` prints the partition with its definition and its control. It reads 770 bound rows across 115 constant files, 673 cited and 97 uncited. This REPLACES the 543-of-763 figures recorded on 2026-09-09 by a script that was never committed; see corpus.supersedes2026_09_09.",
+    "samplingRule": "NOT random, and the read must say so — but no longer chosen for suspicion either. SLICE 1 (A-47-0001..0003, 2026-09-10) was a deliberate hunt for discrepancy: two rows from 10a whose stated values differed from the figures in their cited papers TITLES, plus one row from 87a the mirror itself flags as bibliographically unverified. A sample selected for suspicion cannot be projected onto the corpus as a rate. SLICE 2 (A-47-0004..0008, 2026-09-11) is a SYSTEMATIC sample, deterministic and re-derivable without a seed: enumerate the cited bound rows in file-then-line order (the enumeration `node scripts/depth-audit.mjs --corpus` counts, 673 rows) and take positions 50, 150, 250, 350 and 450. It is still not a random sample and five rows settle nothing on their own, but unlike slice 1 it was drawn without looking at the rows first, so as slices accumulate at fixed positions the audited set stops being biased toward rows we already suspected.",
     "corpus": {
-      "citedRows": 543,
-      "boundRows": 763,
-      "uncitedRows": 220,
+      "citedRows": 673,
+      "boundRows": 770,
+      "uncitedRows": 97,
       "constantFiles": 115,
-      "measuredAt": "2026-09-09",
-      "provenance": "Measured 2026-09-09 and recorded at A-47.note2, by a script written to a file rather than an inline probe. Partition control held: 543 cited + 220 uncited = 763. Positive control that the count is over the right corpus: 87a.md is present, contributes 7 rows of which 6 are cited, cites HMR2019, and contains the string 857.5662.",
-      "staleWhen": "These are a snapshot of the mirror at 2026-09-09. Upstream adds and removes rows, so re-measure before treating the denominator as current; the ratio on the public page is only as fresh as this field."
-    }
+      "measuredAt": "2026-09-11",
+      "readCommand": "node scripts/depth-audit.mjs --corpus",
+      "definition": "A BOUND ROW is a data row of the table under \"## Known upper bounds\" or \"## Known lower bounds\", HTML comments stripped and the table header and separator rows excluded — the repo own definition, lifted from extract-pins.mjs so the audit and the generated pins count the same things. A CITED row names at least one bracketed reference token anywhere in the row; that token is what a reader follows, and this same list is the audit sampling frame.",
+      "partitionControl": "WHAT THE CHECKS PROVE, narrowed twice by adversarial review on 2026-09-11 because the first two statements of it overstated. The partition (673 cited + 97 uncited = 770 bound) proves only that the two classes EXHAUST the rows the parser enumerated; it cannot fail against real enumeration and is not evidence of completeness. Four narrow checks sit under it, each with a demonstrated failing case: the file inventory is checked against the mirror manifest own fileCount (round 2 showed a corpus of one intact file passing without it); every constant file must contribute at least one bound row; every section the committed generated pins expect must produce rows, which catches WHOLE-SECTION disappearance and nothing finer (round 2 drove 770/673 to 428/392 by renaming lower-bound headings while every file still contributed rows); and no line inside any bounds table BLOCK may fail to start with a pipe, which catches row loss within a section — every block in a section is walked, each block own header and separator excluded, and a blank line, blockquote, heading, HTML block or prose ends a block legally rather than being read as a lost row (round 3 stripped the optional leading pipe from 535 interior rows — legal GFM — and drove the corpus to 235/205 with every section still yielding its last row, so the pins and the section baseline both passed). A row that is well-formed, present, and simply absent from upstream is invisible to all of them, as it should be.",
+      "corpusControl": "The 87a.md control A-47.note2 recorded reads 7 bound rows, 6 cited, carrying the string 857.5662 — identical under both the 2026-09-09 enumeration and this one. THAT IS THE WARNING, not the reassurance: the control passed under both while the totals differed by 130 rows, so a control that only asks whether a field is present cannot protect a number. It is pinned to its exact counts for that reason.",
+      "supersedes2026_09_09": "The figures here REPLACE 543 cited of 763 bound rows with 220 uncited, recorded 2026-09-09. CORRECTED 2026-09-11 after adversarial review round 2 flagged this very sentence: the old denominator was NOT on all 115 pages. The audit block renders only on pages carrying an audited row, so at the previous commit it appeared on exactly one public page, c/10a.html (verified with git grep over HEAD; the other hits for that digit string are the value 0.5433 in Landau's constant, not a denominator). Those could not be reproduced. The mirror has not changed since 2026-09-07 (git log over ledger/teorth-optimizationproblems/constants prints nothing since then), so this is not drift, and three predicates were tried against the unchanged corpus: reference token anywhere in the row gives 673 of 770, reference COLUMN names a reference gives 656, column is exactly a bracketed token gives 461. None returns 543, and the 09-09 measuring script was never committed, so its definition is unrecoverable. WHAT THIS MEANS FOR THE PUBLISHED FIGURE: the denominator was understated, which makes any coverage fraction read better than it is, and a number on our own public page could not be re-derived by the people we ask to re-derive everything else. The 87a control passed under both enumerations while the totals differed by 130 rows, which is why a control that only asks \"is the field present\" cannot protect a number.",
+      "staleWhen": "These are a snapshot of the mirror as committed. Upstream adds and removes rows, so re-run the readCommand rather than quoting this block; the figure on the public page is only as fresh as the last render.",
+      "baselineIndependence": "RECORDED BECAUSE IT LIMITS THE SECTION CHECK: the per-section baseline is read from the generated pins in ledger/claims.json, which extract-pins.mjs cuts with the SAME section-matching code this counter uses. It therefore detects a section that stops parsing relative to the last committed snapshot; it is NOT an independent parser, and it would not notice a definition both programs share being wrong in the same way. That is why the table-syntax check exists beside it rather than inside it.",
+      "guardHistory": "FOUR ROUNDS OF ADVERSARIAL REVIEW SHIPPED SEVEN FIXES INTO THIS DENOMINATOR AND ITS GUARDS ON ONE DAY, and three of the seven were defects in checks I had just written to fix the previous one. The pattern is worth more than any single fix: a completeness guard over a format I do not control is a parser, and a hand-rolled parser fails quietly in exactly the direction that flatters the number. What survives is narrow and stated: each check names the one failure it catches, the section baseline is explicitly NOT independent of the pins it reads, and the partition is described as exhausting the enumerated rows rather than proving completeness."
+    },
+    "reviewRounds": [
+      {
+        "round": 1,
+        "at": "2026-09-11",
+        "scope": "working tree, before the commit",
+        "verdict": "needs-attention — 1 high, 2 medium",
+        "findings": "HIGH: A-47-0005 published partial support as SOUND and the rendered page showed unconditional support while the limit stayed in the store — fixed by downgrading to UNRESOLVED. MEDIUM: the partition refusal could never fire against real enumeration (proved with a heading-mutation probe) — fixed by adding a manifest inventory check and a per-file zero-rows check, and by correcting the store own claim. MEDIUM: the 87a control accepted a materially damaged corpus, including one restricted to 87a alone — fixed by pinning it to the recorded 7 and 6."
+      },
+      {
+        "round": 2,
+        "at": "2026-09-11",
+        "scope": "working tree, before the commit, challenging round 1 fixes rather than the original diff",
+        "verdict": "needs-attention — 3 medium",
+        "findings": "MEDIUM: partial section loss still passed everything — a probe renamed the lower-bound headings in files that kept their upper rows and drove 770/673 to 428/392 with all 115 files present, none empty, and 87a intact. Fixed by checking every section the committed generated pins expect (230 of them) against the live parse. MEDIUM: an unreadable or malformed manifest silently disabled the inventory check, so a corpus of one intact file passed; an expectation that could not be established now REFUSES rather than reading clean, for both baselines. MEDIUM: A-47-0001 and A-47-0002 pinned rows asserting a STRICT inequality while their own recorded evidence quotes a non-strict one; both downgraded to UNRESOLVED. The rendered UNRESOLVED/UNREACHABLE population split was examined and found honest."
+      },
+      {
+        "round": 3,
+        "at": "2026-09-11",
+        "scope": "working tree, before the commit, challenging the round-2 fixes",
+        "verdict": "needs-attention — 1 medium",
+        "findings": "MEDIUM: valid table formatting defeated the completeness guard — stripping the optional leading pipe from 535 interior rows (legal GFM) dropped the corpus to 235 bound / 205 cited while all 115 files, all 230 sections and the 87a control passed, because both the counter and the generated pins require a leading pipe. Fixed by REFUSING what the parser cannot read rather than widening the definition away from extract-pins: a non-empty line inside a bounds table block that does not start with a pipe is now a refusal, proven both ways in the selftest (it fires, and the paired assertion records that the section baseline alone would not have caught it). The printed assurances were narrowed to what each check actually covers. Round 3 also confirmed the remaining SOUND verdicts, the downgrade rationale, the one-page denominator correction and the rendered coverage figure."
+      },
+      {
+        "round": 4,
+        "at": "2026-09-11",
+        "scope": "working tree, before the commit, narrowed to the round-3 fix",
+        "verdict": "needs-attention — 2 medium, both in the guard rather than in the audit",
+        "findings": "MEDIUM: rows moved into a SECOND table block in the same section still vanished silently (235 bound / 147 cited at exit 0) because the anomaly scan stopped at the first blank line and never resumed. MEDIUM, and the more dangerous one: a blockquote or an ATX heading placed directly after a table legally ends it under GFM, and the scan read those lines as dropped rows and REFUSED an intact corpus — an ordinary upstream annotation would have disabled the denominator indefinitely, which is the permanently-red alarm this lane was founded on. Both fixed by replacing the hand-rolled scan with real block recognition: a block is a header followed by a separator row, every block in the section is walked with its own header and separator excluded, and a blank line, blockquote, heading, HTML block or prose ends it. The live corpus reads 770/673 before and after the rewrite, so the definition did not move. Both families are now selftest cases, the loss firing and the legal terminators staying silent with the counts proven intact. Round 4 also re-confirmed that all seven rendered audit pages match the eight store entries and that the five reached bound rows are correctly stated rather than understated."
+      }
+    ]
   },
   "audits": [
     {
@@ -38,10 +74,10 @@
       "source": "https://arxiv.org/abs/2608.11158",
       "sourceRead": "read in the abstract",
       "fetchedAt": "2026-09-10, in the same session and minutes before recordedAt — the exact per-fetch stamp was not captured, and is not invented here",
-      "verdict": "SOUND",
+      "verdict": "UNRESOLVED",
       "evidence": "The abstract states the bound verbatim: \"We establish new bounds on the Grothendieck constant $K_G$: \\[ \\frac{6\\pi}{11} \\le K_G \\le \\frac{\\pi}{2\\log(1+\\sqrt2)} - 10^{-4}. \\]\" The mirror row attributes exactly $-10^{-4}$ to this reference. Match.",
       "positiveControl": "The same fetch returned \"these bounds determine the previously unknown tenths digit of $K_G$ to be $7$\" and the lower bound $6\\pi/11$ — tokens specific to this paper, so the artifact is the right one and not a bot page or a neighbouring abstract.",
-      "notes": "",
+      "notes": "DOWNGRADED FROM SOUND 2026-09-11 BY ADVERSARIAL REVIEW ROUND 2, on this row's own recorded evidence rather than a re-fetch. The mirror row states a STRICT inequality (its value cell opens with \"<\"), while the passage recorded here states a NON-STRICT one: the abstract gives the chain with \"\\le\" at this threshold. A source proving \"at most X\" does not establish \"less than X\", so the cited passage does not support the row AS WRITTEN. UNRESOLVED, not DEFECTIVE: the paper may well establish strictness elsewhere, and nothing here shows the row is false. WHAT WOULD SETTLE IT: read the body for a strict statement at this exact threshold. RECORDED, NOT FILED — the row belongs to upstream, and any correction sent there is outward contact needing an adversarial review plus David's explicit gate (AGENTS.md outward gate).",
       "sourceReadInternal": "abstract"
     },
     {
@@ -57,10 +93,10 @@
       "source": "https://arxiv.org/abs/2606.03991",
       "sourceRead": "read in the body, at Theorem 1.1 — the abstract alone was not enough",
       "fetchedAt": "2026-09-10, in the same session and minutes before recordedAt — the exact per-fetch stamp was not captured, and is not invented here",
-      "verdict": "SOUND",
+      "verdict": "UNRESOLVED",
       "evidence": "Theorem 1.1 states \"The Grothendieck constant K_G satisfies: K_G <= pi/(2log(1+sqrt2)) - 6.039*10^-5\", matching the mirror row.",
       "positiveControl": "The body fetch returned the token 6.039, which the ABSTRACT does not contain — a wrong or truncated document could not have produced it. Title also confirmed.",
-      "notes": "THE METHOD FINDING OF THIS SLICE, worth more than the verdict. The paper is TITLED \"... - 10^{-5}\" and its ABSTRACT claims only $10^{-5}$. Read from the abstract alone this row looks WRONG, and I would have filed a defect against upstream for a bound the paper proves in its own Theorem 1.1. The title is the paper rounding its own sharper result. CONSEQUENCE FOR THE AUDIT: an abstract can never settle a value-vs-source row NEGATIVELY, only positively. A row whose abstract disagrees is UNRESOLVED until the body is read — never DEFECTIVE. This is the lane's standing HTTP-200 rule arriving through a new door: the document was genuine, complete and on-topic, and still could not answer the question asked of it.",
+      "notes": "THE METHOD FINDING OF THIS SLICE, worth more than the verdict. The paper is TITLED \"... - 10^{-5}\" and its ABSTRACT claims only $10^{-5}$. Read from the abstract alone this row looks WRONG, and I would have filed a defect against upstream for a bound the paper proves in its own Theorem 1.1. The title is the paper rounding its own sharper result. CONSEQUENCE FOR THE AUDIT: an abstract can never settle a value-vs-source row NEGATIVELY, only positively. A row whose abstract disagrees is UNRESOLVED until the body is read — never DEFECTIVE. This is the lane's standing HTTP-200 rule arriving through a new door: the document was genuine, complete and on-topic, and still could not answer the question asked of it. DOWNGRADED FROM SOUND 2026-09-11 BY ADVERSARIAL REVIEW ROUND 2, on this row's own recorded evidence rather than a re-fetch. The mirror row states a STRICT inequality (its value cell opens with \"<\"), while the passage recorded here states a NON-STRICT one: Theorem 1.1 as recorded here reads \"K_G <= pi/(2log(1+sqrt2)) - 6.039*10^-5\". A source proving \"at most X\" does not establish \"less than X\", so the cited passage does not support the row AS WRITTEN. UNRESOLVED, not DEFECTIVE: the paper may well establish strictness elsewhere, and nothing here shows the row is false. WHAT WOULD SETTLE IT: read the body for a strict statement at this exact threshold. RECORDED, NOT FILED — the row belongs to upstream, and any correction sent there is outward contact needing an adversarial review plus David's explicit gate (AGENTS.md outward gate).",
       "sourceReadInternal": "body (Theorem 1.1, via ar5iv) after the abstract proved insufficient"
     },
     {
@@ -81,6 +117,101 @@
       "positiveControl": "The same fetch returned the title \"Cutting towers of number fields\" and all three authors (Hajir, Maire, Ramakrishna), so the artifact is the cited paper.",
       "notes": "FOUND, NOT FILED. This is a row in UPSTREAM's file, which we mirror. Any correction sent upstream is outward contact and needs an adversarial review plus David's explicit gate (AGENTS.md outward gate). The audit RECORDS it; it does not send it, and nothing here is a decision to send. NEXT STEP if this is ever pursued: fetch the published version's bibliography (the arXiv HTML truncated before it) to establish the full entry before claiming ours is wrong.",
       "sourceReadInternal": "body section 3.3.1 (via ar5iv); the References section did not render"
+    },
+    {
+      "id": "A-47-0004",
+      "constant": "13a",
+      "constantName": "Moser's convex worm cover constant",
+      "leg": "value-vs-source",
+      "citedRef": "KS2009",
+      "rowFile": "ledger/teorth-optimizationproblems/constants/13a.md",
+      "rowLine": 26,
+      "rowText": "| $0.227498$ | [KS2009] | Uses “V”-worms (equilateral-triangle hull) and “U”-worms (square hull) |",
+      "rowTextSha256": "b8789440ae44d606",
+      "source": "https://arxiv.org/abs/math/0701391",
+      "sourceRead": "read in the abstract",
+      "fetchedAt": "2026-09-11, between 15:05Z and 15:20Z, in the session that recorded them",
+      "verdict": "SOUND",
+      "evidence": "The abstract states the value and the improvement it represents: \"any convex region which contains a unit segment, an equilateral triangle of sides 1/2, and a square of side 1/3 always has area at least 0.227498\", and \"we improve a lower bound for Moser's worm problem from 0.2194 to 0.227498\". The mirror row is a LOWER-bound row carrying exactly 0.227498 and attributing it to this reference. Match.",
+      "positiveControl": "The same fetch returned the title \"An Improved Lower Bound for Moser's Worm Problem\", the superseded figure 0.2194, and the three objects the construction uses — tokens specific to this paper, so the artifact is the right one rather than a bot page or a neighbouring abstract.",
+      "notes": "Systematic-sample position 50 of 673.",
+      "sourceReadInternal": "abstract (arXiv listing page, HTTP 200, 38712 bytes)"
+    },
+    {
+      "id": "A-47-0005",
+      "constant": "20a",
+      "constantName": "The thin shell conjecture (variance of |X|^2)",
+      "leg": "value-vs-source",
+      "citedRef": "KL2025",
+      "rowFile": "ledger/teorth-optimizationproblems/constants/20a.md",
+      "rowLine": 62,
+      "rowText": "| $\\sigma_n \\le O(1)$ (and in fact $\\mathrm{Var}(\\lvert X\\rvert^2)\\le C n$) | [KL2025] | **Affirmative resolution** of the thin shell conjecture. The universal constant is not optimized (and is not made explicit). |",
+      "rowTextSha256": "aae443839898aa15",
+      "source": "https://arxiv.org/abs/2507.15495",
+      "sourceRead": "read in the abstract, which settles part of the row and cannot settle the rest",
+      "fetchedAt": "2026-09-11, between 15:05Z and 15:20Z, in the session that recorded them",
+      "verdict": "UNRESOLVED",
+      "evidence": "DOWNGRADED FROM SOUND BY ADVERSARIAL REVIEW, 2026-09-11, before this ever shipped. What the abstract does settle: \"We prove that for any log-concave random vector X in R^n with mean zero and identity covariance, E(|X| - sqrt(n))^2 <= C where C > 0 is a universal constant\", and \"This confirms the thin-shell conjecture in high dimensional convex geometry\" — so the row resolution claim is supported. What it CANNOT settle, and why the verdict is UNRESOLVED rather than SOUND: (1) the row value cell parenthesises an equivalent variance form that this source states nowhere I read, and the equivalence is standard but unread here; (2) the row says the universal constant is \"not optimized (and is not made explicit)\", which is a claim about the PAPER, and an abstract that merely omits a value cannot establish that the body never supplies one. That is this lane own rule — an abstract can settle a value-versus-source row positively but never negatively (A-47-0002) — applied to a clause I had let through. Settling this row needs the body.",
+      "positiveControl": "The same fetch returned the title \"Thin-shell bounds via parallel coupling\", both authors (Klartag, Lehec), and the method tokens \"Eldan's stochastic localization\" and \"Bourgain's slicing conjecture\" — specific to this paper, so the artifact is the right one. The positive control is unaffected by the downgrade: it establishes WHICH document was read, never how much of the row that document settles.",
+      "notes": "Systematic-sample position 150 of 673. THE METHOD POINT OF THIS SLICE: the defect was in my own verdict, not in the record. I recorded SOUND with a limit written beside it, which publishes unconditional support on the public page while the limit stays in the store — the reviewer found exactly that (c/20a.html rendered support with no trace of the caveat). A verdict carrying a recorded limit is not SOUND; it is UNRESOLVED with a note.",
+      "sourceReadInternal": "abstract (arXiv listing page, HTTP 200, 40332 bytes)"
+    },
+    {
+      "id": "A-47-0006",
+      "constant": "31a",
+      "constantName": "Chvatal-Sankoff constant for a binary alphabet",
+      "leg": "value-vs-source",
+      "citedRef": "CS1975",
+      "rowFile": "ledger/teorth-optimizationproblems/constants/31a.md",
+      "rowLine": 21,
+      "rowText": "| $> 0$ | [CS1975] | Showed existence of limit |",
+      "rowTextSha256": "9bdd283659c192e3",
+      "source": "https://par.cse.nsysu.edu.tw/resource/paper/2013/131230/CS-TR-75-477.pdf",
+      "sourceRead": "NOT read — the host did not accept a connection",
+      "fetchedAt": "2026-09-11, between 15:05Z and 15:20Z, in the session that recorded them",
+      "verdict": "UNREACHABLE",
+      "evidence": "The row claims this 1975 paper \"Showed existence of limit\" for the Chvatal-Sankoff constant. That claim is about the paper body and the only full text our reference entry offers is the linked PDF, which did not load: a fetch failure at the connection layer, not an HTTP status, measured twice on 2026-09-11. UNREACHABLE is therefore the honest verdict for the value leg; it is not evidence for or against the row. What WAS established is the citation: Crossref returns \"Longest common subsequences of two random sequences\" by Chvatal and Sankoff in the Journal of Applied Probability, volume 12, issue 2, pages 306-315, 1975 (DOIs 10.1017/s0021900200047999 and 10.2307/3212444), matching our reference entry exactly.",
+      "positiveControl": "The first Crossref query returned a DIFFERENT record — Advances in Applied Probability 7(2), page 253, 1975 — which is the companion one-page abstract, not the paper; a second query naming the title alone returned both, so the journal our entry cites is confirmed to exist rather than assumed from the first hit.",
+      "notes": "Systematic-sample position 250 of 673. A DEAD LINK IN AN UPSTREAM FILE IS A FINDING ABOUT REACHABILITY FROM HERE TODAY, not proof the link is dead everywhere; it is recorded, not filed. Any correction sent upstream is outward contact and needs an adversarial review plus David explicit gate (AGENTS.md outward gate).",
+      "sourceReadInternal": "the URL our own reference entry offers a reader: node fetch threw, and curl -sS -I --max-time 30 exited 28, \"Failed to connect to par.cse.nsysu.edu.tw:443 after 21834 ms\""
+    },
+    {
+      "id": "A-47-0007",
+      "constant": "43a",
+      "constantName": "Gilbert-Pollak conjecture (Steiner ratio)",
+      "leg": "value-vs-source",
+      "citedRef": "GP1968",
+      "rowFile": "ledger/teorth-optimizationproblems/constants/43a.md",
+      "rowLine": 22,
+      "rowText": "| $0.5$ | [GP1968] |  |",
+      "rowTextSha256": "59bb2b5ab5eb8734",
+      "source": "https://doi.org/10.1137/0116001",
+      "sourceRead": "NOT read — the publisher returned a bot challenge",
+      "fetchedAt": "2026-09-11, between 15:05Z and 15:20Z, in the session that recorded them",
+      "verdict": "UNREACHABLE",
+      "evidence": "The row carries the bare value 0.5 with no note. Settling it needs the 1968 paper, and the publisher returned a 403 challenge page rather than the article. POSITIVE CONTROL THAT WE DID NOT GET THE PAPER: the returned body does not contain the string \"Steiner\" at all — this is the HTTP-status-is-not-the-artifact rule in its 403 form. What WAS established is the citation, and it matches our entry exactly: Crossref gives \"Steiner Minimal Trees\" by E. N. Gilbert and H. O. Pollak, SIAM Journal on Applied Mathematics, volume 16, issue 1, pages 1-29, 1968, DOI 10.1137/0116001.",
+      "positiveControl": "The Crossref record carries 677 citing works and the exact volume, issue, page range and year our reference entry states, so the bibliographic half is confirmed against an independent index even though the text was not read.",
+      "notes": "Systematic-sample position 350 of 673. The value leg stays open: a paywalled source is not a defect in our row, and recording it as UNREACHABLE keeps the audit honest about what it has and has not read.",
+      "sourceReadInternal": "DOI resolved to epubs.siam.org, HTTP 403, 5633 bytes, page title \"Just a moment...\""
+    },
+    {
+      "id": "A-47-0008",
+      "constant": "55a",
+      "constantName": "The coefficient of the acyclic chromatic index",
+      "leg": "value-vs-source",
+      "citedRef": "GKPT2017",
+      "rowFile": "ledger/teorth-optimizationproblems/constants/55a.md",
+      "rowLine": 19,
+      "rowText": "|3.74| [GKPT2017] ||",
+      "rowTextSha256": "44dff15b8a2ffa5e",
+      "source": "https://arxiv.org/abs/1407.5374",
+      "sourceRead": "read in the abstract of the arXiv version the reference entry names as the correction",
+      "fetchedAt": "2026-09-11, between 15:05Z and 15:20Z, in the session that recorded them",
+      "verdict": "SOUND",
+      "evidence": "The row carries the bare coefficient 3.74. The abstract states the bound the coefficient belongs to: a graph with maximum degree Delta has an acyclic proper edge coloring with at most ceil(3.74(Delta-1))+1 colors, \"whereas, previously, the best bound was 4(Delta-1)\". The token 3.74 is present in the fetched page (checked, rather than read off memory), and the coefficient our row states is that one.",
+      "positiveControl": "The fetched page carries the title \"Acyclic Edge Coloring through the Lovasz Local Lemma\", the superseded coefficient 4, and the journal reference \"Theoretical Computer Science 665 (2017): 40-50\" — which is exactly the journal, volume, year and pages our reference entry gives, so the arXiv item and the cited journal article are the same work.",
+      "notes": "Systematic-sample position 450 of 673. Our reference entry itself points at this arXiv item as the correction (\"Correction in: arXiv 1407.5374\"), so reading it is following the row own pointer rather than substituting a different source.",
+      "sourceReadInternal": "abstract (arXiv listing page, HTTP 200, 42413 bytes); the journal version is Theoretical Computer Science 665 (2017) 40-50"
     }
   ]
 }
