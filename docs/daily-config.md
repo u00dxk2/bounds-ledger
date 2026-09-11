@@ -207,3 +207,15 @@ shipped a fresh instance of that same class on the same row, `releaseTest` prese
 empty, **behind a green board, because `continuity-check` was not in that phase's battery**. The phase
 that names a defect class is the phase most likely to ship one, and the only thing that would have
 caught it was the checker nobody had wired in. Approved 2026-08-29.
+
+## Two lines every daily report owes (approved 2026-09-11, P1 bucket a)
+
+1. **A line opening `W-7 —`** naming the one instrument read against its own claim that day and what
+   it found. The rule has been in CLAUDE.md since 2026-08-24; the token is fixed because the five
+   reports from 09-06 to 09-10 carried no such line, so on 09-11 nobody could tell which instrument to
+   rotate away from. Tomorrow's line names a DIFFERENT instrument than today's.
+2. **Tomorrow's gate order is written once, in the primer.** The report's Recommendation points at
+   the primer rather than restating the order. On 09-11 the 09-10 report said `A-42` then `A-20` while
+   the primer, written later, said `A-20` first; a cold reader should be able to take one artifact's
+   word. Corollary, same approval: `A-47` (the depth audit, a coverage figure over 543 cited rows) and
+   `A-48` (the second-area citation comparison, binary) never share a sentence or a figure.

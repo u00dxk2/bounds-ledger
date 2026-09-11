@@ -88,6 +88,17 @@ export function countDeferrals(items) {
   return items.filter(isDeferral).length;
 }
 
+// THE ITEMS LEG CANNOT REPORT SUCCESS OVER NOTHING READ EITHER (2026-09-11). loadItems returns []
+// for a missing ledger, so "0 declared deferral(s)" + PASS came out identically from a check that
+// read every row and found no deferral and from one that read no file at all. The PR leg below
+// already refused that shape; the leg inside `npm run verify`'s exit code did not. Named in the
+// 2026-09-08 report's Recommendation, then carried by neither of the next two reports.
+export function emptyReadRefusal(items) {
+  return items.length === 0
+    ? "read 0 row(s) from continuity/items.json — a zero over nothing read is a dead probe, not a pass"
+    : null;
+}
+
 function loadItems(root = ROOT) {
   const path = join(root, "continuity", "items.json");
   if (!existsSync(path)) return [];
@@ -154,6 +165,12 @@ async function selftest() {
   assert.deepEqual(itemFindings([closedOld, plainOpen], TODAY), [],
     "closed rows and undeclared items must not be scanned");
 
+  // FIRES — a ledger that was never read yields [] and must refuse rather than PASS.
+  assert.ok(emptyReadRefusal([]), "zero rows read must refuse — a zero over nothing read is a dead probe");
+  // SILENT — rows read with no deferral among them is a real, measured zero.
+  assert.equal(emptyReadRefusal([closedOld, plainOpen]), null,
+    "rows read with no declared deferral among them is a legitimate zero and must not refuse");
+
   // Boundary: expiring TODAY has not yet lapsed.
   assert.deepEqual(itemFindings([{ ...expired, expiresOn: TODAY }], TODAY), [],
     "a deferral expiring today has not yet lapsed");
@@ -180,6 +197,7 @@ async function selftest() {
 
   console.log("check-deferrals selftest: PASS (fires on expiry, on a missing expiresOn and on a missing releaseTest; " +
     "silent on a well-formed unexpired deferral, on closed and undeclared rows, and on the same-day boundary; " +
+    "refuses a read of zero rows and stays silent on a real zero over rows read; " +
     "PR leg fires on HELD-without-Release and stays silent on a released, an ordinary and an empty body; " +
     "all four declared deferrals proven visible to the scan before any silence was asserted)");
 }
@@ -190,6 +208,12 @@ async function main() {
 
   const today = mtToday();
   const items = loadItems();
+  const refusal = emptyReadRefusal(items);
+  if (refusal) {
+    console.log(`check-deferrals: ${refusal}`);
+    console.log("RESULT: COULD NOT RUN (exit 2) — a guard that did not run must not report success");
+    process.exit(2);
+  }
   const deferrals = countDeferrals(items);
   const findings = itemFindings(items, today);
 
@@ -206,7 +230,7 @@ async function main() {
     }
   }
 
-  console.log(`check-deferrals: ${deferrals} declared deferral(s) in continuity/items.json, today ${today} MT`);
+  console.log(`check-deferrals: ${deferrals} declared deferral(s) among ${items.length} row(s) read from continuity/items.json, today ${today} MT`);
   console.log(`  ${prNote}`);
   for (const f of findings) console.log(`  ${f.kind}  ${f.id} — ${f.detail}`);
 
