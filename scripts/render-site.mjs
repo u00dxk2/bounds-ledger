@@ -289,7 +289,8 @@ export function movementDate(upperChanged, upperKind, lowerChanged, lowerKind) {
 // and moves the subject from the record to our watching of it, which is the only thing we observed.
 // Deliberately NOT fixed here: the data-changed sort key, which has the same root cause and is a
 // RANKING question rather than a wording one. A-42 is explicit that they fail differently and are
-// decided separately; its 09-11 gate still owns the sort key.
+// decided separately. The sort key was then fixed on its own in fa4b407 (movementDate, above), and
+// A-42 closed 2026-09-11 with both halves done.
 export function whenLabel(changed, kind) {
   if (kind === "value") return `value changed ${esc(changed)}`;
   if (kind === "text") return `text edited ${esc(changed)} — bound unchanged`;
