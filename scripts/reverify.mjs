@@ -22,8 +22,9 @@
 // --snapshot and commit the updated ledger copy deliberately.
 
 import { mkdir, readFile, writeFile, readdir, rm } from "node:fs/promises";
+import { realpathSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const REPO = "teorth/optimizationproblems";
 const SUBDIR = "constants";
@@ -41,8 +42,51 @@ if (process.env.GITHUB_TOKEN) UA.authorization = `Bearer ${process.env.GITHUB_TO
 
 const norm = (s) => s.replace(/\r\n/g, "\n");
 
+const RETRYABLE_STATUSES = new Set([429, 502, 503, 504]);
+const RETRY_DELAYS_MS = [500, 1500];
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const fetchErrorText = (err) => {
+  const message = err?.message ?? String(err);
+  const code = err?.code ?? err?.cause?.code;
+  return code && !message.includes(code) ? `${message} (${code})` : message;
+};
+
+const isTransientFetchError = (err) => {
+  const code = err?.code ?? err?.cause?.code;
+  return [
+    "ECONNRESET",
+    "ETIMEDOUT",
+    "UND_ERR_CONNECT_TIMEOUT",
+    "UND_ERR_HEADERS_TIMEOUT",
+    "UND_ERR_BODY_TIMEOUT",
+    "UND_ERR_SOCKET",
+  ].includes(code) || /ECONNRESET|socket hang up|timed?\s*out|timeout/i.test(fetchErrorText(err));
+};
+
+// Retry extends reach; it never converts the final response or error into success.
+// Callers still classify an exhausted HTTP response or transport error exactly as before.
+export async function fetchWithRetry(url, options = {}, {
+  fetchImpl = globalThis.fetch,
+  wait = sleep,
+} = {}) {
+  const totalAttempts = RETRY_DELAYS_MS.length + 1;
+  for (let attempt = 1; attempt <= totalAttempts; attempt++) {
+    try {
+      const res = await fetchImpl(url, options);
+      if (!RETRYABLE_STATUSES.has(res.status) || attempt === totalAttempts) return res;
+      console.log(`Retrying ${url}: attempt ${attempt + 1}/${totalAttempts} after HTTP ${res.status}`);
+      try { await res.body?.cancel(); } catch { /* best effort: release this failed response */ }
+    } catch (err) {
+      if (!isTransientFetchError(err) || attempt === totalAttempts) throw err;
+      console.log(`Retrying ${url}: attempt ${attempt + 1}/${totalAttempts} after ${fetchErrorText(err)}`);
+    }
+    await wait(RETRY_DELAYS_MS[attempt - 1]);
+  }
+}
+
 async function getJson(url) {
-  const res = await fetch(url, { headers: UA });
+  const res = await fetchWithRetry(url, { headers: UA });
   if (!res.ok) throw new Error(`GET ${url}: ${res.status}`);
   return res.json();
 }
@@ -59,7 +103,7 @@ async function fetchUpstream() {
   for (let i = 0; i < paths.length; i += CHUNK) {
     await Promise.all(
       paths.slice(i, i + CHUNK).map(async (p) => {
-        const res = await fetch(`https://raw.githubusercontent.com/${REPO}/${sha}/${p}`, { headers: { "user-agent": UA["user-agent"] } });
+        const res = await fetchWithRetry(`https://raw.githubusercontent.com/${REPO}/${sha}/${p}`, { headers: { "user-agent": UA["user-agent"] } });
         if (!res.ok) throw new Error(`fetch ${p}: ${res.status}`);
         files.set(p, norm(await res.text()));
       })
@@ -146,16 +190,30 @@ async function check(liveDir) {
   return 1;
 }
 
-const args = process.argv.slice(2);
-const liveDirIdx = args.indexOf("--live-dir");
-try {
-  if (args.includes("--snapshot")) await snapshot();
-  else if (args.includes("--check")) process.exitCode = await check(liveDirIdx >= 0 ? args[liveDirIdx + 1] : null);
-  else {
-    console.error("usage: reverify.mjs --snapshot | --check [--live-dir <dir>]");
+// MAIN-MODULE GUARD, F1 from the 2026-09-01 cross-family review of this branch. Comparing
+// pathToFileURL(process.argv[1]) against import.meta.url fails SILENTLY GREEN when the checkout is
+// reached through a symlink or a junction: Node realpaths the ESM entry and not argv[1], so the
+// identity check fails, main never runs, and the process exits 0 having printed nothing — a checker
+// reporting success for work it never did. Measured on the branch through a junction: `--check`
+// exited 0 with 0 bytes, and `npm test` reported PASS with one self-test never executed.
+// realpathSync puts both sides in the same space; the else-branch is A-19 N-2's rule that a guard
+// which cannot run must not read as a pass, and it is why the failure is loud rather than absent.
+const entry = process.argv[1] ? pathToFileURL(realpathSync(process.argv[1])).href : null;
+if (entry === import.meta.url) {
+  const args = process.argv.slice(2);
+  const liveDirIdx = args.indexOf("--live-dir");
+  try {
+    if (args.includes("--snapshot")) await snapshot();
+    else if (args.includes("--check")) process.exitCode = await check(liveDirIdx >= 0 ? args[liveDirIdx + 1] : null);
+    else {
+      console.error("usage: reverify.mjs --snapshot | --check [--live-dir <dir>]");
+      process.exitCode = 2;
+    }
+  } catch (err) {
+    console.error(`error: ${err.message}`);
     process.exitCode = 2;
   }
-} catch (err) {
-  console.error(`error: ${err.message}`);
+} else if (process.argv[1]?.endsWith("reverify.mjs")) {
+  console.error("reverify: COULD NOT RUN — invoked as main but module identity did not match");
   process.exitCode = 2;
 }

@@ -6,7 +6,10 @@ import { cp, readFile, writeFile, rm, readdir, mkdir } from "node:fs/promises";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
+import { symlinkSync } from "node:fs";
 import assert from "node:assert";
+import { fetchWithRetry } from "./reverify.mjs";
+import { run as runClaims } from "./check-claims.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LEDGER = join(ROOT, "ledger", "teorth-optimizationproblems");
@@ -29,6 +32,132 @@ const freshLive = async () => {
   await cp(LEDGER, TMP, { recursive: true });
   await rm(join(TMP, "manifest.json"), { force: true });
 };
+
+const captureStdout = async (action) => {
+  const lines = [];
+  const originalLog = console.log;
+  console.log = (...values) => {
+    lines.push(values.join(" "));
+    originalLog(...values);
+  };
+  try {
+    return { result: await action(), lines };
+  } finally {
+    console.log = originalLog;
+  }
+};
+
+// ---- A-20: bounded retry extends reach without softening the verdict --------
+// Both cases inject fetch and a zero-time wait, so this exercises the production
+// helper and claim run without making a network request or waiting two seconds.
+const transientUrl = "https://example.invalid/a20-transient";
+let transientAttempts = 0;
+const transientWaits = [];
+const { result: transientResponse, lines: transientLogs } = await captureStdout(() =>
+  fetchWithRetry(transientUrl, {}, {
+    fetchImpl: async () => {
+      transientAttempts++;
+      if (transientAttempts === 1) return { ok: false, status: 502 };
+      return { ok: true, status: 200, text: async () => "read completed after retry" };
+    },
+    wait: async (ms) => { transientWaits.push(ms); },
+  }));
+assert.equal(transientAttempts, 2, "one HTTP 502 should cause exactly one retry");
+assert.equal(await transientResponse.text(), "read completed after retry",
+  "a transient HTTP 502 should complete the read on retry");
+assert.deepEqual(transientWaits, [500], "the first retry should wait roughly 500ms");
+assert.deepEqual(transientLogs, [
+  `Retrying ${transientUrl}: attempt 2/3 after HTTP 502`,
+], "the retry must be visible on stdout with URL, attempt, and status");
+console.log("A-20 transient recovery assertion: PASS (injected HTTP 502, read completed on attempt 2, retry logged)");
+
+const persistentUrl = "https://example.invalid/a20-persistent";
+let persistentAttempts = 0;
+const persistentWaits = [];
+const { result: persistentExit, lines: persistentOutput } = await captureStdout(() =>
+  runClaims({
+    claims: [{ id: "A-20-test", statement: "persistent transport failure", url: persistentUrl, expect: "never read" }],
+    fetchImpl: async () => {
+      persistentAttempts++;
+      return { ok: false, status: 503 };
+    },
+    wait: async (ms) => { persistentWaits.push(ms); },
+  }));
+assert.equal(persistentAttempts, 3, "persistent HTTP 503 should stop after three total attempts");
+assert.deepEqual(persistentWaits, [500, 1500], "the two retries should use the bounded 500ms/1500ms backoff");
+assert.equal(persistentExit, 1, "an exhausted transient failure must keep the claim run RED");
+assert.match(persistentOutput.join("\n"), /^UNREACHABLE A-20-test/m,
+  "an exhausted source was never read and must be UNREACHABLE");
+assert.doesNotMatch(persistentOutput.join("\n"), /^BROKEN\s+A-20-test/m,
+  "an exhausted source must never be mislabeled BROKEN");
+console.log("A-20 persistent failure assertion: PASS (injected HTTP 503 three times, UNREACHABLE, exit 1)");
+
+// F2 from the 2026-09-01 review: the retry's SILENT half was unguarded. Widening
+// RETRYABLE_STATUSES to include 403 and 404 — with the mutation proven landed — left the whole
+// suite green, because every assertion above only checks that retryable statuses DO retry. Nothing
+// said which statuses must NOT. A retry layer that quietly re-requests a 404 multiplies load on a
+// dead URL and hides a permanent failure behind three attempts.
+for (const status of [403, 404]) {
+  const url = `https://example.invalid/a20-not-retryable-${status}`;
+  let attempts = 0;
+  const waits = [];
+  const { result, lines } = await captureStdout(() =>
+    fetchWithRetry(url, {}, {
+      fetchImpl: async () => { attempts++; return { ok: false, status }; },
+      wait: async (ms) => { waits.push(ms); },
+    }));
+  assert.equal(attempts, 1, `HTTP ${status} must be returned on the first attempt, never retried`);
+  assert.equal(result.status, status, `HTTP ${status} must be handed back unchanged`);
+  assert.deepEqual(waits, [], `HTTP ${status} must not sleep between attempts`);
+  assert.deepEqual(lines, [], `HTTP ${status} must not log a retry`);
+}
+console.log("A-20 non-retryable assertion: PASS (403 and 404 each returned on attempt 1, no sleep, no retry line)");
+
+// F1 from the same review, exercised rather than described: reach this checkout through a JUNCTION
+// and invoke the checker as main. Before the realpathSync fix this printed nothing and exited 0 —
+// a silent green. The usage text and exit 2 are the proof that main actually ran.
+{
+  // Under tmp/ rather than TMP: TMP is created later by freshLive(), and a junction into a parent
+  // that does not exist yet fails ENOENT — which this block would have reported as "this machine
+  // cannot create junctions", turning a broken test into a skipped one. It did, on the first run.
+  const linkRoot = join(ROOT, "tmp", "f1-junction");
+  await rm(linkRoot, { recursive: true, force: true });
+  let junctionMade = true;
+  try {
+    symlinkSync(ROOT, linkRoot, "junction");
+  } catch {
+    junctionMade = false; // a machine that cannot create junctions cannot answer this question
+  }
+  if (junctionMade) {
+    // execFileSync THROWS on a non-zero exit, so the pass case is the throw: status 2 with the
+    // usage text. Exit 0 is the defect, and it arrives here as no throw at all.
+    let status = 0, stderr = "", threw = false;
+    try {
+      execFileSync(process.execPath, [join(linkRoot, "scripts", "reverify.mjs")], {
+        encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], cwd: ROOT,
+      });
+    } catch (err) {
+      threw = true;
+      status = err.status;
+      stderr = String(err.stderr ?? "");
+    }
+    assert.ok(threw, "through a junction the checker must NOT exit 0 — that is the silent green F1 names");
+    assert.equal(status, 2, "through a junction the checker must reach main and exit 2 on no arguments");
+    assert.match(stderr, /usage: reverify\.mjs/, "the usage text is the proof that main actually ran");
+    // The same guard in check-claims.mjs, and the review's own example: through a junction its
+    // --selftest exited 0 having printed nothing, so `npm test` reported PASS over a self-test that
+    // never ran. Asserting the PASS LINE rather than the exit code is what tells those apart.
+    const claimsOut = execFileSync(process.execPath, [join(linkRoot, "scripts", "check-claims.mjs"), "--selftest"], {
+      encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], cwd: ROOT,
+    });
+    assert.match(claimsOut, /check-claims selftest: PASS/,
+      "through a junction the claims self-test must actually RUN and say so — exit 0 with no output is the defect");
+    await rm(linkRoot, { recursive: true, force: true });
+    console.log("A-20 F1 junction assertion: PASS (through a junction reverify reaches main and exits 2 with usage; check-claims --selftest runs and prints its PASS line)");
+  } else {
+    console.log("A-20 F1 junction assertion: SKIPPED — this machine could not create a junction, so the question was not answered");
+  }
+}
 
 await freshLive();
 
@@ -228,7 +357,7 @@ let alarmCouldNotRun = false;
   }
 }
 
-const summary = `synthetic drift in ${victim} detected; pristine copy clean; README leg fires on an asterisked row, silent when restored, REMOVED when deleted, and untouched by a constants-only edit; ${steps.length} workflow steps, piped steps pipefail-guarded; ${testCmds.length} self-tests present in CI; ${alarmVerdict}`;
+const summary = `synthetic drift in ${victim} detected; pristine copy clean; README leg fires on an asterisked row, silent when restored, REMOVED when deleted, and untouched by a constants-only edit; A-20 retry recovers after one 502 with a visible retry and exhausts three 503 attempts as UNREACHABLE/exit 1; ${steps.length} workflow steps, piped steps pipefail-guarded; ${testCmds.length} self-tests present in CI; ${alarmVerdict}`;
 
 // A-19 N-2. Previously the bash-less path printed PASS and exited 0, so on a machine without
 // bash this file reported success for a guard that never ran — the precise shape this repo
