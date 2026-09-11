@@ -13,6 +13,7 @@
 // counts or the exit code: a local run gains real information, CI output gains one honest line.
 
 import { readFile } from "node:fs/promises";
+import { realpathSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { fetchWithRetry } from "./reverify.mjs";
@@ -157,7 +158,12 @@ export async function run({
   return broken ? 1 : 0;
 }
 
-if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
+// MAIN-MODULE GUARD — the same F1 fix as reverify.mjs, and for the same measured reason: through a
+// junction the identity check failed, `--selftest` exited 0 with 0 bytes, and the suite reported
+// PASS over a self-test that never ran. realpathSync puts both sides in the same space; the
+// else-branch makes a guard that cannot run say so instead of reading as a pass.
+const entry = process.argv[1] ? pathToFileURL(realpathSync(process.argv[1])).href : null;
+if (entry === import.meta.url) {
   try {
     if (process.argv.includes("--selftest")) selftest();
     else process.exitCode = await run();
@@ -165,4 +171,7 @@ if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) 
     console.error(`error: ${err.message}`);
     process.exitCode = 2;
   }
+} else if (process.argv[1]?.endsWith("check-claims.mjs")) {
+  console.error("check-claims: COULD NOT RUN — invoked as main but module identity did not match");
+  process.exitCode = 2;
 }

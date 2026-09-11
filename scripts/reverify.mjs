@@ -22,6 +22,7 @@
 // --snapshot and commit the updated ledger copy deliberately.
 
 import { mkdir, readFile, writeFile, readdir, rm } from "node:fs/promises";
+import { realpathSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -189,7 +190,16 @@ async function check(liveDir) {
   return 1;
 }
 
-if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) {
+// MAIN-MODULE GUARD, F1 from the 2026-09-01 cross-family review of this branch. Comparing
+// pathToFileURL(process.argv[1]) against import.meta.url fails SILENTLY GREEN when the checkout is
+// reached through a symlink or a junction: Node realpaths the ESM entry and not argv[1], so the
+// identity check fails, main never runs, and the process exits 0 having printed nothing — a checker
+// reporting success for work it never did. Measured on the branch through a junction: `--check`
+// exited 0 with 0 bytes, and `npm test` reported PASS with one self-test never executed.
+// realpathSync puts both sides in the same space; the else-branch is A-19 N-2's rule that a guard
+// which cannot run must not read as a pass, and it is why the failure is loud rather than absent.
+const entry = process.argv[1] ? pathToFileURL(realpathSync(process.argv[1])).href : null;
+if (entry === import.meta.url) {
   const args = process.argv.slice(2);
   const liveDirIdx = args.indexOf("--live-dir");
   try {
@@ -203,4 +213,7 @@ if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) 
     console.error(`error: ${err.message}`);
     process.exitCode = 2;
   }
+} else if (process.argv[1]?.endsWith("reverify.mjs")) {
+  console.error("reverify: COULD NOT RUN — invoked as main but module identity did not match");
+  process.exitCode = 2;
 }
