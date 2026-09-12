@@ -20,6 +20,7 @@
 //
 // Usage: node scripts/depth-audit.mjs [--store <path>] | --selftest
 
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -136,24 +137,37 @@ export const SECTIONS = [['U', 'Known upper bounds'], ['L', 'Known lower bounds'
 const BLOCK_TERMINATOR = /^(>|#{1,6}\s|<)/;
 const unescapedPipeCount = (l) => (l.replace(/\\\|/g, '').match(/\|/g) || []).length;
 
+// Each row carries the 1-based line it was parsed FROM. Comments are blanked IN PLACE rather
+// than deleted so that every surviving line keeps its original number: adversarial review on
+// 2026-09-12 showed the alternative failing silently. The draw used to re-find a row by
+// searching the raw file for its text, and a commented-out DUPLICATE of a live row made it
+// report the comment's line while the row hash matched either way — so hashing could not catch
+// a verdict pointing at excluded text, and an inline comment inside a row reported line 0.
 export function boundRowsOf(fileText) {
-  const clean = fileText.replace(/<!--[\s\S]*?-->/g, '');
+  const all = fileText.replace(/<!--[\s\S]*?-->/g, (m) => m.replace(/[^\n]/g, ' ')).split('\n');
   const rows = [];
   const anomalies = [];
   for (const [dir, header] of SECTIONS) {
-    const m = clean.match(new RegExp(`^## ${header}\\s*$([\\s\\S]*?)(?=^## |$(?![\\s\\S]))`, 'm'));
-    if (!m) continue;
-    const body = m[1].split('\n').map((l) => l.trim());
-    let i = 0;
-    while (i < body.length) {
-      const isHeader = body[i].startsWith('|') && i + 1 < body.length && isSeparatorRow(body[i + 1]);
+    const headerRe = new RegExp(`^## ${header}\\s*$`);
+    let start = -1;
+    for (let i = 0; i < all.length; i += 1) {
+      if (headerRe.test(all[i])) { start = i + 1; break; }
+    }
+    if (start === -1) continue;
+    let end = all.length;
+    for (let i = start; i < all.length; i += 1) {
+      if (/^## /.test(all[i])) { end = i; break; }
+    }
+    let i = start;
+    while (i < end) {
+      const isHeader = all[i].trim().startsWith('|') && i + 1 < end && isSeparatorRow(all[i + 1].trim());
       if (!isHeader) { i += 1; continue; }
       i += 2; // the block's own header and separator are never data
-      while (i < body.length) {
-        const l = body[i];
+      while (i < end) {
+        const l = all[i].trim();
         if (l === '' || BLOCK_TERMINATOR.test(l)) break;
         if (l.startsWith('|')) {
-          if (!isSeparatorRow(l)) rows.push({ text: l, section: header, dir });
+          if (!isSeparatorRow(l)) rows.push({ text: l, section: header, dir, line: i + 1 });
           i += 1;
           continue;
         }
@@ -371,6 +385,35 @@ function selftest() {
   const noControl = fs.mkdtempSync(path.join(os.tmpdir(), 'depth-corpus-nocontrol-'));
   fs.writeFileSync(path.join(noControl, '01a.md'), page('| $1$ | [A2020] | cited |', '| $0.5$ | [B2020] | cited |'));
   eq('a corpus missing the 87a control refuses', typeof corpusRefusal(countCorpus(noControl, { expectedFiles: 1, expectedSections: new Set(['01a:U', '01a:L']) }), expect), 'string');
+  // --- THE DRAW, both polarities (2026-09-12, from the adversarial review that blocked it) ---
+  // LINE MAPPING. A commented-out DUPLICATE of a live row sits ABOVE it. The draw must report the
+  // LIVE row's line, and the assertion reads the file back AT that line and requires the row text
+  // there — which is what failed before comments were blanked in place rather than deleted: the
+  // lookup found the commented copy first, and the row HASH matched either way, so a verdict could
+  // point at excluded text with nothing to catch it.
+  const drawDir = fs.mkdtempSync(path.join(os.tmpdir(), 'depth-draw-'));
+  const dupUpper = '<!-- | $1$ | [A2020] | an older copy, commented out | -->\n| $1$ | [A2020] | the live row |';
+  fs.writeFileSync(path.join(drawDir, '01a.md'), page(dupUpper, '| $0.5$ | [B2020] | cited |'));
+  fs.writeFileSync(path.join(drawDir, '87a.md'), page('| $857.5662$ | [HMR2019] | the control row |', '| $1$ | [HMR2019] | cited |'));
+  const drawnRow = drawFrame(drawDir)[0];
+  const lineText = fs.readFileSync(path.join(drawDir, '01a.md'), 'utf8').split('\n')[drawnRow.line - 1].trim();
+  eq('a commented-out duplicate does not steal the live row\'s line', lineText, drawnRow.text);
+  // An INLINE comment inside a row still yields a real location. The stored text has the comment
+  // blanked, so it no longer equals the raw line and ONLY the line number ties the two together —
+  // the shape that previously reported line 0.
+  const inlineDir = fs.mkdtempSync(path.join(os.tmpdir(), 'depth-draw-inline-'));
+  fs.writeFileSync(path.join(inlineDir, '01a.md'), page('| $7$ | [A2020] | note <!-- hidden --> tail |', '| $0.5$ | [B2020] | cited |'));
+  const inlineRow = drawFrame(inlineDir)[0];
+  eq('a row carrying an inline comment reports a real line, never 0', inlineRow.line > 0, true);
+  eq('  …and that line is the row it was parsed from', fs.readFileSync(path.join(inlineDir, '01a.md'), 'utf8').split('\n')[inlineRow.line - 1].includes('[A2020]'), true);
+  // FRAME VALIDATION. The draw must refuse anything --corpus refuses: over the partial-section
+  // fixture above, a draw that checked only its own bounds renumbered the frame and reported PASS.
+  eq('the draw REFUSES a frame the corpus check rejects', drawRun(partial, [1], { ...base, expect }).code, 2);
+  eq('  …and stays silent on the intact fixture, drawing position 1', drawRun(corpusDir, [1], { ...base, expect }).code, 0);
+  eq('a position past the end of the frame refuses rather than drawing a neighbour', drawRun(corpusDir, [9999], { ...base, expect }).code, 3);
+  fs.rmSync(drawDir, { recursive: true, force: true });
+  fs.rmSync(inlineDir, { recursive: true, force: true });
+
   fs.rmSync(corpusDir, { recursive: true, force: true });
   fs.rmSync(partial, { recursive: true, force: true });
   fs.rmSync(pipeless, { recursive: true, force: true });
@@ -384,11 +427,113 @@ function selftest() {
     process.exit(2);
   }
   console.log('depth-audit selftest: PASS (clean store silent; missing, empty and unparseable stores each refuse rather than reporting a zero; an unrecognised verdict trips the sum-check; an all-UNREACHABLE store does NOT trip it; the corpus count skips commented rows and reference lists, and refuses PARTIAL section loss by name, a row that lost its leading pipe while its section still yielded rows, a row hidden in a second table block, a short manifest inventory, an inventory or section baseline that could not be established at all, a moved 87a control, an empty directory and a corpus missing its control — while a blockquote or heading ending a table legally stays SILENT)');
-  console.log('RESULT: PASS — 21 case(s), both polarities (exit 0)');
+  console.log('RESULT: PASS — 27 case(s), both polarities (exit 0)');
+}
+
+// THE SAMPLING FRAME, MADE EXECUTABLE (2026-09-12). Slices 1 and 2 were drawn by a script
+// that was never committed, which is the same shape as the 543 denominator nobody could
+// re-derive — the draw was prose and the reader had to trust it. `--draw` prints the rows
+// at given 1-based positions using THIS file's parser and cited-row definition, so the
+// frame it draws from is the one --corpus counts rather than a second opinion about what a
+// bound row is. It draws ONLY: it never fetches a source, never judges a row, never writes
+// the store. Lives here rather than in a sibling script because depth-audit.mjs runs its
+// CLI at import time, so any importer inherits an exit before its own first line.
+export function drawFrame(dir) {
+  const frame = [];
+  let names = [];
+  try { names = fs.readdirSync(dir).filter((f) => f.endsWith('.md')).sort(); } catch { names = []; }
+  for (const name of names) {
+    const text = fs.readFileSync(path.join(dir, name), 'utf8');
+    const { rows } = boundRowsOf(text);
+    // FILE-then-LINE order, SORTED rather than assumed. boundRowsOf walks upper bounds before
+    // lower bounds, so a file listing its lower table first would enumerate out of document order
+    // and every stored POSITION would silently mean a different row. No file in the mirror does
+    // that today — measured 2026-09-12, 0 of 115 — which is precisely why it is sorted instead of
+    // trusted: the day one does, the frame must not renumber itself behind the stored slices.
+    const cited = rows.filter((r) => CITED_REF_RE.test(r.text)).sort((a, b) => a.line - b.line);
+    for (const r of cited) {
+      frame.push({
+        constant: name.replace(/\.md$/, ''),
+        file: `ledger/teorth-optimizationproblems/constants/${name}`,
+        line: r.line,
+        section: r.section,
+        text: r.text,
+        sha16: crypto.createHash('sha256').update(r.text, 'utf8').digest('hex').slice(0, 16),
+        ref: (CITED_REF_RE.exec(r.text) || [, '(none)'])[1],
+      });
+    }
+  }
+  return frame;
+}
+
+// A DRAW IS ONLY AS GOOD AS THE FRAME IT DRAWS FROM, so this runs the corpus's own refusals first
+// and declines to draw from anything --corpus would reject (adversarial review, 2026-09-12: a
+// fixture with a renamed upper-bound heading left 669 rows, and position 100 quietly became a
+// different constant, while corpusRun exited 2 over the same directory). It also proves the two
+// readings agree on the population size rather than printing that as an instruction to the reader.
+export function drawRun(dir, positions, opts = {}) {
+  const lines = [];
+  const c = countCorpus(dir, { expectedFiles: opts.expectedFiles ?? null, expectedSections: opts.expectedSections ?? null });
+  const refusal = corpusRefusal(c, opts.expect);
+  if (refusal) {
+    lines.push(`RESULT: FAIL — refusing to draw from a frame the corpus check itself rejects: ${refusal} (exit 2)`);
+    return { code: 2, lines };
+  }
+  const frame = drawFrame(dir);
+  if (frame.length !== c.citedRows) {
+    lines.push(`RESULT: FAIL — the draw enumerated ${frame.length} cited row(s) while the corpus counter reports ${c.citedRows} over the same directory — two readings of one population, so neither the draw nor the denominator means anything (exit 3)`);
+    return { code: 3, lines };
+  }
+  if (positions.length === 0 || positions.some((p) => !Number.isInteger(p) || p < 1)) {
+    lines.push('RESULT: FAIL — positions must be 1-based integers: node scripts/depth-audit.mjs --draw <position> [position...] (exit 2)');
+    return { code: 2, lines };
+  }
+  const tooHigh = positions.filter((p) => p > frame.length);
+  if (tooHigh.length > 0) {
+    lines.push(`RESULT: FAIL — position(s) ${tooHigh.join(', ')} exceed the frame size ${frame.length} — refusing rather than silently drawing a neighbour (exit 3)`);
+    return { code: 3, lines };
+  }
+  lines.push(`frame: ${frame.length} cited bound row(s), file-then-line order — the same total the corpus counter reports over this directory, checked on this run rather than asserted`);
+  for (const p of positions) {
+    const row = frame[p - 1];
+    lines.push('');
+    lines.push(`position ${p} of ${frame.length} — ${row.constant} [${row.ref}] (${row.section})`);
+    lines.push(`  row:  ${row.file}:${row.line}`);
+    lines.push(`  sha:  ${row.sha16}`);
+    lines.push(`  text: ${row.text}`);
+  }
+  lines.push('');
+  lines.push(`RESULT: PASS — drew ${positions.length} position(s) from a frame of ${frame.length} (exit 0)`);
+  return { code: 0, lines };
+}
+
+// The two live baselines, read from committed artifacts rather than this script's memory, shared by
+// --corpus and --draw so a draw can never be validated against a weaker expectation than a count.
+function liveBaselines(cdir) {
+  let expectedFiles = null;
+  try {
+    const man = JSON.parse(fs.readFileSync(path.join(cdir, '..', 'manifest.json'), 'utf8'));
+    if (Number.isFinite(man.fileCount)) expectedFiles = man.fileCount - (man.rootFiles?.length ?? 0);
+  } catch { expectedFiles = null; }
+  let expectedSections = null;
+  try { expectedSections = expectedSectionsFromClaims(path.join(REPO, 'ledger', 'claims.json')); } catch { expectedSections = null; }
+  if (expectedSections && expectedSections.size === 0) expectedSections = null;
+  return { expectedFiles, expectedSections };
 }
 
 const argv = process.argv.slice(2);
-if (argv.includes('--selftest')) {
+if (argv.includes('--draw')) {
+  const raw = argv.slice(argv.indexOf('--draw') + 1);
+  const positions = raw.map((a) => Number(a));
+  if (positions.length === 0 || positions.some((p) => !Number.isInteger(p) || p < 1)) {
+    console.log('RESULT: FAIL — usage: node scripts/depth-audit.mjs --draw <position> [position...] (1-based integers) (exit 2)');
+    process.exit(2);
+  }
+  const cdir = path.join(REPO, 'ledger', 'teorth-optimizationproblems', 'constants');
+  const { code, lines } = drawRun(cdir, positions, liveBaselines(cdir));
+  for (const l of lines) console.log(l);
+  process.exit(code);
+} else if (argv.includes('--selftest')) {
   selftest();
 } else if (argv.includes('--corpus')) {
   const j = argv.indexOf('--constants');
@@ -398,15 +543,7 @@ if (argv.includes('--selftest')) {
   // Both baselines come from committed artifacts rather than this script's memory: the mirror's own
   // manifest for the file inventory, and the generated pins for the per-section expectation. If
   // either cannot be read the run REFUSES — corpusRefusal treats a null expectation as unestablished.
-  let expectedFiles = null;
-  try {
-    const man = JSON.parse(fs.readFileSync(path.join(cdir, '..', 'manifest.json'), 'utf8'));
-    if (Number.isFinite(man.fileCount)) expectedFiles = man.fileCount - (man.rootFiles?.length ?? 0);
-  } catch { expectedFiles = null; }
-  let expectedSections = null;
-  try { expectedSections = expectedSectionsFromClaims(path.join(REPO, 'ledger', 'claims.json')); } catch { expectedSections = null; }
-  if (expectedSections && expectedSections.size === 0) expectedSections = null;
-  const { code, lines } = corpusRun(cdir, { expectedFiles, expectedSections });
+  const { code, lines } = corpusRun(cdir, liveBaselines(cdir));
   for (const l of lines) console.log(l);
   process.exit(code);
 } else {
