@@ -113,6 +113,66 @@ for (const status of [403, 404]) {
 }
 console.log("A-20 non-retryable assertion: PASS (403 and 404 each returned on attempt 1, no sleep, no retry line)");
 
+// ---- A-39: a mid-run 429 must not become a synchronized burst ----------------
+// The row's measurement: this alarm fetches ~450 URLs at CHUNK = 10 concurrency, so a 429 retried
+// on the fixed 500ms ladder aims up to 339 requests inside about two seconds at the limiter that
+// just refused us. A 429 is not a server hiccup and no longer shares the 502 ladder.
+{
+  const res429 = (retryAfter) => ({
+    ok: false,
+    status: 429,
+    headers: { get: (name) => (String(name).toLowerCase() === "retry-after" ? retryAfter : null) },
+  });
+  const waitsFor = async (retryAfter, rng) => {
+    const waits = [];
+    await captureStdout(() =>
+      fetchWithRetry("https://example.invalid/a39", {}, {
+        fetchImpl: async () => res429(retryAfter),
+        wait: async (ms) => { waits.push(ms); },
+        rng,
+      }));
+    return waits;
+  };
+
+  assert.deepEqual(await waitsFor(null, () => 0), [2000, 8000],
+    "a 429 must use the rate-limit ladder, never the 500ms/1500ms server-error ladder");
+  assert.deepEqual(await waitsFor("5", () => 0), [5000, 8000],
+    "a Retry-After asking for longer than our ladder step must be honoured");
+  assert.deepEqual(await waitsFor("600", () => 0), [30000, 30000],
+    "a Retry-After beyond the ceiling must be capped rather than parking the run for ten minutes");
+  assert.deepEqual(await waitsFor("not-a-date", () => 0), [2000, 8000],
+    "an unparseable Retry-After falls back to the ladder rather than retrying immediately");
+
+  // note4 and AGENTS.md: the fix is about REQUEST VOLUME AND TIMING, never about the verdict.
+  let exhaustedAttempts = 0;
+  const { result: exhausted } = await captureStdout(() =>
+    fetchWithRetry("https://example.invalid/a39-exhausted", {}, {
+      fetchImpl: async () => { exhaustedAttempts++; return res429(null); },
+      wait: async () => {},
+      rng: () => 0,
+    }));
+  assert.equal(exhaustedAttempts, 3, "a 429 must still stop after three total attempts");
+  assert.equal(exhausted.status, 429,
+    "an exhausted 429 must be handed back unchanged so the run stays RED — never softened into a pass");
+
+  // LOCKSTEP, and its red arm. Ten separate draws must not all land on the identical delay.
+  const firstDelays = async (rng) => {
+    const out = [];
+    for (let i = 0; i < 10; i++) out.push((await waitsFor(null, rng))[0]);
+    return out;
+  };
+  const jittered = new Set(await firstDelays(Math.random));
+  assert.ok(jittered.size > 1,
+    `ten 429 retries must not all wait the identical delay (got ${jittered.size} distinct value(s))`);
+  // THE RED ARM, in the suite rather than in a comment: the SAME check over a constant rng — the
+  // un-jittered version this row exists to prevent — produces ONE value, so the assertion above
+  // rejects a real condition rather than passing on any implementation at all.
+  const lockstep = new Set(await firstDelays(() => 0.5));
+  assert.equal(lockstep.size, 1,
+    "control: a constant rng DOES produce identical delays, which is exactly what the jitter assertion rejects");
+  console.log("A-39 rate-limit assertion: PASS (429 on its own ladder; Retry-After honoured at 5s and capped at 30s; unparseable header falls back; exhausted 429 still returned RED; ten jittered delays spread, and the constant-rng control lands on one value)");
+}
+
 // F1 from the same review, exercised rather than described: reach this checkout through a JUNCTION
 // and invoke the checker as main. Before the realpathSync fix this printed nothing and exited 0 —
 // a silent green. The usage text and exit 2 are the proof that main actually ran.

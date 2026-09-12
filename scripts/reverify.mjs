@@ -44,7 +44,39 @@ const norm = (s) => s.replace(/\r\n/g, "\n");
 
 const RETRYABLE_STATUSES = new Set([429, 502, 503, 504]);
 const RETRY_DELAYS_MS = [500, 1500];
+// A-39: a 429 is NOT a server hiccup, it is the limiter already refusing us, so it gets its own
+// ladder, honours Retry-After, and is jittered. The numbers matter: this alarm fetches ~450 URLs a
+// run at CHUNK = 10 concurrency, so a mid-run 429 retried in lockstep at 500ms aims a burst at the
+// one surface that just said stop — and GitHub's own secondary-limit guidance counts an immediate
+// retry as a further violation. 502/503/504 keep the original ladder unchanged: the lockstep harm
+// measured on this repo was the rate-limit case, and widening the change would move behaviour the
+// A-20 tests pin without evidence that it does harm.
+// BOTH LADDERS MUST STAY THE SAME LENGTH — the attempt count is derived from RETRY_DELAYS_MS.
+const RATE_LIMIT_STATUSES = new Set([429]);
+const RATE_LIMIT_DELAYS_MS = [2000, 8000];
+const RETRY_AFTER_CEILING_MS = 30_000;
+const RATE_LIMIT_JITTER_FRACTION = 0.25;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Retry-After arrives either as seconds or as an HTTP date. An unparseable header is NOT an
+// instruction to retry immediately — it returns null and the caller falls back to its own ladder.
+export function retryAfterMs(header, now = Date.now()) {
+  if (header === null || header === undefined || String(header).trim() === "") return null;
+  const raw = String(header).trim();
+  const seconds = Number(raw);
+  if (Number.isFinite(seconds)) return Math.max(0, Math.round(seconds * 1000));
+  const at = Date.parse(raw);
+  return Number.isFinite(at) ? Math.max(0, at - now) : null;
+}
+
+// The wait for a rate-limited attempt: at least our ladder, at least what the server asked for,
+// never more than the ceiling — then jitter UPWARD only, so ten concurrent retries stop landing in
+// the same millisecond and we never wait LESS than a server-specified Retry-After.
+export function rateLimitDelayMs(base, retryAfterHeader, rng = Math.random, now = Date.now()) {
+  const asked = retryAfterMs(retryAfterHeader, now);
+  const floor = Math.min(Math.max(base, asked ?? 0), RETRY_AFTER_CEILING_MS);
+  return floor + Math.round(floor * RATE_LIMIT_JITTER_FRACTION * rng());
+}
 
 const fetchErrorText = (err) => {
   const message = err?.message ?? String(err);
@@ -69,19 +101,27 @@ const isTransientFetchError = (err) => {
 export async function fetchWithRetry(url, options = {}, {
   fetchImpl = globalThis.fetch,
   wait = sleep,
+  rng = Math.random,
 } = {}) {
   const totalAttempts = RETRY_DELAYS_MS.length + 1;
   for (let attempt = 1; attempt <= totalAttempts; attempt++) {
+    let delay = RETRY_DELAYS_MS[attempt - 1];
     try {
       const res = await fetchImpl(url, options);
       if (!RETRYABLE_STATUSES.has(res.status) || attempt === totalAttempts) return res;
-      console.log(`Retrying ${url}: attempt ${attempt + 1}/${totalAttempts} after HTTP ${res.status}`);
+      if (RATE_LIMIT_STATUSES.has(res.status)) {
+        const header = res.headers?.get?.("retry-after") ?? null;
+        delay = rateLimitDelayMs(RATE_LIMIT_DELAYS_MS[attempt - 1], header, rng);
+        console.log(`Retrying ${url}: attempt ${attempt + 1}/${totalAttempts} after HTTP ${res.status} (rate limited; waiting ${delay}ms${header ? `, Retry-After: ${header}` : ""})`);
+      } else {
+        console.log(`Retrying ${url}: attempt ${attempt + 1}/${totalAttempts} after HTTP ${res.status}`);
+      }
       try { await res.body?.cancel(); } catch { /* best effort: release this failed response */ }
     } catch (err) {
       if (!isTransientFetchError(err) || attempt === totalAttempts) throw err;
       console.log(`Retrying ${url}: attempt ${attempt + 1}/${totalAttempts} after ${fetchErrorText(err)}`);
     }
-    await wait(RETRY_DELAYS_MS[attempt - 1]);
+    await wait(delay);
   }
 }
 
