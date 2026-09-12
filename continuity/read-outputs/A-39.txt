@@ -1,0 +1,7 @@
+# read-output sidecar for A-39 — written by check-due-gates-dispositioned --run
+# readCommand: git grep -c RETRY_DELAYS_MS HEAD -- scripts/reverify.mjs
+# ran: 2026-09-12T19:04:28.999Z · exit: 0
+# lines: 1 · sha256: 0db859603a0f12ed (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+HEAD:scripts/reverify.mjs:3

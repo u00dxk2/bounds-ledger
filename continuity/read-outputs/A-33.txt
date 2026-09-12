@@ -1,0 +1,7 @@
+# read-output sidecar for A-33 — written by check-due-gates-dispositioned --run
+# readCommand: gh issue list --repo teorth/optimizationproblems --author u00dxk2 --state all --limit 20 --json number,state,closedAt,title
+# ran: 2026-09-12T19:04:47.204Z · exit: 0
+# lines: 1 · sha256: 3c8d8fe338b8ba34 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+[{"closedAt":"2026-08-23T17:15:35Z","number":150,"state":"CLOSED","title":"constants/87a.md: the current-record row quotes Martin's degree-8 discriminant, not the degree-12 construction that gives 857.5662"}]
