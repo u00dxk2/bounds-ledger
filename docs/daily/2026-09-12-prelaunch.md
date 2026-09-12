@@ -95,4 +95,9 @@ _Written last, from live commands. This report cannot name the commit that lands
 - **Dependabot:** 0 open alerts — `gh api repos/u00dxk2/bounds-ledger/dependabot/alerts?state=open` → 0.
 
 <!-- findings:begin -->
+**Appended after the report landed (20:25Z), correcting a State Appendix line above rather than rewriting it.**
+
+**The gate line above names a receipt that was taken over a moving tree.** That receipt (`2a40d62`, 20:07:07Z) carries `headMovedDuringRun`: a commit landed WHILE the gate ran, so part of the suite verified a tree the receipt does not name. The bus refused the P4 post over exactly that, and the refusal was correct. **The clean figure, with nothing in flight: `npm run verify` exit 0 at `884ef7a`, receipt 20:23:23Z, `failedGates []`, no `headMovedDuringRun`.**
+
+**Why it is worth more than the correction.** My plan had been to re-run only `check-deferrals` — the single leg that reads the ledger file I had edited — and argue the other legs still held. That is the argument this repo's own CLAUDE.md records the receipt gate refuting: a receipt over changed code cannot say which leg is red NOW, and the re-run is the only thing that can. It would very likely have produced the right answer, which is precisely what makes it the wrong habit, and it is the second sequencing waste of the day after the three-batch ledger edits. Both have one fix: batch the writes, then gate once, with nothing committing in between.
 <!-- findings:end -->
