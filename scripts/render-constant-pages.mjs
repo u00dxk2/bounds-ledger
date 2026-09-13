@@ -219,7 +219,7 @@ function rowLink(a) {
 /**
  * The audit block for ONE constant. Empty string when nothing usable here has been audited.
  *
- * THE COUNTS SEPARATE POPULATIONS, because the denominator does. 543 counts CITED BOUND ROWS, so
+ * THE COUNTS SEPARATE POPULATIONS, because the denominator does. The corpus figure counts CITED BOUND ROWS, so
  * only `value-vs-source` audits may be measured against it; a reference-entry check is real work and
  * a different population. It also counts DISTINCT rows actually READ — not audit entries, and not
  * attempts. Every one of those three distinctions was a way to overstate the work, and every one of
@@ -442,7 +442,7 @@ function selftest() {
       { id: "T-2", constant: "9z", citedRef: "REF2", leg: "citation-well-formed", verdict: "UNRESOLVED", source: "https://example.invalid/p2", sourceRead: "read in the body", selection: "systematic" },
       { id: "T-3", constant: "OTHER", citedRef: "REF3", leg: "value-vs-source", verdict: "DEFECTIVE", source: "https://example.invalid/p3", sourceRead: "read in the abstract", selection: "systematic", ...pinId("| $6.555555$ | [REF3] | x |") },
     ],
-    // Deliberately NOT 543: a fixture equal to the live figure cannot tell a rendered
+    // Deliberately NOT the live figure (read from the store below): a fixture equal to it cannot tell a rendered
     // denominator from a hardcoded one.
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   };
@@ -497,14 +497,16 @@ function selftest() {
   assert.ok(withNull.includes("Read against its cited source"), "a null entry beside a good one must not abort rendering");
 
   // (g) MEANING, and the one that keeps this honest: it must never read as coverage. The
-  //     denominator is RENDERED FROM THE STORE (999 here, not the live 543) and the not-checked
+  //     denominator is RENDERED FROM THE STORE (999 here, not the live corpus figure) and the not-checked
   //     disclaimer is present.
   assert.ok(audited.includes("999"), "the denominator must come from the store, not be hardcoded on the page");
-  assert.ok(!audited.includes("543"), "a fixture denominator of 999 must not render the live figure — that would prove the number is baked in");
+  const liveCited = JSON.parse(readFileSync(join(ROOT, "continuity", "depth-audit.json"), "utf8")).meta?.corpus?.citedRows;
+  assert.ok(Number.isSafeInteger(liveCited) && liveCited > 0 && liveCited !== 999, "positive control: the live cited-row figure is readable from the store and differs from the fixture");
+  assert.ok(!audited.includes(String(liveCited)), "a fixture denominator of 999 must not render the LIVE figure — that would prove the number is baked in");
   assert.ok(audited.includes("2026-01-02"), "the denominator must carry the date it was measured, or it goes stale in silence");
   assert.ok(audited.includes("has NOT been checked"), "the block must say plainly that unlisted rows are unchecked");
 
-  // (h) MEANING: populations are not conflated. 543 counts cited BOUND ROWS, so a reference-entry
+  // (h) MEANING: populations are not conflated. The corpus figure counts cited BOUND ROWS, so a reference-entry
   //     check must be reported separately rather than folded into that ratio.
   assert.ok(/1 bound row\(s\) here/.test(audited), "bound rows are counted on their own against the bound-row denominator");
   assert.ok(/1 reference entry here was also checked/.test(audited), "a reference-entry check must be named as a different population");
