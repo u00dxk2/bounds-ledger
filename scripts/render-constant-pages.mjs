@@ -21,6 +21,8 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import assert from "node:assert/strict";
 import { buildRows, flagUrl, citation, reportLabel, whenLabel } from "./render-site.mjs";
+import { boundCell } from "./lookup.mjs";
+import crypto from "node:crypto";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUTDIR = join(ROOT, "c");
@@ -59,7 +61,12 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 export function loadAudits() {
   try {
     const s = JSON.parse(readFileSync(join(ROOT, "continuity", "depth-audit.json"), "utf8"));
-    return { audits: Array.isArray(s.audits) ? s.audits : [], corpus: s.meta?.corpus || null };
+    const audits = Array.isArray(s.audits) ? s.audits : [];
+    // COMPUTED HERE AND OVERWRITTEN ON EVERY ENTRY, so a stored `inMirror: true` can never assert it.
+    for (const a of audits) {
+      if (a && typeof a === "object") a.inMirror = mirrorHas(a.rowFile, a.rowLine, a.rowText);
+    }
+    return { audits, corpus: s.meta?.corpus || null };
   } catch {
     // No store, or an unreadable one: the pages render exactly as they did before this existed.
     // An audit block is ADDITIVE, so its absence must never take a constant page down with it.
@@ -76,6 +83,61 @@ export function loadAudits() {
  *
  * LINK TEXT IS PER VERDICT, because "the source we read" beside UNREACHABLE contradicts itself.
  */
+/**
+ * A VALUE IS SHOWN ONLY WHEN IT IS PROVABLY THE ROW THAT WAS AUDITED AND THAT ROW STILL STANDS.
+ * Adversarial review, 2026-09-13: printing the stored rowText's first cell beside "supports this row"
+ * trusted the store completely — an entry edited to $9.999999$ with its hash left alone rendered that
+ * number as a supported bound, and non-table text or a comment-only cell came through wholesale.
+ * Three independent conditions, each able to fail on its own: the text is a table row; its hash is
+ * the one recorded when it was audited; and the identical line is still in the mirror today. Any one
+ * failing shows NO value — the verdict line still renders, because the reading happened; only the
+ * number is withheld, since we can no longer say it is the number that was read.
+ */
+const MIRROR_PREFIX = "ledger/teorth-optimizationproblems/constants/";
+/**
+ * THE AUDITED ROW, AT THE AUDITED LINE — not the audited text anywhere in the file (adversarial
+ * review round 2, 2026-09-13). The first version searched every line, so changing 1b:23 while the old
+ * text survived under a historical note left the check passing and printed the OLD value beside the
+ * NEW row. Identity is the recorded location plus the recorded text; an upstream insertion that moves
+ * the row is correctly read as "cannot prove it", never guessed at.
+ */
+export function mirrorHas(rowFile, rowLine, rowText, root = ROOT) {
+  if (typeof rowFile !== "string" || typeof rowText !== "string") return false;
+  if (!Number.isInteger(rowLine) || rowLine < 1) return false;
+  if (!rowFile.startsWith(MIRROR_PREFIX) || rowFile.includes("..")) return false;
+  const want = rowText.trim();
+  if (!want) return false;
+  try {
+    const line = readFileSync(join(root, rowFile), "utf8").split(/\r?\n/)[rowLine - 1];
+    return typeof line === "string" && line.trim() === want;
+  } catch {
+    return false;
+  }
+}
+
+/** Is this audit PROVABLY about the row that stands at its recorded line today? */
+export function identityVerified(a) {
+  if (!a || typeof a.rowText !== "string" || typeof a.rowTextSha256 !== "string") return false;
+  const t = a.rowText.trim();
+  if (!t.startsWith("|")) return false;
+  const sha16 = crypto.createHash("sha256").update(t, "utf8").digest("hex").slice(0, 16);
+  if (sha16 !== a.rowTextSha256) return false;
+  return a.inMirror === true;
+}
+
+export function verifiedValue(a) {
+  return identityVerified(a) ? boundCell(a.rowText.trim()).replace(/<!--[\s\S]*?-->/g, "").trim() : "";
+}
+
+/**
+ * A PINNED bound-row audit whose identity can no longer be proved is HISTORICAL (round 2's second
+ * finding): the reading happened, but on a version of the table that is not the one a reader sees, so
+ * the page must neither link the live line nor say the source "supports this row", and it is not
+ * counted as a read. Review round 3 closed the gap this left: an audit with NO stored rowText cannot
+ * prove identity either, so it is historical too — no identity, no live link, no support claim, no count.
+ */
+const isStale = (a) => a.leg === "value-vs-source" && !identityVerified(a);
+
 const VERDICT_PROSE = {
   SOUND: { text: "the cited source was read and it supports this row", link: "the source we read" },
   DEFECTIVE: { text: "the cited source was read and it does NOT support this row", link: "the source we read" },
@@ -171,14 +233,29 @@ export function auditBlock(id, store) {
   const items = mine.map((a) => {
     const v = VERDICT_PROSE[a.verdict];
     const leg = LEG_LABEL[a.leg];
-    const what = leg ? `${esc(leg)}${leg === "bound row" ? rowLink(a) : ""} citing ` : "";
+    // THE VALUE IS THE THING CHECKED (orchestrator P3 ack, 2026-09-13): the page named the line and
+    // the citation but not the number, so three of 1b's four audited values appeared nowhere in the
+    // served HTML. It is the row's own first cell, read from the stored rowText — never retyped, never
+    // recomputed — only for a bound row, and only when verifiedValue can prove it is the audited row
+    // and that row still stands in the mirror.
+    const value = leg === "bound row" ? verifiedValue(a) : "";
+    const shown = value ? ` <code style="display:inline;padding:.1rem .3rem">${esc(value)}</code>` : "";
+    // A pinned audit whose identity can no longer be proved keeps its reading but loses the live line
+    // link and the support claim — a reader must never be pointed at a row nobody read.
+    const stale = isStale(a);
+    const what = leg ? `${esc(leg)}${shown}${leg === "bound row" && !stale ? rowLink(a) : ""} citing ` : "";
     const note = a.sourceRead ? ` (${esc(a.sourceRead)})` : "";
+    const verdictText = stale
+      ? (READ_VERDICTS.has(a.verdict) ? "this row was read against its cited source on an earlier version of the table, and the row at that line has since changed or cannot be matched, so this verdict says nothing about the row there now" : "a check of this row was attempted on an earlier version of the table and the cited source could not be read; the row at that line has since changed or cannot be matched, so nothing is said about the row there now")
+      : v.text;
     return `<li>${what}<code style="display:inline;padding:.1rem .3rem">[${esc(a.citedRef)}]</code> &mdash; ` +
-      `${esc(v.text)}. <a href="${esc(safeUrl(a.source))}">${esc(v.link)}</a>${note}. ` +
+      `${esc(verdictText)}. <a href="${esc(safeUrl(a.source))}">${esc(v.link)}</a>${note}. ` +
       `<span class="sel">Selected: ${esc(selectionNote(a))}.</span></li>`;
   }).join("");
 
-  const isBoundRead = (a) => a.leg === "value-vs-source" && READ_VERDICTS.has(a.verdict);
+  // A STALE audit (pinned, identity no longer provable) was read on an earlier version of the table,
+  // so it is not a reading of the row a reader sees today and is never counted as read.
+  const isBoundRead = (a) => a.leg === "value-vs-source" && READ_VERDICTS.has(a.verdict) && !isStale(a);
   const countRows = (rows) => new Set(rows.map(rowKey)).size;
   /**
    * PARTITION BY ROW, THEN BY SELECTION — never the other way round (adversarial review, 2026-09-13).
@@ -203,7 +280,7 @@ export function auditBlock(id, store) {
   const susHere = here.suspicion;
   const sysAll = ledger.systematic;
   const susAll = ledger.suspicion;
-  const unreachedHere = new Set(mine.filter((a) => a.leg === "value-vs-source" && !READ_VERDICTS.has(a.verdict)).map(rowKey)).size;
+  const unreachedHere = new Set(mine.filter((a) => a.leg === "value-vs-source" && !READ_VERDICTS.has(a.verdict) && !isStale(a)).map(rowKey)).size;
   const otherHere = new Set(mine.filter((a) => a.leg !== "value-vs-source").map(rowKey)).size;
 
   const cited = store?.corpus?.citedRows;
@@ -225,7 +302,11 @@ export function auditBlock(id, store) {
     const verb = otherHere === 1 ? "was" : "were";
     parts.push(boundHere > 0
       ? `${n} here ${verb} also checked; those are not bound rows and are not counted against that figure.`
-      : `${n} here ${verb} checked. That is a citation check, not a bound row, so no bound row of this constant has been read against its source yet.`);
+      : countRows(mine.filter(isStale)) > 0 ? `${n} here ${verb} checked. That is a citation check, not a bound row, and no bound row of this constant has been verified against the current table.` : `${n} here ${verb} checked. That is a citation check, not a bound row, so no bound row of this constant has been read against its source yet.`);
+  }
+  const staleHere = countRows(mine.filter(isStale));
+  if (staleHere > 0) {
+    parts.push(`${staleHere} audited bound row(s) here no longer match the current table at the line they were checked against; those verdicts describe an earlier version and are not counted.`);
   }
   parts.push("A row not listed here has NOT been checked.");
 
@@ -354,11 +435,12 @@ function selftest() {
   // hostile store values reaching executable HTML. The worst was structural: the no-record
   // prohibition ran ONLY on the unaudited fixture, so the guard could not see the surface the
   // audit block had just added. That is this lane's founding defect in a new place.
+  const pinId = (text) => ({ rowText: text, rowTextSha256: crypto.createHash("sha256").update(text.trim(), "utf8").digest("hex").slice(0, 16), inMirror: true });
   const store = {
     audits: [
-      { id: "T-1", constant: "9z", citedRef: "REF1", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/p1", sourceRead: "read in the abstract", selection: "systematic" },
+      { id: "T-1", constant: "9z", citedRef: "REF1", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/p1", sourceRead: "read in the abstract", selection: "systematic", ...pinId("| $5.555555$ | [REF1] | x |") },
       { id: "T-2", constant: "9z", citedRef: "REF2", leg: "citation-well-formed", verdict: "UNRESOLVED", source: "https://example.invalid/p2", sourceRead: "read in the body", selection: "systematic" },
-      { id: "T-3", constant: "OTHER", citedRef: "REF3", leg: "value-vs-source", verdict: "DEFECTIVE", source: "https://example.invalid/p3", sourceRead: "read in the abstract", selection: "systematic" },
+      { id: "T-3", constant: "OTHER", citedRef: "REF3", leg: "value-vs-source", verdict: "DEFECTIVE", source: "https://example.invalid/p3", sourceRead: "read in the abstract", selection: "systematic", ...pinId("| $6.555555$ | [REF3] | x |") },
     ],
     // Deliberately NOT 543: a fixture equal to the live figure cannot tell a rendered
     // denominator from a hardcoded one.
@@ -387,7 +469,7 @@ function selftest() {
   //     source we read" beside UNREACHABLE would contradict itself.
   assert.ok(audited.includes("the cited source was read and it supports this row"), "a SOUND row must say what was done");
   assert.ok(audited.includes("the cited source was reached but could not settle the question"), "UNRESOLVED must read as its own outcome");
-  const unreach = renderPage(row, "abc1234def", { audits: [{ id: "T-U", constant: "9z", citedRef: "R", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/u" }], corpus: { citedRows: 999 } });
+  const unreach = renderPage(row, "abc1234def", { audits: [{ id: "T-U", constant: "9z", citedRef: "R", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/u", ...pinId("| $7.555555$ | [R] | x |") }], corpus: { citedRows: 999 } });
   assert.ok(!/>the source we read</.test(unreach), "an UNREACHABLE row must not offer 'the source we read'");
   assert.ok(unreach.includes("the source we could not read"), "positive control: UNREACHABLE has its own link text");
 
@@ -447,7 +529,7 @@ function selftest() {
   //      still passed, because DEFECTIVE only ever appeared on the OTHER constant and so was never
   //      read. A verdict rendered somewhere the assertions cannot see is an unchecked verdict.
   const defective = renderPage(row, "abc1234def", {
-    audits: [{ id: "T-D", constant: "9z", citedRef: "RD", leg: "value-vs-source", verdict: "DEFECTIVE", source: "https://example.invalid/d" }],
+    audits: [{ id: "T-D", constant: "9z", citedRef: "RD", leg: "value-vs-source", verdict: "DEFECTIVE", source: "https://example.invalid/d", ...pinId("| $8.555555$ | [RD] | x |") }],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
   assert.ok(defective.includes("does NOT support this row"),
@@ -457,7 +539,7 @@ function selftest() {
   // (h4) AN UNREACHABLE SOURCE WAS NOT READ, and the summary must not count it as read. The page
   //      previously printed "could not be read at all" beside "1 bound row(s) ... have been read".
   const unreadOnly = renderPage(row, "abc1234def", {
-    audits: [{ id: "T-U2", constant: "9z", citedRef: "RU", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/u2" }],
+    audits: [{ id: "T-U2", constant: "9z", citedRef: "RU", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/u2", ...pinId("| $9.555555$ | [RU] | x |") }],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
   assert.ok(unreadOnly.includes("Read against its cited source"), "positive control: the unreachable-only page renders a block");
@@ -468,7 +550,7 @@ function selftest() {
 
   // (h5) A REPEAT AUDIT OF THE SAME ROW IS ONE ROW. Counting entries let a recheck inflate apparent
   //      coverage without examining any new material.
-  const pinned = { constant: "9z", citedRef: "RP", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/p", rowFile: "ledger/x/9z.md", rowLine: 33, rowTextSha256: "abc123" };
+  const pinned = { constant: "9z", citedRef: "RP", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/p", rowFile: "ledger/x/9z.md", rowLine: 33, rowTextSha256: "abc123", ...pinId("| $3.333333$ | [RP] | x |") };
   const repeated = renderPage(row, "abc1234def", {
     audits: [{ ...pinned, id: "T-P1" }, { ...pinned, id: "T-P2" }],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
@@ -502,8 +584,8 @@ function selftest() {
   //      The MEANING guards come first; the count pins last (the 2026-09-06 assertion-order rule).
   const mixed = renderPage(row, "abc1234def", {
     audits: [
-      { id: "T-S1", constant: "9z", citedRef: "RS", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/s", rowFile: "ledger/x/9z.md", rowLine: 10, rowTextSha256: "s1", selection: "systematic" },
-      { id: "T-S2", constant: "9z", citedRef: "RH", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/h2", rowFile: "ledger/x/9z.md", rowLine: 11, rowTextSha256: "s2", selection: "suspicion" },
+      { id: "T-S1", constant: "9z", citedRef: "RS", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/s", rowFile: "ledger/x/9z.md", rowLine: 10, rowTextSha256: "s1", selection: "systematic", ...pinId("| $1.111111$ | [RS] | x |") },
+      { id: "T-S2", constant: "9z", citedRef: "RH", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/h2", rowFile: "ledger/x/9z.md", rowLine: 11, rowTextSha256: "s2", selection: "suspicion", ...pinId("| $1.222222$ | [RH] | x |") },
     ],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
@@ -520,7 +602,7 @@ function selftest() {
   // adversarial review 2026-09-13: counting each group's rows independently printed "1 bound row(s)
   // here" beside "1 drawn by position, 1 chosen because…", inflating the work and contradicting the
   // recheck invariant (h5) in the same sentence.
-  const recheckPin = { constant: "9z", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/r2", rowFile: "ledger/x/9z.md", rowLine: 20, rowTextSha256: "same-row" };
+  const recheckPin = { constant: "9z", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/r2", rowFile: "ledger/x/9z.md", rowLine: 20, rowTextSha256: "same-row", ...pinId("| $2.222222$ | [RR] | x |") };
   const rechecked = renderPage(row, "abc1234def", {
     audits: [
       { ...recheckPin, id: "T-R1", citedRef: "RR", selection: "systematic" },
@@ -538,7 +620,7 @@ function selftest() {
   // ...and the UNLABELLED case goes to suspicion, the direction that understates coverage. An
   // entry with no `selection` must never be counted into the systematic figure by default.
   const unlabelled = renderPage(row, "abc1234def", {
-    audits: [{ id: "T-N", constant: "9z", citedRef: "RN", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/n", rowFile: "ledger/x/9z.md", rowLine: 12, rowTextSha256: "n1" }],
+    audits: [{ id: "T-N", constant: "9z", citedRef: "RN", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/n", rowFile: "ledger/x/9z.md", rowLine: 12, rowTextSha256: "n1", ...pinId("| $4.444444$ | [RN] | x |") }],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
   assert.ok(/ledger 0 row\(s\) were drawn by position/.test(unlabelled), "an unlabelled row must NOT count as systematic coverage");
@@ -550,6 +632,100 @@ function selftest() {
     assert.ok(!forbidden.test(mixed.replace(DISCLAIMER, "")),
       `the selection-labelled page must not claim a record either — matched ${forbidden}`);
   }
+
+  // (h10) THE VALUE CHECKED IS ON THE PAGE. On 2026-09-13 three of 1b's four audited values appeared
+  //       nowhere in the served HTML — the row was named by line and citation only. MEANING first: the
+  //       number is visible for a bound row, absent for a reference entry (whose first cell is not a
+  //       bound), escaped when hostile, and a malformed rowText neither crashes nor prints.
+  const sha16 = (t) => crypto.createHash("sha256").update(t.trim(), "utf8").digest("hex").slice(0, 16);
+  const goodText = "| $0.380876$ | [RV] | TTT-Discover |";
+  const goodRow = { id: "T-V1", constant: "9z", citedRef: "RV", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/v", rowFile: "ledger/x/9z.md", rowLine: 24, rowTextSha256: sha16(goodText), rowText: goodText, inMirror: true, selection: "suspicion" };
+  const refText = "| $9.111111$ | [RV] | should not print |";
+  const valued = renderPage(row, "abc1234def", {
+    audits: [
+      goodRow,
+      { id: "T-V2", constant: "9z", citedRef: "RV", leg: "citation-well-formed", verdict: "UNREACHABLE", source: "https://example.invalid/dead", rowFile: "ledger/x/9z.md", rowLine: 25, rowTextSha256: sha16(refText), rowText: refText, inMirror: true, selection: "suspicion" },
+    ],
+    corpus: { citedRows: 999, measuredAt: "2026-01-02" },
+  });
+  assert.ok(valued.includes("Read against its cited source"), "positive control: the valued page renders a block");
+  assert.ok(valued.includes("0.380876"), "a VERIFIED bound row must show the value that was checked, not only its line and citation");
+  assert.ok(!valued.includes("9.111111"), "a reference entry must not print a first cell as though it were a checked bound");
+
+  // A PINNED audit whose identity can no longer be proved renders as HISTORICAL (review round 2): the
+  // reading is kept, but the page must not say the source supports the row, must not link the live
+  // line, must not print the number, and must not count it as read. MEANING FIRST, so a mutation names
+  // the property it broke (the 2026-09-06 assertion-order rule).
+  const staleHtml = (a, msg) => {
+    const html = renderPage(row, "abc1234def", { audits: [a], corpus: { citedRows: 999, measuredAt: "2026-01-02" } });
+    assert.ok(html.includes("says nothing about the row there now"), `(${msg}) a pinned audit that fails identity must render as HISTORICAL`);
+    assert.ok(!html.includes("it supports this row"), `(${msg}) and must NOT say the cited source supports the row there now`);
+    assert.ok(!/9z\.md#L24/.test(html), `(${msg}) and must NOT link the live line a reader would land on`);
+    assert.ok(!/have been read against their cited source/.test(html), `(${msg}) and must NOT be counted as read`);
+    assert.ok(/no longer match the current table/.test(html), `(${msg}) and the page must disclose it rather than drop it`);
+    return html;
+  };
+  // (1) THE ROUND-1 REPRODUCTION: the stored value edited after its audit, hash left alone.
+  assert.ok(!staleHtml({ ...goodRow, rowText: "| $9.999999$ | [RV] | TTT-Discover |" }, "edited value").includes("9.999999"),
+    "a rowText whose hash no longer matches its recorded audit hash must NOT print its value");
+  // (2) THE ROUND-2 REPRODUCTION: the row no longer stands at its recorded line.
+  assert.ok(!staleHtml({ ...goodRow, inMirror: false }, "not at its line").includes("0.380876"),
+    "a row that no longer stands at its recorded line must NOT print its value");
+  // (3) non-table text comes through boundCell wholesale, so it is refused before boundCell sees it.
+  const prose = "the bound is 7.777777 per the survey";
+  assert.ok(!staleHtml({ ...goodRow, rowText: prose, rowTextSha256: sha16(prose) }, "non-table text").includes("7.777777"),
+    "non-table rowText must NOT print, even with a matching hash");
+  // (4) a VERIFIED row whose first cell is only a comment keeps its verdict and prints no value.
+  const commentOnly = "| <!-- 6.666666 --> | [RV] | x |";
+  const commentHtml = renderPage(row, "abc1234def", { audits: [{ ...goodRow, rowText: commentOnly, rowTextSha256: sha16(commentOnly) }], corpus: { citedRows: 999 } });
+  assert.ok(commentHtml.includes("it supports this row"), "positive control: a verified row keeps its verdict even when its cell is empty");
+  assert.ok(!commentHtml.includes("6.666666"), "a comment-only first cell must not print its comment");
+  assert.ok(!/padding:\.1rem \.3rem"><\/code>/.test(commentHtml), "and must not print an empty code span");
+
+  // (5) REVIEW ROUND 3, first reproduction: an audit with NO stored rowText cannot prove identity, so it
+  //     is historical too, with no live link, no support claim and no count, however complete it looks.
+  staleHtml({ ...goodRow, rowText: undefined }, "unpinned");
+  // (6) REVIEW ROUND 3, second reproduction: a stale UNREACHABLE audit must NOT claim the source was read.
+  const staleUnreach = renderPage(row, "abc1234def", { audits: [{ ...goodRow, verdict: "UNREACHABLE", inMirror: false }], corpus: { citedRows: 999, measuredAt: "2026-01-02" } });
+  assert.ok(staleUnreach.includes("attempted on an earlier version of the table and the cited source could not be read"), "a stale UNREACHABLE audit must say a check was ATTEMPTED, not that the source was read");
+  assert.ok(!staleUnreach.includes("was read against its cited source"), "and must never claim the source was read");
+  assert.ok(staleUnreach.includes("the source we could not read"), "positive control: its link text still says the source could not be read");
+  assert.ok(!staleUnreach.includes("were attempted and the source could NOT be read"), "and it is not double-counted in the current-table attempted sentence");
+  assert.ok(staleUnreach.includes("no longer match the current table"), "it is disclosed with the other historical audits instead");
+
+  // (7) REVIEW ROUND 4: every bound audit here historical AND a reference check present. The summary
+  //     must not deny readings the list above just described as historical.
+  const staleWithRef = renderPage(row, "abc1234def", { audits: [{ ...goodRow, inMirror: false }, { id: "T-RF", constant: "9z", citedRef: "RF", leg: "citation-well-formed", verdict: "UNRESOLVED", source: "https://example.invalid/rf", selection: "suspicion" }], corpus: { citedRows: 999, measuredAt: "2026-01-02" } });
+  assert.ok(!staleWithRef.includes("has been read against its source yet"), "a page with historical bound reads must not claim no bound row was ever read");
+  assert.ok(staleWithRef.includes("has been verified against the current table"), "it says instead that none has been verified against the current table");
+  assert.ok(staleWithRef.includes("no longer match the current table"), "and the historical audit is still disclosed");
+
+  // mirrorHas reads the live mirror AT THE RECORDED LINE, both polarities, and refuses a path outside
+  // it. The positive leg is a row this lane audited on 2026-09-13, so a reader that always returned
+  // false could not pass it.
+  const aeText = "| $0.380924$ | [GGSWT2025] | AlphaEvolve |";
+  assert.equal(mirrorHas("ledger/teorth-optimizationproblems/constants/1b.md", 23, aeText), true,
+    "positive control: an audited row standing at its recorded line is found there");
+  assert.equal(mirrorHas("ledger/teorth-optimizationproblems/constants/1b.md", 24, aeText), false,
+    "the SAME text asked at a different line is NOT the audited row — surviving text elsewhere must not vouch for a changed row");
+  assert.equal(mirrorHas("ledger/teorth-optimizationproblems/constants/1b.md", 23, "| $0.380925$ | [GGSWT2025] | AlphaEvolve |"), false,
+    "a row differing by one digit at the recorded line is NOT the audited row");
+  assert.equal(mirrorHas("ledger/teorth-optimizationproblems/constants/../../../package.json", 1, "{"), false,
+    "a rowFile escaping the mirror directory is refused rather than read");
+
+  const hostileText = "| <img src=x onerror=alert(1)> | [RH] | x |";
+  const hostileValue = renderPage(row, "abc1234def", {
+    audits: [{ id: "T-HV", constant: "9z", citedRef: "RH", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/hv", rowText: hostileText, rowTextSha256: sha16(hostileText), inMirror: true }],
+    corpus: { citedRows: 999 },
+  });
+  assert.ok(hostileValue.includes("&lt;img"), "positive control: the hostile value DID pass verification and render, so the absence below is escaping");
+  assert.ok(!/<img src=x/.test(hostileValue), "a hostile rowText reached the page as markup");
+  const oddValue = renderPage(row, "abc1234def", {
+    audits: [{ id: "T-OV", constant: "9z", citedRef: "RO", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/ov", rowText: { toString: null } }],
+    corpus: { citedRows: 999 },
+  });
+  assert.ok(oddValue.includes("Read against its cited source"), "a malformed rowText must neither crash rendering nor drop the row");
+  assert.match(valued, /<code style="display:inline;padding:\.1rem \.3rem">\$0\.380876\$<\/code>/, "and the value renders as an inline code span, exactly");
 
   // (i) MEANING: only THIS constant's audits appear.
   assert.ok(!audited.includes("REF3"), "a constant page must not show another constant's audit rows");
