@@ -13,7 +13,7 @@ sentry_open_p2: null
 mrr_usd: null
 n_active_users_28d: null
 on_hold_items: 0
-top_action_today: "We checked four more of our own records against the papers they cite, and all four held up. We also fixed something about how we report that work: some records get checked because we already suspected them, and others get picked in order regardless of what we think. Those two are not the same evidence, and until today the page added them together. Now every checked record says which kind it was, and the headline count only includes the ones picked in order — which honestly means that number drops from 9 to 7. One real problem did surface: a paper the table cites has a dead link, so anyone following it reaches nothing. We have not contacted anyone about it. Nothing needs you."
+top_action_today: "We checked four more of our own records against the papers they cite, and all four held up. We also fixed something about how we report that work: some records get checked because we already suspected them, and others get picked in order regardless of what we think. Those two are not the same evidence, and until today the page added them together. Now every checked record says which kind it was, and the headline count only includes the ones picked in order — which honestly means that number is now 7, where yesterday's page said 9. One real problem did surface: a paper the table cites has a dead link, so anyone following it reaches nothing. We have not contacted anyone about it. Nothing needs you."
 ---
 
 # Daily — bounds-ledger — 2026-09-13
@@ -22,7 +22,7 @@ top_action_today: "We checked four more of our own records against the papers th
 
 Four more cited records were read against their sources, and all four held.
 
-The page now says how each audited record was chosen, and the published coverage figure drops from 9 to 7 because two suspicion-drawn rows had been sitting inside it.
+The page now says how each audited record was chosen, and the published coverage figure is now 7 because two suspicion-drawn rows had been sitting inside it (baseline: the 9 printed on the public pages rendered at `3d65a09`, recorded in `docs/daily/2026-09-12-prelaunch.md` § Outputs, read 2026-09-12).
 
 **FIRST ACTION.** Pull, then start the gate — three minutes of network, and a receipt on a stale tree says nothing.
 
