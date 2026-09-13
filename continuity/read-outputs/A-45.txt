@@ -1,0 +1,47 @@
+# read-output sidecar for A-45 — written by check-due-gates-dispositioned --run
+# readCommand: node scripts/check-resolvability.mjs
+# ran: 2026-09-13T16:17:19.687Z · exit: 0
+# lines: 41 · sha256: 07e1372de7c360ef (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+# Stale-value resolvability — A-45, 2026-09-13T16:17:19.673Z
+
+resolvability: 198 of 198 (100.0%) — CALIBRATED 2026-09-13, see the limits
+
+*** NOT COMPARABLE WITH ANY READING BEFORE 2026-09-13. Two things changed. ***
+  The POPULATION is now named by pin KIND, not by digit count: a generated pin:<id>:U|L
+  pins a bound cell, and each hand claim is declared as a constant or as page STATE. The
+  old split ('a 4+ digit run') dropped genuine short bounds and let a wiki footer in.
+  The MATCH is now against the value's OWN constant row, not against any row on the
+  page: a digit run sitting in some other constant answers nothing a reader asked.
+  WHAT STILL BOUNDS THE FIGURE, both of them counted rather than argued:
+  - SHORT/SYMBOLIC STRATUM: 58 of 198 carry no 4+ digit core ($668$, $1+\sqrt{2}$, $2$).
+    They are real bounds and stay in the denominator, but a reader searching one reaches
+    its row among many, so they flatter the figure by at most this count.
+  - The page's search text is built from this same pin history, so a high reading is
+    partly structural. Read it as a REGRESSION FLOOR, not as a coverage trend.
+
+SEARCH SPACE, named so the figure is auditable:
+  denominator — every distinct first-cell 'expect' value in the committed history of
+    ledger/claims.json (git log -- ledger/claims.json, then git show <sha>:ledger/claims.json)
+    whose pin KIND is a bound (generated pin, or a hand claim declared in HAND_CLAIMS).
+  numerator   — those reaching their OWN constant's row: the numeric core, or for a short
+    or symbolic value its own text with $ and spaces squashed, appearing in that row's
+    data-find="..." attribute in the BUILT index.html (115 row(s) keyed, 115 read).
+  excluded    — 3 pinned string(s) whose every pin is page STATE, not a bound
+    (a yaml status, an edit date, a tag list). Excluded BY KIND and reported, never
+    dropped silently — a denominator that quietly shrinks is its own defect.
+
+EXCLUDED BY KIND as page-state pins (shown so the denominator is auditable):
+  - number: "36" prize: "no" informal_status: state: "open"   (C-8)
+  this page was last edited 23 january 2026.   (C-9,C-8)
+  comments: "minimum overlap problem" tags: ["number theory", "additive combinatorics"]   (C-11)
+
+THE LIMIT, which travels with the figure and is not optional (A-45 note5):
+  This denominator is OURS. A value a constant carried BEFORE this ledger started
+  pinning it is not counted here, so a 100% reading means 'every value we know we
+  superseded resolves' — never 'every stale value in circulation resolves'. That gap
+  cannot be closed from our own history. Quote the figure with this sentence or not
+  at all.
+
+RESULT: 198 of 198 resolvable (100.0%) — a figure, not a verdict (exit 0)

@@ -217,5 +217,22 @@ caught it was the checker nobody had wired in. Approved 2026-08-29.
 2. **Tomorrow's gate order is written once, in the primer.** The report's Recommendation points at
    the primer rather than restating the order. On 09-11 the 09-10 report said `A-42` then `A-20` while
    the primer, written later, said `A-20` first; a cold reader should be able to take one artifact's
-   word. Corollary, same approval: `A-47` (the depth audit, a coverage figure over 543 cited rows) and
-   `A-48` (the second-area citation comparison, binary) never share a sentence or a figure.
+   word. Corollary, same approval: `A-47` (the depth audit, a coverage figure over the CITED bound
+   rows — read the denominator with `node scripts/depth-audit.mjs --corpus`, never quote one from a
+   doc; this line said 543 until 2026-09-13, a figure nothing could reproduce) and `A-48` (the
+   second-area citation comparison, binary) never share a sentence or a figure.
+
+## Three more the report owes (approved 2026-09-13, P1 bucket a)
+
+1. **Every Recommendation line carries `[A — user-visible]` or `[B]`.** On 09-12 the Recommendation put
+   `A-48` first and the day's user-visible slice second, with nothing saying which was which, and the
+   next morning's lead had to reverse it under the 80/20 rule. A cold agent should be able to rank the
+   day from the report alone.
+2. **An open question carries the command that closes it, or it is not written as open.** The 09-12
+   State Appendix left "the Pages build row names `3d65a09` while the tip was `e035373`, and I have not
+   established why" with no read beside it, and it arrived in the next kickoff as "unverified either
+   way". The command was one line: `gh api repos/u00dxk2/bounds-ledger/pages/builds`.
+3. **`A-45` is a FLOOR, so the State Appendix carries its MISSES count and never its ratio.** Release:
+   `node scripts/check-resolvability.mjs`, read LOCALLY (CI is fetch-depth 1 and the history walk would
+   report a smaller denominator for an infrastructural reason). Ruled 2026-09-13 on the row itself; the
+   leading read that moves with the work is `A-47` coverage, never this one.
