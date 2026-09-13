@@ -38,6 +38,7 @@ a{color:var(--accent)}h1{font-size:1.4rem;line-height:1.3;margin:.2rem 0 .1rem}
 dl{margin:1.4rem 0;padding:0}dt{font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:1.1rem}
 dd{margin:.35rem 0 0}code{display:block;background:var(--code);padding:.6rem .7rem;font-size:.85rem;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
 .when{display:block;font-size:.8rem;color:var(--muted);margin-top:.3rem}
+.sel{color:var(--muted);font-size:.85rem}
 .none{color:var(--muted)}
 ul.audit{margin:.35rem 0 0;padding-left:1.1rem}ul.audit li{margin:.2rem 0}
 .ours{display:inline-block;margin-top:.6rem;font-size:.85rem}
@@ -84,6 +85,23 @@ const VERDICT_PROSE = {
 
 /** What each audit leg actually examined. A reference entry is NOT a bound row. */
 const LEG_LABEL = { "value-vs-source": "bound row", "citation-well-formed": "reference entry" };
+
+/**
+ * HOW THE ROW WAS CHOSEN, which decides what its count can mean. A row drawn by position before
+ * anybody read it can accumulate into a coverage figure; a row chosen BECAUSE something already
+ * looked wrong cannot — the set is selected on the outcome, so it carries no rate. The store has
+ * said this in prose since 2026-09-10 and the PAGE said nothing, so a reader saw one undifferentiated
+ * count with two suspicion-drawn rows inside it. Added 2026-09-13 with slice 4.
+ *
+ * AN ENTRY WITH NO `selection` COUNTS AS SUSPICION, never as systematic: the unlabelled direction
+ * has to be the one that understates coverage rather than the one that flatters it.
+ */
+const SELECTION_PROSE = {
+  systematic: "drawn by position before it was read",
+  suspicion: "chosen because something already looked wrong",
+};
+const isSystematic = (a) => a.selection === "systematic";
+const selectionNote = (a) => SELECTION_PROSE[isSystematic(a) ? "systematic" : "suspicion"];
 
 /** Only http(s) reaches the page: `javascript:` survives attribute escaping and stays executable. */
 export function safeUrl(u) {
@@ -156,12 +174,35 @@ export function auditBlock(id, store) {
     const what = leg ? `${esc(leg)}${leg === "bound row" ? rowLink(a) : ""} citing ` : "";
     const note = a.sourceRead ? ` (${esc(a.sourceRead)})` : "";
     return `<li>${what}<code style="display:inline;padding:.1rem .3rem">[${esc(a.citedRef)}]</code> &mdash; ` +
-      `${esc(v.text)}. <a href="${esc(safeUrl(a.source))}">${esc(v.link)}</a>${note}.</li>`;
+      `${esc(v.text)}. <a href="${esc(safeUrl(a.source))}">${esc(v.link)}</a>${note}. ` +
+      `<span class="sel">Selected: ${esc(selectionNote(a))}.</span></li>`;
   }).join("");
 
   const isBoundRead = (a) => a.leg === "value-vs-source" && READ_VERDICTS.has(a.verdict);
-  const boundHere = new Set(mine.filter(isBoundRead).map(rowKey)).size;
-  const boundAll = new Set(all.filter(isBoundRead).map(rowKey)).size;
+  const countRows = (rows) => new Set(rows.map(rowKey)).size;
+  /**
+   * PARTITION BY ROW, THEN BY SELECTION — never the other way round (adversarial review, 2026-09-13).
+   * Counting each selection's rows independently let ONE row audited twice, once by position and once
+   * on suspicion, enter both groups: the page printed "1 bound row(s) here" split into "1 drawn by
+   * position, 1 chosen because…", which both inflates the work and contradicts itself. A distinct row
+   * counts as systematic if ANY of its readings was drawn by position — that is a true statement about
+   * how the ladder reached it — and the two groups therefore always sum to the deduplicated count.
+   */
+  const splitRows = (rows) => {
+    const byRow = new Map();
+    for (const a of rows.filter(isBoundRead)) {
+      byRow.set(rowKey(a), (byRow.get(rowKey(a)) || false) || isSystematic(a));
+    }
+    const systematic = [...byRow.values()].filter(Boolean).length;
+    return { total: byRow.size, systematic, suspicion: byRow.size - systematic };
+  };
+  const here = splitRows(mine);
+  const ledger = splitRows(all);
+  const boundHere = here.total;
+  const sysHere = here.systematic;
+  const susHere = here.suspicion;
+  const sysAll = ledger.systematic;
+  const susAll = ledger.suspicion;
   const unreachedHere = new Set(mine.filter((a) => a.leg === "value-vs-source" && !READ_VERDICTS.has(a.verdict)).map(rowKey)).size;
   const otherHere = new Set(mine.filter((a) => a.leg !== "value-vs-source").map(rowKey)).size;
 
@@ -171,9 +212,10 @@ export function auditBlock(id, store) {
 
   const parts = [];
   if (boundHere > 0) {
+    const split = `${boundHere} bound row(s) here have been read against their cited source (${sysHere} drawn by position, ${susHere} chosen because something already looked wrong).`;
     parts.push(citedOk
-      ? `${boundHere} bound row(s) here have been read against their cited source \u2014 ${boundAll} across this whole ledger, against ${esc(String(cited))} rows that name a source${when ? `, counted on ${esc(when)}` : ""}.`
-      : `${boundHere} bound row(s) here have been read against their cited source, ${boundAll} across this whole ledger. The size of the corpus they came from is not recorded, so this is a count and not a proportion.`);
+      ? `${split} Across this whole ledger ${sysAll} row(s) were drawn by position, against ${esc(String(cited))} rows that name a source${when ? `, counted on ${esc(when)}` : ""}; ${susAll} more were chosen for suspicion and are counted apart, because a set selected for suspicion carries no rate.`
+      : `${split} Across this whole ledger ${sysAll} row(s) were drawn by position and ${susAll} were chosen for suspicion. The size of the corpus they came from is not recorded, so this is a count and not a proportion.`);
   }
   if (unreachedHere > 0) {
     parts.push(`${unreachedHere} further bound row(s) here were attempted and the source could NOT be read; those are not counted as read.`);
@@ -314,9 +356,9 @@ function selftest() {
   // audit block had just added. That is this lane's founding defect in a new place.
   const store = {
     audits: [
-      { id: "T-1", constant: "9z", citedRef: "REF1", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/p1", sourceRead: "read in the abstract" },
-      { id: "T-2", constant: "9z", citedRef: "REF2", leg: "citation-well-formed", verdict: "UNRESOLVED", source: "https://example.invalid/p2", sourceRead: "read in the body" },
-      { id: "T-3", constant: "OTHER", citedRef: "REF3", leg: "value-vs-source", verdict: "DEFECTIVE", source: "https://example.invalid/p3", sourceRead: "read in the abstract" },
+      { id: "T-1", constant: "9z", citedRef: "REF1", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/p1", sourceRead: "read in the abstract", selection: "systematic" },
+      { id: "T-2", constant: "9z", citedRef: "REF2", leg: "citation-well-formed", verdict: "UNRESOLVED", source: "https://example.invalid/p2", sourceRead: "read in the body", selection: "systematic" },
+      { id: "T-3", constant: "OTHER", citedRef: "REF3", leg: "value-vs-source", verdict: "DEFECTIVE", source: "https://example.invalid/p3", sourceRead: "read in the abstract", selection: "systematic" },
     ],
     // Deliberately NOT 543: a fixture equal to the live figure cannot tell a rendered
     // denominator from a hardcoded one.
@@ -384,7 +426,7 @@ function selftest() {
   //     check must be reported separately rather than folded into that ratio.
   assert.ok(/1 bound row\(s\) here/.test(audited), "bound rows are counted on their own against the bound-row denominator");
   assert.ok(/1 reference entry here was also checked/.test(audited), "a reference-entry check must be named as a different population");
-  assert.ok(/2 across this whole ledger/.test(audited), "the ledger-wide figure counts bound rows only (2 of the 3 fixtures), never every audit row");
+  assert.ok(/ledger 2 row\(s\) were drawn by position/.test(audited), "the ledger-wide figure counts bound rows only (2 of the 3 fixtures), never every audit row");
 
   // (h2) THE EXTREME CASE, and the fixture above could not show it: a constant with a reference
   //      check and NO bound rows. The first version said "also checked ... not counted against
@@ -455,6 +497,60 @@ function selftest() {
   });
   assert.ok(malformed.includes("line 33"), "a malformed entry must be dropped without taking the good one, or the page, down with it");
 
+  // (h9) HOW THE ROW WAS CHOSEN REACHES THE READER, and the two populations are counted apart.
+  //      Slice 1 was suspicion-drawn and sat inside the ledger-wide figure with nothing saying so.
+  //      The MEANING guards come first; the count pins last (the 2026-09-06 assertion-order rule).
+  const mixed = renderPage(row, "abc1234def", {
+    audits: [
+      { id: "T-S1", constant: "9z", citedRef: "RS", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/s", rowFile: "ledger/x/9z.md", rowLine: 10, rowTextSha256: "s1", selection: "systematic" },
+      { id: "T-S2", constant: "9z", citedRef: "RH", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/h2", rowFile: "ledger/x/9z.md", rowLine: 11, rowTextSha256: "s2", selection: "suspicion" },
+    ],
+    corpus: { citedRows: 999, measuredAt: "2026-01-02" },
+  });
+  assert.ok(mixed.includes("Read against its cited source"), "positive control: the mixed-selection page renders a block");
+  assert.ok(mixed.includes("drawn by position before it was read"), "a systematic row must say it was drawn by position");
+  assert.ok(mixed.includes("chosen because something already looked wrong"), "a suspicion-drawn row must say so on the page, not only in the store");
+  assert.ok(/carries no rate/.test(mixed), "the page must say why a suspicion-drawn set is counted apart");
+  assert.ok(/1 drawn by position, 1 chosen because/.test(mixed), "the per-page count names both populations");
+  assert.ok(/ledger 1 row\(s\) were drawn by position, against 999 rows/.test(mixed),
+    "the ledger-wide coverage figure counts ONLY the rows drawn by position");
+  assert.ok(/1 more were chosen for suspicion and are counted apart/.test(mixed), "and the suspicion-drawn rows are stated beside it, not hidden");
+
+  // ...and ONE ROW AUDITED TWICE under different selections is ONE row, in ONE group. Found by
+  // adversarial review 2026-09-13: counting each group's rows independently printed "1 bound row(s)
+  // here" beside "1 drawn by position, 1 chosen because…", inflating the work and contradicting the
+  // recheck invariant (h5) in the same sentence.
+  const recheckPin = { constant: "9z", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/r2", rowFile: "ledger/x/9z.md", rowLine: 20, rowTextSha256: "same-row" };
+  const rechecked = renderPage(row, "abc1234def", {
+    audits: [
+      { ...recheckPin, id: "T-R1", citedRef: "RR", selection: "systematic" },
+      { ...recheckPin, id: "T-R2", citedRef: "RR", selection: "suspicion" },
+    ],
+    corpus: { citedRows: 999, measuredAt: "2026-01-02" },
+  });
+  assert.ok(/1 bound row\(s\) here/.test(rechecked), "positive control: two audits of one row are one row read");
+  assert.ok(/\(1 drawn by position, 0 chosen because/.test(rechecked),
+    "a row read twice under different selections lands in ONE group — a row the ladder reached stays coverage");
+  assert.ok(!/1 drawn by position, 1 chosen because/.test(rechecked), "negative control: the double-counted split must not appear");
+  assert.ok(/ledger 1 row\(s\) were drawn by position/.test(rechecked), "and the ledger-wide figure counts it once");
+  assert.ok(/0 more were chosen for suspicion/.test(rechecked), "with nothing left over in the suspicion set");
+
+  // ...and the UNLABELLED case goes to suspicion, the direction that understates coverage. An
+  // entry with no `selection` must never be counted into the systematic figure by default.
+  const unlabelled = renderPage(row, "abc1234def", {
+    audits: [{ id: "T-N", constant: "9z", citedRef: "RN", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/n", rowFile: "ledger/x/9z.md", rowLine: 12, rowTextSha256: "n1" }],
+    corpus: { citedRows: 999, measuredAt: "2026-01-02" },
+  });
+  assert.ok(/ledger 0 row\(s\) were drawn by position/.test(unlabelled), "an unlabelled row must NOT count as systematic coverage");
+  assert.ok(/1 more were chosen for suspicion/.test(unlabelled), "an unlabelled row is counted with the suspicion set");
+
+  // ...and the prohibition runs on THIS new surface too, which is the guard that was missing when
+  // the audit block itself was added (2026-09-10) and again when a second render path appeared.
+  for (const forbidden of [/\brecord\b(?!ed)/i, /strongest known/i, /best known bound/i]) {
+    assert.ok(!forbidden.test(mixed.replace(DISCLAIMER, "")),
+      `the selection-labelled page must not claim a record either — matched ${forbidden}`);
+  }
+
   // (i) MEANING: only THIS constant's audits appear.
   assert.ok(!audited.includes("REF3"), "a constant page must not show another constant's audit rows");
   assert.ok(store.audits.some((a) => a.citedRef === "REF3"), "negative control: REF3 IS in the store, so the absence above is about filtering");
@@ -476,7 +572,7 @@ function selftest() {
   assert.match(withReport, /we reported this row/);
   assert.ok(!/we reported this row/.test(html), "a constant we filed nothing against must carry no disclosure");
 
-  console.log(`render-constant-pages selftest: PASS (renders title, both pinned rows and the upstream sha after proving the page is non-empty; carries a canonical URL, and its cite block quotes the SHARED citation unchanged — so the table and the page hand out the same address for the same constant, and a re-added local substitution fails here; a missing side reads "not pinned"; a hostile title is escaped, with the raw fixture proven to contain the markup so the check tests the renderer; the filed-report disclosure appears only for a mapped constant; and the A-47 audit block carries the no-record prohibition on the AUDITED page rather than only the unaudited one, drops an unrecognised verdict instead of printing it, matches link text to verdict so UNREACHABLE never offers 'the source we read', links each source as an anchor whose href IS that source, refuses a javascript: scheme, escapes hostile citedRef and sourceRead, survives a null entry beside a good one, renders the denominator FROM THE STORE with a fixture of 999 proving it is not baked in, carries the date it was measured, counts bound rows separately from reference entries against a bound-row denominator, shows only THIS constant's rows with the other proven present in the fixture, is ABSENT for an unaudited constant, and says 'not recorded' rather than implying a proportion when the corpus is missing)`);
+  console.log(`render-constant-pages selftest: PASS (renders title, both pinned rows and the upstream sha after proving the page is non-empty; carries a canonical URL, and its cite block quotes the SHARED citation unchanged — so the table and the page hand out the same address for the same constant, and a re-added local substitution fails here; a missing side reads "not pinned"; a hostile title is escaped, with the raw fixture proven to contain the markup so the check tests the renderer; the filed-report disclosure appears only for a mapped constant; and the A-47 audit block carries the no-record prohibition on the AUDITED page rather than only the unaudited one, drops an unrecognised verdict instead of printing it, matches link text to verdict so UNREACHABLE never offers 'the source we read', links each source as an anchor whose href IS that source, refuses a javascript: scheme, escapes hostile citedRef and sourceRead, survives a null entry beside a good one, renders the denominator FROM THE STORE with a fixture of 999 proving it is not baked in, carries the date it was measured, counts bound rows separately from reference entries against a bound-row denominator, shows only THIS constant's rows with the other proven present in the fixture, is ABSENT for an unaudited constant, says 'not recorded' rather than implying a proportion when the corpus is missing, and — since 2026-09-13 — tells the reader how each row was CHOSEN, counts the ledger-wide coverage figure from rows drawn by position ONLY, files an unlabelled row with the suspicion set rather than as coverage, and carries the no-record prohibition on that selection-labelled surface too)`);
 }
 
 function main({ check = false } = {}) {

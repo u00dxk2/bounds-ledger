@@ -70,13 +70,31 @@ export function run(storePath) {
     return { code: 3, lines };
   }
 
+  // HOW EACH ROW WAS CHOSEN, counted apart for the same reason the page separates them (2026-09-13):
+  // a set selected BECAUSE something looked wrong carries no rate, so it can never accumulate into a
+  // coverage figure. Unlabelled counts as suspicion — the direction that understates coverage.
+  // The refusal that can actually fire: a selection value outside the two known ones. Counting the
+  // split by partition (systematic, and everything else) is a tautology and would pass over a typo
+  // like "systemattic" while silently filing that row as suspicion-drawn.
+  const KNOWN_SELECTION = ['systematic', 'suspicion'];
+  const badSelection = audits.filter((a) => a.selection !== undefined && !KNOWN_SELECTION.includes(a.selection));
+  if (badSelection.length) {
+    lines.push(`  unrecognised selection(s): ${badSelection.map((a) => `${a.id}:${JSON.stringify(a.selection)}`).join(', ')}`);
+    lines.push(`RESULT: FAIL — ${badSelection.length} row(s) carry a selection outside ${KNOWN_SELECTION.join('|')} — an unreadable label would be filed as suspicion-drawn and the mislabelling would never surface (exit 3)`);
+    return { code: 3, lines };
+  }
+  const systematic = audits.filter((a) => a.selection === 'systematic').length;
+  const unlabelled = audits.filter((a) => a.selection === undefined).length;
+  const suspicion = audits.length - systematic;
+
   const constants = [...new Set(audits.map((a) => a.constant))];
   lines.push(`depth audit (A-47): ${audits.length} row(s) audited — ${counts.SOUND} sound, ${counts.DEFECTIVE} defective, ${counts.UNRESOLVED} unresolved, ${counts.UNREACHABLE} unreachable`);
+  lines.push(`  selection: ${systematic} drawn by position (the systematic ladder) · ${suspicion} chosen because something already looked wrong, of which ${unlabelled} carry no selection at all and are counted there rather than as coverage. Only rows drawn by position can accumulate into a coverage figure.`);
   lines.push(`  denominator: ${store.meta?.denominatorProvenance || '(none recorded — read A-47.note2)'}`);
   lines.push(`  sampling: ${store.meta?.samplingRule || '(none recorded — a rate off an unstated sample is not a rate)'}`);
   lines.push('');
   for (const a of audits) {
-    lines.push(`  ${a.id}  ${a.constant} [${a.citedRef}]  ${a.verdict}  (${a.leg})`);
+    lines.push(`  ${a.id}  ${a.constant} [${a.citedRef}]  ${a.verdict}  (${a.leg})  selection: ${a.selection === 'systematic' ? 'systematic' : 'suspicion-drawn'}`);
     lines.push(`      row: ${a.rowFile}:${a.rowLine} sha256:${a.rowTextSha256} — re-read the row there; it is never retyped into this store`);
     lines.push(`      source: ${a.source} (read: ${a.sourceRead})`);
   }
