@@ -1,0 +1,12 @@
+# read-output sidecar for A-48 — written by check-due-gates-dispositioned --run
+# readCommand: node scripts/citation-footprint.mjs 10.37236/21
+# ran: 2026-09-14T19:23:34.768Z · exit: 0
+# lines: 6 · sha256: b13e1b97b0381eeb (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+crossref HTTP 200 is-referenced-by-count: 36
+semantic-scholar HTTP 200 citationCount: 612
+openalex HTTP 200 cited_by_count: 432
+indices readable: 3 of 3 (crossref 36, semantic-scholar 612, openalex 432)
+figures only, no verdict: compare surfaces by ORDER across indices, never by one index’s magnitude.
+RESULT: READABLE — 3 independent indices answered for 10.37236/21 (exit 0)

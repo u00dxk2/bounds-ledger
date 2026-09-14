@@ -231,6 +231,15 @@ jobs:
       # red alarm the moment the audit pauses.
       - name: Self-test depth-audit reader (no network; refuses a bare zero in both polarities)
         run: node scripts/depth-audit.mjs --selftest
+      # A-48's citation-footprint reader. The distinction it exists to keep is BLOCKED vs a
+      # measured zero: a non-200, or a 200 carrying no count field, is a fact about the INDEX
+      # and must never render as a low or zero footprint for the surface. The selftest drives
+      # both polarities through the real read() -- a count, a missing field, a 429, a 500, a
+      # genuine 0, and 0-vs-BLOCKED kept distinct -- with a stub fetch, so no network. The
+      # reader itself never gates a build: it is an indicator, and wiring an index's uptime
+      # to our exit code would be a permanently red alarm the first time Crossref hiccups.
+      - name: Self-test citation-footprint reader (no network; BLOCKED never reads as a zero)
+        run: node scripts/citation-footprint.mjs --selftest
       # Not piped and deliberately network-free: this asserts README's published figures still
       # match COMMITTED repo state. A stale block is a falsifiable public error on the front
       # page of a repo whose pitch is that it notices stale numbers.
