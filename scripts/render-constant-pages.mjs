@@ -16,9 +16,9 @@
 // pages are small enough that 114 of them cost nothing. Revisit if the mirror grows an order of
 // magnitude.
 
-import { writeFileSync, readFileSync, mkdirSync, readdirSync, rmSync, existsSync } from "node:fs";
+import { writeFileSync, readFileSync, mkdirSync, readdirSync, rmSync, existsSync, realpathSync } from "node:fs";
 import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
 import { buildRows, flagUrl, citation, reportLabel, whenLabel } from "./render-site.mjs";
 import { boundCell } from "./lookup.mjs";
@@ -200,6 +200,45 @@ export function usableAudit(a) {
 const READ_VERDICTS = new Set(["SOUND", "DEFECTIVE", "UNRESOLVED"]);
 
 /**
+ * WHAT COUNTS AS A READING OF A BOUND ROW, in ONE place. It lived as a local inside auditBlock until
+ * 2026-09-14, when the index began showing it too — and two copies of this predicate are two chances
+ * for the page and the index to disagree about whether a row was read. A STALE audit (pinned, identity
+ * no longer provable) was read on an earlier version of the table, so it is not a reading of the row a
+ * reader sees today and is never counted as read.
+ */
+export const isBoundRead = (a) => a.leg === "value-vs-source" && READ_VERDICTS.has(a.verdict) && !isStale(a);
+
+/**
+ * THE INDEX BADGE (2026-09-14). The index said nothing about which rows had been read against their
+ * cited source: a citer who found their constant there could not tell a row we had opened the paper
+ * for from one we only watch as a listing, without opening each of 115 pages. The page's audit block
+ * stays authoritative; the badge says only that a provable reading EXISTS and which way the worst
+ * one went, and links there.
+ *
+ * WORST VERDICT WINS. A constant with one SOUND row and one DEFECTIVE row must never badge as
+ * supported: the badge's job is to stop a citer trusting a number, never to reassure them, so a mixed
+ * constant takes the verdict that understates — the same direction this file already takes for an
+ * unlabelled selection.
+ *
+ * NEVER A RECORD CLAIM. Each wording is about a ROW being read against ITS OWN cited source; none says
+ * or implies the row is the strongest or most recent bound (see DISCLAIMER).
+ */
+const BADGE = {
+  DEFECTIVE: "a cited source does not support a row",
+  UNRESOLVED: "read against its source, not settled",
+  SOUND: "read against its cited source",
+};
+const BADGE_SEVERITY = ["DEFECTIVE", "UNRESOLVED", "SOUND"];
+
+export function badgeFor(id, store) {
+  const reads = (Array.isArray(store?.audits) ? store.audits : [])
+    .filter(usableAudit)
+    .filter((a) => a.constant === id && isBoundRead(a));
+  const worst = BADGE_SEVERITY.find((v) => reads.some((a) => a.verdict === v));
+  return worst ? { verdict: worst, text: BADGE[worst] } : null;
+}
+
+/**
  * A row IDENTITY, so a recheck of the same row does not read as a second row audited. The store
  * pins each audit to a file and line with a hash of the row text; falling back to the citation
  * would merge genuinely different rows, so an unpinned audit keeps its own id and counts once.
@@ -253,9 +292,6 @@ export function auditBlock(id, store) {
       `<span class="sel">Selected: ${esc(selectionNote(a))}.</span></li>`;
   }).join("");
 
-  // A STALE audit (pinned, identity no longer provable) was read on an earlier version of the table,
-  // so it is not a reading of the row a reader sees today and is never counted as read.
-  const isBoundRead = (a) => a.leg === "value-vs-source" && READ_VERDICTS.has(a.verdict) && !isStale(a);
   const countRows = (rows) => new Set(rows.map(rowKey)).size;
   /**
    * PARTITION BY ROW, THEN BY SELECTION — never the other way round (adversarial review, 2026-09-13).
@@ -791,5 +827,25 @@ function main({ check = false } = {}) {
   console.log(`wrote ${pages.size} constant page(s) to c/ @ ${String(manifest.sha).slice(0, 7)}`);
 }
 
-if (process.argv.includes("--selftest")) selftest();
-else main({ check: process.argv.includes("--check") });
+// THE ENTRY GUARD, added 2026-09-14 because render-site.mjs now imports badgeFor from this file.
+// Without it, IMPORTING this module ran main(), and main() does rmSync(c/, {recursive:true}) before
+// rewriting it — so any importer deleted the whole published c/ directory as a side effect, including
+// during `render-site --check`, a command that must never write. It is the THIRD instance of the
+// import-executes-CLI class here: lookup.mjs was bitten first and render-site.mjs repeated the shape
+// the same commit fixed. Same form as render-site.mjs, deliberately, so the two cannot drift apart.
+//
+// ponytail: this file and render-site.mjs import each other. That is safe ONLY while neither calls
+// across at module-evaluation time — which this guard is what guarantees. A future top-level call
+// that reaches the other file's const bindings will throw a TDZ ReferenceError; `npm test` imports
+// both and would crash on it. Upgrade path if that ever bites: move the audit-store functions into
+// their own module that both renderers import.
+const entry = process.argv[1] ? pathToFileURL(realpathSync(process.argv[1])).href : null;
+const isMain = entry === import.meta.url;
+
+if (isMain) {
+  if (process.argv.includes("--selftest")) selftest();
+  else main({ check: process.argv.includes("--check") });
+} else if (process.argv[1]?.endsWith("render-constant-pages.mjs")) {
+  console.error("render-constant-pages: COULD NOT RUN — invoked as main but module identity did not match");
+  process.exit(2);
+}

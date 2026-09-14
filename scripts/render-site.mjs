@@ -26,6 +26,8 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { pinsFor, lastChanged, changeFor, changeKind, boundCell } from "./lookup.mjs";
+import { loadAudits, badgeFor } from "./render-constant-pages.mjs";
+import crypto from "node:crypto";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "index.html");
@@ -177,8 +179,9 @@ export function loadReports(root = ROOT) {
   return Array.isArray(parsed.reports) ? parsed.reports : [];
 }
 
-export function buildRows(claims, { withDates = true, root = ROOT, reports = null } = {}) {
+export function buildRows(claims, { withDates = true, root = ROOT, reports = null, audits = null } = {}) {
   const filed = reports ?? loadReports(root);
+  const store = audits ?? loadAudits();
   return constantIds(claims).map((id) => {
     const pins = pinsFor(id, claims);
     const upper = pins.find((p) => p.id.endsWith(":U"));
@@ -200,6 +203,7 @@ export function buildRows(claims, { withDates = true, root = ROOT, reports = nul
       upperPrev: uc.prevExpect || null,
       lowerPrev: lc.prevExpect || null,
       report: reportFor(id, filed),
+      audit: badgeFor(id, store),
       tableValues: tableValuesFor(id, root),
       aliases: aliasesFor(id, claims),
     };
@@ -479,7 +483,7 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null) {
   // sat inside the style template literal and shipped the whole explanation to every visitor.
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
-<th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}</th>
+<th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}${r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}</th>
 ${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)")}
 ${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)")}
 <td class="src"><a href="${esc(readable(r.url))}">source</a> · <a href="c/${esc(r.id)}.html" aria-label="The page for ${esc(r.title)}">page</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(r.title)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
@@ -521,6 +525,9 @@ thead th{background:var(--bg);font-size:.78rem;letter-spacing:.03em;text-transfo
 tbody th{font-weight:600;min-width:15rem}
 .id{display:block;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);text-decoration:none;width:max-content}
 .ours{display:block;margin-top:.25rem;font-size:12px;color:var(--muted);width:max-content;max-width:100%}
+.read{display:block;margin-top:.25rem;font-size:12px;width:max-content;max-width:100%}
+.read-unresolved::before,.read-defective::before{content:"⚠ "}
+.read-defective{font-weight:600}
 .id:hover,.id:focus{text-decoration:underline}
 tr:target th{box-shadow:inset 3px 0 0 var(--accent)}
 tr:target>*{background:var(--code)}
@@ -575,6 +582,7 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 </div>
 <p class="count" id="count">${rows.length} constants</p>
 <p class="hint">Each date is when that row&rsquo;s pinned text last changed <em>in this ledger</em> &mdash; or, for a row that has never changed here, the day this ledger started tracking it. Most rows share that bootstrap date. Ordering by movement puts the rows we have actually seen change first, most recent first; rows we have only ever watched sit still follow, still dated, each saying so in its own cell. That distinction is the one the date alone cannot make, because a later date can mean a bound changed here <em>or</em> that we only started watching it later. Neither date says anything about what a constant did before we began watching it, and a row we have never seen move may well have moved before we arrived.</p>
+<p class="hint">A line under a constant&rsquo;s name means we opened the source one of its bound rows cites and read the number there &mdash; its page says which row and what we found. Most constants carry no such line. That means we have no reading we can match to the row as it stands today &mdash; either we have not done one, or the row has changed since we did, in which case its page still shows what we found and says it describes an earlier version of the table. It is not a sign that anything is wrong. Either way it is about a row matching its own source, never about whether it is the strongest bound known.</p>
 
 <div class="empty" id="empty" hidden>
 <p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the ${rows.length} constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
@@ -668,7 +676,10 @@ async function selftest() {
   assert.deepEqual(constantIds(claims), ["2a", "10a"], "ids sort numerically, not lexically, and exclude hand claims");
   assert.equal(titleFrom(claims[0].statement), "The real Grothendieck constant");
 
-  const rows = buildRows(claims, { withDates: false });
+  // audits: [] keeps this fixture HERMETIC. buildRows falls back to the live continuity/depth-audit.json,
+  // and one of these fixture ids (10a) really is audited, so without it this selftest silently grew a
+  // badge from production data and its result would change whenever the audit store did.
+  const rows = buildRows(claims, { withDates: false, audits: { audits: [] } });
   assert.equal(rows.length, 2);
   const html = renderHtml(rows, manifest, "2026-08-20");
 
@@ -782,7 +793,7 @@ async function selftest() {
     state: "CLOSED",
     closedAt: "2026-08-23T17:15:35Z",
   }];
-  const disclosed = renderHtml(buildRows(discloseClaims, { withDates: false, reports: filedFixture }), manifest, "2026-09-02");
+  const disclosed = renderHtml(buildRows(discloseClaims, { withDates: false, reports: filedFixture, audits: { audits: [] } }), manifest, "2026-09-02");
   // Positive control FIRST: both rows must actually be on the page, or "absent" below proves nothing.
   assert.match(disclosed, /<tr id="c-87a"/, "positive control: the mapped row must render before its disclosure is asserted");
   assert.match(disclosed, /<tr id="c-10a"/, "positive control: the unmapped row must render before its silence is asserted");
@@ -798,7 +809,7 @@ async function selftest() {
 
   // Negative control on the SILENCE: with the fixture removed the count drops to zero, proving
   // the assertion above tracks the map rather than counting a string that is always there once.
-  const undisclosed = renderHtml(buildRows(discloseClaims, { withDates: false, reports: [] }), manifest, "2026-09-02");
+  const undisclosed = renderHtml(buildRows(discloseClaims, { withDates: false, reports: [], audits: { audits: [] } }), manifest, "2026-09-02");
   assert.equal((undisclosed.match(/class="ours"/g) || []).length, 0, "the disclosure must disappear when nothing is filed");
 
   // NO CAUSAL CLAIM anywhere in the emitted disclosure or the prose that explains it.
@@ -807,6 +818,105 @@ async function selftest() {
   }
   assert.match(disclosed, /it is not a claim that anything upstream changed because of us/,
     "the page must say in words that the disclosure asserts no cause");
+
+  // --- The "read against its cited source" badge (2026-09-14). The page's audit block already
+  // withholds a reading it cannot prove belongs to the row a reader sees (2bd8292). Adding the index
+  // as a SECOND surface does not extend that guard by itself: the one guard most likely to be blind on
+  // a new surface is the guard written to stop exactly what that surface can now do. So the index gets
+  // its own assertions, driven through the SAME store shape the renderer reads.
+  //
+  // ASSERTION ORDER IS DELIBERATE: the guards that carry the MEANING come first and the equality pins
+  // last, so a mutation names the property it broke instead of tripping a string comparison that
+  // short-circuits everything after it (2026-09-06, three assertions on one label with the pin first).
+  const sha16 = (t) => crypto.createHash("sha256").update(t.trim(), "utf8").digest("hex").slice(0, 16);
+  const auditRow = (text) => ({ rowText: text, rowTextSha256: sha16(text) });
+  const readAudit = (over = {}) => ({
+    id: "A-47-T1", constant: "87a", citedRef: "Ref2026", verdict: "SOUND", leg: "value-vs-source",
+    selection: "systematic", source: "https://example.invalid/paper",
+    rowFile: "ledger/teorth-optimizationproblems/constants/87a.md", rowLine: 5,
+    ...auditRow("| 857.5662 | [Ref2026] |"), inMirror: true, ...over,
+  });
+  const withAudits = (audits) => renderHtml(
+    buildRows(discloseClaims, { withDates: false, reports: [], audits: { audits } }), manifest, "2026-09-14");
+  const badgeOn = (html, id) => {
+    const th = html.match(new RegExp(`<tr id="c-${id}"[\\s\\S]*?</th>`));
+    return th ? th[0].match(/<a class="read[^"]*"[^>]*>([^<]*)<\/a>/) : null;
+  };
+
+  // Positive control FIRST: the audited row and the unaudited one must both render, and the audited
+  // one must genuinely badge, or every "no badge" assertion below proves nothing.
+  const soundPage = withAudits([readAudit()]);
+  assert.match(soundPage, /<tr id="c-87a"/, "positive control: the audited row must render before its badge is asserted");
+  assert.match(soundPage, /<tr id="c-10a"/, "positive control: the unaudited row must render before its silence is asserted");
+  assert.ok(badgeOn(soundPage, "87a"), "positive control: a provable SOUND read must badge, or the absences below are vacuous");
+
+  // 1. A reading we can no longer prove is of the row a reader sees must NOT badge, by either route.
+  assert.equal(badgeOn(withAudits([readAudit({ inMirror: false })]), "87a"), null,
+    "a read whose row is no longer at its recorded line must not badge the index — it describes an earlier table");
+  assert.equal(badgeOn(withAudits([readAudit({ rowTextSha256: "0000000000000000" })]), "87a"), null,
+    "a read whose row hash does not match must not badge the index");
+
+  // 2. UNREACHABLE is an attempt, not a reading.
+  assert.equal(badgeOn(withAudits([readAudit({ verdict: "UNREACHABLE" })]), "87a"), null,
+    "an UNREACHABLE source was never read, so it must not badge as read");
+
+  // 3. A reference entry is not a bound row.
+  assert.equal(badgeOn(withAudits([readAudit({ leg: "citation-well-formed" })]), "87a"), null,
+    "a citation check is not a bound row and must not badge the constant as read");
+
+  // 4. An unrecognised verdict is dropped, never printed — the 2026-09-10 record-claim shape.
+  const bogusPage = withAudits([readAudit({ verdict: "VERIFIED BEST KNOWN BOUND" })]);
+  assert.equal(badgeOn(bogusPage, "87a"), null, "an unrecognised verdict must not badge");
+  assert.ok(!/VERIFIED BEST KNOWN BOUND/.test(bogusPage), "an unrecognised verdict must never reach the page as text");
+
+  // 5. WORST VERDICT WINS: a supported row beside an unsupported one must never read as supported.
+  const mixed = badgeOn(withAudits([
+    readAudit(),
+    readAudit({ id: "A-47-T2", verdict: "DEFECTIVE", rowLine: 6, ...auditRow("| 900.0 | [Ref2026] |") }),
+  ]), "87a");
+  assert.ok(mixed, "positive control: the mixed constant must badge at all");
+  assert.match(mixed[1], /does not support/, "SOUND beside DEFECTIVE must badge as DEFECTIVE, never as supported");
+  assert.match(mixed[0], /class="read read-defective"/, "the defective badge must carry its caution class");
+
+  // 6. NO RECORD CLAIM in any wording a badge can take.
+  for (const verdict of ["SOUND", "UNRESOLVED", "DEFECTIVE"]) {
+    const b = badgeOn(withAudits([readAudit({ verdict })]), "87a");
+    assert.ok(b, `positive control: a provable ${verdict} read must badge before its wording is judged`);
+    for (const forbidden of [/\brecord\b/i, /\bbest\b/i, /strongest/i, /\bverified\b/i, /\bcorrect\b/i, /\bcurrent\b/i, /\blatest\b/i]) {
+      assert.ok(!forbidden.test(b[0]), `the ${verdict} badge must make no record claim — matched ${forbidden}`);
+    }
+  }
+
+  // 7. SILENT on a constant with no reading, on the same page as one that has one.
+  assert.equal(badgeOn(soundPage, "10a"), null, "a constant with no provable reading must carry no badge");
+  assert.equal(badgeOn(withAudits([]), "87a"), null, "with the store emptied the badge must disappear");
+
+  // 8. An absent badge must be explained WITHOUT claiming nothing was ever read, and never as a fault.
+  // Adversarial review 2026-09-14: the first wording said a missing badge meant "we have not done that
+  // reading yet". A constant whose only reading has gone stale also carries no badge, and its page
+  // describes that reading as an earlier version of the table — so the index contradicted the page for
+  // exactly the rows where upstream had moved under us.
+  assert.match(soundPage, /we have no reading we can match to the row as it stands today/,
+    "the page must explain a missing badge as unmatched-today, covering a reading that has gone stale");
+  assert.match(soundPage, /It is not a sign that anything is wrong/,
+    "the page must say that a missing badge is not a finding");
+  assert.ok(!/we have not done that reading yet, not that anything is wrong/.test(soundPage),
+    "the superseded wording claimed no reading had ever happened and must not return");
+
+  // The stale-only constant is the case that wording exists for: no badge, and the page still holds
+  // the reading. Asserted here so the copy and the guard cannot drift apart.
+  const staleOnly = withAudits([readAudit({ inMirror: false })]);
+  assert.match(staleOnly, /<tr id="c-87a"/, "positive control: the stale-only constant must render");
+  assert.equal(badgeOn(staleOnly, "87a"), null, "a constant whose only reading is stale must carry no badge");
+  assert.match(staleOnly, /we have no reading we can match to the row as it stands today/,
+    "and the page must still explain that absence in a way that is true of it");
+  assert.match(soundPage, /never about whether it is the strongest bound known/,
+    "the page must say the badge is not a record claim");
+
+  // EQUALITY PINS LAST.
+  const sound = badgeOn(soundPage, "87a");
+  assert.match(sound[0], /href="c\/87a\.html"/, "the badge must link the constant's own page, where the row and verdict live");
+  assert.equal(sound[1], "read against its cited source");
 
   // An OPEN report reads "open" and gets no date — a closed-on date on an open report would be
   // a fabricated fact, and the label builds that date from state rather than from presence.
@@ -821,7 +931,7 @@ async function selftest() {
 
   // A hostile url in the record is attribute-escaped rather than breaking out of the href.
   const hostileFiled = [{ path: "constants/87a.md", issue: 1, url: 'https://example.invalid/"><script>x</script>', state: "OPEN" }];
-  const hostileDisclosed = renderHtml(buildRows(discloseClaims, { withDates: false, reports: hostileFiled }), manifest, "2026-09-02");
+  const hostileDisclosed = renderHtml(buildRows(discloseClaims, { withDates: false, reports: hostileFiled, audits: { audits: [] } }), manifest, "2026-09-02");
   assert.ok(hostileDisclosed.length > 2000, "positive control: the hostile-disclosure page must render before any absence is asserted");
   assert.ok(!/<script>x<\/script>/.test(hostileDisclosed), "a url in the filed-report record reached the page as markup");
 
@@ -833,7 +943,7 @@ async function selftest() {
     url: "https://example.invalid/3a.md",
     expect: "| 3 | X |",
   }];
-  const hostileHtml = renderHtml(buildRows(hostile, { withDates: false }), manifest, "2026-08-20");
+  const hostileHtml = renderHtml(buildRows(hostile, { withDates: false, audits: { audits: [] } }), manifest, "2026-08-20");
   assert.ok(hostileHtml.length > 2000, "positive control: the hostile page must render before any absence is asserted");
   // Match the ROW link by its prefilled title, not by being the first issues/new href on the page.
   // It was positional, and adding the empty state's plain /issues/new link above the table made
@@ -857,7 +967,7 @@ async function selftest() {
     statement: "Last-listed upper-bound table row for A test constant (15a.md)",
     url: "https://example.invalid/15a.md",
     expect: "| $2.371177$ | [XYZ] | prose |",
-  }], { withDates: false })[0];
+  }], { withDates: false, audits: { audits: [] } })[0];
   const cite = citation(citeRow, "abcdef1234567890");
   assert.ok(cite.length > 80, "positive control: the citation must render before any absence is asserted");
   assert.match(cite, /A test constant \(15a\)/, "the citation must name the constant and its id");
@@ -1378,7 +1488,10 @@ async function selftest() {
   // with nothing linking to them, which is the same as not shipping them. The per-id loop is also
   // the wrong-row control: a template that emitted one constant's href on every row would satisfy
   // the count assertion and fail here.
-  assert.equal((html.match(/href="c\/[^"]+\.html"/g) || []).length, rows.length,
+  // Counts the dedicated PAGE link, not every c/ href: since 2026-09-14 an audited row carries a second
+  // link to the same page (its "read against its cited source" badge), so "one c/ href per row" is no
+  // longer true of real output and a count built on it would break the day an audit fixture joins.
+  assert.equal((html.match(/href="c\/[^"]+\.html" aria-label="The page for /g) || []).length, rows.length,
     "every row must link to its own constant page, or the pages are unreachable from the table");
   for (const id of [...html.matchAll(/<tr id="c-([^"]+)"/g)].map((m) => m[1])) {
     assert.ok(html.includes(`href="c/${id}.html"`),
