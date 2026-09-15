@@ -6,3 +6,4 @@ issue-body.md
 .playwright-mcp/
 continuity/health.json
 .playwright-cli/
+continuity/continuity-disposition-events.jsonl
