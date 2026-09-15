@@ -24,12 +24,7 @@ This lane spent the day building a correction to send upstream and then refuted 
 
 The evidence that killed it was already in this repository when the morning's analysis was written.
 
-**FIRST ACTION.** Pull, then start the gate — three minutes of network, and a receipt on a stale tree says nothing.
-
-```bash
-git pull --ff-only
-npm run verify > tmp/verify-out.txt 2>&1
-```
+**FIRST ACTION.** Read the front matter of the *Small Ramsey Numbers* survey PDF, reached from `https://www.combinatorics.org/ojs/index.php/eljc/article/view/DS1`, for a correction path that is not a cold email, and write the answer into `continuity/items.json` → row `A-48` (the second-area citation comparison promised to David for 2026-09-16) → field `surface1Scored`, criterion (4). It is the one criterion that can disqualify the candidate. Pulling and gating come first as they do every day; that is the day's first command, not its action, and for six days this line said only that.
 
 **THE THING THAT WILL MISLEAD YOU.** `A-43` (the watch on upstream's rendering of Haugland's minimum-overlap bound) carries TWO corrections at the top of its `onTrigger`, written six hours apart, and they point in opposite directions. The first says the row's order was already carried out. The second says the conclusion that replaced it overstates the case. **Read the second one first; it is deliberately above the first.** The row is not decision-ready and nothing goes to David on it unless a draft answers the 2026-07-23 precedent named there.
 
