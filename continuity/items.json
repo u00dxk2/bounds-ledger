@@ -1705,6 +1705,30 @@
       "closeWhen": "Either the fleet adopts a tense marker a lead composer keys on, or this lane decides the cost does not justify the change and records that decision with the measured per-occurrence cost.",
       "readCommand": "node ../skylark-site/scripts/read-msg.mjs 42cc5245 --project bounds-ledger # the close post whose sentence the lead re-read as a live defect. POSITIVE CONTROL that the pairing is real rather than remembered: `git -C . show --format=%aI -s 27d4bcd` prints 2026-09-07T15:47:16-06:00 = 21:47:16Z, and the msg above is stamped 21:48:39Z — the fix predates the post announcing it by 83 seconds, so a lead built from that post was reading a repaired record.",
       "updated": "2026-09-08"
+    },
+    {
+      "id": "W-11",
+      "type": "watch",
+      "status": "open",
+      "title": "Before asserting a claim is decision-ready, search this lane's own record for that claim's own terms",
+      "expectedSignalBy": "2026-10-15",
+      "note": "FILED FROM THE 2026-09-15 INSTANCE, and the orchestrator asked for the row in its P3 feedback (bus 3b912d14). That morning's P2 analysis concluded A-43's one-cell upstream correction was the supported report shape and that the row was decision-ready. It was refuted the same afternoon at P3 by re-reading the cited source: Haugland's own abstract states the bound as 0.380926..., so upstream's figure is the abstract's with the ellipsis dropped. BOTH HALVES OF THAT REFUTATION WERE ALREADY IN THIS REPO when the P2 analysis was written — hand claim C-4 pins the abstract's 0.380926..., and docs/findings/2026-07-23-haugland-final-digit.md had already judged the identical ellipsis-dropped form on Wikipedia to be common as citation shorthand and declined to act on it as low value. The record contained the answer and the analysis did not read it.",
+      "note2": "IT IS A RETRIEVAL FAILURE, NOT A REASONING FAILURE, and that is why it gets a watch rather than a lesson. The P2 reasoning was sound on the evidence it held; nothing in it was careless. What was missing was a search. Re-deriving a fact from primary sources is the expensive path and it is the one this lane instinctively takes; reading what we already wrote down is cheap and was skipped. This is the mirror image of A-43's own defect — there a stale imperative outranked fresh evidence; here fresh evidence was gathered while the settled evidence sat unread.",
+      "note3": "WHAT THE SEARCH COSTS. The readCommand below is the exact search that would have caught it, and it takes seconds. A search that returns NOTHING is a real and useful answer and must be reported as such, with the literal terms searched — an unreported empty search is indistinguishable from no search.",
+      "onTrigger": "Before any post, draft, disposition or board card asserts that a claim is decision-ready, that an outward report is warranted, or that a question is settled: search this lane's own record for the claim's OWN terms — the value as it is written, the citation key, the source's name — across ledger/claims.json, docs/findings/ and continuity/items.json. Name in the post what the search returned, including 'nothing'. On 2026-10-15, read back over the posts since this row was filed and check whether any assertion of decision-readiness went out without that search named.",
+      "closeWhen": "Standing watch — it does not close on a date. The 2026-10-15 read either records that every decision-ready assertion since carried its search (the watch keeps standing), or names one that did not, which is a finding and gets written up before the row is re-dated.",
+      "readCommand": "grep -rn \"0.380926\" ledger/claims.json docs/findings/ — the literal search that would have caught the 2026-09-15 miss. EXPECTED: hits in ledger/claims.json (hand claims C-2, C-4, C-5, C-6) and in docs/findings/2026-07-23-haugland-final-digit.md, which is the precedent the P2 analysis missed. This is a POSITIVE CONTROL on the search idiom itself, not a gate on the watch: if it returns nothing, the search is broken rather than the record being empty, and that is the finding.",
+      "links": [
+        "docs/findings/2026-07-23-haugland-final-digit.md",
+        "docs/findings/2026-09-15-a43-asserted-two-states-about-the-same-work.md",
+        "A-43",
+        "W-9"
+      ],
+      "linkedCommits": [
+        "9c23621"
+      ],
+      "created": "2026-09-15",
+      "updated": "2026-09-15"
     }
   ],
   "meta": {
