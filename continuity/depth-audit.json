@@ -421,6 +421,26 @@
       "evidence": "The results section states \"Our best result is 0.380868\", which is what the mirror row carries. The paper CONTRADICTS ITSELF: its introduction headlines 0.380856, and that figure appears eleven times against five for 0.380868. The authors resolve it themselves — of the smaller figure they write that it \"was found during our ablation study (0.380856), which is NOT included in the table for fair comparison\" and \"For the sake of fairness in the comparison, we did not include it in Table 10\". Upstream quotes the paper's reported table result, and is right.",
       "positiveControl": "Both figures and both sentences came from the same fetch of the paper body, so the contradiction is in the artifact rather than between two documents.",
       "notes": "Suspicion-drawn. RECORDED FOR THE NEXT READER: anyone grepping this paper will find 0.380856 first and conclude our table is stale. It is not — read the fair-comparison sentence before filing anything."
+    },
+    {
+      "constant": "1b",
+      "constantName": "Erdős minimum overlap constant",
+      "rowFile": "ledger/teorth-optimizationproblems/constants/1b.md",
+      "selection": "suspicion",
+      "fetchedAt": "2026-09-15 — abstract page 2026-09-15T18:06:23.993Z, ar5iv rendering 2026-09-15T18:07:04.774Z (the file modification times of the two fetches, read back from disk, not typed)",
+      "id": "A-47-0019",
+      "leg": "value-vs-source",
+      "citedRef": "H2016",
+      "rowLine": 22,
+      "rowText": "| $0.380926$ | [H2016] | |",
+      "rowTextSha256": "4a586dd55bc39841",
+      "source": "https://arxiv.org/abs/1609.08000",
+      "sourceRead": "read in the abstract, which states 0.380926..., and in the final section, which gives 0.3809268534330870; the row carries the abstract's six decimals without its ellipsis, just below the value proved, so whether it supports an upper-bound row depends on how that rendering is read",
+      "sourceReadInternal": "arXiv abstract page plus the ar5iv HTML rendering of the full paper",
+      "verdict": "UNRESOLVED",
+      "evidence": "Abstract: \"A step function that improves the upper bound from 0.382002... to 0.380926... is given.\" Final section: \"yields the value 0.3809268534330870 for (1).\" The mirror row, under Known upper bounds, reads | $0.380926$ | [H2016] | |. So the row's figure is the abstract's own six decimals with the ellipsis dropped, and it is strictly below the value the paper proves. The source settles the value; it does not settle whether a six-decimal truncation of an upper bound counts as support, because the paper itself uses the truncated form in its abstract.",
+      "positiveControl": "Abstract page title \"[1609.08000] The minimum overlap problem revisited\", with \"Haugland\" 6 times and \"overlap\" 11 times; ar5iv title \"[1609.08000] The minimum overlap problem revisited\", with \"Haugland\" 4 times and \"minimum overlap\" 7 times. Both are the cited paper, not a bot page or a neighbouring abstract, and both quoted sentences came from those same fetches.",
+      "notes": "Suspicion-drawn: this is the row A-43 investigates, and the one row the 2026-09-13 transcription of A-43's lookups left out of this store. UNRESOLVED rather than DEFECTIVE because the source itself uses both renderings, and this ledger's 2026-07-23 finding judged the identical ellipsis-dropped form on Wikipedia (claim C-6) to be common citation shorthand. UNRESOLVED rather than SOUND because hand claim C-2 records that 0.380926 is strictly below the proved bound. Recorded, NOT filed: any upstream correction is outward contact needing an adversarial review and David's explicit gate."
     }
   ]
 }

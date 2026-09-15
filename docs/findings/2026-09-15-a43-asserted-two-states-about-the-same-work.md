@@ -1,5 +1,7 @@
 # A-43 asserted two incompatible states about the same work, and the false one was the one a cold agent acts on first
 
+> **⚠ PARTLY SUPERSEDED THE SAME DAY (P3, 2026-09-15). The contradiction below is real and stays fixed; the conclusion that the one-cell correction is "the supported report shape" does not survive.** Haugland's own abstract states the bound as "0.380926...", so upstream's 0.380926 is the source's abstract figure with the ellipsis dropped. That fits "quote the source's own figure", the very convention the lookups found. This ledger already pinned the abstract figure (hand claim C-4), and on 2026-07-23 it wrote of the identical ellipsis-dropped form on Wikipedia: "Strictly, 0.380926 alone is not a valid upper bound (the proved bound exceeds it), but as citation shorthand it's common." — and declined to act, calling a Wikipedia edit "outward contact for a cosmetic nuance — low value, skipped." Neither was accounted for here. Current state: the SECOND CORRECTION paragraph at the top of `A-43.onTrigger`, and the H2016 entry in `continuity/depth-audit.json` (verdict UNRESOLVED).
+
 **Found 2026-09-15 (P2), by a session that was parked before it could apply the fix.** The three corrected field texts are at the bottom of this file, ready to apply verbatim. Applying them is the first thing the next session should do — until then, A-43 will re-misread itself.
 
 ## The contradiction
