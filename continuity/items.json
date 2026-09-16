@@ -1320,7 +1320,9 @@
         "2bd8292",
         "a717eba",
         "433282c",
-        "9c23621"
+        "9c23621",
+        "739ce16",
+        "68e9764"
       ],
       "readCommandHistory": "node scripts/depth-audit.mjs # BUILT AND FIRST-RUN 2026-09-10; supersedes the check-claims placeholder kept at readCommandRetired2026_09_10, which correctly said no command answered this row while no audit store existed. LITERAL OUTPUT, pasted from the run rather than described: \"depth audit (A-47): 3 row(s) audited — 2 sound, 0 defective, 1 unresolved, 0 unreachable\" at exit 0. It prints the denominator and the SAMPLING RULE beside the count, and it REFUSES a bare zero: exit 2 when the store is missing or empty (a zero about the WORK, not about the records), exit 3 when the verdict counts do not sum to the row count. Both refusals red-armed 2026-09-10 with the mutations proven to land by sha256 and the restore verified against the original.\n\n — LITERAL OUTPUT RE-RECORDED 2026-09-11, because the line above is dated 2026-09-10 and a stale literal output is the defect this field exists to prevent: \"depth audit (A-47): 8 row(s) audited — 2 sound, 0 defective, 4 unresolved, 2 unreachable\" at exit 0. The verdict mix moved for two reasons on one day: slice 2 added five rows, and three earlier rows were downgraded to UNRESOLVED by adversarial review. A second command now answers the population half of this row: `node scripts/depth-audit.mjs --corpus`, which prints 770 bound rows across 115 constant files, 673 cited, 97 uncited, and refuses (exit 2) when either baseline cannot be established.",
       "readCommandLastRun": "2026-09-16T17:00:51.949Z",
@@ -1357,7 +1359,9 @@
         "953d570",
         "33ab324",
         "433282c",
-        "f805190"
+        "f805190",
+        "e7fbcd2",
+        "271cfe0"
       ],
       "notes": "2026-09-13: EACH SURFACE GETS ITS OWN DATE, forced at P4 on the orchestrator's instruction that one date for the row is not enough. Progress today: 0 surfaces scored — P3's user-visible slice took the day, and that is said rather than hidden. SURFACE 1 — \"Small Ramsey Numbers\", the Electronic Journal of Combinatorics dynamic survey DS1, DOI 10.37236/21, shape (a), the closest structural match to what we already steward. SCORE BY 2026-09-14: its footprint from two of the three indices proven reachable on 2026-09-11 (Crossref 36 / Semantic Scholar 612 / OpenAlex 433 on that date), then A-34's four criteria in order — cited, drifts, mirrorable without a permanently-red alarm, a correction path that is not a cold email. NOTE, stated so it is not read as evidence: today's single Crossref fetch of 10.37236/21 FAILED at the transport layer while a parallel fetch of 10.37236/27 succeeded; a transport failure says nothing about the surface, and 09-14 re-reads it. SURFACE 2 — \"Graph Labeling\", the Electronic Journal of Combinatorics dynamic survey, DOI 10.37236/27, shape (a). Identity VERIFIED TODAY rather than recalled: Crossref returned HTTP 200, title \"Graph Labeling\", container \"The Electronic Journal of Combinatorics\", is-referenced-by-count 156. SCORE BY 2026-09-15, same two-index read and the same four criteria. SHAPES (c) AND (d) ARE UNTESTED, NOT UNSCORABLE — CORRECTED before commit by adversarial review. The first draft of this note struck both as impossible to score because their candidates carry no DOI, and invoked closeWhen's \"the read is attempted and the indices cannot support it\" branch. That was wrong twice: no read was attempted, and a missing DOI does not establish that an index cannot count citations — OpenAlex resolves works by its own IDs and by metadata matching. So neither shape is scored and neither is struck. If a named candidate from (c) encyclopaedic named-constant articles or (d) record tables hosted as repositories is to enter the comparison, it first needs an identity-checked search across two indices, with the actual limitation recorded. Shape (b), community metadata databases, is excluded because teorth/erdosproblems is already partially adopted as A-6. THE COMPARISON DAVID RECEIVES is therefore two shape-(a) surfaces, which closeWhen allows (\"two or three\"), and it must say plainly that the other shapes were not tested, so it is not read as having ruled them out. DELIVERY TO DAVID: 2026-09-16, unchanged. If either surface's read has not landed by the end of 2026-09-15, he is told BEFORE the date, per signalDateNote.\n\n | 2026-09-13 ONE CLOCK, STEPPED PER SURFACE — corrected the same evening by continuity-check DUPLICATE_DATE_DRIFT. Surface 1 had been given nextCheckDate 2026-09-14 beside expectedSignalBy 2026-09-16, two clocks on one row, the shape that hid three due items at reels on 2026-07-13. nextCheckDate is deleted and expectedSignalBy now carries the NEXT owed step: 2026-09-14 for surface 1, then 2026-09-15 for surface 2, then 2026-09-16 for delivery. THE DATE PROMISED TO DAVID DID NOT MOVE: it is 2026-09-16, recorded in note and signalDateNote, and the clock converges on it at the final step. | CLOSED 2026-09-16 ON THE FIRST BRANCH OF closeWhen: the comparison reached David on the promised date. Two surfaces, both scored against A-34's four criteria (surface1Scored, surface2Scored), footprints from three indices re-read the same day, the adoption cost and the G-3 mechanism question each addressed. Document: docs/decisions/2026-09-16-a48-second-surface-comparison.md (commit e7fbcd2). Bus needs-decision e9e049ac-3195-47a9-876b-52e7ec4aac48; David's-board card ba297b25-1518-4bf3-8f06-07ae6658892d, draft reply \"Not yet. Run the small trial first\". RECOMMENDATION: do not adopt yet; if he wants to go further, a one-step trial reading a handful of Small Ramsey Numbers records against their cited papers. Adopting a surface stays HIS call and nothing here adopts one. WHAT THIS DOES NOT CARRY FORWARD: if David rules yes to the trial, that is a NEW row minted on his answer, not a reopening of this one. Adversarial review: three rounds, needs-attention (4 findings, fixed), needs-attention (1, fixed), approve.",
       "lastEvaluated": "2026-09-16",
@@ -1761,7 +1765,10 @@
         "scripts/check-next-primer.mjs"
       ],
       "created": "2026-09-16",
-      "updated": "2026-09-16"
+      "updated": "2026-09-16",
+      "linkedCommits": [
+        "c5a964b"
+      ]
     },
     {
       "id": "A-50",
@@ -1777,7 +1784,10 @@
         "docs/daily/2026-09-14-prelaunch.md"
       ],
       "created": "2026-09-16",
-      "updated": "2026-09-16"
+      "updated": "2026-09-16",
+      "linkedCommits": [
+        "c5a964b"
+      ]
     },
     {
       "id": "A-51",
@@ -1794,7 +1804,11 @@
         "W-11"
       ],
       "created": "2026-09-16",
-      "updated": "2026-09-16"
+      "updated": "2026-09-16",
+      "linkedCommits": [
+        "c5a964b",
+        "55297f7"
+      ]
     },
     {
       "id": "A-52",
@@ -1810,7 +1824,10 @@
         "G-4"
       ],
       "created": "2026-09-16",
-      "updated": "2026-09-16"
+      "updated": "2026-09-16",
+      "linkedCommits": [
+        "c5a964b"
+      ]
     },
     {
       "id": "A-53",
