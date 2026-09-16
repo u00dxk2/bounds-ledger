@@ -1740,6 +1740,71 @@
       ],
       "created": "2026-09-15",
       "updated": "2026-09-15"
+    },
+    {
+      "id": "A-49",
+      "type": "active",
+      "status": "open",
+      "title": "npm run close:primer passes when tomorrow's banner is empty or still the generator placeholder — make it fail",
+      "note": "FILED 2026-09-16 at P2. Proposed in the 2026-09-15 P1 retro (bus bc4ef087) and carried in that day's close post (bus b7fe46f0) with no row, so nobody held it. The orchestrator's P2 feedback on 2026-09-16 (bus 22179070) asked for this row.\n\nTHE DEFECT. `npm run close:primer` runs scripts/check-next-primer.mjs, which fails only when tomorrow's primer file is missing. It does not read the hand-written banner region. The retro that proposed this recorded the red-arm in these words: \"swapping the 4,675-byte banner down to the 86-byte placeholder leaves both gates at exit 0.\" So a primer whose only hand-written guidance is missing passes the close gate.\n\nTHE PROPOSED FIX, about 15 lines in this lane's own file: fail when the banner region is absent, empty, or still the generator's placeholder. Read the region with the same marker grammar the generator writes it with, never a hand-rolled regex (a guard over a format is a parser). Ship it only with both KP-78 answers recorded here: non-zero on a placeholder banner, 0 on a real one, with `git diff --numstat` proving the mutation landed.",
+      "expectedSignalBy": "2026-09-23",
+      "onTrigger": "On 2026-09-23 run the readCommand. If it prints nothing (the check is still unbuilt), either build it that day with both KP-78 outputs pasted on this row, or close the row with a written reason for dropping it. Do not re-date it without doing one of those two.",
+      "closeWhen": "`npm run close:primer` exits non-zero on an empty or placeholder banner and 0 on a real one, with both literal outputs pasted on this row. Or a written decision to drop it, with the reason.",
+      "readCommand": "git log --oneline --since=2026-09-16 -- scripts/check-next-primer.mjs — EMPTY means the check is still unbuilt. A listed commit means read it and run the placeholder red-arm before calling it built.",
+      "links": [
+        "scripts/check-next-primer.mjs"
+      ],
+      "created": "2026-09-16",
+      "updated": "2026-09-16"
+    },
+    {
+      "id": "A-50",
+      "type": "active",
+      "status": "open",
+      "title": "Importing one of our CLI scripts can run it — one selftest that imports every CLI module and asserts the import did nothing",
+      "note": "FILED 2026-09-16 at P2. Proposed in the 2026-09-14 daily report and carried with no row through 2026-09-15.\n\nOWNER: THIS LANE. Ruled by the orchestrator on 2026-09-16 (bus 22179070): the code it covers is all this lane's own, so the fix and its proof live here, and it is built when it is the highest-value item, not today by default.\n\nTHE CLASS AND THE PROPOSAL, quoted from docs/daily/2026-09-14-prelaunch.md: \"The class has now bitten three times here — `lookup.mjs`, then `render-site.mjs` (whose own guard comment records it repeating the shape its own commit had just fixed), then `render-constant-pages.mjs` today. A fourth comment will not stop a fourth instance. The proposal is one selftest that imports every CLI module in a single spawned process and asserts the import was inert: stdout empty, file mtimes unchanged. It tests the property rather than the shape, which matters because a guard-presence lint passes on a guard that is present and wrong.\"\n\nWIRING NOTE: reverify.test.mjs fails when a selftest exists without a matching workflow step, so the build includes that step.",
+      "expectedSignalBy": "2026-09-30",
+      "onTrigger": "On 2026-09-30 run the readCommand. If the selftest is still unbuilt, either build it (a fourth instance of the class before then makes that the answer), or record why something else still outranks it and re-date with that reason. Never re-date it silently.",
+      "closeWhen": "A selftest in `npm test` and in CI that exits non-zero when a CLI module is mutated to act on import and 0 on the current tree, both literal outputs pasted on this row.",
+      "readCommand": "git log --oneline --since=2026-09-16 -- scripts/ .github/workflows/reverify.yml — EMPTY means nothing that could carry the selftest has changed. A listed commit means read it for the selftest.",
+      "links": [
+        "docs/daily/2026-09-14-prelaunch.md"
+      ],
+      "created": "2026-09-16",
+      "updated": "2026-09-16"
+    },
+    {
+      "id": "A-51",
+      "type": "active",
+      "status": "open",
+      "title": "Upstream's [YKLBMWKCZGS2026] reference in the minimum-overlap table cites a dead page — its own correction candidate, not a rider on A-43",
+      "note": "FILED 2026-09-16 at P2 as its own row, so that closing A-43 (the Haugland rounding question) cannot close it too. The orchestrator's P2 feedback that day (bus 22179070) required it before A-43 can close.\n\nTHE FACT, AS OF 2026-09-05 AND NOT RE-READ SINCE. Found during A-43's second lookup and recorded in A-43.lookups2026_09_05: \"upstream's [YKLBMWKCZGS2026] reference cites the URL test-time-training.github.io/discover.pdf, which is DEAD — it returns GitHub Pages' \"Site not found\" page, HTTP 200 with an HTML body of about 9 KB and the title \"Site not found\".\" The same field: \"The paper is live at arXiv:2601.16175v2, published 2026-01-22.\" The table is mirrored here at ledger/teorth-optimizationproblems/constants/1b.md.\n\nWHY IT IS SEPARATE FROM A-43. A-43's rounding case was refuted on 2026-09-15. Its onTrigger says of this one: \"The dead-link correction in the fourth paragraph below is unaffected by any of this.\"\n\nGATE. Any upstream contact goes through the adversarial refute-it review and David's explicit approval. Nothing is drafted or sent on this row's own authority. Before calling it decision-ready, run W-11's search on this lane's own record for the citation key, the dead URL and the arXiv id, and name what it returned.",
+      "expectedSignalBy": "2026-09-18",
+      "onTrigger": "On 2026-09-18 run the readCommand. If the URL now serves a PDF, close the row as moot. If it still serves the HTML page, run W-11's search, then either draft the one-line reference fix for the refute-it review and David's send decision, or close the row with a written reason not to contact upstream.",
+      "closeWhen": "The link is restored upstream (moot), or a drafted correction has passed the adversarial review and reached David for the send decision, or a written decision not to pursue it.",
+      "readCommand": "curl -sIL https://test-time-training.github.io/discover.pdf — prints the response headers. The status line proves nothing here, because on 2026-09-05 the dead page answered HTTP 200. Read the Content-Type: text/html means still the Site-not-found page; application/pdf means restored and this row closes as moot.",
+      "links": [
+        "A-43",
+        "W-11"
+      ],
+      "created": "2026-09-16",
+      "updated": "2026-09-16"
+    },
+    {
+      "id": "A-52",
+      "type": "active",
+      "status": "open",
+      "title": "Write down what an outside party acting on a record could look like besides filing an issue, and what trace each leaves",
+      "note": "FILED 2026-09-16 at P2. Proposed in the 2026-09-15 P1 retro (bus bc4ef087), which said it would be filed as a row that day unless the orchestrator wanted it held. It was not filed, and nothing records a hold. Found on 2026-09-16 while rowing that day's other unrowed promises: Grep over continuity/items.json for `non-issue`, `code search` and `a fork` found it nowhere except the closed A-6, and a scan of G-4's fields for `enumerat`, `trace` and the dates 2026-09-14/15 found nothing.\n\nTHE PROPOSAL, quoted from bus bc4ef087: \"a row that enumerates what a non-issue G-4 arrival would look like and what trace each would leave.\" It went on: \"Some are cheaply observable without any analytics stack — a GitHub code search for the ledger URL, an upstream commit touching a value we flagged, a fork. Others leave no trace we can ever see, and naming those explicitly is the point: it converts today's \"0, expected-zero\" from a number whose weakness I assert in prose into a list someone can check. Not an instrument, a definition.\"\n\nCONTEXT ADDED 2026-09-16. Visitors to the public page are unmeasured: `npm run traffic` reads GitHub's repository traffic, and no page in this repo carries analytics. A Search Console property for the page was sent up to the orchestrator for a ruling that day (bus 22179070). Whatever that ruling is, the list this row asks for is still needed, because most of the shapes it names would not show up in page analytics either.",
+      "expectedSignalBy": "2026-09-23",
+      "onTrigger": "On 2026-09-23 write the list into this row as a field named arrivalShapes: each way an outside party could act on a watched record without filing an issue, the trace it leaves, and the command that reads that trace, or the words 'no trace we can see'. Build nothing: it is a definition. G-4's own read on 2026-09-26 then decides whether any listed trace is worth reading routinely.",
+      "closeWhen": "arrivalShapes is written, with a read command or an explicit 'no trace we can see' beside every shape.",
+      "readCommand": "node scripts/sky.mjs show-item.mjs A-52 — prints this row with one \"## <field>\" heading per field. A LINE STARTING WITH \"## arrivalShapes\" means the list is written. The bare word arrivalShapes appears in this row's onTrigger, closeWhen and this text whether or not the list exists, so finding the word proves nothing.",
+      "links": [
+        "G-4"
+      ],
+      "created": "2026-09-16",
+      "updated": "2026-09-16"
     }
   ],
   "meta": {

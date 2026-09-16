@@ -169,7 +169,7 @@ paths" until 2026-08-23. The count above it was corrected first and this one was
 lines — a correction that reaches one copy is not a correction, and the second copy was in the same
 file as the first.)
 
-**Do NOT substitute an arrival count.** The traffic sampler read 4 unique viewers against 183
+**Do NOT substitute an arrival count.** The traffic sampler read 4 unique repo viewers against 183
 unique cloners on 2026-08-22; the clones are largely our own CI, which checks the repo out daily,
 on every push and every PR.
 

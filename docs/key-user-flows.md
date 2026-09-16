@@ -105,7 +105,7 @@ is silent when restored (rc=0), with the mutation proven to land before the run.
 
 Not persona-tested. `/persona-friction` drives a browser, and the change is one anchor per row on a
 page whose render was already reviewed on 2026-08-21; the encoding risk it introduces is offline-
-testable and is tested. **Below the traffic floor** — 4 unique viewers in the trailing 14 days
+testable and is tested. **Below the traffic floor** — 4 unique repo viewers in the trailing 14 days
 against a 30-arrivals/7-day bar — so there is no readable cohort and none is claimed.
 
 ---
@@ -161,7 +161,7 @@ assertion, and the restored tree was silent.
 was captured. The stub-DOM run covers the ordering logic; it does not cover layout of the new
 control at narrow widths, which remains unverified and is the honest gap in this rotation.
 
-**Below the traffic floor** — ~4 unique viewers in the trailing 14 days against a 30-arrivals/7-day
+**Below the traffic floor** — ~4 unique repo viewers in the trailing 14 days against a 30-arrivals/7-day
 bar. No readable cohort, none claimed; shipped on judgment.
 
 ---
@@ -230,8 +230,8 @@ count, and the file was restored from a copy rather than `git checkout` because 
 the label's appearance at narrow widths is unverified. The wording, the classification and the CSS
 class are covered by assertions; the layout is not.
 
-**Observable, stated in the sub-floor shape.** The surface is at 3 unique viewers in the trailing
-14 days, far below the 30-arrivals-in-7-days floor, so this carries no instrument read. What would
+**Observable, stated in the sub-floor shape.** The repository had 3 unique viewers in the trailing
+14 days (visits to the page itself are not measured), far below the 30-arrivals-in-7-days floor, so this carries no instrument read. What would
 be observed if it worked: a `looks wrong?` report disputing a row we labelled *text edited* would
 mean the classifier mis-called it, and would arrive as a titled GitHub issue. **Nothing observable
 yet at N=3; shipped on judgment.**
@@ -336,7 +336,7 @@ retried). Unlike Rotations 4 and 5 this is no longer only a paragraph here: it i
 collapses to the word *cite* and the revealed block is `max-width:40rem` with `pre-wrap`, so the
 narrow-width risk is real and unmeasured.
 
-**Below the traffic floor** — 3 unique viewers in the trailing 14 days against a 30-arrivals-in-7-days
+**Below the traffic floor** — 3 unique repo viewers in the trailing 14 days against a 30-arrivals-in-7-days
 bar. No instrument read is claimed. What would be observed if it worked: an inbound link or a
 citation naming `u00dxk2.github.io/bounds-ledger/#c-<id>` with a row anchor — the anchor is the tell,
 because it can only come from someone who used this control rather than the bare page URL. It would

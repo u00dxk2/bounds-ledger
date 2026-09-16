@@ -179,8 +179,8 @@ function main() {
   const cloners = sumSince(store.days, FLIP, "cloneUniques");
 
   console.log(`# Traffic sample — ${new Date().toISOString()}`);
-  console.log(`${Object.keys(store.days).length} day(s) recorded in ${STORE.slice(ROOT.length + 1)}; latest 14-day window: ${views.uniques} unique viewer(s), ${clones.uniques} unique cloner(s).`);
-  console.log(`Since the repo went public (${FLIP}, day ${elapsed}): ${visitors} unique viewer-day(s), ${cloners} unique cloner-day(s).`);
+  console.log(`${Object.keys(store.days).length} day(s) recorded in ${STORE.slice(ROOT.length + 1)}; latest 14-day window: ${views.uniques} unique REPO viewer(s), ${clones.uniques} unique cloner(s). Visitors to the GitHub Pages site are NOT counted here — nothing measures them.`);
+  console.log(`Since the repo went public (${FLIP}, day ${elapsed}): ${visitors} unique REPO viewer-day(s), ${cloners} unique cloner-day(s).`);
   // Stated every run because it is the number someone will otherwise misread. Summing per-day
   // uniques counts a returning visitor once per day, so this is an UPPER BOUND on distinct people.
   //
