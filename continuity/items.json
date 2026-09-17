@@ -285,7 +285,9 @@
         "0a29081",
         "28eebf4",
         "a03e49b",
-        "2bd8292"
+        "2bd8292",
+        "e9ad288",
+        "76554fd"
       ],
       "onTrigger": "When the fleet Stage-0 wave lands here (R7, the scheduled verified history sweep): verify BY EXECUTION, not inspection — a scheduled history-sweep workflow exists AND has completed one green run. Only then close. Do not close on the workflow file merely existing; that is the inspection-not-execution failure this item was opened about.",
       "note8Superseded2026_09_17": "SUPERSEDED. note8 and disposition2026_09_03 both record that R7 must not be solved locally ahead of the fleet wave, and the reverify.yml comment said the same. The orchestrator OVERRODE all three on 2026-09-17 (bus b5932dd5), answering the fork this row pre-committed on 2026-09-13: option 2, this lane is licensed to ship it, because fifty days establishes that no fleet date is coming and a public repo is where a full-history sweep matters most. Both records were updated in the same commit so neither keeps teaching the old rule. The earlier text stays on this row because the reasoning was right when it was written; it is the date that changed, not the judgment.",
@@ -1896,10 +1898,13 @@
       ],
       "linkedCommits": [
         "9360084",
-        "2661e95"
+        "2661e95",
+        "aa1aeca",
+        "0ad3615"
       ],
       "created": "2026-09-17",
-      "updated": "2026-09-17"
+      "updated": "2026-09-17",
+      "catchCounterBlindSpot2026_09_17": "THE CATCH COUNTER CANNOT SEE THIS AREA. npm run catches counts generated pins on the teorth/optimizationproblems mirror whose expect changed; catch-rate.mjs is silent on hand claims by construction and its own selftest pins that silence (\"silent on unchanged, added, removed, hand-claim, and absent-file\"). Small Ramsey Numbers is pinned by C-12, C-13 and C-14, which are HAND claims against ledger/ejc-ds1/section-2-1.json, a store that counter does not read at all. So the lane doubled its watched surface on 2026-09-17 and its detection figure covers half of it while printing as though it covered everything. PHASE 2 (2026-09-21) OWNS THE CHOICE: give the second area its own detection counter, or re-scope the printed figure explicitly where it is printed (README state block, daily reports, docs/lane-brief.md). The wrong outcome is nobody choosing. Same shape as catches-blind-to-added-constants: an instrument answering a narrower question than the sentence around it."
     }
   ],
   "meta": {
