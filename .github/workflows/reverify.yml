@@ -204,6 +204,15 @@ jobs:
       # record-claiming wording reaches it. Generation itself is checked by `npm run check`.
       - name: Self-test per-constant page renderer (no network)
         run: node scripts/render-constant-pages.mjs --selftest
+      # A-54, the second watched area. The extractor must REFUSE a survey layout it cannot place
+      # with certainty rather than emit a partial table; its selftest shows every refusal firing on
+      # a synthetic ruled PDF and the well-formed table reading. Network-free.
+      - name: Self-test Small Ramsey Numbers extractor (no network; refuses what it cannot place)
+        run: node scripts/extract-ds1.mjs --selftest
+      # The page's guard: no record wording, nothing loaded from elsewhere, every stored value on the
+      # page in its own entry, the four audit outcomes never merged. Network-free.
+      - name: Self-test Small Ramsey Numbers page renderer (no network)
+        run: node scripts/render-ramsey.mjs --selftest
       # Guards A-33 leg 1's differ. The danger it exists to prevent is the one note4 names: a
       # check that fires on 'a filed report is CLOSED' fires every day once #150 closes, and an
       # alarm that cannot go quiet is this lane's founding defect. The self-test asserts it stays
@@ -245,6 +254,10 @@ jobs:
       # page of a repo whose pitch is that it notices stale numbers.
       - name: Check README state block matches committed state
         run: node scripts/render-state-block.mjs --check
+      # Network-free. Runs the page's guard over the COMMITTED ramsey.html, not a fixture, and
+      # fails if the page no longer matches ledger/ejc-ds1/section-2-1.json.
+      - name: Check ramsey.html matches its table and passes its own guard
+        run: node scripts/render-ramsey.mjs --check
       # `shell: bash` is load-bearing: the DEFAULT runner shell is `bash -e {0}` with NO
       # pipefail, so `node ... | tee` reports tee's exit 0 and a drift exits GREEN. Naming
       # the shell gets `-eo pipefail`. Guarded by reverify.test.mjs.
@@ -260,6 +273,13 @@ jobs:
         if: '!cancelled()'
         shell: bash
         run: node scripts/check-claims.mjs 2>&1 | tee -a finding.txt
+      # A-54: re-read Section 2.1 of Small Ramsey Numbers from the journal's PDF, whose sha256 the
+      # ledger pins. SOURCE CHANGED is a new revision (titled as drift below); DIFFERS and REFUSED
+      # are this repo's problem; an unreadable PDF prints `error:` and is titled as a check error.
+      - name: Check Small Ramsey Numbers table against its pinned PDF
+        if: '!cancelled()'
+        shell: bash
+        run: node scripts/extract-ds1.mjs --check 2>&1 | tee -a finding.txt
       # The report is terminal text (console.log). Two fixes here, from the 2026-07-24
       # peak-moment render read (docs/findings/2026-07-24-peak-moment-render.md):
       #   P-1  the TITLE names what drifted — else every alarm is titled by date alone and
@@ -289,6 +309,11 @@ jobs:
             if [ -z "$parts" ]; then
               parts=$(grep -hE '^BROKEN ' finding.txt | awk '{print $2}' | join_list || true)
               [ -n "$parts" ] && parts="claims $parts"
+            fi
+            # A-54: the Small Ramsey Numbers PDF's bytes moved off the pin — a new revision is
+            # this area's record event, so it is titled as drift, never as a tool error.
+            if [ -z "$parts" ] && grep -qE '^SOURCE CHANGED ' finding.txt; then
+              parts="Small Ramsey Numbers survey PDF changed"
             fi
             # UNREACHABLE is NOT in the list above, and that is the whole point. BROKEN means we
             # read the source and the pinned string was gone — a record moved. UNREACHABLE means

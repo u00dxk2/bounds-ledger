@@ -54,9 +54,15 @@ bounds page and tells you when a number you cited moved."*
 
 Stated plainly, because a bar that only lists successes is decoration:
 
-- **Coverage.** One mirrored upstream surface plus a handful of hand claims. If the constant a
-  user cares about is not among the 111 constants files, the page has nothing for them and the
-  visit is a dead end. Coverage is the single biggest threat to the moment above.
+- **Coverage.** If the constant a user cares about is not among the files this ledger mirrors, the
+  page has nothing for them and the visit is a dead end. Coverage is the single biggest threat to
+  the moment above. **Amended 2026-09-17**: a second area now has its own page — small Ramsey
+  numbers R(k, l) as printed in the *Small Ramsey Numbers* survey, `ramsey.html` — so the answer is
+  no longer one mirrored surface plus a handful of hand claims. It is still two areas out of the
+  whole of mathematics, and the threat stands. Read the live figures rather than quoting this line:
+  `node scripts/render-state-block.mjs --check` for the mirrored constants and
+  `node scripts/render-ramsey.mjs --check` for the second area's entry count (115 and 72 when this
+  line was written; the original text said 111, which was already stale).
 - **The record/listing distinction.** The generated pins assert the LAST-LISTED row of a table,
   never "the record". That is correct and deliberate — numeric record-ranking here is defeated
   by symbolic cells, negatives and asymptotics — but a user who reads "value changed" as "the
@@ -155,6 +161,46 @@ conclude the selftest is the whole blocker and propose a server-side read as the
   when we check it"* — so that outcome read is dropped rather than re-dated, the goal is untouched,
   and `A-47` carries the interim judgment (argued, and open to challenge, at
   `G-4.meanwhileJudgment2026_09_10`). Adopting a second surface remains not self-approvable here.
+
+## Passes
+
+### 2026-09-17 — a second area, because coverage is the named threat
+
+The rotation read `check-cycle-rotation.mjs --lane bounds-ledger` printed `evangelism-pass DUE` and
+P3 was the pass. Its seven steps, answered:
+
+1. **The core problem, unchanged:** is the number I already have still true, and how would I find
+   out without redoing last year's literature search.
+2. **The moment, and the gap.** The moment is a reader looking up a value they are about to cite and
+   being told something about their own citation. The gap was coverage, which this document already
+   names as the single biggest threat: a combinatorialist about to cite R(5, 5) ≤ 46 found nothing
+   here at all, because the only area watched was one upstream repository of named constants.
+3. **The proving metric is NOT READABLE**, exactly as the metric section above says, and nothing in
+   this pass changed that. No analytics exist on the published page and GitHub Pages hands us no
+   request log; `[reached: unknown]` is the honest answer. **No instrument was stood up in place of
+   the ship.** The one arrival signal that does exist — a report filed through an entry's own link —
+   covers the new page from the day it shipped, because each entry's report link carries the title
+   prefix `report-rate.mjs` counts as an arrival, asserted in the renderer's self-test.
+4. **Real-user evidence: none.** This lane has no evidence ledger and no identified users, so the
+   ship rests on judgment and on this document's own naming of coverage as the threat. That forbids
+   the CLAIM that the gap is closed for real readers; it does not forbid the change.
+5. **Expert best-practice:** no playbook in the research library addresses "a verification ledger's
+   coverage of a second mathematical area", and none was invented to fill the slot. What the ship
+   does borrow is this repository's own rule that a surface is pinned rather than mirrored when its
+   licence does not permit republishing (`A-6`), and its refusal to assert which bound is "the"
+   bound.
+6. **What shipped:** `ramsey.html`, the second area's own page — every two-colour classical Ramsey
+   number the survey prints for 3 ≤ k ≤ 10 and k ≤ l ≤ 15, each value exactly as printed, the
+   reference the survey credits beside it, and for every entry whether anyone has read it against
+   that reference. Nothing is merged: Table Ia and Table Ib are shown separately where they differ,
+   and the four audit outcomes stay four. **No freeze was in play** — this lane has none dated,
+   funded or in flight.
+7. **The pre-registered read**, since the metric is unreadable: if this works, the observable is a
+   report arriving through an entry's own link on this page, counted by `npm run reports`, which
+   excludes our own authors. At the arrival rate this lane measures — 1 unique repository viewer in
+   the trailing 14 days when the bar was written — **nothing is observable yet, and this ships on
+   judgment.** The first such arrival is a single event, not a rate, and is worth surfacing the day
+   it lands rather than folding into a weekly line.
 
 ## Review
 

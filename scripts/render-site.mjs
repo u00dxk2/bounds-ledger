@@ -557,6 +557,7 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 <div class="wrap">
 <h1>Is the number you cited still current?</h1>
 <p class="lede">Best-known bounds move, and the papers and index pages citing them do not all move at the same time. This is every mathematical constant this ledger watches, with the exact table rows it has pinned.</p>
+<p><strong>Also watched, on its own page:</strong> <a href="ramsey.html">small Ramsey numbers R(k, l)</a>, exactly as printed in Radziszowski&rsquo;s survey <em>Small Ramsey Numbers</em>, with the reference it credits for each value. It is a separate area and never mixed into the table below.</p>
 
 <div class="note">
 <p><strong>Read this before you trust a number here.</strong> This page is a <em>snapshot</em>, not a live read. It shows our mirror of <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a> at upstream commit <code style="display:inline;padding:.1rem .3rem">${esc(sha.slice(0, 7))}</code>.</p>
