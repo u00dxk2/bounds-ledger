@@ -1,0 +1,7 @@
+# read-output sidecar for A-9 — written by check-due-gates-dispositioned --run
+# readCommand: git log --oneline --since=30.days.ago -- docs/engineering-health-review-2026-07-29.md
+# ran: 2026-09-17T15:27:03.175Z · exit: 0
+# lines: 1 · sha256: 77d5bbee0341162d (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+1cb3f65 The corrected grep found four more, including today's primer - fifth gate-sweep miss

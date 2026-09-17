@@ -61,6 +61,22 @@ function classify(body, c) {
   return "gone";
 }
 
+// The advisory line for a `manual: true` claim, from the SAME classify() the fetchable branch uses.
+// It used to test `c.expect` alone, so a manual NEGATIVE pin read "page unchanged" after a row was
+// inserted below it: the addition it exists to see. Found by adversarial review 2026-09-17 (A-54),
+// before any manual negative pin existed; C-14 would have become the first if its host refuses
+// runners. The advisory still never changes counts or the exit code: the claim stays UNVERIFIED.
+function manualAdvisory(body, c) {
+  const verdict = classify(body, c);
+  if (verdict === "hold") {
+    return `advisory fetch from THIS machine: HTTP 200, expected "${c.expect}" still present — page unchanged (stays UNVERIFIED; CI cannot see this)`;
+  }
+  if (verdict === "added") {
+    return `advisory fetch from THIS machine: HTTP 200, "${c.expect}" still present but NO LONGER followed by "${c.nothingAfter}" — SOMETHING WAS ADDED BELOW IT; hand-verify now and follow the claim's watch runbook (stays UNVERIFIED; this line never changes the exit code)`;
+  }
+  return `advisory fetch from THIS machine: HTTP 200 but expected "${c.expect}" NOT FOUND — the cited page may have moved; hand-verify now and follow the claim's watch runbook`;
+}
+
 function selftest() {
   const assert = (cond, msg) => { if (!cond) { console.error(`selftest FAIL: ${msg}`); process.exit(1); } };
   assert(holds("the bound is 0.380868 today", "0.380868"), "plain substring should hold");
@@ -92,7 +108,20 @@ function selftest() {
          classify("0.380868 and more below", { expect: "0.380868" }) === "hold",
     "a claim without nothingAfter must behave exactly as before (never 'added')");
 
-  console.log("check-claims selftest: PASS (4 matcher cases + empty-body guard + 1 blind-class pin + negative pin fires on an inserted row, silent when last, and distinguishes added from gone)");
+  // MANUAL NEGATIVE PIN, both sides (A-54 review finding). The advisory must see an insertion,
+  // stay quiet when nothing moved, and keep the plain-pin wording for C-7/C-9 unchanged.
+  const manualNeg = { ...neg, manual: true };
+  assert(/SOMETHING WAS ADDED BELOW IT/.test(manualAdvisory(table("\n" + row("0.380800", "Somebody 2027")), manualNeg)),
+    "a MANUAL negative pin's advisory must FIRE on an inserted row, not report the page unchanged");
+  assert(/page unchanged/.test(manualAdvisory(table(), manualNeg)) && !/ADDED/.test(manualAdvisory(table(), manualNeg)),
+    "a MANUAL negative pin's advisory must stay SILENT when the pinned row is still last");
+  assert(/NOT FOUND/.test(manualAdvisory("nothing here", manualNeg)),
+    "a MANUAL negative pin whose value is gone must read NOT FOUND");
+  assert(/page unchanged/.test(manualAdvisory("still 0.380876 here", { expect: "0.380876", manual: true })) &&
+         /NOT FOUND/.test(manualAdvisory("moved on", { expect: "0.380876", manual: true })),
+    "a MANUAL plain pin (C-7/C-9 shape) must keep its hold and not-found wording");
+
+  console.log("check-claims selftest: PASS (4 matcher cases + empty-body guard + 1 blind-class pin + negative pin fires on an inserted row, silent when last, and distinguishes added from gone + manual advisory sees an inserted row on a negative pin, silent when last, plain-pin wording unchanged)");
 }
 
 export async function run({
@@ -114,9 +143,7 @@ export async function run({
       try {
         const res = await fetchWithRetry(c.url, {}, { fetchImpl, wait });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        advisory = holds(await res.text(), c.expect)
-          ? `advisory fetch from THIS machine: HTTP 200, expected "${c.expect}" still present — page unchanged (stays UNVERIFIED; CI cannot see this)`
-          : `advisory fetch from THIS machine: HTTP 200 but expected "${c.expect}" NOT FOUND — the cited page may have moved; hand-verify now and follow the claim's watch runbook`;
+        advisory = manualAdvisory(await res.text(), c);
       } catch (err) {
         advisory = `advisory fetch failed (${err.message}) — expected from datacenter IPs (CI); hand/local verification still required`;
       }

@@ -1,0 +1,9 @@
+# read-output sidecar for A-7 — written by check-due-gates-dispositioned --run
+# readCommand: grep -rn 'history-sweep' .github/workflows/
+# ran: 2026-09-17T15:24:34.999Z · exit: 0
+# lines: 3 · sha256: cc7210d9c6015942 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+.github/workflows/reverify.yml:88:      # gate (A-13) and stays out of CI; the scheduled history-sweep control is A-7's R7, which
+.github/workflows/reverify.yml:92:      - name: Self-test history-sweep patterns (no network)
+.github/workflows/reverify.yml:93:        run: node scripts/history-sweep.mjs --selftest
