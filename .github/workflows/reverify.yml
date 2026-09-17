@@ -84,11 +84,13 @@ jobs:
       # nearly shipped a half-fix on 2026-09-08.
       - name: Self-test typed-notation coverage (no network)
         run: node scripts/check-notation-coverage.mjs --selftest
-      # Guards the SECRET-PATTERN SET, not the sweep itself. The sweep is a one-time pre-flip
-      # gate (A-13) and stays out of CI; the scheduled history-sweep control is A-7's R7, which
-      # is fleet-owned and must not be solved locally ahead of that wave. But the patterns rot
-      # silently — two of them could not fire at all in this file's first draft while the sweep
-      # still printed CLEAN — so the fixture set is guarded here.
+      # Guards the SECRET-PATTERN SET, not the sweep itself. SUPERSEDED 2026-09-17: this comment
+      # used to say the scheduled sweep was fleet-owned and must not be solved locally ahead of
+      # that wave. The orchestrator licensed this lane to ship it (A-7 R7), and it now runs daily
+      # from .github/workflows/history-sweep.yml at fetch-depth 0. The no-flag sweep remains the
+      # one-time pre-flip gate (A-13). The patterns still rot silently — two of them could not fire
+      # at all in this file's first draft while the sweep still printed CLEAN — so the fixture set
+      # is guarded here, and the scheduled run guards the history.
       - name: Self-test history-sweep patterns (no network)
         run: node scripts/history-sweep.mjs --selftest
       # Guards the G-2 gap-table value parser: numeric cells must parse (rightmost
