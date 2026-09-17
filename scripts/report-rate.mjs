@@ -44,15 +44,22 @@ export function isOurs(issue) {
   return login === OWNER || login.startsWith("app/") || login === "github-actions";
 }
 
-// The two prefilled shapes render-site.mjs emits. Title match is primary; the body marker is a
-// fallback because a reporter may retitle the issue before filing it, and that is a REAL report
-// we would otherwise drop.
+// The prefilled shapes the site emits — two from render-site.mjs and one from render-ramsey.mjs.
+// Title match is primary; the body markers are a fallback because a reporter may retitle the issue
+// before filing it, and that is a REAL report we would otherwise drop.
+//
+// The `Survey:` marker was added 2026-09-17 with the second watched area (A-54). Without it a
+// reader who retitled a report from ramsey.html was classified as outsideOther — it vanished from
+// the arrival count while the sum-check still reconciled, so nothing would have shown the loss.
+// Found by adversarial review, which retitled a real report link from that page and watched the
+// arrival count fall from one to zero.
 export function arrivalKind(issue) {
   const title = String(issue?.title ?? "");
   const body = String(issue?.body ?? "");
   if (/^Row looks wrong:/.test(title)) return "row-link";
   if (/^Constant not tracked:/.test(title)) return "empty-state";
   if (/^Ledger mirror: upstream /m.test(body)) return "row-link";
+  if (/^Survey: Small Ramsey Numbers \(EJC dynamic survey DS1\), revision /m.test(body)) return "row-link";
   return null;
 }
 
@@ -104,11 +111,16 @@ async function selftest() {
   const retitled = { number: 4, title: "this bound moved in June", author: { login: "a-stranger" }, body: "Constant: X (12a)\nLedger mirror: upstream 5c4aeee\n" };
   const notTracked = { number: 5, title: "Constant not tracked: Freiman", author: { login: "a-stranger" }, body: "" };
   const unrelated = { number: 6, title: "typo in the readme", author: { login: "a-stranger" }, body: "" };
+  // A-54's second watched area: the same two shapes, prefilled by render-ramsey.mjs.
+  const ramsey = { number: 7, title: "Row looks wrong: Small Ramsey Numbers R(5, 5)", author: { login: "a-stranger" }, body: "Survey: Small Ramsey Numbers (EJC dynamic survey DS1), revision #18\nEntry: R(5, 5)\n" };
+  const ramseyRetitled = { number: 8, title: "R(3,3) source disagreement", author: { login: "a-stranger" }, body: "Survey: Small Ramsey Numbers (EJC dynamic survey DS1), revision #18\nEntry: R(3, 3)\n" };
 
   // FIRES: each arrival shape is recognised, including the retitled one via its body marker.
   assert.equal(arrivalKind(rowReport), "row-link", "the prefilled row title must be recognised");
   assert.equal(arrivalKind(retitled), "row-link", "a RETITLED report must still be caught by its body marker");
   assert.equal(arrivalKind(notTracked), "empty-state", "the empty-state prefill must be recognised");
+  assert.equal(arrivalKind(ramsey), "row-link", "a report from the Small Ramsey Numbers page must be recognised");
+  assert.equal(arrivalKind(ramseyRetitled), "row-link", "a RETITLED Small Ramsey Numbers report must still be caught by its body marker");
 
   // SILENT: ours and unrelated are not arrivals.
   assert.equal(arrivalKind(unrelated), null, "an unrelated outside issue is not an arrival");
@@ -117,10 +129,10 @@ async function selftest() {
   assert.equal(isOurs(rowReport), false, "a stranger is not ours");
 
   // The whole-corpus behaviour, including the sum-check.
-  const c = classify([bot, mine, rowReport, retitled, notTracked, unrelated]);
-  assert.equal(c.raw, 6);
+  const c = classify([bot, mine, rowReport, retitled, notTracked, unrelated, ramsey, ramseyRetitled]);
+  assert.equal(c.raw, 8);
   assert.equal(c.ours, 2, "both of ours must be excluded by author");
-  assert.equal(c.outsideArrivals.length, 3, "three outside arrivals");
+  assert.equal(c.outsideArrivals.length, 5, "five outside arrivals");
   assert.equal(c.outsideOther, 1, "one unrelated outside issue");
   assert.equal(c.reconciles, true, "parts must sum to the raw count");
 
