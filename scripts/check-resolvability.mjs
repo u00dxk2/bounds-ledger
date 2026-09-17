@@ -99,6 +99,8 @@ export function haystacks(html) {
 export const HAND_CLAIMS = {
   "C-1": "1b", "C-2": "1b", "C-3": "1b", "C-4": "1b", "C-5": "1b", "C-6": "1b", "C-7": "1b", "C-10": "1b",
   "C-8": null, "C-9": null, "C-11": null,
+  // A-54: revision pins on the Small Ramsey Numbers survey (a revision label, a list position).
+  "C-12": null, "C-13": null, "C-14": null,
 };
 
 export function constantOf(id) {

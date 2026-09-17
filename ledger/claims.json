@@ -93,6 +93,34 @@
     "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md"
   },
   {
+    "id": "C-12",
+    "statement": "The Electronic Journal of Combinatorics shows its dynamic survey DS1, Small Ramsey Numbers, at version DS1: Apr 24, 2026 (revision #18): the revision pin on the journal copy of the second watched area (A-54)",
+    "url": "https://www.combinatorics.org/ojs/index.php/eljc/article/view/DS1",
+    "expect": "Version DS1: Apr 24, 2026",
+    "note": "FIRST CLAIM ON THE SECOND WATCHED AREA (A-54, David ruled 2026-09-16; scope in docs/decisions/2026-09-17-a54-adopt-small-ramsey-numbers.md). A REVISION pin, not a record: it says revision #18 is still the version the journal shows, and nothing about any value inside the survey. Matched after tags are stripped, on the page's visible 'This Version DS1: Apr 24, 2026' line. A BREAK means the journal posted a new revision or restructured the page: read the PDF and the author's revision page (C-13, C-14) to learn which, then re-pin all three deliberately. Never re-pin on this page alone. The survey's bytes are never copied into this repository, because it grants no licence to republish (A-54 decision D1).",
+    "lastHandVerify": "2026-09-17",
+    "asserts": "docs/decisions/2026-09-17-a54-adopt-small-ramsey-numbers.md"
+  },
+  {
+    "id": "C-13",
+    "statement": "The author's revision page for Small Ramsey Numbers names revision #18, April 24, 2026 as its current entry (A-54)",
+    "url": "https://www.cs.rit.edu/~spr/ElJC/eline.html",
+    "expect": "Small Ramsey Numbers, revision #18, April 24, 2026,",
+    "note": "A-54 revision pin on the author's own copy; the journal copy is C-12. The two hosts publish the same revision separately, so a revision that reaches one host and not the other breaks one pin and leaves the other holding, and that difference is worth reading rather than re-pinning past. The raw HTML splits this string across FONT tags; it matches after tags are stripped and whitespace is collapsed. A BREAK means the current entry changed: confirm against the survey PDF, then re-pin C-12, C-13 and C-14 together.",
+    "lastHandVerify": "2026-09-17",
+    "asserts": "docs/decisions/2026-09-17-a54-adopt-small-ramsey-numbers.md"
+  },
+  {
+    "id": "C-14",
+    "statement": "Nothing is listed above revision #18 at the head of the author's revision history for Small Ramsey Numbers, so #18 is still the newest revision listed there (A-54)",
+    "url": "https://www.cs.rit.edu/~spr/ElJC/eline.html",
+    "expect": "For historical developments see the previous revisions below.",
+    "nothingAfter": " revision #18 (ps | pdf), 149pp (87+62, 1066), April 24, 2026",
+    "note": "PIN-A-NEGATIVE, the C-10/C-11 shape, on the author's revision history. C-13 pins the current-entry line at the top of the page; this pins the history list beneath it, by requiring the sentence that introduces the list to be immediately followed by the revision #18 entry. A revision #19 added to the list breaks this pin as SOMETHING WAS ADDED even if the current-entry line is left unchanged. Asserts listing position on the author's page and nothing about the survey's contents.",
+    "lastHandVerify": "2026-09-17",
+    "asserts": "docs/decisions/2026-09-17-a54-adopt-small-ramsey-numbers.md"
+  },
+  {
     "id": "pin:10a:U",
     "statement": "Last-listed upper-bound table row for The real Grothendieck constant (10a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10a.md",

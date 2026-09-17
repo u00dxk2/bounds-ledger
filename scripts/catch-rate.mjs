@@ -53,7 +53,8 @@
 //   da17be3 (2026-08-02, "first pure record movement") moved exactly three.
 //
 // Deliberately NOT counted:
-//   - HAND claims (C-1…C-11). Their `expect` is hand-edited for reasons other than a
+//   - HAND claims (C-1…C-14). This includes A-54's revision pins on the second watched
+//     area, so a survey revision there is never counted here. Their `expect` is hand-edited for reasons other than a
 //     record moving — re-anchoring to a different pinned string, for one — so counting
 //     them would inflate the figure with our own editing.
 //   - Pins ADDED or REMOVED. Upstream adding a constant (86a, 2026-07-28) grows the
