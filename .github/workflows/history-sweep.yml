@@ -1,0 +1,41 @@
+name: history-sweep
+# A-7 R7: the scheduled verified full-history secret sweep.
+#
+# Licensed to this lane by the orchestrator on 2026-09-17 (bus 63246b2b asked for a fleet date or a
+# local licence; b5932dd5 gave the licence) after the fleet wave this control waited on had not
+# arrived in fifty days. It OVERRIDES the two records that said not to solve it here: the comment on
+# the self-test step in reverify.yml and A-7's note8, both updated in the same commit so neither
+# keeps teaching the old rule.
+#
+# WHY THIS IS A SEPARATE WORKFLOW rather than a step in reverify.yml: it needs the WHOLE history
+# (fetch-depth: 0), and reverify's own jobs deliberately check out at depth 1. Copying depth 0 into
+# that job would slow every drift run for a control that needs to run once a day.
+#
+# THE TRAP THIS CONTROL MOST NEEDS TO SURVIVE — named in the ask and enforced in the script, not
+# here: a sweep in a shallow checkout scans ONE commit and prints CLEAN, which is worse than no
+# sweep at all. `--scheduled` refuses a shallow repository, refuses a scan that walked fewer commits
+# than `git rev-list --all --count` reports, and prints both numbers on every run.
+on:
+  schedule:
+    - cron: "43 10 * * *" # daily 10:43 UTC (04:43 MT), away from reverify's 09:17
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    steps:
+      # fetch-depth: 0 is the whole point of this job. Without it the sweep refuses, by design.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Not piped: reading an exit code through a pipe is this lane's founding defect. The run's
+      # output is the record — it prints the reachable-commit count, the count its own scan walked,
+      # and every dispositioned hit with the reason it was dispositioned.
+      - name: Sweep the full reachable history for secret-shaped content
+        run: node scripts/history-sweep.mjs --scheduled

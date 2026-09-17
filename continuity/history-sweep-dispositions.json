@@ -1,0 +1,36 @@
+{
+  "purpose": "A-7 R7. Known secret-shaped hits in this repository's reachable history, each dispositioned in writing so the SCHEDULED sweep (scripts/history-sweep.mjs --scheduled) can be red when something new appears instead of red every day. The pre-publication gate (no flag) still reports every hit, dispositioned or not.",
+  "contract": [
+    "A record keys on sha256(pattern |~| file |~| the exact matched line). It excuses THAT line and nothing else: a new secret in the same file, or the same string on a different line, still fires.",
+    "Only hashes are stored. The matched text is never written here, so this file cannot itself become a hit.",
+    "Every dispositioned hit is PRINTED on every run with its reason. Nothing is hidden, and an entry nobody can justify is a finding rather than a row.",
+    "A record that matches nothing FAILS the run as stale. History does not normally lose a line, so that means this file is wrong or history was rewritten; re-derive it rather than deleting the entry.",
+    "Rebuild the keys with: node scripts/history-sweep.mjs --list-keys"
+  ],
+  "dispositions": [
+    {
+      "pattern": "aws-access-key",
+      "file": "(commit message)",
+      "sha256": "6672efa4f12861996c4f17e795bc371d7bb1d905612474b5a76814f61f504ba8",
+      "reason": "A line in the message of commit 93d220bc quoting a GitHub secret-scanning alert and its dismissal. The value is AWS's own published example key, which appears in this repository exactly twice: in that message, and as this scanner's own positive fixture in scripts/history-sweep.mjs (which ALLOW skips). Verified 2026-09-17 by listing every AWS-shaped line in reachable history with its commit and file; there is no third occurrence and no live counterpart.",
+      "dispositionedOn": "2026-09-17",
+      "dispositionedBy": "A-7 R7, on the orchestrator's licence (bus b5932dd5)"
+    },
+    {
+      "pattern": "github-pat",
+      "file": "docs/findings/2026-08-02-no-secrets-history-sweep.md",
+      "sha256": "b2f7b28d5c771f40aaad76bbc2cff913821b1dc5769171027fc26c144b1aabce",
+      "reason": "The fake token this repository PLANTED on 2026-08-02 to prove the scanner fires, quoted inside that day's finding as the negative control's own output. The finding records that the mutation was proved landed, the branch deleted, the file removed, and the sweep re-run to confirm nothing reachable remained. The token was never valid anywhere.",
+      "dispositionedOn": "2026-09-17",
+      "dispositionedBy": "A-7 R7, on the orchestrator's licence (bus b5932dd5)"
+    },
+    {
+      "pattern": "secret-assignment",
+      "file": "docs/findings/2026-08-02-no-secrets-history-sweep.md",
+      "sha256": "84b3865bff10fc323a212ac405e69be96436b08f97a8abd74c1ea3b6eaa902dd",
+      "reason": "The same planted line as the github-pat record above, matched by a second pattern. One line can fire more than one pattern, and each needs its own disposition — which is why dispositioning one of them does not silence the other (asserted in the scanner's selftest).",
+      "dispositionedOn": "2026-09-17",
+      "dispositionedBy": "A-7 R7, on the orchestrator's licence (bus b5932dd5)"
+    }
+  ]
+}
