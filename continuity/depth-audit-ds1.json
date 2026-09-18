@@ -1,0 +1,37 @@
+{
+  "project": "bounds-ledger",
+  "item": "A-54",
+  "purpose": "Phase 4 of adopting Small Ramsey Numbers (A-54): bounds in Section 2.1 read against the papers the survey credits, by A-47's method. A store of its own, so these reads never enter A-47's count, whose frame is the 673 cited bound rows of the constants mirror.",
+  "meta": {
+    "created": "2026-09-18",
+    "readCommand": "node scripts/ds1-depth.mjs",
+    "verdicts": {
+      "SOUND": "the credited paper was read and it supports the bound",
+      "DEFECTIVE": "the credited paper was read and it does NOT support the bound",
+      "UNRESOLVED": "the paper was reached but could not settle the question. NOT a defect and NOT a pass. An abstract can settle a bound positively, never negatively.",
+      "UNREACHABLE": "the paper could not be read at all (paywall, 403, dead link)"
+    },
+    "unit": "one credited bound: (k, l, lower | upper | exact, the value, the reference key the survey credits for it)",
+    "frame": "node scripts/ds1-depth.mjs --frame — every bound Table Ia of ledger/ejc-ds1/section-2-1.json prints with a credited paper, k-then-l order, lower before upper. Left out and named: values with no reference printed, and values credited to an item of the survey's Section 2.3. Table Ib is outside the frame because its caption credits its column as a group.",
+    "drawRule": "position_i = floor((2i + 1) * N / 10) + 1 for i = 0..4: the midpoints of five equal strata of the frame. Fixed in scripts/ds1-depth.mjs before any position was computed, and committed with the draw below before any paper was opened.",
+    "surveyRevision": 18
+  },
+  "draws": [
+    {
+      "slice": 1,
+      "drawnOn": "2026-09-18",
+      "frameSize": 122,
+      "positions": [13, 37, 62, 86, 110],
+      "bounds": [
+        { "position": 13, "k": 3, "l": 11, "bound": "upper", "value": 50, "ref": "GoeR1" },
+        { "position": 37, "k": 4, "l": 12, "bound": "lower", "value": 128, "ref": "SuLL" },
+        { "position": 62, "k": 5, "l": 13, "bound": "upper", "value": 1138, "ref": "HW+" },
+        { "position": 86, "k": 7, "l": 8, "bound": "lower", "value": 219, "ref": "Tat" },
+        { "position": 110, "k": 8, "l": 14, "bound": "upper", "value": 41525, "ref": "HW+" }
+      ],
+      "printedBy": "node scripts/ds1-depth.mjs --draw",
+      "order": "This draw was committed before any of the five papers was opened. The commit that adds the reads comes after it in history."
+    }
+  ],
+  "rows": []
+}
