@@ -215,6 +215,16 @@ jobs:
       # page in its own entry, the four audit outcomes never merged. Network-free.
       - name: Self-test Small Ramsey Numbers page renderer (no network)
         run: node scripts/render-ramsey.mjs --selftest
+      # A-54 phase 4. The frame of credited bounds, the fixed draw rule (one position per stratum),
+      # and the store's refusals: an empty store, a fifth verdict, an unselected row, and a read of a
+      # value the committed table no longer prints. Network-free.
+      - name: Self-test Small Ramsey Numbers depth reads (no network)
+        run: node scripts/ds1-depth.mjs --selftest
+      # The recomputation behind the R(7, 8) >= 219 reading: two independent exhaustive clique
+      # searches that must agree, compared with brute force on 240 random colour classes and run on
+      # known graphs that must pass and fail. Network-free.
+      - name: Self-test Ramsey coloring checker (no network)
+        run: node scripts/check-ramsey-coloring.mjs --selftest
       # Guards A-33 leg 1's differ. The danger it exists to prevent is the one note4 names: a
       # check that fires on 'a filed report is CLOSED' fires every day once #150 closes, and an
       # alarm that cannot go quiet is this lane's founding defect. The self-test asserts it stays

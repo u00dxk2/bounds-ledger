@@ -29,7 +29,7 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <p><strong>The source.</strong> Stanisław Radziszowski, <a href="https://www.combinatorics.org/ojs/index.php/eljc/article/view/DS1">Small Ramsey Numbers</a>, The Electronic Journal of Combinatorics, dynamic survey DS1, <strong>revision #18, 24 April 2026</strong>, Section 2.1, Tables Ia and Ib. The survey is the authority. This page reproduces its values and reference keys, not the document.</p>
 <p><strong>What is covered.</strong> Section 2.1 only: 72 values of R(k, l). Table Ia prints something for 72 of them, and Table Ib prints a newer upper bound for 50. <strong>Not covered</strong>: everything else in the survey, including other graphs, more than two colours and hypergraphs, and any result published after revision #18.</p>
 <p><strong>What is watched.</strong> Once a day a scheduled job checks the journal&rsquo;s page and the <a href="https://www.cs.rit.edu/~spr/ElJC/eline.html">author&rsquo;s revision list</a> for a newer revision, and re-reads this table from the survey&rsquo;s PDF, whose fingerprint is pinned. A new revision turns that job red until a person has compared it with this page. The <a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a> is the live read; this page is not.</p>
-<p><strong>What has been checked against its source.</strong> The survey credits each bound to a paper by the key shown beside it, such as [AnM4]. Opening each paper and reading it against the entry is the next step, and until an entry has been read, it says <em>not yet read</em>. So far: sound 0 (read, and it supports the entry) · defective 0 (read, and it does not support the entry) · unresolved 0 (reached, and could not settle it) · unreachable 0 (could not be read) · not yet read 72.</p>
+<p><strong>What has been checked against its source.</strong> The survey credits each bound to a paper by the key shown beside it, such as [AnM4], and an entry can credit its lower and upper bound to different papers. So every bound carries its own state. A bound says <em>not yet read</em> until someone has tried to check it. Where one has been tried, the words beside it say what was actually read — sometimes the credited paper itself, sometimes only what could be reached when that paper could not be opened, and sometimes a construction the ledger recomputed rather than read. Bounds are chosen for reading by a fixed rule, written down and committed before any paper is opened, so the ones read are not the ones that looked easy. The <a href="https://github.com/u00dxk2/bounds-ledger/blob/main/continuity/depth-audit-ds1.json">notes kept on each reading</a> name the paper, what exactly was read, and what it said. So far, of the 128 values Table Ia prints: sound 2 (the credited source was read, and it supports this bound) · defective 0 (the credited source was read, and it does not support this bound) · unresolved 2 (what could be read did not settle this bound) · unreachable 1 (the credited source could not be read at all) · not yet read 117 · nothing to read it against 6.</p>
 <p><strong>Table Ia and Table Ib can print different upper bounds for the same number.</strong> Table Ib lists upper bounds from computations by Angeltveit and McKay ([AnM2], [AnM3], [AnM4]) and R(4, 5) from [MR4], and the survey says they improve on the upper bounds in Table Ia. Where both tables print one, this page shows both and does not choose between them for you.</p>
 <p><strong>[HW+]</strong> is the survey&rsquo;s own abbreviation of [HWSYZH], as enhanced in [Boza5]. A reference written as <em>item 2.3.h of the survey</em> points to a numbered item of its Section 2.3, not to a paper.</p>
 <p>If an entry disagrees with the survey or with the paper it credits, use <strong>looks wrong?</strong> on that entry. The report arrives already naming the entry and the revision.</p>
@@ -52,7 +52,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(3, 3) = 6</span><span class="refs">no reference printed</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="nothing-to-read">the exact value 6, with no reference printed: nothing to read it against</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(3%2C%203)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(3%2C%203)%0AThis%20page%20shows%3A%20Table%20Ia%20R(3%2C%203)%20%3D%206%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -61,7 +62,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(3, 4) = 9</span><span class="refs">credited to [GG]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the exact value 9, credited to [GG]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(3%2C%204)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(3%2C%204)%0AThis%20page%20shows%3A%20Table%20Ia%20R(3%2C%204)%20%3D%209%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -70,7 +72,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(3, 5) = 14</span><span class="refs">credited to [GG]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the exact value 14, credited to [GG]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(3%2C%205)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(3%2C%205)%0AThis%20page%20shows%3A%20Table%20Ia%20R(3%2C%205)%20%3D%2014%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -79,7 +82,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(3, 6) = 18</span><span class="refs">credited to [Kéry]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the exact value 18, credited to [Kéry]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(3%2C%206)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(3%2C%206)%0AThis%20page%20shows%3A%20Table%20Ia%20R(3%2C%206)%20%3D%2018%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -88,7 +92,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(3, 7) = 23</span><span class="refs">lower bound credited to [Ka2] · upper bound credited to [GrY]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 23, credited to [Ka2]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 23, credited to [GrY]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(3%2C%207)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(3%2C%207)%0AThis%20page%20shows%3A%20Table%20Ia%20R(3%2C%207)%20%3D%2023%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -97,7 +103,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(3, 8) = 28</span><span class="refs">lower bound credited to [GR] · upper bound credited to [McZ]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 28, credited to [GR]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 28, credited to [McZ]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(3%2C%208)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(3%2C%208)%0AThis%20page%20shows%3A%20Table%20Ia%20R(3%2C%208)%20%3D%2028%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -106,7 +114,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(3, 9) = 36</span><span class="refs">lower bound credited to [Ka2] · upper bound credited to [GR]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 36, credited to [Ka2]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 36, credited to [GR]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(3%2C%209)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(3%2C%209)%0AThis%20page%20shows%3A%20Table%20Ia%20R(3%2C%209)%20%3D%2036%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -115,7 +125,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">40 ≤ R(3, 10) ≤ 41</span><span class="refs">lower bound credited to [Ex5] · upper bound credited to [Ang1]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 40, credited to [Ex5]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 41, credited to [Ang1]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(3%2C%2010)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(3%2C%2010)%0AThis%20page%20shows%3A%20Table%20Ia%2040%20%E2%89%A4%20R(3%2C%2010)%20%E2%89%A4%2041%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -124,7 +136,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">47 ≤ R(3, 11) ≤ 50</span><span class="refs">lower bound credited to [Ex20] · upper bound credited to [GoeR1]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 47, credited to [Ex20]: not yet read</dd>
+<dd data-state="sound">the upper bound 50, credited to [GoeR1]: sound — the credited source was read, and it supports this bound. The paper is open access and was read: it states this bound in its abstract and again in Theorem 7. <a href="https://github.com/u00dxk2/bounds-ledger/blob/main/continuity/depth-audit-ds1.json">How it was read</a></dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(3%2C%2011)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(3%2C%2011)%0AThis%20page%20shows%3A%20Table%20Ia%2047%20%E2%89%A4%20R(3%2C%2011)%20%E2%89%A4%2050%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -133,7 +147,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">53 ≤ R(3, 12) ≤ 59</span><span class="refs">lower bound credited to [Kol1] · upper bound credited to [Les]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 53, credited to [Kol1]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 59, credited to [Les]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(3%2C%2012)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(3%2C%2012)%0AThis%20page%20shows%3A%20Table%20Ia%2053%20%E2%89%A4%20R(3%2C%2012)%20%E2%89%A4%2059%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -142,7 +158,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">61 ≤ R(3, 13) ≤ 68</span><span class="refs">lower bound credited to [NaRT] · upper bound credited to [GoeR1]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 61, credited to [NaRT]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 68, credited to [GoeR1]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(3%2C%2013)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(3%2C%2013)%0AThis%20page%20shows%3A%20Table%20Ia%2061%20%E2%89%A4%20R(3%2C%2013)%20%E2%89%A4%2068%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -151,7 +169,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">67 ≤ R(3, 14) ≤ 77</span><span class="refs">lower bound credited to [Kol2] · upper bound credited to [GoeR1]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 67, credited to [Kol2]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 77, credited to [GoeR1]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(3%2C%2014)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(3%2C%2014)%0AThis%20page%20shows%3A%20Table%20Ia%2067%20%E2%89%A4%20R(3%2C%2014)%20%E2%89%A4%2077%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -160,7 +180,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">74 ≤ R(3, 15) ≤ 87</span><span class="refs">lower bound credited to [Kol2] · upper bound credited to [GoeR1]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 74, credited to [Kol2]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 87, credited to [GoeR1]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(3%2C%2015)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(3%2C%2015)%0AThis%20page%20shows%3A%20Table%20Ia%2074%20%E2%89%A4%20R(3%2C%2015)%20%E2%89%A4%2087%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -170,7 +192,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(4, 4) = 18</span><span class="refs">credited to [GG]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the exact value 18, credited to [GG]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(4%2C%204)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(4%2C%204)%0AThis%20page%20shows%3A%20Table%20Ia%20R(4%2C%204)%20%3D%2018%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -179,7 +202,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(4, 5) = 25</span><span class="refs">lower bound credited to [Ka1] · upper bound credited to [MR4]</span></dd>
 <dt>Table Ib prints</dt><dd>R(4, 5) ≤ 25</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 25, credited to [Ka1]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 25, credited to [MR4]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(4%2C%205)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(4%2C%205)%0AThis%20page%20shows%3A%20Table%20Ia%20R(4%2C%205)%20%3D%2025%3B%20Table%20Ib%20R(4%2C%205)%20%E2%89%A4%2025%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -188,7 +213,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">36 ≤ R(4, 6) ≤ 41</span><span class="refs">lower bound credited to [Ex19] · upper bound credited to [MR5]</span></dd>
 <dt>Table Ib prints</dt><dd>R(4, 6) ≤ 40</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 36, credited to [Ex19]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 41, credited to [MR5]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(4%2C%206)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(4%2C%206)%0AThis%20page%20shows%3A%20Table%20Ia%2036%20%E2%89%A4%20R(4%2C%206)%20%E2%89%A4%2041%3B%20Table%20Ib%20R(4%2C%206)%20%E2%89%A4%2040%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -197,7 +224,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">49 ≤ R(4, 7) ≤ 61</span><span class="refs">lower bound credited to [Ex3] · upper bound credited to [Mac]</span></dd>
 <dt>Table Ib prints</dt><dd>R(4, 7) ≤ 58</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 49, credited to [Ex3]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 61, credited to [Mac]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(4%2C%207)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(4%2C%207)%0AThis%20page%20shows%3A%20Table%20Ia%2049%20%E2%89%A4%20R(4%2C%207)%20%E2%89%A4%2061%3B%20Table%20Ib%20R(4%2C%207)%20%E2%89%A4%2058%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -206,7 +235,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">59 ≤ R(4, 8) ≤ 84</span><span class="refs">lower bound credited to [ExT] · upper bound credited to [Mac]</span></dd>
 <dt>Table Ib prints</dt><dd>R(4, 8) ≤ 79</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 59, credited to [ExT]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 84, credited to [Mac]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(4%2C%208)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(4%2C%208)%0AThis%20page%20shows%3A%20Table%20Ia%2059%20%E2%89%A4%20R(4%2C%208)%20%E2%89%A4%2084%3B%20Table%20Ib%20R(4%2C%208)%20%E2%89%A4%2079%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -215,7 +246,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">73 ≤ R(4, 9) ≤ 115</span><span class="refs">lower bound credited to [Ex16] · upper bound credited to [Mac]</span></dd>
 <dt>Table Ib prints</dt><dd>R(4, 9) ≤ 105</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 73, credited to [Ex16]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 115, credited to [Mac]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(4%2C%209)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(4%2C%209)%0AThis%20page%20shows%3A%20Table%20Ia%2073%20%E2%89%A4%20R(4%2C%209)%20%E2%89%A4%20115%3B%20Table%20Ib%20R(4%2C%209)%20%E2%89%A4%20105%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -224,7 +257,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">92 ≤ R(4, 10) ≤ 149</span><span class="refs">lower bound credited to [HaKr1] · upper bound credited to [Mac]</span></dd>
 <dt>Table Ib prints</dt><dd>R(4, 10) ≤ 135</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 92, credited to [HaKr1]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 149, credited to [Mac]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(4%2C%2010)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(4%2C%2010)%0AThis%20page%20shows%3A%20Table%20Ia%2092%20%E2%89%A4%20R(4%2C%2010)%20%E2%89%A4%20149%3B%20Table%20Ib%20R(4%2C%2010)%20%E2%89%A4%20135%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -233,7 +268,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">102 ≤ R(4, 11) ≤ 191</span><span class="refs">lower bound credited to [ExT] · upper bound credited to [Spe4]</span></dd>
 <dt>Table Ib prints</dt><dd>R(4, 11) ≤ 170</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 102, credited to [ExT]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 191, credited to [Spe4]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(4%2C%2011)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(4%2C%2011)%0AThis%20page%20shows%3A%20Table%20Ia%20102%20%E2%89%A4%20R(4%2C%2011)%20%E2%89%A4%20191%3B%20Table%20Ib%20R(4%2C%2011)%20%E2%89%A4%20170%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -242,7 +279,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">128 ≤ R(4, 12) ≤ 238</span><span class="refs">lower bound credited to [SuLL] · upper bound credited to [Spe4]</span></dd>
 <dt>Table Ib prints</dt><dd>R(4, 12) ≤ 210</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd data-state="unreachable">the lower bound 128, credited to [SuLL]: unreachable — the credited source could not be read at all. The paper is behind a paywall and no index carries an abstract, so nothing that states the value could be read. <a href="https://github.com/u00dxk2/bounds-ledger/blob/main/continuity/depth-audit-ds1.json">How it was read</a></dd>
+<dd class="none" data-state="not-yet-read">the upper bound 238, credited to [Spe4]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(4%2C%2012)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(4%2C%2012)%0AThis%20page%20shows%3A%20Table%20Ia%20128%20%E2%89%A4%20R(4%2C%2012)%20%E2%89%A4%20238%3B%20Table%20Ib%20R(4%2C%2012)%20%E2%89%A4%20210%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -251,7 +290,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">139 ≤ R(4, 13) ≤ 291</span><span class="refs">lower bound credited to [NaRT] · upper bound credited to [Spe4]</span></dd>
 <dt>Table Ib prints</dt><dd>R(4, 13) ≤ 256</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 139, credited to [NaRT]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 291, credited to [Spe4]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(4%2C%2013)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(4%2C%2013)%0AThis%20page%20shows%3A%20Table%20Ia%20139%20%E2%89%A4%20R(4%2C%2013)%20%E2%89%A4%20291%3B%20Table%20Ib%20R(4%2C%2013)%20%E2%89%A4%20256%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -260,7 +301,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">148 ≤ R(4, 14) ≤ 349</span><span class="refs">lower bound credited to [NaRT] · upper bound credited to [Spe4]</span></dd>
 <dt>Table Ib prints</dt><dd>R(4, 14) ≤ 307</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 148, credited to [NaRT]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 349, credited to [Spe4]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(4%2C%2014)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(4%2C%2014)%0AThis%20page%20shows%3A%20Table%20Ia%20148%20%E2%89%A4%20R(4%2C%2014)%20%E2%89%A4%20349%3B%20Table%20Ib%20R(4%2C%2014)%20%E2%89%A4%20307%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -269,7 +312,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">159 ≤ R(4, 15) ≤ 417</span><span class="refs">lower bound credited to [NaRT] · upper bound credited to [Spe4]</span></dd>
 <dt>Table Ib prints</dt><dd>R(4, 15) ≤ 364</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 159, credited to [NaRT]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 417, credited to [Spe4]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(4%2C%2015)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(4%2C%2015)%0AThis%20page%20shows%3A%20Table%20Ia%20159%20%E2%89%A4%20R(4%2C%2015)%20%E2%89%A4%20417%3B%20Table%20Ib%20R(4%2C%2015)%20%E2%89%A4%20364%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -279,7 +324,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">43 ≤ R(5, 5) ≤ 46</span><span class="refs">lower bound credited to [Ex4] · upper bound credited to [AnM4]</span></dd>
 <dt>Table Ib prints</dt><dd>R(5, 5) ≤ 46</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 43, credited to [Ex4]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 46, credited to [AnM4]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(5%2C%205)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(5%2C%205)%0AThis%20page%20shows%3A%20Table%20Ia%2043%20%E2%89%A4%20R(5%2C%205)%20%E2%89%A4%2046%3B%20Table%20Ib%20R(5%2C%205)%20%E2%89%A4%2046%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -288,7 +335,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">59 ≤ R(5, 6) ≤ 87</span><span class="refs">lower bound credited to [Ex25] · upper bound credited to [HZ1]</span></dd>
 <dt>Table Ib prints</dt><dd>R(5, 6) ≤ 85</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 59, credited to [Ex25]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 87, credited to [HZ1]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(5%2C%206)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(5%2C%206)%0AThis%20page%20shows%3A%20Table%20Ia%2059%20%E2%89%A4%20R(5%2C%206)%20%E2%89%A4%2087%3B%20Table%20Ib%20R(5%2C%206)%20%E2%89%A4%2085%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -297,7 +346,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">80 ≤ R(5, 7) ≤ 143</span><span class="refs">lower bound credited to [CaET] · upper bound credited to [HZ1]</span></dd>
 <dt>Table Ib prints</dt><dd>R(5, 7) ≤ 133</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 80, credited to [CaET]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 143, credited to [HZ1]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(5%2C%207)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(5%2C%207)%0AThis%20page%20shows%3A%20Table%20Ia%2080%20%E2%89%A4%20R(5%2C%207)%20%E2%89%A4%20143%3B%20Table%20Ib%20R(5%2C%207)%20%E2%89%A4%20133%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -306,7 +357,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">101 ≤ R(5, 8) ≤ 216</span><span class="refs">lower bound credited to [HaKr1] · upper bound credited to [Spe4]</span></dd>
 <dt>Table Ib prints</dt><dd>R(5, 8) ≤ 193</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 101, credited to [HaKr1]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 216, credited to [Spe4]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(5%2C%208)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(5%2C%208)%0AThis%20page%20shows%3A%20Table%20Ia%20101%20%E2%89%A4%20R(5%2C%208)%20%E2%89%A4%20216%3B%20Table%20Ib%20R(5%2C%208)%20%E2%89%A4%20193%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -315,7 +368,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">133 ≤ R(5, 9) ≤ 316</span><span class="refs">lower bound credited to [Kuz] · upper bound credited to [Mac]</span></dd>
 <dt>Table Ib prints</dt><dd>R(5, 9) ≤ 282</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 133, credited to [Kuz]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 316, credited to [Mac]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(5%2C%209)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(5%2C%209)%0AThis%20page%20shows%3A%20Table%20Ia%20133%20%E2%89%A4%20R(5%2C%209)%20%E2%89%A4%20316%3B%20Table%20Ib%20R(5%2C%209)%20%E2%89%A4%20282%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -324,7 +379,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">149 ≤ R(5, 10) ≤ 442</span><span class="refs">lower bound credited to [ExT] · upper bound credited to [Mac]</span></dd>
 <dt>Table Ib prints</dt><dd>R(5, 10) ≤ 381</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 149, credited to [ExT]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 442, credited to [Mac]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(5%2C%2010)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(5%2C%2010)%0AThis%20page%20shows%3A%20Table%20Ia%20149%20%E2%89%A4%20R(5%2C%2010)%20%E2%89%A4%20442%3B%20Table%20Ib%20R(5%2C%2010)%20%E2%89%A4%20381%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -333,7 +390,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">183 ≤ R(5, 11) ≤ 633</span><span class="refs">lower bound credited to [Kuz] · upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(5, 11) ≤ 511</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 183, credited to [Kuz]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 633, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(5%2C%2011)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(5%2C%2011)%0AThis%20page%20shows%3A%20Table%20Ia%20183%20%E2%89%A4%20R(5%2C%2011)%20%E2%89%A4%20633%3B%20Table%20Ib%20R(5%2C%2011)%20%E2%89%A4%20511%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -342,7 +401,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">203 ≤ R(5, 12) ≤ 848</span><span class="refs">lower bound credited to [Kuz] · upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(5, 12) ≤ 672</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 203, credited to [Kuz]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 848, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(5%2C%2012)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(5%2C%2012)%0AThis%20page%20shows%3A%20Table%20Ia%20203%20%E2%89%A4%20R(5%2C%2012)%20%E2%89%A4%20848%3B%20Table%20Ib%20R(5%2C%2012)%20%E2%89%A4%20672%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -351,7 +412,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">233 ≤ R(5, 13) ≤ 1138</span><span class="refs">lower bound credited to [Kuz] · upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(5, 13) ≤ 860</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 233, credited to [Kuz]: not yet read</dd>
+<dd data-state="unresolved">the upper bound 1138, credited to [HW+]: unresolved — what could be read did not settle this bound. The credited paper could not be opened at all. Its method was read in two other papers that cite it, and the value recomputed exactly from the survey&#39;s own smaller bounds. <a href="https://github.com/u00dxk2/bounds-ledger/blob/main/continuity/depth-audit-ds1.json">How it was read</a></dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(5%2C%2013)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(5%2C%2013)%0AThis%20page%20shows%3A%20Table%20Ia%20233%20%E2%89%A4%20R(5%2C%2013)%20%E2%89%A4%201138%3B%20Table%20Ib%20R(5%2C%2013)%20%E2%89%A4%20860%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -360,7 +423,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">267 ≤ R(5, 14) ≤ 1461</span><span class="refs">lower bound credited to [Kuz] · upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(5, 14) ≤ 1081</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 267, credited to [Kuz]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 1461, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(5%2C%2014)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(5%2C%2014)%0AThis%20page%20shows%3A%20Table%20Ia%20267%20%E2%89%A4%20R(5%2C%2014)%20%E2%89%A4%201461%3B%20Table%20Ib%20R(5%2C%2014)%20%E2%89%A4%201081%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -369,7 +434,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">275 ≤ R(5, 15) ≤ 1878</span><span class="refs">lower bound credited to item 2.3.h of the survey · upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(5, 15) ≤ 1341</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="nothing-to-read">the lower bound 275, credited to item 2.3.h of the survey: nothing to read it against</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 1878, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(5%2C%2015)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(5%2C%2015)%0AThis%20page%20shows%3A%20Table%20Ia%20275%20%E2%89%A4%20R(5%2C%2015)%20%E2%89%A4%201878%3B%20Table%20Ib%20R(5%2C%2015)%20%E2%89%A4%201341%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -379,7 +446,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">102 ≤ R(6, 6) ≤ 165</span><span class="refs">lower bound credited to [Ka2] · upper bound credited to [Mac]</span></dd>
 <dt>Table Ib prints</dt><dd>R(6, 6) ≤ 160</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 102, credited to [Ka2]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 165, credited to [Mac]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(6%2C%206)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(6%2C%206)%0AThis%20page%20shows%3A%20Table%20Ia%20102%20%E2%89%A4%20R(6%2C%206)%20%E2%89%A4%20165%3B%20Table%20Ib%20R(6%2C%206)%20%E2%89%A4%20160%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -388,7 +457,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">115 ≤ R(6, 7) ≤ 298</span><span class="refs">lower bound credited to [ExT] · upper bound credited to [HZ1]</span></dd>
 <dt>Table Ib prints</dt><dd>R(6, 7) ≤ 270</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 115, credited to [ExT]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 298, credited to [HZ1]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(6%2C%207)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(6%2C%207)%0AThis%20page%20shows%3A%20Table%20Ia%20115%20%E2%89%A4%20R(6%2C%207)%20%E2%89%A4%20298%3B%20Table%20Ib%20R(6%2C%207)%20%E2%89%A4%20270%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -397,7 +468,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">134 ≤ R(6, 8) ≤ 495</span><span class="refs">lower bound credited to [ExT] · upper bound credited to [Mac]</span></dd>
 <dt>Table Ib prints</dt><dd>R(6, 8) ≤ 423</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 134, credited to [ExT]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 495, credited to [Mac]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(6%2C%208)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(6%2C%208)%0AThis%20page%20shows%3A%20Table%20Ia%20134%20%E2%89%A4%20R(6%2C%208)%20%E2%89%A4%20495%3B%20Table%20Ib%20R(6%2C%208)%20%E2%89%A4%20423%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -406,7 +479,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">183 ≤ R(6, 9) ≤ 780</span><span class="refs">lower bound credited to [Kuz] · upper bound credited to [Mac]</span></dd>
 <dt>Table Ib prints</dt><dd>R(6, 9) ≤ 651</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 183, credited to [Kuz]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 780, credited to [Mac]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(6%2C%209)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(6%2C%209)%0AThis%20page%20shows%3A%20Table%20Ia%20183%20%E2%89%A4%20R(6%2C%209)%20%E2%89%A4%20780%3B%20Table%20Ib%20R(6%2C%209)%20%E2%89%A4%20651%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -415,7 +490,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">204 ≤ R(6, 10) ≤ 1171</span><span class="refs">lower bound credited to [Kuz] · upper bound credited to [Mac]</span></dd>
 <dt>Table Ib prints</dt><dd>R(6, 10) ≤ 944</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 204, credited to [Kuz]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 1171, credited to [Mac]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(6%2C%2010)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(6%2C%2010)%0AThis%20page%20shows%3A%20Table%20Ia%20204%20%E2%89%A4%20R(6%2C%2010)%20%E2%89%A4%201171%3B%20Table%20Ib%20R(6%2C%2010)%20%E2%89%A4%20944%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -424,7 +501,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">262 ≤ R(6, 11) ≤ 1804</span><span class="refs">lower bound credited to [Tat] · upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(6, 11) ≤ 1346</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 262, credited to [Tat]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 1804, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(6%2C%2011)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(6%2C%2011)%0AThis%20page%20shows%3A%20Table%20Ia%20262%20%E2%89%A4%20R(6%2C%2011)%20%E2%89%A4%201804%3B%20Table%20Ib%20R(6%2C%2011)%20%E2%89%A4%201346%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -433,7 +512,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">294 ≤ R(6, 12) ≤ 2566</span><span class="refs">lower bound credited to [Kuz] · upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(6, 12) ≤ 1855</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 294, credited to [Kuz]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 2566, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(6%2C%2012)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(6%2C%2012)%0AThis%20page%20shows%3A%20Table%20Ia%20294%20%E2%89%A4%20R(6%2C%2012)%20%E2%89%A4%202566%3B%20Table%20Ib%20R(6%2C%2012)%20%E2%89%A4%201855%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -442,7 +523,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">347 ≤ R(6, 13) ≤ 3703</span><span class="refs">lower bound credited to [Kuz] · upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(6, 13) ≤ 2499</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 347, credited to [Kuz]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 3703, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(6%2C%2013)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(6%2C%2013)%0AThis%20page%20shows%3A%20Table%20Ia%20347%20%E2%89%A4%20R(6%2C%2013)%20%E2%89%A4%203703%3B%20Table%20Ib%20R(6%2C%2013)%20%E2%89%A4%202499%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -451,7 +534,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(6, 14) ≤ 5033 (no lower bound printed)</span><span class="refs">upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(6, 14) ≤ 3301</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the upper bound 5033, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(6%2C%2014)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(6%2C%2014)%0AThis%20page%20shows%3A%20Table%20Ia%20R(6%2C%2014)%20%E2%89%A4%205033%20(no%20lower%20bound%20printed)%3B%20Table%20Ib%20R(6%2C%2014)%20%E2%89%A4%203301%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -460,7 +544,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">401 ≤ R(6, 15) ≤ 6911</span><span class="refs">lower bound credited to item 2.3.i of the survey · upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(6, 15) ≤ 4305</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="nothing-to-read">the lower bound 401, credited to item 2.3.i of the survey: nothing to read it against</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 6911, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(6%2C%2015)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(6%2C%2015)%0AThis%20page%20shows%3A%20Table%20Ia%20401%20%E2%89%A4%20R(6%2C%2015)%20%E2%89%A4%206911%3B%20Table%20Ib%20R(6%2C%2015)%20%E2%89%A4%204305%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -470,7 +556,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">205 ≤ R(7, 7) ≤ 540</span><span class="refs">lower bound credited to [Math] · upper bound credited to [Mac]</span></dd>
 <dt>Table Ib prints</dt><dd>R(7, 7) ≤ 492</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 205, credited to [Math]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 540, credited to [Mac]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(7%2C%207)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(7%2C%207)%0AThis%20page%20shows%3A%20Table%20Ia%20205%20%E2%89%A4%20R(7%2C%207)%20%E2%89%A4%20540%3B%20Table%20Ib%20R(7%2C%207)%20%E2%89%A4%20492%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -479,7 +567,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">219 ≤ R(7, 8) ≤ 1031</span><span class="refs">lower bound credited to [Tat] · upper bound credited to [HZ1]</span></dd>
 <dt>Table Ib prints</dt><dd>R(7, 8) ≤ 832</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd data-state="sound">the lower bound 219, credited to [Tat]: sound — the credited source was read, and it supports this bound. The credited construction is a published graph file rather than a paper: it was downloaded and checked exhaustively, and it does prove this bound. <a href="https://github.com/u00dxk2/bounds-ledger/blob/main/continuity/depth-audit-ds1.json">How it was read</a></dd>
+<dd class="none" data-state="not-yet-read">the upper bound 1031, credited to [HZ1]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(7%2C%208)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(7%2C%208)%0AThis%20page%20shows%3A%20Table%20Ia%20219%20%E2%89%A4%20R(7%2C%208)%20%E2%89%A4%201031%3B%20Table%20Ib%20R(7%2C%208)%20%E2%89%A4%20832%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -488,7 +578,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">252 ≤ R(7, 9) ≤ 1713</span><span class="refs">lower bound credited to [Kuz] · upper bound credited to [HZ2]</span></dd>
 <dt>Table Ib prints</dt><dd>R(7, 9) ≤ 1368</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 252, credited to [Kuz]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 1713, credited to [HZ2]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(7%2C%209)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(7%2C%209)%0AThis%20page%20shows%3A%20Table%20Ia%20252%20%E2%89%A4%20R(7%2C%209)%20%E2%89%A4%201713%3B%20Table%20Ib%20R(7%2C%209)%20%E2%89%A4%201368%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -497,7 +589,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">292 ≤ R(7, 10) ≤ 2826</span><span class="refs">lower bound credited to [Kuz] · upper bound credited to [Mac]</span></dd>
 <dt>Table Ib prints</dt><dd>R(7, 10) ≤ 2119</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 292, credited to [Kuz]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 2826, credited to [Mac]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(7%2C%2010)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(7%2C%2010)%0AThis%20page%20shows%3A%20Table%20Ia%20292%20%E2%89%A4%20R(7%2C%2010)%20%E2%89%A4%202826%3B%20Table%20Ib%20R(7%2C%2010)%20%E2%89%A4%202119%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -506,7 +600,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">405 ≤ R(7, 11) ≤ 4553</span><span class="refs">lower bound credited to [XXER] · upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(7, 11) ≤ 3197</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 405, credited to [XXER]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 4553, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(7%2C%2011)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(7%2C%2011)%0AThis%20page%20shows%3A%20Table%20Ia%20405%20%E2%89%A4%20R(7%2C%2011)%20%E2%89%A4%204553%3B%20Table%20Ib%20R(7%2C%2011)%20%E2%89%A4%203197%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -515,7 +611,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">417 ≤ R(7, 12) ≤ 6954</span><span class="refs">lower bound credited to [XSR2] · upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(7, 12) ≤ 4665</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 417, credited to [XSR2]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 6954, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(7%2C%2012)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(7%2C%2012)%0AThis%20page%20shows%3A%20Table%20Ia%20417%20%E2%89%A4%20R(7%2C%2012)%20%E2%89%A4%206954%3B%20Table%20Ib%20R(7%2C%2012)%20%E2%89%A4%204665%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -524,7 +622,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">511 ≤ R(7, 13) ≤ 10578</span><span class="refs">lower bound credited to [XuXR] · upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(7, 13) ≤ 6653</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 511, credited to [XuXR]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 10578, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(7%2C%2013)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(7%2C%2013)%0AThis%20page%20shows%3A%20Table%20Ia%20511%20%E2%89%A4%20R(7%2C%2013)%20%E2%89%A4%2010578%3B%20Table%20Ib%20R(7%2C%2013)%20%E2%89%A4%206653%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -533,7 +633,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(7, 14) ≤ 15263 (no lower bound printed)</span><span class="refs">upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(7, 14) ≤ 9260</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the upper bound 15263, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(7%2C%2014)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(7%2C%2014)%0AThis%20page%20shows%3A%20Table%20Ia%20R(7%2C%2014)%20%E2%89%A4%2015263%20(no%20lower%20bound%20printed)%3B%20Table%20Ib%20R(7%2C%2014)%20%E2%89%A4%209260%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -542,7 +643,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(7, 15) ≤ 22112 (no lower bound printed)</span><span class="refs">upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(7, 15) ≤ 12635</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the upper bound 22112, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(7%2C%2015)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(7%2C%2015)%0AThis%20page%20shows%3A%20Table%20Ia%20R(7%2C%2015)%20%E2%89%A4%2022112%20(no%20lower%20bound%20printed)%3B%20Table%20Ib%20R(7%2C%2015)%20%E2%89%A4%2012635%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -552,7 +654,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">282 ≤ R(8, 8) ≤ 1870</span><span class="refs">lower bound credited to [BurR] · upper bound credited to [Mac]</span></dd>
 <dt>Table Ib prints</dt><dd>R(8, 8) ≤ 1518</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 282, credited to [BurR]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 1870, credited to [Mac]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(8%2C%208)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(8%2C%208)%0AThis%20page%20shows%3A%20Table%20Ia%20282%20%E2%89%A4%20R(8%2C%208)%20%E2%89%A4%201870%3B%20Table%20Ib%20R(8%2C%208)%20%E2%89%A4%201518%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -561,7 +665,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">329 ≤ R(8, 9) ≤ 3583</span><span class="refs">lower bound credited to [Kuz] · upper bound credited to [Ea1]</span></dd>
 <dt>Table Ib prints</dt><dd>R(8, 9) ≤ 2662</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 329, credited to [Kuz]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 3583, credited to [Ea1]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(8%2C%209)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(8%2C%209)%0AThis%20page%20shows%3A%20Table%20Ia%20329%20%E2%89%A4%20R(8%2C%209)%20%E2%89%A4%203583%3B%20Table%20Ib%20R(8%2C%209)%20%E2%89%A4%202662%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -570,7 +676,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">343 ≤ R(8, 10) ≤ 6090</span><span class="refs">lower bound credited to [Kuz] · upper bound credited to [HZ2]</span></dd>
 <dt>Table Ib prints</dt><dd>R(8, 10) ≤ 4402</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 343, credited to [Kuz]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 6090, credited to [HZ2]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(8%2C%2010)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(8%2C%2010)%0AThis%20page%20shows%3A%20Table%20Ia%20343%20%E2%89%A4%20R(8%2C%2010)%20%E2%89%A4%206090%3B%20Table%20Ib%20R(8%2C%2010)%20%E2%89%A4%204402%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -579,7 +687,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">457 ≤ R(8, 11) ≤ 10630</span><span class="refs">lower bound credited to item 2.3.i of the survey · upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(8, 11) ≤ 7040</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="nothing-to-read">the lower bound 457, credited to item 2.3.i of the survey: nothing to read it against</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 10630, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(8%2C%2011)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(8%2C%2011)%0AThis%20page%20shows%3A%20Table%20Ia%20457%20%E2%89%A4%20R(8%2C%2011)%20%E2%89%A4%2010630%3B%20Table%20Ib%20R(8%2C%2011)%20%E2%89%A4%207040%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -588,7 +698,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(8, 12) ≤ 16944 (no lower bound printed)</span><span class="refs">upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(8, 12) ≤ 10836</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the upper bound 16944, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(8%2C%2012)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(8%2C%2012)%0AThis%20page%20shows%3A%20Table%20Ia%20R(8%2C%2012)%20%E2%89%A4%2016944%20(no%20lower%20bound%20printed)%3B%20Table%20Ib%20R(8%2C%2012)%20%E2%89%A4%2010836%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -597,7 +708,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">817 ≤ R(8, 13) ≤ 27485</span><span class="refs">lower bound credited to [XXER] · upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 817, credited to [XXER]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 27485, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(8%2C%2013)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(8%2C%2013)%0AThis%20page%20shows%3A%20Table%20Ia%20817%20%E2%89%A4%20R(8%2C%2013)%20%E2%89%A4%2027485%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -606,7 +719,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(8, 14) ≤ 41525 (no lower bound printed)</span><span class="refs">upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd data-state="unresolved">the upper bound 41525, credited to [HW+]: unresolved — what could be read did not settle this bound. The credited paper could not be opened at all. Its method was read in two other papers that cite it, and the value recomputed exactly from the survey&#39;s own smaller bounds. <a href="https://github.com/u00dxk2/bounds-ledger/blob/main/continuity/depth-audit-ds1.json">How it was read</a></dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(8%2C%2014)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(8%2C%2014)%0AThis%20page%20shows%3A%20Table%20Ia%20R(8%2C%2014)%20%E2%89%A4%2041525%20(no%20lower%20bound%20printed)%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -615,7 +729,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">873 ≤ R(8, 15) ≤ 63609</span><span class="refs">lower bound credited to item 2.3.i of the survey · upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="nothing-to-read">the lower bound 873, credited to item 2.3.i of the survey: nothing to read it against</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 63609, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(8%2C%2015)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(8%2C%2015)%0AThis%20page%20shows%3A%20Table%20Ia%20873%20%E2%89%A4%20R(8%2C%2015)%20%E2%89%A4%2063609%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -625,7 +741,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">565 ≤ R(9, 9) ≤ 6588</span><span class="refs">lower bound credited to [Math] · upper bound credited to [ShZ1]</span></dd>
 <dt>Table Ib prints</dt><dd>R(9, 9) ≤ 4956</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 565, credited to [Math]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 6588, credited to [ShZ1]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(9%2C%209)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(9%2C%209)%0AThis%20page%20shows%3A%20Table%20Ia%20565%20%E2%89%A4%20R(9%2C%209)%20%E2%89%A4%206588%3B%20Table%20Ib%20R(9%2C%209)%20%E2%89%A4%204956%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -634,7 +752,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">581 ≤ R(9, 10) ≤ 12677</span><span class="refs">lower bound credited to [XSR2] · upper bound credited to [Ea1]</span></dd>
 <dt>Table Ib prints</dt><dd>R(9, 10) ≤ 8675</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 581, credited to [XSR2]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 12677, credited to [Ea1]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(9%2C%2010)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(9%2C%2010)%0AThis%20page%20shows%3A%20Table%20Ia%20581%20%E2%89%A4%20R(9%2C%2010)%20%E2%89%A4%2012677%3B%20Table%20Ib%20R(9%2C%2010)%20%E2%89%A4%208675%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -643,7 +763,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(9, 11) ≤ 22325 (no lower bound printed)</span><span class="refs">upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd>R(9, 11) ≤ 14631</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the upper bound 22325, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(9%2C%2011)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(9%2C%2011)%0AThis%20page%20shows%3A%20Table%20Ia%20R(9%2C%2011)%20%E2%89%A4%2022325%20(no%20lower%20bound%20printed)%3B%20Table%20Ib%20R(9%2C%2011)%20%E2%89%A4%2014631%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -652,7 +773,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(9, 12) ≤ 38832 (no lower bound printed)</span><span class="refs">upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the upper bound 38832, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(9%2C%2012)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(9%2C%2012)%0AThis%20page%20shows%3A%20Table%20Ia%20R(9%2C%2012)%20%E2%89%A4%2038832%20(no%20lower%20bound%20printed)%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -661,7 +783,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(9, 13) ≤ 64864 (no lower bound printed)</span><span class="refs">upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the upper bound 64864, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(9%2C%2013)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(9%2C%2013)%0AThis%20page%20shows%3A%20Table%20Ia%20R(9%2C%2013)%20%E2%89%A4%2064864%20(no%20lower%20bound%20printed)%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -671,7 +794,9 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">798 ≤ R(10, 10) ≤ 23556</span><span class="refs">lower bound credited to [Math] · upper bound credited to [Shi2]</span></dd>
 <dt>Table Ib prints</dt><dd>R(10, 10) ≤ 16064</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the lower bound 798, credited to [Math]: not yet read</dd>
+<dd class="none" data-state="not-yet-read">the upper bound 23556, credited to [Shi2]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(10%2C%2010)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(10%2C%2010)%0AThis%20page%20shows%3A%20Table%20Ia%20798%20%E2%89%A4%20R(10%2C%2010)%20%E2%89%A4%2023556%3B%20Table%20Ib%20R(10%2C%2010)%20%E2%89%A4%2016064%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -680,7 +805,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(10, 11) ≤ 45881 (no lower bound printed)</span><span class="refs">upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the upper bound 45881, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(10%2C%2011)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(10%2C%2011)%0AThis%20page%20shows%3A%20Table%20Ia%20R(10%2C%2011)%20%E2%89%A4%2045881%20(no%20lower%20bound%20printed)%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -689,7 +815,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(10, 12) ≤ 81123 (no lower bound printed)</span><span class="refs">upper bound credited to [HW+]</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="not-yet-read">the upper bound 81123, credited to [HW+]: not yet read</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(10%2C%2012)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(10%2C%2012)%0AThis%20page%20shows%3A%20Table%20Ia%20R(10%2C%2012)%20%E2%89%A4%2081123%20(no%20lower%20bound%20printed)%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
@@ -698,7 +825,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">R(10, 15) ≥ 1313 (no upper bound printed)</span><span class="refs">lower bound credited to item 2.3.i of the survey</span></dd>
 <dt>Table Ib prints</dt><dd class="none">no entry in Table Ib</dd>
-<dt>Read against its credited source</dt><dd class="none">not yet read</dd>
+<dt>Read against its credited source</dt>
+<dd class="none" data-state="nothing-to-read">the lower bound 1313, credited to item 2.3.i of the survey: nothing to read it against</dd>
 </dl>
 <a class="flag" href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(10%2C%2015)&amp;body=Survey%3A%20Small%20Ramsey%20Numbers%20(EJC%20dynamic%20survey%20DS1)%2C%20revision%20%2318%0AEntry%3A%20R(10%2C%2015)%0AThis%20page%20shows%3A%20Table%20Ia%20R(10%2C%2015)%20%E2%89%A5%201313%20(no%20upper%20bound%20printed)%3B%20Table%20Ib%20no%20entry%20in%20Table%20Ib%0A%0AWhat%20the%20survey%20or%20the%20paper%20it%20credits%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </section>
