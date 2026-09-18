@@ -21,17 +21,154 @@
       "slice": 1,
       "drawnOn": "2026-09-18",
       "frameSize": 122,
-      "positions": [13, 37, 62, 86, 110],
+      "positions": [
+        13,
+        37,
+        62,
+        86,
+        110
+      ],
       "bounds": [
-        { "position": 13, "k": 3, "l": 11, "bound": "upper", "value": 50, "ref": "GoeR1" },
-        { "position": 37, "k": 4, "l": 12, "bound": "lower", "value": 128, "ref": "SuLL" },
-        { "position": 62, "k": 5, "l": 13, "bound": "upper", "value": 1138, "ref": "HW+" },
-        { "position": 86, "k": 7, "l": 8, "bound": "lower", "value": 219, "ref": "Tat" },
-        { "position": 110, "k": 8, "l": 14, "bound": "upper", "value": 41525, "ref": "HW+" }
+        {
+          "position": 13,
+          "k": 3,
+          "l": 11,
+          "bound": "upper",
+          "value": 50,
+          "ref": "GoeR1"
+        },
+        {
+          "position": 37,
+          "k": 4,
+          "l": 12,
+          "bound": "lower",
+          "value": 128,
+          "ref": "SuLL"
+        },
+        {
+          "position": 62,
+          "k": 5,
+          "l": 13,
+          "bound": "upper",
+          "value": 1138,
+          "ref": "HW+"
+        },
+        {
+          "position": 86,
+          "k": 7,
+          "l": 8,
+          "bound": "lower",
+          "value": 219,
+          "ref": "Tat"
+        },
+        {
+          "position": 110,
+          "k": 8,
+          "l": 14,
+          "bound": "upper",
+          "value": 41525,
+          "ref": "HW+"
+        }
       ],
       "printedBy": "node scripts/ds1-depth.mjs --draw",
       "order": "This draw was committed before any of the five papers was opened. The commit that adds the reads comes after it in history."
     }
   ],
-  "rows": []
+  "rows": [
+    {
+      "id": "DS1-0001",
+      "k": 3,
+      "l": 11,
+      "bound": "upper",
+      "value": 50,
+      "ref": "GoeR1",
+      "position": 13,
+      "selection": "systematic",
+      "surveyRefEntry": "[GoeR1]** J. Goedgebeur and S.P. Radziszowski, New Computational Upper Bounds for Ramsey Numbers R (3, k ), Electronic Journal of Combinatorics, http://www.combinatorics.org , #P30, 20 (1) (2013), 28 pages.",
+      "source": "https://www.combinatorics.org/ojs/index.php/eljc/article/view/v20i1p30",
+      "sourceRead": "read in full: the landing page (HTTP 200, 20,404 bytes) and the paper PDF (HTTP 200, 331,277 bytes, 28 pages), the PDF both as extracted text and as rendered images of pages 15 and 16",
+      "verdict": "SOUND",
+      "evidence": "The bound is stated three times. The abstract, quoted from the landing page: 'new upper bounds on the classical two-color Ramsey numbers: $R(3,10) \\le 42$, $R(3,11) \\le 50$, $R(3,13) \\le 68$'. Theorem 7 on page 15 of the PDF: 'Theorem 7 The following upper bounds hold:' followed by 'R(3, 11) 50, R(3, 13) 68, R(3, 14) 77, R(3, 15) 87, and R(3, 16) 98.' — the text extractor drops the less-than-or-equal sign, and the sign was confirmed on the rendered image of that page. And after Table 7 on page 17: 'our improvement of the upper bound on R(3, 11) from 51 to 50 is mainly due to the new lower bound'. The paper is the one the survey credits and it asserts exactly the printed bound.",
+      "positiveControl": "The same fetch carries the title 'New Computational Upper Bounds for Ramsey Numbers $R(3,k)$', citation_doi 10.37236/2824, and the running footer 'the electronic journal of combinatorics 20(1) (2013), #P30' — the journal, volume, issue and article number the survey's entry gives.",
+      "notes": "Checked by this session against the saved landing page and extracted text rather than taken on the reading agent's word. The paper's abstract also gives R(3,10) <= 42 while Table Ia prints 41 credited to [Ang1]; that is a later improvement, not a disagreement about this bound.",
+      "fetchedAt": "2026-09-18, between 16:20Z and 17:05Z, by the saved files' timestamps in tmp/depth-reads/",
+      "pageNote": "The paper is open access and was read: it states this bound in its abstract and again in Theorem 7."
+    },
+    {
+      "id": "DS1-0002",
+      "k": 4,
+      "l": 12,
+      "bound": "lower",
+      "value": 128,
+      "ref": "SuLL",
+      "position": 37,
+      "selection": "systematic",
+      "surveyRefEntry": "[SuLL]* Su Wenlong, Luo Haipeng and Li Qiao, New Lower Bounds of Classical Ramsey Numbers R (4,12), R (5,11) and R (5,12), Chinese Science Bulletin, 43 , 6 (1998) 528.",
+      "source": "https://doi.org/10.1007/BF02883828",
+      "sourceRead": "NOT read — every route ended at a paywall or held no abstract. The Springer landing page returned HTTP 200 (215,854 bytes) as a subscription preview; the content/pdf endpoint and the fulltext endpoint both redirected back to it; Crossref (HTTP 200, 3,875 bytes), OpenAlex (HTTP 200, is_oa false, abstract index null) and Semantic Scholar (HTTP 200, abstract null, openAccessPdf CLOSED) hold metadata without an abstract.",
+      "verdict": "UNREACHABLE",
+      "evidence": "No sentence stating R(4, 12) >= 128 was read, so nothing is quoted here. The metadata confirms the paper exists and is about this question — its title is 'New lower bounds of classical Ramsey numbersR(4, 12),R(5, 11) andR(5, 12)' (Crossref's spacing), in Chinese Science Bulletin volume 43, issue 6, page 528, 1998 — but a title names no value and cannot settle the bound. A paywall is not a defect in the survey's entry.",
+      "positiveControl": "The same Springer fetch carries citation_doi 10.1007/BF02883828, the title above, the authors Su Wenlong, Luo Haipeng and Li Qiao, volume 43, issue 6, first page 528 — the bibliographic details the survey's entry gives — together with the line 'This is a preview of subscription content'. So the right record was reached, and only its paywall.",
+      "notes": "What would settle it: institutional access to Chinese Science Bulletin 43(6) 1998. An earlier Chinese-language version appears to exist (Chinese Science Bulletin 42(22), 1997, page 2460); it is a separate publication from the one the survey credits, and it was not read either.",
+      "fetchedAt": "2026-09-18, between 16:20Z and 17:05Z, by the saved files' timestamps in tmp/depth-reads/",
+      "pageNote": "The paper is behind a paywall and no index carries an abstract, so nothing that states the value could be read."
+    },
+    {
+      "id": "DS1-0003",
+      "k": 5,
+      "l": 13,
+      "bound": "upper",
+      "value": 1138,
+      "ref": "HW+",
+      "position": 62,
+      "selection": "systematic",
+      "surveyRefEntry": "[HWSYZH] (also abbreviated as HW+) Huang Yi Ru, Wang Yuandi, Sheng Wancheng, Yang Jiansheng, Zhang Ke Min and Huang Jian, New Upper Bound Formulas with Parameters for Ramsey Numbers, Discrete Mathematics, 307 (2007) 760-763. — with the survey's item 2.1.o: 'In 2013, Boza [Boza5] using the method of [HWSYZH] ... computed the bounds marked HW+ by starting from better upper bounds for smaller parameters.' [Boza5] is 'L. Boza, University of Seville, personal communication (2013).'",
+      "source": "https://doi.org/10.1016/j.disc.2006.07.007",
+      "sourceRead": "NOT read. The publisher's article page and its PDF endpoint both returned HTTP 403 bot-challenge pages (about 1.2 MB each), a headless browser got an Elsevier block page, and no repository copy exists (OpenAlex best open location null, Unpaywall's only location is the publisher, Semantic Scholar's abstract 'elided by the publisher', CORE 0 hits). The single Wayback capture is the landing page with the abstract and no body. The method was instead read in two independent restatements that both cite this paper.",
+      "verdict": "UNRESOLVED",
+      "evidence": "THE VALUE WAS REPRODUCED EXACTLY, TWICE, BUT NOT FROM THE CREDITED SOURCE. The method was read as Lemma 2 of arXiv:1804.00322 (Krüger), quoted from the saved text: 'Lemma 2 (Huang, Wang, Sheng, Yang, Zhang and Huang [4]). If p <= R(m, n) - 1, alpha >= R(m-2, n)-1, beta >= R(m, n-2)-1, gamma >= R(m-1, n)-1 and delta >= R(m, n-1)-1, then (p - 1)(p - 2 - alpha) <= max over d in [p-1-delta, gamma] of (-3d^2 + (alpha - beta + 3(p - 1))d + (beta - alpha)(p - 1))', whose [4] is that Discrete Mathematics paper; and independently as Theorem 2.3 of a 2009 paper by Xiang, Qian and Fu, in solved form, citing the same paper. Applying it to the survey's own printed inputs R(3,13) <= 68, R(5,11) <= 633, R(4,13) <= 291 and R(5,12) <= 848 gives, literally: 'R(5,13): inputs R(3,13)<=68 R(5,11)<=633 R(4,13)<=291 R(5,12)<=848 -> HW bound (integer d) 1138, (real d) 1138; table prints 1138; MATCH'. The 2009 closed form gives 1138.989624, floor 1138. Recomputing the whole HW+ column forward from non-HW+ cells only also yields 1138. WHY NOT SOUND: this ledger's SOUND means the credited source was read and supports the bound. It was not read, and the value's own source is a personal communication nobody can read. The arithmetic is strong; the question this row asks is not settled.",
+      "positiveControl": "That the archived publisher page is the right paper: its og:description quotes the abstract, 'we obtain some new results R(5,12)<=848, R(5,14)<=1461, etc., and we obtain new upper bound formulas for Ramsey numbers with parameters' — two values that are exactly Table Ia's HW+ entries for R(5,12) and R(5,14). That the recomputation discriminates: changing an input moves it (R(5,12)<=838 gives 1129; R(3,13)<=73 gives 1139), and the same script does NOT reproduce rows credited to other references (R(4,13) [Spe4] 291 recomputes to 306, R(9,9) [ShZ1] 6588 to 6854, R(10,10) [Shi2] 23556 to 24362). Re-run by this session rather than taken on the reading agent's word; its output is quoted above.",
+      "notes": "What would settle it: a readable copy of Discrete Mathematics 307 (2007) 760-763 — it is in Elsevier's open archive, so an ordinary browser session may reach what an automated fetch could not. One cell of the column, R(6,13), recomputes to 3704 against the printed 3703 under the bare inequality; it is not one of the drawn bounds, and a parity step the reading agent added (present in no source it read) closes that gap. That is a reason to be careful about the reconstruction, and it is recorded rather than smoothed over.",
+      "fetchedAt": "2026-09-18, between 16:20Z and 17:05Z, by the saved files' timestamps in tmp/depth-reads/",
+      "pageNote": "The credited paper could not be opened at all. Its method was read in two other papers that cite it, and the value recomputed exactly from the survey's own smaller bounds."
+    },
+    {
+      "id": "DS1-0004",
+      "k": 7,
+      "l": 8,
+      "bound": "lower",
+      "value": 219,
+      "ref": "Tat",
+      "position": 86,
+      "selection": "systematic",
+      "surveyRefEntry": "[Tat]* M. Tatarevic, personal communication, graph constructions for lower bounds on Ramsey numbers at http://github.com/milostatarevic/ramsey-numbers/tree/master/graphs (2020).",
+      "source": "https://raw.githubusercontent.com/milostatarevic/ramsey-numbers/master/graphs/g78.218",
+      "sourceRead": "read in full and RECOMPUTED: the credited file (HTTP 200, 47,742 bytes) and the repository's READMEs. The file has one commit, 2020-05-04, which matches the survey's '(2020)'.",
+      "verdict": "SOUND",
+      "evidence": "The repository's graphs README defines the format: 'The file name *gXY.n* gives a 2-coloring of the edges of *K<sub>n</sub>* with no copy of *K<sub>X</sub>* colored 0, and no copy of *K<sub>Y</sub>* colored 1.' and 'In each file, the *i*th entry in the *j*th row gives the color assigned to the edge *(i,j)*.' Its root README lists '|R(7,8)|217|[219](graphs/g78.218)|'. The file was checked exhaustively by scripts/check-ramsey-coloring.mjs, committed with this reading: 218 rows of 218 characters in {0,1}, symmetric, 23,653 edges = C(218,2). Two independent exhaustive searches agree — a maximum-clique branch and bound and a complete enumeration of k-cliques — giving 'max clique in colour 0 = 6', 'number of K7 in colour 0 = 0', 'max clique in colour 1 = 7', 'number of K8 in colour 1 = 0', and 'RESULT: PASS -- no K7 in colour 0 and no K8 in colour 1 on n=218: R(7,8) > 218, i.e. R(7,8) >= 219'. A graph on 218 vertices with no K7 and no independent set of size 8 proves the bound.",
+      "positiveControl": "That the bytes checked are the credited file: the checker computed the git blob sha1 of what it read as 04c77ca96aeb57e6de8d0d2d165a8d8c2113a4ad, which is the blob sha GitHub's contents API lists for graphs/g78.218. pragma: allowlist sha — that is a git blob id in another repository, not a commit in this one. That the checker can fail: with a K7 planted in colour 0 it printed 'FORBIDDEN: colour 0 contains a K7' and 'RESULT: FAIL' at exit 1; with a K8 planted in colour 1, the same; and the real file checked against one-lower thresholds (6,8) and (7,7) also fails, since colour 0 does contain a K6 and colour 1 a K7. This session re-ran both the PASS and the planted-K7 FAIL rather than taking the reading agent's word.",
+      "notes": "The credited artefact is a file, not a paper, so this reading is a recomputation rather than a reading — the strongest kind of check this ledger has, and the same shape as the one accepted correction in its history. Out of scope and NOT checked: the same repository added a file in July 2026 whose name, under the README's own rule, would imply a better bound for R(12,12) than the survey prints; R(12,12) is outside Section 2.1 and outside this area's scope.",
+      "fetchedAt": "2026-09-18, between 16:20Z and 17:05Z, by the saved files' timestamps in tmp/depth-reads/",
+      "pageNote": "The credited construction is a published graph file rather than a paper: it was downloaded and checked exhaustively, and it does prove this bound."
+    },
+    {
+      "id": "DS1-0005",
+      "k": 8,
+      "l": 14,
+      "bound": "upper",
+      "value": 41525,
+      "ref": "HW+",
+      "position": 110,
+      "selection": "systematic",
+      "surveyRefEntry": "[HWSYZH] (also abbreviated as HW+) Huang Yi Ru, Wang Yuandi, Sheng Wancheng, Yang Jiansheng, Zhang Ke Min and Huang Jian, New Upper Bound Formulas with Parameters for Ramsey Numbers, Discrete Mathematics, 307 (2007) 760-763. — with item 2.1.o, as for DS1-0003; the value itself is Boza's personal communication of 2013.",
+      "source": "https://doi.org/10.1016/j.disc.2006.07.007",
+      "sourceRead": "NOT read — the same paper and the same refusals as DS1-0003 (publisher 403 bot pages, no repository copy, Wayback holds the landing page only). The method was read in the same two independent restatements.",
+      "verdict": "UNRESOLVED",
+      "evidence": "Reproduced exactly from the survey's own printed inputs R(6,14) <= 5033, R(8,12) <= 16944, R(7,14) <= 15263 and R(8,13) <= 27485, literally: 'R(8,14): inputs R(6,14)<=5033 R(8,12)<=16944 R(7,14)<=15263 R(8,13)<=27485 -> HW bound (integer d) 41525, (real d) 41525; table prints 41525; MATCH'. The 2009 closed form gives 41525.327175, floor 41525. The chain recomputation from non-HW+ cells only reproduces it too. As with DS1-0003, the credited source was not read and the value's own source is a personal communication, so the row is UNRESOLVED rather than SOUND: the arithmetic agrees, the question the row asks is not settled.",
+      "positiveControl": "Same right-document control as DS1-0003 (the archived abstract quoting two values that are Table Ia HW+ entries). That the recomputation discriminates: raising an input moves it (R(6,14) <= 5083 gives 41562), and the script does not reproduce rows credited elsewhere (R(8,8) [Mac] 1870 recomputes to 1982). Honest limit, reported by the reading agent and kept: lowering R(8,13) does NOT move this answer, because at the optimum the maximiser sits at the other end of the degree interval, so that one input cannot move it by construction. Re-run by this session.",
+      "notes": "Same settling condition as DS1-0003. Noted, not filed as a finding: applying the same method to today's inputs gives R(5,7) <= 139 where Table Ia prints 143 credited to [HZ1]. The survey says at item 2.1.m that only some implied bounds are shown, and Table Ib supersedes that cell with 133, so this is an implication the survey does not print rather than a contradiction.",
+      "fetchedAt": "2026-09-18, between 16:20Z and 17:05Z, by the saved files' timestamps in tmp/depth-reads/",
+      "pageNote": "The credited paper could not be opened at all. Its method was read in two other papers that cite it, and the value recomputed exactly from the survey's own smaller bounds."
+    }
+  ]
 }
