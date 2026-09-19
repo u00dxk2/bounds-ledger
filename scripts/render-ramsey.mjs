@@ -119,6 +119,9 @@ function iaText(e) {
 const ibText = (e) => (e.ib ? `${R(e.k, e.l)} ≤ ${e.ib.upper}` : "no entry in Table Ib");
 
 const STORE_URL = `${REPO}/blob/main/continuity/depth-audit-ds1.json`;
+// The ONE piece of markup a read state carries. Named here because the renderer writes it and leg 7b
+// strips exactly this and then requires everything left to be plain text.
+const HOW_LINK = `<a href="${esc(STORE_URL)}">How it was read</a>`;
 const NOT_YET = "not yet read";
 const NOTHING = "nothing to read it against";
 const BOUND_ORDER = { exact: 0, lower: 1, upper: 2 };
@@ -318,7 +321,7 @@ export function guardPage(html, doc, rows = []) {
       // (adversarial review round 2, 2026-09-18).
       const m = words.match(/the (exact value|lower bound|upper bound) (\d+), credited to \[([^\]]+)\]/);
       if (!m) v.push(`${R(e.k, e.l)}: a reading's words do not name the bound they belong to: "${words}"`);
-      else shownReads.push({ k: e.k, l: e.l, bound: m[1] === "exact value" ? "exact" : m[1].split(" ")[0], value: Number(m[2]), ref: unesc(m[3]), verdict: o[0] });
+      else shownReads.push({ k: e.k, l: e.l, bound: m[1] === "exact value" ? "exact" : m[1].split(" ")[0], value: Number(m[2]), ref: unesc(m[3]), verdict: o[0], words: unesc(words), raw: inner, attrs });
     }
     const flag = body.match(/<a class="flag" href="([^"]+)">/);
     const title = flag ? decodeURIComponent(flag[1].replace(/&amp;/g, "&").match(/[?&]title=([^&]*)/)?.[1] ?? "") : "";
@@ -344,8 +347,44 @@ export function guardPage(html, doc, rows = []) {
   //    store holds and the page does not show is the store-vs-page gap (A-53) in the new area's
   //    first week, so it is refused, not tolerated.
   for (const r of rows) {
-    if (!shownReads.some((s) => sameBound(s, r) && s.verdict === r.verdict)) {
-      v.push(`the stored reading ${r.id ?? `${R(r.k, r.l)} ${r.bound}`} (${r.verdict} on the ${r.bound} bound ${r.value}, credited to [${r.ref}]) is not shown on the page`);
+    const name = `${r.id ?? `${R(r.k, r.l)} ${r.bound}`} (${r.verdict} on the ${r.bound} bound ${r.value}, credited to [${r.ref}])`;
+    const shown = shownReads.find((s) => sameBound(s, r) && s.verdict === r.verdict);
+    if (!shown) { v.push(`the stored reading ${name} is not shown on the page`); continue; }
+    // 7b. A reading that did NOT reach its credited source owes the reader its own sentence. The four
+    //     outcome phrases alone say the reading fell short and nothing about WHY, which on 2026-09-19
+    //     read as an errand still open for two bounds whose value the survey credits to a personal
+    //     communication — uncheckable by anyone, not waiting on us. So UNRESOLVED and UNREACHABLE
+    //     require a pageNote, and require it ON THE PAGE rather than merely present in the store.
+    if (r.verdict === "UNRESOLVED" || r.verdict === "UNREACHABLE") {
+      const note = String(r.pageNote ?? "").trim();
+      if (!note) v.push(`the stored reading ${name} carries no pageNote, so the page says only that the reading fell short`);
+      else if (!shown.words.includes(note)) v.push(`the pageNote of the stored reading ${name} is not on the page`);
+      // A note the reader cannot SEE is not disclosed — the shape of the 2026-09-06 label that hid
+      // in an aria-label where an equality check could not see it. This guard does NOT try to judge
+      // visibility: the first attempt at that was a regex, and round 2 of the 2026-09-19 adversarial
+      // review broke it in both directions (blind to `<dd hidden>` and to `display : none`, and it
+      // refused a harmless aria-hidden="false"). A guard over a format is a parser, so this one
+      // asserts the SHAPE the renderer actually emits instead: the note is plain text in a <dd>
+      // whose only markup is the "How it was read" link, and whose only attributes are the ones
+      // rendered here. Unknown markup is refused whether or not it hides anything, because the
+      // renderer has no reason to add any and this guard cannot tell the two apart.
+      // NOT COVERED, deliberately and by name: a STYLE rule that hides the dd without touching it.
+      // Nothing here reads the stylesheet.
+      else {
+        // Round 3 broke the whitelist: exempting the anchor by TAG NAME exempted `<a hidden>` around
+        // the whole note, and a scan for tags never saw an HTML comment. So this asserts the exact
+        // string the renderer emits instead of enumerating what may appear: strip the one trailing
+        // "How it was read" anchor, and the remainder must be plain escaped text — no `<` or `>` can
+        // survive esc(), so any markup at all, comments and second anchors included, is refused.
+        const body = shown.raw.trim();
+        const rest = body.endsWith(HOW_LINK) ? body.slice(0, -HOW_LINK.length) : null;
+        // Bare attributes count: the first draft matched only `name=`, so `<dd hidden data-state=…>`
+        // — the plainest way to hide the whole reading — walked straight past it (review round 2).
+        const extra = [...shown.attrs.matchAll(/([a-z-]+)(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?/gi)].map((m) => m[1].toLowerCase()).filter((a) => a !== "class" && a !== "data-state");
+        if (rest === null) v.push(`the read state of ${name} does not end with the single "How it was read" link the renderer emits`);
+        else if (/[<>]/.test(rest)) v.push(`the read state of ${name} carries markup around its words, so the page cannot be read as disclosing the pageNote to a reader`);
+        else if (extra.length) v.push(`the pageNote of the stored reading ${name} sits in a <dd> carrying ${extra.join(", ")}, which the renderer never adds`);
+      }
     }
   }
   if (shownReads.length !== rows.length) v.push(`the page shows ${shownReads.length} reading(s) and the store holds ${rows.length}`);
@@ -422,6 +461,37 @@ function selftest() {
     if (mutated === audited) return fail(`${label}: the mutation did not land`);
     if (!g(mutated).some((m) => re.test(m))) return fail(`${label}: the guard did not fire (it said ${JSON.stringify(g(mutated))})`);
   }
+  // 7b, both answers: a reading that never reached its credited source must carry its own sentence,
+  // and carry it ON the page. Without this the two HW+ bounds read as an errand still open.
+  const unres = { k: 6, l: 14, bound: "upper", value: 5033, ref: "HW+", verdict: "UNRESOLVED", selection: "systematic", pageNote: "The credited paper could not be opened at all." };
+  const withNote = renderRamsey(doc, [unres]);
+  const gu = (h, rs = [unres]) => guardPage(h, doc, rs);
+  if (!withNote.includes("unresolved — what could be read did not settle this bound. The credited paper could not be opened at all.")) return fail("an unresolved reading did not render its pageNote");
+  if (gu(withNote).length) return fail(`an unresolved reading carrying its note failed the guard: ${JSON.stringify(gu(withNote))}`);
+  const stripped = withNote.replace(" The credited paper could not be opened at all.", "");
+  if (stripped === withNote) return fail("the pageNote-stripping mutation did not land");
+  if (!gu(stripped).some((m) => /pageNote of the stored reading .* is not on the page/.test(m))) return fail(`the guard did not fire on a pageNote missing from the page (it said ${JSON.stringify(gu(stripped))})`);
+  // Four ways a note reaches the page without reaching the reader. The last two are the ones the
+  // first draft of this guard was blind to, found by adversarial review round 2 on 2026-09-19.
+  for (const [label, mutated, re] of [
+    ["the note wrapped in a hidden span", withNote.replace("The credited paper", '<span hidden>The credited paper').replace("opened at all.", "opened at all.</span>"), /carries markup around its words/],
+    ["the note wrapped in a span hidden by CSS with spaces around the colon", withNote.replace("The credited paper", '<span style="display : none">The credited paper').replace("opened at all.", "opened at all.</span>"), /carries markup around its words/],
+    // Round 3's two bypasses of the previous draft: an anchor was exempted by tag name, so one
+    // wrapped around the note hid it at zero violations, and a comment is not a tag at all.
+    ["the note wrapped in a hidden anchor", withNote.replace("The credited paper", '<a hidden>The credited paper').replace("opened at all.", "opened at all.</a>"), /carries markup around its words/],
+    // This one fires on the EARLIER assertion, and the label says so rather than claiming the
+    // markup leg caught it: tag-stripping eats the whole comment, so the note stops being on the
+    // page at all. A mutation proves the assertion it tripped, not the one the author had in mind.
+    ["the note inside an HTML comment (trips the not-on-the-page leg)", withNote.replace("The credited paper", '<!-- The credited paper').replace("opened at all.", "opened at all. -->"), /is not on the page/],
+    ["the How it was read link dropped", withNote.replace(HOW_LINK, ""), /does not end with the single/],
+    ["the whole reading hidden on the dd itself", withNote.replace('<dd data-state="unresolved">', '<dd hidden data-state="unresolved">'), /carrying hidden/],
+    ["the whole reading hidden by a class on the dd", withNote.replace('<dd data-state="unresolved">', '<dd style="display:none" data-state="unresolved">'), /carrying style/],
+  ]) {
+    if (mutated === withNote) return fail(`${label}: the mutation did not land`);
+    if (!gu(mutated).some((m) => re.test(m))) return fail(`${label}: the guard did not fire (it said ${JSON.stringify(gu(mutated))})`);
+  }
+  const { pageNote: _dropped, ...noNote } = unres;
+  if (!gu(renderRamsey(doc, [noNote]), [noNote]).some((m) => /carries no pageNote/.test(m))) return fail("the guard did not fire on an unresolved reading with no pageNote");
   // A reading of a value the table no longer prints is not drawn on the page at all; --check refuses
   // it through readStore before rendering, which ds1-depth's own selftest shows firing.
   if (/sound — /.test(renderRamsey(doc, [{ ...row, value: 47 }]))) return fail("a reading of a value the table does not print was rendered");
@@ -440,7 +510,7 @@ function selftest() {
   // The SILENT half, last: the well-formed page passes every guard.
   const clean = guard(html);
   if (clean.length) return fail(`the well-formed page failed its own guard: ${JSON.stringify(clean)}`);
-  console.log(`render-ramsey selftest: PASS (${fires.length} guards each fire on their condition — record wording, an external script, an unexpected host, a dropped entry, a changed value, a merged audit state, a bound's state dropped, an uncounted report title, unsummed counts, no not-covered line; report-rate counts the row link; outcomes equal depth-audit.json's; markup escaped; a reading renders on its own bound only; a missing reading, a state whose words disagree, and a verdict moved to another bound of the same entry with every count preserved all fire; a reading of an unprinted value is not drawn; the well-formed page passes)`);
+  console.log(`render-ramsey selftest: PASS (${fires.length} guards each fire on their condition — record wording, an external script, an unexpected host, a dropped entry, a changed value, a merged audit state, a bound's state dropped, an uncounted report title, unsummed counts, no not-covered line; report-rate counts the row link; outcomes equal depth-audit.json's; markup escaped; a reading renders on its own bound only; a missing reading, a state whose words disagree, and a verdict moved to another bound of the same entry with every count preserved all fire; a reading of an unprinted value is not drawn; an unresolved reading renders its pageNote and the guard fires on all seven mutations tried against it — the note stripped from the page, the store carrying none, four ways of putting it on the page without putting it in front of a reader (a hidden span, a CSS-hidden span, a hidden anchor, an HTML comment) and the dd itself hidden by a bare attribute or by style, plus a dropped "How it was read" link; those seven trip four distinct assertions, not seven; the well-formed page passes)`);
   return 0;
 }
 
