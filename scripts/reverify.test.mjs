@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { symlinkSync } from "node:fs";
 import assert from "node:assert";
-import { fetchWithRetry } from "./reverify.mjs";
+import { fetchWithRetry, check, filedReports } from "./reverify.mjs";
 import { run as runClaims } from "./check-claims.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -17,9 +17,12 @@ const SNAP = join(LEDGER, "constants");
 const TMP = join(ROOT, "tmp", "reverify-test-live");
 const SCRIPT = join(ROOT, "scripts", "reverify.mjs");
 
-function runCheck() {
+// env is overridable for A-33 leg 2's publication boundary: the annotation is suppressed when CI is
+// set, and a test that inherited this process's own CI value would assert the opposite thing on a
+// runner from what it asserts on a laptop — passing in both places while checking neither.
+function runCheck(env = {}) {
   try {
-    return { code: 0, out: execFileSync("node", [SCRIPT, "--check", "--live-dir", TMP], { encoding: "utf8" }) };
+    return { code: 0, out: execFileSync("node", [SCRIPT, "--check", "--live-dir", TMP], { encoding: "utf8", env: { ...process.env, ...env } }) };
   } catch (err) {
     return { code: err.status, out: (err.stdout ?? "") + (err.stderr ?? "") };
   }
@@ -241,6 +244,59 @@ assert.ok(dirty.out.includes(`CHANGED constants/${victim}`), `report should name
 // time it ran. The alarm was right; the assertion was reading the wrong line.
 const verdicts = (out) => out.split("\n").filter((l) => /^(CHANGED|ADDED|REMOVED) /.test(l));
 assert.deepEqual(verdicts(dirty.out), [`CHANGED constants/${victim}`], `a constants-only edit should name exactly that one file:\n${dirty.out}`);
+
+// ---- A-33 leg 2: a drifted file we have filed a report against is flagged ----
+// FIRES on constants/87a.md, the file this row was born from (upstream issue 150), and is SILENT on
+// any other file. The real fixture is the 2026-09-05 movement in 87a: leg 1 was correctly silent
+// then, because issue 150 reached a terminal state in August and its transition window shut for
+// good, so no future change to that file can ever produce a leg-1 signal.
+await freshLive();
+const REPORTED = "87a.md";
+const reportedOrig = await readFile(join(TMP, "constants", REPORTED), "utf8");
+await writeFile(join(TMP, "constants", REPORTED), `${reportedOrig}\nA line upstream does not have.\n`);
+const flagged = runCheck({ CI: "" });
+assert.equal(flagged.code, 1, `a drifted reported-against file should exit 1, got ${flagged.code}`);
+assert.ok(flagged.out.includes("CANDIDATE CAUSAL EVENT — we filed https://github.com/teorth/optimizationproblems/issues/150 against this file on 2026-08-20."),
+  `the drift report should name the report we filed against this file:\n${flagged.out}`);
+assert.ok(flagged.out.includes("GO LOOK."), `leg 2 must say go look, never render a verdict:\n${flagged.out}`);
+assert.ok(flagged.out.includes(`CHANGED constants/${REPORTED}`),
+  `leg 2 must print BESIDE the ordinary classification, never instead of it:\n${flagged.out}`);
+// THE PUBLICATION BOUNDARY, proven on the same drift. This stdout is piped into finding.txt by
+// .github/workflows/reverify.yml and published verbatim into a PUBLIC issue when the alarm fires,
+// so the annotation must not survive a CI run — that would publish the label the 2026-09-02
+// decision declined. The ordinary classification must survive it, or the alarm would have been
+// broken to hide a note (adversarial review round 5, 2026-09-19).
+const inCi = runCheck({ CI: "true" });
+assert.equal(inCi.code, 1, `drift must still be RED under CI, got ${inCi.code}`);
+assert.ok(inCi.out.includes(`CHANGED constants/${REPORTED}`),
+  `the public alarm must still name the drifted file:\n${inCi.out}`);
+assert.doesNotMatch(inCi.out, /CANDIDATE CAUSAL EVENT|GO LOOK/,
+  `the causal annotation must never reach the output CI publishes into a public issue:\n${inCi.out}`);
+// The SILENT half. Without it, a leg that flagged every drifted file would pass the assertions
+// above while carrying no information at all about which files we have actually reported against.
+await freshLive();
+const unreported = (await readdir(SNAP)).find((n) => n.endsWith(".md") && n !== REPORTED);
+const unreportedOrig = await readFile(join(TMP, "constants", unreported), "utf8");
+await writeFile(join(TMP, "constants", unreported), `${unreportedOrig}\nA line upstream does not have.\n`);
+const quiet = runCheck({ CI: "" });
+assert.equal(quiet.code, 1, `a drifted unreported file should still exit 1, got ${quiet.code}`);
+assert.ok(quiet.out.includes(`CHANGED constants/${unreported}`), `the report should name constants/${unreported}:\n${quiet.out}`);
+assert.doesNotMatch(quiet.out, /CANDIDATE CAUSAL EVENT/,
+  `a file we have filed nothing against must not be flagged as a candidate causal event:\n${quiet.out}`);
+// UNREADABLE is not "we have filed nothing". The map's own absence has to announce itself in the
+// report, or every drifted file would silently read as unreported.
+await freshLive();
+await writeFile(join(TMP, "constants", REPORTED), `${reportedOrig}\nA line upstream does not have.\n`);
+const { lines: blindLines } = await captureStdout(() => check(TMP, join(TMP, "no-such-report-map.json"), true));
+const blindOut = blindLines.join("\n");
+assert.match(blindOut, /A-33 leg 2 DID NOT RUN/, `an unreadable report map must announce itself:\n${blindOut}`);
+assert.doesNotMatch(blindOut, /CANDIDATE CAUSAL EVENT/, `an unreadable map must not flag anything:\n${blindOut}`);
+assert.ok(blindOut.includes(`CHANGED constants/${REPORTED}`), `drift detection must survive an unreadable map:\n${blindOut}`);
+const readable = await filedReports();
+assert.ok(!readable.error && readable.map.has("constants/87a.md"),
+  "positive control: the committed report map must be readable and name constants/87a.md");
+await freshLive();
+console.log("A-33 leg 2 assertion: PASS (fires on the reported-against file beside its CHANGED line, silent on a file we filed nothing against, suppressed under CI so the annotation never reaches the public issue while the CHANGED line still does, and an unreadable map says so instead of reading as nothing-filed)");
 
 // ---- W-5: the README leg, proven BOTH ways ----------------------------------
 // Upstream's README is where it declares which rows it will STAND BEHIND. On

@@ -266,7 +266,14 @@ function longDate(iso) {
 
 // The page's own guard. Returns the violations found; an empty list is a pass. Run on a fixture in
 // the selftest AND on the committed file by --check.
-export function guardPage(html, doc, rows = []) {
+export function guardPage(page, doc, rows = []) {
+  // CRLF FIRST, before any assertion reads a newline. The entry-shape rule below matches `\n<dl>\n`,
+  // and this checkout is core.autocrlf=true with no .gitattributes — so a fresh Windows clone would
+  // hand this function CRLF and fail all 72 entries on a page whose content never changed. main()
+  // normalises for its equality compare only AFTER calling this, which is too late. The lane already
+  // documents this trap for test mutations (KP-78, "files are CRLF, so a \n pattern silently
+  // no-ops"); here it was the guard itself (adversarial review round 5, 2026-09-19).
+  const html = String(page).replace(/\r\n/g, "\n");
   const v = [];
   const { frame, left } = frameOf(doc);
   const shownReads = [];
@@ -322,6 +329,25 @@ export function guardPage(html, doc, rows = []) {
       const m = words.match(/the (exact value|lower bound|upper bound) (\d+), credited to \[([^\]]+)\]/);
       if (!m) v.push(`${R(e.k, e.l)}: a reading's words do not name the bound they belong to: "${words}"`);
       else shownReads.push({ k: e.k, l: e.l, bound: m[1] === "exact value" ? "exact" : m[1].split(" ")[0], value: Number(m[2]), ref: unesc(m[3]), verdict: o[0], words: unesc(words), raw: inner, attrs });
+    }
+    // THE ENTRY'S SHAPE, not just the reading's. Round 4 of the 2026-09-19 review hid readings by
+    // wrapping the <dd> in an HTML comment, a <template> and a hidden <div>, and by putting `hidden`
+    // on the enclosing <dl>: leg 7b reads the dd itself and could see none of it. A guard that
+    // inspects an element and not its ancestors is the same defect three drafts running, so this
+    // asserts the whole section is what the renderer emits — an h2, a <dl> of <dt>/<dd> pairs, the
+    // looks-wrong link, and nothing else. Unknown markup is refused whether or not it hides anything.
+    const dl = body.match(/\n<dl>\n([\s\S]*?)\n<\/dl>\n/);
+    if (!dl) v.push(`${R(e.k, e.l)}: its readings are not inside the plain <dl> the renderer emits`);
+    else {
+      // `<dt>[\s\S]*?</dt>` would delete a WRAPPER along with its contents: round 6 hid a whole
+      // reading in `<dt><template>…</template></dt>`, and stripping the dt subtree removed every
+      // trace of it while the reading scan still counted the dd nested inside. A dt the renderer
+      // emits holds plain text, so only plain-text dts are discarded and anything else stays behind
+      // as stray markup.
+      const strayInDl = dl[1].replace(/<dt>[^<]*<\/dt>/g, "").replace(/<dd[^>]*>[\s\S]*?<\/dd>/g, "").trim();
+      if (strayInDl) v.push(`${R(e.k, e.l)}: its <dl> carries markup the renderer does not emit: ${JSON.stringify(strayInDl.slice(0, 60))}`);
+      const strayInEntry = body.replace(/\n<dl>\n[\s\S]*?\n<\/dl>\n/, "").replace(/<h2>[\s\S]*?<\/h2>/, "").replace(/<a class="flag"[\s\S]*?<\/a>/, "").trim();
+      if (strayInEntry) v.push(`${R(e.k, e.l)}: its entry carries markup the renderer does not emit: ${JSON.stringify(strayInEntry.slice(0, 60))}`);
     }
     const flag = body.match(/<a class="flag" href="([^"]+)">/);
     const title = flag ? decodeURIComponent(flag[1].replace(/&amp;/g, "&").match(/[?&]title=([^&]*)/)?.[1] ?? "") : "";
@@ -484,6 +510,14 @@ function selftest() {
     // page at all. A mutation proves the assertion it tripped, not the one the author had in mind.
     ["the note inside an HTML comment (trips the not-on-the-page leg)", withNote.replace("The credited paper", '<!-- The credited paper').replace("opened at all.", "opened at all. -->"), /is not on the page/],
     ["the How it was read link dropped", withNote.replace(HOW_LINK, ""), /does not end with the single/],
+    // Round 4's four: the reading is intact and its SURROUNDINGS hide it.
+    ["the whole reading wrapped in an HTML comment", withNote.replace('<dd data-state="unresolved">', '<!--<dd data-state="unresolved">').replace("How it was read</a></dd>", "How it was read</a></dd>-->"), /<dl> carries markup/],
+    ["the whole reading wrapped in a template", withNote.replace('<dd data-state="unresolved">', '<template><dd data-state="unresolved">').replace("How it was read</a></dd>", "How it was read</a></dd></template>"), /<dl> carries markup/],
+    ["the whole reading wrapped in a hidden div", withNote.replace('<dd data-state="unresolved">', '<div hidden><dd data-state="unresolved">').replace("How it was read</a></dd>", "How it was read</a></dd></div>"), /<dl> carries markup/],
+    ["the enclosing dl hidden", withNote.replace("\n<dl>\n", "\n<dl hidden>\n"), /readings are not inside the plain <dl>/],
+    // Round 6: the reading nested inside a dt's template, which a dt-subtree strip would erase.
+    ["the reading hidden inside a dt's template", withNote.replace('<dd data-state="unresolved">', '<dt><template><dd data-state="unresolved">').replace("How it was read</a></dd>", "How it was read</a></dd></template></dt>"), /<dl> carries markup/],
+    ["the same nested template with CRLF endings", withNote.replace('<dd data-state="unresolved">', '<dt><template><dd data-state="unresolved">').replace("How it was read</a></dd>", "How it was read</a></dd></template></dt>").replace(/\n/g, "\r\n"), /<dl> carries markup/],
     ["the whole reading hidden on the dd itself", withNote.replace('<dd data-state="unresolved">', '<dd hidden data-state="unresolved">'), /carrying hidden/],
     ["the whole reading hidden by a class on the dd", withNote.replace('<dd data-state="unresolved">', '<dd style="display:none" data-state="unresolved">'), /carrying style/],
   ]) {
@@ -507,10 +541,15 @@ function selftest() {
   }
   if (!storeGate(false, { rows: [row] }).error) return fail("a MISSING store was accepted");
   if (storeGate(true, { rows: [] }).error || storeGate(true, { rows: [row] }).rows.length !== 1) return fail("a well-formed store was refused");
-  // The SILENT half, last: the well-formed page passes every guard.
+  // The SILENT half, last: the well-formed page passes every guard — and passes it with CRLF, which
+  // is what a fresh Windows clone of this repo actually hands the guard.
   const clean = guard(html);
   if (clean.length) return fail(`the well-formed page failed its own guard: ${JSON.stringify(clean)}`);
-  console.log(`render-ramsey selftest: PASS (${fires.length} guards each fire on their condition — record wording, an external script, an unexpected host, a dropped entry, a changed value, a merged audit state, a bound's state dropped, an uncounted report title, unsummed counts, no not-covered line; report-rate counts the row link; outcomes equal depth-audit.json's; markup escaped; a reading renders on its own bound only; a missing reading, a state whose words disagree, and a verdict moved to another bound of the same entry with every count preserved all fire; a reading of an unprinted value is not drawn; an unresolved reading renders its pageNote and the guard fires on all seven mutations tried against it — the note stripped from the page, the store carrying none, four ways of putting it on the page without putting it in front of a reader (a hidden span, a CSS-hidden span, a hidden anchor, an HTML comment) and the dd itself hidden by a bare attribute or by style, plus a dropped "How it was read" link; those seven trip four distinct assertions, not seven; the well-formed page passes)`);
+  const crlf = html.replace(/\n/g, "\r\n");
+  if (crlf === html) return fail("the CRLF control did not convert anything");
+  if (guard(crlf).length) return fail(`the same page with CRLF line endings failed its own guard: ${JSON.stringify(guard(crlf).slice(0, 3))}`);
+  if (gu(withNote.replace(/\n/g, "\r\n")).length) return fail("a CRLF page carrying a real reading failed its own guard");
+  console.log(`render-ramsey selftest: PASS (${fires.length} guards each fire on their condition — record wording, an external script, an unexpected host, a dropped entry, a changed value, a merged audit state, a bound's state dropped, an uncounted report title, unsummed counts, no not-covered line; report-rate counts the row link; outcomes equal depth-audit.json's; markup escaped; a reading renders on its own bound only; a missing reading, a state whose words disagree, and a verdict moved to another bound of the same entry with every count preserved all fire; a reading of an unprinted value is not drawn; an unresolved reading renders its pageNote and the guard fires on all thirteen mutations tried against it — the note stripped from the page, the store carrying none, a dropped "How it was read" link, four ways of hiding the note in place (a hidden span, a CSS-hidden span, a hidden anchor, an HTML comment), the dd itself hidden by a bare attribute or by style, and six that leave the reading intact and hide its SURROUNDINGS (the dd wrapped in a comment, a template or a hidden div, the enclosing dl hidden, and the reading nested inside a dt's template under both LF and CRLF); those thirteen trip seven distinct assertions, not thirteen; and the real page passes in LF and in CRLF; the well-formed page passes)`);
   return 0;
 }
 

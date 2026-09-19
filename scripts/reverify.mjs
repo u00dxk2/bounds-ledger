@@ -36,6 +36,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LEDGER_DIR = join(ROOT, "ledger", "teorth-optimizationproblems");
 const SNAP_DIR = join(LEDGER_DIR, SUBDIR);
 const MANIFEST = join(LEDGER_DIR, "manifest.json");
+const REPORTS = join(ROOT, "ledger", "upstream-reports.json");
 
 const UA = { "user-agent": "bounds-ledger-reverify" };
 if (process.env.GITHUB_TOKEN) UA.authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
@@ -168,6 +169,28 @@ async function readMirror(dir) {
   return files;
 }
 
+// A-33 LEG 2, INTERNAL ONLY. A drifted file we have filed an upstream report against is a CANDIDATE
+// CAUSAL EVENT — worth a human look, BESIDE the ordinary value/text classification and never instead
+// of it. Its public form was permanently declined on 2026-09-02: that label on the public page
+// publishes a judgment about causation, which the row's note3 forbids in terms. Output here is
+// "go look", never a verdict.
+//
+// WHY LEG 1 DOES NOT COVER THIS, which is the whole reason this leg exists. check-upstream-reports
+// fires on a state TRANSITION, and issue 150 has been CLOSED since 2026-08-23, so that window shut
+// permanently: no future change to constants/87a.md can ever produce a leg-1 signal. On 2026-09-05
+// exactly such a change landed, leg 1 was correctly silent, and what caught it was a human reading
+// the drift report line by line — the same accident that produced this row on 2026-08-26.
+export async function filedReports(path = REPORTS) {
+  try {
+    const rows = JSON.parse(await readFile(path, "utf8")).reports ?? [];
+    return { map: new Map(rows.filter((r) => r?.path).map((r) => [r.path, r])) };
+  } catch (err) {
+    // UNREADABLE is never read as "we have filed nothing": that would make every drifted file look
+    // unreported, silently, which is this lane's founding defect pointed at its own records.
+    return { map: new Map(), error: err.message };
+  }
+}
+
 // ponytail: line-set diff (order-insensitive, no LCS) — fine for bound tables; upgrade to a real diff if reports get noisy
 function lineDiff(oldText, newText) {
   const o = oldText.split("\n"), n = newText.split("\n");
@@ -190,7 +213,17 @@ async function snapshot() {
   console.log(`snapshot: ${files.size} files @ ${REPO}@${sha.slice(0, 7)}`);
 }
 
-async function check(liveDir) {
+// reportsPath is injectable for ONE reason: leg 2's unreadable-map branch has to be shown printing
+// its own absence, and a test cannot make the real map unreadable without vandalising the repo.
+//
+// `causal` IS THE INTERNAL-ONLY BOUNDARY, AND IT HAS TO BE A PLACE RATHER THAN AN INTENTION.
+// This function's stdout is piped into finding.txt by .github/workflows/reverify.yml and published
+// VERBATIM into a public issue when the alarm fires. So a CANDIDATE CAUSAL EVENT line printed here
+// unconditionally would publish precisely the label the 2026-09-02 decision declined for the public
+// page — the lane's own rule that a decision forbidding a channel forbids the CONTENT, walked into
+// by putting the text in the one place that auto-publishes (adversarial review round 5, 2026-09-19).
+// CI sets CI=true and gets the ordinary classification and nothing else.
+export async function check(liveDir, reportsPath = REPORTS, causal = !process.env.CI) {
   const snap = await readMirror(LEDGER_DIR);
   const manifest = JSON.parse(await readFile(MANIFEST, "utf8"));
   const live = liveDir ? { sha: "(local)", files: await readMirror(liveDir) } : await fetchUpstream();
@@ -198,6 +231,8 @@ async function check(liveDir) {
   const names = [...new Set([...snap.keys(), ...live.files.keys()])].sort();
   let drift = 0;
   const lines = [`# Drift report — ${REPO} (${SUBDIR}/ + ${ROOT_FILES.join(", ")}) — ${new Date().toISOString()}`, `Snapshot: ${manifest.sha} · Live: ${live.sha}`, ""];
+  const filed = causal ? await filedReports(reportsPath) : { map: new Map() };
+  if (filed.error) lines.push(`(A-33 leg 2 DID NOT RUN: ledger/upstream-reports.json could not be read — ${filed.error}.`, ` No file below has been checked against the reports we have filed, so silence here means nothing.)`, "");
   for (const name of names) {
     const a = snap.get(name), b = live.files.get(name);
     if (a === b) continue;
@@ -219,6 +254,13 @@ async function check(liveDir) {
       }
       for (const l of d.removed) lines.push(`  - ${l}`);
       for (const l of d.added) lines.push(`  + ${l}`);
+    }
+    const report = filed.map.get(name);
+    if (report) {
+      lines.push(`  CANDIDATE CAUSAL EVENT — we filed ${report.url} against this file on ${String(report.filed ?? "").slice(0, 10)}.`);
+      lines.push(`  GO LOOK. This says the file MOVED and that we hold an artifact about it. It is not a`);
+      lines.push(`  verdict that our report caused the change, and it can never be a G-4 arrival: G-4 forbids`);
+      lines.push(`  a causal path containing an artifact we authored and sent.`);
     }
   }
   if (!drift) {
