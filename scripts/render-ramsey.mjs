@@ -28,6 +28,18 @@ import { frameOf, sameBound, readStore, STORE } from "./ds1-depth.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 export const OUT = join(ROOT, "ramsey.html");
+// The disclosure page (A-54 phase 2). It is GENERATED rather than hand-written because the counts
+// it states are the committed table's own — a hand-typed "72 values" is a number that drifts away
+// from the file it describes, which is the shape this whole ledger exists to catch.
+export const OUT_COPYING = join(ROOT, "copying.html");
+// The day ramsey.html first served the table publicly (commit 0ad3615). The disclosure is a DATED
+// ACCOUNT OF A PUBLISHED PAGE, not a clearance obtained beforehand: the scope doc said the pass
+// would ask the copyright question "before anything is published" and that is simply not what
+// happened, so the page says when it went up and this constant is that date.
+const PUBLISHED_ON = "2026-09-17";
+// The day the disclosure below was written. Stated on the page beside PUBLISHED_ON precisely
+// because the gap between them is the honest part.
+const WRITTEN_ON = "2026-09-20";
 const REPO = "https://github.com/u00dxk2/bounds-ledger";
 const SITE = "https://u00dxk2.github.io/bounds-ledger/";
 const AUTHOR_PAGE = "https://www.cs.rit.edu/~spr/ElJC/eline.html";
@@ -53,6 +65,18 @@ export const OUTCOMES = [
   ["UNRESOLVED", "unresolved", "what could be read did not settle this bound"],
   ["UNREACHABLE", "unreachable", "the credited source could not be read at all"],
 ];
+
+// The never-claim-a-record wordings. Shared so the disclosure page is held to the SAME rule as the
+// table it describes: a new rendering path does not inherit the guards that already exist, and the
+// blind one is always the guard written to prevent exactly what the new surface can now do
+// (2026-09-10, docs/findings). This list is the one place to add a wording.
+const RECORD_RES = [/\brecord\b(?!ed)/i, /\bbest[- ]known\b/i, /\bstrongest known\b/i, /\bstate of the art\b/i, /\bthe true value\b/i, /\bcurrent(ly)? best\b/i];
+
+// How many NUMBERS a set of table rows prints. An entry is not a number: 52 of Table Ia's 72
+// entries print a lower AND an upper bound, so "72 values" understates what is reproduced by 52
+// (adversarial review, 2026-09-20 — on the page whose whole job is to state that amount exactly).
+// The disclosure states both units and its guard recomputes them from the committed table.
+export const numbersIn = (rows) => rows.reduce((a, r) => a + ["exact", "lower", "upper"].filter((k) => r[k] !== undefined).length, 0);
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 // The guard reads reference keys back off the page, so it must undo what esc did to them.
@@ -214,8 +238,12 @@ ${dds.map((d) => d.html).join("\n")}
 <h1>Small Ramsey numbers R(k, l)</h1>
 <p class="lede">What the survey <em>Small Ramsey Numbers</em> prints for every two-colour classical Ramsey number R(k, l) with 3 ≤ k ≤ 10 and k ≤ l ≤ 15, exactly as printed, with the reference it credits for each value, and what this ledger has and has not checked about it.</p>
 
+<nav class="jump" aria-label="Jump to an entry">
+${jump}
+</nav>
+
 <div class="note">
-<p><strong>The source.</strong> Stanisław Radziszowski, <a href="${esc(src.landing)}">Small Ramsey Numbers</a>, The Electronic Journal of Combinatorics, dynamic survey ${esc(src.survey)}, <strong>revision #${esc(src.revision)}, ${esc(longDate(src.revisionDate))}</strong>, Section 2.1, Tables Ia and Ib. The survey is the authority. This page reproduces its values and reference keys, not the document.</p>
+<p><strong>The source.</strong> Stanisław Radziszowski, <a href="${esc(src.landing)}">Small Ramsey Numbers</a>, The Electronic Journal of Combinatorics, dynamic survey ${esc(src.survey)}, <strong>revision #${esc(src.revision)}, ${esc(longDate(src.revisionDate))}</strong>, Section 2.1, Tables Ia and Ib. The survey is the authority. This page reproduces its values and reference keys, not the document. <a href="copying.html">What this page copies from the survey, and how to ask for a change</a>.</p>
 <p><strong>What is covered.</strong> Section 2.1 only: ${entries.length} values of R(k, l). Table Ia prints something for ${doc.tableIa.length} of them, and Table Ib prints a newer upper bound for ${doc.tableIb.length}. <strong>Not covered</strong>: everything else in the survey, including other graphs, more than two colours and hypergraphs, and any result published after revision #${esc(src.revision)}.</p>
 <p><strong>What is watched.</strong> Once a day a scheduled job checks the journal&rsquo;s page and the <a href="${esc(AUTHOR_PAGE)}">author&rsquo;s revision list</a> for a newer revision, and re-reads this table from the survey&rsquo;s PDF, whose fingerprint is pinned. A new revision turns that job red until a person has compared it with this page. The <a href="${esc(RUNS)}">run history</a> is the live read; this page is not.</p>
 <p><strong>What has been checked against its source.</strong> The survey credits each bound to a paper by the key shown beside it, such as [AnM4], and an entry can credit its lower and upper bound to different papers. So every bound carries its own state. A bound says <em>not yet read</em> until someone has tried to check it. Where one has been tried, the words beside it say what was actually read — sometimes the credited paper itself, sometimes only what could be reached when that paper could not be opened, and sometimes a construction the ledger recomputed rather than read. Bounds are chosen for reading by a fixed rule, written down and committed before any paper is opened, so the ones read are not the ones that looked easy. The <a href="${esc(STORE_URL)}">notes kept on each reading</a> name the paper, what exactly was read, and what it said. So far, of the ${total} values Table Ia prints: ${esc(countLine)}.</p>
@@ -223,10 +251,6 @@ ${dds.map((d) => d.html).join("\n")}
 <p><strong>[HW+]</strong> is the survey&rsquo;s own abbreviation of [HWSYZH], as enhanced in [Boza5]. A reference written as <em>item 2.3.h of the survey</em> points to a numbered item of its Section 2.3, not to a paper.</p>
 <p>If an entry disagrees with the survey or with the paper it credits, use <strong>looks wrong?</strong> on that entry. The report arrives already naming the entry and the revision.</p>
 </div>
-
-<nav class="jump" aria-label="Jump to an entry">
-${jump}
-</nav>
 
 ${blocks.join("\n")}
 
@@ -279,7 +303,7 @@ export function guardPage(page, doc, rows = []) {
   const shownReads = [];
   const text = html.replace(/<[^>]+>/g, " ");
   // 1. It never claims which bound is the record.
-  for (const re of [/\brecord\b(?!ed)/i, /\bbest[- ]known\b/i, /\bstrongest known\b/i, /\bstate of the art\b/i, /\bthe true value\b/i, /\bcurrent(ly)? best\b/i]) {
+  for (const re of RECORD_RES) {
     if (re.test(text)) v.push(`claims a record: ${re}`);
   }
   // 2. It loads nothing from anywhere.
@@ -417,6 +441,95 @@ export function guardPage(page, doc, rows = []) {
   return v;
 }
 
+// copying.html — the written disclosure pass (A-54 phase 2). ONE linked page, so the table's own
+// note box does not grow an eighth paragraph about rights above the first number.
+export function renderCopying(doc, rows = []) {
+  const src = doc.source;
+  const ia = doc.tableIa.length;
+  const ib = doc.tableIb.length;
+  // The repository retains MORE of the survey than the table does, and the first draft of this page
+  // denied it outright ("its bibliography … none of them are stored in this repository"). That was
+  // false when written: the depth-audit notes keep each cited paper's bibliography entry verbatim,
+  // and one keeps a sentence of the survey's own item 2.1.o. Found by adversarial review before
+  // publication, 2026-09-20 — in the sentence describing our own position, which is where this
+  // lane's defects land. The count is COMPUTED so it cannot drift from the store.
+  const refEntries = rows.filter((r) => String(r.surveyRefEntry ?? "").trim()).length;
+  return `<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>What this site copies from Small Ramsey Numbers — Bounds Ledger</title>
+<meta name="description" content="${esc(`Exactly what the Bounds Ledger reproduces from the dynamic survey Small Ramsey Numbers, what it does not, and how the author or the journal can ask for a change or removal.`)}">
+<link rel="canonical" href="${esc(`${SITE}copying.html`)}">
+<style>${STYLE}</style>
+<a class="back" href="ramsey.html">&larr; small Ramsey numbers</a>
+<h1>What this site copies from <em>Small Ramsey Numbers</em></h1>
+<p class="lede">The survey is someone else&rsquo;s work. This page says exactly what is reproduced here, what is not, and how its author or its journal can have any of it changed or taken down.</p>
+
+<div class="note">
+<p><strong>What this page copies.</strong> From Section 2.1: ${ia} entries of Table Ia, which between them print <strong>${numbersIn(doc.tableIa)} numbers</strong> &mdash; an entry gives either one exact value or a lower and an upper bound &mdash; and ${ib} upper bounds from Table Ib, ${numbersIn(doc.tableIb)} numbers in all. Beside each, the reference key the survey credits for it, such as [AnM4]. That is everything the table itself reproduces.</p>
+<p><strong>What else the repository keeps.</strong> When a bound is read against the paper it credits, the note of that reading also keeps, word for word, the survey&rsquo;s own bibliography entry for that paper &mdash; ${refEntries} of them so far &mdash; so a reader can see which work was checked without going back to the survey. Where the survey&rsquo;s numbered items explain where a value came from, such a note also quotes the sentence that says so. These live in the audit notes, not on this table.</p>
+<p><strong>What is not copied.</strong> The survey&rsquo;s PDF and its text: every other section, its figures, the rest of its commentary, the rest of its bibliography, and any table beyond Section 2.1. A fingerprint of the PDF is kept so a new revision can be detected; the file itself is never stored here or served from here.</p>
+<p><strong>No licence is claimed.</strong> <a href="${esc(src.landing)}">Small Ramsey Numbers</a>, revision #${esc(src.revision)} of ${esc(longDate(src.revisionDate))}, carries no licence permitting republication, and none is assumed here. The survey remains the authority; where this site and the survey disagree, the survey is right and this site has a bug.</p>
+<p><strong>Why copy the values at all.</strong> A bound and the paper credited for it are the two facts a reader needs to check a citation. This site exists to say whether anyone has actually opened that credited paper, which cannot be said without naming the bound it is about.</p>
+<p><strong>When this went up, and when this was written.</strong> The table has been public at <a href="ramsey.html">ramsey.html</a> since ${esc(longDate(PUBLISHED_ON))}. This disclosure was written on ${esc(longDate(WRITTEN_ON))} &mdash; after that, not before. It is an account of a page already public rather than a clearance obtained beforehand, and saying so is part of the disclosure.</p>
+<p><strong>How to ask for a change or a removal.</strong> The survey&rsquo;s author, the journal, or anyone acting for either can <a href="${esc(`${REPO}/issues/new?title=${encodeURIComponent("Request about Small Ramsey Numbers material")}`)}">open a request here</a>. A request to correct or remove this material will be acted on, not argued with: tell us what to take down and it comes down.</p>
+</div>
+
+<footer>
+<p>Values as printed in revision #${esc(src.revision)}, read from the journal&rsquo;s PDF by <a href="${esc(`${REPO}/blob/main/scripts/extract-ds1.mjs`)}">scripts/extract-ds1.mjs</a>. This page is generated by scripts/render-ramsey.mjs.</p>
+</footer>
+</html>
+`;
+}
+
+// The disclosure page's OWN guard. The table's guard reads entries and readings and would pass this
+// page while saying nothing about it. Assertions carry MEANING FIRST and the revision pin LAST, so a
+// mutation names the property it broke rather than only reporting that a string differs
+// (the 2026-09-06 assertion-order rule).
+export function guardCopying(page, doc, rows = []) {
+  const html = String(page).replace(/\r\n/g, "\n");
+  const text = html.replace(/<[^>]+>/g, " ");
+  const v = [];
+  for (const re of RECORD_RES) if (re.test(text)) v.push(`claims a record: ${re}`);
+  if (!/<strong>What is not copied\.<\/strong>/.test(html)) v.push("does not say what is NOT copied");
+  // The repository holds more of the survey than the table shows, and the disclosure must say so
+  // with a number that matches the store. A disclosure that UNDER-states what we keep is the one
+  // failure this page cannot have.
+  if (!/<strong>What else the repository keeps\.<\/strong>/.test(html)) {
+    v.push("does not disclose the survey material kept OUTSIDE the table (the bibliography entries in the audit notes)");
+  }
+  // The amount reproduced, in NUMBERS, recomputed from the committed table. A disclosure that
+  // states an entry count as though it were a value count understates the material it exists to
+  // disclose, and both validation commands accepted exactly that until it was caught.
+  const wantNums = numbersIn(doc.tableIa);
+  const saidNums = Number(html.match(/<strong>(\d+) numbers<\/strong>/)?.[1] ?? NaN);
+  if (!Number.isFinite(saidNums)) v.push("does not state how many NUMBERS of Table Ia it reproduces");
+  else if (saidNums !== wantNums) v.push(`says it reproduces ${saidNums} numbers from Table Ia, the committed table prints ${wantNums}`);
+  const want = rows.filter((r) => String(r.surveyRefEntry ?? "").trim()).length;
+  const said = text.match(/&mdash;\s*(\d+)\s*of them so far|—\s*(\d+)\s*of them so far/);
+  const saidN = said ? Number(said[1] ?? said[2]) : null;
+  if (saidN === null) v.push("does not state how many of the survey's bibliography entries the repository keeps");
+  else if (saidN !== want) v.push(`says the repository keeps ${saidN} bibliography entr(y/ies) from the survey, the audit store holds ${want}`);
+  if (!/carries no licence permitting republication/.test(text)) v.push("does not say the survey carries no licence to republish");
+  // The trap this page exists to avoid: describing a clearance that was never obtained.
+  if (!text.includes(longDate(PUBLISHED_ON))) v.push("does not name the date the table was published");
+  if (!/account of a page already public rather than a clearance obtained beforehand/.test(text)) {
+    v.push("does not disclose that it was written AFTER publication — a disclosure that reads as prior clearance is a false account");
+  }
+  if (!/acted on, not argued with/.test(text)) v.push("does not promise to act on a change-or-removal request");
+  if (!/issues\/new/.test(html)) v.push("carries no route for asking for a change or removal");
+  if (/<script\b/i.test(html)) v.push("carries a <script>");
+  if (/<(img|iframe|video|audio|source|embed|object)\b/i.test(html)) v.push("embeds media");
+  if (/\ssrc=/i.test(html) || /url\(/i.test(html) || /@import/i.test(html)) v.push("loads an external asset");
+  for (const m of html.matchAll(/href="(https?:\/\/[^"/]+)/g)) {
+    const host = m[1].replace(/^https?:\/\//, "");
+    if (!ALLOWED_HOSTS.has(host)) v.push(`links an unexpected host: ${host}`);
+  }
+  if (!html.includes(`revision #${doc.source.revision}`)) v.push("does not name the revision");
+  return v;
+}
+
 function selftest() {
   const fail = (msg) => { console.error(`render-ramsey selftest FAIL: ${msg}`); process.exitCode = 1; return 1; };
   const doc = {
@@ -453,6 +566,72 @@ function selftest() {
     const found = guard(mutated);
     if (!found.some((m) => re.test(m))) return fail(`${label}: the guard did not fire (it said ${JSON.stringify(found)})`);
   }
+  // The table's first screen is NUMBERS, not prose: the jump nav precedes the note box. A phone
+  // reader met seven dense paragraphs before the first number until 2026-09-20, and nothing asserted
+  // the order, so it could drift back with every guard still green.
+  if (html.indexOf('<nav class="jump"') > html.indexOf('<div class="note">')) {
+    return fail("the note box comes before the jump links, so a reader meets prose before any number");
+  }
+  // The table links its disclosure. Without this the disclosure page is reachable only by URL.
+  if (!/<a href="copying\.html">What this page copies from the survey, and how to ask for a change<\/a>/.test(html)) {
+    return fail("the table does not link copying.html from The source");
+  }
+
+  // THE DISCLOSURE PAGE, both answers. A new rendering path does not inherit the guards that
+  // already exist, so guardCopying is shown firing on each property it claims and silent on the
+  // page as rendered.
+  const copying = renderCopying(doc);
+  if (guardCopying(copying, doc).length) return fail(`the rendered copying.html fails its own guard: ${JSON.stringify(guardCopying(copying, doc))}`);
+  if (guardPage(copying, doc).some((m) => /claims a record/.test(m))) return fail("the disclosure page claims a record");
+  // THE MATERIAL KEPT OUTSIDE THE TABLE. The first draft of this page denied that the repository
+  // holds any of the survey's bibliography, while the audit store held five entries verbatim
+  // (adversarial review, 2026-09-20). The count is rendered from the store and asserted against it,
+  // so the denial cannot come back and a stale number cannot stand.
+  const refRows = [
+    { k: 5, l: 5, bound: "upper", value: 46, ref: "AnM4", verdict: "SOUND", selection: "systematic", surveyRefEntry: "[AnM4] a bibliography entry copied from the survey." },
+    { k: 3, l: 9, bound: "exact", value: 36, ref: "GR", verdict: "SOUND", selection: "systematic", surveyRefEntry: "[GR] another one." },
+  ];
+  const copyingWithRefs = renderCopying(doc, refRows);
+  if (guardCopying(copyingWithRefs, doc, refRows).length) return fail(`copying.html with stored bibliography entries fails its guard: ${JSON.stringify(guardCopying(copyingWithRefs, doc, refRows))}`);
+  if (!/&mdash; 2 of them so far &mdash;/.test(copyingWithRefs)) return fail("copying.html does not state the number of bibliography entries the store holds");
+  // The number must track the STORE, not the page: the same page judged against a store holding a
+  // different number of entries is a stale disclosure and is refused.
+  if (!guardCopying(copyingWithRefs, doc, [...refRows, { surveyRefEntry: "[X] a third." }]).some((m) => /says the repository keeps 2 bibliography entr/.test(m))) {
+    return fail("the guard did not fire on a disclosure whose count disagrees with the audit store");
+  }
+  // THE COUNTING UNIT. The fixture's R(5, 5) and R(4, 6) each print a lower AND an upper bound, so
+  // entries and numbers differ here exactly as they do in the committed table (72 vs 124).
+  if (numbersIn(doc.tableIa) === doc.tableIa.length) return fail("the selftest fixture has no two-bound entry, so it cannot tell an entry count from a number count");
+  if (!new RegExp(`<strong>${numbersIn(doc.tableIa)} numbers</strong>`).test(copying)) return fail("copying.html does not state how many numbers of Table Ia it reproduces");
+  const asEntries = copying.replace(`<strong>${numbersIn(doc.tableIa)} numbers</strong>`, `<strong>${doc.tableIa.length} numbers</strong>`);
+  if (asEntries === copying) return fail("the entry-count-as-number-count mutation did not land");
+  if (!guardCopying(asEntries, doc).some((m) => /says it reproduces \d+ numbers from Table Ia, the committed table prints/.test(m))) {
+    return fail(`the guard did not fire on a disclosure stating an ENTRY count where a NUMBER count belongs (it said ${JSON.stringify(guardCopying(asEntries, doc))})`);
+  }
+  const denied = copyingWithRefs.replace(/<p><strong>What else the repository keeps\.<\/strong>[\s\S]*?<\/p>\n/, "");
+  if (denied === copyingWithRefs) return fail("the what-else-is-kept stripping mutation did not land");
+  if (!guardCopying(denied, doc, refRows).some((m) => /does not disclose the survey material kept OUTSIDE the table/.test(m))) {
+    return fail(`the guard did not fire on a disclosure that omits what the repository keeps (it said ${JSON.stringify(guardCopying(denied, doc, refRows))})`);
+  }
+  for (const [label, mutated, re] of [
+    ["record wording", copying.replace("<h1>", "<h1>The record for "), /claims a record/],
+    ["no not-copied statement", copying.replace("<strong>What is not copied.</strong>", "What is not copied."), /does not say what is NOT copied/],
+    ["the no-licence sentence dropped", copying.replace("carries no licence permitting republication", "is freely reusable"), /does not say the survey carries no licence/],
+    ["the publication date dropped", copying.replace(longDate(PUBLISHED_ON), "some time ago"), /does not name the date the table was published/],
+    // The trap, as its own mutation: the disclosure rewritten to read as prior clearance — which is
+    // what the scope doc claimed happened and did not.
+    ["rewritten to read as clearance obtained beforehand",
+      copying.replace("account of a page already public rather than a clearance obtained beforehand", "clearance obtained before anything was published"),
+      /written AFTER publication/],
+    ["the promise to act dropped", copying.replace("acted on, not argued with", "considered"), /does not promise to act/],
+    ["an external script", copying.replace("</style>", '</style><script src="https://cdn.example/x.js"></script>'), /carries a <script>/],
+    ["an unexpected host", copying.replace('href="ramsey.html"', 'href="https://example.org/"'), /unexpected host: example\.org/],
+  ]) {
+    if (mutated === copying) return fail(`copying.html ${label}: the mutation did not land`);
+    const found = guardCopying(mutated, doc);
+    if (!found.some((m) => re.test(m))) return fail(`copying.html ${label}: the guard did not fire (it said ${JSON.stringify(found)})`);
+  }
+
   // A title prefix report-rate classifies as an arrival, checked with report-rate's own function.
   const flagHref = html.match(/<a class="flag" href="([^"]+)">/)[1].replace(/&amp;/g, "&");
   const flagTitle = decodeURIComponent(flagHref.match(/[?&]title=([^&]*)/)[1]);
@@ -549,7 +728,7 @@ function selftest() {
   if (crlf === html) return fail("the CRLF control did not convert anything");
   if (guard(crlf).length) return fail(`the same page with CRLF line endings failed its own guard: ${JSON.stringify(guard(crlf).slice(0, 3))}`);
   if (gu(withNote.replace(/\n/g, "\r\n")).length) return fail("a CRLF page carrying a real reading failed its own guard");
-  console.log(`render-ramsey selftest: PASS (${fires.length} guards each fire on their condition — record wording, an external script, an unexpected host, a dropped entry, a changed value, a merged audit state, a bound's state dropped, an uncounted report title, unsummed counts, no not-covered line; report-rate counts the row link; outcomes equal depth-audit.json's; markup escaped; a reading renders on its own bound only; a missing reading, a state whose words disagree, and a verdict moved to another bound of the same entry with every count preserved all fire; a reading of an unprinted value is not drawn; an unresolved reading renders its pageNote and the guard fires on all thirteen mutations tried against it — the note stripped from the page, the store carrying none, a dropped "How it was read" link, four ways of hiding the note in place (a hidden span, a CSS-hidden span, a hidden anchor, an HTML comment), the dd itself hidden by a bare attribute or by style, and six that leave the reading intact and hide its SURROUNDINGS (the dd wrapped in a comment, a template or a hidden div, the enclosing dl hidden, and the reading nested inside a dt's template under both LF and CRLF); those thirteen trip seven distinct assertions, not thirteen; and the real page passes in LF and in CRLF; the well-formed page passes)`);
+  console.log(`render-ramsey selftest: PASS (${fires.length} guards each fire on their condition — record wording, an external script, an unexpected host, a dropped entry, a changed value, a merged audit state, a bound's state dropped, an uncounted report title, unsummed counts, no not-covered line; report-rate counts the row link; outcomes equal depth-audit.json's; markup escaped; a reading renders on its own bound only; a missing reading, a state whose words disagree, and a verdict moved to another bound of the same entry with every count preserved all fire; a reading of an unprinted value is not drawn; an unresolved reading renders its pageNote and the guard fires on all thirteen mutations tried against it — the note stripped from the page, the store carrying none, a dropped "How it was read" link, four ways of hiding the note in place (a hidden span, a CSS-hidden span, a hidden anchor, an HTML comment), the dd itself hidden by a bare attribute or by style, and six that leave the reading intact and hide its SURROUNDINGS (the dd wrapped in a comment, a template or a hidden div, the enclosing dl hidden, and the reading nested inside a dt's template under both LF and CRLF); those thirteen trip seven distinct assertions, not thirteen; and the real page passes in LF and in CRLF; the well-formed page passes; the jump links precede the note box and the table links copying.html; and copying.html's OWN guard fires on ten mutations — record wording, no not-copied statement, a dropped no-licence sentence, a dropped publication date, the disclosure rewritten to read as clearance obtained beforehand, a dropped promise to act, an external script, an unexpected host, a disclosure that omits the survey material kept outside the table, a bibliography count that disagrees with the audit store, and an ENTRY count stated where a NUMBER count belongs — and is silent on the page as rendered, with and without stored bibliography entries)`);
   return 0;
 }
 
@@ -568,20 +747,29 @@ function main(args) {
   const r = rows.length ? readStore(parsed, frameOf(doc).frame) : { code: 0 };
   if (r.code !== 0) { console.log(`REFUSED — continuity/depth-audit-ds1.json does not match the committed table:\n  ${r.lines.join("\n  ")}`); return args.includes("--check") ? 1 : 3; }
   const html = renderRamsey(doc, rows);
+  const copying = renderCopying(doc, rows);
   if (args.includes("--check")) {
     if (!existsSync(OUT)) { console.log("STALE — ramsey.html is missing; run node scripts/render-ramsey.mjs and commit it."); return 1; }
+    if (!existsSync(OUT_COPYING)) { console.log("STALE — copying.html is missing; run node scripts/render-ramsey.mjs and commit it."); return 1; }
     const onDisk = readFileSync(OUT, "utf8");
+    const copyOnDisk = readFileSync(OUT_COPYING, "utf8");
     const norm = (s) => s.replace(/\r\n/g, "\n");
     const violations = guardPage(onDisk, doc, rows);
     if (violations.length) { console.log(`GUARD FAILED on the committed ramsey.html:\n  ${violations.join("\n  ")}`); return 1; }
+    const copyViolations = guardCopying(copyOnDisk, doc, rows);
+    if (copyViolations.length) { console.log(`GUARD FAILED on the committed copying.html:\n  ${copyViolations.join("\n  ")}`); return 1; }
     if (norm(onDisk) !== norm(html)) { console.log("STALE — ramsey.html does not match ledger/ejc-ds1/section-2-1.json; run node scripts/render-ramsey.mjs and commit it."); return 1; }
-    console.log(`RESULT: PASS — ramsey.html matches the committed table (${entriesOf(doc).length} entries, revision #${doc.source.revision}) and the committed file passes its own guard.`);
+    if (norm(copyOnDisk) !== norm(copying)) { console.log("STALE — copying.html does not match ledger/ejc-ds1/section-2-1.json; run node scripts/render-ramsey.mjs and commit it."); return 1; }
+    console.log(`RESULT: PASS — ramsey.html matches the committed table (${entriesOf(doc).length} entries, revision #${doc.source.revision}) and ramsey.html and copying.html both pass their own guards.`);
     return 0;
   }
   const violations = guardPage(html, doc, rows);
   if (violations.length) { console.log(`REFUSED to write: the rendered page fails its own guard:\n  ${violations.join("\n  ")}`); return 3; }
+  const copyViolations = guardCopying(copying, doc, rows);
+  if (copyViolations.length) { console.log(`REFUSED to write: the rendered copying.html fails its own guard:\n  ${copyViolations.join("\n  ")}`); return 3; }
   writeFileSync(OUT, html);
-  console.log(`WROTE ramsey.html — ${entriesOf(doc).length} entries from revision #${doc.source.revision}.`);
+  writeFileSync(OUT_COPYING, copying);
+  console.log(`WROTE ramsey.html — ${entriesOf(doc).length} entries from revision #${doc.source.revision}. WROTE copying.html.`);
   return 0;
 }
 

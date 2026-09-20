@@ -68,7 +68,7 @@ Each phase ends on a command whose output decides it. A date slipping is said on
 
 - **A host blocks runners** (the erdosproblems.com shape). Phase 1 measures this first, on a runner, because a local 200 has already misled this ledger once (`docs/findings/2026-07-25-the-403-that-wasnt.md`).
 - **The extractor misreads a future revision.** D4's refusal is the guard, and phase 2's self-test must show it refusing.
-- **Copyright of the committed table.** Numbers are facts, but a table's selection can carry thin protection. The disclosure pass in phase 2 asks this before anything is published.
+- **Copyright of the committed table.** Numbers are facts, but a table's selection can carry thin protection. ~~The disclosure pass in phase 2 asks this before anything is published.~~ **CORRECTED 2026-09-20: that is not what happened, and the sentence stood here for three days describing a clearance nobody obtained.** The reader-visible slice was pulled forward to 2026-09-17 on the orchestrator's ruling (`A-54` `notes2026_09_17_slice`), so the table went public that day, ahead of the disclosure pass rather than after it. The pass therefore shipped on 2026-09-20 as `copying.html` — a dated account of an already-published page, which says on its face when the table went up and that the disclosure was written afterwards. Leaving the original wording would have had the scope document assert a prior clearance while the page it governs said the opposite.
 - **Noise.** The survey is revised every one to two years, so its alarm should be quiet. Wikipedia is edited more often, so its comparison pins individual cells, never the whole article.
 
 ## What this does not settle
