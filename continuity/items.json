@@ -1355,7 +1355,10 @@
         "9c23621",
         "739ce16",
         "68e9764",
-        "70ebd63"
+        "70ebd63",
+        "874e411",
+        "d7f10db",
+        "9065909"
       ],
       "readCommandHistory": "node scripts/depth-audit.mjs # BUILT AND FIRST-RUN 2026-09-10; supersedes the check-claims placeholder kept at readCommandRetired2026_09_10, which correctly said no command answered this row while no audit store existed. LITERAL OUTPUT, pasted from the run rather than described: \"depth audit (A-47): 3 row(s) audited — 2 sound, 0 defective, 1 unresolved, 0 unreachable\" at exit 0. It prints the denominator and the SAMPLING RULE beside the count, and it REFUSES a bare zero: exit 2 when the store is missing or empty (a zero about the WORK, not about the records), exit 3 when the verdict counts do not sum to the row count. Both refusals red-armed 2026-09-10 with the mutations proven to land by sha256 and the restore verified against the original.\n\n — LITERAL OUTPUT RE-RECORDED 2026-09-11, because the line above is dated 2026-09-10 and a stale literal output is the defect this field exists to prevent: \"depth audit (A-47): 8 row(s) audited — 2 sound, 0 defective, 4 unresolved, 2 unreachable\" at exit 0. The verdict mix moved for two reasons on one day: slice 2 added five rows, and three earlier rows were downgraded to UNRESOLVED by adversarial review. A second command now answers the population half of this row: `node scripts/depth-audit.mjs --corpus`, which prints 770 bound rows across 115 constant files, 673 cited, 97 uncited, and refuses (exit 2) when either baseline cannot be established.",
       "readCommandLastRun": "2026-09-21T15:44:29.609Z",
@@ -1845,7 +1848,9 @@
       "linkedCommits": [
         "c5a964b",
         "55297f7",
-        "70ebd63"
+        "70ebd63",
+        "07b8f0b",
+        "2efa648"
       ],
       "disposition2026_09_18": "DISPOSITION 2026-09-18 — STILL DEAD, and the correction is TWO files, not one. DECISION: draft it, do not close it.\n\nTHE READ, literal. `curl -sIL https://test-time-training.github.io/discover.pdf` returned `HTTP/1.1 404 Not Found` and `Content-Type: text/html; charset=utf-8`, Content-Length 9115. The status line has CHANGED since 2026-09-05, when the same page answered HTTP 200; the readCommand rightly never trusted the status line. POSITIVE CONTROL that the body is the dead page and not something else: the saved body's title is `Site not found &middot; GitHub Pages`.\n\nW-11's SEARCH, run over this repo excluding tmp/, for the citation key, the dead URL and the arXiv id (YKLBMWKCZGS2026|discover\\.pdf|2601\\.16175): 61 hits in 28 files. What it returned that changes the correction: THE SAME DEAD LINK IS IN A SECOND UPSTREAM FILE. The mirror carries the [YKLBMWKCZGS2026] reference entry, linking test-time-training.github.io/discover.pdf, at ledger/teorth-optimizationproblems/constants/1a.md line 55 as well as at constants/1b.md line 57. This row's title names only the minimum-overlap table; a fix drafted from the title would have left 1a's citation dead. The same search found the depth audit already holding this as A-47-0015/0016 in continuity/depth-audit.json, and nothing in the record arguing against a correction.\n\nREPLACEMENT VERIFIED, not assumed. https://arxiv.org/abs/2601.16175 fetched 2026-09-18; its title element reads `[2601.16175] Learning to Discover at Test Time`, the title the upstream entry gives.\n\nWHY DRAFT RATHER THAN CLOSE. A dead link on a record's own citation is editorial drift on the adopted surface, the kind this lane stewards, and the fix is two link targets pointing at a primary source verified today. It is not a G-4 event (we would author it) and it asks nothing of David beyond the send decision.\n\nNEXT, DATED 2026-09-21: draft the two-line reference fix (1a.md and 1b.md), run the adversarial refute-it review on it, including its method sentence, and put the send decision on David's board. Nothing is sent on this row's authority. Moved from today because today's depth-reading capacity is the approved Section A, the first Small Ramsey Numbers depth slice (A-54 phase 4).",
       "lastEvaluated": "2026-09-21",
@@ -1899,7 +1904,10 @@
       ],
       "created": "2026-09-16",
       "updated": "2026-09-21",
-      "secondInstance2026_09_21": "SECOND INSTANCE, 2026-09-21, found by the orchestrator reading today's P3 — and it is the same defect one layer up, on the INDEX rather than on a constant page.\n\nWHAT IT IS. `index.html` badges a constant only when a row of it was READ: live counts today are 13 `read read-sound` and 4 `read read-unresolved`, and nothing at all for the five rows that were drawn by position and whose sources could not be read. scripts/render-site.mjs:860-862 asserts that deliberately — \"an UNREACHABLE source was never read, so it must not badge as read\" — and that rule is right. The consequence is not: on the index, a constant whose drawn source proved unreadable looks exactly like a constant the ladder never reached. The work is invisible and the reader cannot tell the two apart.\n\nWHY IT BELONGS ON THIS ROW. It is this row's own sentence — \"the page under-reports, the store over-reports relative to the page, and neither says so\" — with the page being the index instead of a constant page. The constant pages were fixed today (the ledger-wide sentence now prints 20 drawn, 15 read, 5 unreadable); the index was not, and nothing compares the two.\n\nWHAT THE 2026-09-24 DECISION NOW CHOOSES BETWEEN, unchanged in kind but with this instance in scope: (a) the comparison check, (b) making the render side refuse a dropped entry, or (c) a written decision not to guard it. The orchestrator's suggestion for the index specifically is a THIRD badge meaning attempted-and-unreadable, never a fourth way of saying read. That is a rendering fix rather than a guard, so it does not settle this row on its own."
+      "secondInstance2026_09_21": "SECOND INSTANCE, 2026-09-21, found by the orchestrator reading today's P3 — and it is the same defect one layer up, on the INDEX rather than on a constant page.\n\nWHAT IT IS. `index.html` badges a constant only when a row of it was READ: live counts today are 13 `read read-sound` and 4 `read read-unresolved`, and nothing at all for the five rows that were drawn by position and whose sources could not be read. scripts/render-site.mjs:860-862 asserts that deliberately — \"an UNREACHABLE source was never read, so it must not badge as read\" — and that rule is right. The consequence is not: on the index, a constant whose drawn source proved unreadable looks exactly like a constant the ladder never reached. The work is invisible and the reader cannot tell the two apart.\n\nWHY IT BELONGS ON THIS ROW. It is this row's own sentence — \"the page under-reports, the store over-reports relative to the page, and neither says so\" — with the page being the index instead of a constant page. The constant pages were fixed today (the ledger-wide sentence now prints 20 drawn, 15 read, 5 unreadable); the index was not, and nothing compares the two.\n\nWHAT THE 2026-09-24 DECISION NOW CHOOSES BETWEEN, unchanged in kind but with this instance in scope: (a) the comparison check, (b) making the render side refuse a dropped entry, or (c) a written decision not to guard it. The orchestrator's suggestion for the index specifically is a THIRD badge meaning attempted-and-unreadable, never a fourth way of saying read. That is a rendering fix rather than a guard, so it does not settle this row on its own.",
+      "linkedCommits": [
+        "9065909"
+      ]
     },
     {
       "id": "A-54",
@@ -1937,7 +1945,8 @@
         "f1c5e85",
         "fc0bbba",
         "db57062",
-        "645457a"
+        "645457a",
+        "d7f10db"
       ],
       "created": "2026-09-17",
       "updated": "2026-09-21",
@@ -1969,7 +1978,10 @@
         "A-51",
         "G-2"
       ],
-      "updated": "2026-09-21"
+      "updated": "2026-09-21",
+      "linkedCommits": [
+        "2efa648"
+      ]
     },
     {
       "id": "A-55",
@@ -1989,7 +2001,10 @@
         "A-47",
         "G-4"
       ],
-      "updated": "2026-09-21"
+      "updated": "2026-09-21",
+      "linkedCommits": [
+        "9065909"
+      ]
     }
   ],
   "meta": {
