@@ -1,0 +1,7 @@
+# read-output sidecar for A-2 — written by check-due-gates-dispositioned --run
+# readCommand: node scripts/reverify.mjs --check
+# ran: 2026-09-21T15:43:39.937Z · exit: 2
+# lines: 1 · sha256: 8a29ce20c54a526e (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+error: GET https://api.github.com/repos/teorth/optimizationproblems/commits/HEAD: 403

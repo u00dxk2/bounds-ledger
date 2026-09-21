@@ -1,6 +1,6 @@
 # read-output sidecar for A-47 — written by check-due-gates-dispositioned --run
 # readCommand: node scripts/depth-audit.mjs
-# ran: 2026-09-16T17:00:51.949Z · exit: 0
+# ran: 2026-09-21T15:44:29.609Z · exit: 0
 # lines: 81 · sha256: d56ebc89b9f9c9ee (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--

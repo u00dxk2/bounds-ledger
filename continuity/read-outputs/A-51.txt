@@ -1,0 +1,25 @@
+# read-output sidecar for A-51 — written by check-due-gates-dispositioned --run
+# readCommand: curl -sIL https://test-time-training.github.io/discover.pdf
+# ran: 2026-09-21T15:44:38.251Z · exit: 0
+# lines: 19 · sha256: ab838e31788d5a22 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+HTTP/1.1 404 Not Found
+Connection: keep-alive
+Content-Length: 9115
+Server: GitHub.com
+Content-Type: text/html; charset=utf-8
+ETag: "6aac0af2-239b"
+Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'
+X-GitHub-Request-Id: F8F8:14F893:AB42C:CD86C:6AB14C5B
+x-github-edge-region: iad
+Accept-Ranges: bytes
+Age: 1165
+Date: Mon, 21 Sep 2026 15:44:40 GMT
+Via: 1.1 varnish
+X-Served-By: cache-den-kden1300023-DEN
+X-Cache: HIT
+X-Cache-Hits: 0
+X-Timer: S1790005481.935914,VS0,VE1
+Vary: Accept-Encoding
+X-Fastly-Request-ID: 01acb43bcc2082772a29a6ca0422206ed01d1f31
