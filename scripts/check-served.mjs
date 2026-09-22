@@ -42,11 +42,15 @@ import assert from "node:assert/strict";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = "https://u00dxk2.github.io/bounds-ledger/";
 
-// Measured 2026-09-22 on the first ship of the day: see A-55.lagMeasured2026_09_22 for the poll
-// record. The window is that measurement rounded UP to the next minute, so a normal publish never
-// reads STALE, and it is deliberately not larger: a window wide enough to swallow a real failure
-// would make this read say nothing.
-export const LAG_MEASURED = { seconds: null, measuredOn: "2026-09-22", note: "set from the poll record" };
+// MEASURED 2026-09-22 on that day's first ship, by polling the live index every 15 s against
+// HEAD's bytes. Commit aee164c is stamped 14:33:22Z; the page still served the previous build at
+// 14:36:00Z and matched by 14:36:15Z, so the publish reached a reader between 158 s and 173 s after
+// the commit. The new build's own Last-Modified was 14:34:36Z, about 74 s in — the rest is delivery,
+// not build, which is why this window is measured at the READER rather than taken from the builds
+// API. The window below is 300 s: above the measured upper bound with roughly 1.7x margin, and
+// deliberately not larger, because a window wide enough to swallow a real failure says nothing.
+// Poll record: A-55.lagMeasured2026_09_22.
+export const LAG_MEASURED = { secondsLow: 158, secondsHigh: 173, measuredOn: "2026-09-22", anchor: "aee164c", note: "commit 14:33:22Z, stale at 14:36:00Z, served by 14:36:15Z" };
 // CC_SERVED_WINDOW_MS overrides the window. It exists so the LIVE path can be red-armed: set it to 0
 // immediately after a push and the same fetch that would read IN-FLIGHT reads STALE instead, which
 // is how the firing half was demonstrated end to end rather than only in the selftest. It is a test

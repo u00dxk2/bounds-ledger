@@ -225,6 +225,13 @@ jobs:
       # known graphs that must pass and fail. Network-free.
       - name: Self-test Ramsey coloring checker (no network)
         run: node scripts/check-ramsey-coloring.mjs --selftest
+      # A-55's served-bytes check. Only its SELF-TEST runs here, never the live read: the live leg
+      # fetches the published site, and a transient GitHub failure must not turn this suite
+      # permanently red — both 2026-09-21 publish failures were transient. The selftest is
+      # network-free and proves both answers (identical bytes silent, differing bytes on an old push
+      # STALE), plus a derived path set that admits a page added later.
+      - name: Self-test served-bytes check (no network)
+        run: node scripts/check-served.mjs --selftest
       # Guards A-33 leg 1's differ. The danger it exists to prevent is the one note4 names: a
       # check that fires on 'a filed report is CLOSED' fires every day once #150 closes, and an
       # alarm that cannot go quiet is this lane's founding defect. The self-test asserts it stays
