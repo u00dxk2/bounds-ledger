@@ -1,0 +1,15 @@
+# read-output sidecar for A-54 — written by check-due-gates-dispositioned --run
+# readCommand: node scripts/check-claims.mjs
+# ran: 2026-09-22T13:14:29.041Z · exit: 0
+# lines: 9 · sha256: 53384edd280b0a30 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+# Claim check — 2026-09-22T13:14:28.892Z
+UNVERIFIED  C-7  erdosproblems.com/36 still shows 0.380876 — three records stale (A-3)
+            source blocks automated fetch (https://www.erdosproblems.com/36) — Site 403s automated fetch from DATACENTER IPs only (CI runners); a residential IP gets 200 — which is why the advisory line below is real information locally and never is in CI. DO NOT re-automate this claim on the strength of a local 200: tried 2026-07-25, CI went red in four minutes. Only a green CI run is evidence. Full account: docs/findings/2026-07-25-the-403-that-wasnt.md. Last hand-verified 2026-07-25, three agreeing reads (David, Node fetch, Playwright): 0.379005 < c < 0.380876, 0.380868 absent, last edited 23 January 2026.
+            advisory fetch from THIS machine: HTTP 200, expected "0.380876" still present — page unchanged (stays UNVERIFIED; CI cannot see this)
+UNVERIFIED  C-9  erdosproblems.com/36 has not been edited since 23 January 2026 — the second leg of the W-3 ack watch
+            source blocks automated fetch (https://www.erdosproblems.com/36) — Same site block as C-7. C-7 pins the bound (catches the correction landing as a value change); this pins the edit date (catches the maintainer touching the page at all — ack-adjacent evidence C-7 cannot see). `manual: true` is what makes an edit-date pin safe: the 2026-07-25 version of this pin was FETCHABLE, so CI reported UNREACHABLE and went red (docs/findings/2026-07-25-the-403-that-wasnt.md). Two manual claims = two requests per local run to a personal site that dislikes bots; don't grow this pattern.
+            advisory fetch from THIS machine: HTTP 200, expected "This page was last edited 23 January 2026." still present — page unchanged (stays UNVERIFIED; CI cannot see this)
+
+244 claim(s): 242 hold, 0 broken/unreachable, 2 unverified (manual).

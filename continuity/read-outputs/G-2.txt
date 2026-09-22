@@ -1,0 +1,10 @@
+# read-output sidecar for G-2 — written by check-due-gates-dispositioned --run
+# readCommand: node -e "const fs=require('fs');import('./search/27b/verifier.mjs').then(v=>{const c=JSON.parse(fs.readFileSync('search/27b/sulanke-certificate.json','utf8'));const pc=v.verifyCertificate(c);console.log('positive control - verifier still scores the KNOWN 1980 record:',JSON.stringify(pc));if(!pc.ok)throw new Error('verifier cannot score the known record - the instrument is broken, not the search');for(const f of ['round1-results.json','round2-results.json','round3-results.json']){const j=JSON.parse(fs.readFileSync('search/27b/'+f,'utf8'));const rows=j.results||j.rows||[];const vals=rows.map(r=>typeof r.bestChi==='number'?r.bestChi:(typeof r.chi==='number'?r.chi:null)).filter(x=>x!==null);const best=vals.length?Math.max(...vals):null;console.log(f,'rows='+rows.length,vals.length?('best chi='+best+' over '+vals.length+' scored row(s) - beats the record only if >9'):'0 rows carry a chromatic value (keys checked: bestChi, chi) - eliminated before the chromatic gate; verdicts: '+rows.map(r=>r.verdict||'?').join('/'))}})"
+# ran: 2026-09-22T13:14:37.269Z · exit: 0
+# lines: 4 · sha256: a60ee0a46b3d9c69 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+positive control - verifier still scores the KNOWN 1980 record: {"ok":true,"chromaticNumber":9,"reasons":[]}
+round1-results.json rows=11 best chi=9 over 4 scored row(s) - beats the record only if >9
+round2-results.json rows=5 best chi=8 over 5 scored row(s) - beats the record only if >9
+round3-results.json rows=4 best chi=9 over 4 scored row(s) - beats the record only if >9

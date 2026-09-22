@@ -1,0 +1,13 @@
+# read-output sidecar for A-46 — written by check-due-gates-dispositioned --run
+# readCommand: node ../skylark-site/scripts/read-msg.mjs 42cc5245 --project bounds-ledger
+# ran: 2026-09-22T13:13:53.724Z · exit: 1
+# lines: 7 · sha256: 123b801c87e6e24e (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+RESULT: NOTHING-SWEPT — "42cc5245" not in the searched window (109 rows, project=bounds-ledger) (exit 1)
+read-msg: searched project=bounds-ledger newest 109 rows since 2026-09-15T17:04:43.472Z · asked limit=500 — the v1 bus reader is windowed server-side (~14d, cap 5000); an older row is NOT searched.
+read-msg: "42cc5245" NOT FOUND IN THAT WINDOW — this is not "no such message". The window is the
+  limit, not the store. Widen it: --project <slug> (scopes the read and reaches further back for
+  one project), --limit <n up to 5000>, or --since <ISO>. If it is a BOARD card id rather
+  than a bus messageId, use: node scripts/answered-cards.mjs --id 42cc5245
+  To see what IS in the window without knowing an id: node scripts/read-msg.mjs --list --project bounds-ledger

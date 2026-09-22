@@ -1,0 +1,28 @@
+# read-output sidecar for W-9 — written by check-due-gates-dispositioned --run
+# readCommand: npm run catches
+# ran: 2026-09-22T13:17:12.861Z · exit: 0
+# lines: 22 · sha256: 130da4c3005ec1d8 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+> bounds-ledger@0.0.0 catches
+> node scripts/catch-rate.mjs
+
+# Record-listing MOVEMENTS per week — a CEILING on catches, not a count of them — 2026-09-22T13:17:12.403Z
+2026-07-20    0
+2026-07-27    4  pin:10c:L pin:38a:L pin:3a:L pin:71a:L
+2026-08-03    0
+2026-08-10    4 (6 movements)  pin:10a:L pin:10a:U pin:15a:U pin:2a:U
+2026-08-17    5  pin:15a:U pin:3a:L pin:81a:L pin:81a:U pin:87a:U
+2026-08-24    3  pin:2a:U pin:53a:L pin:56a:U
+2026-08-31    7  pin:41a:U pin:43a:L pin:47a:U pin:50a:U pin:53a:U pin:88a:U pin:8a:L
+2026-09-07    0
+2026-09-14    0
+2026-09-21    0 (current, partial)
+
+23 movement(s) on distinct pins across 10 week(s) — quote the PER-WEEK figure, never this total; 2 COMPLETED consecutive week(s) with none — the current partial week is never counted, and a month is four.
+A month of zeros is the signal to adopt a SECOND surface, not to try harder on this one.
+The zeros do NOT fire that alone (amended 2026-08-14): read docs/findings/ over the same window first — dry means no movements AND no findings. This counts drift DETECTION only, and G-1's one acknowledgement came from manual error detection it cannot see. Adopting a second surface stays David's call, never self-approved.
+Upper bound: a citation-key rename moves a pin without moving a bound, and our own merged PRs land as upstream movement (both true of pin:15a:U).
+
+Candidate-correction queue depth: 0 — verified defects in a stewarded surface awaiting a gate or a send, counted from the explicit correctionCandidate flag in continuity/items.json.
+Read this WITH the per-week figure, not instead of it: the rate says whether the surface is still moving, this says whether we are still finding things. A zero rate beside a non-zero queue is not a quiet week — it is work found and blocked.
