@@ -28,6 +28,31 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUTDIR = join(ROOT, "c");
 const REPO = "https://github.com/u00dxk2/bounds-ledger";
 const SITE = "https://u00dxk2.github.io/bounds-ledger/";
+const RUNS = `${REPO}/actions/workflows/reverify.yml`;
+
+/**
+ * WHEN WE LAST LOOKED, said on the page a citer actually lands on (2026-09-22). The index has
+ * said this since 2026-08-27; the constant pages never did. Those pages are what a search result
+ * or a "Cite this row" link reaches, which makes them the page this lane's user reads just before
+ * citing. Their only freshness words were "a snapshot at that commit, not a live read", which
+ * answers the reader's question ("is it current, or has nobody looked since?", docs/evangelism-bar.md)
+ * with half of the truth. A dated row can look abandoned when it has been checked every day.
+ *
+ * DELIBERATELY NOT "an old date means the row has been steady". The page changes only after a
+ * person verifies an upstream change and republishes, so during an unresolved drift the alarm is
+ * red, upstream HAS moved, and this page still shows the old date. The sentence therefore claims
+ * only what the date cannot mean (neglect), and it sends the reader to the run history for the
+ * verdict, which is the one read that knows about an unresolved change.
+ *
+ * SCOPED TO THE DATES AND VALUES, not to "this page" (adversarial review, 2026-09-22). The first
+ * draft said "This page changes only after a change upstream has been verified and published here",
+ * which this very commit falsifies: the mirror is untouched at 9d57db8 and all 115 pages changed,
+ * because a page is also rewritten whenever its renderer is. It also hung the daily-re-check
+ * conclusion on the wrong clause — an old date is not neglect BECAUSE of the daily check, not
+ * because of what publishing does.
+ */
+export const FRESHNESS =
+  "This row is re-checked against upstream every day by a scheduled job, so an old date above does not mean nobody has looked. The dates and values above change only after an upstream change has been verified and published here, so an old date does not prove nothing has moved upstream either.";
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
   ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -407,9 +432,14 @@ ${auditBlock(r.id, audits)}
 </div>
 <div class="cite"><strong>Cite this row</strong><code>${esc(citation(r, sha))}</code></div>
 <footer><p>${esc(DISCLAIMER)}</p>
-<p>Mirrored from <code style="display:inline;padding:.1rem .3rem">teorth/optimizationproblems@${esc(String(sha).slice(0, 7))}</code> — a snapshot at that commit, not a live read.</p></footer>
+<p>Mirrored from <code style="display:inline;padding:.1rem .3rem">teorth/optimizationproblems@${esc(String(sha).slice(0, 7))}</code> — a snapshot at that commit, not a live read.</p>
+<p>${esc(FRESHNESS)} The latest check and its verdict: <a href="${esc(RUNS)}">run history</a>.</p></footer>
 </html>`;
 }
+
+// The footer's exact rendered text for the fixture below (sha abc1234def). Updated DELIBERATELY
+// when the footer changes; an added sentence cannot slip in unreviewed.
+const FOOTER_PIN = "These are the LAST-LISTED rows of this constant&#39;s bounds table upstream — a listing position, not a statement that either bound is the strongest or most recent known. Upstream keeps superseded and inferior rows because the tables are histories. Read the source file before citing. Mirrored from teorth/optimizationproblems@abc1234 — a snapshot at that commit, not a live read. This row is re-checked against upstream every day by a scheduled job, so an old date above does not mean nobody has looked. The dates and values above change only after an upstream change has been verified and published here, so an old date does not prove nothing has moved upstream either. The latest check and its verdict: run history.";
 
 function selftest() {
   const claims = [
@@ -426,6 +456,25 @@ function selftest() {
   assert.match(html, /\| 1\.5 \|/);
   assert.match(html, /abc1234/, "the page must name the upstream sha it is a snapshot of");
   assert.match(html, /canonical/, "each page needs a canonical URL or duplicates compete in search");
+
+  // FRESHNESS (2026-09-22). Meaning first: the page says it is re-checked, says an old date is not
+  // neglect, and hands the reader the live read. Scoped to the FOOTER, where it is rendered, and
+  // proven non-empty before anything is asserted inside it.
+  const footer = (html.match(/<footer>.*?<\/footer>/s) || [""])[0];
+  assert.ok(footer.length > 100, "positive control: the footer must exist before anything is asserted inside it");
+  assert.ok(footer.includes("re-checked against upstream every day"), "a constant page must say it is re-checked, not only that it is a snapshot");
+  assert.ok(footer.includes("does not mean nobody has looked"), "a constant page must say an old date is not neglect");
+  assert.match(footer, /href="https:\/\/github\.com\/u00dxk2\/bounds-ledger\/actions\/workflows\/reverify\.yml"/, "a constant page must link the live read of the last check");
+  // THE WHOLE FOOTER IS PINNED (adversarial review, 2026-09-22), for two reasons it found.
+  // (a) `footer.includes(esc(FRESHNESS))` was a TAUTOLOGY — the footer is built FROM esc(FRESHNESS),
+  //     so it compared the output with its own input and survived every rewrite of that constant.
+  // (b) A literal guard on one steadiness phrasing was evaded by appending a fresh one ("An old date
+  //     above means this bound has been steady."), selftest still green. Enumerating forbidden words
+  //     cannot work here — the text legitimately says "does not prove nothing has moved" — so this
+  //     pins the EXACT emitted text instead, and any added or reworded sentence fails until someone
+  //     updates the pin deliberately.
+  const footerText = footer.replace(/<[^>]+>/g, "").replace(/&mdash;/g, "--").replace(/&rsquo;/g, "'").replace(/\s+/g, " ").trim();
+  assert.equal(footerText, FOOTER_PIN);
 
   // It must NEVER assert a record. This is the table's refusal, carried to the page.
   assert.ok(html.includes("listing position"), "the page must say its pins are a listing position");

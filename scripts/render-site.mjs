@@ -28,6 +28,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { pinsFor, lastChanged, changeFor, changeKind, boundCell } from "./lookup.mjs";
 import { loadAudits, badgeFor } from "./render-constant-pages.mjs";
 import crypto from "node:crypto";
+import { execFileSync } from "node:child_process";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "index.html");
@@ -462,12 +463,88 @@ export function findKey(r) {
   return extra.length ? `${base} ${extra.join(" ")}` : base;
 }
 
+// THE QUIET-STRETCH FIGURE IS DERIVED, NOT TYPED, AND IT SAYS WHAT IT EXCLUDES (2026-09-22).
+//
+// The note used to say "The longest such quiet stretch so far was nine days." Two separate defects,
+// and the first draft of this block misdiagnosed them — it claimed that figure "went false on
+// 2026-09-15", which under the completed-gap definition adopted here it never did: 9 days was the
+// longest completed gap then and still is. What is actually wrong with the old sentence:
+//   (a) it was TYPED, so nobody could re-derive it and it would go stale silently after the next
+//       snapshot, exactly like the roster count in finding F5 below; and
+//   (b) it invited a comparison it never disclosed. The reader sees "last CHANGED 2026-09-05" at the
+//       top of the same note, and on 2026-09-22 the OPEN stretch is 17 days against a stated maximum
+//       of 9. A stranger with a calendar concludes the page is abandoned, which is the exact
+//       conclusion this paragraph exists to prevent, and the reassurance inverts precisely on the
+//       days a reader would be worried.
+// So the figure is derived from the dates the COMMITTED manifest changed, over COMPLETED gaps only,
+// AND the sentence says the open stretch is not counted. Completed gaps keep it dependent on
+// committed history and never on today's date: a figure keyed to "now" would make --check fail the
+// day after any regeneration, which is a permanently-red alarm and this repo's founding defect.
+export function longestQuietStretch(dates) {
+  const days = [...new Set((dates || []).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d)))].sort();
+  if (days.length < 2) return null;
+  let best = null;
+  for (let i = 1; i < days.length; i++) {
+    const gap = Math.round((Date.parse(`${days[i]}T00:00:00Z`) - Date.parse(`${days[i - 1]}T00:00:00Z`)) / 86400000);
+    if (!best || gap > best.days) best = { days: gap, from: days[i - 1], to: days[i] };
+  }
+  return best;
+}
+
+// Null, never a guess, when history cannot be read. A shallow clone (CI checks out at depth 1) sees
+// one commit, so this returns ONE date if that commit happens to touch the manifest and ZERO lines
+// if it does not; both paths end at null through longestQuietStretch(), and the page then prints no
+// figure at all rather than a wrong one. `--check` is deliberately not in CI (reverify.yml runs the
+// selftest only), so a shallow runner never judges the page against a history it cannot see.
+export function manifestChangeDates(root = ROOT) {
+  try {
+    const out = execFileSync(
+      "git",
+      ["log", "--format=%ad", "--date=short", "--", "ledger/teorth-optimizationproblems/manifest.json"],
+      { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] },
+    ).trim();
+    return out ? out.split(/\r?\n/) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * THE PRODUCTION PATH, exported so the selftest drives the SAME call `main` makes (adversarial
+ * review, 2026-09-22). Until this existed, `main` composed the two functions inline and nothing
+ * asserted the composition: replacing that call with the hard-coded literal
+ * `{ days: 9, from: "2026-08-14", to: "2026-08-23" }` — the very figure this change removed —
+ * passed --selftest, --check AND the whole offline battery. The derivation was tested; the WIRING
+ * was not, which is the only part a regression would touch.
+ */
+export function quietForRender(root = ROOT) {
+  return longestQuietStretch(manifestChangeDates(root));
+}
+
+/**
+ * THE WHOLE PRODUCTION RENDER, in one exported function, so the selftest drives the same path
+ * `main` does. Keeping this inside `main` is what let the review's mutation hide: a hard-coded
+ * literal swapped in for the derived call passed every gate, because every test called renderHtml
+ * directly and nothing tested the CALL SITE. `main` now does no composing of its own.
+ */
+export function buildIndexHtml(root = ROOT) {
+  const claims = JSON.parse(readFileSync(join(root, "ledger", "claims.json"), "utf8"));
+  const manifest = JSON.parse(readFileSync(join(root, "ledger", "teorth-optimizationproblems", "manifest.json"), "utf8"));
+  // The date shown is the MIRROR's fetch date, not "now" — see the note in the entry point below.
+  const on = String(manifest.fetchedAt || "").slice(0, 10) || "an unrecorded date";
+  const manualCount = (claims.claims || claims).filter((c) => c.manual === true).length;
+  return { html: renderHtml(buildRows(claims), manifest, on, manualCount, quietForRender(root)), claims, manifest };
+}
+
 // manualCount is DERIVED and passed in, never hard-coded — review finding F5. The footer used to
 // say "Two claims", a roster count baked into a generated page, which drifts silently the day a
 // third manual claim joins. Same class as the README state block this repo already generates
 // rather than types. Defaults to null so an omitted count prints a countless sentence instead of
 // a wrong number.
-export function renderHtml(rows, manifest, generatedOn, manualCount = null) {
+export function renderHtml(rows, manifest, generatedOn, manualCount = null, quiet = null) {
+  const quietSentence = quiet
+    ? ` The longest COMPLETED stretch between two changes so far was ${esc(String(quiet.days))} days (${esc(quiet.from)} to ${esc(quiet.to)}); the stretch running from the date above is still open and is not counted here.`
+    : "";
   const manualPhrase = manualCount === null
     ? "Some claims cite"
     : manualCount === 1
@@ -561,7 +638,7 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 
 <div class="note">
 <p><strong>Read this before you trust a number here.</strong> This page is a <em>snapshot</em>, not a live read. It shows our mirror of <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a> at upstream commit <code style="display:inline;padding:.1rem .3rem">${esc(sha.slice(0, 7))}</code>.</p>
-<p><strong>${esc(generatedOn)} is the date this mirror last CHANGED &mdash; not the last time it was checked.</strong> Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date means the records have been <em>steady</em>, not that nobody has looked. The longest such quiet stretch so far was nine days. To see the actual last check and its verdict, read the <a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a> &mdash; that is the live read, and this page is deliberately not.</p>
+<p><strong>${esc(generatedOn)} is the date this mirror last CHANGED &mdash; not the last time it was checked.</strong> Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date does not mean nobody has looked. Nor does it prove nothing moved: the dates and values here change only after an upstream change has been verified and published.${quietSentence} To see the actual last check and its verdict, read the <a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a> &mdash; that is the live read, and this page is deliberately not.</p>
 <p>Every row links to its primary source so you can check us in one hop — and if a row disagrees with its source, that is a bug worth reporting. Use the <strong>looks wrong?</strong> link on that row: the report arrives already naming the constant and the exact mirror commit, so you never have to work out how to describe which of ${rows.length} rows you meant.</p>
 <p>Some rows carry a <strong>we reported this row</strong> link. That means we ourselves filed a report upstream about that row, and the link goes to it so you can read what we said and judge it. We show it because our own involvement in a row is part of what you need in order to weigh the row — and <strong>it is not a claim that anything upstream changed because of us</strong>. The state shown is the report's own; whether it caused anything is a separate question this page does not answer.</p>
 <p><strong>Every row has its own link.</strong> Click a row&rsquo;s short id — the grey code under the constant&rsquo;s name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred.</p>
@@ -662,6 +739,10 @@ ${body}
 `;
 }
 
+// The note block's exact rendered text for the fixture below. Updated DELIBERATELY when the note
+// changes; that is the point of pinning it — an added sentence cannot slip in unreviewed.
+const NOTE_PIN = "Read this before you trust a number here. This page is a snapshot, not a live read. It shows our mirror of teorth/optimizationproblems at upstream commit e70b4a4. 2026-08-20 is the date this mirror last CHANGED -- not the last time it was checked. Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date does not mean nobody has looked. Nor does it prove nothing moved: the dates and values here change only after an upstream change has been verified and published. To see the actual last check and its verdict, read the run history -- that is the live read, and this page is deliberately not. Every row links to its primary source so you can check us in one hop — and if a row disagrees with its source, that is a bug worth reporting. Use the looks wrong? link on that row: the report arrives already naming the constant and the exact mirror commit, so you never have to work out how to describe which of 2 rows you meant. Some rows carry a we reported this row link. That means we ourselves filed a report upstream about that row, and the link goes to it so you can read what we said and judge it. We show it because our own involvement in a row is part of what you need in order to weigh the row — and it is not a claim that anything upstream changed because of us. The state shown is the report's own; whether it caused anything is a separate question this page does not answer. Every row has its own link. Click a row's short id — the grey code under the constant's name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred. These are last-listed table rows, not a claim about which bound is “the record.” Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.";
+
 async function selftest() {
   const assert = (await import("node:assert/strict")).default;
   const claims = [
@@ -692,8 +773,9 @@ async function selftest() {
 
   // The snapshot date must be labelled as LAST CHANGED, never as last checked. Measured 2026-08-27:
   // fetchedAt only moves on a --snapshot, which only happens when something drifted, so a quiet
-  // stretch freezes it -- the longest so far was NINE days (2026-08-14 -> 2026-08-23), during which
-  // the scheduled job verified every row daily. Reading that date as "last looked at" makes a
+  // stretch freezes it -- the longest as of that day was NINE days (2026-08-14 -> 2026-08-23), during which
+  // the scheduled job verified every row daily. (That figure is now derived, not typed: see the
+  // quiet-stretch block below and longestQuietStretch(), 2026-09-22.) Reading that date as "last looked at" makes a
   // diligently-checked ledger look abandoned -- the inverse of this repo's founding defect, and it
   // costs exactly the trust this page exists to earn.
   assert.match(html, /last CHANGED/, "must label the snapshot date as last-changed, not last-checked");
@@ -701,6 +783,86 @@ async function selftest() {
   // NEGATIVE CONTROL: the old phrasing implied the date was when we last looked. It must be GONE,
   // not merely outnumbered by the new sentence.
   assert.doesNotMatch(html, /[<][/]code[>], fetched /, "the bare fetched-date phrasing must not survive");
+
+  // QUIET STRETCH (2026-09-22). The meaning guards come first and the exact wording last, so a
+  // mutation names the property it broke.
+  // (1) NO TYPED FIGURE. This render passes no derived stretch, so the page must carry no figure at
+  //     all. The page it replaces carried a typed "nine days" that went false while this suite stayed green.
+  assert.doesNotMatch(html, /quiet stretch/i, "with no derived figure the page must print none, never a typed one");
+  assert.doesNotMatch(html, /nine days/i, "the hand-typed figure must be gone from the template");
+  // An old date must not be sold as "steady": during an unresolved drift upstream HAS moved and this
+  // page still shows the old date, because it changes only after a person verifies and republishes.
+  assert.match(html, /does not mean nobody has looked/, "the page must still say an old date is not neglect");
+  // THE WHOLE NOTE IS PINNED, not one forbidden phrasing (adversarial review, 2026-09-22). A
+  // literal guard on "means the records have been" was evaded in one line by appending "An old date
+  // above tells you the numbers have held." — a fresh steadiness promise, selftest still green.
+  // Enumerating the forbidden cannot work here, because the note legitimately contains "nor does it
+  // prove nothing moved"; so this pins the EXACT emitted text of the block instead, and ANY added,
+  // removed or reworded sentence in it fails until someone updates this pin deliberately.
+  const noteStart = html.indexOf('<div class="note">');
+  assert.ok(noteStart > -1, "positive control: the note block must exist before its text is pinned");
+  const noteText = html.slice(noteStart, html.indexOf("</div>", noteStart))
+    .replace(/<[^>]+>/g, "").replace(/&mdash;/g, "--").replace(/&rsquo;/g, "'").replace(/&ldquo;|&rdquo;/g, '"')
+    .replace(/\s+/g, " ").trim();
+  assert.equal(noteText, NOTE_PIN);
+  // (2) THE PURE FUNCTION: the longest COMPLETED gap. Duplicates collapse, input order does not
+  //     matter, malformed dates are ignored, fewer than two dates is null (a shallow clone), and a
+  //     tie keeps the earliest gap.
+  const hist = ["2026-09-05", "2026-09-04", "2026-09-02", "2026-09-02", "2026-08-27", "2026-08-24", "2026-08-23", "2026-08-14", "2026-08-12", "not-a-date"];
+  assert.deepEqual(longestQuietStretch(hist), { days: 9, from: "2026-08-14", to: "2026-08-23" });
+  assert.equal(longestQuietStretch(["2026-09-05"]), null, "one date (a shallow clone) must yield no figure, never a zero");
+  assert.equal(longestQuietStretch([]), null);
+  assert.equal(longestQuietStretch(null), null);
+  assert.deepEqual(longestQuietStretch(["2026-01-01", "2026-01-04", "2026-01-07"]), { days: 3, from: "2026-01-01", to: "2026-01-04" }, "a tie keeps the earliest gap");
+  // (3) THE INPUT DRIVES THE SENTENCE: a different history moves the rendered figure, so it cannot be a constant.
+  const quietPage2 = renderHtml(rows, manifest, "2026-09-05", null, longestQuietStretch(["2026-01-01", "2026-03-01"]));
+  assert.match(quietPage2, /was 59 days \(2026-01-01 to 2026-03-01\)/, "the rendered figure must follow its input");
+  // (4) THE PRODUCTION PATH, against a throwaway repo. This is the assertion the adversarial review
+  //     showed was missing: with only the tests above, replacing main's derived call with a
+  //     hard-coded literal passed --selftest, --check and the whole offline battery, because every
+  //     test drove renderHtml directly and none drove the WIRING. quietForRender() is what main
+  //     calls, so a literal put back in its place fails here.
+  const tmp = mkdtempSync(join(tmpdir(), "quiet-stretch-"));
+  try {
+    const at = (date) => ({
+      cwd: tmp, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"],
+      env: { ...process.env, GIT_AUTHOR_DATE: date, GIT_COMMITTER_DATE: date, GIT_AUTHOR_NAME: "t", GIT_AUTHOR_EMAIL: "t@example.invalid", GIT_COMMITTER_NAME: "t", GIT_COMMITTER_EMAIL: "t@example.invalid" },
+    });
+    const manifestDir = join(tmp, "ledger", "teorth-optimizationproblems");
+    mkdirSync(manifestDir, { recursive: true });
+    execFileSync("git", ["init", "-q"], at());
+    const commitManifest = (body, date) => {
+      writeFileSync(join(manifestDir, "manifest.json"), body);
+      execFileSync("git", ["add", "-A"], at(date));
+      execFileSync("git", ["commit", "-qm", `snapshot ${date}`], at(date));
+    };
+    commitManifest('{"sha":"aaa"}', "2026-01-01T12:00:00+0000");
+    // A commit that does NOT touch the manifest must not enter the series.
+    writeFileSync(join(tmp, "unrelated.txt"), "x");
+    execFileSync("git", ["add", "-A"], at("2026-01-03T12:00:00+0000"));
+    execFileSync("git", ["commit", "-qm", "unrelated"], at("2026-01-03T12:00:00+0000"));
+    assert.equal(quietForRender(tmp), null, "one manifest commit is not a gap — it must read null, never a zero");
+    commitManifest('{"sha":"bbb"}', "2026-01-05T12:00:00+0000");
+    commitManifest('{"sha":"ccc"}', "2026-01-20T12:00:00+0000");
+    assert.deepEqual(quietForRender(tmp), { days: 15, from: "2026-01-05", to: "2026-01-20" },
+      "the production path must read the repo's OWN manifest history, not a literal");
+    // ...and the CALL SITE too: buildIndexHtml is what main runs, so a literal swapped in there —
+    // the review's actual mutation — fails here. Asserted against a fixture whose history nobody
+    // would ever type: a hard-coded 9-day figure cannot produce 15 days from this repo.
+    writeFileSync(join(tmp, "ledger", "claims.json"), JSON.stringify(claims));
+    const built = buildIndexHtml(tmp);
+    assert.match(built.html, /was 15 days \(2026-01-05 to 2026-01-20\)/,
+      "buildIndexHtml must derive the figure from the repo it is given, not from a constant");
+    assert.doesNotMatch(built.html, /2026-08-14 to 2026-08-23/,
+      "a figure from THIS repo's history reaching a render of ANOTHER repo means the call site is hard-coded");
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+
+  // (5) EXACT WORDING LAST: the figure reaches the page with both endpoints and says what it
+  //     excludes, because a maximum printed beside an uncounted open stretch reads as abandonment.
+  const quietPage = renderHtml(rows, manifest, "2026-09-05", null, longestQuietStretch(hist));
+  assert.match(quietPage, /The longest COMPLETED stretch between two changes so far was 9 days \(2026-08-14 to 2026-08-23\); the stretch running from the date above is still open and is not counted here\./);
 
   // A missing side must be shown as missing, never silently blank — 2a has no lower pin here.
   assert.match(html, /not pinned/, "a constant with only one pinned side must say so");
@@ -1519,17 +1681,14 @@ if (isMain) {
   if (process.argv.includes("--selftest")) {
     await selftest();
   } else {
-    const claims = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
-    const manifest = JSON.parse(readFileSync(join(ROOT, "ledger", "teorth-optimizationproblems", "manifest.json"), "utf8"));
-    // The date shown is the MIRROR's fetch date, not "now". Two reasons, and the second is the
-    // load-bearing one. (1) It is what the reader actually needs: the page reflects upstream as of
-    // when we fetched it, not as of when the HTML was rendered. (2) "now" would make `--check` fail
-    // the day after any regeneration — a permanently-red alarm, which carries as much information
-    // as a permanently-green one and is this repo's founding defect. Keyed to fetchedAt, the page is
-    // stable until the mirror itself moves, which is exactly when it SHOULD be regenerated.
-    const on = String(manifest.fetchedAt || "").slice(0, 10) || "an unrecorded date";
-    const manualCount = (claims.claims || claims).filter((c) => c.manual === true).length;
-    const html = renderHtml(buildRows(claims), manifest, on, manualCount);
+    // Every composing step lives in buildIndexHtml(), which the selftest drives against a throwaway
+    // repo. The date it shows is the MIRROR's fetch date, not "now". Two reasons, and the second is
+    // the load-bearing one. (1) It is what the reader actually needs: the page reflects upstream as
+    // of when we fetched it, not as of when the HTML was rendered. (2) "now" would make `--check`
+    // fail the day after any regeneration — a permanently-red alarm, which carries as much
+    // information as a permanently-green one and is this repo's founding defect. Keyed to fetchedAt,
+    // the page is stable until the mirror itself moves, which is exactly when it SHOULD be regenerated.
+    const { html, claims, manifest } = buildIndexHtml();
 
     if (process.argv.includes("--check")) {
       let current = "";

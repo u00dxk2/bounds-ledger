@@ -236,7 +236,7 @@ ${dds.map((d) => d.html).join("\n")}
 <style>${STYLE}</style>
 <a class="back" href="./">&larr; all constants</a>
 <h1>Small Ramsey numbers R(k, l)</h1>
-<p class="lede">What the survey <em>Small Ramsey Numbers</em> prints for every two-colour classical Ramsey number R(k, l) with 3 ≤ k ≤ 10 and k ≤ l ≤ 15, exactly as printed, with the reference it credits for each value, and what this ledger has and has not checked about it.</p>
+<p class="lede">What the survey <em>Small Ramsey Numbers</em> prints for the two-colour classical Ramsey numbers R(k, l) with 3 ≤ k ≤ 10 and k ≤ l ≤ 15, which is 72 of those 76 pairs because the survey gives no value for R(9, 14), R(9, 15), R(10, 13) or R(10, 14), exactly as printed, with the reference it credits for each value, and what this ledger has and has not checked about it.</p>
 
 <nav class="jump" aria-label="Jump to an entry">
 ${jump}

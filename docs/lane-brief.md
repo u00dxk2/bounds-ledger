@@ -119,6 +119,24 @@
 >
 > **Nothing is needed from you.**
 
+> ## Update - 22 September 2026: a second area is watched, and the weekly count cannot see it
+>
+> **Since 17 September we watch a second area:** the small Ramsey numbers R(k, l), as Radziszowski's
+> survey *Small Ramsey Numbers* prints them, on a page of their own. You ruled on 20 September that
+> the table is to be rebuilt from the underlying papers as our own arrangement, with the survey still
+> credited, and that the page stays as written until then. The rebuild's first working session is
+> 24 September.
+>
+> **One thing to know when you read our numbers.** The weekly count of records that moved covers the
+> curated table of constants only, not the Ramsey page and not the Erdős problem entries we also pin. If the survey behind the Ramsey page publishes a new revision, a
+> separate daily check turns red until a person has compared the two, but that revision never shows
+> up in the weekly count. So a quiet week in that count says nothing about the Ramsey area. We chose
+> to say so rather than build a second counter, because the Ramsey table is about to be rebuilt anyway.
+>
+> **You answered the one question on your board this morning**, and the fix is in: the Ramsey page
+> promised every R(k, l) in its range and printed 72 of the 76, without saying which four were
+> missing. It now says so, naming them. Nothing else on that page changed, as you asked.
+
 ---
 
 The most-used index of Erdős problems lists a number that two later results have beaten. Below is everything behind the correction that was sent, including what we did *not* check.

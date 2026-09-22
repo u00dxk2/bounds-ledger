@@ -352,7 +352,9 @@ const total = ordered.reduce((n, [, moved]) => n + new Set(moved).size, 0);
 console.log(
   `\n${total} movement(s) on distinct pins across ${ordered.length} week(s) — quote the PER-WEEK figure, never this total; ${dryWeeks} COMPLETED consecutive week(s) with none — the current partial week is never counted, and a month is four.`,
 );
-console.log("A month of zeros is the signal to adopt a SECOND surface, not to try harder on this one.");
+// "a SECOND surface" until 2026-09-22, when it started printing beside a line announcing that a
+// second area HAS been adopted (A-54) and read as a contradiction to anyone running this.
+console.log("A month of zeros is the signal to adopt ANOTHER surface, not to try harder on this one.");
 console.log(
   "The zeros do NOT fire that alone (amended 2026-08-14): read docs/findings/ over the same window first — dry means no movements AND no findings. This counts drift DETECTION only, and G-1's one acknowledgement came from manual error detection it cannot see. Adopting a second surface stays David's call, never self-approved.",
 );
@@ -367,6 +369,13 @@ console.log(
 //   - Our OWN merged PRs land as upstream movement. pin:15a:U is again the case — that was
 //     PR #141 landing, not a catch. Not deducted, because git cannot see whose commit it was.
 console.log("Upper bound: a citation-key rename moves a pin without moving a bound, and our own merged PRs land as upstream movement (both true of pin:15a:U).");
+// A-54 deliverable 3, decided 2026-09-20 and shipped 2026-09-22: STATE the blind spot, do not make
+// the second area countable. Everything above counts the generated pins of ONE mirrored surface.
+// The second watched area (small Ramsey numbers, ramsey.html) is held by hand revision pins
+// C-12 to C-14 and by extract-ds1.mjs --check. A new survey revision there moves no generated pin,
+// so it can never appear in this table, and a quiet table says nothing about that area. Printed
+// every run for the reason the caveat above is: a reader quotes the figure, not the header comment.
+console.log("Blind spot: this counts GENERATED pins on the mirrored surface only, so every hand claim is invisible to it — the second watched area's revision pins C-12 to C-14 (small Ramsey numbers, ramsey.html, watched by extract-ds1.mjs --check) and the erdosproblems pins C-7 to C-11 alike. A new survey revision, or a change to a pinned erdosproblems entry, moves no generated pin and is NEVER counted here, so a quiet table says nothing about those areas.");
 
 // Companion line: the movements figure is about the SURFACE, this is about US. Read together.
 {
