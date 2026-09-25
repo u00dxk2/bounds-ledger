@@ -26,7 +26,7 @@ The whole rail, P1 to P5, ran this morning in one session. Every figure below na
 **FIRST ACTION (next session, 2026-09-26):** `A-56` (settle 46a by reading the published body of Bourgain's GAFA 1991 paper) is due. Read its routes and its stop condition first:
 
 ```bash
-node scripts/sky.mjs show-item.mjs A-56 --fields onTrigger,unWait
+node scripts/sky.mjs show-item.mjs A-56 --fields onTrigger,waitJustification.unWait,closeWhen
 ```
 
 **DON'T-TOUCH:** the refusals in `scripts/ds1-depth.mjs`: an undrawn position, a value the committed table no longer prints, and now census papers read out of turn. The rebuild builds on them rather than replacing them.
@@ -103,7 +103,7 @@ node scripts/sky.mjs show-item.mjs A-56 --fields onTrigger,unWait
 **`W-3`** (the watch for a reply to the 2026-07-24 email about erdosproblems.com/36) reads on 2026-10-08. Whether to close it for no response is David's call.
 
 **Dated reads ahead:**
-- `G-4` and `A-56`: 2026-09-26.
+- `G-4`, `A-56` and `A-52` (write down how an outsider could act on a record without filing an issue): 2026-09-26. `A-52` is already overdue on its own trigger. It said to write the `arrivalShapes` field on 2026-09-23, and `show-item.mjs A-52 --fields arrivalShapes` printed "(absent)" today.
 - `A-47`: 2026-09-27.
 - `W-12` (upstream's handling of our pull request #194) and `A-54`'s checkpoint: 2026-09-28.
 - `W-13` (someone must call the served-bytes check): 2026-09-29.
@@ -120,4 +120,4 @@ Written last, from live commands, on 2026-09-25 morning MT. **This appendix cann
   Positive control: the same run printed a classified row for each of those 33 services (in-sync, doc-only-drift or suspended), so it read the fleet table rather than an empty one.
 - **Second area**: `node scripts/ds1-depth.mjs` exited 0. It printed "15 reading(s) stored against a frame of 122 bound(s)" and the census line quoted above.
 - **Ledger**: 72 rows. `continuity-edit` printed "items.json items[] (72 rows)" at P2.
-- **Tomorrow's primer**: `docs/cold-starts/2026-09-26.md`, written in this pass. `check-next-primer-exists.mjs` read it ABSENT earlier in this pass, before it was written.
+- **Tomorrow's primer**: `docs/cold-starts/2026-09-26.md`, written in this pass. `check-next-primer-exists.mjs` read it ABSENT earlier in this pass, before it was written. After it was written, `npm run close:primer` exited 0 and `gen-primer-first-action.mjs --check` printed "RESULT: PASS — checked candidate + target PASS, 3 owed gate(s)".
