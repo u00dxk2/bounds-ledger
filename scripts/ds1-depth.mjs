@@ -24,6 +24,14 @@
 // anyone can re-derive it, and it was committed with its output before a single paper was opened.
 // A record chosen by hand (the scope's R(5, 5) [AnM3]/[AnM4] question) is stored with
 // selection "hand-picked" and never counted with the drawn ones.
+//
+// THE CENSUS (A-54's rebuild, rebuildScope2026_09_21 decision 2). A census reads EVERY bound in the
+// frame, one credited paper at a time, so it is a different statistic from a draw and carries its own
+// selection, "census", counted apart and never merged with the drawn count. Its order is not chosen:
+// it is the frame's credited keys in order of first appearance, which censusOrder() derives and the
+// store's census.order must equal, element by element. The unit of work is the PAPER, so a key the
+// census has touched must have a census row for every bound the frame credits to it: half a paper is
+// refused, because a coverage figure counting it would claim bounds nobody read.
 
 import { readFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -62,6 +70,13 @@ export function frameOf(doc) {
 export function drawPositions(n) {
   if (!Number.isInteger(n) || n < 5) throw new Error(`a frame of ${n} cannot give five distinct strata`);
   return [0, 1, 2, 3, 4].map((i) => Math.floor(((2 * i + 1) * n) / 10) + 1);
+}
+
+// The census order: the frame's credited keys, each at its first appearance.
+export function censusOrder(frame) {
+  const order = [];
+  for (const b of frame) if (!order.includes(b.ref)) order.push(b.ref);
+  return order;
 }
 
 export const boundText = (b) => (b.bound === "exact" ? `R(${b.k}, ${b.l}) = ${b.value}` : b.bound === "lower" ? `R(${b.k}, ${b.l}) >= ${b.value}` : `R(${b.k}, ${b.l}) <= ${b.value}`);
@@ -104,14 +119,49 @@ export function readStore(store, frame) {
     if (!VERDICTS.includes(r.verdict)) return { code: 3, lines: [`ERROR — ${r.id} has verdict ${JSON.stringify(r.verdict)}, which is not one of ${VERDICTS.join(", ")}`] };
     if (!frame.some((b) => sameBound(b, r))) return { code: 3, lines: [`ERROR — ${r.id} reads ${boundText(r)} credited to [${r.ref}], which the committed table no longer prints. A new revision moved it; re-read it before it is shown.`] };
   }
+  // THE CENSUS IS RECONCILED TOO: its order against the rule, each row against a key the order
+  // holds, one row per bound, and every bound of a touched key present.
+  const census = rows.filter((r) => r.selection === "census");
+  const order = censusOrder(frame);
+  if (census.length || store?.census !== undefined) {
+    const stored = store?.census?.order;
+    if (!Array.isArray(stored) || stored.length !== order.length || order.some((k, i) => stored[i] !== k)) {
+      return { code: 3, lines: [`ERROR — the store's census order ${JSON.stringify(stored)} is not the frame's keys in order of first appearance [${order.join(", ")}]. The census order is derived, never chosen.`] };
+    }
+    // THE PROGRESSION IS RECONCILED, NOT ONLY THE ORDER (adversarial review, 2026-09-25): without
+    // this a census of the LAST paper alone counted, skipping forty-one. Sessions plan a prefix of
+    // the order, and the papers read are a prefix of what was planned.
+    const planned = (Array.isArray(store?.census?.sessions) ? store.census.sessions : []).flatMap((s) => (Array.isArray(s.keys) ? s.keys : [null]));
+    if (planned.some((k, i) => k !== order[i])) {
+      return { code: 3, lines: [`ERROR — the census sessions plan [${planned.join(", ")}], which is not the start of the census order [${order.slice(0, planned.length).join(", ")}]. Sessions take the order in turn, never a paper out of it.`] };
+    }
+    const touched = new Set(census.map((r) => r.ref));
+    const readPrefix = order.slice(0, touched.size);
+    if (readPrefix.some((k) => !touched.has(k)) || touched.size > planned.length) {
+      return { code: 3, lines: [`ERROR — the census has read [${[...touched].join(", ")}], which is not the first ${touched.size} paper(s) of the order [${readPrefix.join(", ")}] within the ${planned.length} planned. A paper the census reaches is read in turn; one that cannot be opened is recorded UNREACHABLE, never skipped.`] };
+    }
+    const seen = new Set();
+    for (const r of census) {
+      const key = `${r.k},${r.l},${r.bound},${r.value},${r.ref}`;
+      if (seen.has(key)) return { code: 3, lines: [`ERROR — ${r.id} is a second census reading of ${boundText(r)} credited to [${r.ref}]; a census reads each bound once, so a second row would count it twice`] };
+      seen.add(key);
+    }
+    for (const ref of new Set(census.map((r) => r.ref))) {
+      const missing = frame.filter((b) => b.ref === ref && !census.some((r) => sameBound(r, b)));
+      if (missing.length) return { code: 3, lines: [`ERROR — the census touched [${ref}] but has no census row for ${missing.map(boundText).join("; ")}. The unit is the paper: half a paper would be counted as coverage nobody read.`] };
+    }
+  }
   for (const sel of ["systematic", "hand-picked"]) {
     const part = rows.filter((r) => r.selection === sel);
     const counts = VERDICTS.map((v) => `${part.filter((r) => r.verdict === v).length} ${v.toLowerCase()}`).join(", ");
     lines.push(`${sel === "systematic" ? "drawn by position" : "picked by hand"}: ${part.length} read — ${counts}`);
   }
-  const counted = rows.filter((r) => r.selection === "systematic" || r.selection === "hand-picked").length;
-  if (counted !== rows.length) return { code: 3, lines: [`ERROR — ${rows.length - counted} row(s) carry no selection, so they cannot be counted as drawn or as picked by hand`] };
-  return { code: 0, lines: [`depth reads (A-54, Small Ramsey Numbers Section 2.1): ${rows.length} bound(s) read of a frame of ${frame.length}`, ...lines, "A drawn count is a sample of five-per-slice, not a rate, and is never projected onto the frame."] };
+  const censusKeys = new Set(census.map((r) => r.ref)).size;
+  const censusCounts = VERDICTS.map((v) => `${census.filter((r) => r.verdict === v).length} ${v.toLowerCase()}`).join(", ");
+  lines.push(`census: ${census.length} of ${frame.length} bound(s), across ${censusKeys} of ${order.length} credited paper(s) — ${censusCounts}`);
+  const counted = rows.filter((r) => r.selection === "systematic" || r.selection === "hand-picked" || r.selection === "census").length;
+  if (counted !== rows.length) return { code: 3, lines: [`ERROR — ${rows.length - counted} row(s) carry no selection this reader knows, so they cannot be counted as drawn, picked by hand or census`] };
+  return { code: 0, lines: [`depth reads (A-54, Small Ramsey Numbers Section 2.1): ${rows.length} reading(s) stored against a frame of ${frame.length} bound(s)`, ...lines, "A drawn count is a sample of five-per-slice, not a rate, and is never projected onto the frame. The census count is coverage of the frame and is never summed with the drawn count."] };
 }
 
 function selftest() {
@@ -162,7 +212,33 @@ function selftest() {
   if (readStore(asString, frame).code !== 3) return fail("a draw whose positions are a string, admitting an undrawn position by substring, was counted");
   const good = readStore(withDraw([ok, { id: "DS1-0002", k: 3, l: 4, bound: "exact", value: 9, ref: "GG", verdict: "UNREACHABLE", selection: "hand-picked" }]), frame);
   if (good.code !== 0 || !good.lines.some((l) => /drawn by position: 1 read — 1 sound/.test(l)) || !good.lines.some((l) => /picked by hand: 1 read — 0 sound, 0 defective, 0 unresolved, 1 unreachable/.test(l))) return fail(`a well-formed store did not count cleanly: ${JSON.stringify(good)}`);
-  console.log("ds1-depth selftest: PASS (frame order and left-outs, one position per stratum, a frame under 5 refused, empty store refused, a moved value refused, a fifth verdict refused, an unselected row refused; the draw reconciled — a systematic read at an undrawn position, a read whose bound is not the one drawn there, a draw disagreeing with the rule, with the frame, taken over another frame, or carrying its positions as a string that admits an undrawn one by substring are each refused; a well-formed store counted with drawn and hand-picked apart)");
+  // THE CENSUS, both answers. The fixture's order is GG, Ka2, GrY, Ex5, Ang1, HW+ (first appearance).
+  const cOrder = censusOrder(frame);
+  if (cOrder.join(",") !== "GG,Ka2,GrY,Ex5,Ang1,HW+") return fail(`census order: got ${cOrder}`);
+  const cRow = (b, id, verdict = "SOUND") => ({ id, ...b, verdict, selection: "census" });
+  const byKey = (k) => frame.filter((b) => b.ref === k);
+  const readKeys = (keys) => keys.flatMap(byKey).map((b, i) => cRow(b, `DS1-C${i + 1}`));
+  const withCensus = (rows, { order = cOrder, sessions = [{ session: 1, keys: cOrder.slice(0, 2) }] } = {}) => ({ draws: [draw], census: { order, sessions }, rows: [ok, ...rows] });
+  // Each refusal is asserted by its OWN message, so a mutation names the property it broke rather
+  // than tripping whichever check happens to run first.
+  const refused = (store, re, label) => { const r = readStore(store, frame); return r.code === 3 && r.lines.some((l) => re.test(l)) ? null : fail(`${label}: ${JSON.stringify(r)}`); };
+  const cGood = readStore(withCensus(readKeys(["GG", "Ka2"])), frame);
+  if (cGood.code !== 0) return fail(`a well-formed census was refused: ${JSON.stringify(cGood)}`);
+  if (!cGood.lines.some((l) => l === "census: 2 of 7 bound(s), across 2 of 6 credited paper(s) — 2 sound, 0 defective, 0 unresolved, 0 unreachable")) return fail(`census count line: ${JSON.stringify(cGood.lines)}`);
+  if (!cGood.lines.some((l) => /drawn by position: 1 read — 1 sound/.test(l))) return fail("a census row leaked into the drawn count");
+  if (readStore(withCensus([]), frame).code !== 0) return fail("a planned census with nothing read yet was refused");
+  const allSix = { sessions: [{ session: 1, keys: cOrder }] };
+  if (refused(withCensus(readKeys(["GG"]), { order: [...cOrder].reverse() }), /is not the frame's keys in order of first appearance/, "a census order that is not first appearance was counted")) return 1;
+  if (refused({ draws: [draw], rows: [ok, ...readKeys(["GG"])] }, /is not the frame's keys in order of first appearance/, "a census with no recorded order was counted")) return 1;
+  if (refused(withCensus([], { sessions: [{ session: 1, keys: ["Ka2", "GG"] }] }), /which is not the start of the census order/, "a session planning papers out of order was counted")) return 1;
+  if (refused(withCensus(readKeys(["HW+"]), allSix), /which is not the first 1 paper\(s\) of the order/, "the LAST paper read alone, skipping the rest, was counted")) return 1;
+  if (refused(withCensus(readKeys(["GG", "Ka2", "GrY"])), /within the 2 planned/, "a paper read beyond what the sessions planned was counted")) return 1;
+  if (refused(withCensus([...readKeys(["GG"]), { ...readKeys(["GG"])[0], id: "DS1-C9" }]), /is a second census reading/, "the same bound read twice by the census was counted")) return 1;
+  const fiveAndHalf = [...readKeys(["GG", "Ka2", "GrY", "Ex5", "Ang1"]), cRow(byKey("HW+")[0], "DS1-C9")];
+  if (refused(withCensus(fiveAndHalf, allSix), /has no census row for R\(6, 14\) <= 5033/, "half a paper (one of [HW+]'s two bounds) was counted as census coverage")) return 1;
+  if (refused(withCensus([{ ...readKeys(["GG"])[0], value: frame[0].value + 1 }]), /which the committed table no longer prints/, "a census read of a value the table no longer prints was counted")) return 1;
+  if (refused(withCensus([{ ...readKeys(["GG"])[0], selection: "censsu" }]), /carry no selection this reader knows/, "a misspelt selection was counted")) return 1;
+  console.log("ds1-depth selftest: PASS (the census counted apart from the drawn and hand-picked reads with its own coverage line, a planned census with nothing read yet accepted; each refused by its own message: an order that is not first appearance or is absent, a session planning out of order, the last paper read alone, a paper beyond the plan, a bound read twice, half a paper, a moved value, a misspelt selection; frame order and left-outs, one position per stratum, a frame under 5 refused, empty store refused, a moved value refused, a fifth verdict refused, an unselected row refused; the draw reconciled — a systematic read at an undrawn position, a read whose bound is not the one drawn there, a draw disagreeing with the rule, with the frame, taken over another frame, or carrying its positions as a string that admits an undrawn one by substring are each refused; a well-formed store counted with drawn and hand-picked apart)");
   return 0;
 }
 

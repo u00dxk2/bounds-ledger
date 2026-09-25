@@ -170,5 +170,67 @@
       "fetchedAt": "2026-09-18, between 16:20Z and 17:05Z, by the saved files' timestamps in tmp/depth-reads/",
       "pageNote": "The credited paper could not be opened at all — an automated browser request on 2026-09-19 met the publisher's 403 block page again, and why it refuses us is undetermined. Its method was read in two other papers that cite it, and the value recomputed exactly from the survey's own smaller bounds. The survey's note 2.1.o says Boza computed bounds marked HW+ in 2013 and cites a personal communication for them; whether this cell is one of those is not established here."
     }
-  ]
+  ],
+  "census": {
+    "order": [
+      "GG",
+      "Kéry",
+      "Ka2",
+      "GrY",
+      "GR",
+      "McZ",
+      "Ex5",
+      "Ang1",
+      "Ex20",
+      "GoeR1",
+      "Kol1",
+      "Les",
+      "NaRT",
+      "Kol2",
+      "Ka1",
+      "MR4",
+      "Ex19",
+      "MR5",
+      "Ex3",
+      "Mac",
+      "ExT",
+      "Ex16",
+      "HaKr1",
+      "Spe4",
+      "SuLL",
+      "Ex4",
+      "AnM4",
+      "Ex25",
+      "HZ1",
+      "CaET",
+      "Kuz",
+      "HW+",
+      "Tat",
+      "Math",
+      "HZ2",
+      "XXER",
+      "XSR2",
+      "XuXR",
+      "BurR",
+      "Ea1",
+      "ShZ1",
+      "Shi2"
+    ],
+    "orderRule": "The frame's credited keys in order of first appearance (k-then-l, lower before upper), derived by censusOrder() in scripts/ds1-depth.mjs and reconciled against the frame on every read. Not chosen: a census reads every paper, so the order decides only which come first.",
+    "sessions": [
+      {
+        "session": 1,
+        "plannedOn": "2026-09-25",
+        "keys": [
+          "GG",
+          "Kéry",
+          "Ka2",
+          "GrY",
+          "GR"
+        ],
+        "bounds": 10,
+        "order": "Planned and committed before any of these papers was opened. The commit that adds the readings comes after it in history."
+      }
+    ]
+  }
 }

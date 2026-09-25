@@ -143,6 +143,14 @@ function iaText(e) {
 const ibText = (e) => (e.ib ? `${R(e.k, e.l)} ≤ ${e.ib.upper}` : "no entry in Table Ib");
 
 const STORE_URL = `${REPO}/blob/main/continuity/depth-audit-ds1.json`;
+
+// THE FREEZE, IN CODE. David's ruling of 2026-09-20 (A-54 davidRuling2026_09_20): "Until that is
+// done, leave the page as written." Census readings (A-54 rebuildScope2026_09_21) are written to the
+// same store this page renders from, so without this filter the first census row would change
+// ramsey.html and copying.html, or turn `npm run check` STALE. They are still VALIDATED against the
+// table (readStore runs over every row); they are only held off the page. Remove this filter in the
+// commit that lands the rebuild, and not before.
+export const pageRows = (rows) => rows.filter((r) => r.selection !== "census");
 // The ONE piece of markup a read state carries. Named here because the renderer writes it and leg 7b
 // strips exactly this and then requires everything left to be plain text.
 const HOW_LINK = `<a href="${esc(STORE_URL)}">How it was read</a>`;
@@ -651,6 +659,17 @@ function selftest() {
   // A reading renders on ITS bound only, moves the counts, and every stored reading must be shown.
   const row = { k: 5, l: 5, bound: "upper", value: 46, ref: "AnM4", verdict: "SOUND", selection: "systematic" };
   const audited = renderRamsey(doc, [row]);
+  // THE FREEZE, both answers: a census reading leaves both pages byte-identical, and the same
+  // reading labelled hand-picked changes the table page, so the filter is what holds it off.
+  const censusRead = { k: 5, l: 5, bound: "lower", value: 43, ref: "Ex4", verdict: "SOUND", selection: "census" };
+  if (renderRamsey(doc, pageRows([row, censusRead])) !== audited) return fail("a census reading changed ramsey.html while the freeze holds");
+  if (renderCopying(doc, pageRows([...refRows, censusRead])) !== renderCopying(doc, refRows)) return fail("a census reading changed copying.html while the freeze holds");
+  // ...and copying.html's guard is judged against EVERY stored row: a census row that stored a
+  // survey entry verbatim makes the frozen disclosure's count false, and is refused.
+  const frozenCopying = renderCopying(doc, pageRows([...refRows, censusRead]));
+  if (guardCopying(frozenCopying, doc, [...refRows, censusRead]).length) return fail("a census row with no survey entry tripped the disclosure guard");
+  if (!guardCopying(frozenCopying, doc, [...refRows, { ...censusRead, surveyRefEntry: "[Ex4] an entry." }]).some((m) => /says the repository keeps 2 bibliography entr/.test(m))) return fail("a census row storing a survey entry verbatim did not trip the disclosure guard");
+  if (renderRamsey(doc, pageRows([row, { ...censusRead, selection: "hand-picked" }])) === audited) return fail("positive control: a hand-picked reading of the same bound did not change the page, so the census test above proves nothing");
   const g = (h) => guardPage(h, doc, [row]);
   if (!/the upper bound 46, credited to \[AnM4\]: sound — the credited source was read, and it supports this bound\./.test(audited) || !/the lower bound 43, credited to \[Ex4\]: not yet read/.test(audited) || !/sound 1 \(the credited source was read/.test(audited) || g(audited).length) return fail(`an audited bound did not render cleanly: ${JSON.stringify(g(audited))}`);
   for (const [label, mutated, re] of [
@@ -743,8 +762,13 @@ function main(args) {
   if (storeExists) { try { parsed = JSON.parse(readFileSync(STORE, "utf8")); } catch (e) { parsed = { __unreadable: e.message }; } }
   const got = storeGate(storeExists, parsed);
   if (got.error) { console.log(`REFUSED — continuity/depth-audit-ds1.json ${got.error}`); return args.includes("--check") ? 1 : 3; }
-  const rows = got.rows;
-  const r = rows.length ? readStore(parsed, frameOf(doc).frame) : { code: 0 };
+  const r = got.rows.length ? readStore(parsed, frameOf(doc).frame) : { code: 0 };
+  const rows = pageRows(got.rows);
+  // copying.html states how many survey bibliography entries the REPOSITORY keeps, so its guard is
+  // judged against every stored row, census included — never the filtered set. A census row that
+  // stored an entry verbatim would make the frozen page false, and this makes that a refusal
+  // (adversarial review, 2026-09-25). Census rows therefore record the key, not the entry.
+  const allRows = got.rows;
   if (r.code !== 0) { console.log(`REFUSED — continuity/depth-audit-ds1.json does not match the committed table:\n  ${r.lines.join("\n  ")}`); return args.includes("--check") ? 1 : 3; }
   const html = renderRamsey(doc, rows);
   const copying = renderCopying(doc, rows);
@@ -756,7 +780,7 @@ function main(args) {
     const norm = (s) => s.replace(/\r\n/g, "\n");
     const violations = guardPage(onDisk, doc, rows);
     if (violations.length) { console.log(`GUARD FAILED on the committed ramsey.html:\n  ${violations.join("\n  ")}`); return 1; }
-    const copyViolations = guardCopying(copyOnDisk, doc, rows);
+    const copyViolations = guardCopying(copyOnDisk, doc, allRows);
     if (copyViolations.length) { console.log(`GUARD FAILED on the committed copying.html:\n  ${copyViolations.join("\n  ")}`); return 1; }
     if (norm(onDisk) !== norm(html)) { console.log("STALE — ramsey.html does not match ledger/ejc-ds1/section-2-1.json; run node scripts/render-ramsey.mjs and commit it."); return 1; }
     if (norm(copyOnDisk) !== norm(copying)) { console.log("STALE — copying.html does not match ledger/ejc-ds1/section-2-1.json; run node scripts/render-ramsey.mjs and commit it."); return 1; }
@@ -765,7 +789,7 @@ function main(args) {
   }
   const violations = guardPage(html, doc, rows);
   if (violations.length) { console.log(`REFUSED to write: the rendered page fails its own guard:\n  ${violations.join("\n  ")}`); return 3; }
-  const copyViolations = guardCopying(copying, doc, rows);
+  const copyViolations = guardCopying(copying, doc, allRows);
   if (copyViolations.length) { console.log(`REFUSED to write: the rendered copying.html fails its own guard:\n  ${copyViolations.join("\n  ")}`); return 3; }
   writeFileSync(OUT, html);
   writeFileSync(OUT_COPYING, copying);
