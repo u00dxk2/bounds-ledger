@@ -193,13 +193,15 @@ the file rotated or two listeners are writing to it — stop and read the whole 
 trusting any line under it. (The fleet-side half — the `/listen` skill's own `tail -n 30` instruction —
 is the orchestrator's, routed 2026-08-29 as a fleet-skill defect.)
 
-## P2 gate battery
+## Ledger gate battery (was the P2 gate battery)
+
+Re-homed for the three-stage day (P1 → P3 → P5) on 2026-09-25 by the orchestrator; P2/P4 no longer run.
 
 ```
 node scripts/sky.mjs continuity-check.mjs
 ```
 
-Run it **inside P2**, and read its own RESULT line rather than inferring from a clean commit.
+Run it **at the P5 close, after applying the hygiene draft** (`docs/close-session-config.md`), and read its own RESULT line rather than inferring from a clean commit.
 
 **Why it is pinned here.** On 2026-08-28 P2 diagnosed the tracked-and-untracked class — `A-35` carrying
 `expiresOn` but no `expectedSignalBy`, visible to one instrument and invisible to another — and then

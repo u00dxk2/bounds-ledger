@@ -63,9 +63,17 @@ node scripts/sky.mjs gen-primer-first-action.mjs --repo . --target-date <MT-date
 
 Generated: the banner slot, the first-action block (the fence under `<!-- primer:first-action -->` in `docs/daily-config.md`, copied verbatim — re-point it by moving that marker, never by editing the primer), the owed-gates LIST, what shipped (from git log), and State rows as `value · as of <stamp> — release: <command>`. Hand prose goes ONLY inside `<!-- hand:begin narrative -->` … `<!-- hand:end narrative -->` (the banner/INVARIANT inside `hand:begin banner`, rewritten in place, never appended under); everything outside the markers is replaced on the next run, and a dropped region is printed, never silent. A file that already holds prose with no markers makes the generator REFUSE — wrap that prose in the narrative markers and re-run; it merges back. `--check` exits 3 on a failed generation-time check: fix the flagged line and re-run. Why (8/26 retro, 11 of 14 lanes): the hand-authored half of a primer drifts, the generated half does not. Fleet read: `node scripts/sky.mjs check-primer-generated.mjs`.
 
-## Tomorrow's primer is generated at P2, not at close (approved 2026-08-27)
+## P5 close order (three-stage day)
 
-First step of P2, every day — `<MT-date>` is TOMORROW's Mountain-Time date:
+Re-homed for the three-stage day (P1 → P3 → P5) on 2026-09-25 by the orchestrator; P2/P4 no longer run.
+
+1. Apply the hygiene draft (`tmp/hygiene-draft-bounds-ledger-<MT-date>.md`: ACCEPT / AMEND / REJECT each line), then run the no-flag due-gate verify.
+2. Run the ledger gate battery, `node scripts/sky.mjs continuity-check.mjs` (`docs/daily-config.md` § Ledger gate battery; it ran inside P2 until 2026-09-25), and read its own RESULT line.
+3. Generate tomorrow's primer (the section above). It ran first thing at P2 from 2026-08-27 to 2026-09-25; P2 no longer exists, so the close's run is the only one.
+
+## Tomorrow's primer was generated at P2, not at close (approved 2026-08-27; history — P2 no longer runs, see § P5 close order)
+
+The P2 run was, every day — `<MT-date>` is TOMORROW's Mountain-Time date:
 
 ```
 node scripts/sky.mjs gen-primer-first-action.mjs --repo . --out docs/cold-starts/<MT-date>.md

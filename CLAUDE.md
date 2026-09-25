@@ -8,7 +8,7 @@ Cross-vendor invariants (commands, what-never-to-hand-edit, the outward gate, de
 
 A **steward** of drifting mathematical records: a reproducible, continuously re-verified ledger that alarms when a cited record (bound / constant / certificate) drifts. Not a record-search engine. Full thesis in `README.md`. **LAUNCHED** — David ruled it 2026-08-27; the repo has been public since 2026-08-08.
 
-**Rail: PACED (David-ruled 2026-08-01).** Each session: the steward cadence FIRST (read the overnight run's LOG not the badge; drift cycle if red; local `npm run check` for the W-3 advisory legs), then **≥1 concrete increment on an open goal** — `G-4` (an outside party acts on a watched record WITHOUT us filing the report) is Tier-0. **Weekly forced-decision pass** over `continuity/items.json` (stale items move or die). Still **no self-rating**.
+**Rail: PACED (David-ruled 2026-08-01).** Each session: the steward cadence FIRST (read the overnight run's LOG not the badge; drift cycle if red; local `npm run check` for the W-3 advisory legs), then **≥1 concrete increment on an open goal** — `G-4` (an outside party acts on a watched record WITHOUT us filing the report) is Tier-0. Stale items in `continuity/items.json` still move or die, now as **hygiene inputs**: P1 lists them under `HYGIENE INPUTS`, the P3 hygiene helper drafts each disposition, P5 applies the draft (re-homed from the weekly forced-decision pass for the three-stage day on 2026-09-25 by the orchestrator; P2/P4 no longer run). Still **no self-rating**.
 
 ## Commands
 
