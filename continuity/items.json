@@ -1415,7 +1415,9 @@
         "70ebd63",
         "874e411",
         "d7f10db",
-        "9065909"
+        "9065909",
+        "0ed11f7",
+        "c05232f"
       ],
       "readCommandHistory": "node scripts/depth-audit.mjs # BUILT AND FIRST-RUN 2026-09-10; supersedes the check-claims placeholder kept at readCommandRetired2026_09_10, which correctly said no command answered this row while no audit store existed. LITERAL OUTPUT, pasted from the run rather than described: \"depth audit (A-47): 3 row(s) audited — 2 sound, 0 defective, 1 unresolved, 0 unreachable\" at exit 0. It prints the denominator and the SAMPLING RULE beside the count, and it REFUSES a bare zero: exit 2 when the store is missing or empty (a zero about the WORK, not about the records), exit 3 when the verdict counts do not sum to the row count. Both refusals red-armed 2026-09-10 with the mutations proven to land by sha256 and the restore verified against the original.\n\n — LITERAL OUTPUT RE-RECORDED 2026-09-11, because the line above is dated 2026-09-10 and a stale literal output is the defect this field exists to prevent: \"depth audit (A-47): 8 row(s) audited — 2 sound, 0 defective, 4 unresolved, 2 unreachable\" at exit 0. The verdict mix moved for two reasons on one day: slice 2 added five rows, and three earlier rows were downgraded to UNRESOLVED by adversarial review. A second command now answers the population half of this row: `node scripts/depth-audit.mjs --corpus`, which prints 770 bound rows across 115 constant files, 673 cited, 97 uncited, and refuses (exit 2) when either baseline cannot be established.",
       "readCommandLastRun": "2026-09-21T15:44:29.609Z",
@@ -2136,14 +2138,17 @@
       "note3": "WHAT THIS ROW CANNOT SEE, said because the gap is the point: it reads the tip's own files from this machine. It cannot see a page stale for a reader behind a cache we do not share, it cannot see a publish that fails AFTER the read, and its anchor is the last page-changing commit, so a day whose commits touch no published page gives it nothing to compare and it refuses (exit 2) rather than printing a pass.",
       "readCommand": "npm run served # A-55's check, carried here because a closed row's command is never swept. Exit 0 = every published file the last page-changing commit touched is SERVED (or IN-FLIGHT inside the measured 300s window); exit 1 = STALE, the publish did not reach readers, and each stale line names the served Last-Modified so the build being served is identifiable; exit 2 = REFUSED (empty path set, unreadable anchor, a commit touching no page, or a failed fetch), which is never a pass. Literal output 2026-09-22 after that day's ship: \"117 checked — 117 served, 0 in flight, 0 stale, 0 unreachable\", exit 0. POSITIVE CONTROL that it can say otherwise, taken on the live path the same day: the same command with CC_SERVED_WINDOW_MS=0 seconds after the push printed 117 STALE rows and exited 1.",
       "nextCheckDate": "2026-09-29",
-      "closeWhen": "Either (A) the read has a caller that does not depend on anyone remembering, and this row closes naming that job; or (B) the lane stops publishing by GitHub Pages, which ends the question, and this row closes recording that. Until one of those, it stays open and carries the read on its own date.\n\n(A) IS NOT MET BY A WORKFLOW FILE EXISTING (amended 2026-09-24 at P2, on the orchestrator's approval of the P1 retro's proposal 1, bus e10ed349): the approved shape is `.github/workflows/served.yml`, a scheduled job kept OUT of the reverify suite, that runs `node scripts/check-served.mjs` and on exit 1 (STALE) files or updates ONE issue titled `Publish: stale page`, while exit 2 (a refusal) files nothing. It closes this row only when BOTH KP-78 legs have been run ON THAT WORKFLOW and their literal output is quoted on this row: (1) FIRES — a run with CC_SERVED_WINDOW_MS=0 dispatched seconds after a page-changing push exits 1 and the issue exists afterwards; (2) SILENT — a run on the settled tip exits 0 and files or updates nothing. A workflow never seen to fire is not an alarm yet.",
+      "closeWhen": "Either (A) the read has a caller that does not depend on anyone remembering, and this row closes naming that job; or (B) the lane stops publishing by GitHub Pages, which ends the question, and this row closes recording that. Until one of those, it stays open and carries the read on its own date.\n\n(A) IS NOT MET BY A WORKFLOW FILE EXISTING (amended 2026-09-24 at P2, on the orchestrator's approval of the P1 retro's proposal 1, bus e10ed349): the approved shape is a new workflow file named served.yml (not yet written), a scheduled job kept OUT of the reverify suite, that runs `node scripts/check-served.mjs` and on exit 1 (STALE) files or updates ONE issue titled `Publish: stale page`, while exit 2 (a refusal) files nothing. It closes this row only when BOTH KP-78 legs have been run ON THAT WORKFLOW and their literal output is quoted on this row: (1) FIRES — a run with CC_SERVED_WINDOW_MS=0 dispatched seconds after a page-changing push exits 1 and the issue exists afterwards; (2) SILENT — a run on the settled tip exits 0 and files or updates nothing. A workflow never seen to fire is not an alarm yet.",
       "links": [
         "A-55",
         "G-4"
       ],
       "updated": "2026-09-24",
       "onTrigger": "On 2026-09-29, run `npm run served` and read which of three answers it gives. Exit 0: say so with the figure it printed, and re-date a week on — the read is cheap and its value is the cadence, not any single run. Exit 1 (STALE): that is a live finding, not a clock event — the published site is not serving the tip, so resolve it first (a Pages rebuild, then re-run) and record the served Last-Modified the check printed, because that names the build readers were getting. Exit 2 (REFUSED): read WHICH refusal. \"A commit touching no page\" is the ordinary state on a day whose commits were docs or ledger only, and it is not a miss; an unreadable anchor or a failed fetch is an instrument problem and is recorded as one.\n\nDo NOT let this row become the caller of record indefinitely. Its closeWhen asks for a caller that does not depend on anyone remembering, and a row read on a date is still a person remembering to read the row. The candidate worth pricing when there is a spare half-hour: a scheduled workflow that runs the check and files or updates ONE issue on a STALE verdict, kept out of the reverify suite so a transient GitHub failure cannot turn that suite red. That is the shape that would close this row.",
-      "lastEvaluated": "2026-09-24"
+      "lastEvaluated": "2026-09-24",
+      "linkedCommits": [
+        "ea25512"
+      ]
     },
     {
       "id": "A-56",
@@ -2166,7 +2171,10 @@
       "onTrigger": "On 2026-09-26, run the three routes in unWait and record each one's result on this row. If the published body is read: pp. 149–187 NOT stating 58/15 makes A-47-0030 DEFECTIVE; stating it, even by citing the companion, makes it SOUND with the attribution recorded in its notes. In either case, re-render the pages, run the adversarial review before the commit, and close this row naming the commit. If no route reads it: record the routes tried and their results, leave A-47-0030 UNRESOLVED, and close this row as 'no reachable copy'. Do not re-date it to try the same routes again. Nothing goes upstream on this row's authority; a correction to the mirrored entry is outward contact and David-gated.",
       "closeWhen": "A-47-0030 carries a verdict read from the published body (DEFECTIVE or SOUND), committed and served; OR the three routes are recorded as not yielding the published text, and the entry stays UNRESOLVED with that recorded.",
       "created": "2026-09-24",
-      "updated": "2026-09-24"
+      "updated": "2026-09-24",
+      "linkedCommits": [
+        "b4003fa"
+      ]
     }
   ],
   "meta": {
