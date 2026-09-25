@@ -1,0 +1,102 @@
+# read-output sidecar for A-53 — written by check-due-gates-dispositioned --run
+# readCommand: node scripts/depth-audit.mjs
+# ran: 2026-09-25T00:04:16.317Z · exit: 0
+# lines: 96 · sha256: 85a812560070773e (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+depth audit (A-47): 29 row(s) audited — 17 sound, 0 defective, 6 unresolved, 6 unreachable
+  selection: 20 drawn by position (the systematic ladder) · 9 chosen because something already looked wrong, of which 0 carry no selection at all and are counted there rather than as coverage. Only rows drawn by position can accumulate into a coverage figure.
+  denominator: COMPUTED, not remembered, since 2026-09-11: `node scripts/depth-audit.mjs --corpus` prints the partition with its definition and its control. It reads 770 bound rows across 115 constant files, 673 cited and 97 uncited. This REPLACES the 543-of-763 figures recorded on 2026-09-09 by a script that was never committed; see corpus.supersedes2026_09_09.
+  sampling: NOT random, and the read must say so — but no longer chosen for suspicion either. SLICE 1 (A-47-0001..0003, 2026-09-10) was a deliberate hunt for discrepancy: two rows from 10a whose stated values differed from the figures in their cited papers TITLES, plus one row from 87a the mirror itself flags as bibliographically unverified. A sample selected for suspicion cannot be projected onto the corpus as a rate. SLICE 2 (A-47-0004..0008, 2026-09-11) is a SYSTEMATIC sample, deterministic and re-derivable without a seed: enumerate the cited bound rows in file-then-line order (the enumeration `node scripts/depth-audit.mjs --corpus` counts, 673 rows) and take positions 50, 150, 250, 350 and 450. It is still not a random sample and five rows settle nothing on their own, but unlike slice 1 it was drawn without looking at the rows first, so as slices accumulate at fixed positions the audited set stops being biased toward rows we already suspected. SLICE 3 (A-47-0009..0013, 2026-09-12) continues the same systematic ladder and was likewise drawn before any row was read: positions 550 and 650 complete the +100 ladder slice 2 began, and 100, 200 and 300 continue it offset by 50. The draw is no longer prose: `node scripts/depth-audit.mjs --draw 100 200 300 550 650` prints the rows at those positions from the same parser and the same cited-row definition the denominator counts, and each stored row carries the hash that draw printed. WHAT THE STORED HASHES DO AND DO NOT ESTABLISH (recorded 2026-09-12 at the adversarial review's insistence): each row carries the hash the draw printed, which proves the verdict belongs to the row that was drawn — selection IDENTITY. It does NOT prove the draw happened BEFORE the reading; nothing in the artifact orders those two events, and the claim that positions were fixed first rests on this session's own account. A timestamped draw receipt pinned to the mirror revision would make it independently checkable, and is not built. SLICE 4 (A-47-0014..0018, 2026-09-13) is SUSPICION-DRAWN and labelled as such: the four neighbouring rows of the H2016 cell in 1b.md, selected on 2026-09-05 because that cell had changed to its truncation, plus the dead-citation leg found while reading them. They were read on 2026-09-05 and are transcribed here from A-43.lookups2026_09_05; the row text and hashes were re-read from the mirror on 2026-09-13. They are excluded from the systematic coverage figure for the same reason slice 1 is. SLICE 5 (A-47-0020..0024, 2026-09-16) continues the systematic ladder and was drawn before any row was read: positions 400, 500 and 600 complete the 50-step grid slices 2 and 3 laid down (every multiple of 50 from 50 to 650 is now drawn), and 25 and 75 begin the next grid, offset by 25. `node scripts/depth-audit.mjs --draw 400 500 600 25 75` prints those rows, and each stored row carries the hash that draw printed. The same limit recorded for slice 3 applies: the hashes prove which row each verdict belongs to, not that the draw came before the reading. SLICE 6 (A-47-0025..0029, 2026-09-21) continues the systematic ladder at the offset-25 grid slice 5 began: positions 125, 175, 225, 275 and 325. They were drawn on 2026-09-18, stored verbatim on the ledger row as A-47.slice6Draw2026_09_18 before any of the five sources was opened, and re-derived on 2026-09-21 by `node scripts/depth-audit.mjs --draw 125 175 225 275 325` with the same five fingerprints. The limit recorded for slices 3 and 5 applies unchanged: the hashes prove which row each verdict belongs to; the draw's date on the ledger row is this lane's own record, not an independent timestamp.
+
+  A-47-0001  10a [SLXCKKM26]  UNRESOLVED  (value-vs-source)  selection: suspicion-drawn
+      row: ledger/teorth-optimizationproblems/constants/10a.md:33 sha256:b4e85d43cbe91734 — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/2608.11158 (read: read in the abstract)
+  A-47-0002  10a [LSXCKKM26]  UNRESOLVED  (value-vs-source)  selection: suspicion-drawn
+      row: ledger/teorth-optimizationproblems/constants/10a.md:32 sha256:4e142e1f379a4b5d — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/2606.03991 (read: read in the body, at Theorem 1.1 — the abstract alone was not enough)
+  A-47-0003  87a [Mar2006]  UNRESOLVED  (citation-well-formed)  selection: suspicion-drawn
+      row: ledger/teorth-optimizationproblems/constants/87a.md:44 sha256:9d36b07ca4df7a0f — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/1901.04354 (read: read at section 3.3.1; the bibliography itself did not render)
+  A-47-0004  13a [KS2009]  SOUND  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/13a.md:26 sha256:b8789440ae44d606 — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/math/0701391 (read: read in the abstract)
+  A-47-0005  20a [KL2025]  UNRESOLVED  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/20a.md:62 sha256:aae443839898aa15 — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/2507.15495 (read: read in the abstract, which settles part of the row and cannot settle the rest)
+  A-47-0006  31a [CS1975]  UNREACHABLE  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/31a.md:21 sha256:9bdd283659c192e3 — re-read the row there; it is never retyped into this store
+      source: https://par.cse.nsysu.edu.tw/resource/paper/2013/131230/CS-TR-75-477.pdf (read: NOT read — the host did not accept a connection)
+  A-47-0007  43a [GP1968]  UNREACHABLE  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/43a.md:22 sha256:59bb2b5ab5eb8734 — re-read the row there; it is never retyped into this store
+      source: https://doi.org/10.1137/0116001 (read: NOT read — the publisher returned a bot challenge)
+  A-47-0008  55a [GKPT2017]  SOUND  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/55a.md:19 sha256:44dff15b8a2ffa5e — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/1407.5374 (read: read in the abstract of the arXiv version the reference entry names as the correction)
+  A-47-0009  17a [Gri26]  SOUND  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/17a.md:14 sha256:98b819000da28d9e — re-read the row there; it is never retyped into this store
+      source: https://github.com/maaxgrin/ramsey-3792-bound (read: read in the repository front page, which is the whole of what the reference entry offers)
+  A-47-0010  24a [Bec1981]  UNREACHABLE  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/24a.md:35 sha256:3654119758adbde1 — re-read the row there; it is never retyped into this store
+      source: https://doi.org/10.1007/bf02579452 (read: NOT read — the publisher returned a bot challenge)
+  A-47-0011  3a [GGSWT2025]  SOUND  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/3a.md:27 sha256:54b823091560b6ec — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/2511.02864 (read: read in the body via ar5iv, at section 6 subsection 25 — the abstract does not carry the figure)
+  A-47-0012  77a [Wu2023]  SOUND  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/77a.md:36 sha256:3350ece5e2b8de69 — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/2008.13043 (read: read in Wu's abstract for the value, and in the GOWWZ2025 body for the attribution clause beside it)
+  A-47-0013  88a [Pol14a]  SOUND  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/88a.md:20 sha256:8c1c006f14a19999 — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/1402.0811 (read: read in the body via ar5iv — the abstract does not carry the figure)
+  A-47-0014  1b [GGSWT2025]  SOUND  (value-vs-source)  selection: suspicion-drawn
+      row: ledger/teorth-optimizationproblems/constants/1b.md:23 sha256:0ed94b753dae2418 — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/2511.02864 (read: read in the body — the paper states its own figure at six decimals)
+  A-47-0015  1b [YKLBMWKCZGS2026]  SOUND  (value-vs-source)  selection: suspicion-drawn
+      row: ledger/teorth-optimizationproblems/constants/1b.md:24 sha256:e19d80316c75fd95 — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/2601.16175 (read: read in the body at arXiv — NOT at the URL the reference entry gives, which is dead)
+  A-47-0016  1b [YKLBMWKCZGS2026]  UNREACHABLE  (citation-well-formed)  selection: suspicion-drawn
+      row: ledger/teorth-optimizationproblems/constants/1b.md:24 sha256:e19d80316c75fd95 — re-read the row there; it is never retyped into this store
+      source: https://test-time-training.github.io/discover.pdf (read: the URL this reference entry gives returns GitHub Pages' "Site not found" page — HTTP 200, about 9 KB, title "Site not found" — so a reader following the citation reaches nothing; the paper itself is live at arXiv:2601.16175v2 and was read there (A-47-0015))
+  A-47-0017  1b [T2026]  SOUND  (value-vs-source)  selection: suspicion-drawn
+      row: ledger/teorth-optimizationproblems/constants/1b.md:25 sha256:68a116efb727d114 — re-read the row there; it is never retyped into this store
+      source: https://github.com/togethercomputer/EinsteinArena-new-SOTA (read: read in the repository README's own results table — the cited source is a repository, not a paper)
+  A-47-0018  1b [YLTLYSTYLLGDHZSWZSHMELCZX2026]  SOUND  (value-vs-source)  selection: suspicion-drawn
+      row: ledger/teorth-optimizationproblems/constants/1b.md:26 sha256:c64d455e7268d34e — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/2604.19341 (read: read in the body — the results section, because the paper contradicts its own introduction)
+  A-47-0019  1b [H2016]  UNRESOLVED  (value-vs-source)  selection: suspicion-drawn
+      row: ledger/teorth-optimizationproblems/constants/1b.md:22 sha256:4a586dd55bc39841 — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/1609.08000 (read: read in the abstract, which states 0.380926..., and in the final section, which gives 0.3809268534330870; the row carries the abstract's six decimals without its ellipsis, just below the value proved, so whether it supports an upper-bound row depends on how that rendering is read)
+  A-47-0020  4a [RBNBKDREWFKF2023]  SOUND  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/4a.md:23 sha256:8ed1217ecf5f21de — re-read the row there; it is never retyped into this store
+      source: https://www.nature.com/articles/s41586-023-06924-6 (read: read in the body of the open-access copy at Europe PMC (PMC10794145) — the Nature page itself returned a bot challenge)
+  A-47-0021  65a [Xyl2011]  UNREACHABLE  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/65a.md:51 sha256:b47de987ffe95e94 — re-read the row there; it is never retyped into this store
+      source: https://doi.org/10.4064/aa150-1-4 (read: NOT read — the publisher's DOI service returned HTTP 502, twice)
+  A-47-0022  84a [ABGLSSTWW2026]  SOUND  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/84a.md:25 sha256:0fd77595b8e716c6 — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/2605.20695 (read: read in the body of [ABGLSSTWW2026] at arXiv — the reference this entry audits; the row's other reference, the OpenAI blog post [O2026], was NOT read)
+  A-47-0023  10c [L2026]  SOUND  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/10c.md:49 sha256:04d4db5516d6dcf2 — re-read the row there; it is never retyped into this store
+      source: https://github.com/u00dxk2/bounds-ledger/blob/main/ledger/teorth-optimizationproblems/constants/10c.md#L281 (read: recomputed — the cited source is a 17 by 17 certificate printed in the constant's own file, and its discrepancy was evaluated over all 131,072 sign vectors)
+  A-47-0024  15a [P1981]  UNREACHABLE  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/15a.md:18 sha256:a20161e3c8903a8d — re-read the row there; it is never retyped into this store
+      source: https://doi.org/10.1016/0898-1221(81)90009-2 (read: NOT read — the publisher returned a redirect page and its API returned metadata only)
+  A-47-0025  1a [IX2026]  SOUND  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/1a.md:34 sha256:46fde5b828a9ac50 — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/2605.05193 (read: read in the body — Theorem 5 and its proof in Section 2.4 of the arXiv PDF)
+  A-47-0026  21a [CNV1987]  SOUND  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/21a.md:30 sha256:f3fe218c29a28de0 — re-read the row there; it is never retyped into this store
+      source: https://www.math.kent.edu/~varga/pub/paper_162.pdf (read: read in the body at the URL our entry gives — a scanned PDF with no text layer, read from page images; the main Theorem is on p. 487)
+  A-47-0027  28a [Bon2014]  SOUND  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/28a.md:62 sha256:21bff5473487c6d1 — re-read the row there; it is never retyped into this store
+      source: https://arxiv.org/abs/1305.2584 (read: read in the body of the arXiv preprint our entry names (version 3, the current one))
+  A-47-0028  35a [B2015]  UNRESOLVED  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/35a.md:19 sha256:5b9f063bb886146f — re-read the row there; it is never retyped into this store
+      source: https://web.mit.edu/dimitrib/www/Chapter_2_NEW_ALG.pdf (read: read in Chapter 2 of the book as the author posts it, Section 2.1 at pp. 60–61; the formal statement in Section 6.1 that the passage points to was NOT read. This row's Reference column reads Folklore: [B2015] is the "see, e.g." pointer in its comment, not the row's credited source)
+  A-47-0029  3e [HRY1999]  SOUND  (value-vs-source)  selection: systematic
+      row: ledger/teorth-optimizationproblems/constants/3e.md:27 sha256:dc8205fd55bb35bb — re-read the row there; it is never retyped into this store
+      source: https://www.numdam.org/item/AST_1999__258__173_0/ (read: read in the body — Numdam's scan of the Astérisque paper, pp. 173–178, read from page images)
+
+population: the 29 row(s) recorded in continuity\depth-audit.json, across constant file(s) 10a, 87a, 13a, 20a, 31a, 43a, 55a, 17a, 24a, 3a, 77a, 88a, 1b, 4a, 65a, 84a, 10c, 15a, 1a, 21a, 28a, 35a, 3e. NOT a sample of the 673 cited rows — see the sampling line above.
+blindTo: every cited row not yet in this store; whether a SOUND row's source says something the auditor did not think to ask; whether an UNRESOLVED row is sound or defective, which is the whole content of that verdict; and any defect in the 97 UNCITED rows, which this audit cannot reach by construction.
+RESULT: PASS — 29 audited, 17 sound, 0 defective, 6 unresolved, 6 unreachable (exit 0)
