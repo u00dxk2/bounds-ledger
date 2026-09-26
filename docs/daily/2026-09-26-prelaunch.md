@@ -26,7 +26,7 @@ Three-stage day (David, card `99bb9206`): P1 evidence and choice, P3 the product
 **FIRST ACTION (next session, 2026-09-27):** `A-47` slice 8 (the depth audit, which renders on the public constant pages) is due. Draw it and push the draw before any source is opened:
 
 ```bash
-node scripts/sky.mjs show-item.mjs A-47 --fields onTrigger,closeWhen
+node scripts/sky.mjs show-item.mjs A-47 --fields closeWhen,nextCheckDateNote,slice7Draw2026_09_24
 ```
 
 **DON'T-TOUCH:** nothing goes upstream about 46a until `A-57` (the drafted correction) has had its adversarial review and David has decided.
@@ -66,7 +66,7 @@ node scripts/sky.mjs show-item.mjs A-47 --fields onTrigger,closeWhen
   - The six other traces written onto `A-52` today, each read once, found nothing from outside.
   - Page readership is not measured at all.
   - Positive control: the same run counted 30 issues and attributed every one, so it reads issues when they exist.
-- **Depth audit (the constants mirror):** "34 audited, 19 sound, 1 defective, 6 unresolved, 8 unreachable", from `node scripts/depth-audit.mjs` at 2026-09-26 about 16:05Z. Yesterday it was 0 defective and 7 unresolved; the move is `A-47-0030`.
+- **Depth audit (the constants mirror):** "34 audited, 19 sound, 1 defective, 6 unresolved, 8 unreachable", from `node scripts/depth-audit.mjs`, run after the verdict was written (store `recordedAt` 2026-09-26T15:54:17Z) and before the commit `412cd1d`. Yesterday it was 0 defective and 7 unresolved; the move is `A-47-0030`.
 - **The second area, printed beside it and never summed:** "census: 10 of 122 bound(s), across 5 of 42 credited paper(s) — 6 sound, 0 defective, 1 unresolved, 3 unreachable", from `node scripts/ds1-depth.mjs`. It is unchanged today.
 - **Record-listing movements:** 0 in the current partial week, and 2 completed consecutive weeks with none (`npm run catches`, 16:49Z). **Correction queue: 1 (A-57).**
   Positive control: the same run lists 7 movements in the week of 2026-08-31, so it counts movements when they happen.
@@ -74,7 +74,7 @@ node scripts/sky.mjs show-item.mjs A-47 --fields onTrigger,closeWhen
 
 ## Recommendation
 
-**[A — user-visible] 2026-09-27: `A-47` slice 8 (the depth audit), which renders on the public constant pages.** Draw it and push the draw before any source is opened.
+**[A — user-visible] 2026-09-27: `A-47` slice 8 (the depth audit), which renders on the public constant pages.** Draw it and push the draw before any source is opened. The model to follow is slice 7's draw, stored on the row as `slice7Draw2026_09_24` on 2026-09-24 and pushed before any of its five sources was opened.
 
 **[A] 2026-09-28: `A-54` census session 2 and the rate checkpoint**, by `blockedSourceRule2026_09_25`. The reading brief sends no identity.
 
@@ -98,7 +98,7 @@ node scripts/sky.mjs show-item.mjs A-47 --fields onTrigger,closeWhen
 
 ## State Appendix
 
-### Selection packet (P1, written 2026-09-26 at about 15:45Z)
+### Selection packet (P1, posted as bus msgId b4c305ba at 2026-09-26T15:45:58Z)
 
 **Outcome:** settle what the public page tells a reader about constant 46a's credited source. **Item:** `A-56`.
 
@@ -157,7 +157,7 @@ ACTION: COMPLETED · item A-56 · P3 9b86d9d9 (the P3 task-complete's bus msgId)
 ### Live state
 
 Written last. A report cannot name the commit that lands it, so every value carries its as-of and the command that re-reads it.
-- **HEAD before this close's commit:** `59c8cd0`, as of 2026-09-26 about 16:50Z. Re-read with `git rev-parse HEAD origin/main`.
+- **HEAD before this close's commit:** `59c8cd0`, the commit tomorrow's primer was composed against at 2026-09-26T16:53:32Z. Re-read with `git rev-parse HEAD origin/main`.
 - **CI on `59c8cd0d7f`:** GREEN, as of 16:27Z. Re-read with `node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml`.
 - **Served:** 2 of 2 changed files served, anchored on `412cd1d387`, as of 16:27:39Z. Re-read with `npm run served`.
 - **Depth audit:** 34 audited, 19 sound, 1 defective, 6 unresolved, 8 unreachable. Re-read with `node scripts/depth-audit.mjs`.
