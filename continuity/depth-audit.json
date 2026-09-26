@@ -4,7 +4,7 @@
   "purpose": "The depth audit David ruled on 2026-09-09 (\"start reading our own 543 records against their sources on a schedule\") and made this project's interim yardstick on 2026-09-10 (\"judge the project meanwhile on how much of our own material stands up when we check it\").",
   "meta": {
     "created": "2026-09-10",
-    "recordedAt": "2026-09-26T15:54:17.218Z",
+    "recordedAt": "2026-09-26T18:14:01.080Z",
     "readCommand": "node scripts/depth-audit.mjs",
     "verdicts": {
       "SOUND": "the cited source was read and it supports the row",
@@ -389,12 +389,12 @@
       "rowText": "| $0.380876$ | [YKLBMWKCZGS2026] | TTT-Discover |",
       "rowTextSha256": "e19d80316c75fd95",
       "source": "https://test-time-training.github.io/discover.pdf",
-      "sourceRead": "the URL this reference entry gives returns GitHub Pages' \"Site not found\" page — HTTP 200, about 9 KB, title \"Site not found\" — so a reader following the citation reaches nothing; the paper itself is live at arXiv:2601.16175v2 and was read there (A-47-0015)",
+      "sourceRead": "on 2026-09-05 the URL this reference entry gave returned GitHub Pages' \"Site not found\" page (HTTP 200, about 9 KB, title \"Site not found\"), so a reader following the citation reached nothing; the paper itself is live at arXiv:2601.16175v2 and was read there (A-47-0015). Upstream replaced the link with arXiv:2601.16175 on 2026-09-26 (pull request #194, which we opened); that day the old URL was serving a PDF again (HTTP 200, application/pdf, 908,032 bytes), so the link was down and then up, not permanently dead",
       "sourceReadInternal": "HTTP 200 with a \"Site not found\" HTML body",
       "verdict": "UNREACHABLE",
       "evidence": "The reference entry for [YKLBMWKCZGS2026] cites test-time-training.github.io/discover.pdf, which does not resolve to the paper. It is the HTTP-200-is-not-the-artifact trap firing on upstream's own citation rather than on one of our fetches.",
       "positiveControl": "The body returned is 9 KB of GitHub Pages' 404 template with the title \"Site not found\", which is a positive identification of the wrong document rather than an inference from an empty response.",
-      "notes": "A dead cited URL, not a bound question — the row's VALUE is SOUND (A-47-0015) and only the link is broken. Recorded, NOT filed: any correction sent upstream is outward contact needing an adversarial review and David's explicit gate."
+      "notes": "A dead cited URL, not a bound question — the row's VALUE is SOUND (A-47-0015) and only the link is broken. Recorded, NOT filed: any correction sent upstream is outward contact needing an adversarial review and David's explicit gate. UPDATED 2026-09-26: upstream merged our PR #194 (merge 2026-09-26T17:05:38Z) replacing this link with arXiv:2601.16175. The maintainer's comment the same day reported the old URL serving the paper again; our own fetch that day read HTTP 200, application/pdf, 908,032 bytes, first bytes %PDF-1.5 (whether it is the same paper was not confirmed). The 2026-09-05 reading stands as a dated reading."
     },
     {
       "constant": "1b",
@@ -523,13 +523,13 @@
       "leg": "value-vs-source",
       "citedRef": "L2026",
       "rowFile": "ledger/teorth-optimizationproblems/constants/10c.md",
-      "rowLine": 49,
+      "rowLine": 50,
       "source": "https://github.com/u00dxk2/bounds-ledger/blob/main/ledger/teorth-optimizationproblems/constants/10c.md#L281",
       "sourceRead": "recomputed — the cited source is a 17 by 17 certificate printed in the constant's own file, and its discrepancy was evaluated over all 131,072 sign vectors",
       "verdict": "SOUND",
       "evidence": "The row gives 7/sqrt(17) ≈ 1.697749 as a lower bound, from a 17 by 17 sign matrix with discrepancy 7. The reference [L2026] is a certificate submitted to the upstream repository and printed in the same file, so the check is a recomputation rather than a reading. A script read the matrix from the mirror's bytes (17 rows by 17 columns, every entry ±1, 16 distinct rows, the last equal to the first, as the file says), evaluated max_i |(Ax)_i| for every x in {±1}^17, and found the minimum to be exactly 7. 7/sqrt(17) = 1.697749 to six places. The 17 sets T_i printed beside the matrix agree with the positions of its -1 entries. Since the constant is the least K with disc(A) ≤ K·sqrt(n) for every n and every A, one matrix with discrepancy 7 at n = 17 proves K ≥ 7/sqrt(17).",
       "positiveControl": "The same evaluation run on a 17 by 17 all-ones matrix returned 1, not 7 — so the computation distinguishes matrices rather than printing a constant. The matrix was taken from the certificate block under the file's own heading, never retyped.",
-      "notes": "Systematic-sample position 25 of 673. This is the first entry in the store whose source could be recomputed rather than read, which is the kind of check this lane's standing prediction says finds record-facing defects. It found none here. The source field is a link to that certificate's heading in this repository's mirror of the table (line 281), because the page renders only http(s) sources: as first recorded, with a repository path, this entry was dropped from the public page without any warning while `node scripts/depth-audit.mjs` still counted it.",
+      "notes": "Systematic-sample position 25 of 673. This is the first entry in the store whose source could be recomputed rather than read, which is the kind of check this lane's standing prediction says finds record-facing defects. It found none here. The source field is a link to that certificate's heading in this repository's mirror of the table (line 281), because the page renders only http(s) sources: as first recorded, with a repository path, this entry was dropped from the public page without any warning while `node scripts/depth-audit.mjs` still counted it. RE-LOCATED 2026-09-26, NOT RE-READ: upstream inserted a row above this one in constants/10c.md (the [H2026] and v2 [PV2022] rows, merged 2026-09-26), so the row moved from line 49 to line 50. Its text is byte-identical and its fingerprint unchanged; only the stored line number was updated, so the page keeps linking the live row instead of calling this reading historical.",
       "sourceReadInternal": "session script over ledger/teorth-optimizationproblems/constants/10c.md: parsed the first text block after the certificate heading; exhaustive 2^17 evaluation; all-ones red arm = 1",
       "rowText": "| $7/\\sqrt{17}\\approx 1.697749$ | [L2026] | A 17 by 17 sign matrix with exact discrepancy $7$ ($16$ distinct rows, one repeated to square it). |",
       "rowTextSha256": "04d4db5516d6dcf2",

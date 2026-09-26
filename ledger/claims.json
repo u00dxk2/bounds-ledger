@@ -11,7 +11,10 @@
     "statement": "Tao's curated table lists Haugland's 2016 bound as 0.380926 — the TRUNCATION, which is strictly below the proved 0.3809268534330870 and so is not a valid upper bound at the precision shown. Upstream changed this on 2026-09-05 from the round-to-nearest 0.380927; W-2's 2026-07-23 verdict that the repo was right is reversed by that change, not by a new reading.",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1b.md",
     "expect": "$0.380926$ | [H2016]",
-    "searchAliases": ["0.380927", "0.3809268534330870"],
+    "searchAliases": [
+      "0.380927",
+      "0.3809268534330870"
+    ],
     "searchAliasesWhy": "A reader arriving with 0.380927 is holding the value upstream's table carried until 2026-09-05, and the value arXiv:2601.16175 still cites nine times. It vanished from the page's search haystack the moment upstream changed the cell, because the haystack carries the CURRENT mirrored table plus previously-pinned GENERATED values, and this one lived only in a hand claim's superseded expect. An alias ASSERTS NOTHING — it is a string the filter matches so the reader lands on the row and reads the live table themselves,  0.3809268534330870 was added 2026-09-06, found by the FIRST run of scripts/check-resolvability.mjs (A-45) rather than by anyone noticing: it is the full-precision bound Haugland proves and C-5 pins, so it is the most precise form a careful citer can be holding, and it returned zero hits on index.html while 0.380927, 0.380926 and the c-1b row itself all returned one. C-5 could never have supplied it through aliasesFor, which maps aliases to a constant by matching constants/<id>.md in the claim url — C-5 points at the ar5iv paper, so its value has no route to the 1b haystack except from here.",
     "asserts": "docs/findings/2026-07-23-haugland-final-digit.md"
   },
@@ -156,7 +159,7 @@
     "id": "pin:10c:U",
     "statement": "Last-listed upper-bound table row for Spencer discrepancy constant (“six standard deviations suffice”) (10c.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10c.md",
-    "expect": "| $3\\sqrt{3/2}\\approx 3.674235$ | [PV2022] | Also gives an algorithmic version. |",
+    "expect": "| $4.1$ | [PV2022] | v2 Theorem 4.5: $\\lVert Ax\\rVert_\\infty\\leqslant 4.1\\sqrt{n}+O(1)$. Algorithmic. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/10c.md",
     "generated": true
   },
@@ -164,7 +167,7 @@
     "id": "pin:10c:L",
     "statement": "Last-listed lower-bound table row for Spencer discrepancy constant (“six standard deviations suffice”) (10c.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10c.md",
-    "expect": "| $7/\\sqrt{17}\\approx 1.697749$ | [L2026] | A 17 by 17 sign matrix with exact discrepancy $7$ ($16$ distinct rows, one repeated to square it). |",
+    "expect": "| $5/\\sqrt{8}=\\tfrac{5\\sqrt2}{4}\\approx 1.767767$ | [H2026] | An 8 by 8 matrix over $\\{-1,0,1\\}$ with exact discrepancy $5$; column 8 is identically zero. Its eight rows are the perfect $[7,4]$ Hamming code: the sets $T_i$ below, together with their complements in $\\{1,\\dots,7\\}$, are the 16 codewords, whose radius-1 balls **partition** $\\{0,1\\}^7$. Optimal at $n=8$; see below. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/10c.md",
     "generated": true
   },
@@ -348,7 +351,7 @@
     "id": "pin:19a:U",
     "statement": "Last-listed upper-bound table row for The Berry–Esseen constant (19a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/19a.md",
-    "expect": "| $0.4690$ | [She2013] |                                    |",
+    "expect": "| $0.423^*$ | [Lin2026] | Unverified. GitHub repository with a Lean 4 formalization (`berryEsseenConstant ≤ 0.423`); its finite certificates are checked with `native_decide`. Builds on the analytic framework of [XL2026]; does not use [She2013]. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/19a.md",
     "generated": true
   },
@@ -372,7 +375,7 @@
     "id": "pin:1a:L",
     "statement": "Last-listed lower-bound table row for An autocorrelation constant related to Sidon sets (1a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1a.md",
-    "expect": "| $1.292$ | [PBV2026] | |",
+    "expect": "| $1.292*$ | [PBV2026] | Unverified (see README asterisk convention) |",
     "asserts": "ledger/teorth-optimizationproblems/constants/1a.md",
     "generated": true
   },
@@ -868,7 +871,7 @@
     "id": "pin:3b:L",
     "statement": "Last-listed lower-bound table row for Kakeya-type sum-difference constant (3b.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3b.md",
-    "expect": "| $1.77898884$ | [MI2026] | Entropy construction on a 13-point support. |",
+    "expect": "| $1.77898884$* | [MI2026] | Entropy construction on a 13-point support.  Asterisked: the certificate is a self-archived Zenodo deposit and the bound has not been independently replayed. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/3b.md",
     "generated": true
   },
@@ -884,7 +887,7 @@
     "id": "pin:3c:L",
     "statement": "Last-listed lower-bound table row for 4-slope Kakeya-type sum-difference constant (3c.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3c.md",
-    "expect": "| $1.6747338950208249$ | [MI2026] | Entropy construction on a 95-point support. |",
+    "expect": "| $1.6747338950414058$ | [L2026] | Entropy construction on a 147-point support, exact rational weights at denominator $10^{320}$. Certified $C_{3c} \\geq 1.674733895041405870063135756722213999136383713818148696811828$, with $H(X-Y) = 1.90118266043426947934\\ldots$ and $H(X) = H(Y) = H(X+Y) = H(X+2Y) = 1.13521477415805507651\\ldots$ (natural logarithm), so no constraint is slack. Improves [MI2026] by $2.06 \\times 10^{-11}$. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/3c.md",
     "generated": true
   },
@@ -1068,7 +1071,7 @@
     "id": "pin:47a:U",
     "statement": "Last-listed upper-bound table row for Centered Hardy–Littlewood maximal constant in dimension $2$ (47a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/47a.md",
-    "expect": "| $4$ | [Tao2010] | The Vitali-covering proof can be sharpened from $3^d$ to $2^d$ by covering centers with $(2+\\varepsilon)$-dilates of a disjoint subcollection and letting $\\varepsilon\\downarrow 0$. The same argument applies to $\\ell_\\infty$ balls, i.e. axis-parallel cubes; hence $c_2\\le 2^2=4$. [Tao2010-ex42] |",
+    "expect": "| $3.879$ | <a href=\"#Lin2026\">[Lin2026]</a> | Comparison with an explicit kernel for the Cauchy generator $A=-\\lvert D\\_u\\rvert-\\lvert D\\_v\\rvert$. In the diamond radius $r=\\lvert u\\rvert+\\lvert v\\rvert$, the kernel $K=(R/r-1)\\_+/(R-1)-\\varepsilon(1-r)\\_+^2$ with $R=3797/2000$ and $\\varepsilon=159411/200000$ satisfies $K\\ge 1$ on the unit diamond and $AK\\ge 0$ away from the origin, which gives $c\\_2\\le 3.879$. Formalized in Lean 4 as `CenteredMaximal.weakTypeConstant_two_le_upper`. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/47a.md",
     "generated": true
   },
@@ -1076,7 +1079,7 @@
     "id": "pin:47a:L",
     "statement": "Last-listed lower-bound table row for Centered Hardy–Littlewood maximal constant in dimension $2$ (47a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/47a.md",
-    "expect": "| $\\dfrac{11+\\sqrt{61}}{12}\\approx 1.5675208$ | <a href=\"#Mel2003\">[Mel2003]</a>, <a href=\"#Ald2011\">[Ald2011]</a> | Melas proved $c_1=\\dfrac{11+\\sqrt{61}}{12}$. Since $c_{d+1}\\ge c_d$, we get $c_2\\ge c_1$. <a href=\"#Mel2003-c1-formula\">[Mel2003-c1-formula]</a> <a href=\"#Ald2011-monotone\">[Ald2011-monotone]</a> |",
+    "expect": "| $\\Phi\\approx 1.6855099933$ | <a href=\"#Lin2026\">[Lin2026]</a> | Periodic measure: masses $1$ and $w=(17+4\\sqrt{22})/9$ on alternating columns $x=ih$, rows $y=jV$, with $h=(5+\\sqrt{22})/6$ and $V=h+1$. Its maximal function is at least $1$ on a period cell except four open $a\\times b$ slots, so $\\Phi=(2hV-4ab)/(1+w)$, where $u=(2+\\sqrt{22})/3$, $a=2h-\\sqrt{2(2+w)}/2-u/2$ and $b=V-\\sqrt{2}u/2-\\sqrt{w}/2$. Formalized in Lean 4 and registered on Palomar. <a href=\"#Lin2026-construction\">[Lin2026-construction]</a> |",
     "asserts": "ledger/teorth-optimizationproblems/constants/47a.md",
     "generated": true
   },
@@ -1140,7 +1143,7 @@
     "id": "pin:4b:L",
     "statement": "Last-listed lower-bound table row for Furstenberg–Sárközy exponent for square-difference-free sets (4b.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/4b.md",
-    "expect": "| $\\frac12\\!\\left(1+\\frac{\\log 12}{\\log 205}\\right)\\approx 0.733412$ | [Lew2015] | Improves modulus and residue set in base expansion |",
+    "expect": "| $0.75806770413$ (exact $75806770413/10^{11}$) | [Jon2026b] | Naslund's criterion and components, reallocated: the same nine pairwise coprime components — Paley chains at $p = 3, 7, 11, 31, 59, 103$ (lengths $2, 3, 4, 7, 9, 11$, equal widths $1/t$ on one digit, the other digit free), the two composite three-low-digit codes at $215^6$ and $437^6$ ($4913$ and $19683$ retained words, free multiplicities $215^3$ and $437^3$), and the 25-state binary recursion with its transition rules unchanged (depth $10^{15}$, new rational row weights, certified growth factor $a = 1430119207986461/(5 \\cdot 10^{14})$ with $\\log\\_2 a > 2\\alpha$) — with several retained words of the $19 \\cdot 23$ code replaced, intervals repositioned, rational widths changed, and all nine moment powers reallocated: $f = 0.15494199\\ldots$ (binary), $0.18194473\\ldots, 0.08579838\\ldots, 0.10723242\\ldots, 0.08916535\\ldots, 0.04217280\\ldots, 0.00239690\\ldots$ (chains), $0.02653617\\ldots, 0.06787893\\ldots$ (codes); $\\sum\\_i f\\_i - \\alpha = 38652/10^{15}$. The bound is unconditional with an explicit constant, $r(N) \\ge c\\,N^{\\alpha}$ for every $N \\ge 1$, from a criterion proved for every $k \\ge 1$ (the same repository gives $D\\_4(N) \\ge c\\,N^{0.9142}$ and $D\\_6(N) \\ge c\\,N^{0.95295}$ for fourth- and sixth-power differences). Not an asserted optimum of the method. Lean 4 formalization of the criterion and of the full value, registered as Palomar entry PALOMAR-2026-09-21-000004 (standard axioms only; the certificate data are checked by proved Lean verifiers with kernel replay); no paper, the mathematical account is the repository's `PROOF.md`. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/4b.md",
     "generated": true
   },
@@ -1324,7 +1327,7 @@
     "id": "pin:59a:U",
     "statement": "Last-listed upper-bound table row for Bohr radius for the bidisc (59a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/59a.md",
-    "expect": "| $0.3174541$ | <a href=\"#G2026\">[G2026]</a> | Degree-$(250,250)$ polynomial from a rational-inner Fejer averaging certificate. Exact integer verification gives $B\\_{3174541/10000000}(p)>1$. <a href=\"#G2026-ub-K2-0-3174541\">[G2026-ub-K2-0-3174541]</a> |",
+    "expect": "| $0.302825279492$ | <a href=\"#P2026\">[P2026]</a> | Set $U=(1+z)(1-w)$, $V=1+zw$, $P=LU+iTV$, $Q=LV+iTU$, and $f=(SQ-P)/(SQ+P)$, with $L=2500000000$, $T=3067398171$, and $S=10^{15}$. Two independent exact computations of the 841 coefficients with $0\\le j,k\\le N=28$ give a finite majorant greater than $1+10^{-26}$ at $r=302825279492/10^{12}$. [Proof package v1.0.0, DOI: 10.5281/zenodo.22341928](https://doi.org/10.5281/zenodo.22341928); archived `bidisc-bohr-certificate-v1.0.0.zip` SHA-256: `afc77b42cdd9de9b82e3d4c6a973dc32bf82b2c19960df58507b9a5cf333928b`. <a href=\"#P2026-ub-K2-0-302825279492\">[P2026-ub-K2-0-302825279492]</a> |",
     "asserts": "ledger/teorth-optimizationproblems/constants/59a.md",
     "generated": true
   },
@@ -1636,7 +1639,7 @@
     "id": "pin:74a:L",
     "statement": "Last-listed lower-bound table row for 10-point multi-point Seshadri constant on $\\mathbb{P}^2$ (74a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/74a.md",
-    "expect": "| $\\frac{117}{370}$ | [[Eck2011](#Eck2011)] | Eckl’s improvement on the earlier $55/174$ bound. <a href=\"#Eck2011-lb-117-370\">[Eck2011-lb-117-370]</a> |",
+    "expect": "| $\\frac{117}{370}$ | [[Eck2011](#Eck2011)] | Eckl’s improvement on the earlier $55/174$ bound. Record among the tabulated lower bounds. <a href=\"#Eck2011-lb-117-370\">[Eck2011-lb-117-370]</a> |",
     "asserts": "ledger/teorth-optimizationproblems/constants/74a.md",
     "generated": true
   },
@@ -1900,7 +1903,7 @@
     "id": "pin:88a:U",
     "statement": "Last-listed upper-bound table row for Bounded prime gap constant (88a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/88a.md",
-    "expect": "| $186$ | [OAI26] | Establishes $\\mathrm{DHL}[40,2]$: every admissible $40$-tuple has infinitely many translates containing at least two primes.  Combines the equidistribution estimates of [Pol14a] and [Sta25] with factorization conditions making suitable least common multiples of divisor products *triply* densely divisible, which widens the support of the multidimensional Selberg sieve, together with an improved numerical optimization.  Applied to the admissible $40$-tuple $\\\\{0, 2, 6, \\dots, 182, 186\\\\}$ of diameter $186$.  Preprint of 30 August 2026, one day before [Sta26], which it describes as independent concurrent work; the proof is attributed to the model GPT 6 Astra.  See the note on its formalization below. |",
+    "expect": "| $240$  | [Sta26]  | Stadlmann: independent proof using the Bombieri–Vinogradov theorem combined with newer equidistribution estimates for smooth moduli. Preprint of 31 August 2026. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/88a.md",
     "generated": true
   },
@@ -1956,7 +1959,7 @@
     "id": "pin:9a:L",
     "statement": "Last-listed lower-bound table row for Shannon capacity of the 7-cycle (9a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/9a.md",
-    "expect": "| $367^{1/5} \\approx 3.2578$ | [PS2018] | |",
+    "expect": "| $3.25883262\\ldots$ | [Tan2026] | Heterogeneous recursion; independent set in ${\\mathcal C}\\_{7}^{\\boxtimes 500}$. Certificates: https://github.com/tandonravi/C7-Shannon-Capacity-Heterogeneous-Recursion |",
     "asserts": "ledger/teorth-optimizationproblems/constants/9a.md",
     "generated": true
   }
