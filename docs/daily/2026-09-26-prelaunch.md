@@ -154,6 +154,16 @@ ACTION: COMPLETED · item A-56 · P3 9b86d9d9 (the P3 task-complete's bus msgId)
 
 **Pending reads, scheduled and not done:** the encounter and outcome reads on the 46a change cannot be taken, because no instrument reads a page reader. The only one that could fire is a report through the 46a row link, counted by `npm run reports` at `G-4`'s next read on 2026-10-26.
 
+### Afternoon addendum: the lane reopened for an upstream merge burst
+
+Written after the close, when David pasted the maintainer's merge notice for our PR #194. The figures above were true as of the close and are not rewritten.
+
+- **What happened.** Upstream merged 17 queued pull requests between 16:49:24Z and 17:05:43Z, ours among them. The drift alarm failed on this lane's own pushes `aa1b917` and `0b413c4` and opened issues #40 and #41. The close-out had read CI only for `59c8cd0`, so both reds went unnoticed until David's message. A correction was posted on the bus as msgId `2980dc74`.
+- **Resolved** in `ce5a57c` and `eb0405a`. 16 files were verified against their primary sources by four reading agents plus this session, and the 10c certificate was recomputed. 13 generated pins moved. CI is GREEN on `eb0405a`, and #40 and #41 are closed by hand with the account. The full log is `A-2.drift2026_09_26`.
+- **The public correction figure moved from 1 to 2** on the #194 merge. The maintainer's comment corrected our premise: the old URL was serving the paper again, and the swap was accepted for stability. The README says so beside the figure.
+- **Record-listing movements this week: no longer 0.** `npm run catches` will count this cycle's moved pins once `ce5a57c` is in history. 88a's pin moving to 240 is a listing artifact; the record, 186, stands.
+- **Findings, one sentence of human judgment:** the afternoon added record-facing findings, four small citation-quality and editorial defects in text upstream merged today (`A-58`), found by reading sources during a drift cycle rather than in the depth audit. So they neither confirm nor falsify the standing prediction, which concerns the depth audit. Positive control: the same readings found every changed bound value supported, so the readers were reading the right documents.
+
 ### Live state
 
 Written last. A report cannot name the commit that lands it, so every value carries its as-of and the command that re-reads it.
