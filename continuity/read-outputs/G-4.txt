@@ -1,0 +1,22 @@
+# read-output sidecar for G-4 — written by check-due-gates-dispositioned --run
+# readCommand: npm run reports
+# ran: 2026-09-26T15:53:38.603Z · exit: 0
+# lines: 16 · sha256: 06674e1458d1617f (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+> bounds-ledger@0.0.0 reports
+> node scripts/report-rate.mjs
+
+# Report arrivals — 2026-09-26 MT · 49 day(s) since the public flip
+raw issues fetched: 30 (pull requests excluded by construction — gh issue list, not the REST issues endpoint)
+  ours (CI bot + owner), excluded: 30
+  outside, not an arrival:        0
+  OUTSIDE ARRIVALS:               0
+
+parts reconcile: 30 + 0 + 0 = 30.
+So 0 is a MEASURED figure: the probe demonstrably sees 30 issue(s) and accounts for every one.
+This counts ARRIVALS, never clicks — the page is static and we are not adding an analytics stack.
+A click measures curiosity; a filed report measures someone who read a row, disbelieved it, and acted.
+G-4 asks for n=1, and this stopped being a LEADING indicator when G-3 closed 2026-08-26:
+an issue arriving through a per-row link has no artifact we authored in its causal path,
+which is G-4's whole condition — so this is the thing itself. It renders no verdict.

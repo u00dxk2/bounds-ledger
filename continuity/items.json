@@ -1380,7 +1380,14 @@
       "updated": "2026-09-10",
       "davidRuled2026_09_10": "DAVID RULED 2026-09-10, and this settles the wait cardedAt2026_09_10 opened. His words, verbatim, from the Command Center board resolving needs-decision 6382100a-8542-4b26-a287-4e1c0dd35db4: \"Yes — keep the goal as it is, drop the November verdict date, and judge the project meanwhile on how much of our own material stands up when we check it.\"\n\nWHAT IT SETTLES, and every clause below is his rather than mine. (1) THE GOAL IS UNCHANGED: title, note3's operationalization, closeWhen and the n=1 bar are untouched, and this row still measures an outside party acting on a watched record with no artifact we authored and sent in the causal path. (2) THE 2026-11-06 OUTCOME READ IS DROPPED, not re-dated. There is now NO date on which this row owes a verdict about whether the goal was met; it stays open until closeWhen fires. The retired sentence is kept verbatim in noteRetiredOutcomeRead2026_09_10 so the change is legible rather than silent. (3) A MEANWHILE JUDGMENT REPLACES IT — the half that is new work rather than a deletion, operationalized in meanwhileJudgment2026_09_10.\n\nWHAT IT DOES NOT SETTLE. The 2026-09-26 read stays ON ITS DATE and stays bound by readRescope2026_09_09: he dropped the OUTCOME read and said nothing about the instrument read, which was never the uninterpretable one. Adopting a second surface remains his call under note5 and CLAUDE.md. And W-6's own 2026-11-06 date is NOT touched here: it is a different row asking a different question at n=1, its onTrigger already instructs its reader to write \"no contact yet\" rather than a verdict, and re-dating another row's watch on the strength of a ruling that named this goal would be the quiet re-date the waits gate forbids. If W-6 should move too, that is a question for him, not an inference from this.",
       "noteRetiredOutcomeRead2026_09_10": "WHAT onTrigger USED TO SAY, kept so the change is legible rather than silent — the precedent is W-6's noteRetiredTrigger, and the reason is the same: a retired instruction that vanishes leaves the next reader unable to tell a decision from a typo. The retired sentence, verbatim: \"The OUTCOME read is 2026-11-06, alongside W-6.\"\n\nRETIRED 2026-09-10 on David's ruling (davidRuled2026_09_10). readRescope2026_09_09 argued at length that the 11-06 read was the one that could not be saved by waiting, that it inherited a denominator which does not fill, and that re-pointing, converting or retiring it were all HIS. He has now retired it. That paragraph is SUPERSEDED on this one point and is deliberately left unedited: it is the record of what was routed to him and why, and editing it would destroy the evidence that the route worked.",
-      "meanwhileJudgment2026_09_10": "WHAT THE MEANWHILE JUDGMENT IS. The mapping below is OPERATIONALIZATION — mine, and challengeable on the same standing note carries for this row. His clause, verbatim: \"judge the project meanwhile on how much of our own material stands up when we check it\".\n\nTHE MAPPING, AND IT IS NOT THE ONE THE CARD RECOMMENDED. The reply drafted for him in cardedAt2026_09_10 proposed stale-value resolvability (A-45). His words describe a different property: material that STANDS UP WHEN WE CHECK IT is a record read against its cited source and found sound — which is A-47, the depth audit he himself ruled on 2026-09-09 (\"start reading our own 543 records against their sources on a schedule\"). A-45 asks whether a reader holding a superseded value can still reach the constant's current row; that is findability, not soundness. So A-47 carries the meanwhile judgment as PRIMARY, and A-45 stays exactly what its own note3 makes it — a Tier-1 LEADING indicator read BESIDE the arrivals number, never in place of it and never promoted to the yardstick by this ruling.\n\nWHY THE DIVERGENCE IS RECORDED RATHER THAN RESOLVED QUIETLY. He said \"Yes\" to a card that named A-45 and then wrote a clause naming A-47's property. Collapsing the two would be reading his agreement as agreement to MY wording rather than to his own sentence. If this mapping is wrong it is wrong HERE, in one field, rather than diffused through the cadence where nobody could find it. Challenge it by reading his sentence, not this paragraph.\n\nWHAT A-47 NOW OWES THAT IT DID NOT. Its closeWhen already promises, at every re-read, a count of rows audited, a count found sound, a count found defective and a count UNREACHABLE. That set is now the project's interim yardstick, so the 2026-09-16 read either names the audit store and its counts or reports that the work did not start — and under this ruling the second answer is a finding about the lane, not a slipped chore."
+      "meanwhileJudgment2026_09_10": "WHAT THE MEANWHILE JUDGMENT IS. The mapping below is OPERATIONALIZATION — mine, and challengeable on the same standing note carries for this row. His clause, verbatim: \"judge the project meanwhile on how much of our own material stands up when we check it\".\n\nTHE MAPPING, AND IT IS NOT THE ONE THE CARD RECOMMENDED. The reply drafted for him in cardedAt2026_09_10 proposed stale-value resolvability (A-45). His words describe a different property: material that STANDS UP WHEN WE CHECK IT is a record read against its cited source and found sound — which is A-47, the depth audit he himself ruled on 2026-09-09 (\"start reading our own 543 records against their sources on a schedule\"). A-45 asks whether a reader holding a superseded value can still reach the constant's current row; that is findability, not soundness. So A-47 carries the meanwhile judgment as PRIMARY, and A-45 stays exactly what its own note3 makes it — a Tier-1 LEADING indicator read BESIDE the arrivals number, never in place of it and never promoted to the yardstick by this ruling.\n\nWHY THE DIVERGENCE IS RECORDED RATHER THAN RESOLVED QUIETLY. He said \"Yes\" to a card that named A-45 and then wrote a clause naming A-47's property. Collapsing the two would be reading his agreement as agreement to MY wording rather than to his own sentence. If this mapping is wrong it is wrong HERE, in one field, rather than diffused through the cadence where nobody could find it. Challenge it by reading his sentence, not this paragraph.\n\nWHAT A-47 NOW OWES THAT IT DID NOT. Its closeWhen already promises, at every re-read, a count of rows audited, a count found sound, a count found defective and a count UNREACHABLE. That set is now the project's interim yardstick, so the 2026-09-16 read either names the audit store and its counts or reports that the work did not start — and under this ruling the second answer is a finding about the lane, not a slipped chore.",
+      "readCommandLastRun": "2026-09-26T15:53:38.603Z",
+      "readCommandLastExit": 0,
+      "readCommandLastDurationMs": 9225,
+      "readCommandLastOutputRef": {
+        "lines": 16,
+        "sha256": "06674e1458d1617f"
+      }
     },
     {
       "id": "A-47",
@@ -1967,12 +1974,12 @@
       "linkedCommits": [
         "c5a964b"
       ],
-      "readCommandLastRun": "2026-09-25T00:04:16.187Z",
+      "readCommandLastRun": "2026-09-26T15:53:08.114Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 367,
+      "readCommandLastDurationMs": 627,
       "readCommandLastOutputRef": {
-        "lines": 48,
-        "sha256": "537f04f69fb54283"
+        "lines": 73,
+        "sha256": "1b28960a2f77a08c"
       },
       "disposition2026_09_24": "DISPOSITION 2026-09-24, due 2026-09-23, read a day late inside the two-day dark window described on A-49's disposition of the same date.\n\nTHE READ, literal, through the gate (check-due-gates-dispositioned --run A-52, exit 0, 367ms, 48 lines): the row rendered, and Grep over the stamped output for a line starting \"## arrivalShapes\" returns ZERO. Per this row's own readCommand that is the whole test, and it is deliberately the quoted heading form rather than the bare word, because the word appears in this row's own onTrigger, closeWhen and readCommand whether or not the list exists. So the list is still unwritten.\n\nRE-DATED to 2026-09-26. This is writing, not building: what an outside party acting on a watched record would actually look like, so G-4 (the Tier-0 goal that someone acts on a record without us filing the report) can be recognised when it happens rather than argued about afterwards. It is the kind of thing that stays unwritten because nothing breaks while it is missing, which is the argument for a near date rather than a far one.",
       "lastEvaluated": "2026-09-24"
@@ -2159,7 +2166,7 @@
     {
       "id": "A-56",
       "type": "action",
-      "status": "open",
+      "status": "closed",
       "title": "Settle 46a's depth-audit entry: read the published body of Bourgain's GAFA 1991 paper, pp. 149–187, and decide whether it states 58/15",
       "nextCheckDate": "2026-09-26",
       "links": [
@@ -2177,10 +2184,14 @@
       "onTrigger": "On 2026-09-26, run the three routes in unWait and record each one's result on this row. If the published body is read: pp. 149–187 NOT stating 58/15 makes A-47-0030 DEFECTIVE; stating it, even by citing the companion, makes it SOUND with the attribution recorded in its notes. In either case, re-render the pages, run the adversarial review before the commit, and close this row naming the commit. If no route reads it: record the routes tried and their results, leave A-47-0030 UNRESOLVED, and close this row as 'no reachable copy'. Do not re-date it to try the same routes again. Nothing goes upstream on this row's authority; a correction to the mirrored entry is outward contact and David-gated.",
       "closeWhen": "A-47-0030 carries a verdict read from the published body (DEFECTIVE or SOUND), committed and served; OR the three routes are recorded as not yielding the published text, and the entry stays UNRESOLVED with that recorded.",
       "created": "2026-09-24",
-      "updated": "2026-09-24",
+      "updated": "2026-09-26",
       "linkedCommits": [
         "b4003fa"
-      ]
+      ],
+      "routes2026_09_26": "Route 1, SpringerLink preview: page-one.springer.com/pdf/preview/10.1007/BF01896376 HTTP 200 74421 bytes, pp. 147-148 only; the PDF URL redirected to an idp.springer.com sign-in page. Route 2, an openly posted copy: Semantic Scholar and OpenAlex report closed access; archive.org title search numFound 0; scholar.archive.org answered a bot check; eudml.org/doc/58112 HTTP 200 links the Goettingen Digitisation Centre (GDZ), whose IIIF manifest for GAFA vol. 1 (437 canvases, canvas n = page n+6) served pp. 147-187 as 41 images, all HTTP 200. THE PUBLISHED BODY WAS READ THIS WAY. Route 3, collected works: none found, not needed. No identity sent to any service.",
+      "closedAt": "2026-09-26",
+      "lastEvaluated": "2026-09-26",
+      "notes": " | CLOSED 2026-09-26 by 412cd1d: the published GAFA 1 (1991) body was read (GDZ page images, pp. 147-187; routes on routes2026_09_26). It proves 31/8 (p. 185 'Take p0 = 31/8', from Proposition 6.47 on p. 182) and states 58/15 on no page; [Bo2] is cited once, p. 186, with no exponent. A-47-0030 is DEFECTIVE, an attribution defect: 58/15 is proved in the companion IHES M/90/74, Prop. 2.15. Adversarial review on the working tree: approve, no material findings. Nothing sent upstream; a correction to the mirrored entry is outward contact and David-gated."
     }
   ],
   "meta": {
