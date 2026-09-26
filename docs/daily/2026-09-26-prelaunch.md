@@ -1,85 +1,165 @@
+---
+north_star_metric: an outside party acts on a watched record WITHOUT us filing the report (G-4; primary indicator = npm run reports, arrivals through the per-row links)
+north_star_value: 0
+north_star_status: expected-zero
+north_star_classification: expected-zero
+product: bounds-ledger
+date: 2026-09-26
+lifecycle_stage: launched
+last_deploy: 412cd1d3 (the last page-changing commit; `npm run served` read 2 of 2 changed files served as committed at 2026-09-26T16:27:39Z)
+on_hold_items: 0
+top_action_today: settle 46a's citation from the published body of Bourgain's 1991 paper; it proves 31/8, not the row's 58/15, and the public page now says so
+# The four keys below have NO instrument in this lane and are left null rather than filled with a
+# zero nobody measured: pre-revenue, no billing, no analytics on the published page, no Sentry project.
+mrr_usd: null
+n_active_users_28d: null
+sentry_open_p1: null
+sentry_open_p2: null
+---
+
 # Daily report — bounds-ledger — 2026-09-26 (MT)
 
-Three-stage day (David, card `99bb9206`): P1 evidence and choice, P3 the product-work loop, P5 the delta-only close. This file opens with the P1 selection packet; the report's other sections are written at the close.
+Three-stage day (David, card `99bb9206`): P1 evidence and choice, P3 the product-work loop, P5 the delta-only close. Every figure below names the command it came from and when it was read.
 
-## Selection packet (P1, written 2026-09-26 at about 15:45Z)
+## BLUF
 
-**Outcome:** settle what the public page tells a reader about constant 46a's credited source. **Item:** `A-56` (settle 46a's depth-audit entry by reading the published body of Bourgain's GAFA 1991 paper, pp. 149–187).
-
-**The user problem, in the user's words** (from `docs/evangelism-bar.md`): *"I cited a bound and a referee told me it had been improved. I had no way to know."* The version this item serves: a reader about to cite 46a's extension exponent 58/15 with the reference [Bo1991] sees a badge saying our check of that reference is UNRESOLVED, and no answer. Either the paper states 58/15, or the citation points at the wrong Bourgain paper.
-
-**Evidence, one line each:**
-- OBSERVED: `node scripts/depth-audit.mjs` at 2026-09-26 about 15:43Z printed `A-47-0030  46a [Bo1991]  UNRESOLVED  (value-vs-source)  selection: systematic`. Source: our audit store. Population: the 34 audited rows. Limit: this is our own reading, not a reader's.
-- OBSERVED: at HEAD `08b739b`, a Grep count for `A-47-0030|46a` finds 10 matching lines in `c/46a.html` and 4 in `index.html`, so the committed pages carry the entry. [linter-report] Limit: I read the committed files, not the served bytes. Served bytes were last read on 2026-09-25 (`npm run served`: 23 of 23 served).
-- OBSERVED, from `A-56.note` (the 2026-09-24 reading): the July 1990 IHES preprint of the paper (M/90/62) and the published pp. 147–148 give 31/8. Bourgain's companion paper, IHES M/90/74, proves 58/15 (Proposition 2.15).
-- HYPOTHESIS: the published body does not state 58/15, which would make the citation defective. The adversarial review of 2026-09-24 (round 6) refused to store DEFECTIVE on this hypothesis, because a published paper that cites its companion could still state the value.
-- MISSING: the text of the published pp. 149–187. That is the whole of what settles the entry.
-- MISSING: any reader of `c/46a.html`. The page has no analytics and GitHub Pages provides no request log (`docs/evangelism-bar.md`, "Reader reach is unmeasured").
-
-**Recurred prior-day finding that bears on this choice:** the 2026-09-25 retro's finding 4 (the census store fed the page David froze). It does not recur here. `A-47-0030` renders on the constants pages, which are not frozen; the freeze covers `ramsey.html` and `copying.html` only.
-
-**Permission:** `A-56` is open with no park, and nothing is waiting on David for it. A depth-audit verdict with its re-render is lane work under David's 2026-09-09 depth ruling (`A-47`). The row's own limit binds: nothing goes upstream. A correction to the mirrored 46a entry is outward contact, so it needs adversarial review first and David's approval after that.
-
-**Next action:** kind: **improve**. Run the three routes in `A-56.waitJustification.unWait` in order and record each one's literal HTTP result on the row. First command:
+**FIRST ACTION (next session, 2026-09-27):** `A-47` slice 8 (the depth audit, which renders on the public constant pages) is due. Draw it and push the draw before any source is opened:
 
 ```bash
-node scripts/sky.mjs show-item.mjs A-56 --fields onTrigger,waitJustification.unWait,closeWhen
+node scripts/sky.mjs show-item.mjs A-47 --fields onTrigger,closeWhen
 ```
 
-Reading brief constraint (standing since 2026-09-25): the brief sends no email address or name to any service, and Unpaywall is not a route.
+**DON'T-TOUCH:** nothing goes upstream about 46a until `A-57` (the drafted correction) has had its adversarial review and David has decided.
 
-**Acceptance condition, observable:** one of these two outcomes.
-- (a) `node scripts/depth-audit.mjs` prints `A-47-0030 … SOUND` or `… DEFECTIVE`, read from the published body and stored with that source. The adversarial review ran before the commit. `c/46a.html` and `index.html` are re-rendered and committed, and `npm run served` reads them SERVED.
-- (b) The three routes are recorded on `A-56` with their literal results, `A-47-0030` stays UNRESOLVED with the routes named, and `A-56` closes as "no reachable copy". (b) changes nothing a user sees, and the P3 receipt says so.
+**The day in one line:** a citer looking up constant 46a is now told that the 1991 paper it credits proves 31/8, not the row's 58/15, and is pointed to the companion paper where 58/15 is proved. We read the published paper page by page from a free scan to settle it.
 
-**Delivery and encounter checks:** delivery is read by `npm run served` after the push. Encounter cannot be read: no reader of `c/46a.html` is measurable. The only event that could appear is a report filed through the 46a row's own link, counted by `npm run reports`. One such arrival is one event, not a rate.
+## What changed
 
-**USER-FACING: yes** for outcome (a): `continuity/depth-audit.json` (user-read data), `c/46a.html` and `index.html` (served pages), and `continuity/items.json`. Outcome (b) touches `continuity/items.json` only, with the depth-audit notes possibly amended to name the routes.
+- **`A-56` (settle 46a's depth-audit entry from the published body) is done, and the entry is DEFECTIVE** (`412cd1d`).
+  - The premise that the published body sat only behind Springer's paywall was wrong. EuDML's entry `eudml.org/doc/58112` links the Göttingen Digitisation Centre, which serves GAFA volume 1 as page images. All 41 pages, pp. 147–187, returned HTTP 200.
+  - The published paper proves 31/8. p. 185 reads "Take p₀ = 31/8", from Proposition 6.47 on p. 182. 58/15 appears on no page. The one citation of the companion paper, on p. 186, is for "refinements" and gives no exponent.
+  - The defect is in the attribution, not the number: 58/15 is proved in Bourgain's companion paper, IHES M/90/74, Proposition 2.15.
+  - `c/46a.html`, the index badge and the README's audit paragraph were re-rendered or updated. `npm run served` reads both changed pages as served.
+- **`A-56` closed** (`59c8cd0`), with its three routes and their literal results recorded on the row.
+- **`A-52` (write down how an outsider could act on a record without filing an issue) closed at the close.** Its `arrivalShapes` field now lists 10 shapes: 7 with a trace and a read command, each run once today, and 3 marked "no trace we can see".
+- **`A-57` filed:** draft the upstream correction to 46a's attribution, review it, then bring it to David. It carries `correctionCandidate`, so `npm run catches` now reads a correction queue of 1 (A-57).
 
-**HYGIENE INPUTS** (copied from the kickoff's reads, composed at 2026-09-26T15:41:40Z):
-- (a) Due rows not bearing on the choice, **2**:
-  - `A-52` (write down how an outsider could act on a record without filing an issue), expectedSignalBy 2026-09-26. The kickoff shows its last run as 2026-09-25T00:04:16Z, and the `arrivalShapes` field is still absent.
-  - `G-4` (an outside party acts on a watched record without us filing the report), expectedSignalBy 2026-09-26, last run NEVER.
-- (b) Owed child rows in the orchestrator's ledger: **none**. Read: "rows owed to you in skylark-site's ledger: 0 of 724 considered".
-- (c) State reads marked CROSSED or not judged, **3**:
-  - Dated gates due today: 3 of 3 due, 3 UNREAD. One of them is `A-56`, selected above.
-  - Prior-day retro: 2 of 2 tagged findings "still on discipline".
-  - missingLinkedCommits: NOTHING SWEPT (0 of 0 considered), so it was not judged.
+**Findings classification, one sentence of human judgment: today's one finding is RECORD-FACING.** A mirrored upstream entry credits a value to a paper that does not state it, and a human found it by reading the cited source in the depth audit.
+- **Numeric or byte-only: neither.** It was found by reading, not by the drift alarm. `npm run catches` at 2026-09-26T16:49Z read 0 in the current partial week and 2 completed consecutive weeks with none.
+- **Consecutive instrument-facing days: 0**, counted by hand. The run of 1 that ended yesterday is broken by today's record-facing finding.
+- **The standing prediction, quoted from CLAUDE.md:** "the next record-facing catch will be a citation-quality defect in a mirrored upstream entry … found by a human reading the cited source in the depth audit (`A-47`), not by any alarm." **Today HELD it:** an attribution defect in the mirrored 46a entry, found by reading the cited source for an `A-47` entry. It was not falsified, and CLAUDE.md needs no correction.
 
-**Yesterday's recommendations** (Section 0, Step 0.10, from `docs/daily/2026-09-25-prelaunch.md` § Recommendation):
-- `A-56` on 2026-09-26: carrying today, to P3 (selected above).
-- `A-47` slice 8 on 2026-09-27: carrying, to tomorrow.
-- `A-54` census session 2 and the rate checkpoint on 2026-09-28: carrying, to 2026-09-28.
+**W-7 — one instrument read against its own claim: `gh search code "u00dxk2.github.io/bounds-ledger" --limit 50`, used at the close to ask whether anyone outside links our pages.** It returned 50 hits, all in our own repository. So it could never have shown an outside hit ranked below the 50th: a clipped read of a 143-hit total, because `gh api search/code` without the limit reported `"total":143`. The shape was replaced before any conclusion was drawn, by excluding our repository in the query (`-repo:u00dxk2/bounds-ledger`). That returned total 1, in our own `skylark-site`, and it is the command recorded on `A-52`. Rotation: 09-22 `A-55`'s readCommand, 09-24 `depth-audit.mjs`'s drawn-by-position count, 09-25 `update-david-board.mjs --list`, this one today.
 
-## Prep while P1 is under review (nothing stored, nothing committed)
+## Inputs (controllable)
 
-**Route 2 reached the published text, so the premise that the body sits only behind Springer's paywall was wrong.**
-- EuDML's entry `https://eudml.org/doc/58112` links "Access to full text" to the Göttingen Digitisation Centre (GDZ), which holds GAFA volume 1 as page images.
-- The IIIF manifest returned HTTP 200 with 437 canvases, and canvas n is printed page n−6.
-- All 41 images for pp. 147–187 returned HTTP 200. They are saved under `tmp/depth-reads/a56/gdz/`, which is gitignored, and are not republished.
-- Route 1 (Springer's preview) still stops at p. 148. Route 3 (collected works) found no volume and was not needed.
-- The literal HTTP results are in `tmp/depth-reads/a56/routes-log.md`.
-- Nothing identifying was sent: default Node user agent, no email address and no name.
+- **One adversarial review, on the right target, before the commit.** Target: working tree diff. Verdict: approve, "No material findings". Its render re-checks hit the sandbox's git EPERM. `npm run check` was run outside the sandbox on that tree (exit 0), and both render checks were run again after the commit (PASS).
+- **One reading agent** read all 39 body pages offline. I read pp. 147, 148, 182, 185, 186 and 187 on the images myself, and every quotation stored was checked against them.
+- **One hygiene helper** drafted A-52 and G-4. Both lines were amended at the close; see § Close.
+- **No identity sent anywhere.** The fetches used Node's default user agent, with no email address and no name. Unpaywall was not used.
 
-**Positive control (I read these images myself).**
-- p. 147 carries "Geometric and Functional Analysis Vol. 1, No. 2 (1991)" and "© 1991 Birkhäuser Verlag, Basel".
-- p. 187 carries "[Bo2] J. BOURGAIN, On the restriction and multiplier problem in R³, Preprint IHES, M/90/74" and "Submitted: February 7, 1990".
+## Outputs (lagging)
 
-**The reading.**
-- A sub-agent read all 39 images, pp. 148–186, offline and reported a per-page summary. It found no "58/15", no "4 − 2/15" and no 3.866… anywhere.
-- I read pp. 148, 182, 185 and 186 myself:
-  - p. 182: Proposition 6.47, the L^∞(S_{d−1}) → L^p(R^d) extension bound for p > 2{p(d)′/(d+1) + d/(d−1)}, and Theorem 6.49 with r ≤ 31/23.
-  - p. 185: "Take p₀ = 31/8. By discretization of Proposition 6.47 …".
-  - p. 186: the single citation of [Bo2], "Added in proof: The reader may find some refinements of the techniques and results of the present paper in [Bo2]", which states no exponent.
-  - p. 148: "for d = 3, one gets (0.6) for p < 31/23".
-- My arithmetic: with p(3) = 7/3, (6.48) gives 2(7/16 + 24/16) = 31/8.
+- **`G-4` (an outside party acts on a watched record without us filing the report): 0 arrivals.**
+  - Source: `npm run reports` at 2026-09-26T15:53Z, exit 0. It counted 30 raw issues: 30 ours by author and 0 outside, and the parts reconcile to 30.
+  - The rule of three on 0 arrivals over the 29 clean-detection days since 2026-08-28 gives an upper 95% bound of about 0.10 arrivals a day.
+  - The six other traces written onto `A-52` today, each read once, found nothing from outside.
+  - Page readership is not measured at all.
+  - Positive control: the same run counted 30 issues and attributed every one, so it reads issues when they exist.
+- **Depth audit (the constants mirror):** "34 audited, 19 sound, 1 defective, 6 unresolved, 8 unreachable", from `node scripts/depth-audit.mjs` at 2026-09-26 about 16:05Z. Yesterday it was 0 defective and 7 unresolved; the move is `A-47-0030`.
+- **The second area, printed beside it and never summed:** "census: 10 of 122 bound(s), across 5 of 42 credited paper(s) — 6 sound, 0 defective, 1 unresolved, 3 unreachable", from `node scripts/ds1-depth.mjs`. It is unchanged today.
+- **Record-listing movements:** 0 in the current partial week, and 2 completed consecutive weeks with none (`npm run catches`, 16:49Z). **Correction queue: 1 (A-57).**
+  Positive control: the same run lists 7 movements in the week of 2026-08-31, so it counts movements when they happen.
+- **Publish:** "2 checked — 2 served, 0 in flight, 0 stale, 0 unreachable", from `npm run served` at 2026-09-26T16:27:39Z, anchored on `412cd1d387`. CI: `check-ci-status --workflow reverify.yml` on `59c8cd0d7f` returned GREEN.
 
-**What this supports, pending P3 and the adversarial review:** `A-47-0030` DEFECTIVE. The published [Bo1991] proves the extension exponent 31/8. The row's 58/15 is Bourgain's companion paper [Bo2] (IHES M/90/74, Proposition 2.15), which the published paper names only as a source of "refinements" and never with that exponent.
+## Recommendation
 
-**Section 0 lines:**
-- Gate: `npm run verify` at HEAD `08b739b` printed `[verify] TRUE exit 0`. Its output included "No drift. 116 files match upstream" and "244 claim(s): 242 hold, 0 broken/unreachable, 2 unverified (manual)". The brief leg was UNVERIFIABLE because of a sign-in redirect, which is advisory under `A-41` (the rule that an unreachable brief is reported but not counted).
-- CI: `check-ci-status --workflow reverify.yml` on `08b739bd42` returned GREEN (exit 0).
-- Deploy: `check-deployed-sha-drift` is clean across 33 services but swept NOTHING for this lane. This lane publishes to GitHub Pages and has no Render service, so the read is neither a stop nor a pass. The lane's own served-bytes read is `npm run served`.
+**[A — user-visible] 2026-09-27: `A-47` slice 8 (the depth audit), which renders on the public constant pages.** Draw it and push the draw before any source is opened.
+
+**[A] 2026-09-28: `A-54` census session 2 and the rate checkpoint**, by `blockedSourceRule2026_09_25`. The reading brief sends no identity.
+
+**[A] 2026-09-30: `A-57`.**
+- Fetch the companion paper's published form.
+- Draft the correction to the mirrored 46a entry into `docs/decisions/`.
+- Run the adversarial review, including the method sentence.
+- Then file ONE needs-decision with the reviewed draft attached. Send nothing.
+
+## On hold pending data
+
+**Nothing in this lane waits on David today.** `node scripts/sky.mjs answered-cards.mjs --project bounds-ledger` at P1 found no waiting or answered card. `A-57` becomes a David decision only after its draft is reviewed.
+
+**Dated reads ahead:**
+- `A-47` and `A-45` (the Tier-1 leading indicator): 2026-09-27.
+- `A-54`, `A-2` and `W-12` (upstream's handling of our PR #194): 2026-09-28.
+- `W-13` (someone must call the served-bytes check) and `A-49`: 2026-09-29.
+- `A-57`: 2026-09-30.
+- `G-4`: 2026-10-26.
+- `W-3` (the watch for a reply about erdosproblems.com/36): 2026-10-08.
+
+## State Appendix
+
+### Selection packet (P1, written 2026-09-26 at about 15:45Z)
+
+**Outcome:** settle what the public page tells a reader about constant 46a's credited source. **Item:** `A-56`.
+
+**The user problem, in the user's words** (from `docs/evangelism-bar.md`): *"I cited a bound and a referee told me it had been improved. I had no way to know."*
+
+**Evidence at P1:**
+- OBSERVED: `A-47-0030` stored UNRESOLVED.
+- OBSERVED: the 2026-09-24 reading gave 31/8 in the preprint and in the published pp. 147–148, and 58/15 in the companion.
+- HYPOTHESIS: the published body does not state 58/15.
+- MISSING: the published pp. 149–187.
+- MISSING: any reader of `c/46a.html`.
+
+**Acceptance condition, (a):** a verdict read from the published body, adversarial review before the commit, the pages re-rendered and committed, and `npm run served` reading them SERVED. **Met.** The manager review on the bus (`60dbe402`) confirmed each leg and fetched the live page itself.
+
+**HYGIENE INPUTS (as copied at P1):**
+- (a) `A-52` and `G-4`.
+- (b) none, from "0 of 724 considered".
+- (c) three reads: dated gates 3 of 3 UNREAD; prior-day retro 2 of 2 "still on discipline"; missingLinkedCommits NOTHING SWEPT.
+
+**Yesterday's recommendations** (Step 0.10):
+- `A-56`: executed (`412cd1d`).
+- `A-47` slice 8: carrying, to 2026-09-27.
+- `A-54` session 2: carrying, to 2026-09-28.
+
+**Section 0:**
+- `npm run verify` at `08b739b`: TRUE exit 0.
+- CI GREEN on `08b739bd42`.
+- Deploy drift: NOTHING SWEPT for this lane. It is a GitHub Pages lane, which is neither a stop nor a pass; its own read is `npm run served`.
 - Harness: running 2.1.283 · fleet UNIFORM · installed 2.1.283 (SAME).
-- Codex: GREEN, from the probe line on the kickoff (2026-09-26T15:31Z). Not used for this choice.
-- Cycle rotation: no product-love cycle picks this lane today (exit 0).
+- Codex: GREEN.
+- Cycle rotation: no product-love cycle today.
+
+### Close
+
+ACTION: COMPLETED · item A-56 · P3 9b86d9d9 (the P3 task-complete's bus msgId)
+
+**State changed since the P3 post (bus msgId `9b86d9d9`):** none to the product. The P3 receipt still holds, and no new one is posted.
+
+**Hygiene draft** (`tmp/hygiene-draft-bounds-ledger-2026-09-26.md`): 2 lines, 0 accepted · 2 amended · 0 rejected.
+- **`A-52`, AMENDED: the draft proposed a re-date; I wrote the list and closed the row instead**, because it is a definition and had slipped twice. `arrivalShapes` was written, and the row's own readCommand prints `## arrivalShapes` at line 73, with the control `## title (119c)` at line 10. Then `--close A-52`.
+- **`G-4`, AMENDED from UNDECIDED.** Today's read and judgment went into `disposition2026_09_26`: none of the new traces is worth reading daily at this arrival rate. Then `--extend G-4 --new-target 2026-10-26`, the next instrument read, because David's 2026-09-10 ruling dropped the outcome date and set no cadence.
+- READ-MUTATED: "none — 2 reads guarded", with the HEAD commit unchanged across both runs.
+- Check verdicts, from the helper:
+  - check-wait-justification: "RESULT: PASS — 1 of 72 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)". That one row was `A-56`, which is now closed.
+  - check-engineering-zero: "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)".
+    Positive control: the same run printed red rows for agentic-dir, bloom-edu and buddha-ur, so it reports findings where they exist.
+
+**The rest of today's ledger delta:**
+- `A-56`: closed naming `412cd1d`, with `routes2026_09_26` (in `59c8cd0`).
+- `A-57`: minted, then `correctionCandidate: true` set. `npm run catches` then printed "Candidate-correction queue depth: 1 (A-57)".
+
+**Verify:** `check-due-gates-dispositioned.mjs` (no flag) printed "snapshot CURRENT: taken today (2026-09-26); this verdict certifies today's Phase-0 due set of 3 row(s)". A-52 and A-56 were closed and G-4 re-dated, and the run ended "RESULT: PASS (exit 0)". The ledger gate battery, `continuity-check.mjs`, printed "status: OK • items: 73 • commits checked: 15", with information lines only.
+
+**Pending reads, scheduled and not done:** the encounter and outcome reads on the 46a change cannot be taken, because no instrument reads a page reader. The only one that could fire is a report through the 46a row link, counted by `npm run reports` at `G-4`'s next read on 2026-10-26.
+
+### Live state
+
+Written last. A report cannot name the commit that lands it, so every value carries its as-of and the command that re-reads it.
+- **HEAD before this close's commit:** `59c8cd0`, as of 2026-09-26 about 16:50Z. Re-read with `git rev-parse HEAD origin/main`.
+- **CI on `59c8cd0d7f`:** GREEN, as of 16:27Z. Re-read with `node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml`.
+- **Served:** 2 of 2 changed files served, anchored on `412cd1d387`, as of 16:27:39Z. Re-read with `npm run served`.
+- **Depth audit:** 34 audited, 19 sound, 1 defective, 6 unresolved, 8 unreachable. Re-read with `node scripts/depth-audit.mjs`.
+- **Ledger:** 73 rows, per `continuity-check.mjs` at the close. Re-read with `node scripts/sky.mjs continuity-check.mjs`.
+- **Open correction queue:** 1 (`A-57`, the drafted upstream correction to 46a's attribution). Re-read with `npm run catches`.
