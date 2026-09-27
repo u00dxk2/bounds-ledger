@@ -45,7 +45,7 @@ The fifth, 8a (the zero-free region constant), stays unsettled: the cited paper'
 
 ## Outputs (lagging)
 
-- **`G-4` (an outside party acting on a watched record without us filing the report), measured by `npm run reports` at about 15:44Z:** 0 outside arrivals of 32 issues. The parts sum: 32 + 0 + 0. By the rule of three that is a 95% upper bound of about 3/32 on the outside share of issues. It says nothing about readers who never file.
+- **`G-4` (an outside party acting on a watched record without us filing the report), measured by `npm run reports` before the P1 post at 15:44:35Z, and again at the retro with the same figures:** 0 outside arrivals of 32 issues. The parts sum: 32 + 0 + 0. By the rule of three that is a 95% upper bound of about 3/32 on the outside share of issues. It says nothing about readers who never file.
 - **Reach of today's change:** unknown. The pages are static and carry no analytics.
 
 ## Recommendation
@@ -69,7 +69,7 @@ The fifth, 8a (the zero-free region constant), stays unsettled: the cited paper'
 **The user problem, in the user's words** (`docs/evangelism-bar.md` lines 20–21, verbatim): "I got this constant from a page that says it was last edited in January. I don't know if that means it's current or that nobody has looked at it since." (Corrected at P3 after the manager review: the P1 draft quoted a paraphrase as if it were the user's words.) The depth audit is the "has anybody looked" half of that sentence, because it reads a row against its source.
 
 **Evidence**
-- OBSERVED — `npm run reports` (G-4 — an outside party acting on a watched record without us filing the report) · every issue on the public repo · 50 days since the public flip · run 2026-09-27 ~15:44Z: 32 issues fetched, 32 ours, 0 outside, 0 outside arrivals; the three parts add up to 32 + 0 + 0 = 32. Limit: it counts filed issues, not people who read a row and acted without filing.
+- OBSERVED — `npm run reports` (G-4 — an outside party acting on a watched record without us filing the report) · every issue on the public repo · 50 days since the public flip · run 2026-09-27 before the P1 post at 15:44:35Z: 32 issues fetched, 32 ours, 0 outside, 0 outside arrivals; the three parts add up to 32 + 0 + 0 = 32. Limit: it counts filed issues, not people who read a row and acted without filing.
 - OBSERVED — `node scripts/depth-audit.mjs`, run live this morning at exit 0, first line literal: "depth audit (A-47): 34 row(s) audited — 19 sound, 1 defective, 6 unresolved, 8 unreachable". The 1 defective is 46a, settled yesterday (`412cd1d`). Limit: 25 rows were drawn by position and 9 were chosen for suspicion, and they are counted apart; none of it is a random-sample rate.
 - OBSERVED, a defect on the public pages that this slice fixes — the same run's denominator line claims "COMPUTED, not remembered", then prints the STORED 673 of 770 from `meta.corpus` (measuredAt 2026-09-11), while `--corpus` computes 691 of 788 today. 22 public pages (21 constant pages and `index.html`, which says it twice) carry "against 673 rows that name a source, counted on 2026-09-11". The date is on the page, so the sentence is not false, but it is stale by 18 rows. The fix: refresh `meta.corpus` from `--corpus` in the landing commit, so every audited page re-renders against 691.
 - OBSERVED — `node scripts/depth-audit.mjs --corpus`, exit 0 this morning: "691 cited of 788 bound row(s)". The frame moved from 673 because of the upstream burst resolved in `ce5a57c`.
@@ -84,7 +84,7 @@ The fifth, 8a (the zero-free region constant), stays unsettled: the cited paper'
 **Next action — kind: improve (deliver built value: more rows read, shown on the public pages).** First command, at P3 start. It commits the draw onto the row and pushes it before any source is opened:
 
 ```bash
-node C:/dev/skylark/bounds-ledger/scripts/depth-audit.mjs --draw 625 675 12 62 112
+node scripts/depth-audit.mjs --draw 625 675 12 62 112
 ```
 
 **Acceptance condition:** `node scripts/depth-audit.mjs` prints a count five higher than the pre-slice store, and its four verdict counts add up to the row count. The draw commit is on `origin/main` before any reading agent is dispatched. `render-site --check` and `npm run check` pass after the landing commit and the second render. `npm run served` reports SERVED for the changed constant pages.
