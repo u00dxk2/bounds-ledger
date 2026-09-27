@@ -33,7 +33,7 @@ const KNOWN = ['SOUND', 'DEFECTIVE', 'UNRESOLVED', 'UNREACHABLE'];
 // Returns { code, lines }. Never exits, never throws — so the selftest can read
 // both polarities in-process rather than trusting a spawned exit code through a
 // shell, which is exactly how this repo's alarm was fake for its first two days.
-export function run(storePath) {
+export function run(storePath, { live = null } = {}) {
   const lines = [];
   const rel = path.relative(REPO, storePath) || storePath;
 
@@ -91,6 +91,7 @@ export function run(storePath) {
   lines.push(`depth audit (A-47): ${audits.length} row(s) audited — ${counts.SOUND} sound, ${counts.DEFECTIVE} defective, ${counts.UNRESOLVED} unresolved, ${counts.UNREACHABLE} unreachable`);
   lines.push(`  selection: ${systematic} drawn by position (the systematic ladder) · ${suspicion} chosen because something already looked wrong, of which ${unlabelled} carry no selection at all and are counted there rather than as coverage. Only rows drawn by position can accumulate into a coverage figure.`);
   lines.push(`  denominator: ${store.meta?.denominatorProvenance || '(none recorded — read A-47.note2)'}`);
+  lines.push(`  ${denominatorCheck(store.meta?.corpus, live)}`);
   lines.push(`  sampling: ${store.meta?.samplingRule || '(none recorded — a rate off an unstated sample is not a rate)'}`);
   lines.push('');
   for (const a of audits) {
@@ -110,6 +111,38 @@ export function run(storePath) {
   lines.push(`blindTo: every cited row not yet in this store; whether a SOUND row's source says something the auditor did not think to ask; whether an UNRESOLVED row is sound or defective, which is the whole content of that verdict; and any defect in ${uncitedText}, which this audit cannot reach by construction.`);
   lines.push(`RESULT: PASS — ${audits.length} audited, ${counts.SOUND} sound, ${counts.DEFECTIVE} defective, ${counts.UNRESOLVED} unresolved, ${counts.UNREACHABLE} unreachable (exit 0)`);
   return { code: 0, lines };
+}
+
+// THE STORED DENOMINATOR AGAINST THE LIVE ONE (2026-09-27). The store's meta.corpus is what every
+// audited public page prints ("against N rows that name a source, counted on <date>"), and it is a
+// snapshot: the upstream burst resolved in ce5a57c took the live count from 673 to 691 while the
+// store, the read above it and 22 public pages went on saying 673 — and this read's own denominator
+// line called that figure "COMPUTED, not remembered". Nothing compared the two, so a person had to
+// notice. This line compares them on every read. It is a WARNING and never changes the exit code:
+// the read is an indicator, and an upstream edit must not turn it into a failing alarm. It also
+// refuses to read as a pass when the comparison could not be made, because an unrun check that
+// prints nothing is indistinguishable from one that ran and agreed.
+// The live side of that comparison. It NEVER throws: countCorpus reads every constant file, and a
+// file that is unreadable or vanishes mid-enumeration used to throw out of the CLI before the audit
+// summary printed, turning an optional comparison into a crash of the whole read (adversarial
+// review, 2026-09-27). A read failure becomes the refusal the comparison already reports as NOT RUN.
+export function liveCorpus(cdir, baselines) {
+  try {
+    const c = countCorpus(cdir, baselines);
+    return { citedRows: c.citedRows, refusal: corpusRefusal(c) };
+  } catch (e) {
+    return { citedRows: null, refusal: `reading the mirror threw ${e.code || e.name}` };
+  }
+}
+
+export function denominatorCheck(stored, live) {
+  const s = stored?.citedRows;
+  if (!Number.isSafeInteger(s)) return 'denominator check: NOT RUN — the store records no citedRows figure to compare';
+  if (!live) return `denominator check: NOT RUN — no live corpus was supplied, so the stored ${s} is unverified at this read`;
+  if (live.refusal) return `denominator check: NOT RUN — the live corpus was not established (${live.refusal}), so the stored ${s} is unverified at this read`;
+  if (live.citedRows === s) return `denominator check: the stored ${s} cited rows match the live corpus at this read`;
+  const when = typeof stored?.measuredAt === 'string' ? ` (measured ${stored.measuredAt})` : '';
+  return `denominator check: ⚠ STALE — the store records ${s} cited rows${when} but the live corpus enumerates ${live.citedRows}; every public page that prints the stored figure is off by ${Math.abs(live.citedRows - s)}. Refresh meta.corpus from \`node scripts/depth-audit.mjs --corpus\` and re-render.`;
 }
 
 // THE DENOMINATOR, COMPUTED RATHER THAN REMEMBERED (2026-09-11). The store carried 543 cited of 763
@@ -334,6 +367,36 @@ function selftest() {
   // The sum-check must not fire on a store that is merely all-one-verdict.
   check('a store of only UNREACHABLE rows still sums (no false sum-check)', run(write('unreach.json', { audits: [{ ...sound, verdict: 'UNREACHABLE' }] })).code, 0);
 
+  // --- the stored denominator against the live one (2026-09-27), THROUGH run(), so the wiring is
+  // what is tested and not only the helper: FIRES on a mismatch, SILENT on agreement, and an
+  // uncomparable read says NOT RUN rather than printing nothing. None of them changes the exit code.
+  const has = (label, lines, needle) => {
+    const ok = lines.some((l) => l.includes(needle));
+    console.log(`  ${ok ? 'ok  ' : 'FAIL'} ${label} — ${ok ? 'found' : 'missing'} "${needle}"`);
+    if (!ok) fails.push(label);
+  };
+  const dstore = write('denom.json', { meta: { corpus: { citedRows: 673, measuredAt: '2026-09-11' } }, audits: [sound] });
+  const stale = run(dstore, { live: { citedRows: 691, refusal: null } });
+  has('a stored denominator behind the live corpus WARNS, naming both figures', stale.lines, 'STALE — the store records 673 cited rows (measured 2026-09-11) but the live corpus enumerates 691');
+  check('  …and the warning does not change the exit code', stale.code, 0);
+  has('a stored denominator equal to the live corpus is SILENT', run(dstore, { live: { citedRows: 673, refusal: null } }).lines, 'match the live corpus');
+  has('a read with no live corpus says NOT RUN rather than passing', run(dstore).lines, 'NOT RUN — no live corpus was supplied');
+  has('a live corpus that refused says NOT RUN rather than comparing', run(dstore, { live: { citedRows: 0, refusal: 'dead probe' } }).lines, 'NOT RUN — the live corpus was not established (dead probe)');
+  has('a stored denominator AHEAD of the live corpus warns too', run(dstore, { live: { citedRows: 650, refusal: null } }).lines, 'off by 23');
+  // THE CLI's live side over a mirror that cannot be read: a "constant file" that is a directory
+  // makes readFileSync throw EISDIR, the shape an unreadable or vanished file takes. It must come
+  // back as a refusal, never as a throw, and the audit read must still print its summary at exit 0.
+  const badMirror = fs.mkdtempSync(path.join(os.tmpdir(), 'depth-live-bad-'));
+  fs.mkdirSync(path.join(badMirror, '01a.md'));
+  let thrown = null;
+  let badLive = null;
+  try { badLive = liveCorpus(badMirror, {}); } catch (e) { thrown = e; }
+  check('an unreadable mirror file does not throw out of the live corpus read', thrown ? 1 : 0, 0);
+  const badRun = run(dstore, { live: badLive });
+  has('  …and the audit read reports it as NOT RUN, naming the error', badRun.lines, 'NOT RUN — the live corpus was not established (reading the mirror threw EISDIR)');
+  check('  …while the read itself still exits 0', badRun.code, 0);
+  fs.rmSync(badMirror, { recursive: true, force: true });
+
   // --- the corpus count, both polarities (2026-09-11) ---
   const eq = (label, got, want) => {
     const ok = got === want;
@@ -444,8 +507,8 @@ function selftest() {
     console.log(`RESULT: FAIL — depth-audit selftest: ${fails.length} case(s) failed: ${fails.join(' · ')} (exit 2)`);
     process.exit(2);
   }
-  console.log('depth-audit selftest: PASS (clean store silent; missing, empty and unparseable stores each refuse rather than reporting a zero; an unrecognised verdict trips the sum-check; an all-UNREACHABLE store does NOT trip it; the corpus count skips commented rows and reference lists, and refuses PARTIAL section loss by name, a row that lost its leading pipe while its section still yielded rows, a row hidden in a second table block, a short manifest inventory, an inventory or section baseline that could not be established at all, a moved 87a control, an empty directory and a corpus missing its control — while a blockquote or heading ending a table legally stays SILENT)');
-  console.log('RESULT: PASS — 27 case(s), both polarities (exit 0)');
+  console.log('depth-audit selftest: PASS (clean store silent; missing, empty and unparseable stores each refuse rather than reporting a zero; an unrecognised verdict trips the sum-check; an all-UNREACHABLE store does NOT trip it; a stored denominator behind or ahead of the live corpus warns without changing the exit code, an equal one is silent, an uncomparable one says NOT RUN, and an unreadable mirror file becomes a NOT RUN rather than a crash of the read; the corpus count skips commented rows and reference lists, and refuses PARTIAL section loss by name, a row that lost its leading pipe while its section still yielded rows, a row hidden in a second table block, a short manifest inventory, an inventory or section baseline that could not be established at all, a moved 87a control, an empty directory and a corpus missing its control — while a blockquote or heading ending a table legally stays SILENT)');
+  console.log('RESULT: PASS — 36 case(s), both polarities (exit 0)');
 }
 
 // THE SAMPLING FRAME, MADE EXECUTABLE (2026-09-12). Slices 1 and 2 were drawn by a script
@@ -567,7 +630,8 @@ if (argv.includes('--draw')) {
 } else {
   const i = argv.indexOf('--store');
   const storePath = i !== -1 && argv[i + 1] ? path.resolve(argv[i + 1]) : DEFAULT_STORE;
-  const { code, lines } = run(storePath);
+  const cdir = path.join(REPO, 'ledger', 'teorth-optimizationproblems', 'constants');
+  const { code, lines } = run(storePath, { live: liveCorpus(cdir, liveBaselines(cdir)) });
   for (const l of lines) console.log(l);
   process.exit(code);
 }
