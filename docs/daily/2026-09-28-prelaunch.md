@@ -143,6 +143,10 @@ Then attempt the next papers in census order under the route ladder and the 20-m
 - Recommendations from yesterday: (1) the A-54 census session with the encounter read first — the encounter read is done and the census is carried into P3. (2) A-47 slice 9 and settling 8a — carried to 2026-09-29, as dated.
 - Rotation: `check-cycle-rotation` says no product-love cycle picks this lane today (exit 0).
 
+### Round 2 selection packet (P1, afternoon)
+
+The orchestrator opened a second product round at 17:52:53Z. The packet is posted to the bus with this report linked. Outcome: settle `A-47-0036` (the 8a audit entry, UNRESOLVED since 2026-09-27) under `A-47.settle8a2026_09_27`, which is dated "at or before 2026-09-29". The Ramsey freeze is untouched, and nothing is filed upstream.
+
 ### Live state at the close (as of 2026-09-28T16:21:12Z; this report cannot name the commit that lands it)
 
 - HEAD before the close commit: `084546ad70746784223d2853b9537fcad52b76f4`, 0 commits apart from origin/main. Release: `git rev-parse HEAD origin/main`.
