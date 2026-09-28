@@ -1,7 +1,7 @@
 # read-output sidecar for A-2 — written by check-due-gates-dispositioned --run
 # readCommand: node scripts/reverify.mjs --check
-# ran: 2026-09-21T15:43:39.937Z · exit: 2
-# lines: 1 · sha256: 8a29ce20c54a526e (first 16 hex of the output below)
+# ran: 2026-09-28T15:39:25.855Z · exit: 0
+# lines: 1 · sha256: 6ab0e655afebfdc4 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
-error: GET https://api.github.com/repos/teorth/optimizationproblems/commits/HEAD: 403
+No drift. 116 files match upstream 2c1968cd520b60f1cf3cf50749f7285e800e4e15.
