@@ -2318,6 +2318,24 @@
       "correctionCandidate": true,
       "created": "2026-09-26",
       "updated": "2026-09-26"
+    },
+    {
+      "id": "A-59",
+      "type": "active",
+      "status": "open",
+      "title": "Encounter is BLIND on the public pages: nothing can tell whether a real reader met a changed page",
+      "nextCheckDate": "2026-10-28",
+      "links": [
+        "A-47",
+        "G-4"
+      ],
+      "note": "FILED 2026-09-28 (round 2, P3) because the P3 receipt's encounter state for 9ee0a9a (8a's public text on c/8a.html) has only one honest form, `blind`, and that form requires a bug row. WHY IT IS BLIND: the pages are static on GitHub Pages. They carry no analytics, and render-site's selftest enforces no third-party asset and no runtime fetch. GitHub Pages hands us no request log. `npm run traffic` counts github.com repo views, never page readers. `npm run reports` counts only readers who FILE an issue through a row's link: a met reader who files nothing is invisible to it. This absence was CONSIDERED, not overlooked: docs/evangelism-bar.md, section 'Reader reach is unmeasured, and that absence is CONSIDERED' (approved 2026-09-03). Moving to a measurable surface was A-34's question, and David answered it 'depth' on 2026-09-09. THIS ROW IS NOT A LICENCE TO BUILD A READER INSTRUMENT: standing one up is not self-approvable here. It exists so that `blind` in a receipt names a place, and so that the one arrival path that does exist (a filed report, counted by npm run reports) is the named read.",
+      "onTrigger": "On the first outside arrival counted by `npm run reports`, record it here and on the receipt it answers. On 2026-10-28 with no arrival, re-date it and name the reads taken; do not close it for lack of events, because no events is not no readers.",
+      "closeWhen": "A reader instrument exists that David has approved, or David rules that encounter on these pages stays permanently blind and this row is the standing record of that.",
+      "readCommand": "npm run reports",
+      "owner": "bounds-ledger",
+      "created": "2026-09-28",
+      "updated": "2026-09-28"
     }
   ],
   "meta": {
