@@ -113,7 +113,7 @@ Pending reads, each dated on its row:
 **Next action — kind: improve (census reads), with the checkpoint read beside it.**
 
 ```
-node C:/dev/skylark/bounds-ledger/scripts/ds1-depth.mjs --frame
+node scripts/ds1-depth.mjs --frame
 ```
 
 Then attempt the next papers in census order under the route ladder and the 20-minute access limit, with background reading agents under the brief rules: no email, no Unpaywall, no human-verification challenge, no shadow library, and a citing paper never used as a route to the source. Every quotation gets checked against the saved text before any verdict is stored. A verdict follows the edition actually read (see the retro line below).
