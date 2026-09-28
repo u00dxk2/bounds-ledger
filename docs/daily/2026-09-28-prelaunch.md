@@ -69,6 +69,29 @@ Twenty of the table's 122 values have now been checked. At the pace we have actu
 
 ## State Appendix
 
+### Close
+
+ACTION: COMPLETED · item A-54 · P3 bus msgId 0eb5686f. The acceptance condition was met:
+- `node scripts/ds1-depth.mjs` prints a census of 12 papers, not 5.
+- DS1-0016 to DS1-0025 carry `selection: "census"` and a 2026-09-28 `fetchedAt`.
+- `render-ramsey --check` PASS, with 0 changed lines in either page.
+- The checkpoint and the comparator disposition are both on A-54.
+- The manager review of P3 (bus 2ca0f3ff) read all four independently.
+
+State changed since the P3 post: none. The P3 receipt still stands, so no new receipt is written.
+
+Ledger delta at the close:
+- `A-2` (the drift-resolution log): `nextCheckDate` 2026-09-28 → 2026-10-05. This AMENDS the hygiene helper's `--extend`, because the row's own `nextCheckDateNote` says it deliberately carries no signal date.
+- Hygiene draft: 1 line — 0 accepted · 1 amended · 0 rejected. READ-MUTATED: none. Wait-justification PASS, engineering-zero PASS for this lane.
+- Everything else on A-54 was written during P3 and landed in `084546a`.
+
+Due-gate verification: `check-due-gates-dispositioned.mjs` reads "verdict: CLEAR — every gate due at Phase 0 was dispositioned", and it names the snapshot CURRENT (taken 2026-09-28).
+
+Pending reads, each dated on its row:
+- `A-47` slice 9 and the 8a settle-step, 2026-09-29.
+- The census tripwire at the start of session 3, 2026-09-30 (32 papers against 36 at this close).
+- `A-2`'s next look, 2026-10-05.
+
 ### Selection packet (P1)
 
 [P1 — Evidence and choice]
@@ -119,3 +142,10 @@ Then attempt the next papers in census order under the route ladder and the 20-m
 - Harness: running 2.1.283 · fleet UNIFORM · installed 2.1.283 (SAME).
 - Recommendations from yesterday: (1) the A-54 census session with the encounter read first — the encounter read is done and the census is carried into P3. (2) A-47 slice 9 and settling 8a — carried to 2026-09-29, as dated.
 - Rotation: `check-cycle-rotation` says no product-love cycle picks this lane today (exit 0).
+
+### Live state at the close (as of 2026-09-28T16:21:12Z; this report cannot name the commit that lands it)
+
+- HEAD before the close commit: `084546ad70746784223d2853b9537fcad52b76f4`, 0 commits apart from origin/main. Release: `git rev-parse HEAD origin/main`.
+- CI on that commit: GREEN, per `node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml`, which is also the release command.
+- `npm run verify` receipt: exitCode 0 at that sha (`tmp/.verify-receipt.json`). The close commit touches only doc-shaped paths (`docs/`, `continuity/`), so the receipt carries forward under the ancestor carve-out.
+- The census: `node scripts/ds1-depth.mjs` reads "census: 20 of 122 bound(s), across 12 of 42 credited paper(s) — 14 sound, 0 defective, 2 unresolved, 4 unreachable". That command is also the release.
