@@ -400,6 +400,21 @@
         ],
         "bounds": 10,
         "order": "Planned and committed before any of these papers was opened. The commit that adds the readings comes after it in history."
+      },
+      {
+        "session": 2,
+        "plannedOn": "2026-09-28",
+        "keys": [
+          "McZ",
+          "Ex5",
+          "Ang1",
+          "Ex20",
+          "GoeR1",
+          "Kol1",
+          "Les"
+        ],
+        "bounds": 10,
+        "order": "Planned and committed before any of these papers was opened. The commit that adds the readings comes after it in history. Seven papers rather than five, on the orchestrator's P1 review (bus d62d8270), so the rate the 2026-09-28 checkpoint reports is one the census can sustain."
       }
     ]
   }
