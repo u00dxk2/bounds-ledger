@@ -147,6 +147,35 @@ Then attempt the next papers in census order under the route ladder and the 20-m
 
 The orchestrator opened a second product round at 17:52:53Z. The packet is posted to the bus with this report linked. Outcome: settle `A-47-0036` (the 8a audit entry, UNRESOLVED since 2026-09-27) under `A-47.settle8a2026_09_27`, which is dated "at or before 2026-09-29". The Ramsey freeze is untouched, and nothing is filed upstream.
 
+### Close — round 2 (afternoon)
+
+ACTION: COMPLETED · item A-47 · P3 62639bcb. The acceptance condition in force was the P1 manager review's (bus ca1c2ce4): whichever route opened, the page names the numbers. It was met in `9ee0a9a`:
+- `c/8a.html` now says 9.65 appears in both editions of Stechkin 1970. It labels how each was read: the English translation at its abstract on Springer's page on 2026-09-28, and the Russian original in the body on 2026-09-27.
+- It names 9.64591 as Mossinghoff–Trudgian's attribution to Rosser–Schoenfeld 1975, unchecked here.
+- The P3 manager review (bus f3819b2e) fetched the live page itself: HTTP 200, with the new text present and the old text gone.
+
+`A-47-0036` stays UNRESOLVED. Neither settling route opened: the AMS served a Cloudflare challenge, which was not completed, and the translation's body is paywalled. The verdict follows the reading, and only the cited edition's abstract was read.
+
+State changed since the P3 post: none.
+
+Ledger delta:
+- `A-47.settle8aAttempt2026_09_28` records the attempt. The next settle attempt rides slice 9 on 2026-09-29, and `A-47.nextCheckDate` already reads 2026-09-29, so the two agree.
+- `A-47-0036.settleAttempt2026_09_28` in `continuity/depth-audit.json` holds the routes and the quotation.
+- `A-59` (encounter on the public pages is blind) was filed open in `6db01ce`, with `nextCheckDate` 2026-10-28 and `npm run reports` as its read.
+- Hygiene draft, round 2: 0 lines — 0 accepted · 0 amended · 0 rejected. READ-MUTATED: none. The helper printed `RESULT: PASS` on the wait-justification check and on the engineering-zero check (0 findings).
+
+Due-gate verification: "verdict: CLEAR — every gate due at Phase 0 was dispositioned", with the snapshot CURRENT (taken 2026-09-28).
+
+Receipt: P3's receipt still stands, so no new one is written.
+
+Pending reads:
+- The 8a settle attempt and `A-47` slice 9, 2026-09-29.
+- The census tripwire, 2026-09-30.
+- `A-2`'s next look, 2026-10-05.
+- `A-59`, 2026-10-28.
+
+Findings classification for round 2, one sentence of human judgment: no record-facing catch was made, because 8a's credit is still a lead and not a finding. The standing prediction is neither held nor falsified.
+
 ### Live state at the close (as of 2026-09-28T16:21:12Z; this report cannot name the commit that lands it)
 
 - HEAD before the close commit: `084546ad70746784223d2853b9537fcad52b76f4`, 0 commits apart from origin/main. Release: `git rev-parse HEAD origin/main`.
