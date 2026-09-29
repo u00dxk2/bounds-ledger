@@ -129,3 +129,30 @@ David asked for a second product round on 2026-09-29. Round 1 above is done and 
 - **Next action (improve):** a third index badge meaning attempted-and-unreadable, never worded as a reading, tested through the index render.
 - **Acceptance:** the live index badges exactly the attempted-and-never-read constants, no read badge changes, and the self-test is red-armed both ways.
 - **USER-FACING: yes.** Paths: `scripts/render-constant-pages.mjs`, `scripts/render-site.mjs`, `index.html`, `continuity/items.json`.
+
+### Close (round 2)
+
+ACTION: COMPLETED · item A-53 · P3 b004dad2. The acceptance condition was met:
+- The live index (https://u00dxk2.github.io/bounds-ledger/, HTTP 200) carries 7 `class="tried"` lines, on exactly the constants the store says were attempted and never read: 15a, 24a, 31a, 43a, 52a, 65a, 80a.
+- It still carries 29 `class="read read-` badges, as before.
+- `npm run served` read SERVED for index.html at `920f2ae`, and `reverify.yml` read GREEN on it.
+- The self-test was red-armed both ways (P3 post b004dad2). The orchestrator's P3 review (bus d66bc252) read these independently and marked the work COMPLETED with no defects.
+
+State changed since the P3 post: none in the code or on the page.
+
+The review's process point is answered here, not implied. The Codex review's focus text named the new index hint among four challenges, but nobody attacked it as its own angle, which CLAUDE.md asks for with a method sentence. This session then checked it by hand against each of the seven records. "We tried on the date it gives and were turned away or found nothing" holds for all seven:
+- Five were turned away: 43a, 24a, 52a and 80a by a bot challenge, and 31a by a host that refused the connection.
+- 65a's DOI service returned HTTP 502 twice.
+- 15a's publisher returned a redirect page and metadata only.
+Each printed date is that attempt's `fetchedAt` day. It is MT for 52a and 80a, whose attempts were at 01:46Z on 09-25. "That row's number has not been checked" is true for all seven, since none has any other reading. This was one reviewer checking their own sentence, not an independent review.
+
+Ledger delta at the close:
+- Hygiene draft (`tmp/hygiene-draft-bounds-ledger-2026-09-29-r2.md`): 0 lines — 0 accepted · 0 amended · 0 rejected. READ-MUTATED: "none — 0 reads guarded (no `--run` executed)". Checks: "check-wait-justification: RESULT: PASS — 1 of 75 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)" and "check-engineering-zero --project bounds-ledger: RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)".
+- `A-53`: `renderFix2026_09_29` was added in `920f2ae`. The row stays OPEN. Its guard choice between (a), (b) and (c) on its onTrigger is due 2026-10-01 (`expectedSignalBy`, unchanged), and tomorrow's primer banner now names that read.
+- Tomorrow's primer (`docs/cold-starts/2026-09-30.md`): its banner was rewritten in place for round 2, at 1,115 characters. `check-cold-readability.mjs` exit 0.
+
+Due-gate verification: `check-due-gates-dispositioned.mjs` read "RESULT: PASS (exit 0)", with "snapshot: tmp\due-gates-snapshot.json — CURRENT (taken 2026-09-29)".
+
+Pending reads:
+- `A-53`'s guard choice: 2026-10-01.
+- `A-59`, the encounter on the public pages: 2026-10-28, or the first outside arrival counted by `npm run reports`. The outcome of this change stays open until then.
