@@ -270,10 +270,17 @@ export function badgeFor(id, store, shown = []) {
  * order they were stored. Only rows whose identity is still provable, so every one can be named by its
  * value.
  */
+//
+// A row that was also READ is not an attempted row (review R2, 2026-09-29): the page would name it
+// "not counted as read" beside a count that includes it. A retried row keeps its LATEST attempt, so the
+// reference key printed and the date printed come from the same attempt (review R4).
 function attemptedRows(usable) {
+  const read = new Set(usable.filter(isBoundRead).map(rowKey));
   const byRow = new Map();
   for (const a of usable) {
-    if (a.leg === "value-vs-source" && a.verdict === "UNREACHABLE" && !isStale(a) && !byRow.has(rowKey(a))) byRow.set(rowKey(a), a);
+    if (a.leg !== "value-vs-source" || a.verdict !== "UNREACHABLE" || isStale(a) || read.has(rowKey(a))) continue;
+    const prev = byRow.get(rowKey(a));
+    if (!prev || (attemptDate(a.fetchedAt) || "") > (attemptDate(prev.fetchedAt) || "")) byRow.set(rowKey(a), a);
   }
   return [...byRow.values()];
 }
@@ -312,9 +319,7 @@ function plainRowName(a) {
 function triedFor(usable, shown = []) {
   const rows = attemptedRows(usable);
   if (rows.length === 0) return null;
-  const dates = usable
-    .filter((a) => a.leg === "value-vs-source" && a.verdict === "UNREACHABLE" && !isStale(a))
-    .map((a) => attemptDate(a.fetchedAt)).filter(Boolean).sort();
+  const dates = rows.map((a) => attemptDate(a.fetchedAt)).filter(Boolean).sort();
   const date = dates.length ? dates[dates.length - 1] : null;
   const which = rows.length === 1
     ? `the source for ${isShownRow(rows[0], shown) ? "the row shown" : "another row"}, ${plainRowName(rows[0])}`
@@ -472,11 +477,16 @@ export function auditBlock(id, store, shown = []) {
   // THE HEADING SAYS WHAT HAPPENED (2026-09-29, round 3). It read "Read against its cited source" above
   // a bullet saying the source could not be read at all. When no audit of this constant reached its
   // source, it says it was tried and not opened, with the latest attempt's date.
+  // THREE cases, not two (review R3): a block holding both readings and failed attempts is headed as
+  // both, so neither a citation-only reading nor an attempt is presented as the other.
   const anyRead = mine.some((a) => READ_VERDICTS.has(a.verdict));
+  const anyTried = mine.some((a) => a.verdict === "UNREACHABLE");
   const triedDates = mine.filter((a) => a.verdict === "UNREACHABLE").map((a) => attemptDate(a.fetchedAt)).filter(Boolean).sort();
-  const heading = anyRead
+  const heading = !anyTried
     ? "Read against its cited source"
-    : `Tried, could not open its cited source${triedDates.length ? ` (${triedDates[triedDates.length - 1]})` : ""}`;
+    : anyRead
+      ? "Read or tried against its cited source"
+      : `Tried, could not open its cited source${triedDates.length ? ` (${triedDates[triedDates.length - 1]})` : ""}`;
   return `<dt>${esc(heading)}</dt><dd><ul class="audit">${items}</ul><span class="when">${parts.join(" ")}</span></dd>`;
 }
 
@@ -763,6 +773,29 @@ function selftest() {
   assert.ok(shownUnread.includes("<dt>Tried, could not open its cited source</dt>"), "an undated attempt gives the heading without a guessed date");
   // A page with a READING keeps the reading heading.
   assert.ok(audited.includes("<dt>Read against its cited source</dt>"), "a block with a reading keeps the reading heading");
+  // (h4c) Review R3 (2026-09-29): a citation-check READING beside a bound row that could only be
+  //       TRIED was headed as a reading over the attempt. A block holding both is headed as both.
+  const citeReadBoundTried = renderPage(row, "abc1234def", {
+    audits: [
+      { id: "T-C1", constant: "9z", citedRef: "RC", leg: "citation-well-formed", verdict: "SOUND", source: "https://example.invalid/c1" },
+      { id: "T-C2", constant: "9z", citedRef: "RU", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/c2", ...pinId("| $9.555555$ | [RU] | x |") },
+    ],
+    corpus: { citedRows: 999, measuredAt: "2026-01-02" },
+  });
+  assert.ok(!citeReadBoundTried.includes("<dt>Read against its cited source</dt>"), "an attempt must not sit under a reading-only heading because a citation check was read");
+  assert.ok(!citeReadBoundTried.includes("<dt>Tried, could not open"), "nor a reading under an attempt-only heading");
+  assert.ok(citeReadBoundTried.includes("<dt>Read or tried against its cited source</dt>"), "a block with both is headed as both");
+  // (h4d) Review R2 (2026-09-29): a row that was tried AND later read is a read row. Naming it among
+  //       the attempted rows printed "That row is not counted as read" beside a count that included it.
+  const triedThenRead = renderPage(row, "abc1234def", {
+    audits: [
+      { id: "T-TR1", constant: "9z", citedRef: "RT", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/t1", fetchedAt: "2026-09-11", ...pinId("| $3.141592$ | [RT] | x |") },
+      { id: "T-TR2", constant: "9z", citedRef: "RT", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/t2", ...pinId("| $3.141592$ | [RT] | x |") },
+    ],
+    corpus: { citedRows: 999, measuredAt: "2026-01-02" },
+  });
+  assert.ok(/1 bound row\(s\) here have been read/.test(triedThenRead), "positive control: the row is counted as read");
+  assert.ok(!/not counted as read/.test(triedThenRead), "a row that was read must never also be named as not counted as read");
 
   // (h5) A REPEAT AUDIT OF THE SAME ROW IS ONE ROW. Counting entries let a recheck inflate apparent
   //      coverage without examining any new material.
@@ -852,7 +885,7 @@ function selftest() {
     ],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
-  assert.ok(drawnUnread.includes("Read against its cited source"), "positive control: the drawn-but-unread fixture renders a block");
+  assert.ok(drawnUnread.includes("<dt>Read or tried against its cited source</dt>"), "positive control: the drawn-but-unread fixture renders a block, headed as both");
   assert.ok(/ledger 2 row\(s\) have been drawn by position/.test(drawnUnread), "a drawn row whose source could not be read is still a draw, and is counted as one");
   assert.ok(/the sources of 1 were read and 1 could not be read at all/.test(drawnUnread), "the sentence says how many drawn rows were read and how many were not");
 
@@ -878,7 +911,7 @@ function selftest() {
     ],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
-  assert.ok(valued.includes("Read against its cited source"), "positive control: the valued page renders a block");
+  assert.ok(valued.includes("<dt>Read or tried against its cited source</dt>"), "positive control: the valued page renders a block (a reading and an unreachable citation check, so headed as both)");
   assert.ok(valued.includes("0.380876"), "a VERIFIED bound row must show the value that was checked, not only its line and citation");
   assert.ok(!valued.includes("9.111111"), "a reference entry must not print a first cell as though it were a checked bound");
 
@@ -921,6 +954,7 @@ function selftest() {
   assert.ok(!staleUnreach.includes("was read against its cited source"), "and must never claim the source was read");
   assert.ok(staleUnreach.includes("the source we could not read"), "positive control: its link text still says the source could not be read");
   assert.ok(!staleUnreach.includes("were attempted and the source could NOT be read"), "and it is not double-counted in the current-table attempted sentence");
+  assert.ok(!staleUnreach.includes("Attempted, and the source could NOT be read"), "nor in that sentence's 2026-09-29 wording");
   assert.ok(staleUnreach.includes("no longer match the current table"), "it is disclosed with the other historical audits instead");
 
   // (7) REVIEW ROUND 4: every bound audit here historical AND a reference check present. The summary
