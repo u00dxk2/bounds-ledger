@@ -272,18 +272,25 @@ export function badgeFor(id, store, shown = []) {
  */
 //
 // A row that was also READ is not an attempted row (review R2, 2026-09-29): the page would name it
-// "not counted as read" beside a count that includes it. A retried row keeps its LATEST attempt, so the
-// reference key printed and the date printed come from the same attempt (review R4).
+// "not counted as read" beside a count that includes it. A retried row carries EVERY reference key it
+// was tried through, in store order (reviews R4 and B2): picking "the latest attempt's key" needs a
+// chronology the store's day-only dates cannot give, so the line claims less instead of guessing.
 function attemptedRows(usable) {
   const read = new Set(usable.filter(isBoundRead).map(rowKey));
   const byRow = new Map();
   for (const a of usable) {
     if (a.leg !== "value-vs-source" || a.verdict !== "UNREACHABLE" || isStale(a) || read.has(rowKey(a))) continue;
     const prev = byRow.get(rowKey(a));
-    if (!prev || (attemptDate(a.fetchedAt) || "") > (attemptDate(prev.fetchedAt) || "")) byRow.set(rowKey(a), a);
+    if (!prev) byRow.set(rowKey(a), { ...a, triedRefs: [a.citedRef], attempts: [a] });
+    else {
+      if (!prev.triedRefs.includes(a.citedRef)) prev.triedRefs.push(a.citedRef);
+      prev.attempts.push(a);
+    }
   }
   return [...byRow.values()];
 }
+
+const refsOf = (a) => (Array.isArray(a.triedRefs) ? a.triedRefs : [a.citedRef]);
 
 /** Is this audited row one of the last-listed rows the reader sees? Whole-row equality, never a substring. */
 const isShownRow = (a, shown) => typeof a.rowText === "string" && shown.some((s) => typeof s === "string" && s.trim() === a.rowText.trim());
@@ -291,7 +298,8 @@ const isShownRow = (a, shown) => typeof a.rowText === "string" && shown.some((s)
 /** A row named in plain text for the index: its first cell without the math delimiters, then its key. */
 function plainRowName(a) {
   const v = verifiedValue(a).replace(/^\$([\s\S]*)\$$/, "$1").trim();
-  return v ? `${v} [${a.citedRef}]` : `[${a.citedRef}]`;
+  const keys = refsOf(a).map((r) => `[${r}]`).join(", ");
+  return v ? `${v} ${keys}` : keys;
 }
 
 /**
@@ -319,7 +327,7 @@ function plainRowName(a) {
 function triedFor(usable, shown = []) {
   const rows = attemptedRows(usable);
   if (rows.length === 0) return null;
-  const dates = rows.map((a) => attemptDate(a.fetchedAt)).filter(Boolean).sort();
+  const dates = rows.flatMap((r) => r.attempts).map((a) => attemptDate(a.fetchedAt)).filter(Boolean).sort();
   const date = dates.length ? dates[dates.length - 1] : null;
   const which = rows.length === 1
     ? `the source for ${isShownRow(rows[0], shown) ? "the row shown" : "another row"}, ${plainRowName(rows[0])}`
@@ -454,7 +462,7 @@ export function auditBlock(id, store, shown = []) {
     const named = tried.map((a) => {
       const value = verifiedValue(a);
       const shownNote = isShownRow(a, shown) ? ", one of the last-listed rows shown above" : "";
-      return `the bound row${value ? ` <code style="display:inline;padding:.1rem .3rem">${esc(value)}</code>` : ""} citing [${esc(a.citedRef)}]${rowLink(a)}${shownNote}`;
+      return `the bound row${value ? ` <code style="display:inline;padding:.1rem .3rem">${esc(value)}</code>` : ""} citing ${refsOf(a).map((r) => `[${esc(r)}]`).join(", ")}${rowLink(a)}${shownNote}`;
     }).join("; ");
     parts.push(`${boundHere > 0 ? "Also attempted" : "Attempted"}, and the source could NOT be read: ${named}. ${tried.length === 1 ? "That row is" : "Those rows are"} not counted as read.`);
   }
