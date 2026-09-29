@@ -2087,7 +2087,8 @@
       "updated": "2026-09-24",
       "secondInstance2026_09_21": "SECOND INSTANCE, 2026-09-21, found by the orchestrator reading today's P3 — and it is the same defect one layer up, on the INDEX rather than on a constant page.\n\nWHAT IT IS. `index.html` badges a constant only when a row of it was READ: live counts today are 13 `read read-sound` and 4 `read read-unresolved`, and nothing at all for the five rows that were drawn by position and whose sources could not be read. scripts/render-site.mjs:860-862 asserts that deliberately — \"an UNREACHABLE source was never read, so it must not badge as read\" — and that rule is right. The consequence is not: on the index, a constant whose drawn source proved unreadable looks exactly like a constant the ladder never reached. The work is invisible and the reader cannot tell the two apart.\n\nWHY IT BELONGS ON THIS ROW. It is this row's own sentence — \"the page under-reports, the store over-reports relative to the page, and neither says so\" — with the page being the index instead of a constant page. The constant pages were fixed today (the ledger-wide sentence now prints 20 drawn, 15 read, 5 unreadable); the index was not, and nothing compares the two.\n\nWHAT THE 2026-09-24 DECISION NOW CHOOSES BETWEEN, unchanged in kind but with this instance in scope: (a) the comparison check, (b) making the render side refuse a dropped entry, or (c) a written decision not to guard it. The orchestrator's suggestion for the index specifically is a THIRD badge meaning attempted-and-unreadable, never a fourth way of saying read. That is a rendering fix rather than a guard, so it does not settle this row on its own.",
       "linkedCommits": [
-        "9065909"
+        "9065909",
+        "920f2ae"
       ],
       "readCommandLastRun": "2026-09-25T00:04:16.317Z",
       "readCommandLastExit": 0,
