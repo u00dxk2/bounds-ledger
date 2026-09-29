@@ -167,3 +167,29 @@ David started a third round at 16:18 MT. Rounds 1 and 2 are not redone. The pack
 - **Next action (improve):** the index line carries the tried row's value and credit. The hint says "the row it names". The constant page titles the block "Tried, could not open its cited source" with the date when nothing on it was read.
 - **Acceptance:** each live tried line contains its tried row's value and not the pin's, and the hint no longer says "that row's number". The 7 pages carry the new heading and the date. Still 29 read badges and 7 tried lines, `npm run served` reads SERVED, and CI is GREEN.
 - **USER-FACING: yes.** Paths: `scripts/render-constant-pages.mjs`, `scripts/render-site.mjs`, `index.html`, `c/{15a,24a,31a,43a,52a,65a,80a}.html`, `continuity/items.json`.
+
+### Close (round 3)
+
+ACTION: COMPLETED · item A-53 · P3 a6c8942b. The acceptance condition was met, checked on the live site at `7bcccc9`:
+- `npm run served`: "SERVED index.html 319527 bytes … RESULT: PASS".
+- `check-ci-status --workflow reverify.yml`: GREEN.
+- The live index has 7 tried lines and 29 read badges. Each tried line names its tried row, for example "we could not open the source for another row, 2.5161 [P1981] (tried 2026-09-16)". None of the named values equals a displayed cell, and the old hint is absent.
+- All 7 live constant pages return HTTP 200 and carry the heading "Tried, could not open its cited source (<date>)" with the row named. 1b is headed "Read or tried against its cited source".
+- The iPhone 15 check had touch proven, 393 px with no horizontal scroll.
+- The orchestrator's P3 review (bus e22a15ef) marked it COMPLETED with no defects.
+
+Commits: `f58f07f` (the change), `7830495` (review round 1: four findings fixed), `7bcccc9` (review round 2: two findings of the same class, fixed by making the wording claim less). Codex review round 3 at `7bcccc9` returned NO BLOCKING DEFECTS. The manager's year suggestion was declined: 65a's key `Xyl2011` sits on a row that credits Graham 1981.
+
+State changed since the P3 post: none in the code or on the page.
+
+Ledger delta:
+- `A-53`: `renderFix2026_09_29r3` landed in `f58f07f`, and `walkCandidates2026_09_29r3` was added at this close. The row stays OPEN. Its guard choice between (a), (b) and (c) is due 2026-10-01.
+- The walk's remaining candidates are named on that row, not scheduled. The tried line's tap height measured 37 px on phone, under the 44 px bar. The others are a title-search link beside a dead-ending DOI, and the "Selected: …" wording.
+- Hygiene draft (`tmp/hygiene-draft-bounds-ledger-2026-09-29-r3.md`): 0 lines — 0 accepted · 0 amended · 0 rejected. READ-MUTATED: "none — 0 reads guarded (no `--run` executed)". Checks: "check-wait-justification: RESULT: PASS — 1 of 75 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)" and "check-engineering-zero --project bounds-ledger: RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable".
+
+Due-gate verification: `check-due-gates-dispositioned.mjs` read "verdict: CLEAR — every gate due at Phase 0 was dispositioned." with "snapshot: tmp\due-gates-snapshot.json — CURRENT (taken 2026-09-29)", RESULT: PASS (exit 0).
+
+Pending reads:
+- `A-53`'s guard choice: 2026-10-01.
+- `A-59`, the encounter on the public pages: 2026-10-28, or the first outside arrival counted by `npm run reports`.
+- `A-54` census session 3: 2026-09-30, the next session's governing action.
