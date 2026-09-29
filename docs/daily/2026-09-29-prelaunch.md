@@ -119,3 +119,13 @@ node C:/dev/skylark/bounds-ledger/scripts/depth-audit.mjs --draw 162 212 262 312
 - (a) Due rows not bearing on the choice, 2 of 3 due: `A-49` (tomorrow's-primer check; `expectedSignalBy` 2026-09-29, its last read was empty) and `W-13` (the standing call of the served-bytes check; due 2026-09-29, never run). `A-47` is selected and leaves this list.
 - (b) Owed child rows: none. Read: "rows owed to you in skylark-site's ledger: 0 of 729".
 - (c) State reads marked crossed: key numbers, no `docs/key-metrics.json` (0 of 1 file present); missingLinkedCommits, nothing swept (0 of 0 considered, so not judged). All other kickoff reads are within threshold: CI GREEN at `796ed7f`, 0 queued, 0 stale-actionable of 19, 0 answered cards.
+
+### Round 2 selection packet (P1)
+
+David asked for a second product round on 2026-09-29. Round 1 above is done and is not redone. The round 2 packet was posted as written in `tmp/p1-packet-r2.md`. In summary:
+
+- **Outcome:** on the public index, a constant whose cited source we tried to read and could not is told apart from one we never looked at. Item: `A-53` (the store and the page can disagree about how many rows were read), its second instance, found by the orchestrator on 2026-09-21.
+- **Evidence:** `node scripts/depth-audit.mjs` reads 8 unreachable, and 7 of them are bound rows on constants with no reading at all: 31a, 43a, 24a, 65a, 15a, 52a, 80a. The index shows nothing on those, by the assertion at `scripts/render-site.mjs:1023`. The other route was tried first: a Wayback `id_` fetch of 24a's PDF returned 404, with 0 CDX captures.
+- **Next action (improve):** a third index badge meaning attempted-and-unreadable, never worded as a reading, tested through the index render.
+- **Acceptance:** the live index badges exactly the attempted-and-never-read constants, no read badge changes, and the self-test is red-armed both ways.
+- **USER-FACING: yes.** Paths: `scripts/render-constant-pages.mjs`, `scripts/render-site.mjs`, `index.html`, `continuity/items.json`.

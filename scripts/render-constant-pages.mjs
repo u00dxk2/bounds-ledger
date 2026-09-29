@@ -256,11 +256,54 @@ const BADGE = {
 const BADGE_SEVERITY = ["DEFECTIVE", "UNRESOLVED", "SOUND"];
 
 export function badgeFor(id, store) {
-  const reads = (Array.isArray(store?.audits) ? store.audits : [])
+  const usable = (Array.isArray(store?.audits) ? store.audits : [])
     .filter(usableAudit)
-    .filter((a) => a.constant === id && isBoundRead(a));
+    .filter((a) => a.constant === id);
+  const reads = usable.filter(isBoundRead);
   const worst = BADGE_SEVERITY.find((v) => reads.some((a) => a.verdict === v));
-  return worst ? { verdict: worst, text: BADGE[worst] } : null;
+  if (worst) return { verdict: worst, text: BADGE[worst] };
+  return triedFor(usable);
+}
+
+/**
+ * THE ATTEMPTED BADGE (2026-09-29, A-53's second instance). Until today a constant whose cited source
+ * we went to and were turned away from carried NO line on the index, exactly like a constant we never
+ * looked at, so the work was invisible and a citer could not tell the two apart. This is a THIRD kind
+ * of line, never a fourth way of saying "read": it has its own class (`tried`, not `read`), and its
+ * wording says the number was NOT checked.
+ *
+ * It takes the read badge's exclusions: only a bound row (a citation-check leg is not one), only an
+ * attempt we can still prove is of the row a reader sees (not stale), and ANY reading on the constant
+ * wins, because badgeFor returns before reaching here.
+ *
+ * DATED, because an unreachable host is a moment and not a fact: 1b's cited link was down on
+ * 2026-09-05 and serving again by 2026-09-26. The date is the latest attempt's, read from its
+ * `fetchedAt`; an attempt with no parseable date gives the line without one rather than a guessed date.
+ */
+function triedFor(usable) {
+  const attempts = usable.filter((a) => a.leg === "value-vs-source" && a.verdict === "UNREACHABLE" && !isStale(a));
+  if (attempts.length === 0) return null;
+  const dates = attempts.map((a) => attemptDate(a.fetchedAt)).filter(Boolean).sort();
+  const date = dates.length ? dates[dates.length - 1] : null;
+  return {
+    verdict: "UNREACHABLE",
+    kind: "tried",
+    date,
+    text: date ? `we could not open its cited source (tried ${date})` : "we could not open its cited source",
+  };
+}
+
+/**
+ * The attempt's day, as a human label in MOUNTAIN TIME when the record states one ("2026-09-25 UTC
+ * (2026-09-24 evening MT)" gives 2026-09-24), else the first ISO date the field carries. Free text is
+ * never trusted further than that: no date found means none is printed.
+ */
+export function attemptDate(fetchedAt) {
+  if (typeof fetchedAt !== "string") return null;
+  const mt = fetchedAt.match(/\((\d{4}-\d{2}-\d{2})[^)]*\bMT\)/);
+  if (mt) return mt[1];
+  const first = fetchedAt.match(/\b(\d{4}-\d{2}-\d{2})\b/);
+  return first ? first[1] : null;
 }
 
 /**
