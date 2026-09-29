@@ -156,3 +156,14 @@ Due-gate verification: `check-due-gates-dispositioned.mjs` read "RESULT: PASS (e
 Pending reads:
 - `A-53`'s guard choice: 2026-10-01.
 - `A-59`, the encounter on the public pages: 2026-10-28, or the first outside arrival counted by `npm run reports`. The outcome of this change stays open until then.
+
+### Round 3 selection packet (P1)
+
+David started a third round at 16:18 MT. Rounds 1 and 2 are not redone. The packet is posted as written in `tmp/p1-packet-r3.md`. In summary:
+
+- **Outcome:** the "we could not open its cited source" line names the row it is about. Item: `A-53` (the store and the page can disagree about what was read), its third instance: round 2's own line.
+- **Evidence:** a cold walk (desktop and iPhone 15, 21:02–21:17Z) read the line as doubt about the displayed number. Re-derived from `continuity/depth-audit.json` tonight: 0 of the 7 attempted bound rows is a displayed last-listed pin. The same exact-match rule finds 7 of 42 audits that are pins, so the zero is not a dead matcher. `npm run reports`: 0 outside arrivals of 32 raw issues.
+- **Recurring:** round 2's close checked "that row's number has not been checked" against the store, found it true, and missed that a reader takes "that row" to be the displayed one. This is the method sentence again.
+- **Next action (improve):** the index line carries the tried row's value and credit. The hint says "the row it names". The constant page titles the block "Tried, could not open its cited source" with the date when nothing on it was read.
+- **Acceptance:** each live tried line contains its tried row's value and not the pin's, and the hint no longer says "that row's number". The 7 pages carry the new heading and the date. Still 29 read badges and 7 tried lines, `npm run served` reads SERVED, and CI is GREEN.
+- **USER-FACING: yes.** Paths: `scripts/render-constant-pages.mjs`, `scripts/render-site.mjs`, `index.html`, `c/{15a,24a,31a,43a,52a,65a,80a}.html`, `continuity/items.json`.

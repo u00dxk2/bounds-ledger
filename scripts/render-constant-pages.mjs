@@ -255,14 +255,36 @@ const BADGE = {
 };
 const BADGE_SEVERITY = ["DEFECTIVE", "UNRESOLVED", "SOUND"];
 
-export function badgeFor(id, store) {
+export function badgeFor(id, store, shown = []) {
   const usable = (Array.isArray(store?.audits) ? store.audits : [])
     .filter(usableAudit)
     .filter((a) => a.constant === id);
   const reads = usable.filter(isBoundRead);
   const worst = BADGE_SEVERITY.find((v) => reads.some((a) => a.verdict === v));
   if (worst) return { verdict: worst, text: BADGE[worst] };
-  return triedFor(usable);
+  return triedFor(usable, shown);
+}
+
+/**
+ * The attempted bound rows of one constant, ONE per row (a retry of the same row is one row), in the
+ * order they were stored. Only rows whose identity is still provable, so every one can be named by its
+ * value.
+ */
+function attemptedRows(usable) {
+  const byRow = new Map();
+  for (const a of usable) {
+    if (a.leg === "value-vs-source" && a.verdict === "UNREACHABLE" && !isStale(a) && !byRow.has(rowKey(a))) byRow.set(rowKey(a), a);
+  }
+  return [...byRow.values()];
+}
+
+/** Is this audited row one of the last-listed rows the reader sees? Whole-row equality, never a substring. */
+const isShownRow = (a, shown) => typeof a.rowText === "string" && shown.some((s) => typeof s === "string" && s.trim() === a.rowText.trim());
+
+/** A row named in plain text for the index: its first cell without the math delimiters, then its key. */
+function plainRowName(a) {
+  const v = verifiedValue(a).replace(/^\$([\s\S]*)\$$/, "$1").trim();
+  return v ? `${v} [${a.citedRef}]` : `[${a.citedRef}]`;
 }
 
 /**
@@ -280,16 +302,28 @@ export function badgeFor(id, store) {
  * 2026-09-05 and serving again by 2026-09-26. The date is the latest attempt's, read from its
  * `fetchedAt`; an attempt with no parseable date gives the line without one rather than a guessed date.
  */
-function triedFor(usable) {
-  const attempts = usable.filter((a) => a.leg === "value-vs-source" && a.verdict === "UNREACHABLE" && !isStale(a));
-  if (attempts.length === 0) return null;
-  const dates = attempts.map((a) => attemptDate(a.fetchedAt)).filter(Boolean).sort();
+//
+// IT NAMES THE ROW (2026-09-29, round 3). The first wording said only "we could not open its cited
+// source" and sat above the two last-listed rows, so a cold walker read it as doubt about the number
+// shown — while all seven attempted rows were older rows further up their tables. The line now carries
+// the tried row's value and reference key, and says whether that row is one of those shown, decided by
+// whole-row equality with the pins, never assumed. No year is printed: a key's digits are a label, and
+// 65a's `Xyl2011` row credits Graham 1981.
+function triedFor(usable, shown = []) {
+  const rows = attemptedRows(usable);
+  if (rows.length === 0) return null;
+  const dates = usable
+    .filter((a) => a.leg === "value-vs-source" && a.verdict === "UNREACHABLE" && !isStale(a))
+    .map((a) => attemptDate(a.fetchedAt)).filter(Boolean).sort();
   const date = dates.length ? dates[dates.length - 1] : null;
+  const which = rows.length === 1
+    ? `the source for ${isShownRow(rows[0], shown) ? "the row shown" : "another row"}, ${plainRowName(rows[0])}`
+    : `the sources for ${rows.length} rows: ${rows.map((a) => `${plainRowName(a)}${isShownRow(a, shown) ? " (shown)" : ""}`).join("; ")}`;
   return {
     verdict: "UNREACHABLE",
     kind: "tried",
     date,
-    text: date ? `we could not open its cited source (tried ${date})` : "we could not open its cited source",
+    text: `we could not open ${which}${date ? ` (tried ${date})` : ""}`,
   };
 }
 
@@ -332,7 +366,7 @@ function rowLink(a) {
  * attempts. Every one of those three distinctions was a way to overstate the work, and every one of
  * them landed in the sentence describing our own method, which is where this lane's defects live.
  */
-export function auditBlock(id, store) {
+export function auditBlock(id, store, shown = []) {
   const all = (Array.isArray(store?.audits) ? store.audits : []).filter(usableAudit);
   const mine = all.filter((a) => a.constant === id);
   if (mine.length === 0) return "";
@@ -354,7 +388,7 @@ export function auditBlock(id, store) {
     const note = a.sourceRead ? ` (${esc(a.sourceRead)})` : "";
     const verdictText = stale
       ? (READ_VERDICTS.has(a.verdict) ? "this row was read against its cited source on an earlier version of the table, and the row at that line has since changed or cannot be matched, so this verdict says nothing about the row there now" : "a check of this row was attempted on an earlier version of the table and the cited source could not be read; the row at that line has since changed or cannot be matched, so nothing is said about the row there now")
-      : v.text;
+      : a.verdict === "UNREACHABLE" && attemptDate(a.fetchedAt) ? `${v.text} (tried ${attemptDate(a.fetchedAt)})` : v.text;
     return `<li>${what}<code style="display:inline;padding:.1rem .3rem">[${esc(a.citedRef)}]</code> &mdash; ` +
       `${esc(verdictText)}. <a href="${esc(safeUrl(a.source))}">${esc(v.link)}</a>${note}. ` +
       `<span class="sel">Selected: ${esc(selectionNote(a))}.</span></li>`;
@@ -408,8 +442,19 @@ export function auditBlock(id, store) {
       ? `${split} Across this whole ledger ${drawnAll} row(s) have been drawn by position, against ${esc(String(cited))} rows that name a source${when ? `, counted on ${esc(when)}` : ""}: the sources of ${drawnRead} were read and ${drawnUnread} could not be read at all. ${susAll} more were chosen for suspicion and read; they are counted apart, because a set selected for suspicion carries no rate.`
       : `${split} Across this whole ledger ${drawnAll} row(s) have been drawn by position (the sources of ${drawnRead} were read and ${drawnUnread} could not be read at all) and ${susAll} more were chosen for suspicion and read. The size of the corpus they came from is not recorded, so this is a count and not a proportion.`);
   }
-  if (unreachedHere > 0) {
-    parts.push(`${unreachedHere} further bound row(s) here were attempted and the source could NOT be read; those are not counted as read.`);
+  // NAMED, NOT COUNTED (2026-09-29, round 3): "1 further bound row(s) here were attempted" did not say
+  // which row, and with nothing read there was nothing for "further" to be further than.
+  const tried = attemptedRows(mine);
+  if (tried.length > 0) {
+    const named = tried.map((a) => {
+      const value = verifiedValue(a);
+      const shownNote = isShownRow(a, shown) ? ", one of the last-listed rows shown above" : "";
+      return `the bound row${value ? ` <code style="display:inline;padding:.1rem .3rem">${esc(value)}</code>` : ""} citing [${esc(a.citedRef)}]${rowLink(a)}${shownNote}`;
+    }).join("; ");
+    parts.push(`${boundHere > 0 ? "Also attempted" : "Attempted"}, and the source could NOT be read: ${named}. ${tried.length === 1 ? "That row is" : "Those rows are"} not counted as read.`);
+  }
+  if (boundHere === 0 && tried.length > 0 && otherHere === 0 && countRows(mine.filter(isStale)) === 0) {
+    parts.push("No bound row of this constant has been read against its source, including the last-listed rows shown above.");
   }
   if (otherHere > 0) {
     const n = `${otherHere} reference entr${otherHere === 1 ? "y" : "ies"}`;
@@ -424,7 +469,15 @@ export function auditBlock(id, store) {
   }
   parts.push("A row not listed here has NOT been checked.");
 
-  return `<dt>Read against its cited source</dt><dd><ul class="audit">${items}</ul><span class="when">${parts.join(" ")}</span></dd>`;
+  // THE HEADING SAYS WHAT HAPPENED (2026-09-29, round 3). It read "Read against its cited source" above
+  // a bullet saying the source could not be read at all. When no audit of this constant reached its
+  // source, it says it was tried and not opened, with the latest attempt's date.
+  const anyRead = mine.some((a) => READ_VERDICTS.has(a.verdict));
+  const triedDates = mine.filter((a) => a.verdict === "UNREACHABLE").map((a) => attemptDate(a.fetchedAt)).filter(Boolean).sort();
+  const heading = anyRead
+    ? "Read against its cited source"
+    : `Tried, could not open its cited source${triedDates.length ? ` (${triedDates[triedDates.length - 1]})` : ""}`;
+  return `<dt>${esc(heading)}</dt><dd><ul class="audit">${items}</ul><span class="when">${parts.join(" ")}</span></dd>`;
 }
 
 /** The one sentence every page owes, because a pinned row is a listing position and not a record. */
@@ -466,7 +519,7 @@ ${r.report ? `<a class="ours" href="${esc(r.report.url)}">${esc(reportLabel(r.re
 <dl>
 ${side("Upper", r.upper, r.upperChanged, r.upperKind)}
 ${side("Lower", r.lower, r.lowerChanged, r.lowerKind)}
-${auditBlock(r.id, audits)}
+${auditBlock(r.id, audits, [r.upper, r.lower])}
 </dl>
 <div class="actions">
 <a href="${esc(upstream)}">the mirrored file</a> &middot;
@@ -602,6 +655,7 @@ function selftest() {
   });
   assert.ok(!/best known bound/i.test(smuggle), "an unrecognised verdict must never reach the page verbatim");
   assert.ok(!smuggle.includes("Read against its cited source"), "a store of only unusable rows must render no block at all");
+  assert.ok(!smuggle.includes('<ul class="audit">'), "no block under either heading");
 
   // (b) MEANING: the verdict is stated in words, and the link text matches the verdict — "the
   //     source we read" beside UNREACHABLE would contradict itself.
@@ -620,6 +674,7 @@ function selftest() {
   const hostileUrl = renderPage(row, "abc1234def", { audits: [{ id: "T-J", constant: "9z", citedRef: "R", leg: "value-vs-source", verdict: "SOUND", source: "javascript:alert(1)" }], corpus: { citedRows: 999 } });
   assert.ok(!/javascript:/i.test(hostileUrl), "a javascript: source must never reach the published page");
   assert.ok(!hostileUrl.includes("Read against its cited source"), "a row whose only source is unusable is dropped, not rendered link-less");
+  assert.ok(!hostileUrl.includes('<ul class="audit">'), "no block under either heading");
 
   // (e) MEANING: hostile store text is escaped rather than interpolated as markup.
   const hostileStore = renderPage(row, "abc1234def", {
@@ -679,14 +734,35 @@ function selftest() {
   // (h4) AN UNREACHABLE SOURCE WAS NOT READ, and the summary must not count it as read. The page
   //      previously printed "could not be read at all" beside "1 bound row(s) ... have been read".
   const unreadOnly = renderPage(row, "abc1234def", {
-    audits: [{ id: "T-U2", constant: "9z", citedRef: "RU", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/u2", ...pinId("| $9.555555$ | [RU] | x |") }],
+    audits: [{ id: "T-U2", constant: "9z", citedRef: "RU", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/u2", fetchedAt: "2026-09-16 at 15:51Z", ...pinId("| $9.555555$ | [RU] | x |") }],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
-  assert.ok(unreadOnly.includes("Read against its cited source"), "positive control: the unreachable-only page renders a block");
+  assert.ok(unreadOnly.includes('<ul class="audit">'), "positive control: the unreachable-only page renders a block");
   assert.ok(!/have been read against their cited source/.test(unreadOnly),
     "a source that could not be read must not be counted as read");
-  assert.ok(/attempted and the source could NOT be read/.test(unreadOnly),
+  assert.ok(/Attempted, and the source could NOT be read/.test(unreadOnly),
     "an attempted-but-unreachable row must be disclosed as its own category");
+  // (h4b) THE HEADING SAYS WHAT HAPPENED, AND THE ROW IS NAMED (2026-09-29, round 3). The block was
+  //       headed "Read against its cited source" over a bullet saying the source could not be read at
+  //       all, and it counted "1 further bound row(s)" without saying which. MEANING first, pins last.
+  assert.ok(!unreadOnly.includes("<dt>Read against its cited source</dt>"), "a block where nothing was read must not be headed as a reading");
+  assert.ok(unreadOnly.includes("<dt>Tried, could not open its cited source (2026-09-16)</dt>"), "and is headed as an attempt, with the attempt's date");
+  assert.ok(unreadOnly.includes("could not be read at all (tried 2026-09-16)"), "the attempted row's own line carries the date the index line promised");
+  assert.ok(!/further bound row/.test(unreadOnly), "with nothing read there is nothing for 'further' to be further than");
+  assert.ok(/the bound row <code[^>]*>\$9\.555555\$<\/code> citing \[RU\]/.test(unreadOnly), "the attempted row is named by its value and key, not counted");
+  assert.ok(!/one of the last-listed rows shown above/.test(unreadOnly), "a tried row that is not a displayed pin must not be called one");
+  assert.ok(unreadOnly.includes("No bound row of this constant has been read against its source, including the last-listed rows shown above."),
+    "the page must say the rows shown are unread too, so the attempt cannot be read as doubt about them alone");
+  // ...and when the tried row IS a displayed pin (0 of 7 live on 2026-09-29, so only a fixture can
+  // reach this branch), the page says so. Whole-row equality: the fixture's pin is `| 2.5 |`.
+  const shownUnread = renderPage(row, "abc1234def", {
+    audits: [{ id: "T-U3", constant: "9z", citedRef: "RU", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/u3", ...pinId("| 2.5 |") }],
+    corpus: { citedRows: 999, measuredAt: "2026-01-02" },
+  });
+  assert.ok(/one of the last-listed rows shown above/.test(shownUnread), "an attempt of a displayed row must say it is one of those shown");
+  assert.ok(shownUnread.includes("<dt>Tried, could not open its cited source</dt>"), "an undated attempt gives the heading without a guessed date");
+  // A page with a READING keeps the reading heading.
+  assert.ok(audited.includes("<dt>Read against its cited source</dt>"), "a block with a reading keeps the reading heading");
 
   // (h5) A REPEAT AUDIT OF THE SAME ROW IS ONE ROW. Counting entries let a recheck inflate apparent
   //      coverage without examining any new material.
@@ -889,6 +965,7 @@ function selftest() {
   const unaudited = renderPage(row, "abc1234def", { audits: [], corpus: { citedRows: 999 } });
   assert.ok(unaudited.length > 800, "positive control: the unaudited page must still render");
   assert.ok(!unaudited.includes("Read against its cited source"), "a constant nobody has audited must carry no audit block");
+  assert.ok(!unaudited.includes('<ul class="audit">'), "no block under either heading");
   assert.ok(audited.includes("Read against its cited source"), "positive control: the heading IS present when there are audits");
 
   // (k) A missing corpus renders a COUNT and explicitly refuses to imply a proportion.

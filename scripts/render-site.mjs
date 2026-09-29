@@ -204,7 +204,7 @@ export function buildRows(claims, { withDates = true, root = ROOT, reports = nul
       upperPrev: uc.prevExpect || null,
       lowerPrev: lc.prevExpect || null,
       report: reportFor(id, filed),
-      audit: badgeFor(id, store),
+      audit: badgeFor(id, store, [upper && upper.expect, lower && lower.expect]),
       tableValues: tableValuesFor(id, root),
       aliases: aliasesFor(id, claims),
     };
@@ -560,7 +560,7 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   // sat inside the style template literal and shipped the whole explanation to every visitor.
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
-<th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}, so its number is not checked. Open its page for which row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}</th>
+<th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(r.audit.text)}. That row&rsquo;s number is not checked, and neither row shown here has a reading we can match to it today. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}</th>
 ${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)")}
 ${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)")}
 <td class="src"><a href="${esc(readable(r.url))}">source</a> · <a href="c/${esc(r.id)}.html" aria-label="The page for ${esc(r.title)}">page</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(r.title)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
@@ -661,7 +661,7 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 </div>
 <p class="count" id="count">${rows.length} constants</p>
 <p class="hint">Each date is when that row&rsquo;s pinned text last changed <em>in this ledger</em> &mdash; or, for a row that has never changed here, the day this ledger started tracking it. Most rows share that bootstrap date. Ordering by movement puts the rows we have actually seen change first, most recent first; rows we have only ever watched sit still follow, still dated, each saying so in its own cell. That distinction is the one the date alone cannot make, because a later date can mean a bound changed here <em>or</em> that we only started watching it later. Neither date says anything about what a constant did before we began watching it, and a row we have never seen move may well have moved before we arrived.</p>
-<p class="hint">A line under a constant&rsquo;s name means we opened the source one of its bound rows cites and read the number there &mdash; its page says which row and what we found. A line in italics saying <em>we could not open its cited source</em> is different: we tried on the date it gives and were turned away or found nothing, so that row&rsquo;s number has not been checked against its source, and you should check it yourself before citing it. A later attempt may succeed, because sites come back. Most constants carry no such line. That means we have no reading we can match to the row as it stands today &mdash; either we have not done one, or the row has changed since we did, in which case its page still shows what we found and says it describes an earlier version of the table. It is not a sign that anything is wrong. Either way it is about a row matching its own source, never about whether it is the strongest bound known.</p>
+<p class="hint">A line under a constant&rsquo;s name means we opened the source one of its bound rows cites and read the number there &mdash; its page says which row and what we found. A line in italics beginning <em>we could not open the source</em> is different. It names the row we tried to check, by its number and the reference key it carries in the table, and on the date it gives we were turned away or found nothing, so that row&rsquo;s number has not been checked against its source. When it says <em>another row</em>, the row it names is listed elsewhere in that constant&rsquo;s tables, and the two rows shown here have no reading either, like those of any constant with no line. Either way, check a number yourself before citing it. A later attempt may succeed, because sites come back. Most constants carry no such line. That means we have no reading we can match to the row as it stands today &mdash; either we have not done one, or the row has changed since we did, in which case its page still shows what we found and says it describes an earlier version of the table. It is not a sign that anything is wrong. Either way it is about a row matching its own source, never about whether it is the strongest bound known.</p>
 
 <div class="empty" id="empty" hidden>
 <p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the ${rows.length} constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
@@ -1036,6 +1036,17 @@ async function selftest() {
   assert.match(tried[1], /could not open/, "the attempted line must say the source could not be opened");
   assert.match(tried[1], /2026-09-11/, "the attempted line must carry the date of the attempt — a host being down is a moment");
   assert.match(tried[0], /not checked/, "its accessible label must say the number is not checked");
+  // IT NAMES THE ROW IT IS ABOUT (2026-09-29, round 3). A cold walk read the unnamed line as doubt about
+  // the number shown, while every live attempt was of another row. "Is it the row shown" is decided by
+  // WHOLE-ROW equality with the pin: this fixture's tried row shares its value 857.5662 with the pin
+  // `| 857.5662 |` and is a different row, so a value or substring match would call it shown.
+  assert.match(tried[1], /857\.5662 \[Ref2026\]/, "the attempted line must name the tried row by its value and reference key");
+  assert.match(tried[1], /another row/, "a tried row that is not a displayed pin must be called another row");
+  assert.ok(!/the row shown/.test(tried[1]), "a tried row sharing only its VALUE with the pin must not be called the row shown");
+  const shownTried = triedOn(withAudits([readAudit({ verdict: "UNREACHABLE", ...auditRow("| 857.5662 |"), fetchedAt: "2026-09-11" })]), "87a");
+  assert.ok(shownTried, "positive control: an attempt of the displayed row must show the attempted line");
+  assert.match(shownTried[1], /the row shown/, "an attempt of the displayed row itself must say so");
+  assert.ok(!/another row/.test(shownTried[1]), "and must not call the displayed row another row");
   for (const forbidden of [/\brecord\b/i, /\bbest\b/i, /strongest/i, /\bverified\b/i, /\bcorrect\b/i, /\bcurrent\b/i, /\blatest\b/i]) {
     assert.ok(!forbidden.test(tried[0]), `the attempted line must make no record claim — matched ${forbidden}`);
   }
@@ -1061,10 +1072,20 @@ async function selftest() {
     readAudit({ id: "A-47-T4", verdict: "UNREACHABLE", rowLine: 8, ...auditRow("| 902.0 | [Ref2026] |"), fetchedAt: "2026-09-20" }),
   ]), "87a");
   assert.match(twoAttempts[1], /tried 2026-09-20/, "with two attempts the line must carry the LATEST");
-  const undated = triedOn(withAudits([readAudit({ verdict: "UNREACHABLE" })]), "87a");
-  assert.equal(undated[1], "we could not open its cited source", "an undated attempt must print no date rather than a guessed one");
-  assert.match(unreachablePage, /we tried on the date it gives and were turned away or found nothing/,
+  assert.match(twoAttempts[1], /2 rows: 857\.5662 \[Ref2026\]; 902\.0 \[Ref2026\]/, "two attempted rows must both be named, not counted");
+  const retried = triedOn(withAudits([
+    readAudit({ verdict: "UNREACHABLE", fetchedAt: "2026-09-11" }),
+    readAudit({ id: "A-47-T5", verdict: "UNREACHABLE", fetchedAt: "2026-09-20" }),
+  ]), "87a");
+  assert.ok(!/rows:/.test(retried[1]), "a retry of the SAME row is one row, not two");
+  assert.match(unreachablePage, /on the date it gives we were turned away or found nothing/,
     "the page must explain the attempted line");
+  assert.match(unreachablePage, /When it says <em>another row<\/em>, the row it names is listed elsewhere in that constant&rsquo;s tables/,
+    "the page must say what another row means, so the line cannot be read as doubt about the rows shown");
+  assert.ok(!/that row&rsquo;s number has not been checked against its source, and you should check it yourself/.test(unreachablePage),
+    "the superseded hint pointed at the row shown and must not return");
+  const undated = triedOn(withAudits([readAudit({ verdict: "UNREACHABLE" })]), "87a");
+  assert.equal(undated[1], "we could not open the source for another row, 857.5662 [Ref2026]", "an undated attempt must print no date rather than a guessed one");
 
   // 3. A reference entry is not a bound row.
   assert.equal(badgeOn(withAudits([readAudit({ leg: "citation-well-formed" })]), "87a"), null,
