@@ -585,6 +585,21 @@
         ],
         "bounds": 10,
         "order": "Planned and committed before any of these papers was opened. The commit that adds the readings comes after it in history. Seven papers rather than five, on the orchestrator's P1 review (bus d62d8270), so the rate the 2026-09-28 checkpoint reports is one the census can sustain."
+      },
+      {
+        "session": 3,
+        "plannedOn": "2026-09-30",
+        "keys": [
+          "NaRT",
+          "Kol2",
+          "Ka1",
+          "MR4",
+          "Ex19",
+          "MR5",
+          "Ex3"
+        ],
+        "bounds": 11,
+        "order": "Planned and committed before any of these papers was opened. The commit that adds the readings comes after it in history. The next seven keys of the derived census order. The tripwire in A-54.rebuildCheckpoint2026_09_28 was applied first and did not fire: 32 papers remaining against 4 x 9 census slots through 2026-10-16 = 36. Mac, the next key, carries 13 bounds and opens session 4. Acceptance floor, on the orchestrator's P1 review (bus 4026973b): at least 4 of these 7 papers READ (full text of the cited edition, or an edition shown to carry the same statement, reached), with attempted and read reported as two numbers."
       }
     ]
   }
