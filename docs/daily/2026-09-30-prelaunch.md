@@ -6,7 +6,7 @@ north_star_classification: expected-zero
 product: bounds-ledger
 date: 2026-09-30
 lifecycle_stage: launched
-last_deploy: 5a6f925 (HEAD at P1; the last page-changing commit is named at the close)
+last_deploy: 5f22082 (the last page-changing commit, round 2; served 32 of 32 by npm run served at 21:47:18Z)
 on_hold_items: 0
 top_action_today: A-54 census session 3 on the Small Ramsey Numbers rebuild
 # The four keys below have NO instrument in this lane and are left null rather than filled with a
@@ -23,7 +23,7 @@ sentry_open_p2: null
 
 We checked seven more papers behind the small Ramsey numbers table against the bounds the survey credits to them. Five were read in the edition the survey cites and back their bounds; one web page could only be read in a later copy, and one book chapter could not be reached.
 
-Nothing changed on the public pages today: these readings stay off them until the rebuilt table lands on 2026-10-20.
+Those readings stay off the public pages until the rebuilt table lands on 2026-10-20. In a second round this afternoon, we read five more cited rows of the constants ledger against their sources, and all five hold. One of them, Linnik's constant, had been marked "could not open the source" since 16 September, and its page now says it was read. Those verdicts are live.
 
 ## What changed
 
@@ -32,6 +32,9 @@ Nothing changed on the public pages today: these readings stay off them until th
   - UNRESOLVED: Kol2's two bounds. The cited web page states both, but it was read only as archived in 2022-2025, and its equivalence to the 2016 version the survey cites is not established.
   - UNREACHABLE: Ex3, a chapter in a 1991 SIAM proceedings volume. The Internet Archive copy needs an account to borrow, and HathiTrust's copy is search-only.
   - Attempted 7, full text reached 6, read in the cited edition 5. The P1 review's floor was 4.
+- **Round 2: `A-47` slice 10** (the depth audit of the constants ledger), pulled forward from 2026-10-01. The draw was pushed in `d100b70` before any source was opened, the readings landed in `5f22082`, and the review fix landed in `a657873`. `node scripts/depth-audit.mjs` now reads "48 row(s) audited — 30 sound, 2 defective, 9 unresolved, 7 unreachable" (this morning, 44: 25/2/9/8).
+  - SOUND: 4b [Kra2026], 55a [GKZ2018] (on the narrow claim: the abstract announces a factor below 4 and states no value), 77a (on the Lee2006 leg only: Lee2004 was not reached) and 84a [E1946].
+  - Position 512 drew the row `A-47-0021` already held (65a), because the frame grew from 673 to 691 rows on 2026-09-26. It was retried in place, UNREACHABLE → SOUND: the DOI still answers 502, and the publisher's own landing page serves the PDF. Filed as `A-60` (the draw has no collision guard). Slice 11's position 137 collides again.
 - **Findings classification, one sentence of human judgment:** today's findings were instrument-facing. The cross-family review caught my own overclaims: Kol2's edition, a read count that included it, a wrong comparison on MR4 and an access overclaim on Ex3. The one defect found in a source is a dropped "to 159" in NaRT's summary sentence (v3-v5), and it concerns a preprint's prose, not a mirrored upstream entry.
   - **Numeric or byte-only: neither.** The drift alarm counted nothing today. Positive control: `reverify.test.mjs` plants synthetic drift on every `npm test`, and today's verify ran it.
   - **Consecutive instrument-facing days: 1**, counted by hand. Yesterday had a record-facing finding (8a).
@@ -47,12 +50,13 @@ Nothing changed on the public pages today: these readings stay off them until th
 ## Outputs (lagging)
 
 - **`G-4` (an outside party acting on a watched record without us filing the report):** `npm run reports` at P1 read "OUTSIDE ARRIVALS: 0" of 32 raw issues, with the parts reconciling (32 + 0 + 0 = 32). By the rule of three, the 95% upper bound on the outside share of issues is about 3/32. It says nothing about readers who never file.
-- **Delivery:** none by design. `node scripts/render-ramsey.mjs --check` read "RESULT: PASS — ramsey.html matches the committed table (72 entries, revision #18)". CI on `3f4384c`: GREEN.
+- **Delivery, round 2:** `npm run served` at 21:47:18Z read "32 checked — 32 served, 0 in flight, 0 stale, 0 unreachable", with anchor `5f22082`. CI GREEN on `a657873`. Encounter: blind (`A-59`).
+- **Delivery, round 1:** none by design. `node scripts/render-ramsey.mjs --check` read "RESULT: PASS — ramsey.html matches the committed table (72 entries, revision #18)". CI on `3f4384c`: GREEN.
 - **The two depth counts, side by side and never summed:** the Small Ramsey Numbers census is above. The constants audit (`node scripts/depth-audit.mjs`) did not change today; its slice 10 is 2026-10-01.
 
 ## Recommendation
 
-- 2026-10-01: `A-47` slice 10 (the depth audit of the constants ledger), then `A-53`'s guard choice, (a), (b) or (c).
+- 2026-10-01: `A-53`'s guard choice, (a), (b) or (c), then `A-47` slice 11 at positions 662, 37, 87, 137 and 187. Settle the rule for position 137's collision (`A-60`) before the draw is pushed. Slice 10 landed today in round 2.
 - 2026-10-02: census session 4 on `A-54`, opening with Mac (13 bounds). Apply the tripwire first: 25 papers against 4 × 8 = 32 at this close.
 - The Wayback `id_` retry of the five blocked census papers (GrY, Ka2, Ex5, Kol1, Ex3), at the first census slot with time to spare and no later than the 10-08 slot (`A-54.blockedRetry2026_09_30`).
 
@@ -62,6 +66,28 @@ Nothing changed on the public pages today: these readings stay off them until th
 - **This lane's `npm run close:primer` is red under today's primer-naming change** (orchestrator, bus 8bac7908). A close now appends to the primer dated the day it is written, but the lane's check still looks for `docs/cold-starts/2026-10-01.md`: "RESULT: FAIL — no cold-start primer for tomorrow (2026-10-01 MT)". The fleet check `check-next-primer-exists.mjs` reads "RESULT: PASS" on `docs/cold-starts/2026-09-30.md`. UNRESOLVED: the lane check needs updating to the new rule, which is a code change for a later day.
 
 ## State Appendix
+
+### Close (round 2)
+
+ACTION: COMPLETED · item A-47 · P3 58caa6bd (the P3 bus msgId). The acceptance condition in force was the round-2 P1 packet's, which the review approved (bus 7c15df50). It was met:
+- the draw `d100b70` was pushed at 21:08:58Z, before the first source fetch (21:10:40Z);
+- `node scripts/depth-audit.mjs` reads 48 audited (condition: 48 or more);
+- `A-47-0021` gained a dated attempt (`retry2026_09_30`);
+- every verdict names the edition it read;
+- `render-site --check` passed after the commit (in `npm run verify`, receipt `exitCode: 0` at `5f22082`).
+
+The orchestrator's P3 review (bus 7fea9bad) marked it COMPLETED.
+
+State changed since the P3 post: none on the pages. The ledger delta:
+- Hygiene draft (round 2): 0 lines, so 0 accepted · 0 amended · 0 rejected. READ-MUTATED: none. Its checks read "check-wait-justification: RESULT: PASS — 1 of 75 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)" and "check-engineering-zero --project bounds-ledger: RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)".
+- `A-47`: `slice10Draw2026_09_30` (in `d100b70`) and a round-2 line on `nextCheckDateNote`. `nextCheckDate` stays 2026-10-01, now slice 11's date, after `A-53`'s guard choice.
+- `A-60` minted: the depth-audit draw has no guard against a position landing on a row already in the store. Its trigger is slice 11's draw on 2026-10-01. `node scripts/depth-audit.mjs --draw 662 37 87 137 187` (exit 0) prints fingerprints counted in the store at 0, 0, 0, 2 and 0 (positive control: 65a's counts 2), so position 137 lands on `A-47-0015` and `A-47-0016`.
+
+Due-gate verification: `check-due-gates-dispositioned.mjs` reads "verdict: CLEAR — every gate due at Phase 0 was dispositioned", with "snapshot: tmp\due-gates-snapshot.json — CURRENT (taken 2026-09-30)".
+
+Receipt: the P3 receipt (bus 58caa6bd) still holds, so no new receipt is written.
+
+Pending reads: `A-53`'s guard choice and `A-47` slice 11 with `A-60`'s rule, 2026-10-01. The rest are unchanged from round 1's close below.
 
 ### Close
 
