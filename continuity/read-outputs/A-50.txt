@@ -1,0 +1,24 @@
+# read-output sidecar for A-50 — written by check-due-gates-dispositioned --run
+# readCommand: git log --oneline --since=2026-09-16 -- scripts/ .github/workflows/reverify.yml
+# ran: 2026-09-30T16:04:55.861Z · exit: 0
+# lines: 18 · sha256: 45852f51dfc87207 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+7bcccc9 The tried line claims less: every key it was tried through, and no reading matched today
+7830495 Review fixes on f58f07f: the hint claims less, and a row's key and date come from one attempt
+f58f07f The could-not-open line names the row we tried, and the page stops heading an attempt as a reading
+920f2ae Index shows a third line on a constant whose cited source we tried and could not open
+9649491 A-47 slice 8 lands: four sources support their rows, 8a's credit is an open lead, and the public pages stop printing a stale 673
+876caa4 A-54 census session 1 planned before any paper is opened: GG, Kery, Ka2, GrY, GR
+a4a61c1 A-55 closes: the served-bytes check is wired as an indicator, and its window comes from a lag measured at the reader
+b1c1af9 A-55: a check that reads what a reader is actually served, because every gate here passed while the site served the previous tip
+aee164c P3 2026-09-22: the pages a citer lands on say when we last looked, and the index stops asserting a figure that went false
+874e411 A-47 slice 6: five more cited rows read against their sources, and the page stops hiding the draws it could not read
+334e49a A-54 phase 2: the disclosure ships as its own page, and the table shows numbers before prose
+53c3abd A-33 leg 2 ships and the row CLOSES: a drifted file we reported against says go look, to us only
+645457a A-54: the two HW+ readings say what was attempted, and a guard that the saying reaches a reader
+fc0bbba A-54 phase 4: the first five Small Ramsey Numbers bounds read against their sources, on the page
+f1c5e85 A-54 phase 4: the draw for the first Small Ramsey Numbers depth slice, committed before any read
+e9ad288 A-7 R7: the scheduled full-history secret sweep, with its known hits dispositioned rather than allowlisted
+aa1aeca A-54: the second watched area gets a page a reader can use today
+9360084 A-54: adopt Small Ramsey Numbers as the second watched area, scoped, with its revision watch
