@@ -485,7 +485,7 @@
       "ref": "Kol1",
       "selection": "census",
       "censusSession": 2,
-      "source": "Matematicheskoye i Informacionnoe Modelirovanie (Tyumen State University), issue 14 (2015), pp. 126-130; no DOI exists",
+      "source": "Matematicheskoye i Informacionnoe Modelirovanie (Tyumen State University), issue 14 (2015), pp. 126-130; no DOI was located",
       "sourceRead": "NOT read. No text of the paper, not even an abstract, was reached. The publisher's own e-library (library.utmn.ru) holds this series only from issue 17 (2019); every guessed filename for issue 14 returned 404, and the Wayback Machine's listings of that library hold no issue-14 file. OpenAlex, Crossref, arXiv, CORE, CyberLeninka, EuDML and the Internet Archive hold no record of it; HathiTrust answered 403; biblioclub.ru and eLibrary.ru require an account login, which this census does not use; Google Books answered 429 or a page with no results.",
       "verdict": "UNREACHABLE",
       "evidence": "No sentence of the paper was read, so nothing is quoted from it.",
@@ -588,11 +588,11 @@
       "selection": "census",
       "censusSession": 3,
       "source": "http://aluarium.net/forum/wiki-article-17.html",
-      "sourceRead": "read: the web page the survey cites, as archived by the Wayback Machine on 2022-01-21, 2024-12-31 and 2025-02-20 (32,924 bytes each; the three captures differ in hash and carry the same statements). The live site did not answer. The six earlier captures, 2019-04-26 to 2020-08-05, each recorded an HTTP 403 from the site, and no 2016 capture exists. The 2025 capture was read by this session with Grep.",
-      "verdict": "SOUND",
+      "sourceRead": "read: the web page the survey cites, as archived by the Wayback Machine on 2022-01-21, 2024-12-31 and 2025-02-20 (32,924 bytes each; the three captures differ in hash and carry the same statements). The live site did not answer. The six earlier captures, 2019-04-26 to 2020-08-05, each recorded an HTTP 403 from the site, and no 2016 capture was found. The 2025 capture was read by this session with Grep.",
+      "verdict": "UNRESOLVED",
       "evidence": "Line 238 of the 2025 capture, in Russian: 'На текущий момент удалось получить 4 новых нижних оценки чисел Рамсея: R(3, 12) ≥ 53, R(3, 13) ≥ 60, R(3, 14) ≥ 67, R(3, 15) ≥ 74.' (our translation: 'So far 4 new lower bounds for Ramsey numbers have been obtained: ...'). Line 367 heads an adjacency matrix: 'Матрица смежности одного из найденных R(3, 14; 66)-графов:' ('Adjacency matrix of one of the R(3, 14; 66)-graphs found').",
       "positiveControl": "The page's title reads 'Aluarium - Статьи - Новые нижние границы для чисел Рамсея' ('New lower bounds for Ramsey numbers'); the URL is the survey's; the article is signed 'М. Колодяжный' (M. Kolodyazhny) and its header reads 'Написано 31-03-2016 в 15:56' ('Written 31-03-2016 at 15:56'). These are the survey's entry for [Kol2], which it dates 2016.",
-      "notes": "Edition: the survey cites this URL together with a 2016 personal communication. The communication cannot be read, and the page was read as archived in 2022-2025, not as it stood in 2016; it carries a 2016 'written' date, but edits between 2016 and 2022 cannot be ruled out. The 66-vertex matrix was counted for shape only (66 rows of 66 characters) and not checked as a graph. The same sentence also states R(3, 12) ≥ 53, the bound the survey credits to [Kol1] (DS1-0024, UNREACHABLE); that is corroboration from a different source and does not move DS1-0024.",
+      "notes": "UNRESOLVED on the edition, not the value: the archived 2022-2025 page states this bound, but its equivalence to the version the survey cites (a 2016 personal communication with this URL) is not established. The page carries a 2016 'written' date, which does not rule out edits between 2016 and 2022. First proposed SOUND; downgraded on the 2026-09-30 cross-family review. What would settle it: a copy of the page from 2016, or the 2016 communication itself. The 66-vertex matrix was counted for shape only (66 rows of 66 characters) and not checked as a graph. The same sentence also states R(3, 12) ≥ 53, the bound the survey credits to [Kol1] (DS1-0024, UNREACHABLE); that is corroboration from a different source and does not move DS1-0024.",
       "fetchedAt": "2026-09-30, 16:07Z to about 16:09Z, by the saved files' timestamps in tmp/depth-reads/census3/Kol2/"
     },
     {
@@ -605,11 +605,11 @@
       "selection": "census",
       "censusSession": 3,
       "source": "http://aluarium.net/forum/wiki-article-17.html",
-      "sourceRead": "read: the web page the survey cites, as archived by the Wayback Machine on 2022-01-21, 2024-12-31 and 2025-02-20. The live site did not answer, the 2019-2020 captures recorded HTTP 403, and no 2016 capture exists. The 2025 capture was read by this session with Grep.",
-      "verdict": "SOUND",
+      "sourceRead": "read: the web page the survey cites, as archived by the Wayback Machine on 2022-01-21, 2024-12-31 and 2025-02-20. The live site did not answer, the 2019-2020 captures recorded HTTP 403, and no 2016 capture was found. The 2025 capture was read by this session with Grep.",
+      "verdict": "UNRESOLVED",
       "evidence": "Line 238 of the 2025 capture: '... R(3, 14) ≥ 67, R(3, 15) ≥ 74.' Line 439 heads an adjacency matrix: 'Матрица смежности одного из найденных R(3, 15; 73)-графов:' ('Adjacency matrix of one of the R(3, 15; 73)-graphs found').",
       "positiveControl": "The same tokens as DS1-0030: the page title 'Новые нижние границы для чисел Рамсея', the survey's URL, the signature 'М. Колодяжный', and the header 'Написано 31-03-2016 в 15:56'. These are the survey's entry for [Kol2].",
-      "notes": "Same edition limit as DS1-0030: the page as archived in 2022-2025, not a 2016 copy. The 73-vertex matrix was counted for shape only and not checked as a graph.",
+      "notes": "UNRESOLVED for the same edition limit as DS1-0030: the archived 2022-2025 page states this bound, but its equivalence to the 2016 version the survey cites is not established. First proposed SOUND; downgraded on the 2026-09-30 cross-family review. What would settle it: a 2016 copy of the page or the communication itself. The 73-vertex matrix was counted for shape only and not checked as a graph.",
       "fetchedAt": "2026-09-30, 16:07Z to about 16:09Z, by the saved files' timestamps in tmp/depth-reads/census3/Kol2/"
     },
     {
@@ -643,7 +643,7 @@
       "verdict": "SOUND",
       "evidence": "Page 1, abstract: 'With the help of a long computation using novel techniques, we prove that R(4, 5) = 25.' Page 10, section 5: 'As a result of these computations, about 250000 (4, 5, 24)-graphs were found. These were shown to not be induced subgraphs of (4, 5, 25)-graphs using two independent programs for extending (4, 5, n)-graphs to (4, 5, n+1)-graphs. Thus we have our main theorem. Theorem 2. R(4, 5) = 25.'",
       "positiveControl": "The copy's page 1 carries the title 'R(4,5) = 25', the authors Brendan D. McKay and Stanisław P. Radziszowski, and the line 'JGT 19 (1995) 309–322'. The publisher's archived abstract page carries citation_title 'R(4, 5) = 25', Journal of Graph Theory, volume 19, issue 3, pages 309-322. These are the survey's entry for [MR4].",
-      "notes": "Edition: the authors' copy is taken to carry the journal's statement because its abstract matches the publisher's abstract word for word, it prints the journal citation itself, and its 14 pages match the journal's 309-322 span; the same treatment as McZ (DS1-0016). The journal body was not compared line by line. The computation was not re-run.",
+      "notes": "Edition: the authors' copy is taken to carry the journal's statement because its abstract matches the publisher's abstract word for word, it prints the journal citation itself, and its 14 pages match the journal's 309-322 span. The author copy and the publisher's abstract state the same bound. Unlike McZ (DS1-0016), which was the publisher's typeset version posted by its author, this is an author-prepared version with its own pagination. The journal body was not compared line by line. The computation was not re-run.",
       "fetchedAt": "2026-09-30, 16:07:57Z to about 16:09Z, by the saved files' timestamps in tmp/depth-reads/census3/MR4/"
     },
     {
@@ -689,7 +689,7 @@
       "ref": "Ex3",
       "selection": "census",
       "censusSession": 3,
-      "source": "Graph Theory, Combinatorics, Algorithms, and Applications (Y. Alavi et al., eds.), SIAM, Philadelphia, 1991 (proceedings of a 1989 conference), pp. 175-179; ISBN 0898712874; no DOI exists",
+      "source": "Graph Theory, Combinatorics, Algorithms, and Applications (Y. Alavi et al., eds.), SIAM, Philadelphia, 1991 (proceedings of a 1989 conference), pp. 175-179; ISBN 0898712874; no DOI was located",
       "sourceRead": "NOT read. No text of the chapter was reached: no page image, OCR or snippet. The Internet Archive holds the volume (graphtheorycombi0000unse_s4t8) as an access-restricted item whose borrowing needs an account, which this census does not use; its search-inside answered 403. HathiTrust holds it as search-only and answered a human-verification challenge, which was not completed; Google Books answered 429 and a CAPTCHA page. Crossref, OpenAlex, dblp and CORE hold no record of the chapter; SIAM's search answered 403; EuDML does not index this volume; the author's own pages hold no copy.",
       "verdict": "UNREACHABLE",
       "evidence": "No sentence of the chapter was read, so nothing is quoted from it.",
