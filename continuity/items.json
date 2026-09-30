@@ -1429,7 +1429,9 @@
         "0ed11f7",
         "c05232f",
         "113e098",
-        "b2dbe8f"
+        "b2dbe8f",
+        "d100b70",
+        "5f22082"
       ],
       "readCommandHistory": "node scripts/depth-audit.mjs # BUILT AND FIRST-RUN 2026-09-10; supersedes the check-claims placeholder kept at readCommandRetired2026_09_10, which correctly said no command answered this row while no audit store existed. LITERAL OUTPUT, pasted from the run rather than described: \"depth audit (A-47): 3 row(s) audited — 2 sound, 0 defective, 1 unresolved, 0 unreachable\" at exit 0. It prints the denominator and the SAMPLING RULE beside the count, and it REFUSES a bare zero: exit 2 when the store is missing or empty (a zero about the WORK, not about the records), exit 3 when the verdict counts do not sum to the row count. Both refusals red-armed 2026-09-10 with the mutations proven to land by sha256 and the restore verified against the original.\n\n — LITERAL OUTPUT RE-RECORDED 2026-09-11, because the line above is dated 2026-09-10 and a stale literal output is the defect this field exists to prevent: \"depth audit (A-47): 8 row(s) audited — 2 sound, 0 defective, 4 unresolved, 2 unreachable\" at exit 0. The verdict mix moved for two reasons on one day: slice 2 added five rows, and three earlier rows were downgraded to UNRESOLVED by adversarial review. A second command now answers the population half of this row: `node scripts/depth-audit.mjs --corpus`, which prints 770 bound rows across 115 constant files, 673 cited, 97 uncited, and refuses (exit 2) when either baseline cannot be established.",
       "readCommandLastRun": "2026-09-27T17:07:07.197Z",
@@ -2154,7 +2156,8 @@
         "89b4dd4",
         "876caa4",
         "7bd7ec9",
-        "3dd9b0c"
+        "3dd9b0c",
+        "441c6f8"
       ],
       "created": "2026-09-17",
       "updated": "2026-09-30",
@@ -2402,7 +2405,10 @@
       "readCommand": "node scripts/depth-audit.mjs --draw 662 37 87 137 187 — then count each printed fingerprint in continuity/depth-audit.json; nonzero means that position collides with an existing entry",
       "owner": "bounds-ledger",
       "created": "2026-09-30",
-      "updated": "2026-09-30"
+      "updated": "2026-09-30",
+      "linkedCommits": [
+        "c468859"
+      ]
     }
   ],
   "meta": {
