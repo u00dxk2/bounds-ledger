@@ -86,6 +86,17 @@ Pending reads, each dated on its row:
 - `A-57` and `A-58`: 2026-10-07. `A-50`: 2026-10-14.
 - `A-59` encounter: 2026-10-28 or the first outside arrival.
 
+### Selection packet (P1, round 2)
+
+Round 2 (David, about 14:00 MT: "Yes to your 1 -> 2"): `A-47` slice 10, pulled forward from 2026-10-01. The full packet is the P1 round-2 bus post, and the key lines are here.
+
+- **Draw:** `node scripts/depth-audit.mjs --draw 412 462 512 562 612` (the offset-12 grid in the 691-row frame): 4b [Kra2026], 55a [GKZ2018], 65a [Xyl2011], 77a [Lee2004], 84a [E1946]. It is pushed as `A-47.slice10Draw2026_09_30` before any source is opened.
+- **Draw collision:** position 512 is the same row and fingerprint as `A-47-0021` (UNREACHABLE on 2026-09-16, drawn at position 500 of the older 673-row frame). It is kept and read as a retry of that row's source, with the result recorded on `A-47-0021`, not as a new row. Slice 10 adds at most 4 rows.
+- **Acceptance:** `depth-audit.mjs` reads 48 or more rows audited, `A-47-0021` gains a dated attempt, every verdict names the edition it read, and `render-site --check` passes after the commit.
+- **USER-FACING: yes** (`index.html` re-rendered). Delivery read: `npm run served`. Encounter: `A-59`, blind.
+- **HYGIENE INPUTS:** none on all three lists ("0 gate(s) due on/before 2026-09-30"; 0 owed child rows; no crossed reads).
+- **The lead's "the Wayback retry has no date" does not match the ledger:** `A-54.blockedRetry2026_09_30` has a trigger and a hard date (the 2026-10-08 slot).
+
 ### Selection packet (P1)
 
 [P1 — Evidence and choice]
