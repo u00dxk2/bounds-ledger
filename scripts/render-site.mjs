@@ -1157,10 +1157,26 @@ async function selftest() {
   assert.match(soundPage, /never about whether it is the strongest bound known/,
     "the page must say the badge is not a record claim");
 
-  // EQUALITY PINS LAST.
+  // A-62 (2026-10-01 round 2): THE READ BADGE NAMES ITS ROW. The fixture pins "| 857.5662 |" and the
+  // reading is of "| 857.5662 | [Ref2026] |", a different row, so the badge must say "another row" and
+  // name it. MEANING first: a badge beside an unread shown row with no row named is the defect.
   const sound = badgeOn(soundPage, "87a");
+  assert.match(sound[1], /another row, 857\.5662 \[Ref2026\]/,
+    "a read badge beside a row that was not read must name the row that was");
+  assert.ok(!/the row shown/.test(sound[1]), "and must not call the read row the one shown");
+  //   The shown case: pin the audited row itself, and the badge must say so. This proves the pinned
+  //   rows reach the badge; any other array fails here.
+  const shownClaims = discloseClaims.map((c) => (c.id === "pin:87a:U" ? { ...c, expect: "| 857.5662 | [Ref2026] |" } : c));
+  const shownBadge = badgeOn(renderHtml(buildRows(shownClaims, { withDates: false, reports: [], audits: { audits: [readAudit()] } }), manifest, "2026-09-14"), "87a");
+  assert.ok(shownBadge, "positive control: the shown-row fixture must badge");
+  assert.match(shownBadge[1], /the row shown, 857\.5662 \[Ref2026\]/, "a read badge on the row shown must say it is that row");
+  //   Two rows read with the same verdict are named one per row, a retry of one row counted once.
+  const twoRows = badgeOn(withAudits([readAudit(), readAudit({ id: "A-47-T2", citedRef: "Other2020", rowLine: 4, ...auditRow("| 900.1 | [Other2020] |") }), readAudit({ id: "A-47-T3" })]), "87a");
+  assert.match(twoRows[1], /2 rows, 857\.5662 \[Ref2026\]; 900\.1 \[Other2020\]/, "each read row is named once");
+
+  // EQUALITY PINS LAST.
   assert.match(sound[0], /href="c\/87a\.html"/, "the badge must link the constant's own page, where the row and verdict live");
-  assert.equal(sound[1], "read against its cited source");
+  assert.equal(sound[1], "read against its cited source: another row, 857.5662 [Ref2026]");
 
   // An OPEN report reads "open" and gets no date — a closed-on date on an open report would be
   // a fabricated fact, and the label builds that date from state rather than from presence.

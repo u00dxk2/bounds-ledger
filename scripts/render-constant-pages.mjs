@@ -20,7 +20,7 @@ import { writeFileSync, readFileSync, mkdirSync, readdirSync, rmSync, existsSync
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
-import { buildRows, flagUrl, citation, reportLabel, whenLabel } from "./render-site.mjs";
+import { buildRows, flagUrl, citation, reportLabel, whenLabel, readable } from "./render-site.mjs";
 import { boundCell } from "./lookup.mjs";
 import crypto from "node:crypto";
 
@@ -164,9 +164,14 @@ export function verifiedValue(a) {
 const isStale = (a) => a.leg === "value-vs-source" && !identityVerified(a);
 
 const VERDICT_PROSE = {
-  SOUND: { text: "the cited source was read and it supports this row", link: "the source we read" },
-  DEFECTIVE: { text: "the cited source was read and it does NOT support this row", link: "the source we read" },
-  UNRESOLVED: { text: "the cited source was reached but could not settle the question", link: "the source we reached" },
+  // "source link", NOT "the source we read/reached" (2026-10-01, round 2): the store's `source` is
+  // sometimes the copy that was read and sometimes the cited edition's DOI while the reading happened
+  // elsewhere (4 of 53 entries outright, A-47-0020/-0047/-0048/-0053, the last being 22a, whose link
+  // went to the publisher that refused us; 3 more read partly elsewhere). The
+  // label now claims nothing about which; the `sourceRead` note beside it says what was actually read.
+  SOUND: { text: "the cited source was read and it supports this row", link: "source link" },
+  DEFECTIVE: { text: "the cited source was read and it does NOT support this row", link: "source link" },
+  UNRESOLVED: { text: "the cited source was reached but could not settle the question", link: "source link" },
   UNREACHABLE: { text: "the cited source could not be read at all", link: "the source we could not read" },
 };
 
@@ -348,8 +353,24 @@ export function badgeFor(id, store, shown = []) {
     .filter((a) => a.constant === id);
   const reads = usable.filter(isBoundRead);
   const worst = BADGE_SEVERITY.find((v) => reads.some((a) => a.verdict === v));
-  if (worst) return { verdict: worst, text: BADGE[worst] };
+  if (worst) return { verdict: worst, text: `${BADGE[worst]}: ${namedRows(reads.filter((a) => a.verdict === worst), shown)}` };
   return triedFor(usable, shown);
+}
+
+/**
+ * THE READ BADGE NAMES ITS ROW (A-62, 2026-10-01 round 2), as the tried line has since 2026-09-29. The
+ * badge sat beside the last-listed row while the reading was of another: 15a read "read against its
+ * cited source" beside 2.371177 [DEKMRSZAWB2026], and the row read was 2.371866 [DWZ2022]. It names the
+ * rows that carry the badge's own (worst) verdict, one per row, and says "another row" or "the row
+ * shown" by whole-row equality with the pins, never by assumption.
+ */
+function namedRows(reads, shown) {
+  const byRow = new Map();
+  for (const a of reads) if (!byRow.has(rowKey(a))) byRow.set(rowKey(a), a);
+  const rows = [...byRow.values()];
+  return rows.length === 1
+    ? `${isShownRow(rows[0], shown) ? "the row shown" : "another row"}, ${plainRowName(rows[0])}`
+    : `${rows.length} rows, ${rows.map((a) => `${plainRowName(a)}${isShownRow(a, shown) ? " (shown)" : ""}`).join("; ")}`;
 }
 
 /**
@@ -480,16 +501,26 @@ export function auditBlock(id, store, shown = []) {
     // recomputed — only for a bound row, and only when verifiedValue can prove it is the audited row
     // and that row still stands in the mirror.
     const value = leg === "bound row" ? verifiedValue(a) : "";
-    const shown = value ? ` <code style="display:inline;padding:.1rem .3rem">${esc(value)}</code>` : "";
+    // Named valueHtml, not `shown`: that name is the PARAMETER holding the pinned rows, and shadowing it
+    // here would hand isShownRow a string (orchestrator review, 2026-10-01 round 2).
+    const valueHtml = value ? ` <code style="display:inline;padding:.1rem .3rem">${esc(value)}</code>` : "";
     // A pinned audit whose identity can no longer be proved keeps its reading but loses the live line
     // link and the support claim — a reader must never be pointed at a row nobody read.
     const stale = isStale(a);
-    const what = leg ? `${esc(leg)}${shown}${leg === "bound row" && !stale ? rowLink(a) : ""} citing ` : "";
+    // WHICH ROW, RELATIVE TO THE ROWS SHOWN (2026-10-01 cold walk, finding 1): c/22a showed 10.02 and its
+    // verdict was about 12.63, and a reader checking 10.02 took the verdict as being about it. Said only
+    // where whole-row equality can decide it: a bound row whose identity is still provable. A stale row
+    // gets neither phrase (we cannot say what it is today), nor does a reference entry (not a row).
+    // "another row", never "an earlier/older row": nothing here proves where that row is listed.
+    const relation = leg === "bound row" && value
+      ? `<span class="rel">${isShownRow(a, shown) ? "The row shown above:" : "Another row, not one shown above:"}</span> `
+      : "";
+    const what = leg ? `${esc(leg)}${valueHtml}${leg === "bound row" && !stale ? rowLink(a) : ""} citing ` : "";
     const note = a.sourceRead ? ` (${esc(a.sourceRead)})` : "";
     const verdictText = stale
       ? (READ_VERDICTS.has(a.verdict) ? "this row was read against its cited source on an earlier version of the table, and the row at that line has since changed or cannot be matched, so this verdict says nothing about the row there now" : "a check of this row was attempted on an earlier version of the table and the cited source could not be read; the row at that line has since changed or cannot be matched, so nothing is said about the row there now")
       : a.verdict === "UNREACHABLE" && attemptDate(a.fetchedAt) ? `${v.text} (tried ${attemptDate(a.fetchedAt)})` : v.text;
-    return `<li>${what}<code style="display:inline;padding:.1rem .3rem">[${esc(a.citedRef)}]</code> &mdash; ` +
+    return `<li>${relation}${what}<code style="display:inline;padding:.1rem .3rem">[${esc(a.citedRef)}]</code> &mdash; ` +
       `${esc(verdictText)}. <a href="${esc(safeUrl(a.source))}">${esc(v.link)}</a>${note}. ` +
       `<span class="sel">Selected: ${esc(selectionNote(a))}.</span></li>`;
   }).join("");
@@ -628,7 +659,7 @@ ${auditBlock(r.id, audits, [r.upper, r.lower])}
 </dl>
 <div class="actions">
 <a href="${esc(upstream)}">the mirrored file</a> &middot;
-<a href="${esc(r.url || upstream)}">upstream source</a> &middot;
+<a href="${esc(readable(r.url) || upstream)}">upstream source</a> &middot;
 <a href="${esc(flagUrl(r, sha))}">looks wrong?</a>
 </div>
 <div class="cite"><strong>Cite this row</strong><code>${esc(citation(r, sha))}</code></div>
@@ -767,13 +798,43 @@ function selftest() {
   assert.ok(audited.includes("the cited source was read and it supports this row"), "a SOUND row must say what was done");
   assert.ok(audited.includes("the cited source was reached but could not settle the question"), "UNRESOLVED must read as its own outcome");
   const unreach = renderPage(row, "abc1234def", { audits: [{ id: "T-U", constant: "9z", citedRef: "R", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/u", ...pinId("| $7.555555$ | [R] | x |") }], corpus: { citedRows: 999 } });
-  assert.ok(!/>the source we read</.test(unreach), "an UNREACHABLE row must not offer 'the source we read'");
+  assert.ok(!/>source link</.test(unreach), "an UNREACHABLE row must not offer the read verdicts' link text");
   assert.ok(unreach.includes("the source we could not read"), "positive control: UNREACHABLE has its own link text");
+  // 2026-10-01 round 2: the stored `source` is not always the copy that was read (22a linked the
+  // publisher that refused us under "the source we reached"), so no read verdict's link may say it was.
+  for (const claim of [/>the source we read</, />the source we reached</]) {
+    assert.ok(!claim.test(audited), `a read verdict's link must not claim which copy was read — matched ${claim}`);
+  }
 
   // (c) MEANING: the source is a real anchor pointing at the stored URL — a span containing the
   //     text would satisfy a substring check while giving the reader nothing to click.
-  assert.match(audited, /<a href="https:\/\/example\.invalid\/p1">the source we read<\/a>/,
+  assert.match(audited, /<a href="https:\/\/example\.invalid\/p1">source link<\/a>/,
     "each audited row must link its source as an anchor whose href IS that source");
+
+  // (c2) WHICH ROW EACH VERDICT JUDGES, relative to the rows shown (2026-10-01 cold walk, finding 1).
+  //      The fixture pins "| 2.5 |" and "| 1.5 |", so T-1's row is NOT shown. MEANING first.
+  const rel = (h) => [...h.matchAll(/<span class="rel">([^<]*)<\/span>/g)].map((m) => m[1]);
+  assert.deepEqual(rel(audited), ["Another row, not one shown above:"],
+    "a verdict on a row the reader is not looking at must say so, and only the bound row gets a phrase (T-2 is a reference entry)");
+  //      The SHOWN case, with the audited row pinned as the upper bound. This is the case that proves
+  //      the pinned rows reach isShownRow: pass it anything else and this fails.
+  const shownClaims = [{ ...claims[0], expect: "| $5.555555$ | [REF1] | x |" }, claims[1]];
+  const [shownRow] = buildRows(shownClaims, { withDates: false, reports: [] });
+  const shownPage = renderPage(shownRow, "abc1234def", store);
+  assert.deepEqual(rel(shownPage), ["The row shown above:"], "a verdict on the row shown must say it is that row");
+  //      A STALE row gets no phrase: we cannot prove what the row at that line is today.
+  const stalePage = renderPage(row, "abc1234def", { audits: [{ ...store.audits[0], inMirror: false }], corpus: { citedRows: 999 } });
+  assert.ok(stalePage.includes("earlier version of the table"), "positive control: the stale verdict rendered");
+  assert.deepEqual(rel(stalePage), [], "a stale verdict must not be placed relative to the rows shown");
+
+  // (c3) "upstream source" opens the RENDERED GitHub page, never raw markdown (cold walk, finding 2):
+  //      on a phone the raw file rendered at about 4px and its paper links could not be tapped.
+  const rawClaims = claims.map((c) => ({ ...c, url: "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/9z.md" }));
+  const [rawRow] = buildRows(rawClaims, { withDates: false, reports: [] });
+  const rawPage = renderPage(rawRow, "abc1234def");
+  assert.match(rawPage, /<a href="https:\/\/github\.com\/teorth\/optimizationproblems\/blob\/main\/constants\/9z\.md">upstream source<\/a>/,
+    "upstream source must link the rendered GitHub page");
+  assert.ok(!rawPage.includes("raw.githubusercontent.com"), "no raw.githubusercontent.com link may survive on a constant page");
 
   // (d) MEANING: only http(s) is rendered. `javascript:` survives attribute escaping.
   const hostileUrl = renderPage(row, "abc1234def", { audits: [{ id: "T-J", constant: "9z", citedRef: "R", leg: "value-vs-source", verdict: "SOUND", source: "javascript:alert(1)" }], corpus: { citedRows: 999 } });
