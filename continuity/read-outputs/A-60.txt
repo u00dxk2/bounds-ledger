@@ -1,0 +1,34 @@
+# read-output sidecar for A-60 — written by check-due-gates-dispositioned --run
+# readCommand: node scripts/depth-audit.mjs --draw 662 37 87 137 187
+# ran: 2026-10-01T16:01:05.138Z · exit: 0
+# lines: 28 · sha256: 563dba172ee6cb56 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+frame: 691 cited bound row(s), file-then-line order — the same total the corpus counter reports over this directory, checked on this run rather than asserted
+
+position 662 of 691 — 88a [Zha14] (Known upper bounds)
+  row:  ledger/teorth-optimizationproblems/constants/88a.md:19
+  sha:  999bc2cb30f77cc1
+  text: | $70\,000\,000$ | [Zha14] | The first finiteness proof, via a bounded-level equidistribution estimate for smooth moduli beyond the Bombieri–Vinogradov range. |
+
+position 37 of 691 — 11b [BIM2023] (Known lower bounds)
+  row:  ledger/teorth-optimizationproblems/constants/11b.md:36
+  sha:  06bb10ad79266052
+  text: | $0.5$ | [BIM2023] | For every $\beta<1/2$, Hamming ball examples give half-size sets with $\mathbb{E}h_{A}(x)^\beta$ arbitrarily small as $n\to\infty$ |
+
+position 87 of 691 — 15a [DWZ2022] (Known upper bounds)
+  row:  ledger/teorth-optimizationproblems/constants/15a.md:29
+  sha:  180c699cb327a479
+  text: | $2.371866$ | [DWZ2022] | This and subsequent improvements introduce and optimize an asymmetric modification of the laser method. |
+
+position 137 of 691 — 1b [YKLBMWKCZGS2026] (Known upper bounds)
+  row:  ledger/teorth-optimizationproblems/constants/1b.md:24
+  sha:  e19d80316c75fd95
+  text: | $0.380876$ | [YKLBMWKCZGS2026] | TTT-Discover |
+
+position 187 of 691 — 22a [ACPR2011] (Known upper bounds)
+  row:  ledger/teorth-optimizationproblems/constants/22a.md:18
+  sha:  254a8313c7ff8e8e
+  text: | 12.63| [ACPR2011] | $10_{124}$ knot |
+
+RESULT: PASS — drew 5 position(s) from a frame of 691 (exit 0)
