@@ -2427,6 +2427,41 @@
       "closedAt": "2026-10-01",
       "lastEvaluated": "2026-10-01",
       "notes": " | Closed: --draw names held rows (a1c0b81, a41c707), red-armed both ways; the collision rule is on A-47.collisionRule2026_10_01. Receipt: closeReceipt2026_10_01."
+    },
+    {
+      "id": "A-61",
+      "type": "active",
+      "status": "open",
+      "title": "Cross-family claims pass owed on slice 11's five public verdicts (88a, 11b, 15a, 1b, 22a)",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-10-03",
+      "links": [
+        "A-47"
+      ],
+      "note": "FILED 2026-10-01 at P5 on the orchestrator's P3 review (bus 5d13b639): 'record the cross-family claims pass on today's five verdicts as a pending item, trigger = the next Codex probe that reads GREEN, no later than slice 12 on 2026-10-03, so slice 12 does not stack a second unreviewed batch on top.' WHY OWED: the portfolio rule (global CLAUDE.md, portable rule 6) asks for a claims pass by the OTHER model family on outward-facing text, and these five verdicts are published on c/88a.html, c/11b.html, c/15a.html, c/1b.html and c/22a.html and name authors' papers. Both of today's reviews (on a1c0b81, then a41c707) were same-family Claude reviewers because the Codex probe read RED (2026-10-01T15:14:27Z), which the P3 post (5fed6e23) declared. WHAT THE PASS READS: the five store entries A-47-0049 to A-47-0053 in continuity/depth-audit.json (sourceRead, evidence, positiveControl, notes, claimChecked), against the saved sources in tmp/depth-reads/slice11/<constant>/; each factual sentence HOLDS / REFUTED-AS-WRITTEN / UNVERIFIABLE-HERE, with the narrower true sentence for each failure. The review prompt to reuse is tmp/slice11-review-brief.md, angles 1, 2 and 6, launched per the global CLAUDE.md Codex section (foreground pipe, --sandbox read-only, banner workdir checked). NOTE: tmp/ is gitignored, so the saved sources exist only on this machine.",
+      "onTrigger": "When `node C:/dev/skylark/skylark-site/scripts/codex-probe.mjs --if-stale` reads GREEN, run the Codex claims pass described in note, record each finding's fate on this row, fix any REFUTED sentence in continuity/depth-audit.json, re-render and push. If the probe is still RED on 2026-10-03, do NOT stack slice 12's verdicts on top unreviewed: either run slice 12 and hold its push until this pass and slice 12's own pass are done, or record here why slice 12 publishes without one.",
+      "closeWhen": "A cross-family (Codex) claims pass over A-47-0049..0053 has run, with its banner workdir checked, and each finding is fixed or rejected with a reason on this row.",
+      "readCommand": "node C:/dev/skylark/skylark-site/scripts/codex-probe.mjs --if-stale — GREEN means the pass can run today; RED means it is still blocked and this row's 2026-10-03 clause governs",
+      "created": "2026-10-01",
+      "updated": "2026-10-01"
+    },
+    {
+      "id": "A-62",
+      "type": "active",
+      "status": "open",
+      "title": "The index's 'read against its cited source' badge can sit beside a pinned row nobody read",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-10-06",
+      "links": [
+        "A-47",
+        "A-53"
+      ],
+      "note": "FILED 2026-10-01 at P5, from the slice 11 adversarial review (round 1, on a1c0b81) and confirmed by this session against index.html: the 15a row reads 'read against its cited source' beside its pinned last-listed row 2.371177 [DEKMRSZAWB2026], while the reading (A-47-0051) was of the 2.371866 [DWZ2022] row. 22a and 88a show the same shape. CAUSE: badgeFor in scripts/render-constant-pages.mjs badges a constant when ANY of its bound rows was read and the index shows the last-listed row beside it; the 'tried' line was made to name its row on 2026-09-29 (A-53.renderFix2026_09_29r3) for exactly this misreading, and the read badge never got the same fix. OLDER THAN 2026-10-01 (88a's read entry dates from slice 3). The orchestrator's P3 review (bus 5d13b639) asked that it stay on the next product round's list. Candidate fix, not decided: name the read row by value and reference key, and say 'another row' or 'the row shown' by whole-row equality with the pins, as the tried line already does.",
+      "onTrigger": "On 2026-10-06 or the next product round, whichever comes first: decide whether this is that round's change. If yes, extend the tried line's row-naming to the read badge, with a selftest that fails when a read badge sits beside an unread shown row without naming its row, and a red-arm. If no, re-date with the reason.",
+      "closeWhen": "No index badge claims a reading without naming which row was read when that row is not the one shown, proven by a selftest with both answers recorded; or this row is closed with a written decision not to change it.",
+      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check — PASS means index.html matches its renderer; then read the 15a row in index.html: a 'read against its cited source' badge beside 2.371177 [DEKMRSZAWB2026] with no named row is this defect still live",
+      "created": "2026-10-01",
+      "updated": "2026-10-01"
     }
   ],
   "meta": {
