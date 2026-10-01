@@ -661,7 +661,7 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 </div>
 <p class="count" id="count">${rows.length} constants</p>
 <p class="hint">Each date is when that row&rsquo;s pinned text last changed <em>in this ledger</em> &mdash; or, for a row that has never changed here, the day this ledger started tracking it. Most rows share that bootstrap date. Ordering by movement puts the rows we have actually seen change first, most recent first; rows we have only ever watched sit still follow, still dated, each saying so in its own cell. That distinction is the one the date alone cannot make, because a later date can mean a bound changed here <em>or</em> that we only started watching it later. Neither date says anything about what a constant did before we began watching it, and a row we have never seen move may well have moved before we arrived.</p>
-<p class="hint">A line under a constant&rsquo;s name means we opened the source one of its bound rows cites and read the number there &mdash; its page says which row and what we found. A line in italics beginning <em>we could not open the source</em> is different. It names what we tried to check, and we were turned away or found nothing; a date, when it gives one, is the latest day recorded among those attempts. We have no reading we can match to what it names as it stands today. When it says <em>another row</em>, the row it names is not one of those shown here, and the rows shown here have no reading we can match to them today either, like those of any constant with no line. Either way, check a number yourself before citing it. A later attempt may succeed, because sites come back. Most constants carry no such line. That means we have no reading we can match to the row as it stands today &mdash; either we have not done one, or the row has changed since we did, in which case its page still shows what we found and says it describes an earlier version of the table. It is not a sign that anything is wrong. Either way it is about a row matching its own source, never about whether it is the strongest bound known.</p>
+<p class="hint">A line under a constant&rsquo;s name means we opened the source one of its bound rows cites and checked what that row credits to it &mdash; the line names that row, and its page says what was checked and what we found. In such a line, <em>another row</em> means the named row is not one of those shown here; the rows shown may have readings of their own, listed on its page. A line in italics beginning <em>we could not open the source</em> is different. It names what we tried to check, and we were turned away or found nothing; a date, when it gives one, is the latest day recorded among those attempts. We have no reading we can match to what it names as it stands today. When an italic line says <em>another row</em>, the row it names is not one of those shown here, and the rows shown here have no reading we can match to them today either, like those of any constant with no line. Either way, check a number yourself before citing it. A later attempt may succeed, because sites come back. Most constants carry no such line. That means we have no reading we can match to the row as it stands today &mdash; either we have not done one, or the row has changed since we did, in which case its page still shows what we found and says it describes an earlier version of the table. It is not a sign that anything is wrong. Either way it is about a row matching its own source, never about whether it is the strongest bound known.</p>
 
 <div class="empty" id="empty" hidden>
 <p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the ${rows.length} constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
@@ -1097,8 +1097,18 @@ async function selftest() {
   assert.match(unreachablePage, /We have no reading we can match to what it names as it stands today/, "the hint says what is known: no reading matched today");
   assert.ok(!/No number it names has been checked/.test(unreachablePage), "and never the absolute denial round 2 refuted");
   assert.match(tried[0], /no reading we can match today to what is named here or to the rows shown here/, "the label says the same, with any number of named rows");
-  assert.match(unreachablePage, /When it says <em>another row<\/em>, the row it names is not one of those shown here/,
+  assert.match(unreachablePage, /When an italic line says <em>another row<\/em>, the row it names is not one of those shown here/,
     "the page must say what another row means, so the line cannot be read as doubt about the rows shown");
+  // Review R1 (2026-10-01, round 2): read badges now say "another row" too, and for them the claim that
+  // the rows shown have no reading is false (1b: the badge names an UNRESOLVED row while its shown
+  // upper row has a SOUND reading). So the no-reading clause must be scoped to the italic line, and the
+  // read line's own "another row" must be explained without it.
+  assert.ok(!/When it says <em>another row<\/em>/.test(unreachablePage), "the unscoped wording must not return");
+  assert.match(unreachablePage, /In such a line, <em>another row<\/em> means the named row is not one of those shown here; the rows shown may have readings of their own/,
+    "a read line's another row must be explained without claiming the shown rows are unread");
+  // Review R2: a read line is not always about the number (26a's reading checked only the comment's
+  // attribution), so the explanation must not say we read the number.
+  assert.ok(!/read the number there/.test(unreachablePage), "the explanation must not claim the number was read");
   assert.ok(!/that row&rsquo;s number/.test(unreachablePage),
     "the hint must not say \"that row's number\" in any form: the superseded one pointed at the row shown (review R1)");
   const undated = triedOn(withAudits([readAudit({ verdict: "UNREACHABLE" })]), "87a");
@@ -1121,6 +1131,9 @@ async function selftest() {
   assert.ok(mixed, "positive control: the mixed constant must badge at all");
   assert.match(mixed[1], /does not support/, "SOUND beside DEFECTIVE must badge as DEFECTIVE, never as supported");
   assert.match(mixed[0], /class="read read-defective"/, "the defective badge must carry its caution class");
+  // Review gap (2026-10-01 round 2): the badge names ONLY the rows carrying its own verdict.
+  assert.match(mixed[1], /900\.0 \[Ref2026\]/, "the DEFECTIVE badge must name the row that earned it");
+  assert.ok(!/857\.5662/.test(mixed[1]), "and must not name the SOUND row under a DEFECTIVE label");
 
   // 6. NO RECORD CLAIM in any wording a badge can take.
   for (const verdict of ["SOUND", "UNRESOLVED", "DEFECTIVE"]) {
@@ -1173,6 +1186,15 @@ async function selftest() {
   //   Two rows read with the same verdict are named one per row, a retry of one row counted once.
   const twoRows = badgeOn(withAudits([readAudit(), readAudit({ id: "A-47-T2", citedRef: "Other2020", rowLine: 4, ...auditRow("| 900.1 | [Other2020] |") }), readAudit({ id: "A-47-T3" })]), "87a");
   assert.match(twoRows[1], /2 rows, 857\.5662 \[Ref2026\]; 900\.1 \[Other2020\]/, "each read row is named once");
+  //   Two rows, one of them shown: the shown one is marked, the other is not (review gap, round 2).
+  const twoShown = badgeOn(renderHtml(buildRows(shownClaims, { withDates: false, reports: [], audits: { audits: [readAudit(), readAudit({ id: "A-47-T2", citedRef: "Other2020", rowLine: 4, ...auditRow("| 900.1 | [Other2020] |") })] } }), manifest, "2026-09-14"), "87a");
+  assert.match(twoShown[1], /857\.5662 \[Ref2026\] \(shown\); 900\.1 \[Other2020\]$/, "in a multi-row badge, only the shown row is marked (shown)");
+  //   Review R2: a row that credits its bound to someone else and cites the key only in its comment must
+  //   not have its value paired with the key (26a: "\infty [DMP2019]", where the row credits "Trivial").
+  const commentOnly = badgeOn(withAudits([readAudit({ citedRef: "DMP2019", ...auditRow("| 857.5662 | Trivial | best estimate [DMP2019] |") })]), "87a");
+  assert.ok(commentOnly, "positive control: the comment-cited reading must badge");
+  assert.ok(!/857\.5662 \[DMP2019\]/.test(commentOnly[1]), "the value must not be paired with a key the row does not credit it to");
+  assert.match(commentOnly[1], /\[DMP2019\], cited in the comment of that row, not for its bound/, "the line must say where the key is cited");
 
   // EQUALITY PINS LAST.
   assert.match(sound[0], /href="c\/87a\.html"/, "the badge must link the constant's own page, where the row and verdict live");

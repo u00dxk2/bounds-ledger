@@ -166,8 +166,8 @@ const isStale = (a) => a.leg === "value-vs-source" && !identityVerified(a);
 const VERDICT_PROSE = {
   // "source link", NOT "the source we read/reached" (2026-10-01, round 2): the store's `source` is
   // sometimes the copy that was read and sometimes the cited edition's DOI while the reading happened
-  // elsewhere (4 of 53 entries outright, A-47-0020/-0047/-0048/-0053, the last being 22a, whose link
-  // went to the publisher that refused us; 3 more read partly elsewhere). The
+  // elsewhere (examples, not an inventory: A-47-0020, -0038, -0047, -0048 and -0053, the last being 22a,
+  // whose link went to the publisher that refused us). The
   // label now claims nothing about which; the `sourceRead` note beside it says what was actually read.
   SOUND: { text: "the cited source was read and it supports this row", link: "source link" },
   DEFECTIVE: { text: "the cited source was read and it does NOT support this row", link: "source link" },
@@ -407,7 +407,31 @@ const isShownRow = (a, shown) => typeof a.rowText === "string" && shown.some((s)
 function plainRowName(a) {
   const v = verifiedValue(a).replace(/^\$([\s\S]*)\$$/, "$1").trim();
   const keys = refsOf(a).map((r) => `[${r}]`).join(", ");
-  return v ? `${v} ${keys}` : keys;
+  if (!v) return keys;
+  // A value is paired with a key ONLY when the row credits that value to it (review R2, 2026-10-01
+  // round 2): 26a's row credits infinity to "Trivial" and cites DMP2019 in its comment, and the badge
+  // read "the row shown, \infty [DMP2019]", a pairing the row never makes.
+  // Three cases, each saying only what the row text shows: a key in the credit cell keeps the old
+  // "value [key]" form (a retried row lists every key it was tried through, so ONE credited key is
+  // enough); every key found only in the later cells is said to be cited there; anything else names the
+  // keys without the value and claims nothing about where they sit.
+  const refs = refsOf(a);
+  if (refs.some((r) => creditCites(a, r))) return `${v} ${keys}`;
+  if (refs.every((r) => commentCites(a, r))) return `${keys}, cited in the comment of that row, not for its bound`;
+  return keys;
+}
+
+/** The row's cells after the credit cell (its comment), from the stored, hash-checked rowText. */
+function commentCites(a, ref) {
+  if (!identityVerified(a)) return false;
+  return a.rowText.trim().split("|").slice(3).join("|").includes(ref);
+}
+
+/** Does the row's CREDIT cell (its second cell) name this key? Read from the stored, hash-checked rowText. */
+function creditCites(a, ref) {
+  if (!identityVerified(a)) return false;
+  const credit = a.rowText.trim().split("|")[2];
+  return typeof credit === "string" && credit.includes(ref);
 }
 
 /**
@@ -515,7 +539,10 @@ export function auditBlock(id, store, shown = []) {
     const relation = leg === "bound row" && value
       ? `<span class="rel">${isShownRow(a, shown) ? "The row shown above:" : "Another row, not one shown above:"}</span> `
       : "";
-    const what = leg ? `${esc(leg)}${valueHtml}${leg === "bound row" && !stale ? rowLink(a) : ""} citing ` : "";
+    // "citing" pairs the value with the key; where the row credits its bound to someone else and names
+    // the key only in its comment (26a, 35a), say so instead (review R2, 2026-10-01 round 2).
+    const cites = value && !creditCites(a, a.citedRef) && commentCites(a, a.citedRef) ? "whose comment cites" : "citing";
+    const what = leg ? `${esc(leg)}${valueHtml}${leg === "bound row" && !stale ? rowLink(a) : ""} ${cites} ` : "";
     const note = a.sourceRead ? ` (${esc(a.sourceRead)})` : "";
     const verdictText = stale
       ? (READ_VERDICTS.has(a.verdict) ? "this row was read against its cited source on an earlier version of the table, and the row at that line has since changed or cannot be matched, so this verdict says nothing about the row there now" : "a check of this row was attempted on an earlier version of the table and the cited source could not be read; the row at that line has since changed or cannot be matched, so nothing is said about the row there now")
@@ -822,6 +849,19 @@ function selftest() {
   const [shownRow] = buildRows(shownClaims, { withDates: false, reports: [] });
   const shownPage = renderPage(shownRow, "abc1234def", store);
   assert.deepEqual(rel(shownPage), ["The row shown above:"], "a verdict on the row shown must say it is that row");
+  //      The same, when the audited row is the LOWER pin (review gap: only the upper match was tested).
+  const lowerClaims = [claims[0], { ...claims[1], expect: "| $5.555555$ | [REF1] | x |" }];
+  const [lowerRow] = buildRows(lowerClaims, { withDates: false, reports: [] });
+  assert.deepEqual(rel(renderPage(lowerRow, "abc1234def", store)), ["The row shown above:"], "a verdict on the shown LOWER row must say it is that row");
+  //      DEFECTIVE's link must not claim which copy was read either (review gap: the fixture lacked it).
+  const defPage = renderPage(row, "abc1234def", { audits: [{ ...store.audits[0], verdict: "DEFECTIVE" }], corpus: { citedRows: 999 } });
+  assert.ok(defPage.includes("does NOT support this row"), "positive control: the DEFECTIVE verdict rendered");
+  assert.ok(!/>the source we read</.test(defPage), "a DEFECTIVE verdict's link must not claim which copy was read");
+  //      Review R2: a row crediting its bound to someone else, citing the key only in its comment, must not
+  //      read "bound row <value> citing [KEY]".
+  const commentPage = renderPage(row, "abc1234def", { audits: [{ ...store.audits[0], citedRef: "DMP2019", ...pinId("| $\\infty$ | Trivial | best estimate [DMP2019] |") }], corpus: { citedRows: 999 } });
+  assert.ok(commentPage.includes("whose comment cites"), "a comment-cited key must be said to be cited in the comment");
+  assert.ok(!/<\/code>[^<]*<a [^>]*>line [^<]*<\/a> citing /.test(commentPage) && !/<\/code> citing <code/.test(commentPage), "and the value must not be said to be credited to it");
   //      A STALE row gets no phrase: we cannot prove what the row at that line is today.
   const stalePage = renderPage(row, "abc1234def", { audits: [{ ...store.audits[0], inMirror: false }], corpus: { citedRows: 999 } });
   assert.ok(stalePage.includes("earlier version of the table"), "positive control: the stale verdict rendered");
