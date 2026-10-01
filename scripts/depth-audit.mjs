@@ -492,6 +492,22 @@ function selftest() {
   eq('the draw REFUSES a frame the corpus check rejects', drawRun(partial, [1], { ...base, expect }).code, 2);
   eq('  …and stays silent on the intact fixture, drawing position 1', drawRun(corpusDir, [1], { ...base, expect }).code, 0);
   eq('a position past the end of the frame refuses rather than drawing a neighbour', drawRun(corpusDir, [9999], { ...base, expect }).code, 3);
+  // THE HOLDERS, both polarities (A-60, 2026-10-01). Position 1 of this fixture is a row the store
+  // holds under its fingerprint; position 2 is one it does not. The fingerprint is read from the frame
+  // itself, never typed, so the fixture cannot drift from what the draw computes.
+  const f0 = drawFrame(corpusDir);
+  const heldStore = { audits: [
+    { id: 'T-H1', rowTextSha256: f0[0].sha16, rowFile: f0[0].file, rowLine: f0[0].line, selection: 'suspicion', verdict: 'SOUND', leg: 'value-vs-source' },
+    { id: 'T-H2', rowTextSha256: 'ffffffffffffffff', rowFile: f0[1].file, rowLine: f0[1].line, selection: 'systematic', verdict: 'SOUND', leg: 'value-vs-source' },
+  ] };
+  const heldOut = drawRun(corpusDir, [1, 2], { ...base, expect, store: heldStore });
+  const blockOf = (out, p) => out.lines.slice(out.lines.findIndex((l) => l.startsWith(`position ${p} `))).join('\n').split('\n\n')[0];
+  eq('FIRES: a drawn row already in the store names its holder', /held: T-H1 \(suspicion, SOUND, value-vs-source\)/.test(blockOf(heldOut, 1)), true);
+  eq('SILENT: a drawn row not in the store says none, and names no holder', /held: none/.test(blockOf(heldOut, 2)) && !/T-H1/.test(blockOf(heldOut, 2)), true);
+  eq('  …and a different fingerprint at the same line is reported as an earlier version, not a holder', /same line, different text: T-H2/.test(blockOf(heldOut, 2)), true);
+  eq('  …and the summary counts one collision of two', heldOut.lines.includes('store: 1 of 2 drawn position(s) land on a row already held, read against 2 audit store entries'), true);
+  eq('an unreadable store REFUSES rather than printing held by none', drawRun(corpusDir, [1], { ...base, expect, store: {} }).code, 2);
+  eq('  …and a draw with no store asked for prints no holder line at all', drawRun(corpusDir, [1], { ...base, expect }).lines.some((l) => l.includes('held:')), false);
   fs.rmSync(drawDir, { recursive: true, force: true });
   fs.rmSync(inlineDir, { recursive: true, force: true });
 
@@ -508,7 +524,7 @@ function selftest() {
     process.exit(2);
   }
   console.log('depth-audit selftest: PASS (clean store silent; missing, empty and unparseable stores each refuse rather than reporting a zero; an unrecognised verdict trips the sum-check; an all-UNREACHABLE store does NOT trip it; a stored denominator behind or ahead of the live corpus warns without changing the exit code, an equal one is silent, an uncomparable one says NOT RUN, and an unreadable mirror file becomes a NOT RUN rather than a crash of the read; the corpus count skips commented rows and reference lists, and refuses PARTIAL section loss by name, a row that lost its leading pipe while its section still yielded rows, a row hidden in a second table block, a short manifest inventory, an inventory or section baseline that could not be established at all, a moved 87a control, an empty directory and a corpus missing its control — while a blockquote or heading ending a table legally stays SILENT)');
-  console.log('RESULT: PASS — 36 case(s), both polarities (exit 0)');
+  console.log('RESULT: PASS — 42 case(s), both polarities (exit 0)');
 }
 
 // THE SAMPLING FRAME, MADE EXECUTABLE (2026-09-12). Slices 1 and 2 were drawn by a script
@@ -574,6 +590,19 @@ export function drawRun(dir, positions, opts = {}) {
     lines.push(`RESULT: FAIL — position(s) ${tooHigh.join(', ')} exceed the frame size ${frame.length} — refusing rather than silently drawing a neighbour (exit 3)`);
     return { code: 3, lines };
   }
+  // WHICH STORE ENTRIES ALREADY HOLD EACH DRAWN ROW (A-60, 2026-10-01). Slice 10's position 512 and
+  // slice 11's 137 both landed on rows already in the store, and each was caught only by a hand grep
+  // of the fingerprint. A frame grows when upstream adds cited rows, so one grid drifts onto another
+  // and this recurs without anyone choosing it. The draw names the holders; the RULE for what to do
+  // with them is written on A-60 (positionRule2026_10_01), never decided here. A store that cannot be
+  // read REFUSES: printing "held by none" from a store nobody read is a zero from a dead probe.
+  const store = opts.store === undefined ? null : opts.store;
+  if (store !== null && !Array.isArray(store?.audits)) {
+    lines.push('RESULT: FAIL — the audit store could not be read, so whether a drawn row is already held cannot be said; refusing rather than printing "held by none" (exit 2)');
+    return { code: 2, lines };
+  }
+  const audits = store ? store.audits : [];
+  let collisions = 0;
   lines.push(`frame: ${frame.length} cited bound row(s), file-then-line order — the same total the corpus counter reports over this directory, checked on this run rather than asserted`);
   for (const p of positions) {
     const row = frame[p - 1];
@@ -582,8 +611,19 @@ export function drawRun(dir, positions, opts = {}) {
     lines.push(`  row:  ${row.file}:${row.line}`);
     lines.push(`  sha:  ${row.sha16}`);
     lines.push(`  text: ${row.text}`);
+    if (!store) continue;
+    const held = audits.filter((a) => a && a.rowTextSha256 === row.sha16);
+    // Same file and line under a DIFFERENT fingerprint: the row an earlier entry read has since been
+    // edited upstream. Not the same row, so not a collision, but a reader of the draw should know.
+    const moved = audits.filter((a) => a && a.rowTextSha256 !== row.sha16 && a.rowFile === row.file && a.rowLine === row.line);
+    if (held.length) collisions += 1;
+    lines.push(held.length
+      ? `  held: ${held.map((a) => `${a.id} (${a.selection ?? 'unlabelled'}, ${a.verdict}, ${a.leg ?? 'no leg'})`).join(', ')} — this row is ALREADY in the audit store; apply A-60's rule before the draw is pushed`
+      : '  held: none — no audit store entry carries this fingerprint');
+    if (moved.length) lines.push(`  same line, different text: ${moved.map((a) => a.id).join(', ')} — read an earlier version of the row at this line`);
   }
   lines.push('');
+  if (store) lines.push(`store: ${collisions} of ${positions.length} drawn position(s) land on a row already held, read against ${audits.length} audit store entr${audits.length === 1 ? 'y' : 'ies'}`);
   lines.push(`RESULT: PASS — drew ${positions.length} position(s) from a frame of ${frame.length} (exit 0)`);
   return { code: 0, lines };
 }
@@ -607,11 +647,14 @@ if (argv.includes('--draw')) {
   const raw = argv.slice(argv.indexOf('--draw') + 1);
   const positions = raw.map((a) => Number(a));
   if (positions.length === 0 || positions.some((p) => !Number.isInteger(p) || p < 1)) {
-    console.log('RESULT: FAIL — usage: node scripts/depth-audit.mjs --draw <position> [position...] (1-based integers) (exit 2)');
+    console.log('RESULT: FAIL — usage: node scripts/depth-audit.mjs --draw <position> [position...] (1-based integers; positions must come last) (exit 2)');
     process.exit(2);
   }
   const cdir = path.join(REPO, 'ledger', 'teorth-optimizationproblems', 'constants');
-  const { code, lines } = drawRun(cdir, positions, liveBaselines(cdir));
+  // An unreadable store becomes {} rather than null, so drawRun REFUSES instead of skipping the check.
+  let store;
+  try { store = JSON.parse(fs.readFileSync(DEFAULT_STORE, 'utf8')); } catch { store = {}; }
+  const { code, lines } = drawRun(cdir, positions, { ...liveBaselines(cdir), store });
   for (const l of lines) console.log(l);
   process.exit(code);
 } else if (argv.includes('--selftest')) {

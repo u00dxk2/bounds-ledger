@@ -183,8 +183,12 @@ const LEG_LABEL = { "value-vs-source": "bound row", "citation-well-formed": "ref
  * AN ENTRY WITH NO `selection` COUNTS AS SUSPICION, never as systematic: the unlabelled direction
  * has to be the one that understates coverage rather than the one that flatters it.
  */
+// The systematic wording was "drawn by position before it was read" until 2026-10-01; the 2026-09-29
+// cold walk read it as jargon (A-53.walkCandidates2026_09_29r3), so it now says what the ladder does
+// in plain words. "Before it was read" was dropped too: a row picked this way may have been read
+// earlier under suspicion (A-47-0052, 1b's row, first read 2026-09-05), so it was not always true.
 const SELECTION_PROSE = {
-  systematic: "drawn by position before it was read",
+  systematic: "picked by its place in a fixed list, not because it looked wrong",
   suspicion: "chosen because something already looked wrong",
 };
 const isSystematic = (a) => a.selection === "systematic";
@@ -213,6 +217,67 @@ export function usableAudit(a) {
     && (a.leg === undefined || typeof a.leg === "string")
     && (a.sourceRead === undefined || typeof a.sourceRead === "string")
     && safeUrl(a.source) !== null;
+}
+
+/**
+ * THE RENDER SIDE REFUSES A DROPPED ENTRY (A-53, option (b), decided 2026-10-01). `usableAudit` keeps
+ * one malformed entry from crashing all 115 pages, and that stays: the renderers below still filter.
+ * What it also did was make the entry VANISH — slice 5's 10c entry, recorded with a repository path
+ * as its source, left the public count while `depth-audit.mjs` went on counting it, with no warning
+ * and no non-zero exit anywhere. So both GENERATORS (this file's main, which writes c/ through
+ * auditBlock, and render-site.mjs, which writes the index through badgeFor) call
+ * `auditStoreRefusal()` first and write nothing when it names an entry. The alarm sits where the loss
+ * happens, not in a second counter comparing two counts.
+ *
+ * SCOPED TO WHAT IS DROPPED, never to what is STALE. A stale entry (its row edited upstream since it
+ * was read) passes usableAudit and renders as historical; refusing it would stop every render on
+ * every upstream edit, and upstream drift is the event this ledger exists to show.
+ *
+ * Not covered: a THIRD importer of badgeFor or auditBlock that skips this call. Both live callers are
+ * the two mains, and render-site --check runs in CI.
+ */
+const UNUSABLE_CHECKS = [
+  ["not an object", (a) => !!a && typeof a === "object"],
+  ["constant is not a string", (a) => typeof a.constant === "string"],
+  ["citedRef is not a string", (a) => typeof a.citedRef === "string"],
+  ["verdict is not a string", (a) => typeof a.verdict === "string"],
+  ["verdict is outside SOUND / DEFECTIVE / UNRESOLVED / UNREACHABLE", (a) => Object.prototype.hasOwnProperty.call(VERDICT_PROSE, a.verdict)],
+  ["leg is not a string", (a) => a.leg === undefined || typeof a.leg === "string"],
+  ["sourceRead is not a string", (a) => a.sourceRead === undefined || typeof a.sourceRead === "string"],
+  ["source is not an http(s) URL", (a) => safeUrl(a.source) !== null],
+];
+
+export function droppedAudits(store) {
+  const audits = Array.isArray(store?.audits) ? store.audits : [];
+  const out = [];
+  audits.forEach((a, i) => {
+    if (usableAudit(a)) return;
+    const failed = UNUSABLE_CHECKS.find(([, ok]) => !ok(a));
+    const at = a && typeof a === "object" && typeof a.id === "string" ? a.id : `audits[${i}]`;
+    out.push({ at, why: failed ? failed[0] : "fails usableAudit" });
+  });
+  return out;
+}
+
+/** null when nothing would be dropped; otherwise one line per entry that would vanish from the pages. */
+export function auditStoreRefusal(storePath = join(ROOT, "continuity", "depth-audit.json")) {
+  if (!existsSync(storePath)) return null;
+  let s;
+  try { s = JSON.parse(readFileSync(storePath, "utf8")); } catch (e) {
+    return [`the audit store did not parse (${e.message}), so every entry in it would be dropped from every page`];
+  }
+  if (!Array.isArray(s?.audits)) return ["the audit store has no audits array, so every entry in it would be dropped from every page"];
+  const dropped = droppedAudits(s);
+  return dropped.length ? dropped.map((d) => `${d.at}: ${d.why}`) : null;
+}
+
+/** Prints the refusal in the repo's RESULT shape; returns true when the caller must stop. */
+export function refuseDroppedAudits(label) {
+  const refusal = auditStoreRefusal();
+  if (!refusal) return false;
+  console.error(`RESULT: FAIL — ${label}: ${refusal.length} audit store entr${refusal.length === 1 ? "y" : "ies"} would be silently dropped from the published pages; fix the entry, nothing was written (A-53):`);
+  for (const line of refusal) console.error(`  ${line}`);
+  return true;
 }
 
 /**
@@ -707,6 +772,42 @@ function selftest() {
   const withNull = renderPage(row, "abc1234def", { audits: [null, store.audits[0]], corpus: { citedRows: 999 } });
   assert.ok(withNull.includes("Read against its cited source"), "a null entry beside a good one must not abort rendering");
 
+  // (f2) A-53 (b), 2026-10-01: the renderer above stays robust, and the GENERATORS refuse instead.
+  //      Meaning first, the count last, so each mutation names the property it broke.
+  const goodEntry = store.audits[0];
+  const staleEntry = { ...goodEntry, id: "T-ST", inMirror: false };
+  const toDrop = { audits: [
+    null,
+    { ...goodEntry, id: "T-RP", source: "ledger/teorth-optimizationproblems/constants/10c.md#L281" },
+    { ...goodEntry, id: "T-UV", verdict: "VERIFIED" },
+    staleEntry,
+    goodEntry,
+  ] };
+  const dropped = droppedAudits(toDrop);
+  assert.ok(isStale(staleEntry) && !dropped.some((d) => d.at === "T-ST"),
+    "a STALE entry renders as historical and must never trip the refusal — upstream drift would stop every render");
+  assert.ok(!dropped.some((d) => d.at === goodEntry.id), "SILENT: a usable entry is never named");
+  assert.ok(dropped.some((d) => d.at === "T-RP" && d.why === "source is not an http(s) URL"),
+    "FIRES: the 2026-09-16 instance — a repository path as source — is named with its reason");
+  assert.ok(dropped.some((d) => d.at === "T-UV" && /verdict is outside/.test(d.why)), "FIRES: an unknown verdict is named");
+  assert.ok(dropped.some((d) => d.at === "audits[0]" && d.why === "not an object"), "FIRES: a null entry is named by position");
+  assert.equal(dropped.length, 3, "exactly the three unusable entries, no more");
+  const refusalDir = join(ROOT, "tmp", `a53-selftest-${process.pid}`);
+  mkdirSync(refusalDir, { recursive: true });
+  try {
+    writeFileSync(join(refusalDir, "bad.json"), "{ not json");
+    writeFileSync(join(refusalDir, "good.json"), JSON.stringify({ audits: [goodEntry, staleEntry] }));
+    writeFileSync(join(refusalDir, "drops.json"), JSON.stringify({ audits: [goodEntry, { ...goodEntry, id: "T-RP", source: "ledger/x.md" }] }));
+    assert.ok(/did not parse/.test((auditStoreRefusal(join(refusalDir, "bad.json")) || [""])[0]),
+      "an unparseable store refuses: every entry in it would vanish from every page");
+    assert.ok(/^T-RP: source is not an http\(s\) URL$/.test((auditStoreRefusal(join(refusalDir, "drops.json")) || [""])[0]),
+      "a store file holding a droppable entry refuses and names it");
+    assert.equal(auditStoreRefusal(join(refusalDir, "good.json")), null, "SILENT: good and stale entries alone do not refuse");
+    assert.equal(auditStoreRefusal(join(refusalDir, "absent.json")), null, "an absent store drops nothing and stays silent, as the renderer does");
+  } finally {
+    rmSync(refusalDir, { recursive: true, force: true });
+  }
+
   // (g) MEANING, and the one that keeps this honest: it must never read as coverage. The
   //     denominator is RENDERED FROM THE STORE (999 here, not the live corpus figure) and the not-checked
   //     disclaimer is present.
@@ -847,7 +948,8 @@ function selftest() {
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
   assert.ok(mixed.includes("Read against its cited source"), "positive control: the mixed-selection page renders a block");
-  assert.ok(mixed.includes("drawn by position before it was read"), "a systematic row must say it was drawn by position");
+  assert.ok(mixed.includes("picked by its place in a fixed list, not because it looked wrong"), "a systematic row must say how it was picked, in plain words");
+  assert.ok(!mixed.includes("drawn by position before it was read"), "the retired jargon label must not come back");
   assert.ok(mixed.includes("chosen because something already looked wrong"), "a suspicion-drawn row must say so on the page, not only in the store");
   assert.ok(/carries no rate/.test(mixed), "the page must say why a suspicion-drawn set is counted apart");
   assert.ok(/1 drawn by position, 1 chosen because/.test(mixed), "the per-page count names both populations");
@@ -1025,6 +1127,7 @@ function selftest() {
 }
 
 function main({ check = false } = {}) {
+  if (refuseDroppedAudits("render-constant-pages")) { process.exitCode = 1; return; }
   const claims = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
   const manifest = JSON.parse(readFileSync(join(ROOT, "ledger", "teorth-optimizationproblems", "manifest.json"), "utf8"));
   const rows = buildRows(claims);

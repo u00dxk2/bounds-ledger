@@ -26,7 +26,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { pinsFor, lastChanged, changeFor, changeKind, boundCell } from "./lookup.mjs";
-import { loadAudits, badgeFor, attemptDate } from "./render-constant-pages.mjs";
+import { loadAudits, badgeFor, attemptDate, refuseDroppedAudits } from "./render-constant-pages.mjs";
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 
@@ -1769,6 +1769,9 @@ if (isMain) {
     // fail the day after any regeneration — a permanently-red alarm, which carries as much
     // information as a permanently-green one and is this repo's founding defect. Keyed to fetchedAt,
     // the page is stable until the mirror itself moves, which is exactly when it SHOULD be regenerated.
+    // A-53 (b): an audit entry the index badge would silently drop stops the render before anything
+    // is composed or written. Same call as render-constant-pages' main; see refuseDroppedAudits.
+    if (refuseDroppedAudits("render-site")) process.exit(1);
     const { html, claims, manifest } = buildIndexHtml();
 
     if (process.argv.includes("--check")) {
