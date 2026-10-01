@@ -97,8 +97,9 @@ fi
 # --- A staged index.html must be the page render-site would produce (2026-08-27, A-31) ---
 # GitHub Pages builds on PUSH and waits for nothing: measured 2026-08-26, the Pages build for
 # c25cecd was created 23:06:53Z and its CI run started 23:06:55Z -- the publish is created TWO
-# SECONDS BEFORE CI begins. So render-site --check in CI reports a malformed page AFTER it is
-# already live. On 2026-08-26 commit 784e4f4 shipped an index.html whose first 45 bytes were
+# SECONDS BEFORE CI begins. So any page check in CI reports a malformed page AFTER it is
+# already live. (Corrected 2026-10-01: CI runs only render-site --selftest, never --check, so
+# this hook and a local `npm run check` are the only places the committed page is compared.) On 2026-08-26 commit 784e4f4 shipped an index.html whose first 45 bytes were
 # clobbered, and the only reason no visitor saw it is that Pages was erroring in an unrelated
 # outage -- which is luck, not a gate. This closes the window at COMMIT time instead, where it
 # costs nothing. It does NOT gate the publish; that question stays open as A-31 on 2026-09-09.

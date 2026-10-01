@@ -174,8 +174,8 @@ const VERDICT_PROSE = {
 const LEG_LABEL = { "value-vs-source": "bound row", "citation-well-formed": "reference entry" };
 
 /**
- * HOW THE ROW WAS CHOSEN, which decides what its count can mean. A row drawn by position before
- * anybody read it can accumulate into a coverage figure; a row chosen BECAUSE something already
+ * HOW THE ROW WAS CHOSEN, which decides what its count can mean. A row drawn by its position, without
+ * looking at it, can accumulate into a coverage figure; a row chosen BECAUSE something already
  * looked wrong cannot — the set is selected on the outcome, so it carries no rate. The store has
  * said this in prose since 2026-09-10 and the PAGE said nothing, so a reader saw one undifferentiated
  * count with two suspicion-drawn rows inside it. Added 2026-09-13 with slice 4.
@@ -184,11 +184,12 @@ const LEG_LABEL = { "value-vs-source": "bound row", "citation-well-formed": "ref
  * has to be the one that understates coverage rather than the one that flatters it.
  */
 // The systematic wording was "drawn by position before it was read" until 2026-10-01; the 2026-09-29
-// cold walk read it as jargon (A-53.walkCandidates2026_09_29r3), so it now says what the ladder does
-// in plain words. "Before it was read" was dropped too: a row picked this way may have been read
-// earlier under suspicion (A-47-0052, 1b's row, first read 2026-09-05), so it was not always true.
+// cold walk read it as jargon (A-53.walkCandidates2026_09_29r3), so it now says what "drawn by position"
+// means, in the same words the page's count sentence uses. "Before it was read" was dropped: a row
+// drawn this way may have been read earlier under suspicion (A-47-0052, 1b's row, first read
+// 2026-09-05). "Fixed list" was rejected by review: the list grew from 673 to 691 rows at slice 8.
 const SELECTION_PROSE = {
-  systematic: "picked by its place in a fixed list, not because it looked wrong",
+  systematic: "drawn by its position in the list of cited rows, not because it looked wrong",
   suspicion: "chosen because something already looked wrong",
 };
 const isSystematic = (a) => a.selection === "systematic";
@@ -233,8 +234,18 @@ export function usableAudit(a) {
  * was read) passes usableAudit and renders as historical; refusing it would stop every render on
  * every upstream edit, and upstream drift is the event this ledger exists to show.
  *
- * Not covered: a THIRD importer of badgeFor or auditBlock that skips this call. Both live callers are
- * the two mains, and render-site --check runs in CI.
+ * ALSO REFUSED (adversarial review, 2026-10-01): an entry that passes usableAudit but whose `constant`
+ * names no page — badgeFor and auditBlock both filter on `a.constant === id`, so it reached no page
+ * while the ledger-wide sentence and depth-audit.mjs still counted it; and an ABSENT store, which
+ * would drop every entry from every page while depth-audit.mjs refuses the same absence (exit 2).
+ * The store is tracked, so its absence is never legitimate here.
+ *
+ * Not covered, and where it is caught instead: a THIRD importer of badgeFor or auditBlock that skips
+ * this call. And CI does not run either --check (reverify.yml runs only the --selftests), so the
+ * refusal fires in `npm run check`, `npm run resnap`, any render, and the pre-commit hook only when
+ * index.html is staged. A commit that touches ONLY continuity/depth-audit.json — the 10c shape — is
+ * refused by none of those until the next render or `npm run check`. The selftest drives both mains
+ * against a bad store, so deleting either call fails it.
  */
 const UNUSABLE_CHECKS = [
   ["not an object", (a) => !!a && typeof a === "object"],
@@ -247,35 +258,41 @@ const UNUSABLE_CHECKS = [
   ["source is not an http(s) URL", (a) => safeUrl(a.source) !== null],
 ];
 
-export function droppedAudits(store) {
+/** `pageIds`, when given, is the set of constant ids that get a page; an entry naming none is dropped too. */
+export function droppedAudits(store, pageIds = null) {
   const audits = Array.isArray(store?.audits) ? store.audits : [];
   const out = [];
   audits.forEach((a, i) => {
-    if (usableAudit(a)) return;
-    const failed = UNUSABLE_CHECKS.find(([, ok]) => !ok(a));
     const at = a && typeof a === "object" && typeof a.id === "string" ? a.id : `audits[${i}]`;
+    if (usableAudit(a)) {
+      if (pageIds && !pageIds.has(a.constant)) out.push({ at, why: `constant "${a.constant}" names no page` });
+      return;
+    }
+    const failed = UNUSABLE_CHECKS.find(([, ok]) => !ok(a));
     out.push({ at, why: failed ? failed[0] : "fails usableAudit" });
   });
   return out;
 }
 
+export const DEFAULT_AUDIT_STORE = join(ROOT, "continuity", "depth-audit.json");
+
 /** null when nothing would be dropped; otherwise one line per entry that would vanish from the pages. */
-export function auditStoreRefusal(storePath = join(ROOT, "continuity", "depth-audit.json")) {
-  if (!existsSync(storePath)) return null;
+export function auditStoreRefusal(storePath = DEFAULT_AUDIT_STORE, pageIds = null) {
+  if (!existsSync(storePath)) return ["the audit store is absent, so every audited entry would be dropped from every page"];
   let s;
   try { s = JSON.parse(readFileSync(storePath, "utf8")); } catch (e) {
     return [`the audit store did not parse (${e.message}), so every entry in it would be dropped from every page`];
   }
   if (!Array.isArray(s?.audits)) return ["the audit store has no audits array, so every entry in it would be dropped from every page"];
-  const dropped = droppedAudits(s);
+  const dropped = droppedAudits(s, pageIds);
   return dropped.length ? dropped.map((d) => `${d.at}: ${d.why}`) : null;
 }
 
 /** Prints the refusal in the repo's RESULT shape; returns true when the caller must stop. */
-export function refuseDroppedAudits(label) {
-  const refusal = auditStoreRefusal();
+export function refuseDroppedAudits(label, { storePath = DEFAULT_AUDIT_STORE, pageIds = null } = {}) {
+  const refusal = auditStoreRefusal(storePath, pageIds);
   if (!refusal) return false;
-  console.error(`RESULT: FAIL — ${label}: ${refusal.length} audit store entr${refusal.length === 1 ? "y" : "ies"} would be silently dropped from the published pages; fix the entry, nothing was written (A-53):`);
+  console.error(`RESULT: FAIL — ${label}: ${refusal.length} problem(s) would silently drop audit store entries from the published pages; fix the store, nothing was written (A-53):`);
   for (const line of refusal) console.error(`  ${line}`);
   return true;
 }
@@ -803,7 +820,25 @@ function selftest() {
     assert.ok(/^T-RP: source is not an http\(s\) URL$/.test((auditStoreRefusal(join(refusalDir, "drops.json")) || [""])[0]),
       "a store file holding a droppable entry refuses and names it");
     assert.equal(auditStoreRefusal(join(refusalDir, "good.json")), null, "SILENT: good and stale entries alone do not refuse");
-    assert.equal(auditStoreRefusal(join(refusalDir, "absent.json")), null, "an absent store drops nothing and stays silent, as the renderer does");
+    assert.ok(/absent/.test((auditStoreRefusal(join(refusalDir, "absent.json")) || [""])[0]),
+      "an ABSENT store refuses: it would drop every entry from every page, and depth-audit.mjs refuses it too");
+    writeFileSync(join(refusalDir, "nopage.json"), JSON.stringify({ audits: [goodEntry, { ...goodEntry, id: "T-PG", constant: "zz9" }] }));
+    const noPage = auditStoreRefusal(join(refusalDir, "nopage.json"), new Set([goodEntry.constant]));
+    assert.ok(noPage && noPage.includes('T-PG: constant "zz9" names no page'), "FIRES: a usable entry whose constant has no page is refused, not silently dropped");
+    assert.ok(!noPage.some((l) => l.startsWith(`${goodEntry.id}:`)), "SILENT: an entry whose constant has a page is not named");
+    // THE WIRING, not only the helper: main() itself must refuse a droppable store and write nothing.
+    // Deleting its refuseDroppedAudits call makes this fail (it would compare pages and PASS).
+    const before = process.exitCode;
+    const errs = [];
+    const origErr = console.error;
+    console.error = (...a) => errs.push(a.join(" "));
+    try { main({ check: true, storePath: join(refusalDir, "drops.json") }); } finally { console.error = origErr; }
+    // The NAMING comes first: exit code 1 alone is also what a stale page produces, so it cannot tell
+    // the refusal from staleness (red-armed 2026-10-01: with the call deleted and the pages stale, the
+    // exit-code check still passed and only this one failed).
+    assert.ok(errs.some((l) => l.includes("T-RP: source is not an http(s) URL")), "main() must refuse a droppable store and name the entry it refused");
+    assert.equal(process.exitCode, 1, "…and exit 1");
+    process.exitCode = before;
   } finally {
     rmSync(refusalDir, { recursive: true, force: true });
   }
@@ -948,7 +983,7 @@ function selftest() {
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
   assert.ok(mixed.includes("Read against its cited source"), "positive control: the mixed-selection page renders a block");
-  assert.ok(mixed.includes("picked by its place in a fixed list, not because it looked wrong"), "a systematic row must say how it was picked, in plain words");
+  assert.ok(mixed.includes("drawn by its position in the list of cited rows, not because it looked wrong"), "a systematic row must say how it was drawn, in plain words that match the count sentence");
   assert.ok(!mixed.includes("drawn by position before it was read"), "the retired jargon label must not come back");
   assert.ok(mixed.includes("chosen because something already looked wrong"), "a suspicion-drawn row must say so on the page, not only in the store");
   assert.ok(/carries no rate/.test(mixed), "the page must say why a suspicion-drawn set is counted apart");
@@ -1126,11 +1161,12 @@ function selftest() {
   console.log(`render-constant-pages selftest: PASS (renders title, both pinned rows and the upstream sha after proving the page is non-empty; carries a canonical URL, and its cite block quotes the SHARED citation unchanged — so the table and the page hand out the same address for the same constant, and a re-added local substitution fails here; a missing side reads "not pinned"; a hostile title is escaped, with the raw fixture proven to contain the markup so the check tests the renderer; the filed-report disclosure appears only for a mapped constant; and the A-47 audit block carries the no-record prohibition on the AUDITED page rather than only the unaudited one, drops an unrecognised verdict instead of printing it, matches link text to verdict so UNREACHABLE never offers 'the source we read', links each source as an anchor whose href IS that source, refuses a javascript: scheme, escapes hostile citedRef and sourceRead, survives a null entry beside a good one, renders the denominator FROM THE STORE with a fixture of 999 proving it is not baked in, carries the date it was measured, counts bound rows separately from reference entries against a bound-row denominator, shows only THIS constant's rows with the other proven present in the fixture, is ABSENT for an unaudited constant, says 'not recorded' rather than implying a proportion when the corpus is missing, and — since 2026-09-13 — tells the reader how each row was CHOSEN, counts the ledger-wide coverage figure from rows drawn by position ONLY — and, since 2026-09-21, counts every drawn row whether or not its source could be read and says how many were read, files an unlabelled row with the suspicion set rather than as coverage, and carries the no-record prohibition on that selection-labelled surface too)`);
 }
 
-function main({ check = false } = {}) {
-  if (refuseDroppedAudits("render-constant-pages")) { process.exitCode = 1; return; }
+export function main({ check = false, storePath = DEFAULT_AUDIT_STORE } = {}) {
   const claims = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
   const manifest = JSON.parse(readFileSync(join(ROOT, "ledger", "teorth-optimizationproblems", "manifest.json"), "utf8"));
   const rows = buildRows(claims);
+  // A-53 (b): refuse before anything is composed or written. Nothing above writes.
+  if (refuseDroppedAudits("render-constant-pages", { storePath, pageIds: new Set(rows.map((r) => r.id)) })) { process.exitCode = 1; return; }
   const pages = new Map(rows.map((r) => [`${r.id}.html`, renderPage(r, manifest.sha)]));
 
   if (check) {

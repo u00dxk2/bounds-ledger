@@ -654,6 +654,9 @@ if (argv.includes('--draw')) {
   // An unreadable store becomes {} rather than null, so drawRun REFUSES instead of skipping the check.
   let store;
   try { store = JSON.parse(fs.readFileSync(DEFAULT_STORE, 'utf8')); } catch { store = {}; }
+  // A file holding literal `null` parses to null, which drawRun reads as "no store asked for" and would
+  // skip the holder check silently (adversarial review 2026-10-01); anything that is not an object refuses.
+  if (store === null || typeof store !== 'object') store = {};
   const { code, lines } = drawRun(cdir, positions, { ...liveBaselines(cdir), store });
   for (const l of lines) console.log(l);
   process.exit(code);

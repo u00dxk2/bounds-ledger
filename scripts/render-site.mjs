@@ -26,7 +26,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { pinsFor, lastChanged, changeFor, changeKind, boundCell } from "./lookup.mjs";
-import { loadAudits, badgeFor, attemptDate, refuseDroppedAudits } from "./render-constant-pages.mjs";
+import { loadAudits, badgeFor, attemptDate, refuseDroppedAudits, DEFAULT_AUDIT_STORE } from "./render-constant-pages.mjs";
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 
@@ -1747,6 +1747,32 @@ async function selftest() {
   const badHost = externals.filter((h) => !/github\.com|example\.invalid/.test(h));
   assert.deepEqual(badHost, [], `page must fetch nothing at runtime; found ${badHost.join(", ")}`);
 
+  // A-53 (b) THROUGH THE ENTRY POINT (2026-10-01): cli() is what the CLI runs, so this proves the
+  // refusal is WIRED, not only that the helper works. Deleting cli()'s refuseDroppedAudits call makes
+  // the first case go on to compare index.html and return 0 instead. The refusal runs before the
+  // slow composition, so both cases return without reading git history.
+  {
+    const dir = join(ROOT, "tmp", `a53-site-selftest-${process.pid}`);
+    mkdirSync(dir, { recursive: true });
+    const errs = [];
+    const origErr = console.error;
+    console.error = (...a) => errs.push(a.join(" "));
+    try {
+      const real = JSON.parse(readFileSync(join(ROOT, "continuity", "depth-audit.json"), "utf8"));
+      const good = real.audits.find((a) => a && a.leg === "value-vs-source");
+      writeFileSync(join(dir, "drops.json"), JSON.stringify({ audits: [good, { ...good, id: "T-SRP", source: "ledger/x.md" }] }));
+      writeFileSync(join(dir, "nopage.json"), JSON.stringify({ audits: [good, { ...good, id: "T-SPG", constant: "zz9" }] }));
+      assert.equal(cli({ check: true, storePath: join(dir, "drops.json") }), 1, "cli() must refuse a store holding a droppable entry");
+      assert.ok(errs.some((l) => l.includes("T-SRP: source is not an http(s) URL")), "…naming it");
+      assert.equal(cli({ check: true, storePath: join(dir, "nopage.json") }), 1, "cli() must refuse an entry whose constant has no page");
+      assert.ok(errs.some((l) => l.includes('T-SPG: constant "zz9" names no page')), "…naming it");
+      assert.equal(cli({ check: true, storePath: join(dir, "absent.json") }), 1, "cli() must refuse an absent store");
+    } finally {
+      console.error = origErr;
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }
+
   console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match; a changed bound reads as a value change while an escaping-only edit and a changed citation detail both read as text edits with the bound held, a pin with no prior version gets no verdict, and all four reader-facing wordings are pinned; every row carries a c-prefixed id and a permalink that targets that row's OWN id in document order, with the landed row visibly marked; the filter haystack carries current AND previously-pinned bound values so a truncated stale citation matches, a row with no earlier pin contributes no phantom value, it also carries every value cell in the constant's mirrored tables — proven on a fixture where a value two rows above the pinned one is extracted while separators, headers and prose outside the table are not, and proven ABSENT from the visible page — the attribute is read back OUT of the rendered row rather than re-derived, a previously-pinned value is proven searchable and proven ABSENT from the visible page, and the page's own filter script, extracted and executed against the emitted attribute, reveals the right row and hides the rest; a row we filed an upstream report against discloses it and links the report, an unfiled row carries none and the count drops to zero when the record is emptied, the label reads open with no date for an open report, a neighbouring id inherits nothing, a hostile url reaches the page escaped, and neither the disclosure nor its explanatory prose claims our report caused anything; every row links to its OWN constant page, so a one-href-fits-all template passes the count and fails the per-id check; and every row's citation hands out that constant's canonical c/<id>.html address while the in-table anchor is proven absent from the cite blocks and proven still present as the row permalink, so the two address forms cannot swap jobs)");
 }
 
@@ -1755,6 +1781,31 @@ async function selftest() {
 // module, but the defect class is proven live in this codebase: the commit that introduced this
 // file also had to add this same guard to lookup.mjs after import-executes-CLI bit it, and the new
 // module repeated the shape it had just fixed. Guarding it now rather than after it bites twice.
+// THE ENTRY POINT AS A FUNCTION (2026-10-01), so the selftest can drive the A-53 refusal through the
+// same path the CLI takes — the wiring, not only the helper. Returns the exit code; never exits.
+export function cli({ check = false, storePath = DEFAULT_AUDIT_STORE } = {}) {
+  // A-53 (b): an audit entry the index badge would silently drop stops the render before anything is
+  // composed or written. The page ids come from the claims alone, so this runs before the slow,
+  // git-reading composition. Same call as render-constant-pages' main; see refuseDroppedAudits.
+  const pinned = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
+  if (refuseDroppedAudits("render-site", { storePath, pageIds: new Set(constantIds(pinned)) })) return 1;
+  const { html, claims, manifest } = buildIndexHtml();
+
+  if (check) {
+    let current = "";
+    try { current = readFileSync(OUT, "utf8"); } catch { /* missing counts as stale */ }
+    if (current.replace(/\r\n/g, "\n") !== html.replace(/\r\n/g, "\n")) {
+      console.error("RESULT: FAIL — index.html is stale. Re-run `node scripts/render-site.mjs` and commit it.");
+      return 1;
+    }
+    console.log(`RESULT: PASS — index.html matches committed state (${buildRows(claims, { withDates: false }).length} constants @ ${String(manifest.sha).slice(0, 7)})`);
+    return 0;
+  }
+  writeFileSync(OUT, html);
+  console.log(`wrote index.html — ${buildRows(claims, { withDates: false }).length} constants @ ${String(manifest.sha).slice(0, 7)}`);
+  return 0;
+}
+
 const entry = process.argv[1] ? pathToFileURL(realpathSync(process.argv[1])).href : null;
 const isMain = entry === import.meta.url;
 
@@ -1769,23 +1820,7 @@ if (isMain) {
     // fail the day after any regeneration — a permanently-red alarm, which carries as much
     // information as a permanently-green one and is this repo's founding defect. Keyed to fetchedAt,
     // the page is stable until the mirror itself moves, which is exactly when it SHOULD be regenerated.
-    // A-53 (b): an audit entry the index badge would silently drop stops the render before anything
-    // is composed or written. Same call as render-constant-pages' main; see refuseDroppedAudits.
-    if (refuseDroppedAudits("render-site")) process.exit(1);
-    const { html, claims, manifest } = buildIndexHtml();
-
-    if (process.argv.includes("--check")) {
-      let current = "";
-      try { current = readFileSync(OUT, "utf8"); } catch { /* missing counts as stale */ }
-      if (current.replace(/\r\n/g, "\n") !== html.replace(/\r\n/g, "\n")) {
-        console.error("RESULT: FAIL — index.html is stale. Re-run `node scripts/render-site.mjs` and commit it.");
-        process.exit(1);
-      }
-      console.log(`RESULT: PASS — index.html matches committed state (${buildRows(claims, { withDates: false }).length} constants @ ${String(manifest.sha).slice(0, 7)})`);
-    } else {
-      writeFileSync(OUT, html);
-      console.log(`wrote index.html — ${buildRows(claims, { withDates: false }).length} constants @ ${String(manifest.sha).slice(0, 7)}`);
-    }
+    process.exit(cli({ check: process.argv.includes("--check") }));
   }
 } else if (process.argv[1]?.endsWith("render-site.mjs")) {
   console.error("render-site: COULD NOT RUN — invoked as main but module identity did not match");
