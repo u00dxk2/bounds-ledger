@@ -240,6 +240,11 @@ export function usableAudit(a) {
  * would drop every entry from every page while depth-audit.mjs refuses the same absence (exit 2).
  * The store is tracked, so its absence is never legitimate here.
  *
+ * ACCEPTED EDGE (second review, 2026-10-01): if upstream DELETES a constant that holds audit entries,
+ * those entries name no page and the render refuses, mid-`npm run resnap`, after the snapshot and the
+ * pins have moved. That is deliberate. Their readings would otherwise vanish from every page in
+ * silence; a human decides what a deleted constant's readings become, then renders.
+ *
  * Not covered, and where it is caught instead: a THIRD importer of badgeFor or auditBlock that skips
  * this call. And CI does not run either --check (reverify.yml runs only the --selftests), so the
  * refusal fires in `npm run check`, `npm run resnap`, any render, and the pre-commit hook only when
