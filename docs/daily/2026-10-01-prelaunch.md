@@ -56,3 +56,12 @@ Order in P3: (1) build the `A-60` draw-collision guard and red-arm it, (2) build
 - (a) Due rows not bearing on the choice: **none.** Read: `check-due-gates-dispositioned --snapshot` ("3 gate(s) due on/before 2026-10-01": `A-47`, `A-53`, `A-60`, and all three bear on the choice).
 - (b) Owed child rows in the orchestrator's ledger: **none.** Read: the kickoff's "rows owed to you" read (0 of 739).
 - (c) State reads marked CROSSED: **none.** Read: the kickoff state block. The fields that print a CROSSED marker carry none: stale-actionable 0 of 19, queued rows 0, and missingLinkedCommits NOTHING SWEPT (0 of 0, not a clean read).
+
+## Findings (P3)
+
+<!-- findings:begin -->
+- **The index's read badge can sit beside a row nobody read** (instrument-facing, older than today; surfaced by the slice 11 review). The index badges a constant "read against its cited source" when ANY of its bound rows was read, and shows the constant's last-listed pinned row beside it. On 15a after slice 11, the badge sits beside 2.371177 [DEKMRSZAWB2026], which was never read: the reading was of the 2.371866 [DWZ2022] row. 88a and 22a show the same shape. The "tried" line was made to name its row on 2026-09-29 for exactly this misreading; the read badge never got that fix. Not fixed today. Candidate for the next product round, beside `A-53`'s walk candidates.
+- **22a's 12.63 may be a truncation in the wrong direction** (record-facing, UNRESOLVED, not a defect finding). The arXiv preprint of [ACPR2011] gives 10_124 a ropelength of 71.0739, so 71.0739 / 10^{3/4} = 12.638925, while the row says 12.63, a bound the preprint's figure does not reach. The published Experimental Mathematics edition the entry cites was not read, so under the edition rule this is UNRESOLVED (`A-47-0053`). Settling it needs that edition's 10_124 table entry.
+- **Slice 10 never got its paragraph in the store's sampling note**; added today, labelled as a day late.
+- **Method sentences failed again, as predicted** (instrument-facing): the review refuted two of them. 1b's claimChecked labelled a post-reading clause as named before reading, and the sampling note credited slice 11's collision to a guard that did not exist at its draw. Both are fixed in `a41c707`. Separately, a false sentence about our own CI ("render-site --check runs in CI") was found in three places, one of which predates today.
+<!-- findings:end -->
