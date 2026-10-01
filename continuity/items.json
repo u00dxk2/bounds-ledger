@@ -2431,7 +2431,7 @@
     {
       "id": "A-61",
       "type": "active",
-      "status": "open",
+      "status": "closed",
       "title": "Cross-family claims pass owed on slice 11's five public verdicts (88a, 11b, 15a, 1b, 22a)",
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-10-03",
@@ -2443,7 +2443,11 @@
       "closeWhen": "A cross-family (Codex) claims pass over A-47-0049..0053 has run, with its banner workdir checked, and each finding is fixed or rejected with a reason on this row.",
       "readCommand": "node C:/dev/skylark/skylark-site/scripts/codex-probe.mjs --if-stale — GREEN means the pass can run today; RED means it is still blocked and this row's 2026-10-03 clause governs",
       "created": "2026-10-01",
-      "updated": "2026-10-01"
+      "updated": "2026-10-01",
+      "closeReceipt2026_10_01": "CLOSED 2026-10-01 at P5, the same day it was filed: the trigger fired. The Codex probe stamp read GREEN at 2026-10-01T18:17:37Z (the orchestrator confirmed GREEN in 40.7 s at about 12:20 MT, bus 56a095f0), and the pass ran as `codex exec --sandbox read-only` via a foreground pipe, prompt tmp/a61-codex-prompt.md pinned to e531ec5cb2681ebf6658c030875d9fc0426ddead and read back before launch. BANNER CHECKED before any finding was read: \"workdir: C:\\dev\\skylark\\bounds-ledger\", \"model: gpt-6-astra\", \"sandbox: read-only\". The reviewer confirmed HEAD e531ec5 as its first line. VERDICT: FIX-NEEDED, 0 BLOCKER, 5 SHOULD-FIX, 2 NIT. FATES: (1) 88a priority stronger than the page states: CONFIRMED, wording narrowed in evidence (\"inferred from the paper's presentation, not stated in those words\"); verdict kept SOUND, DELIBERATE: p. 1122 states that the best result until very recently was the weaker (1.2) and that this paper answers the finiteness question, which is the source stating the claim. (2) 11b sourceRead (public) omitted the appendix's exactly half-size odd ball: CONFIRMED, fixed. 11b evidence now gives the unfixed t in (1.4) as the reason for UNRESOLVED, as the reviewer advised. (3) 15a sourceRead (public) said Wayback and CORE could not be queried: CONFIRMED against core-search.json (returns the paper) and wayback-avail.json (a 202 shell capture), fixed. (4) 22a sourceRead (public) said OpenAlex lists only submitted versions: CONFIRMED against openalex.json (it carries a publishedVersion location), fixed. (5) 22a evidence rounded an upper bound downward (C_22a <= 12.6389): CONFIRMED, now <= 12.638926, with the approximations marked. NIT (6) 22a notes, the full condition for DEFECTIVE: fixed. NIT (7, M1) session-action sentences are not independently verifiable from saved files: DELIBERATE, no change; the store records this session's own account, which its sampling note has said since slice 3. Fixes landed in the commit after e531ec5 with the re-rendered pages for 11b, 15a and 22a. This was the cross-family review the 2026-10-01 same-family reviews could not be.",
+      "closedAt": "2026-10-01",
+      "lastEvaluated": "2026-10-01",
+      "notes": " | Closed the day it was filed: the Codex probe turned GREEN, the cross-family claims pass ran read-only with its banner workdir checked, 5 SHOULD-FIX and 2 NIT dispositioned (6 fixed, 1 deliberate). Receipt: closeReceipt2026_10_01."
     },
     {
       "id": "A-62",

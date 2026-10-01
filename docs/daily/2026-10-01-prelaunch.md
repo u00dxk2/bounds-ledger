@@ -23,7 +23,7 @@ sentry_open_p2: null
 
 We read five more cited rows of the constants ledger against the papers they cite, and those verdicts are live on the public pages. Three hold. Two could not be settled: one paper's worked example is not quite the case the row describes, and the other row's number is slightly below what the paper's own figure gives, but the edition it cites was out of reach.
 
-The pages now refuse to rebuild if a reading would silently drop off them, and the ledger's draw warns when it picks a row already read. The review before publishing came from the same model family as the work, so a cross-family check on those five verdicts (88a, 11b, 15a, 1b and 22a, listed under What changed) is still owed, by 3 October at the latest.
+The pages now refuse to rebuild if a reading would silently drop off them, and the ledger's draw warns when it picks a row already read. The review before publishing came from the same model family as the work. Once the other family's reviewer was available this afternoon it checked those five verdicts (88a, 11b, 15a, 1b and 22a, listed under What changed). It changed no verdict, and we fixed six of its seven points, three of them in wording on the public pages.
 
 ## What changed
 
@@ -34,7 +34,7 @@ The pages now refuse to rebuild if a reading would silently drop off them, and t
 - **`A-53` closed** (the audit store and the public page could disagree about how many rows were read) on option (b): both page generators refuse to write when an entry would be silently dropped, including an absent store or an entry whose constant has no page. Stale entries are not refused. It was red-armed on the live store and through the wiring.
 - **`A-60` closed** (the draw did not warn on a row already held): `--draw` now names the holders, red-armed both ways, and the collision rule is on `A-47`.
 - **The systematic label** on the constant pages now reads "drawn by its position in the list of cited rows, not because it looked wrong", replacing wording the 2026-09-29 walk flagged as jargon.
-- **Two rows filed:** `A-61` (the cross-family claims pass owed on the five verdicts, due 2026-10-03) and `A-62` (the index read badge can sit beside a row nobody read, due 2026-10-06).
+- **Two rows filed:** `A-61` (the cross-family claims pass owed on the five verdicts), filed and closed the same day once the Codex probe turned GREEN, and `A-62` (the index read badge can sit beside a row nobody read, due 2026-10-06).
 - **Findings classification, one sentence of human judgment:** today's findings were mostly instrument-facing (the index badge, two refuted method sentences, a false sentence about our own CI in three places); one is record-facing but UNRESOLVED, 22a's 12.63, which is not a catch until the cited edition is read.
   - **Numeric or byte-only: neither.** The drift alarm counted nothing today. Positive control: `reverify.test.mjs` plants synthetic drift on every `npm test`, and today's verify ran it.
   - **Consecutive instrument-facing days: 2**, counted by hand. Yesterday's were instrument-facing too.
@@ -43,7 +43,7 @@ The pages now refuse to rebuild if a reading would silently drop off them, and t
 ## Inputs (controllable)
 
 - Five background reading agents, one per row, under `tmp/slice11-brief.md` (slice 10's brief, unchanged). The brief forbids sending identity, Unpaywall, completing a verification challenge and shadow libraries. The quoted page of each was checked by this session against the saved image: 88a p. 1122, 11b p. 16, 15a's arXiv v5 p. 1 and the FOCS abstract's JSON, 1b's v2 p. 8, and 22a's p. 40.
-- Two adversarial reviews, both by same-family Claude reviewers because the Codex probe read RED at 15:14Z. Round 1 on `a1c0b81` returned FIX-THEN-PUSH with no blocker; its findings and their fates are in the `a41c707` commit body. Round 2 on `a41c707` returned PUSH; three wording nits were taken in `3c34147`.
+- Two adversarial reviews, both by same-family Claude reviewers because the Codex probe read RED at 15:14Z. Round 1 on `a1c0b81` returned FIX-THEN-PUSH with no blocker; its findings and their fates are in the `a41c707` commit body. Round 2 on `a41c707` returned PUSH; three wording nits were taken in `3c34147`. A third review, cross-family, ran at the close once the probe read GREEN: Codex, read-only, on `e531ec5` (see Close).
 - One hygiene helper. Its draft held 0 lines, with wait-justification and engineering-zero both PASS.
 
 ## Outputs (lagging)
@@ -55,7 +55,7 @@ The pages now refuse to rebuild if a reading would silently drop off them, and t
 ## Recommendation
 
 - 2026-10-02: census session 4 on `A-54` (the Small Ramsey Numbers rebuild), opening with Mac (13 bounds). Apply the tripwire first.
-- 2026-10-03: `A-47` slice 12 at positions 237, 287, 337, 387 and 437. Run `A-61`'s claims pass first if the Codex probe reads GREEN. If it is still RED, hold slice 12's push until both passes can run, or write down why it publishes without one.
+- 2026-10-03: `A-47` slice 12 at positions 237, 287, 337, 387 and 437, with its pre-push review from the other model family (Codex) when the probe reads GREEN.
 - By 2026-10-06: decide whether `A-62` (the index read badge) is the next product round's change.
 
 ## On hold pending data
@@ -140,5 +140,6 @@ ACTION: COMPLETED · item A-47 · P3 5fed6e23 (the P3 bus msgId)
 - **Ledger delta today:** `A-53` and `A-60` closed (`d7f0858`, each with closeReceipt2026_10_01). `A-47` got slice11Draw2026_10_01, slice11Result2026_10_01 and collisionRule2026_10_01, and was re-dated to 2026-10-03. `A-60` got positionRule2026_10_01. `A-61` and `A-62` were minted at this close.
 - **Hygiene draft:** 0 lines (0 accepted · 0 amended · 0 rejected). It drafted nothing because the P1 packet listed no inputs. READ-MUTATED: none. check-wait-justification: "RESULT: PASS — 1 of 76 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)". check-engineering-zero --project bounds-ledger: "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)".
 - **Due gates:** `check-due-gates-dispositioned` (no flag) reads "snapshot CURRENT (taken 2026-10-01)" and "RESULT: PASS (exit 0)".
-- **Pending reads:** `A-61`, the cross-family claims pass, at the next GREEN Codex probe and no later than 2026-10-03. `A-62`, the index read badge, by 2026-10-06. `A-59`, the encounter read, on 2026-10-28 or the first outside arrival. 22a's published edition, unscheduled; it is on `A-47-0053`'s notes.
+- **Cross-family claims pass, run at this close** (`A-61`, the claims pass owed on the five verdicts). The Codex probe turned GREEN at 18:17:37Z, so the pass ran the same day: read-only, banner "workdir: C:\dev\skylark\bounds-ledger" checked before any finding was read. Verdict: FIX-NEEDED, with 0 blockers, 5 should-fix and 2 nits. Six were fixed and re-rendered in the commit after `e531ec5`: 11b's and 15a's public source lines, 22a's public source line, its downward-rounded upper bound and its DEFECTIVE condition, and 88a's priority wording. One was kept deliberately (session-action sentences are this session's own account). 88a stays SOUND. `A-61` closed, and the fates are on its closeReceipt2026_10_01.
+- **Pending reads:** `A-62`, the index read badge, by 2026-10-06. `A-59`, the encounter read, on 2026-10-28 or the first outside arrival. 22a's published edition, unscheduled; it is on `A-47-0053`'s notes.
 - **Receipt:** P3's receipt line still holds; nothing new.
