@@ -6,7 +6,7 @@ north_star_classification: expected-zero
 product: bounds-ledger
 date: 2026-10-02
 lifecycle_stage: launched
-last_deploy: not re-read at P1 (release: npm run served)
+last_deploy: f573da8 (the last page-changing commit; npm run served read 40 of 40 served at 2026-10-02T07:31:33Z)
 on_hold_items: 0
 top_action_today: A-64, the desktop index hides both bound columns; then A-54 census session 4
 # The four keys below have NO instrument in this lane and are left null rather than filled with a
@@ -21,27 +21,71 @@ sentry_open_p2: null
 
 ## BLUF
 
-Written at P1; the close rewrites it. Yesterday's change to the front page broke it on desktop screens: the two columns of numbers are pushed off to the right and a visitor sees only names. Today we fix that first, and make the "line N" links on each constant's page land on the row they name. After that we read the next batch of Ramsey-number papers against the survey.
+Yesterday's change broke the front page on desktop screens: the two columns of numbers were pushed out of view and a visitor saw only names. That is fixed and live. The "line N" links on each constant's page now land on the row they name.
+
+We also read four more of the papers that the Ramsey-number survey credits, covering 21 numbers. Ten are confirmed in the paper itself. Eleven could not be settled. Ten of those eleven are credited by the survey to a 1994 thesis, and the thesis only lists them in a table that it says the survey's own author compiled, with no proof. That is a finding about the survey's citations and not a confirmed error. Nothing about it is public, and nobody has been contacted.
 
 ## What changed
 
-Nothing yet. Written at the close.
+- **`A-64` closed** (on a desktop screen the index hid both bound columns behind a sideways scroll). Fix `f573da8`, review fix `25dd1b4`, pushed in `e120c4d..7f909e1`. This repairs a regression from yesterday's round 2, so it is corrective work and not new progress.
+  - Measured on the live page at 1440 wide: the scroll box went from 1058 visible against 1471 of content to 1058 against 1058; columns from 1055 / 81 / 81 / 253 to 381 / 154 / 269 / 253; median row height from 820 to 311. At 1024 wide: 982 against 982. At 390 wide the page is unchanged.
+  - Every row link on the constant pages now ends `?plain=1#L<N>`: 57 links on 39 pages. The 22a link opened on GitHub at 390 wide lands on line 18, highlighted.
+- **`A-54` census session 4** (the Small Ramsey Numbers rebuild: read each bound against the paper the survey credits). Plan pushed in `7f909e1` before any source was opened; readings in `6ec8eac`, with the review's fixes in the commit that lands this report. Four papers attempted, 21 bounds: 10 SOUND and 11 UNRESOLVED.
+  - ExT: five lower bounds SOUND, from the journal's own PDF.
+  - HaKr1: two lower bounds SOUND, on OCR text of the cited volume only. No page image of a page carrying a bound was seen, and each entry says so.
+  - Mac: three diagonal upper bounds SOUND. Ten off-diagonal upper bounds UNRESOLVED (see the findings block).
+  - Ex16: UNRESOLVED on the reading, because the survey's key names a personal communication nobody can read. The 72-vertex colouring linked from the cited address passed this repository's own checker, and that result is stored apart from the verdict.
+- **`A-65` filed** (the 10c page's source link names a line of the mirrored file that has since moved), found during `A-64`'s sibling sweep. Due 2026-10-06.
+- **Findings classification, one sentence of human judgment:** today's findings were mostly instrument-facing (the desktop regression, an absence test that named the old link shape, a stale line number in a stored source link, and two more sentences about our own method that a reviewer refuted); one is record-facing but UNRESOLVED, the ten bounds the survey credits to a thesis that does not derive them, and it is not a catch until the 1993 report that thesis cites is read.
+  - **Numeric or byte-only: neither.** The drift alarm counted nothing today. Positive control: `reverify.test.mjs` plants synthetic drift on every `npm test`, and both of today's verify runs ran it.
+  - **Consecutive instrument-facing days: 3**, counted by hand, on the same reading as yesterday's 2: a record-facing finding that stays UNRESOLVED does not end the run.
+  - **The standing prediction, quoted from CLAUDE.md:** "the next record-facing catch will be a citation-quality defect in a mirrored upstream entry … found by a human reading the cited source in the depth audit (`A-47`), not by any alarm." Not tested today: there was no catch. Today's Mac finding is of that kind (a citation-quality question, found by reading the cited source and not by any alarm), but it is in the second watched area and not a mirrored upstream entry, and it is UNRESOLVED.
+- W-7 — the instrument read against its own claim today was the stale-row assertion in `scripts/render-constant-pages.mjs`'s selftest, `!/9z\.md#L24/`, whose message says a stale row "must NOT link the live line". Could its output ever have said otherwise? Only for one spelling of the link. The moment the link shape changed it would have passed on a stale row that did link. It now asks whether any line anchor is present, with a positive control, and was red-armed. Yesterday's report carries no W-7 line, so there was no instrument to rotate away from.
+
+<!-- findings:begin -->
+**The survey credits ten upper bounds to a thesis that states them and does not derive them.** `A-54` census session 4, key Mac (J. Mackey's 1994 University of Hawaii thesis), read in full from the university's repository.
+
+- What the thesis does: it proves five diagonal bounds as numbered Calculations and its abstract presents exactly those five as new. Three of them are in Table Ia: R(6,6) ≤ 165, R(7,7) ≤ 540, R(8,8) ≤ 1870.
+- What it does not do: derive any of the ten off-diagonal bounds the survey credits to it (R(4,7) ≤ 61, R(4,8) ≤ 84, R(4,9) ≤ 115, R(4,10) ≤ 149, R(5,9) ≤ 316, R(5,10) ≤ 442, R(6,8) ≤ 495, R(6,9) ≤ 780, R(6,10) ≤ 1171, R(7,10) ≤ 2826). Each appears in its Table 2, and four are used as inputs. Printed p. 16 says of that table: "Tables 1 and 2 which were compiled by Radziszowski [Rad]". Radziszowski is the survey's author.
+- What was checked, and its limit: this session saw pp. 16 and 17 on their page images. A search of the extracted text for the notation R (a, b) finds 21 lines and no off-diagonal derivation; that search cannot see a bound written in prose. The cross-family reviewer read all three chapters and found no derivation.
+- Three readings disagreed, and all three are recorded on the entries: the reading agent proposed DEFECTIVE, this session stored UNRESOLVED, and the reviewer held SOUND because the thesis states each bound. UNRESOLVED is kept, on David's words of 2026-09-20: "Independently source what you can, and mark anything you cannot as credited to the survey and not independently checked." A value supported in the credited source only by a table attributed to the survey's author is not independent of the survey.
+- What it is not: evidence that any number is wrong, or that the credit is wrong. The compilation the thesis cites may itself include results Mackey communicated. Settled by: the thesis's reference [Rad] (a 1993 Rochester Institute of Technology report) or version #0 of the survey. Release: `node scripts/ds1-depth.mjs`, then entries DS1-0037 to DS1-0049 in `continuity/depth-audit-ds1.json`.
+
+**Corrections to today's own earlier statements.**
+
+- The selection packet below gives the cause of the desktop regression as a HYPOTHESIS. It is now measured: capping the three badge classes at a length moved the name column from 1055 to 381 with nothing else changed.
+- `f573da8`'s commit body says the selftest helper collects "every #L href whatever its shape". Its pattern read one shape. Corrected in `25dd1b4`.
+- `6ec8eac`'s commit body says of the Mac thesis "neither proves nor claims any of them", "Every Ramsey bound the thesis text states was listed (21 lines)", and that Ex16 is "SOUND by recomputation". The first is too strong (the thesis states them), the second describes a search as a census, and the third was changed to UNRESOLVED with the recomputation stored apart. The entries now carry the corrected wording.
+
+**Not measured.** Between about 897 and 938 wide the index table's 56rem minimum exceeds its box. Named by the manager review and by Codex; older than today's change. Release: `playwright-cli` on the live index, `resize 920 800`, then compare `.scroll`'s clientWidth and scrollWidth.
+<!-- findings:end -->
 
 ## Inputs (controllable)
 
-Written at the close.
+- Two cross-family reviews, both Codex, read-only, with the banner's working directory checked against this repository before any finding was read. Round 1 on `f573da8`: PUSH, one NIT, fixed in `25dd1b4`. Round 2 on `6ec8eac`: FIX-THEN-PUSH, two blockers, two should-fix and one NIT. One blocker was taken (Ex16 from SOUND to UNRESOLVED). One was not (the reviewer wanted the ten Mac entries SOUND), with the reason written on each entry. The should-fix items and the NIT were taken.
+- Four background reading agents, one per paper, under `tmp/census4-brief.md`, which is session 3's brief plus a rule that a table is read cell by cell. The brief forbids sending identity, completing a verification challenge and shadow libraries. This session checked each reader's key evidence itself: Mac pp. 16 and 17 on page images and the whole extracted text; ExT's Table 1 on its page image; HaKr1's two snippet files; Ex16's archived rows, and the colouring with `scripts/check-ramsey-coloring.mjs` (pass, and a planted-K4 control fails).
+- One hygiene helper, dispatched before the build. Its draft holds one line (`A-54`), with wait-justification PASS and engineering-zero PASS for this lane.
 
 ## Outputs (lagging)
 
-Written at the close.
+- **`G-4` (an outside party acting on a watched record without us filing the report):** `npm run reports` at P1 read 0 outside arrivals of 32 raw issues, parts reconciling 32 + 0 + 0 = 32. By the rule of three, the 95% upper bound on the outside share of issues is about 3/32. It says nothing about readers who never file.
+- **Delivery:** `npm run served` after the push read "40 checked — 40 served" with anchor `f573da8`. The live index was then measured at 1440 and 390, and one row link opened on GitHub. CI: GREEN at `7f909e1`. `npm run verify`: exit 0 at `7f909e1`. Encounter: blind (`A-59`, the encounter read, dated 2026-10-28).
+- **The two depth counts, side by side and never summed:** the constants audit (`node scripts/depth-audit.mjs`) did not change today. The Small Ramsey Numbers census (`node scripts/ds1-depth.mjs`) reads "census: 52 of 122 bound(s), across 23 of 42 credited paper(s) — 32 sound, 0 defective, 15 unresolved, 5 unreachable"; this morning it read 31 of 122 and 19 of 42.
 
 ## Recommendation
 
-Written at the close. Tomorrow's order lives in the primer.
+Tomorrow's order lives in the primer, written at the close.
+
+- [B] 2026-10-03: `A-47` slice 12 (the depth audit of the constants ledger) at positions 237, 287, 337, 387 and 437, with its review from the other model family before the push.
+- [B] 2026-10-04: `A-54` census session 5, opening with Spe4 (6 bounds). Tripwire at that slot: 21 papers remaining against 4 × 7 slots = 28.
+- [A — user-visible] By 2026-10-06: `A-63` (a constant page does not say which claim a verdict checked) and `A-65` (the stale source line on the 10c page) are both due, and both change what a reader sees.
+- [B] At the 2026-10-18 render slot, not before: decide how the ten Mac cells and the Ex16 cell are marked on the rebuilt page. Proposal on the `A-54` row.
 
 ## On hold pending data
 
-Written at the close.
+- **The ten Mac bounds are UNRESOLVED on who established them.** The 1993 report the thesis cites, or version #0 of the survey, would settle it. Neither has been looked for yet.
+- **Telling the survey's author** is outward contact. It is not proposed today, because the finding is unresolved; if the 1993 report settles it, it becomes a decision for David.
+- **HaKr1's two bounds rest on OCR text.** A library copy of pp. 139 to 146 would make them page readings.
 
 ## State Appendix
 
