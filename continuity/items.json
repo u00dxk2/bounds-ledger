@@ -2452,7 +2452,7 @@
     {
       "id": "A-62",
       "type": "active",
-      "status": "open",
+      "status": "closed",
       "title": "The index's 'read against its cited source' badge can sit beside a pinned row nobody read",
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-10-06",
@@ -2465,7 +2465,10 @@
       "closeWhen": "No index badge claims a reading without naming which row was read when that row is not the one shown, proven by a selftest with both answers recorded; or this row is closed with a written decision not to change it.",
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check — PASS means index.html matches its renderer; then read the 15a row in index.html: a 'read against its cited source' badge beside 2.371177 [DEKMRSZAWB2026] with no named row is this defect still live",
       "created": "2026-10-01",
-      "updated": "2026-10-01"
+      "updated": "2026-10-01",
+      "closedAt": "2026-10-01",
+      "lastEvaluated": "2026-10-01",
+      "notes": " | CLOSED 2026-10-01 (round 2 P3, orchestrator review bus 3a2f74d0). The read badge now names its row, as the tried line has since 2026-09-29: badgeFor -> namedRows in scripts/render-constant-pages.mjs names the rows carrying the badge's verdict, one per row, as \"the row shown\" or \"another row\" by whole-row equality with the pins. Commits 60f9242..cbb5a7b, pushed f2683e7..cbb5a7b and published. closeWhen met: a selftest records both answers (render-site.mjs: \"a read badge beside a row that was not read must name the row that was\" and \"a read badge on the row shown must say it is that row\"), and each went RED when red-armed (badge text reverted to BADGE[worst]; pins replaced by []). readCommand result: `render-site.mjs --check` passes inside `npm run verify` (receipt exit 0 at cbb5a7b). The LIVE 15a row, read at 2026-10-02T00:37Z from https://u00dxk2.github.io/bounds-ledger/ at 390px, shows \"checked against material for its cited source: another row, 2.371866 [DWZ2022]\" beside the shown row 2.371177 [DEKMRSZAWB2026]. The badge wording changed in the same ship: the six Codex review rounds refuted every sentence saying the cited source itself was read."
     }
   ],
   "meta": {
