@@ -2491,7 +2491,7 @@
     {
       "id": "A-64",
       "type": "active",
-      "status": "open",
+      "status": "closed",
       "title": "On a desktop screen the index hides both bound columns behind a sideways scroll",
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-10-02",
@@ -2504,7 +2504,10 @@
       "closeWhen": "On the live index at 1440 wide the scroll box's content width equals its visible width and each bound column is at least 120px; at 390 wide the page still has no sideways scroll; every 'line N' link on the constant pages ends ?plain=1#L<N>, held by a selftest with both answers recorded, and one such link opened on GitHub shows the code view with that line highlighted.",
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check — PASS means index.html matches its renderer; the widths themselves are a browser read at 1440 (playwright-cli goto the live index, resize 1440 900, eval the .scroll clientWidth and scrollWidth and the first row's cell widths)",
       "created": "2026-10-02",
-      "updated": "2026-10-02"
+      "updated": "2026-10-02",
+      "closedAt": "2026-10-02",
+      "lastEvaluated": "2026-10-02",
+      "notes": " | CLOSED 2026-10-02 on its own closeWhen. Fix f573da8, review fix 25dd1b4, pushed in e120c4d..7f909e1. LIVE READ after the push (playwright-cli, 2026-10-02 about 07:32Z): at 1440 wide the scroll box is 1058 visible and 1058 of content, columns 381 / 154 / 269 / 253, narrowest bound cell on the page 154 (before: 1055 / 81 / 81 / 253, content 1471); at 390 wide the document is 390 and the page height 54679, identical to before. Every rowLink on the constant pages ends ?plain=1#L<N> (57 links on 39 pages, counted by grep over c/); the selftest holds it with both answers recorded in the two commit bodies. The 22a link opened on GitHub at 390 wide shows the code view scrolled to line 18, \"| 12.63| [ACPR2011] | $10_{124}$ knot |\", highlighted. npm run served: 40 checked, 40 served. CI GREEN at 7f909e1. Codex reviewed f573da8 read-only: PUSH, one NIT, fixed in 25dd1b4. NOT COVERED BY THIS CLOSE: the stored source link on c/10c.html (A-65), and a width between about 897 and 938 where the table's 56rem minimum exceeds its box (named by the review, not measured, older than this change). FILES THAT STILL MENTION THIS ID after close (grep A-64 over scripts/, docs/, *.md, continuity/*.json): scripts/render-constant-pages.mjs (3, comments giving the reason for the link shape and the assertion order), scripts/render-site.mjs (1, the comment on the badge width), docs/daily/2026-10-02-prelaunch.md (4), continuity/items.json (this row, and A-65's link and note). None of them reads as an open gate."
     },
     {
       "id": "A-65",
