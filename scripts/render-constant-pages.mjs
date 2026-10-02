@@ -169,9 +169,14 @@ const VERDICT_PROSE = {
   // elsewhere (examples, not an inventory: A-47-0020, -0038, -0047, -0048 and -0053, the last being 22a,
   // whose link went to the publisher that refused us). The
   // label now claims nothing about which; the `sourceRead` note beside it says what was actually read.
-  SOUND: { text: "the cited source was read and it supports this row", link: "source link" },
-  DEFECTIVE: { text: "the cited source was read and it does NOT support this row", link: "source link" },
-  UNRESOLVED: { text: "the cited source was reached but could not settle the question", link: "source link" },
+  // VERDICT TEXT CLAIMS ONLY WHAT THE VERDICT GUARANTEES (review round 3, 2026-10-01, the third round
+  // in a row to refute a sentence about our own reading). "The cited source was read/reached" was false
+  // for 22a and 32a, where only a preprint was; "supports this row" was wider than the claim checked on
+  // 15a and 26a. Every audit checks ONE named claim against what was read, so the text says exactly that,
+  // and the sourceRead note beside it says what was read.
+  SOUND: { text: "what we read supports the claim we checked in this row", link: "source link" },
+  DEFECTIVE: { text: "what we read does NOT support the claim we checked in this row", link: "source link" },
+  UNRESOLVED: { text: "what we read could not settle the claim we checked in this row", link: "source link" },
   UNREACHABLE: { text: "the cited source could not be read at all", link: "the source we could not read" },
 };
 
@@ -832,8 +837,14 @@ function selftest() {
 
   // (b) MEANING: the verdict is stated in words, and the link text matches the verdict — "the
   //     source we read" beside UNREACHABLE would contradict itself.
-  assert.ok(audited.includes("the cited source was read and it supports this row"), "a SOUND row must say what was done");
-  assert.ok(audited.includes("the cited source was reached but could not settle the question"), "UNRESOLVED must read as its own outcome");
+  // Review round 3 (C2): a read verdict must not say the CITED source was read or reached (22a and 32a
+  // reached only a preprint), nor that it supports the whole row (15a and 26a checked one claim).
+  // MEANING FIRST, the exact wording pins after it.
+  for (const claim of [/the cited source was read/, /the cited source was reached/, /supports this row/]) {
+    assert.ok(!claim.test(audited), `a read verdict must claim only what its verdict guarantees — matched ${claim}`);
+  }
+  assert.ok(audited.includes("what we read supports the claim we checked in this row"), "a SOUND row must say what was done");
+  assert.ok(audited.includes("what we read could not settle the claim we checked in this row"), "UNRESOLVED must read as its own outcome");
   const unreach = renderPage(row, "abc1234def", { audits: [{ id: "T-U", constant: "9z", citedRef: "R", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/u", ...pinId("| $7.555555$ | [R] | x |") }], corpus: { citedRows: 999 } });
   assert.ok(!/>source link</.test(unreach), "an UNREACHABLE row must not offer the read verdicts' link text");
   assert.ok(unreach.includes("the source we could not read"), "positive control: UNREACHABLE has its own link text");
@@ -865,7 +876,7 @@ function selftest() {
   assert.deepEqual(rel(renderPage(lowerRow, "abc1234def", store)), ["The row shown above:"], "a verdict on the shown LOWER row must say it is that row");
   //      DEFECTIVE's link must not claim which copy was read either (review gap: the fixture lacked it).
   const defPage = renderPage(row, "abc1234def", { audits: [{ ...store.audits[0], verdict: "DEFECTIVE" }], corpus: { citedRows: 999 } });
-  assert.ok(defPage.includes("does NOT support this row"), "positive control: the DEFECTIVE verdict rendered");
+  assert.ok(defPage.includes("does NOT support the claim we checked"), "positive control: the DEFECTIVE verdict rendered");
   assert.ok(!/>the source we read</.test(defPage), "a DEFECTIVE verdict's link must not claim which copy was read");
   //      Review R2: a row crediting its bound to someone else, citing the key only in its comment, must not
   //      read "bound row <value> citing [KEY]".
@@ -1005,9 +1016,9 @@ function selftest() {
     audits: [{ id: "T-D", constant: "9z", citedRef: "RD", leg: "value-vs-source", verdict: "DEFECTIVE", source: "https://example.invalid/d", ...pinId("| $8.555555$ | [RD] | x |") }],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
-  assert.ok(defective.includes("does NOT support this row"),
+  assert.ok(defective.includes("does NOT support the claim we checked in this row"),
     "DEFECTIVE must say the source does NOT support the row — reversing it silently inverts an audit outcome");
-  assert.ok(!/ it supports this row/.test(defective), "DEFECTIVE must never render the SOUND sentence");
+  assert.ok(!/ supports the claim we checked/.test(defective), "DEFECTIVE must never render the SOUND sentence");
 
   // (h4) AN UNREACHABLE SOURCE WAS NOT READ, and the summary must not count it as read. The page
   //      previously printed "could not be read at all" beside "1 bound row(s) ... have been read".
@@ -1191,7 +1202,7 @@ function selftest() {
   const staleHtml = (a, msg) => {
     const html = renderPage(row, "abc1234def", { audits: [a], corpus: { citedRows: 999, measuredAt: "2026-01-02" } });
     assert.ok(html.includes("says nothing about the row there now"), `(${msg}) a pinned audit that fails identity must render as HISTORICAL`);
-    assert.ok(!html.includes("it supports this row"), `(${msg}) and must NOT say the cited source supports the row there now`);
+    assert.ok(!html.includes("supports the claim we checked"), `(${msg}) and must NOT say the cited source supports the row there now`);
     assert.ok(!/9z\.md#L24/.test(html), `(${msg}) and must NOT link the live line a reader would land on`);
     assert.ok(!/have been read against their cited source/.test(html), `(${msg}) and must NOT be counted as read`);
     assert.ok(/no longer match the current table/.test(html), `(${msg}) and the page must disclose it rather than drop it`);
@@ -1210,7 +1221,7 @@ function selftest() {
   // (4) a VERIFIED row whose first cell is only a comment keeps its verdict and prints no value.
   const commentOnly = "| <!-- 6.666666 --> | [RV] | x |";
   const commentHtml = renderPage(row, "abc1234def", { audits: [{ ...goodRow, rowText: commentOnly, rowTextSha256: sha16(commentOnly) }], corpus: { citedRows: 999 } });
-  assert.ok(commentHtml.includes("it supports this row"), "positive control: a verified row keeps its verdict even when its cell is empty");
+  assert.ok(commentHtml.includes("supports the claim we checked"), "positive control: a verified row keeps its verdict even when its cell is empty");
   assert.ok(!commentHtml.includes("6.666666"), "a comment-only first cell must not print its comment");
   assert.ok(!/padding:\.1rem \.3rem"><\/code>/.test(commentHtml), "and must not print an empty code span");
 
