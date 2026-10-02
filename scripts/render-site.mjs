@@ -675,7 +675,7 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 </select>
 </div>
 </div>
-<p class="fresh">Snapshot: this mirror last changed on <strong>${esc(generatedOn)}</strong>, which is not the last time it was checked. A job re-verifies every pinned row daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Read <a href="#notes">the notes below the table</a> before citing a number.</p>
+<p class="fresh">Snapshot: this mirror last changed on <strong>${esc(generatedOn)}</strong>, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Read <a href="#notes">the notes below the table</a> before citing a number.</p>
 <p class="count" id="count">${rows.length} constants</p>
 
 <div class="empty" id="empty" hidden>
@@ -854,7 +854,7 @@ async function selftest() {
   assert.ok(at('<p class="lede">') < at('<input id="q"'), "the filter comes after the lede");
   assert.equal(html.slice(at('<p class="lede">'), at('<input id="q"')).includes("<p>"), false, "nothing but the controls sits between the lede and the filter");
   assert.equal(fresh.replace(/<[^>]+>/g, "").replace(/&mdash;/g, "--").replace(/\s+/g, " ").trim(),
-    "Snapshot: this mirror last changed on 2026-08-20, which is not the last time it was checked. A job re-verifies every pinned row daily (run history). Read the notes below the table before citing a number.");
+    "Snapshot: this mirror last changed on 2026-08-20, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (run history). Read the notes below the table before citing a number.");
   // (2) THE PURE FUNCTION: the longest COMPLETED gap. Duplicates collapse, input order does not
   //     matter, malformed dates are ignored, fewer than two dates is null (a shallow clone), and a
   //     tie keeps the earliest gap.
