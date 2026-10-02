@@ -33,11 +33,11 @@ th,td{text-align:left;vertical-align:top;padding:.6rem .75rem;border-bottom:1px 
 thead th{background:var(--bg);font-size:.78rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
 tbody th{font-weight:600;min-width:15rem}
 .id{display:block;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);text-decoration:none;width:max-content}
-.ours{display:block;margin-top:.25rem;font-size:12px;color:var(--muted);width:max-content;max-width:100%}
-.read{display:block;margin-top:.25rem;font-size:12px;width:max-content;max-width:100%}
+.ours{display:block;margin-top:.25rem;font-size:12px;color:var(--muted);width:max-content;max-width:22rem}
+.read{display:block;margin-top:.25rem;font-size:12px;width:max-content;max-width:22rem}
 .read-unresolved::before,.read-defective::before{content:"⚠ "}
 .read-defective{font-weight:600}
-.tried{display:block;margin-top:.25rem;font-size:12px;width:max-content;max-width:100%;color:var(--muted);font-style:italic}
+.tried{display:block;margin-top:.25rem;font-size:12px;width:max-content;max-width:22rem;color:var(--muted);font-style:italic}
 .id:hover,.id:focus{text-decoration:underline}
 tr:target th{box-shadow:inset 3px 0 0 var(--accent)}
 tr:target>*{background:var(--code)}
@@ -59,6 +59,7 @@ tbody{display:block}
 tr{display:block;border:1px solid var(--line);border-radius:8px;margin:0 0 .75rem}
 th,td{display:block;border-bottom:0;padding:.45rem .8rem}
 tbody th{min-width:0;padding-top:.7rem}
+.ours,.read,.tried{max-width:100%}
 td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
 .src{white-space:normal;padding-bottom:.7rem}
 .cite code{max-width:none}

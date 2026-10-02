@@ -558,6 +558,12 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   // which is better is one I cannot run here. Dead CSS promising behaviour the page lacks is worse
   // than no promise. This note lives in the SOURCE, not in a CSS comment: the first version of it
   // sat inside the style template literal and shipped the whole explanation to every visitor.
+  // NOTE on .ours/.read/.tried (A-64, 2026-10-02): their max-width is a LENGTH on desktop, never a
+  // percentage. `width:max-content;max-width:100%` looks capped and is not: inside a table cell a
+  // percentage max-width does not limit the width the cell asks for, so the longer badges of
+  // 2026-10-01 set the name column to 1055px of a 1058px box and pushed both bound columns out of
+  // view. The card layout below the breakpoint is not a table, so there 100% is a real cap and is
+  // restored. Nothing in the selftest can see a layout; the proof is a browser read at 1440.
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
 <th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}</th>
@@ -601,11 +607,11 @@ th,td{text-align:left;vertical-align:top;padding:.6rem .75rem;border-bottom:1px 
 thead th{background:var(--bg);font-size:.78rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
 tbody th{font-weight:600;min-width:15rem}
 .id{display:block;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);text-decoration:none;width:max-content}
-.ours{display:block;margin-top:.25rem;font-size:12px;color:var(--muted);width:max-content;max-width:100%}
-.read{display:block;margin-top:.25rem;font-size:12px;width:max-content;max-width:100%}
+.ours{display:block;margin-top:.25rem;font-size:12px;color:var(--muted);width:max-content;max-width:22rem}
+.read{display:block;margin-top:.25rem;font-size:12px;width:max-content;max-width:22rem}
 .read-unresolved::before,.read-defective::before{content:"⚠ "}
 .read-defective{font-weight:600}
-.tried{display:block;margin-top:.25rem;font-size:12px;width:max-content;max-width:100%;color:var(--muted);font-style:italic}
+.tried{display:block;margin-top:.25rem;font-size:12px;width:max-content;max-width:22rem;color:var(--muted);font-style:italic}
 .id:hover,.id:focus{text-decoration:underline}
 tr:target th{box-shadow:inset 3px 0 0 var(--accent)}
 tr:target>*{background:var(--code)}
@@ -627,6 +633,7 @@ tbody{display:block}
 tr{display:block;border:1px solid var(--line);border-radius:8px;margin:0 0 .75rem}
 th,td{display:block;border-bottom:0;padding:.45rem .8rem}
 tbody th{min-width:0;padding-top:.7rem}
+.ours,.read,.tried{max-width:100%}
 td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
 .src{white-space:normal;padding-bottom:.7rem}
 .cite code{max-width:none}

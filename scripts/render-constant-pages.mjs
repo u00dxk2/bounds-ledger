@@ -512,7 +512,12 @@ function rowKey(a) {
 
 function rowLink(a) {
   if (typeof a.rowFile !== "string" || !Number.isInteger(a.rowLine)) return "";
-  const href = `${REPO}/blob/main/${a.rowFile.split("/").map(encodeURIComponent).join("/")}#L${a.rowLine}`;
+  // `?plain=1` IS WHAT MAKES THE ANCHOR WORK (2026-10-02 cold walk, finding 2): GitHub opens a .md file
+  // rendered, where `#L<N>` does nothing, so "line 18" on c/22a landed at the top of the file. The code
+  // view honours the anchor and highlights the line. Both callers reach here only for a row that still
+  // stands at its recorded line (`!stale` at the verdict list, `isStale` inside attemptedRows), which
+  // matters more now that the link points at one highlighted line.
+  const href = `${REPO}/blob/main/${a.rowFile.split("/").map(encodeURIComponent).join("/")}?plain=1#L${a.rowLine}`;
   return ` <a href="${esc(href)}">line ${esc(String(a.rowLine))}</a>`;
 }
 
@@ -1101,8 +1106,8 @@ function selftest() {
 
   // (h6) THE AUDITED ROW IS IDENTIFIED. On the live 10a page both bounds cite the same reference,
   //      so "supports this row" is ambiguous without the line the audit actually covered.
-  assert.match(repeated, /<a href="[^"]*9z\.md#L33">line 33<\/a>/,
-    "a pinned bound row must link the exact line it audited, or the reader cannot tell which bound was checked");
+  assert.match(repeated, /<a href="[^"]*9z\.md\?plain=1#L33">line 33<\/a>/,
+    "a pinned bound row must link the exact line it audited, in GitHub's code view (?plain=1#L<N>; a bare #L<N> lands at the top of a rendered .md), or the reader cannot tell which bound was checked");
 
   // (h7) HOSTILE measuredAt is escaped — it reaches the page like any other store string.
   const hostileWhen = renderPage(row, "abc1234def", {
@@ -1206,6 +1211,19 @@ function selftest() {
   assert.ok(valued.includes("<dt>Checked or tried against material for its cited source</dt>"), "positive control: the valued page renders a block (a reading and an unreachable citation check, so headed as both)");
   assert.ok(valued.includes("0.380876"), "a VERIFIED bound row must show the value that was checked, not only its line and citation");
   assert.ok(!valued.includes("9.111111"), "a reference entry must not print a first cell as though it were a checked bound");
+  // THE LINE LINK LANDS ON ITS LINE (A-64, 2026-10-02). MEANING first: the anchor must be one GitHub
+  // honours, and it only does in the code view. The stale assertions below assert the link is ABSENT
+  // by collecting every #L href whatever its shape: the old pattern named the pre-A-64 shape, so the
+  // moment the shape changed it would have passed on a stale row that DID link.
+  const lineLinks = (html) => [...html.matchAll(/href="([^"]*#L\d+)"/g)].map((m) => m[1]);
+  assert.equal(lineLinks(valued).length, 1, "positive control: a verified bound row carries exactly one line link (the reference entry carries none)");
+  assert.match(lineLinks(valued)[0], /\?plain=1#L24$/, "a line link must open GitHub's code view (?plain=1), or the #L anchor does nothing and the reader lands at the top of the file");
+  assert.match(lineLinks(valued)[0], /\/blob\/main\/ledger\/x\/9z\.md\?plain=1#L24$/, "and it must name the audited row's own file and line");
+  const attemptedLive = renderPage(row, "abc1234def", { audits: [{ ...goodRow, verdict: "UNREACHABLE" }], corpus: { citedRows: 999, measuredAt: "2026-01-02" } });
+  // Linked twice (the verdict list and the "Attempted" sentence), so assert the shape of each.
+  const attemptedHrefs = lineLinks(attemptedLive).map((h) => h.replace(/^.*\//, ""));
+  assert.ok(attemptedHrefs.length > 0 && attemptedHrefs.every((h) => h === "9z.md?plain=1#L24"),
+    `an attempted row that still stands at its line is linked the same way — got ${JSON.stringify(attemptedHrefs)}`);
 
   // A PINNED audit whose identity can no longer be proved renders as HISTORICAL (review round 2): the
   // reading is kept, but the page must not say the source supports the row, must not link the live
@@ -1215,7 +1233,7 @@ function selftest() {
     const html = renderPage(row, "abc1234def", { audits: [a], corpus: { citedRows: 999, measuredAt: "2026-01-02" } });
     assert.ok(html.includes("says nothing about the row there now"), `(${msg}) a pinned audit that fails identity must render as HISTORICAL`);
     assert.ok(!html.includes("supports the claim we checked"), `(${msg}) and must NOT say the cited source supports the row there now`);
-    assert.ok(!/9z\.md#L24/.test(html), `(${msg}) and must NOT link the live line a reader would land on`);
+    assert.deepEqual(lineLinks(html), [], `(${msg}) and must NOT link the live line a reader would land on`);
     assert.ok(!/have been checked against material for their cited source/.test(html), `(${msg}) and must NOT be counted as read`);
     assert.ok(/no longer match the current table/.test(html), `(${msg}) and the page must disclose it rather than drop it`);
     return html;
@@ -1242,6 +1260,8 @@ function selftest() {
   staleHtml({ ...goodRow, rowText: undefined }, "unpinned");
   // (6) REVIEW ROUND 3, second reproduction: a stale UNREACHABLE audit must NOT claim the source was read.
   const staleUnreach = renderPage(row, "abc1234def", { audits: [{ ...goodRow, verdict: "UNREACHABLE", inMirror: false }], corpus: { citedRows: 999, measuredAt: "2026-01-02" } });
+  // FIRST, because a highlighted line is the most confident wrong answer a stale row can give (A-64).
+  assert.deepEqual(lineLinks(staleUnreach), [], "an attempted row that no longer stands at its line must carry no line link: the link highlights ONE line, and that line now holds a different row (positive control: attemptedLive above)");
   assert.ok(staleUnreach.includes("attempted on an earlier version of the table and the cited source could not be read"), "a stale UNREACHABLE audit must say a check was ATTEMPTED, not that the source was read");
   assert.ok(!staleUnreach.includes("was read against its cited source"), "and must never claim the source was read");
   assert.ok(staleUnreach.includes("the source we could not read"), "positive control: its link text still says the source could not be read");
