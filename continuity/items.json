@@ -2548,6 +2548,24 @@
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check — PASS means index.html matches its renderer; the width is a browser read: playwright-cli goto the live index, resize 920 900, then compare the .scroll element's clientWidth and scrollWidth (878 against 896 on 2026-10-02 means still open; equal means fixed at that width)",
       "created": "2026-10-02",
       "updated": "2026-10-02"
+    },
+    {
+      "id": "A-67",
+      "type": "active",
+      "status": "open",
+      "title": "On the index a pasted number's matching row lands below the first screen, under the explanatory notes",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-10-06",
+      "links": [
+        "A-64",
+        "A-66"
+      ],
+      "note": "FILED 2026-10-02 at round 2's P1, from the orchestrator's cold walk of round 1 (skylark-site docs/walks/2026-10-02-r1/bounds-ledger.md, findings 1 and 2; a synthetic walk, not a real-user encounter). THE READ, the walker's and not re-run by this lane: typing 10.02 into the filter on the live index, the one matching row sat 929px below the box on a 393x659 phone (box top 310, row top 1239) and 709px below it on a 1440x900 desktop (box 430, row 1139). Unfiltered, the filter box is 1708px from the top on the phone and 1000px on desktop; the 'Read this before you trust a number here' note alone is 1209px tall on the phone. THE CAUSE, read in index.html at 8a0ff25: the order is lede, the also-watched line, the six-paragraph note, the controls, the count, two long hint paragraphs, then the table. The note and hints are deliberate honesty text (the snapshot disclaimer, what a date means, what a read line means), so the fix moves them, it does not delete or shorten them.",
+      "onTrigger": "Round 2 of 2026-10-02 (selected at P1): put the filter controls and count directly under the lede so the table follows the count, and move the note and the two hint paragraphs below the table, with a one-line pointer above the table to the notes before citing. Measure the walker's two reads before and after on a served copy, then live. Cross-family review of the moved and new text before the push.",
+      "closeWhen": "On the live index, with 10.02 typed into the filter, the matching row's top is inside the first screen on a 393x659 phone and a 1440x900 desktop; the snapshot disclaimer is still on the page and named from above the table; render-site --check passes.",
+      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check — PASS means index.html matches its renderer; the position is a browser read: playwright-cli goto the live index, resize 1440 900, fill #q with 10.02, then compare the first visible tbody tr's getBoundingClientRect().top with window.innerHeight (1139 against 900 on 2026-10-02 means still open; below innerHeight means fixed at that size)",
+      "created": "2026-10-02",
+      "updated": "2026-10-02"
     }
   ],
   "meta": {

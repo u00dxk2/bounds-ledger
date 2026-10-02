@@ -21,7 +21,9 @@ input,select{width:100%;padding:.6rem .7rem;font-size:1rem;border:1px solid var(
 .controls{display:flex;flex-wrap:wrap;gap:.9rem 1.5rem;align-items:flex-end}
 .ctl{flex:0 0 auto}
 .ctl.grow{flex:1 1 18rem;max-width:26rem}
+.fresh{font-size:.85rem;color:var(--muted);margin:.9rem 0 0;max-width:78ch}
 .count{font-size:.85rem;color:var(--muted);margin:.9rem 0 .3rem}
+#notes{margin-top:2rem}
 .hint{font-size:.8rem;color:var(--muted);margin:0 0 1.1rem;max-width:72ch}
 .empty{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:6px;padding:.85rem 1rem;margin:0 0 1.5rem;font-size:.92rem;max-width:78ch}
 .empty p{margin:.35rem 0}
@@ -51,7 +53,7 @@ code{display:block;font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
 .cite code{display:block;white-space:pre-wrap;margin-top:.4rem;padding:.5rem;background:var(--code);font-size:.8rem;line-height:1.45;max-width:40rem;user-select:all}
 footer{margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;max-width:78ch}
 tr[hidden]{display:none}
-@media(max-width:56rem){
+@media(max-width:60rem){
 .scroll{overflow-x:visible;border:0;border-radius:0}
 table{min-width:0;display:block}
 thead{display:none}
@@ -63,21 +65,19 @@ tbody th{min-width:0;padding-top:.7rem}
 td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
 .src{white-space:normal;padding-bottom:.7rem}
 .cite code{max-width:none}
+.wrap{padding-top:1.5rem}
+.controls{gap:.6rem 1.5rem}
+.ctl{min-width:0;max-width:100%}
+.fresh{margin-top:.6rem}
+.count{margin:.5rem 0 .3rem}
+.ctl:not(.grow){display:flex;align-items:center;gap:.6rem;flex:1 1 100%}
+.ctl:not(.grow) label{margin:0;white-space:nowrap}
+.ctl:not(.grow) select{width:auto;flex:1 1 auto;min-width:0}
 }
 </style>
 <div class="wrap">
 <h1>Is the number you cited still current?</h1>
 <p class="lede">Best-known bounds move, and the papers and index pages citing them do not all move at the same time. This is every mathematical constant this ledger watches, with the exact table rows it has pinned.</p>
-<p><strong>Also watched, on its own page:</strong> <a href="ramsey.html">small Ramsey numbers R(k, l)</a>, exactly as printed in Radziszowski&rsquo;s survey <em>Small Ramsey Numbers</em>, with the reference it credits for each value. It is a separate area and never mixed into the table below.</p>
-
-<div class="note">
-<p><strong>Read this before you trust a number here.</strong> This page is a <em>snapshot</em>, not a live read. It shows our mirror of <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a> at upstream commit <code style="display:inline;padding:.1rem .3rem">2c1968c</code>.</p>
-<p><strong>2026-09-26 is the date this mirror last CHANGED &mdash; not the last time it was checked.</strong> Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date does not mean nobody has looked. Nor does it prove nothing moved: the dates and values here change only after an upstream change has been verified and published. The longest COMPLETED stretch between two changes so far was 21 days (2026-09-05 to 2026-09-26); the stretch running from the date above is still open and is not counted here. To see the actual last check and its verdict, read the <a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a> &mdash; that is the live read, and this page is deliberately not.</p>
-<p>Every row links to its primary source so you can check us in one hop — and if a row disagrees with its source, that is a bug worth reporting. Use the <strong>looks wrong?</strong> link on that row: the report arrives already naming the constant and the exact mirror commit, so you never have to work out how to describe which of 115 rows you meant.</p>
-<p>Some rows carry a <strong>we reported this row</strong> link. That means we ourselves filed a report upstream about that row, and the link goes to it so you can read what we said and judge it. We show it because our own involvement in a row is part of what you need in order to weigh the row — and <strong>it is not a claim that anything upstream changed because of us</strong>. The state shown is the report's own; whether it caused anything is a separate question this page does not answer.</p>
-<p><strong>Every row has its own link.</strong> Click a row&rsquo;s short id — the grey code under the constant&rsquo;s name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred.</p>
-<p><strong>These are last-listed table rows, not a claim about which bound is “the record.”</strong> Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.</p>
-</div>
 
 <div class="controls">
 <div class="ctl grow">
@@ -92,9 +92,8 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 </select>
 </div>
 </div>
+<p class="fresh">Snapshot: this mirror last changed on <strong>2026-09-26</strong>, which is not the last time it was checked. A job re-verifies every pinned row daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Read <a href="#notes">the notes below the table</a> before citing a number.</p>
 <p class="count" id="count">115 constants</p>
-<p class="hint">Each date is when that row&rsquo;s pinned text last changed <em>in this ledger</em> &mdash; or, for a row that has never changed here, the day this ledger started tracking it. Most rows share that bootstrap date. Ordering by movement puts the rows we have actually seen change first, most recent first; rows we have only ever watched sit still follow, still dated, each saying so in its own cell. That distinction is the one the date alone cannot make, because a later date can mean a bound changed here <em>or</em> that we only started watching it later. Neither date says anything about what a constant did before we began watching it, and a row we have never seen move may well have moved before we arrived.</p>
-<p class="hint">A line under a constant&rsquo;s name means we checked a claim in one of its bound rows against material for a source that row cites &mdash; that source itself, or, where we could not reach it, another copy or edition of it. The line names that row, and its page says what we reached and what we found. In such a line, <em>another row</em> means the named row is not one of those shown here; the rows shown may have readings of their own, listed on its page. A line in italics beginning <em>we could not open the source</em> is different. It names what we tried to check, and we were turned away or found nothing; a date, when it gives one, is the latest day recorded among those attempts. We have no reading we can match to what it names as it stands today. When an italic line says <em>another row</em>, the row it names is not one of those shown here, and the rows shown here have no reading we can match to them today either, like those of any constant with no line. Either way, check a number yourself before citing it. A later attempt may succeed, because sites come back. Most constants carry no such line. That means we have no reading we can match to the row as it stands today &mdash; either we have not done one, or the row has changed since we did, in which case its page still shows what we found and says it describes an earlier version of the table. It is not a sign that anything is wrong. Either way it is about a row matching its own source, never about whether it is the strongest bound known.</p>
 
 <div class="empty" id="empty" hidden>
 <p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the 115 constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
@@ -1259,6 +1258,22 @@ https://u00dxk2.github.io/bounds-ledger/c/88b.html</code></details></td>
 </tbody>
 </table>
 </div>
+
+<section id="notes" aria-label="How to read this page">
+<p><strong>Also watched, on its own page:</strong> <a href="ramsey.html">small Ramsey numbers R(k, l)</a>, exactly as printed in Radziszowski&rsquo;s survey <em>Small Ramsey Numbers</em>, with the reference it credits for each value. It is a separate area and never mixed into the table above.</p>
+
+<div class="note">
+<p><strong>Read this before you trust a number here.</strong> This page is a <em>snapshot</em>, not a live read. It shows our mirror of <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a> at upstream commit <code style="display:inline;padding:.1rem .3rem">2c1968c</code>.</p>
+<p><strong>2026-09-26 is the date this mirror last CHANGED &mdash; not the last time it was checked.</strong> Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date does not mean nobody has looked. Nor does it prove nothing moved: the dates and values here change only after an upstream change has been verified and published. The longest COMPLETED stretch between two changes so far was 21 days (2026-09-05 to 2026-09-26); the stretch running from the date above is still open and is not counted here. To see the actual last check and its verdict, read the <a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a> &mdash; that is the live read, and this page is deliberately not.</p>
+<p>Every row links to its primary source so you can check us in one hop — and if a row disagrees with its source, that is a bug worth reporting. Use the <strong>looks wrong?</strong> link on that row: the report arrives already naming the constant and the exact mirror commit, so you never have to work out how to describe which of 115 rows you meant.</p>
+<p>Some rows carry a <strong>we reported this row</strong> link. That means we ourselves filed a report upstream about that row, and the link goes to it so you can read what we said and judge it. We show it because our own involvement in a row is part of what you need in order to weigh the row — and <strong>it is not a claim that anything upstream changed because of us</strong>. The state shown is the report's own; whether it caused anything is a separate question this page does not answer.</p>
+<p><strong>Every row has its own link.</strong> Click a row&rsquo;s short id — the grey code under the constant&rsquo;s name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred.</p>
+<p><strong>These are last-listed table rows, not a claim about which bound is “the record.”</strong> Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.</p>
+</div>
+
+<p class="hint">Each date is when that row&rsquo;s pinned text last changed <em>in this ledger</em> &mdash; or, for a row that has never changed here, the day this ledger started tracking it. Most rows share that bootstrap date. Ordering by movement puts the rows we have actually seen change first, most recent first; rows we have only ever watched sit still follow, still dated, each saying so in its own cell. That distinction is the one the date alone cannot make, because a later date can mean a bound changed here <em>or</em> that we only started watching it later. Neither date says anything about what a constant did before we began watching it, and a row we have never seen move may well have moved before we arrived.</p>
+<p class="hint">A line under a constant&rsquo;s name means we checked a claim in one of its bound rows against material for a source that row cites &mdash; that source itself, or, where we could not reach it, another copy or edition of it. The line names that row, and its page says what we reached and what we found. In such a line, <em>another row</em> means the named row is not one of those shown here; the rows shown may have readings of their own, listed on its page. A line in italics beginning <em>we could not open the source</em> is different. It names what we tried to check, and we were turned away or found nothing; a date, when it gives one, is the latest day recorded among those attempts. We have no reading we can match to what it names as it stands today. When an italic line says <em>another row</em>, the row it names is not one of those shown here, and the rows shown here have no reading we can match to them today either, like those of any constant with no line. Either way, check a number yourself before citing it. A later attempt may succeed, because sites come back. Most constants carry no such line. That means we have no reading we can match to the row as it stands today &mdash; either we have not done one, or the row has changed since we did, in which case its page still shows what we found and says it describes an earlier version of the table. It is not a sign that anything is wrong. Either way it is about a row matching its own source, never about whether it is the strongest bound known.</p>
+</section>
 
 <footer>
 <p>Generated from <code style="display:inline;padding:.1rem .3rem">ledger/claims.json</code> by <code style="display:inline;padding:.1rem .3rem">scripts/render-site.mjs</code>. For the live verdict — whether every claim still holds right now — clone the repo and run <code style="display:inline;padding:.1rem .3rem">npm run check</code>.</p>

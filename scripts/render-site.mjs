@@ -564,6 +564,15 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   // 2026-10-01 set the name column to 1055px of a 1058px box and pushed both bound columns out of
   // view. The card layout below the breakpoint is not a table, so there 100% is a real cap and is
   // restored. Nothing in the selftest can see a layout; the proof is a browser read at 1440.
+  // NOTE on the breakpoint (A-66, 2026-10-02): the card layout starts at 60rem, not at the table's
+  // own 56rem minimum. The scroll box is narrower than the viewport by the wrap's side padding and
+  // its own border (about 42px), so with both at 56rem the box was under 896px from 897 to about
+  // 938 wide and the table scrolled sideways inside it.
+  // NOTE on the order (A-67, 2026-10-02): the filter, a one-sentence freshness line, the count and
+  // the table come straight after the lede; the snapshot note and the two hints sit below the table
+  // in #notes, moved and not reworded. A number pasted into the filter used to land its row 709px
+  // (desktop) to 929px (phone) below the box. The freshness line repeats the note's own date fact so
+  // the first screen still says this is a snapshot and where the live read is.
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
 <th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}</th>
@@ -595,7 +604,9 @@ input,select{width:100%;padding:.6rem .7rem;font-size:1rem;border:1px solid var(
 .controls{display:flex;flex-wrap:wrap;gap:.9rem 1.5rem;align-items:flex-end}
 .ctl{flex:0 0 auto}
 .ctl.grow{flex:1 1 18rem;max-width:26rem}
+.fresh{font-size:.85rem;color:var(--muted);margin:.9rem 0 0;max-width:78ch}
 .count{font-size:.85rem;color:var(--muted);margin:.9rem 0 .3rem}
+#notes{margin-top:2rem}
 .hint{font-size:.8rem;color:var(--muted);margin:0 0 1.1rem;max-width:72ch}
 .empty{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:6px;padding:.85rem 1rem;margin:0 0 1.5rem;font-size:.92rem;max-width:78ch}
 .empty p{margin:.35rem 0}
@@ -625,7 +636,7 @@ code{display:block;font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
 .cite code{display:block;white-space:pre-wrap;margin-top:.4rem;padding:.5rem;background:var(--code);font-size:.8rem;line-height:1.45;max-width:40rem;user-select:all}
 footer{margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;max-width:78ch}
 tr[hidden]{display:none}
-@media(max-width:56rem){
+@media(max-width:60rem){
 .scroll{overflow-x:visible;border:0;border-radius:0}
 table{min-width:0;display:block}
 thead{display:none}
@@ -637,21 +648,19 @@ tbody th{min-width:0;padding-top:.7rem}
 td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
 .src{white-space:normal;padding-bottom:.7rem}
 .cite code{max-width:none}
+.wrap{padding-top:1.5rem}
+.controls{gap:.6rem 1.5rem}
+.ctl{min-width:0;max-width:100%}
+.fresh{margin-top:.6rem}
+.count{margin:.5rem 0 .3rem}
+.ctl:not(.grow){display:flex;align-items:center;gap:.6rem;flex:1 1 100%}
+.ctl:not(.grow) label{margin:0;white-space:nowrap}
+.ctl:not(.grow) select{width:auto;flex:1 1 auto;min-width:0}
 }
 </style>
 <div class="wrap">
 <h1>Is the number you cited still current?</h1>
 <p class="lede">Best-known bounds move, and the papers and index pages citing them do not all move at the same time. This is every mathematical constant this ledger watches, with the exact table rows it has pinned.</p>
-<p><strong>Also watched, on its own page:</strong> <a href="ramsey.html">small Ramsey numbers R(k, l)</a>, exactly as printed in Radziszowski&rsquo;s survey <em>Small Ramsey Numbers</em>, with the reference it credits for each value. It is a separate area and never mixed into the table below.</p>
-
-<div class="note">
-<p><strong>Read this before you trust a number here.</strong> This page is a <em>snapshot</em>, not a live read. It shows our mirror of <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a> at upstream commit <code style="display:inline;padding:.1rem .3rem">${esc(sha.slice(0, 7))}</code>.</p>
-<p><strong>${esc(generatedOn)} is the date this mirror last CHANGED &mdash; not the last time it was checked.</strong> Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date does not mean nobody has looked. Nor does it prove nothing moved: the dates and values here change only after an upstream change has been verified and published.${quietSentence} To see the actual last check and its verdict, read the <a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a> &mdash; that is the live read, and this page is deliberately not.</p>
-<p>Every row links to its primary source so you can check us in one hop — and if a row disagrees with its source, that is a bug worth reporting. Use the <strong>looks wrong?</strong> link on that row: the report arrives already naming the constant and the exact mirror commit, so you never have to work out how to describe which of ${rows.length} rows you meant.</p>
-<p>Some rows carry a <strong>we reported this row</strong> link. That means we ourselves filed a report upstream about that row, and the link goes to it so you can read what we said and judge it. We show it because our own involvement in a row is part of what you need in order to weigh the row — and <strong>it is not a claim that anything upstream changed because of us</strong>. The state shown is the report's own; whether it caused anything is a separate question this page does not answer.</p>
-<p><strong>Every row has its own link.</strong> Click a row&rsquo;s short id — the grey code under the constant&rsquo;s name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred.</p>
-<p><strong>These are last-listed table rows, not a claim about which bound is “the record.”</strong> Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.</p>
-</div>
 
 <div class="controls">
 <div class="ctl grow">
@@ -666,9 +675,8 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 </select>
 </div>
 </div>
+<p class="fresh">Snapshot: this mirror last changed on <strong>${esc(generatedOn)}</strong>, which is not the last time it was checked. A job re-verifies every pinned row daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Read <a href="#notes">the notes below the table</a> before citing a number.</p>
 <p class="count" id="count">${rows.length} constants</p>
-<p class="hint">Each date is when that row&rsquo;s pinned text last changed <em>in this ledger</em> &mdash; or, for a row that has never changed here, the day this ledger started tracking it. Most rows share that bootstrap date. Ordering by movement puts the rows we have actually seen change first, most recent first; rows we have only ever watched sit still follow, still dated, each saying so in its own cell. That distinction is the one the date alone cannot make, because a later date can mean a bound changed here <em>or</em> that we only started watching it later. Neither date says anything about what a constant did before we began watching it, and a row we have never seen move may well have moved before we arrived.</p>
-<p class="hint">A line under a constant&rsquo;s name means we checked a claim in one of its bound rows against material for a source that row cites &mdash; that source itself, or, where we could not reach it, another copy or edition of it. The line names that row, and its page says what we reached and what we found. In such a line, <em>another row</em> means the named row is not one of those shown here; the rows shown may have readings of their own, listed on its page. A line in italics beginning <em>we could not open the source</em> is different. It names what we tried to check, and we were turned away or found nothing; a date, when it gives one, is the latest day recorded among those attempts. We have no reading we can match to what it names as it stands today. When an italic line says <em>another row</em>, the row it names is not one of those shown here, and the rows shown here have no reading we can match to them today either, like those of any constant with no line. Either way, check a number yourself before citing it. A later attempt may succeed, because sites come back. Most constants carry no such line. That means we have no reading we can match to the row as it stands today &mdash; either we have not done one, or the row has changed since we did, in which case its page still shows what we found and says it describes an earlier version of the table. It is not a sign that anything is wrong. Either way it is about a row matching its own source, never about whether it is the strongest bound known.</p>
 
 <div class="empty" id="empty" hidden>
 <p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the ${rows.length} constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
@@ -684,6 +692,22 @@ ${body}
 </tbody>
 </table>
 </div>
+
+<section id="notes" aria-label="How to read this page">
+<p><strong>Also watched, on its own page:</strong> <a href="ramsey.html">small Ramsey numbers R(k, l)</a>, exactly as printed in Radziszowski&rsquo;s survey <em>Small Ramsey Numbers</em>, with the reference it credits for each value. It is a separate area and never mixed into the table above.</p>
+
+<div class="note">
+<p><strong>Read this before you trust a number here.</strong> This page is a <em>snapshot</em>, not a live read. It shows our mirror of <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a> at upstream commit <code style="display:inline;padding:.1rem .3rem">${esc(sha.slice(0, 7))}</code>.</p>
+<p><strong>${esc(generatedOn)} is the date this mirror last CHANGED &mdash; not the last time it was checked.</strong> Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date does not mean nobody has looked. Nor does it prove nothing moved: the dates and values here change only after an upstream change has been verified and published.${quietSentence} To see the actual last check and its verdict, read the <a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a> &mdash; that is the live read, and this page is deliberately not.</p>
+<p>Every row links to its primary source so you can check us in one hop — and if a row disagrees with its source, that is a bug worth reporting. Use the <strong>looks wrong?</strong> link on that row: the report arrives already naming the constant and the exact mirror commit, so you never have to work out how to describe which of ${rows.length} rows you meant.</p>
+<p>Some rows carry a <strong>we reported this row</strong> link. That means we ourselves filed a report upstream about that row, and the link goes to it so you can read what we said and judge it. We show it because our own involvement in a row is part of what you need in order to weigh the row — and <strong>it is not a claim that anything upstream changed because of us</strong>. The state shown is the report's own; whether it caused anything is a separate question this page does not answer.</p>
+<p><strong>Every row has its own link.</strong> Click a row&rsquo;s short id — the grey code under the constant&rsquo;s name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred.</p>
+<p><strong>These are last-listed table rows, not a claim about which bound is “the record.”</strong> Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.</p>
+</div>
+
+<p class="hint">Each date is when that row&rsquo;s pinned text last changed <em>in this ledger</em> &mdash; or, for a row that has never changed here, the day this ledger started tracking it. Most rows share that bootstrap date. Ordering by movement puts the rows we have actually seen change first, most recent first; rows we have only ever watched sit still follow, still dated, each saying so in its own cell. That distinction is the one the date alone cannot make, because a later date can mean a bound changed here <em>or</em> that we only started watching it later. Neither date says anything about what a constant did before we began watching it, and a row we have never seen move may well have moved before we arrived.</p>
+<p class="hint">A line under a constant&rsquo;s name means we checked a claim in one of its bound rows against material for a source that row cites &mdash; that source itself, or, where we could not reach it, another copy or edition of it. The line names that row, and its page says what we reached and what we found. In such a line, <em>another row</em> means the named row is not one of those shown here; the rows shown may have readings of their own, listed on its page. A line in italics beginning <em>we could not open the source</em> is different. It names what we tried to check, and we were turned away or found nothing; a date, when it gives one, is the latest day recorded among those attempts. We have no reading we can match to what it names as it stands today. When an italic line says <em>another row</em>, the row it names is not one of those shown here, and the rows shown here have no reading we can match to them today either, like those of any constant with no line. Either way, check a number yourself before citing it. A later attempt may succeed, because sites come back. Most constants carry no such line. That means we have no reading we can match to the row as it stands today &mdash; either we have not done one, or the row has changed since we did, in which case its page still shows what we found and says it describes an earlier version of the table. It is not a sign that anything is wrong. Either way it is about a row matching its own source, never about whether it is the strongest bound known.</p>
+</section>
 
 <footer>
 <p>Generated from <code style="display:inline;padding:.1rem .3rem">ledger/claims.json</code> by <code style="display:inline;padding:.1rem .3rem">scripts/render-site.mjs</code>. For the live verdict — whether every claim still holds right now — clone the repo and run <code style="display:inline;padding:.1rem .3rem">npm run check</code>.</p>
@@ -813,6 +837,24 @@ async function selftest() {
     .replace(/<[^>]+>/g, "").replace(/&mdash;/g, "--").replace(/&rsquo;/g, "'").replace(/&ldquo;|&rdquo;/g, '"')
     .replace(/\s+/g, " ").trim();
   assert.equal(noteText, NOTE_PIN);
+  // THE FIRST SCREEN (A-67, 2026-10-02). The note moved below the table, so the one sentence above
+  // the table must still carry its date fact. Guards on MEANING run first and the exact pin last, so
+  // a mutation names the property it broke rather than only "the string differs".
+  const freshStart = html.indexOf('<p class="fresh">');
+  assert.ok(freshStart > -1, "positive control: the freshness line must exist above the table");
+  const fresh = html.slice(freshStart, html.indexOf("</p>", freshStart));
+  assert.match(fresh, /not the last time it was checked/, "the freshness line must say the change date is not the last check");
+  assert.match(fresh, /actions\/workflows\/reverify\.yml/, "the freshness line must link the live read");
+  assert.match(fresh, /href="#notes"/, "the freshness line must point to the notes below the table");
+  assert.doesNotMatch(fresh.replace(/<[^>]+>/g, ""), /\b(held|holds|steady|current|up to date|unchanged)\b/i, "the freshness line must not promise the numbers held");
+  // ORDER: filter, freshness line, count, table, then the notes holding the snapshot note and hints.
+  const at = (needle) => { const i = html.indexOf(needle); assert.ok(i > -1, `positive control: ${needle} must be on the page`); return i; };
+  const pageOrder = ['<input id="q"', '<p class="fresh">', '<p class="count"', '<div class="scroll">', '<section id="notes"', '<div class="note">', '<p class="hint">'];
+  for (let i = 1; i < pageOrder.length; i++) assert.ok(at(pageOrder[i - 1]) < at(pageOrder[i]), `${pageOrder[i - 1]} must come before ${pageOrder[i]}`);
+  assert.ok(at('<p class="lede">') < at('<input id="q"'), "the filter comes after the lede");
+  assert.equal(html.slice(at('<p class="lede">'), at('<input id="q"')).includes("<p>"), false, "nothing but the controls sits between the lede and the filter");
+  assert.equal(fresh.replace(/<[^>]+>/g, "").replace(/&mdash;/g, "--").replace(/\s+/g, " ").trim(),
+    "Snapshot: this mirror last changed on 2026-08-20, which is not the last time it was checked. A job re-verifies every pinned row daily (run history). Read the notes below the table before citing a number.");
   // (2) THE PURE FUNCTION: the longest COMPLETED gap. Duplicates collapse, input order does not
   //     matter, malformed dates are ignored, fewer than two dates is null (a shallow clone), and a
   //     tie keeps the earliest gap.

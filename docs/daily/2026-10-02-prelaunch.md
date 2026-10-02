@@ -163,3 +163,60 @@ ACTION: COMPLETED · item `A-64` (the desktop index hid both bound columns) · P
 - **Does marking the Mackey cells need David before 2026-10-18? No card is filed, and here is why.** His 2026-09-20 ruling already gives the wording for a value we could not independently source: "credited to the survey and not independently checked". Marking the ten cells that way applies his sentence and asks nothing new of him. The Ex16 cell (verified by recomputing its colouring) follows the reading already recorded on the `A-54` row and used for one earlier cell. The rendered page gets its own cross-family review at the 2026-10-20 slot before the freeze lifts. What WOULD need his word, and is not being asked: telling the survey's author. That waits on the 1993 report being read.
 - **Pending reads, each on its row:** 2026-10-03 `A-47` slice 12 (the depth audit of the constants ledger). 2026-10-04 `A-54` census session 5. 2026-10-06 `A-63` (which claim a verdict checked), `A-65` (the stale source line on the 10c page) and `A-66`. 2026-10-08 at the latest, the blocked-paper retry on `A-54`. 2026-10-28 `A-59`.
 - **UNRESOLVED at the close:** none of the day's gates. The ten Mac verdicts are UNRESOLVED as verdicts, by design.
+
+## Round 2
+
+### Selection packet (P1 — evidence and choice, round 2)
+
+**Outcome:** a number pasted into the index's filter shows its row on the first screen, on a phone and on a desktop. Item `A-67` (on the index a pasted number's matching row lands below the first screen, under the explanatory notes), minted at this P1. `A-66` (the index table scrolls sideways between about 897 and 938 wide) rides beside it: it is the same page and the same stylesheet.
+
+**The user problem, in the user's words** (`docs/evangelism-bar.md`): "I got this constant from a page that says it was last edited in January. I don't know if that means it's current or that nobody has looked at it since." The index's own label tells that person to "paste a number you are about to cite". When they do, the answer sits below the first screen, under two paragraphs of explanation.
+
+#### Evidence
+
+- OBSERVED by the orchestrator's cold walk of round 1, not re-run here (`skylark-site/docs/walks/2026-10-02-r1/bounds-ledger.md`, findings 1 and 2; a synthetic walk, not a real-user encounter; window 08:28Z to 08:37Z): with `10.02` typed, the one matching row sat 929px below the box on a 393×659 phone and 709px below it on a 1440×900 desktop. Unfiltered, the box is 1708px down on the phone and 1000px on desktop.
+- OBSERVED — `index.html` at `8a0ff25`, lines 69 to 106: lede, the also-watched line, a six-paragraph note, the controls, the count, two long hint paragraphs, then the table. The note and hints are deliberate honesty text, so the change moves them and does not cut them.
+- OBSERVED by the same walk: at 920 wide the scroll box is 878 visible against 896 of content and the "cite" link is clipped (`A-66`'s own read, unchanged since round 1's close).
+- OBSERVED — `npm run reports` (exit 0, at this P1): 0 outside arrivals of 32 raw issues; parts reconcile 32 + 0 + 0 = 32. It counts filed issues, never page readers.
+- OBSERVED — `check-ci-status --workflow reverify.yml`: GREEN at `8a0ff25`, HEAD equal to origin/main after `git pull` ("Already up to date.").
+- OBSERVED — `check-cycle-rotation --lane bounds-ledger` (exit 0): "no product-love cycle picks this lane today".
+- OBSERVED — `answered-cards`: no waiting, answered or pending-verify card for this lane.
+- PENDING at posting — `npm run verify` was started at this P1 and had not finished when this packet was written; its receipt is read before any P3 commit. One ledger file (`continuity/items.json`, the `A-67` row) was edited while it ran; the row carries no deferral fields, so the deferral leg's answer is the same either way.
+- MISSING — any read of a real person using the filter. The page is static with no analytics by design (`A-59`, the encounter read, dated 2026-10-28).
+- Prior-day retro findings: the one that bears here is the receipt and a working tree that changes during the run, and it recurred in the mild form above (a doc-shaped edit, not code).
+
+#### Not chosen this round
+
+- `A-63` (a constant page does not say which claim a verdict checked) is the larger reader-visible change. Its public sentence is a method sentence and needs its own review angle before it is written. It keeps its 2026-10-06 date. If it is not the next round's change, it gets a new date and the reason at that round's close.
+- `A-65` (the stale `#L281` source link on the 10c page) stays a small fix. It is done only if P3 has room after `A-67` and `A-66` are reviewed. Otherwise it keeps its date.
+- Marking the Mackey cells and Ex16 on the frozen page (owed 2026-10-18): **no board card is needed.** Round 1's close gives the reason: David's 2026-09-20 sentence already supplies the wording. The question that would need him, telling the survey's author, is not being asked.
+
+#### Permission
+
+- Lane-authorised: a layout change to the lane's own public index, on the orchestrator's round-2 lead. `index.html` is not under the 2026-09-20 freeze (that covers `ramsey.html` and `copying.html`). No board card is open.
+- Outward gate: none beyond the ordinary Pages publish. The moved text and the new pointer line get a cross-family review before the push, because the change moves a public disclaimer.
+
+#### Next action
+
+Kind: **improve**. First command, the baseline on a clean tree:
+
+```
+node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --selftest
+```
+
+#### Acceptance condition
+
+On the live index, with `10.02` in the filter, the matching row's top is inside the first screen at 393×659 and at 1440×900. The "Read this before you trust a number here" note is still on the page and is named from above the table. For `A-66`, the scroll box's content width equals its visible width at 900, 920, 940 and 960 wide, and 390 and 1440 match `A-64`'s close read. `render-site --check` passes after the commit.
+
+#### Delivery and encounter checks
+
+- Delivery: `npm run served` after the push, then the same browser reads on the live page.
+- Encounter: blind (`A-59`). The event that would appear is an outside issue filed through a per-row link or the empty-result link, counted by `npm run reports`. It is readable at N = 1.
+
+**USER-FACING: yes.** Paths: `scripts/render-site.mjs` (order of the blocks, the pointer line, the card-layout breakpoint) and `index.html` (regenerated).
+
+#### HYGIENE INPUTS
+
+- (a) due rows not bearing on the choice: none — read "dated gates due today: 0". The morning snapshot stands: a re-snapshot at this P1 was refused with exit 2 because it would drop `A-54`, which round 1's close re-dated to 2026-10-04.
+- (b) owed child rows: none — read "rows owed to you in skylark-site's ledger: 0 of 739 considered".
+- (c) state reads marked CROSSED: none — read the kickoff's state reads. Two could not be judged and are not zeros: missingLinkedCommits "NOTHING SWEPT (0 of 0 considered)", and key numbers "no list yet".
