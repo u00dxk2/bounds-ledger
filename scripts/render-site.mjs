@@ -854,14 +854,17 @@ async function selftest() {
   for (let i = 1; i < pageOrder.length; i++) assert.ok(at(pageOrder[i - 1]) < at(pageOrder[i]), `${pageOrder[i - 1]} must come before ${pageOrder[i]}`);
   // The notes sit OUTSIDE the table's scroll box: only whitespace between the box's close and the section.
   assert.match(html.slice(at("</table>"), at('<section id="notes"')), /^<\/table>\s*<\/div>\s*$/, "the notes must follow the closed scroll box, not sit inside it");
-  // WHAT THIS DOES NOT GUARD, deliberately (review round 2, 2026-10-02): VISIBILITY. Two review rounds
-  // each found a new way to hide or interpose content past an enumerated check (a CSS rule on another
-  // selector, a decoy attribute, prose inside the controls). Enumerating the forbidden cannot work, so
-  // this guards text and order only, and pins the EXACT first-screen block below; whether the block
-  // and #notes are visible is a browser read, A-67's readCommand, like every layout claim here.
-  // THE EXACT FIRST-SCREEN BLOCK, pinned last, from the lede to the count. Any added, removed or
+  // WHAT THESE A-67 ASSERTIONS DO NOT GUARD, deliberately (review rounds 2 and 3, 2026-10-02). They
+  // read the emitted SOURCE TEXT: they check text and the order of markers in it, never a parsed tree,
+  // never what a script does at runtime, never visibility. Three review rounds each found a way past an
+  // enumerated check at the next scope up (a CSS rule on another selector, a decoy attribute, a wrapper
+  // <div> that re-nests #notes inside the scroll box, a second script rewriting the lede). Enumerating
+  // the forbidden cannot work here, so this pins the EXACT first-screen block below and stops there;
+  // whether the block and #notes render where they should is a browser read, A-67's readCommand, like
+  // every layout claim on this page.
+  // THE EXACT FIRST-SCREEN BLOCK, pinned last, from the lede through the count. Any added, removed or
   // reworded element in it fails until someone updates this pin deliberately, as NOTE_PIN does.
-  assert.equal(html.slice(at('<p class="lede">'), at('<p class="count"')), [
+  assert.equal(html.slice(at('<p class="lede">'), html.indexOf("</p>", at('<p class="count"')) + 4), [
     '<p class="lede">Best-known bounds move, and the papers and index pages citing them do not all move at the same time. This is every mathematical constant this ledger watches, with the exact table rows it has pinned.</p>',
     "",
     '<div class="controls">',
@@ -878,8 +881,8 @@ async function selftest() {
     "</div>",
     "</div>",
     '<p class="fresh">Snapshot: this mirror last changed on <strong>2026-08-20</strong>, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Each bound row shown is the last-listed row of its table, not a claim about which bound is &ldquo;the record.&rdquo; Read <a href="#notes">the notes below the table</a> before citing a number.</p>',
-    "",
-  ].join("\n"), "the first-screen block (lede, controls, freshness line) is pinned exactly");
+    '<p class="count" id="count">2 constants</p>',
+  ].join("\n"), "the first-screen block (lede, controls, freshness line, count) is pinned exactly");
   // (2) THE PURE FUNCTION: the longest COMPLETED gap. Duplicates collapse, input order does not
   //     matter, malformed dates are ignored, fewer than two dates is null (a shallow clone), and a
   //     tie keeps the earliest gap.
