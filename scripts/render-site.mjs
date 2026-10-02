@@ -661,7 +661,7 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 </div>
 <p class="count" id="count">${rows.length} constants</p>
 <p class="hint">Each date is when that row&rsquo;s pinned text last changed <em>in this ledger</em> &mdash; or, for a row that has never changed here, the day this ledger started tracking it. Most rows share that bootstrap date. Ordering by movement puts the rows we have actually seen change first, most recent first; rows we have only ever watched sit still follow, still dated, each saying so in its own cell. That distinction is the one the date alone cannot make, because a later date can mean a bound changed here <em>or</em> that we only started watching it later. Neither date says anything about what a constant did before we began watching it, and a row we have never seen move may well have moved before we arrived.</p>
-<p class="hint">A line under a constant&rsquo;s name means we opened the source one of its bound rows cites and checked what that row credits to it &mdash; the line names that row, and its page says what was checked and what we found. In such a line, <em>another row</em> means the named row is not one of those shown here; the rows shown may have readings of their own, listed on its page. A line in italics beginning <em>we could not open the source</em> is different. It names what we tried to check, and we were turned away or found nothing; a date, when it gives one, is the latest day recorded among those attempts. We have no reading we can match to what it names as it stands today. When an italic line says <em>another row</em>, the row it names is not one of those shown here, and the rows shown here have no reading we can match to them today either, like those of any constant with no line. Either way, check a number yourself before citing it. A later attempt may succeed, because sites come back. Most constants carry no such line. That means we have no reading we can match to the row as it stands today &mdash; either we have not done one, or the row has changed since we did, in which case its page still shows what we found and says it describes an earlier version of the table. It is not a sign that anything is wrong. Either way it is about a row matching its own source, never about whether it is the strongest bound known.</p>
+<p class="hint">A line under a constant&rsquo;s name means we read material for the source one of its bound rows cites &mdash; that source itself, or, where we could not reach it, another copy or edition of it &mdash; and checked that row, or the part of it its page names, against what we read. The line names that row, and its page says what we reached, what we checked and what we found. In such a line, <em>another row</em> means the named row is not one of those shown here; the rows shown may have readings of their own, listed on its page. A line in italics beginning <em>we could not open the source</em> is different. It names what we tried to check, and we were turned away or found nothing; a date, when it gives one, is the latest day recorded among those attempts. We have no reading we can match to what it names as it stands today. When an italic line says <em>another row</em>, the row it names is not one of those shown here, and the rows shown here have no reading we can match to them today either, like those of any constant with no line. Either way, check a number yourself before citing it. A later attempt may succeed, because sites come back. Most constants carry no such line. That means we have no reading we can match to the row as it stands today &mdash; either we have not done one, or the row has changed since we did, in which case its page still shows what we found and says it describes an earlier version of the table. It is not a sign that anything is wrong. Either way it is about a row matching its own source, never about whether it is the strongest bound known.</p>
 
 <div class="empty" id="empty" hidden>
 <p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the ${rows.length} constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
@@ -1088,7 +1088,9 @@ async function selftest() {
   // Review B2 (2026-09-29, round 2): choosing "the latest attempt's key" needs a chronology that
   // day-only dates cannot give, so a retried row names EVERY key it was tried through, and no key is
   // presented as the one that goes with the date.
-  assert.match(rekeyed[1], /857\.5662 \[Ref2026\], \[Other2027\] \(tried 2026-09-20\)/, "a retried row names every key it was tried through, and the latest recorded day");
+  // Review S3 (2026-10-01 round 2): the row credits its value to Ref2026 only, so Other2027 is named as a
+  // key it was ALSO tried through, never printed beside the value as if credited.
+  assert.match(rekeyed[1], /857\.5662 \[Ref2026\] \(also tried through \[Other2027\]\) \(tried 2026-09-20\)/, "a retried row names every key it was tried through, the value only beside the credited one, and the latest recorded day");
   assert.equal((rekeyed[1].match(/857\.5662/g) || []).length, 1, "and is still one row");
   assert.match(unreachablePage, /we were turned away or found nothing; a date, when it gives one, is the latest day recorded among those attempts/,
     "the page must explain the attempted line, and must not promise a date every line cannot give");
@@ -1194,7 +1196,27 @@ async function selftest() {
   const commentOnly = badgeOn(withAudits([readAudit({ citedRef: "DMP2019", ...auditRow("| 857.5662 | Trivial | best estimate [DMP2019] |") })]), "87a");
   assert.ok(commentOnly, "positive control: the comment-cited reading must badge");
   assert.ok(!/857\.5662 \[DMP2019\]/.test(commentOnly[1]), "the value must not be paired with a key the row does not credit it to");
-  assert.match(commentOnly[1], /\[DMP2019\], cited in the comment of that row, not for its bound/, "the line must say where the key is cited");
+  assert.match(commentOnly[1], /\[DMP2019\], cited in the comment of that row/, "the line must say where the key is cited");
+  // Review B1 (round 2): a comment can cite a key FOR the bound (35a: "Achieved by constant step sizes.
+  // See, e.g., [B2015]."), so the line must not say the key is not for the bound.
+  assert.ok(!/not for its bound/.test(commentOnly[1]), "the line must not claim the comment's key is unrelated to the bound");
+  // Review S1/S2/S3 (round 2): whole keys only, unescaped pipes only, value only beside credited keys.
+  const sibling = badgeOn(withAudits([readAudit({ citedRef: "H2016", ...auditRow("| 857.5662 | [H2016b] | see [H2016] |") })]), "87a");
+  assert.ok(!/857\.5662 \[H2016\]/.test(sibling[1]), "a key must not match inside a longer key in the credit cell");
+  assert.match(sibling[1], /\[H2016\], cited in the comment of that row/, "and is found as a whole key in the comment");
+  const siblingOnly = badgeOn(withAudits([readAudit({ citedRef: "H2016", ...auditRow("| 857.5662 | [H2016b] | see [H2016b] |") })]), "87a");
+  assert.ok(!/cited in the comment/.test(siblingOnly[1]) && !/857\.5662/.test(siblingOnly[1]), "a key found only inside longer keys is placed nowhere and the value is withheld");
+  const piped = badgeOn(withAudits([readAudit({ citedRef: "H2016", ...auditRow("| $\\|x\\|$ | [H2016] | |") })]), "87a");
+  // The VALUE itself is truncated at an escaped pipe by lookup.mjs's boundCell (pre-existing, shared
+  // with search; no stored row has the shape; recorded as a finding). Asserted here: the CREDIT placement.
+  assert.match(piped[1], / \[H2016\]$/, "an escaped pipe in the value must not shift the credit cell");
+  assert.ok(!/cited in the comment/.test(piped[1]), "so the credited key is never reported as a comment citation");
+  const linked = badgeOn(withAudits([readAudit({ citedRef: "Wu2023", ...auditRow("| 857.5662 | [[Wu2023](#Wu2023)] | |") })]), "87a");
+  assert.match(linked[1], /857\.5662 \[Wu2023\]/, "the linked-key form counts as a whole key in the credit cell");
+  // The index paragraph's method sentence (review B2): the cited edition is not always what was read.
+  assert.ok(!/we opened the source one of its bound rows cites/.test(soundPage), "the paragraph must not claim the cited source itself was opened");
+  assert.match(soundPage, /another copy or edition of it/, "the paragraph must say another copy or edition may be what was read");
+  assert.match(soundPage, /its page says what we reached, what we checked and what we found/, "and send the reader to the page for what was reached");
 
   // EQUALITY PINS LAST.
   assert.match(sound[0], /href="c\/87a\.html"/, "the badge must link the constant's own page, where the row and verdict live");

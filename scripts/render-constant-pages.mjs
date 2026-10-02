@@ -411,27 +411,36 @@ function plainRowName(a) {
   // A value is paired with a key ONLY when the row credits that value to it (review R2, 2026-10-01
   // round 2): 26a's row credits infinity to "Trivial" and cites DMP2019 in its comment, and the badge
   // read "the row shown, \infty [DMP2019]", a pairing the row never makes.
-  // Three cases, each saying only what the row text shows: a key in the credit cell keeps the old
-  // "value [key]" form (a retried row lists every key it was tried through, so ONE credited key is
-  // enough); every key found only in the later cells is said to be cited there; anything else names the
-  // keys without the value and claims nothing about where they sit.
+  // RULE (review round 2 changed the SHAPE here rather than patch the matcher a second time): the value
+  // is paired ONLY with keys the credit cell names as whole citation keys; a retry key the credit cell
+  // does not name is listed as "also tried through", never beside the value; keys found as whole keys
+  // only in the comment are said to be cited there, and nothing more (35a's comment cites B2015 FOR its
+  // bound, so "not for its bound" was false); anything citeLocation cannot place gets the keys alone,
+  // a claim of nothing.
   const refs = refsOf(a);
-  if (refs.some((r) => creditCites(a, r))) return `${v} ${keys}`;
-  if (refs.every((r) => commentCites(a, r))) return `${keys}, cited in the comment of that row, not for its bound`;
+  const fmt = (rs) => rs.map((r) => `[${r}]`).join(", ");
+  const credited = refs.filter((r) => citeLocation(a, r) === "credit");
+  if (credited.length) {
+    const rest = refs.filter((r) => !credited.includes(r));
+    return `${v} ${fmt(credited)}${rest.length ? ` (also tried through ${fmt(rest)})` : ""}`;
+  }
+  if (refs.every((r) => citeLocation(a, r) === "comment")) return `${keys}, cited in the comment of that row`;
   return keys;
 }
 
-/** The row's cells after the credit cell (its comment), from the stored, hash-checked rowText. */
-function commentCites(a, ref) {
-  if (!identityVerified(a)) return false;
-  return a.rowText.trim().split("|").slice(3).join("|").includes(ref);
-}
-
-/** Does the row's CREDIT cell (its second cell) name this key? Read from the stored, hash-checked rowText. */
-function creditCites(a, ref) {
-  if (!identityVerified(a)) return false;
-  const credit = a.rowText.trim().split("|")[2];
-  return typeof credit === "string" && credit.includes(ref);
+/**
+ * WHERE A ROW CITES A KEY: "credit" (its second cell), "comment" (any later cell), or null. A key counts
+ * only as a WHOLE citation key — `[KEY]` or the linked form `[[KEY](#KEY)]` — never as a substring, so
+ * `H2016` is not found inside `[H2016b]`. Cells split on UNESCAPED pipes only, so `$\|x\|$` stays one
+ * cell. Read from the stored, hash-checked rowText; a row whose identity cannot be proved is null.
+ */
+function citeLocation(a, ref) {
+  if (!identityVerified(a)) return null;
+  const cells = a.rowText.trim().split(/(?<!\\)\|/);
+  const key = new RegExp(`\\[\\[?${ref.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\]`);
+  if (key.test(cells[2] ?? "")) return "credit";
+  if (key.test(cells.slice(3).join("|"))) return "comment";
+  return null;
 }
 
 /**
@@ -541,7 +550,8 @@ export function auditBlock(id, store, shown = []) {
       : "";
     // "citing" pairs the value with the key; where the row credits its bound to someone else and names
     // the key only in its comment (26a, 35a), say so instead (review R2, 2026-10-01 round 2).
-    const cites = value && !creditCites(a, a.citedRef) && commentCites(a, a.citedRef) ? "whose comment cites" : "citing";
+    const where = value ? citeLocation(a, a.citedRef) : "credit";
+    const cites = where === "credit" ? "citing" : where === "comment" ? "whose comment cites" : "audited against";
     const what = leg ? `${esc(leg)}${valueHtml}${leg === "bound row" && !stale ? rowLink(a) : ""} ${cites} ` : "";
     const note = a.sourceRead ? ` (${esc(a.sourceRead)})` : "";
     const verdictText = stale
@@ -861,6 +871,14 @@ function selftest() {
   //      read "bound row <value> citing [KEY]".
   const commentPage = renderPage(row, "abc1234def", { audits: [{ ...store.audits[0], citedRef: "DMP2019", ...pinId("| $\\infty$ | Trivial | best estimate [DMP2019] |") }], corpus: { citedRows: 999 } });
   assert.ok(commentPage.includes("whose comment cites"), "a comment-cited key must be said to be cited in the comment");
+  //      Review round 2: a key in BOTH the credit cell and the comment is credited, so "citing", never
+  //      "whose comment cites"; a key found in neither (here only inside the VALUE cell) is placed nowhere.
+  const bothPage = renderPage(row, "abc1234def", { audits: [{ ...store.audits[0], ...pinId("| $5.555555$ | [REF1] | see also [REF1] |") }], corpus: { citedRows: 999 } });
+  assert.ok(bothPage.includes("Another row") && !bothPage.includes("whose comment cites"), "a credited key also named in the comment is still credited");
+  assert.match(bothPage, /<\/code> citing <code/, "positive control: the credited form says citing");
+  const nowherePage = renderPage(row, "abc1234def", { audits: [{ ...store.audits[0], ...pinId("| $[REF1]$ | Trivial | x |") }], corpus: { citedRows: 999 } });
+  assert.ok(nowherePage.includes("audited against") && !/<\/code> citing <code/.test(nowherePage) && !nowherePage.includes("whose comment cites"),
+    "a key the row places nowhere gets the claim-free form, neither credited nor comment-cited");
   assert.ok(!/<\/code>[^<]*<a [^>]*>line [^<]*<\/a> citing /.test(commentPage) && !/<\/code> citing <code/.test(commentPage), "and the value must not be said to be credited to it");
   //      A STALE row gets no phrase: we cannot prove what the row at that line is today.
   const stalePage = renderPage(row, "abc1234def", { audits: [{ ...store.audits[0], inMirror: false }], corpus: { citedRows: 999 } });
