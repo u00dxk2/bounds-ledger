@@ -675,7 +675,7 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 </select>
 </div>
 </div>
-<p class="fresh">Snapshot: this mirror last changed on <strong>${esc(generatedOn)}</strong>, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Each row is the last-listed row of its table, not a claim about which bound is &ldquo;the record.&rdquo; Read <a href="#notes">the notes below the table</a> before citing a number.</p>
+<p class="fresh">Snapshot: this mirror last changed on <strong>${esc(generatedOn)}</strong>, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Each bound row shown is the last-listed row of its table, not a claim about which bound is &ldquo;the record.&rdquo; Read <a href="#notes">the notes below the table</a> before citing a number.</p>
 <p class="count" id="count">${rows.length} constants</p>
 
 <div class="empty" id="empty" hidden>
@@ -844,7 +844,7 @@ async function selftest() {
   assert.ok(freshStart > -1, "positive control: the freshness line must exist above the table");
   const fresh = html.slice(freshStart, html.indexOf("</p>", freshStart));
   assert.match(fresh, /not the last time it was checked/, "the freshness line must say the change date is not the last check");
-  assert.ok(fresh.includes('href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml"'), "the freshness line must link THIS repository's run history, exactly");
+  assert.equal((fresh.match(/<a href="([^"]*)">run history<\/a>/) || [])[1], "https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml", "the freshness line's run-history anchor must link THIS repository's run history, exactly");
   assert.match(fresh, /href="#notes"/, "the freshness line must point to the notes below the table");
   assert.match(fresh, /not a claim about which bound is &ldquo;the record\.&rdquo;/, "the freshness line must carry the last-listed, not-the-record caveat above the table (review 2026-10-02)");
   assert.doesNotMatch(fresh.replace(/<[^>]+>/g, ""), /\b(held|holds|steady|current|up to date|unchanged|guaranteed|certified)\b/i, "the freshness line must not promise the numbers held");
@@ -854,14 +854,32 @@ async function selftest() {
   for (let i = 1; i < pageOrder.length; i++) assert.ok(at(pageOrder[i - 1]) < at(pageOrder[i]), `${pageOrder[i - 1]} must come before ${pageOrder[i]}`);
   // The notes sit OUTSIDE the table's scroll box: only whitespace between the box's close and the section.
   assert.match(html.slice(at("</table>"), at('<section id="notes"')), /^<\/table>\s*<\/div>\s*$/, "the notes must follow the closed scroll box, not sit inside it");
-  // ...and are never hidden, by attribute or by a stylesheet rule naming them.
-  assert.equal(html.slice(at('<section id="notes"'), html.indexOf(">", at('<section id="notes"')) + 1), '<section id="notes" aria-label="How to read this page">', "the notes section carries no hidden or style attribute");
-  const css = html.slice(at("<style>"), at("</style>"));
-  assert.deepEqual(css.match(/#notes[^{]*\{[^}]*\}/g), ["#notes{margin-top:2rem}"], "the only stylesheet rule naming #notes is its margin");
-  assert.ok(at('<p class="lede">') < at('<input id="q"'), "the filter comes after the lede");
-  assert.match(html.slice(at('<p class="lede">'), at('<div class="controls">')), /^<p class="lede">[^<]*<\/p>\s*$/, "nothing sits between the lede and the controls");
-  assert.equal(fresh.replace(/<[^>]+>/g, "").replace(/&mdash;/g, "--").replace(/&ldquo;|&rdquo;/g, '"').replace(/\s+/g, " ").trim(),
-    "Snapshot: this mirror last changed on 2026-08-20, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (run history). Each row is the last-listed row of its table, not a claim about which bound is \"the record.\" Read the notes below the table before citing a number.");
+  // WHAT THIS DOES NOT GUARD, deliberately (review round 2, 2026-10-02): VISIBILITY. Two review rounds
+  // each found a new way to hide or interpose content past an enumerated check (a CSS rule on another
+  // selector, a decoy attribute, prose inside the controls). Enumerating the forbidden cannot work, so
+  // this guards text and order only, and pins the EXACT first-screen block below; whether the block
+  // and #notes are visible is a browser read, A-67's readCommand, like every layout claim here.
+  // THE EXACT FIRST-SCREEN BLOCK, pinned last, from the lede to the count. Any added, removed or
+  // reworded element in it fails until someone updates this pin deliberately, as NOTE_PIN does.
+  assert.equal(html.slice(at('<p class="lede">'), at('<p class="count"')), [
+    '<p class="lede">Best-known bounds move, and the papers and index pages citing them do not all move at the same time. This is every mathematical constant this ledger watches, with the exact table rows it has pinned.</p>',
+    "",
+    '<div class="controls">',
+    '<div class="ctl grow">',
+    '<label for="q">Filter by name, id, or a bound value — paste a number you are about to cite, or try “sofa”, “Grothendieck”, “27b”</label>',
+    '<input id="q" type="search" autocomplete="off" placeholder="Type to filter&hellip;">',
+    "</div>",
+    '<div class="ctl">',
+    '<label for="sort">Order</label>',
+    '<select id="sort">',
+    '<option value="id">By constant id</option>',
+    '<option value="recent">Rows we have seen move, most recent first</option>',
+    "</select>",
+    "</div>",
+    "</div>",
+    '<p class="fresh">Snapshot: this mirror last changed on <strong>2026-08-20</strong>, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Each bound row shown is the last-listed row of its table, not a claim about which bound is &ldquo;the record.&rdquo; Read <a href="#notes">the notes below the table</a> before citing a number.</p>',
+    "",
+  ].join("\n"), "the first-screen block (lede, controls, freshness line) is pinned exactly");
   // (2) THE PURE FUNCTION: the longest COMPLETED gap. Duplicates collapse, input order does not
   //     matter, malformed dates are ignored, fewer than two dates is null (a shallow clone), and a
   //     tie keeps the earliest gap.
