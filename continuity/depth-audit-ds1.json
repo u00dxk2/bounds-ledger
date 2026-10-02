@@ -787,6 +787,18 @@
         ],
         "bounds": 11,
         "order": "Planned and committed before any of these papers was opened. The commit that adds the readings comes after it in history. The next seven keys of the derived census order. The tripwire in A-54.rebuildCheckpoint2026_09_28 was applied first and did not fire: 32 papers remaining against 4 x 9 census slots through 2026-10-16 = 36. Mac, the next key, carries 13 bounds and opens session 4. Acceptance floor, on the orchestrator's P1 review (bus 4026973b): at least 4 of these 7 papers READ (full text of the cited edition, or an edition shown to carry the same statement, reached), with attempted and read reported as two numbers."
+      },
+      {
+        "session": 4,
+        "plannedOn": "2026-10-02",
+        "keys": [
+          "Mac",
+          "ExT",
+          "Ex16",
+          "HaKr1"
+        ],
+        "bounds": 21,
+        "order": "Planned and committed before any of these papers was opened. The commit that adds the readings comes after it in history. The next four keys of the derived census order, covering frame positions 28, 30, 32, 34, 54, 56, 67, 71, 73, 75, 85, 91 and 101 (Mac, 13 bounds), 29, 35, 55, 68 and 70 (ExT, 5), 31 (Ex16) and 33 and 51 (HaKr1). The tripwire in A-54.rebuildCheckpoint2026_09_28 was applied first and did not fire: 25 papers remaining against 4 x 8 census slots through 2026-10-16 (10-02 through 10-16, counting today) = 32. Four papers and not seven because Mac alone needs thirteen verdicts, which rebuildCheckpoint2026_09_28 named in advance; four is the floor for papers ATTEMPTED. Attempted and read are reported as two numbers."
       }
     ]
   }
