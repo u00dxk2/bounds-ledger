@@ -2469,6 +2469,24 @@
       "closedAt": "2026-10-01",
       "lastEvaluated": "2026-10-01",
       "notes": " | CLOSED 2026-10-01 (round 2 P3, orchestrator review bus 3a2f74d0). The read badge now names its row, as the tried line has since 2026-09-29: badgeFor -> namedRows in scripts/render-constant-pages.mjs names the rows carrying the badge's verdict, one per row, as \"the row shown\" or \"another row\" by whole-row equality with the pins. Commits 60f9242..cbb5a7b, pushed f2683e7..cbb5a7b and published. closeWhen met: a selftest records both answers (render-site.mjs: \"a read badge beside a row that was not read must name the row that was\" and \"a read badge on the row shown must say it is that row\"), and each went RED when red-armed (badge text reverted to BADGE[worst]; pins replaced by []). readCommand result: `render-site.mjs --check` passes inside `npm run verify` (receipt exit 0 at cbb5a7b). The LIVE 15a row, read at 2026-10-02T00:37Z from https://u00dxk2.github.io/bounds-ledger/ at 390px, shows \"checked against material for its cited source: another row, 2.371866 [DWZ2022]\" beside the shown row 2.371177 [DEKMRSZAWB2026]. The badge wording changed in the same ship: the six Codex review rounds refuted every sentence saying the cited source itself was read."
+    },
+    {
+      "id": "A-63",
+      "type": "active",
+      "status": "open",
+      "title": "A constant page does not say WHICH claim in a row was checked",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-10-06",
+      "links": [
+        "A-47",
+        "A-62"
+      ],
+      "note": "FILED 2026-10-01 at the round-2 P5, on the orchestrator's P3 review (bus b4c1dede), which asked for a ledger row rather than a primer line. WHY: after six Codex review rounds on the round-2 ship (commits 60f9242..cbb5a7b), every reading sentence on the public pages claims only 'what we read supports / does not support / could not settle the claim we checked in this row'. That is true by construction, and a reader cannot see WHICH claim. On 15a the reading excluded the row's 'and subsequent improvements' clause (A-47-0051's claimChecked); on 26a it checked only the comment's attribution, not the bound (A-47-0041); on 20a 'settles part of the row' never says which part. The store holds that answer in each audit's claimChecked field, and the renderer does not publish it. CAUTION FOR WHOEVER BUILDS IT: claimChecked is written for us ('Named before reading, verbatim from A-47.slice11Draw...'), so publishing it verbatim would put internal process text on a public page. It needs a reader-facing form, and that form is a method sentence: give it its own review angle first (memory: method-sentence-fails-every-time).",
+      "onTrigger": "On 2026-10-06 or the next product round, whichever comes first: decide whether this is that round's change. If yes, render a reader-facing statement of the claim checked beside each read verdict, with a selftest that fails when a read verdict has no named claim, and a red-arm. If no, re-date with the reason.",
+      "closeWhen": "Every read verdict on a constant page names the claim that was checked, proven by a selftest with both answers recorded and a live read of c/15a.html and c/26a.html; or this row is closed with a written decision not to change it.",
+      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-constant-pages.mjs --check — PASS means c/ matches its renderer; then read c/15a.html: a read verdict saying 'the claim we checked in this row' with no statement of which claim means this row is still open",
+      "created": "2026-10-01",
+      "updated": "2026-10-01"
     }
   ],
   "meta": {
