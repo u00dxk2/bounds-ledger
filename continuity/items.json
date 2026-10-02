@@ -2487,6 +2487,24 @@
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-constant-pages.mjs --check — PASS means c/ matches its renderer; then read c/15a.html: a read verdict saying 'the claim we checked in this row' with no statement of which claim means this row is still open",
       "created": "2026-10-01",
       "updated": "2026-10-01"
+    },
+    {
+      "id": "A-64",
+      "type": "active",
+      "status": "open",
+      "title": "On a desktop screen the index hides both bound columns behind a sideways scroll",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-10-02",
+      "links": [
+        "A-62",
+        "A-63"
+      ],
+      "note": "FILED 2026-10-02 at P1, from the orchestrator's cold walk of round 2 of 2026-10-01 (skylark-site docs/walks/2026-10-02/bounds-ledger.md, findings 1 and 2). WHAT A READER GETS: at 1440 wide the index shows a constant's name and its badge and no bound, with no cue to scroll sideways. MEASURED BY THIS LANE on the live index at 2026-10-02T06:19Z (playwright-cli, viewport 1440x900, page at 89bda4a): column widths 1055 / 81 / 81 / 253; scroll box 1058 visible against 1471 of content; widest badge 1031 across 34 badges. The walk reports 478 / 127 / 200 / 253 and 1058 / 1058 for the page at f2683e7 (its measurement, not re-run here). CAUSE, read in the stylesheet and not yet proven by a change: scripts/render-site.mjs gives .read, .ours and .tried width:max-content with max-width:100%, and a percentage max-width does not limit what a table cell asks for, so A-62's longer badges (commit 69f4160) set the name column's width. SECOND DEFECT, same walk: the constant pages' 'line N' link ends #L<N> (scripts/render-constant-pages.mjs rowLink), and GitHub opens a .md file in its rendered view, where a line anchor does nothing, so the reader lands at the top of the file and not on the row the verdict names.",
+      "onTrigger": "On 2026-10-02, in P3 before the A-54 census session: cap the badge width so it wraps and both bound columns show at 1440 without sideways scrolling; point 'line N' at ?plain=1#L<N>. Measure before and after in a browser at 1440 and at 390. Cross-family review before the push.",
+      "closeWhen": "On the live index at 1440 wide the scroll box's content width equals its visible width and each bound column is at least 120px; at 390 wide the page still has no sideways scroll; every 'line N' link on the constant pages ends ?plain=1#L<N>, held by a selftest with both answers recorded, and one such link opened on GitHub shows the code view with that line highlighted.",
+      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check — PASS means index.html matches its renderer; the widths themselves are a browser read at 1440 (playwright-cli goto the live index, resize 1440 900, eval the .scroll clientWidth and scrollWidth and the first row's cell widths)",
+      "created": "2026-10-02",
+      "updated": "2026-10-02"
     }
   ],
   "meta": {
