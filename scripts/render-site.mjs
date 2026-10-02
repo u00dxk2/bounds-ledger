@@ -1144,6 +1144,11 @@ async function selftest() {
     for (const forbidden of [/\brecord\b/i, /\bbest\b/i, /strongest/i, /\bverified\b/i, /\bcorrect\b/i, /\bcurrent\b/i, /\blatest\b/i]) {
       assert.ok(!forbidden.test(b[0]), `the ${verdict} badge must make no record claim — matched ${forbidden}`);
     }
+    // Review round 5 (R5-6a): 22a's and 32a's badges said "read against its source" where only a
+    // preprint was read; no badge may say the source itself was read, or that a cited source fails a row.
+    for (const claim of [/>read against/, /a cited source does not support/]) {
+      assert.ok(!claim.test(b[0]), `the ${verdict} badge must claim only what was checked — matched ${claim}`);
+    }
   }
 
   // 7. SILENT on a constant with no reading, on the same page as one that has one.
@@ -1226,7 +1231,7 @@ async function selftest() {
 
   // EQUALITY PINS LAST.
   assert.match(sound[0], /href="c\/87a\.html"/, "the badge must link the constant's own page, where the row and verdict live");
-  assert.equal(sound[1], "read against its cited source: another row, 857.5662 [Ref2026]");
+  assert.equal(sound[1], "checked against material for its cited source: another row, 857.5662 [Ref2026]");
 
   // An OPEN report reads "open" and gets no date — a closed-on date on an open report would be
   // a fabricated fact, and the label builds that date from state rather than from presence.

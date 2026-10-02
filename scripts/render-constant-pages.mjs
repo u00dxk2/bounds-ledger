@@ -346,9 +346,9 @@ export const isBoundRead = (a) => a.leg === "value-vs-source" && READ_VERDICTS.h
  * or implies the row is the strongest or most recent bound (see DISCLAIMER).
  */
 const BADGE = {
-  DEFECTIVE: "a cited source does not support a row",
-  UNRESOLVED: "read against its source, not settled",
-  SOUND: "read against its cited source",
+  DEFECTIVE: "what we read does not support a claim in a row",
+  UNRESOLVED: "checked against material for its source, not settled",
+  SOUND: "checked against material for its cited source",
 };
 const BADGE_SEVERITY = ["DEFECTIVE", "UNRESOLVED", "SOUND"];
 
@@ -560,7 +560,7 @@ export function auditBlock(id, store, shown = []) {
     const what = leg ? `${esc(leg)}${valueHtml}${leg === "bound row" && !stale ? rowLink(a) : ""} ${cites} ` : "";
     const note = a.sourceRead ? ` (${esc(a.sourceRead)})` : "";
     const verdictText = stale
-      ? (READ_VERDICTS.has(a.verdict) ? "this row was read against its cited source on an earlier version of the table, and the row at that line has since changed or cannot be matched, so this verdict says nothing about the row there now" : "a check of this row was attempted on an earlier version of the table and the cited source could not be read; the row at that line has since changed or cannot be matched, so nothing is said about the row there now")
+      ? (READ_VERDICTS.has(a.verdict) ? "this row was checked against material for its cited source on an earlier version of the table, and the row at that line has since changed or cannot be matched, so this verdict says nothing about the row there now" : "a check of this row was attempted on an earlier version of the table and the cited source could not be read; the row at that line has since changed or cannot be matched, so nothing is said about the row there now")
       : a.verdict === "UNREACHABLE" && attemptDate(a.fetchedAt) ? `${v.text} (tried ${attemptDate(a.fetchedAt)})`
         // A reference-entry check is not a row (87a, found reading every rendered verdict line).
         : leg === "reference entry" ? v.text.replace(/ in this row$/, " in this entry") : v.text;
@@ -614,8 +614,8 @@ export function auditBlock(id, store, shown = []) {
   if (boundHere > 0) {
     const split = `${boundHere} bound row(s) here have been checked against material for their cited source (${sysHere} drawn by position, ${susHere} chosen because something already looked wrong).`;
     parts.push(citedOk
-      ? `${split} Across this whole ledger ${drawnAll} row(s) have been drawn by position, against ${esc(String(cited))} rows that name a source${when ? `, counted on ${esc(when)}` : ""}: the sources of ${drawnRead} were read and ${drawnUnread} could not be read at all. ${susAll} more were chosen for suspicion and read; they are counted apart, because a set selected for suspicion carries no rate.`
-      : `${split} Across this whole ledger ${drawnAll} row(s) have been drawn by position (the sources of ${drawnRead} were read and ${drawnUnread} could not be read at all) and ${susAll} more were chosen for suspicion and read. The size of the corpus they came from is not recorded, so this is a count and not a proportion.`);
+      ? `${split} Across this whole ledger ${drawnAll} row(s) have been drawn by position, against ${esc(String(cited))} rows that name a source${when ? `, counted on ${esc(when)}` : ""}: ${drawnRead} were checked against material for their cited sources and for ${drawnUnread} the cited source could not be read at all. ${susAll} more were chosen for suspicion and checked; they are counted apart, because a set selected for suspicion carries no rate.`
+      : `${split} Across this whole ledger ${drawnAll} row(s) have been drawn by position (${drawnRead} were checked against material for their cited sources and for ${drawnUnread} the cited source could not be read at all) and ${susAll} more were chosen for suspicion and checked. The size of the corpus they came from is not recorded, so this is a count and not a proportion.`);
   }
   // NAMED, NOT COUNTED (2026-09-29, round 3): "1 further bound row(s) here were attempted" did not say
   // which row, and with nothing read there was nothing for "further" to be further than.
@@ -844,8 +844,11 @@ function selftest() {
   // MEANING FIRST, the exact wording pins after it.
   // Round 4 (B3): the HEADING and the COUNT said the same thing on 22a and 32a ("Read against its cited
   // source", "have been read against their cited source") where only a preprint was read.
+  // Round 5 (R5-3a/b): the CLASS, closed from an enumeration of every rendered sentence about reading a
+  // source, not one surface per round: the ledger-wide count and the suspicion clause said "were read".
   for (const claim of [/the cited source was read/, /the cited source was reached/, /supports this row/,
-    /<dt>Read against its cited source/, /<dt>Read or tried against its cited source/, /read against their cited source/]) {
+    /<dt>Read against its cited source/, /<dt>Read or tried against its cited source/, /read against their cited source/,
+    /sources of \d+ were read/, /for suspicion and read/]) {
     assert.ok(!claim.test(audited), `a read verdict must claim only what its verdict guarantees — matched ${claim}`);
   }
   //   T-2 is a reference-entry check, which is not a row (87a's page said "in this row" for one).
@@ -902,6 +905,7 @@ function selftest() {
   //      A STALE row gets no phrase: we cannot prove what the row at that line is today.
   const stalePage = renderPage(row, "abc1234def", { audits: [{ ...store.audits[0], inMirror: false }], corpus: { citedRows: 999 } });
   assert.ok(stalePage.includes("earlier version of the table"), "positive control: the stale verdict rendered");
+  assert.ok(!/was read against its cited source/.test(stalePage), "a stale read verdict must not say the cited source itself was read (R5-3b)");
   assert.deepEqual(rel(stalePage), [], "a stale verdict must not be placed relative to the rows shown");
 
   // (c3) "upstream source" opens the RENDERED GitHub page, never raw markdown (cold walk, finding 2):
@@ -1133,7 +1137,7 @@ function selftest() {
   assert.ok(/1 drawn by position, 1 chosen because/.test(mixed), "the per-page count names both populations");
   assert.ok(/ledger 1 row\(s\) have been drawn by position, against 999 rows/.test(mixed),
     "the ledger-wide coverage figure counts ONLY the rows drawn by position");
-  assert.ok(/1 more were chosen for suspicion and read; they are counted apart/.test(mixed), "and the suspicion-drawn rows are stated beside it, not hidden");
+  assert.ok(/1 more were chosen for suspicion and checked; they are counted apart/.test(mixed), "and the suspicion-drawn rows are stated beside it, not hidden");
 
   // ...and ONE ROW AUDITED TWICE under different selections is ONE row, in ONE group. Found by
   // adversarial review 2026-09-13: counting each group's rows independently printed "1 bound row(s)
@@ -1175,7 +1179,7 @@ function selftest() {
   });
   assert.ok(drawnUnread.includes("<dt>Checked or tried against material for its cited source</dt>"), "positive control: the drawn-but-unread fixture renders a block, headed as both");
   assert.ok(/ledger 2 row\(s\) have been drawn by position/.test(drawnUnread), "a drawn row whose source could not be read is still a draw, and is counted as one");
-  assert.ok(/the sources of 1 were read and 1 could not be read at all/.test(drawnUnread), "the sentence says how many drawn rows were read and how many were not");
+  assert.ok(/1 were checked against material for their cited sources and for 1 the cited source could not be read at all/.test(drawnUnread), "the sentence says how many drawn rows were read and how many were not");
 
   // ...and the prohibition runs on THIS new surface too, which is the guard that was missing when
   // the audit block itself was added (2026-09-10) and again when a second render path appeared.
