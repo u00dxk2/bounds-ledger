@@ -1212,10 +1212,15 @@ function selftest() {
   assert.ok(valued.includes("0.380876"), "a VERIFIED bound row must show the value that was checked, not only its line and citation");
   assert.ok(!valued.includes("9.111111"), "a reference entry must not print a first cell as though it were a checked bound");
   // THE LINE LINK LANDS ON ITS LINE (A-64, 2026-10-02). MEANING first: the anchor must be one GitHub
-  // honours, and it only does in the code view. The stale assertions below assert the link is ABSENT
-  // by collecting every #L href whatever its shape: the old pattern named the pre-A-64 shape, so the
-  // moment the shape changed it would have passed on a stale row that DID link.
+  // honours, and it only does in the code view. `lineLinks` reads the ONE shape rowLink emits (a
+  // double-quoted href ending #L<digits>) and is used for the POSITIVE assertions only. The stale
+  // assertions below assert ABSENCE with `hasLineAnchor`, which asks only whether "#L<digit>" occurs
+  // anywhere in the page, so no change of attribute shape can make them pass on a stale row that links
+  // (Codex review of f573da8, 2026-10-02: the first version used lineLinks for both and its comment
+  // claimed it saw every shape, which its pattern does not). The old pattern named the pre-A-64 shape
+  // outright, so the moment that shape changed it would have passed vacuously.
   const lineLinks = (html) => [...html.matchAll(/href="([^"]*#L\d+)"/g)].map((m) => m[1]);
+  const hasLineAnchor = (html) => /#L\d/.test(html);
   assert.equal(lineLinks(valued).length, 1, "positive control: a verified bound row carries exactly one line link (the reference entry carries none)");
   assert.match(lineLinks(valued)[0], /\?plain=1#L24$/, "a line link must open GitHub's code view (?plain=1), or the #L anchor does nothing and the reader lands at the top of the file");
   assert.match(lineLinks(valued)[0], /\/blob\/main\/ledger\/x\/9z\.md\?plain=1#L24$/, "and it must name the audited row's own file and line");
@@ -1224,6 +1229,7 @@ function selftest() {
   const attemptedHrefs = lineLinks(attemptedLive).map((h) => h.replace(/^.*\//, ""));
   assert.ok(attemptedHrefs.length > 0 && attemptedHrefs.every((h) => h === "9z.md?plain=1#L24"),
     `an attempted row that still stands at its line is linked the same way — got ${JSON.stringify(attemptedHrefs)}`);
+  assert.ok(hasLineAnchor(valued) && hasLineAnchor(attemptedLive), "positive control for hasLineAnchor: both live fixtures carry a line anchor, so its absences below are not vacuous");
 
   // A PINNED audit whose identity can no longer be proved renders as HISTORICAL (review round 2): the
   // reading is kept, but the page must not say the source supports the row, must not link the live
@@ -1233,7 +1239,7 @@ function selftest() {
     const html = renderPage(row, "abc1234def", { audits: [a], corpus: { citedRows: 999, measuredAt: "2026-01-02" } });
     assert.ok(html.includes("says nothing about the row there now"), `(${msg}) a pinned audit that fails identity must render as HISTORICAL`);
     assert.ok(!html.includes("supports the claim we checked"), `(${msg}) and must NOT say the cited source supports the row there now`);
-    assert.deepEqual(lineLinks(html), [], `(${msg}) and must NOT link the live line a reader would land on`);
+    assert.ok(!hasLineAnchor(html), `(${msg}) and must NOT link the live line a reader would land on`);
     assert.ok(!/have been checked against material for their cited source/.test(html), `(${msg}) and must NOT be counted as read`);
     assert.ok(/no longer match the current table/.test(html), `(${msg}) and the page must disclose it rather than drop it`);
     return html;
@@ -1261,7 +1267,7 @@ function selftest() {
   // (6) REVIEW ROUND 3, second reproduction: a stale UNREACHABLE audit must NOT claim the source was read.
   const staleUnreach = renderPage(row, "abc1234def", { audits: [{ ...goodRow, verdict: "UNREACHABLE", inMirror: false }], corpus: { citedRows: 999, measuredAt: "2026-01-02" } });
   // FIRST, because a highlighted line is the most confident wrong answer a stale row can give (A-64).
-  assert.deepEqual(lineLinks(staleUnreach), [], "an attempted row that no longer stands at its line must carry no line link: the link highlights ONE line, and that line now holds a different row (positive control: attemptedLive above)");
+  assert.ok(!hasLineAnchor(staleUnreach), "an attempted row that no longer stands at its line must carry no line link: the link highlights ONE line, and that line now holds a different row (positive control: attemptedLive above)");
   assert.ok(staleUnreach.includes("attempted on an earlier version of the table and the cited source could not be read"), "a stale UNREACHABLE audit must say a check was ATTEMPTED, not that the source was read");
   assert.ok(!staleUnreach.includes("was read against its cited source"), "and must never claim the source was read");
   assert.ok(staleUnreach.includes("the source we could not read"), "positive control: its link text still says the source could not be read");
