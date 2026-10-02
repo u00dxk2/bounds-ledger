@@ -57,7 +57,7 @@ We also read four more of the papers that the Ramsey-number survey credits, cove
 - `f573da8`'s commit body says the selftest helper collects "every #L href whatever its shape". Its pattern read one shape. Corrected in `25dd1b4`.
 - `6ec8eac`'s commit body says of the Mac thesis "neither proves nor claims any of them", "Every Ramsey bound the thesis text states was listed (21 lines)", and that Ex16 is "SOUND by recomputation". The first is too strong (the thesis states them), the second describes a search as a census, and the third was changed to UNRESOLVED with the recomputation stored apart. The entries now carry the corrected wording.
 
-**Not measured.** Between about 897 and 938 wide the index table's 56rem minimum exceeds its box. Named by the manager review and by Codex; older than today's change. Release: `playwright-cli` on the live index, `resize 920 800`, then compare `.scroll`'s clientWidth and scrollWidth.
+**Measured at the close, by the orchestrator: now `A-66`.** Between about 897 and 938 wide the index table's 56rem minimum exceeds its box. At 920 wide the live box read 878 visible against 896 of content (the orchestrator's read, about 2026-10-02T08:04Z). Release: `playwright-cli` on the live index, `resize 920 900`, then compare `.scroll`'s clientWidth and scrollWidth.
 <!-- findings:end -->
 
 ## Inputs (controllable)
@@ -146,3 +146,20 @@ On the live index at 1440 wide the scroll box's content width equals its visible
 - CI: GREEN at `89bda4a`. Drift: NOTHING SWEPT.
 - Harness: running 2.1.287 · fleet UNIFORM · installed 2.1.287 (SAME).
 - Recs yesterday: census session 4 on `A-54` → carrying today, P3, after `A-64`. `A-47` (the depth audit) slice 12 → carrying, dated 2026-10-03. Decide `A-62` by 2026-10-06 → executed (closed in round 2, commit `69f4160`).
+
+### Close
+
+ACTION: COMPLETED · item `A-64` (the desktop index hid both bound columns) · P3 279db3cd
+
+- **Acceptance met, and re-measured by the orchestrator** (its P3 review, bus e874cf67, its own browser read at about 08:04Z): at 1440 wide the scroll box is 1058 / 1058 with columns 381 / 154 / 269 / 253; at 390 wide the document is 390 / 390; at 1024 the box is 982 / 982. Those are this lane's numbers. The highlighted-line read on GitHub is this lane's alone.
+- **State changed since the P3 post:** CI on `78fa36d` settled GREEN (the orchestrator's `gh run list` read; the P3 post said pending). Not re-read by this lane.
+- **Receipt:** the P3 receipt stands unchanged. Exposure is still blind (`A-59`, the encounter read) and the outcome is open.
+- **Hygiene draft: 1 line — 1 accepted · 0 amended · 0 rejected.** `A-54` (the Small Ramsey Numbers census) re-dated to 2026-10-04, the next census slot, because session 4's readings landed today. The draft's READ-MUTATED line, quoted: "READ-MUTATED A-54 scripts/render-constant-pages.mjs — NOT named in the readCommand: may be the lane's own concurrent P3 edit; lane checks". Checked: it was this lane's own `A-64` edit, in progress while the helper ran. Its two checks: wait-justification "RESULT: PASS — 1 of 80 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)"; engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable". The helper also asked whether `A-54`'s stored read should move to the census counter. Judged: no change today. The stored read watches for a new survey revision, which the row still owes, and the census counter is named in the row's `onTrigger`.
+- **Due gates:** `check-due-gates-dispositioned` printed "verdict: CLEAR — every gate due at Phase 0 was dispositioned." and "snapshot CURRENT: taken today (2026-10-02)".
+- **Ledger delta at the close:**
+  - `A-66` minted (between about 897 and 938 wide the index table scrolls sideways inside its box), due 2026-10-06. It records the orchestrator's read at 920 wide, 878 visible against 896 of content, with its read command. Both stylesheet rules behind it are in `index.html` at `e120c4d`, the commit before today's fix, so the band is older than `A-64`; nobody measured the earlier page at that width. This replaces the "Not measured" line in the findings block above.
+  - `A-64` gains its two linked commits, `f573da8` and `25dd1b4`.
+  - `node scripts/sky.mjs continuity-check.mjs` reads WARN on one finding, UNTRACKED_COMMITS (21 commits in 48 hours not linked from any row). It is not new today and is not resolved today.
+- **Does marking the Mackey cells need David before 2026-10-18? No card is filed, and here is why.** His 2026-09-20 ruling already gives the wording for a value we could not independently source: "credited to the survey and not independently checked". Marking the ten cells that way applies his sentence and asks nothing new of him. The Ex16 cell (verified by recomputing its colouring) follows the reading already recorded on the `A-54` row and used for one earlier cell. The rendered page gets its own cross-family review at the 2026-10-20 slot before the freeze lifts. What WOULD need his word, and is not being asked: telling the survey's author. That waits on the 1993 report being read.
+- **Pending reads, each on its row:** 2026-10-03 `A-47` slice 12 (the depth audit of the constants ledger). 2026-10-04 `A-54` census session 5. 2026-10-06 `A-63` (which claim a verdict checked), `A-65` (the stale source line on the 10c page) and `A-66`. 2026-10-08 at the latest, the blocked-paper retry on `A-54`. 2026-10-28 `A-59`.
+- **UNRESOLVED at the close:** none of the day's gates. The ten Mac verdicts are UNRESOLVED as verdicts, by design.
