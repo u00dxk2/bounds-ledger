@@ -220,3 +220,21 @@ On the live index, with `10.02` in the filter, the matching row's top is inside 
 - (a) due rows not bearing on the choice: none — read "dated gates due today: 0". The morning snapshot stands: a re-snapshot at this P1 was refused with exit 2 because it would drop `A-54`, which round 1's close re-dated to 2026-10-04.
 - (b) owed child rows: none — read "rows owed to you in skylark-site's ledger: 0 of 739 considered".
 - (c) state reads marked CROSSED: none — read the kickoff's state reads. Two could not be judged and are not zeros: missingLinkedCommits "NOTHING SWEPT (0 of 0 considered)", and key numbers "no list yet".
+
+
+### Close (round 2)
+
+ACTION: COMPLETED · item `A-67` (on the index a pasted number's matching row lands below the first screen) · P3 bus msgId d0b37bf7
+
+- **Acceptance met on the live page,** read at about 17:16Z with `playwright-cli` on https://u00dxk2.github.io/bounds-ledger/, after `npm run served` printed "SERVED index.html 325443 bytes" and `check-ci-status` read GREEN at `6b65190`. With `10.02` typed: at 1440×900 the matched row's top moved from 1139 to 483 and both bound values end by 633; at 393×659 the row's top moved from 1239 to 553. The snapshot note is on the page, after the table, and named from the freshness line above it. The orchestrator's P3 review (bus 887c47de) read it COMPLETED.
+- **Not met, and carried:** on the 393×659 phone the first bound value runs 680 to 711, about 21px under the fold. The not-the-record caveat added in review costs about 42px there. Filed as `A-68`.
+- **`A-66` (the sideways scroll) closed on the same read:** scroll box content equals visible width at 900, 920, 940 and 960, with 390 and 1440 unchanged from `A-64`'s close read.
+- **Review:** three Codex read-only rounds, banner workdir checked each time. After the third round found the same class of bypass one scope up, the selftest stopped enumerating: it pins the exact first-screen block and says it does not test visibility.
+- **Receipt:** the P3 receipt stands unchanged. Exposure is blind (`A-59`, the encounter read); the outcome is open.
+- **Hygiene draft (round 2): 0 lines — 0 accepted · 0 amended · 0 rejected.** No READ-MUTATED lines. Its two checks, quoted: wait-justification "RESULT: PASS — 1 of 83 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)"; engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable".
+- **Due gates:** `check-due-gates-dispositioned` printed "verdict: CLEAR — every gate due at Phase 0 was dispositioned." and "snapshot CURRENT: taken today (2026-10-02)".
+- **Ledger delta:** `A-66` and `A-67` closed, each with its live read. `A-67` was minted at this round's P1. `A-68` minted, due 2026-10-09: on a 393×659 phone the matched row's first bound value starts below the fold.
+- **Ids still named after the close** (`grep A-6[67]` over `scripts/`, `docs/` and root `*.md`: 16 hits in 3 files): `scripts/render-site.mjs` 5, which are code comments recording why the breakpoint and the order are what they are; `docs/cold-starts/2026-10-02.md` 3; this report 8. All are historical and none still cites either row as open.
+- **Process:** `npm test` through the PowerShell tool hung more than ten minutes inside `render-constant-pages --selftest`; the same selftest passed alone through Bash in seconds, and the whole suite exited 0 through Bash. Run the suite through Bash.
+- **Pending reads, each on its row:** 2026-10-03 `A-47` slice 12. 2026-10-04 `A-54` census session 5. 2026-10-06 `A-63` and `A-65`. 2026-10-08 at the latest, the `A-54` blocked-paper retry. 2026-10-09 `A-68`. 2026-10-28 `A-59`.
+- **UNRESOLVED at the close:** none.

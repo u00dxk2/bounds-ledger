@@ -2535,7 +2535,7 @@
     {
       "id": "A-66",
       "type": "active",
-      "status": "open",
+      "status": "closed",
       "title": "Between about 897 and 938 wide the index table scrolls sideways inside its box",
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-10-06",
@@ -2547,12 +2547,15 @@
       "closeWhen": "On the live index the scroll box's content width equals its visible width at 900, 920, 940 and 960 wide, with 390 and 1440 unchanged from A-64's close read.",
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check — PASS means index.html matches its renderer; the width is a browser read: playwright-cli goto the live index, resize 920 900, then compare the .scroll element's clientWidth and scrollWidth (878 against 896 on 2026-10-02 means still open; equal means fixed at that width)",
       "created": "2026-10-02",
-      "updated": "2026-10-02"
+      "updated": "2026-10-02",
+      "closedAt": "2026-10-02",
+      "lastEvaluated": "2026-10-02",
+      "notes": " | CLOSED 2026-10-02 (round 2) at 6b651909279951db92d9bc0edb4afe488966017a: the card layout now starts at 60rem. closeWhen met on the LIVE index (playwright-cli, https://u00dxk2.github.io/bounds-ledger/, about 17:16Z, after npm run served printed \"SERVED index.html 325443 bytes\"). Scroll box clientWidth/scrollWidth: 900 860/860, 920 880/880, 940 900/900, 960 920/920; 390 350/350 and 1440 1058/1058, unchanged from A-64's close read. Before: 920 wide was 878/896 (the orchestrator's read). Cross-family review: three Codex read-only rounds (P3 d0b37bf7). Manager review COMPLETED (bus 887c47de)."
     },
     {
       "id": "A-67",
       "type": "active",
-      "status": "open",
+      "status": "closed",
       "title": "On the index a pasted number's matching row lands below the first screen, under the explanatory notes",
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-10-06",
@@ -2564,6 +2567,26 @@
       "onTrigger": "Round 2 of 2026-10-02 (selected at P1): put the filter controls and count directly under the lede so the table follows the count, and move the note and the two hint paragraphs below the table, with a one-line pointer above the table to the notes before citing. Measure the walker's two reads before and after on a served copy, then live. Cross-family review of the moved and new text before the push.",
       "closeWhen": "On the live index, with 10.02 typed into the filter, the matching row's top is inside the first screen on a 393x659 phone and a 1440x900 desktop; the snapshot disclaimer is still on the page and named from above the table; render-site --check passes.",
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check — PASS means index.html matches its renderer; the position is a browser read: playwright-cli goto the live index, resize 1440 900, fill #q with 10.02, then compare the first visible tbody tr's getBoundingClientRect().top with window.innerHeight (1139 against 900 on 2026-10-02 means still open; below innerHeight means fixed at that size)",
+      "created": "2026-10-02",
+      "updated": "2026-10-02",
+      "closedAt": "2026-10-02",
+      "lastEvaluated": "2026-10-02",
+      "notes": " | CLOSED 2026-10-02 (round 2) at 6b651909279951db92d9bc0edb4afe488966017a (commits 1a2f8dc..6b65190). The index now runs lede, filter, freshness line, count, table, with the note and hints moved, unchanged, below the table in #notes. closeWhen met on the LIVE index (playwright-cli, about 17:16Z, after npm run served SERVED index.html; CI GREEN at 6b65190), with 10.02 typed into the filter. 1440x900: box 227, matched row c-22a top 483 (was 1139), both bound values ending at 597 and 633. 393x659: box 294, row top 553 (was 1239). The snapshot note is on the page, visible, after the table, and named from the freshness line above it. render-site --check PASS. NOT met and carried to A-68: on the 393x659 phone the first bound value runs 680-711, about 21px below the fold. Encounter blind (A-59); outcome open. P3 d0b37bf7; manager review COMPLETED (bus 887c47de)."
+    },
+    {
+      "id": "A-68",
+      "type": "active",
+      "status": "open",
+      "title": "On a phone, a pasted number's matching row shows its name but its first bound value starts below the first screen",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-10-09",
+      "links": [
+        "A-67"
+      ],
+      "note": "FILED 2026-10-02 at round 2's close, on the orchestrator's P3 review (bus 887c47de), as the follow-up A-67 named. THE READ, this lane's own, on the live index at 6b65190 at about 17:16Z (playwright-cli, viewport 393x659, 10.02 typed into the filter): filter box top 294, matched row c-22a top 553, upper-bound code 680-711, lower-bound code 771-892. So the row's name and id are on the first screen and its first bound value starts about 21px below the fold. The one-line not-the-record caveat added in review costs about 42px there; without it the first line of the value was on screen (local read before that commit: upper-bound code 637-668). Desktop at 1440x900 is unaffected: both values end by 633. Do not drop the caveat to win the pixels: it was moved above the table because review found the record caveat otherwise sat below all 115 constants.",
+      "onTrigger": "By 2026-10-09 or the next front-page round: make the first bound value of a single matched row visible on a 393x659 first screen without removing the freshness line or its caveat. Candidates, measure before choosing: a shorter lede or h1 margin on narrow screens, scrolling the single remaining match into view after filtering, or showing the matched bound value inside the card's first line. Measure 393x659 and 390x844 before and after, and 1440x900 for no change. Cross-family review before the push.",
+      "closeWhen": "On the live index with 10.02 typed, at 393x659 the matched row's first bound value (the first td code) has its bottom inside window.innerHeight; 1440x900 still shows both values; the freshness line and its not-the-record caveat are unchanged; render-site --check passes.",
+      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check — PASS means index.html matches its renderer; the position is a browser read: playwright-cli goto the live index, resize 393 659, fill #q with 10.02, then compare the first visible row's first td code getBoundingClientRect().bottom with window.innerHeight (711 against 659 on 2026-10-02 means still open; below 659 means fixed)",
       "created": "2026-10-02",
       "updated": "2026-10-02"
     }
