@@ -573,6 +573,15 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   // in #notes, moved and not reworded. A number pasted into the filter used to land its row 709px
   // (desktop) to 929px (phone) below the box. The freshness line repeats the note's own date fact so
   // the first screen still says this is a snapshot and where the live read is.
+  // NOTE on the card order (A-68, 2026-10-02): below the breakpoint the row's th is display:contents
+  // and the row a flex column, so the name and id stay on top, the bound cells come next, and the
+  // badges (.ours/.read/.tried, which carry their own numbers, e.g. "another row, 12.63") follow the
+  // bound cells. A phone reader who pasted 10.02 used to meet 12.63 first and their own value 21px
+  // below the 393x659 fold. Only the VISUAL order moves: the DOM order, and with it reading and focus
+  // order, is unchanged, and the badges stay inside the th. Measured in Chromium that the row keeps
+  // its rowheader with display:contents; Safari is not measured. A th with no box cannot carry the
+  // landed-row marker (tr:target th's inset shadow), so the card layout puts it on the tr. The trimmed .wrap and .lede spacing
+  // here is the last few pixels; the freshness line and its not-the-record caveat are untouched.
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
 <th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}</th>
@@ -645,10 +654,19 @@ tr{display:block;border:1px solid var(--line);border-radius:8px;margin:0 0 .75re
 th,td{display:block;border-bottom:0;padding:.45rem .8rem}
 tbody th{min-width:0;padding-top:.7rem}
 .ours,.read,.tried{max-width:100%}
+tbody tr{display:flex;flex-direction:column}
+tbody th{display:contents}
+tbody th>*{order:0;margin-left:.8rem;margin-right:.8rem}
+tbody th>a:first-child{padding-top:.7rem}
+tbody td{order:1}
+tbody th>.ours,tbody th>.read,tbody th>.tried{order:2;margin-top:0;margin-bottom:.45rem}
+tbody td.src{order:3}
+tr:target{box-shadow:inset 3px 0 0 var(--accent);background:var(--code)}
+.lede{margin-bottom:1rem}
 td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
 .src{white-space:normal;padding-bottom:.7rem}
 .cite code{max-width:none}
-.wrap{padding-top:1.5rem}
+.wrap{padding-top:1rem}
 .controls{gap:.6rem 1.5rem}
 .ctl{min-width:0;max-width:100%}
 .fresh{margin-top:.6rem}
@@ -883,6 +901,27 @@ async function selftest() {
     '<p class="fresh">Snapshot: this mirror last changed on <strong>2026-08-20</strong>, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Each bound row shown is the last-listed row of its table, not a claim about which bound is &ldquo;the record.&rdquo; Read <a href="#notes">the notes below the table</a> before citing a number.</p>',
     '<p class="count" id="count">2 constants</p>',
   ].join("\n"), "the first-screen block (lede, controls, freshness line, count) is pinned exactly");
+  // THE CARD ORDER (A-68, 2026-10-02). Below the breakpoint the badges carry numbers of their own
+  // ("another row, 12.63"), so they must come AFTER the bound cells or a phone reader meets them
+  // before the value they pasted. Same limit as the A-67 block above: this reads the stylesheet's
+  // SOURCE TEXT, never layout; whether a phone shows the value above the fold is A-68's browser read.
+  // Meaning first, the exact pin last.
+  const cardStart = html.indexOf("@media(max-width:60rem){");
+  assert.ok(cardStart > -1, "positive control: the card-layout block must exist");
+  const card = html.slice(cardStart, html.indexOf("\n}\n", cardStart));
+  assert.ok(card.includes("\ntbody th{display:contents}\n"), "on the card layout the th must not box its badges above the bound cells");
+  assert.ok(card.includes("\ntbody th>.ours,tbody th>.read,tbody th>.tried{order:2;"), "on the card layout the badges must be ordered after the bound cells");
+  assert.ok(card.includes("\ntr:target{box-shadow:inset 3px 0 0 var(--accent);"), "a th with no box cannot mark the landed row, so the card layout must mark the tr");
+  assert.ok(card.includes([
+    "tbody tr{display:flex;flex-direction:column}",
+    "tbody th{display:contents}",
+    "tbody th>*{order:0;margin-left:.8rem;margin-right:.8rem}",
+    "tbody th>a:first-child{padding-top:.7rem}",
+    "tbody td{order:1}",
+    "tbody th>.ours,tbody th>.read,tbody th>.tried{order:2;margin-top:0;margin-bottom:.45rem}",
+    "tbody td.src{order:3}",
+    "tr:target{box-shadow:inset 3px 0 0 var(--accent);background:var(--code)}",
+  ].join("\n")), "the card-order rules are pinned exactly, in this order");
   // (2) THE PURE FUNCTION: the longest COMPLETED gap. Duplicates collapse, input order does not
   //     matter, malformed dates are ignored, fewer than two dates is null (a shallow clone), and a
   //     tie keeps the earliest gap.
