@@ -377,7 +377,7 @@
       "rowText": "| $0.380876$ | [YKLBMWKCZGS2026] | TTT-Discover |",
       "rowTextSha256": "e19d80316c75fd95",
       "source": "https://arxiv.org/abs/2601.16175",
-      "sourceRead": "read in the body at arXiv — NOT at the URL the reference entry gives, which is dead",
+      "sourceRead": "read in the body at arXiv — NOT at the URL the reference entry gave on 2026-09-05, which was not serving the paper that day (the reference-entry check on this page records that URL's later history)",
       "sourceReadInternal": "arXiv HTML of the full paper (v2, published 2026-01-22)",
       "verdict": "SOUND",
       "evidence": "The value 0.380876 appears 7 times in the paper, at six decimal places, as the result the row attributes to it.",

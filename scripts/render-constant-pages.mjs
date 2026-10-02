@@ -561,7 +561,9 @@ export function auditBlock(id, store, shown = []) {
     const note = a.sourceRead ? ` (${esc(a.sourceRead)})` : "";
     const verdictText = stale
       ? (READ_VERDICTS.has(a.verdict) ? "this row was read against its cited source on an earlier version of the table, and the row at that line has since changed or cannot be matched, so this verdict says nothing about the row there now" : "a check of this row was attempted on an earlier version of the table and the cited source could not be read; the row at that line has since changed or cannot be matched, so nothing is said about the row there now")
-      : a.verdict === "UNREACHABLE" && attemptDate(a.fetchedAt) ? `${v.text} (tried ${attemptDate(a.fetchedAt)})` : v.text;
+      : a.verdict === "UNREACHABLE" && attemptDate(a.fetchedAt) ? `${v.text} (tried ${attemptDate(a.fetchedAt)})`
+        // A reference-entry check is not a row (87a, found reading every rendered verdict line).
+        : leg === "reference entry" ? v.text.replace(/ in this row$/, " in this entry") : v.text;
     return `<li>${relation}${what}<code style="display:inline;padding:.1rem .3rem">[${esc(a.citedRef)}]</code> &mdash; ` +
       `${esc(verdictText)}. <a href="${esc(safeUrl(a.source))}">${esc(v.link)}</a>${note}. ` +
       `<span class="sel">Selected: ${esc(selectionNote(a))}.</span></li>`;
@@ -610,7 +612,7 @@ export function auditBlock(id, store, shown = []) {
 
   const parts = [];
   if (boundHere > 0) {
-    const split = `${boundHere} bound row(s) here have been read against their cited source (${sysHere} drawn by position, ${susHere} chosen because something already looked wrong).`;
+    const split = `${boundHere} bound row(s) here have been checked against material for their cited source (${sysHere} drawn by position, ${susHere} chosen because something already looked wrong).`;
     parts.push(citedOk
       ? `${split} Across this whole ledger ${drawnAll} row(s) have been drawn by position, against ${esc(String(cited))} rows that name a source${when ? `, counted on ${esc(when)}` : ""}: the sources of ${drawnRead} were read and ${drawnUnread} could not be read at all. ${susAll} more were chosen for suspicion and read; they are counted apart, because a set selected for suspicion carries no rate.`
       : `${split} Across this whole ledger ${drawnAll} row(s) have been drawn by position (the sources of ${drawnRead} were read and ${drawnUnread} could not be read at all) and ${susAll} more were chosen for suspicion and read. The size of the corpus they came from is not recorded, so this is a count and not a proportion.`);
@@ -651,9 +653,9 @@ export function auditBlock(id, store, shown = []) {
   const anyTried = mine.some((a) => a.verdict === "UNREACHABLE");
   const triedDates = mine.filter((a) => a.verdict === "UNREACHABLE").map((a) => attemptDate(a.fetchedAt)).filter(Boolean).sort();
   const heading = !anyTried
-    ? "Read against its cited source"
+    ? "Checked against material for its cited source"
     : anyRead
-      ? "Read or tried against its cited source"
+      ? "Checked or tried against material for its cited source"
       : `Tried, could not open its cited source${triedDates.length ? ` (${triedDates[triedDates.length - 1]})` : ""}`;
   return `<dt>${esc(heading)}</dt><dd><ul class="audit">${items}</ul><span class="when">${parts.join(" ")}</span></dd>`;
 }
@@ -832,7 +834,7 @@ function selftest() {
     corpus: { citedRows: 999 },
   });
   assert.ok(!/best known bound/i.test(smuggle), "an unrecognised verdict must never reach the page verbatim");
-  assert.ok(!smuggle.includes("Read against its cited source"), "a store of only unusable rows must render no block at all");
+  assert.ok(!smuggle.includes("Checked against material for its cited source"), "a store of only unusable rows must render no block at all");
   assert.ok(!smuggle.includes('<ul class="audit">'), "no block under either heading");
 
   // (b) MEANING: the verdict is stated in words, and the link text matches the verdict — "the
@@ -840,11 +842,17 @@ function selftest() {
   // Review round 3 (C2): a read verdict must not say the CITED source was read or reached (22a and 32a
   // reached only a preprint), nor that it supports the whole row (15a and 26a checked one claim).
   // MEANING FIRST, the exact wording pins after it.
-  for (const claim of [/the cited source was read/, /the cited source was reached/, /supports this row/]) {
+  // Round 4 (B3): the HEADING and the COUNT said the same thing on 22a and 32a ("Read against its cited
+  // source", "have been read against their cited source") where only a preprint was read.
+  for (const claim of [/the cited source was read/, /the cited source was reached/, /supports this row/,
+    /<dt>Read against its cited source/, /<dt>Read or tried against its cited source/, /read against their cited source/]) {
     assert.ok(!claim.test(audited), `a read verdict must claim only what its verdict guarantees — matched ${claim}`);
   }
+  //   T-2 is a reference-entry check, which is not a row (87a's page said "in this row" for one).
+  assert.ok(!/reference entry citing <code[^>]*>\[REF2\]<\/code> &mdash; [^<]*in this row/.test(audited), "a reference-entry verdict must not call the entry a row");
+  assert.ok(audited.includes("could not settle the claim we checked in this entry"), "positive control: the reference-entry verdict rendered, about the entry");
   assert.ok(audited.includes("what we read supports the claim we checked in this row"), "a SOUND row must say what was done");
-  assert.ok(audited.includes("what we read could not settle the claim we checked in this row"), "UNRESOLVED must read as its own outcome");
+  assert.ok(audited.includes("what we read could not settle the claim we checked in this entry"), "UNRESOLVED must read as its own outcome (the fixture's UNRESOLVED is T-2, a reference entry)");
   const unreach = renderPage(row, "abc1234def", { audits: [{ id: "T-U", constant: "9z", citedRef: "R", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/u", ...pinId("| $7.555555$ | [R] | x |") }], corpus: { citedRows: 999 } });
   assert.ok(!/>source link</.test(unreach), "an UNREACHABLE row must not offer the read verdicts' link text");
   assert.ok(unreach.includes("the source we could not read"), "positive control: UNREACHABLE has its own link text");
@@ -908,7 +916,7 @@ function selftest() {
   // (d) MEANING: only http(s) is rendered. `javascript:` survives attribute escaping.
   const hostileUrl = renderPage(row, "abc1234def", { audits: [{ id: "T-J", constant: "9z", citedRef: "R", leg: "value-vs-source", verdict: "SOUND", source: "javascript:alert(1)" }], corpus: { citedRows: 999 } });
   assert.ok(!/javascript:/i.test(hostileUrl), "a javascript: source must never reach the published page");
-  assert.ok(!hostileUrl.includes("Read against its cited source"), "a row whose only source is unusable is dropped, not rendered link-less");
+  assert.ok(!hostileUrl.includes("Checked against material for its cited source"), "a row whose only source is unusable is dropped, not rendered link-less");
   assert.ok(!hostileUrl.includes('<ul class="audit">'), "no block under either heading");
 
   // (e) MEANING: hostile store text is escaped rather than interpolated as markup.
@@ -916,13 +924,13 @@ function selftest() {
     audits: [{ id: "T-H", constant: "9z", citedRef: '<img src=x onerror=alert(1)>', leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/h", sourceRead: '<b>note</b>' }],
     corpus: { citedRows: 999 },
   });
-  assert.ok(hostileStore.includes("Read against its cited source"), "positive control: the hostile-store page DID render a block, so the absences below are real");
+  assert.ok(hostileStore.includes("Checked against material for its cited source"), "positive control: the hostile-store page DID render a block, so the absences below are real");
   assert.ok(!/<img src=x/.test(hostileStore), "a hostile citedRef reached the page as markup");
   assert.ok(!/<b>note<\/b>/.test(hostileStore), "a hostile sourceRead reached the page as markup");
 
   // (f) MEANING: a malformed entry must not take all 115 pages down with it.
   const withNull = renderPage(row, "abc1234def", { audits: [null, store.audits[0]], corpus: { citedRows: 999 } });
-  assert.ok(withNull.includes("Read against its cited source"), "a null entry beside a good one must not abort rendering");
+  assert.ok(withNull.includes("Checked against material for its cited source"), "a null entry beside a good one must not abort rendering");
 
   // (f2) A-53 (b), 2026-10-01: the renderer above stays robust, and the GENERATORS refuse instead.
   //      Meaning first, the count last, so each mutation names the property it broke.
@@ -1002,7 +1010,7 @@ function selftest() {
     audits: [{ id: "T-R", constant: "9z", citedRef: "R", leg: "citation-well-formed", verdict: "UNRESOLVED", source: "https://example.invalid/r" }],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
-  assert.ok(refOnly.includes("Read against its cited source"), "positive control: the reference-only page renders a block");
+  assert.ok(refOnly.includes("Checked against material for its cited source"), "positive control: the reference-only page renders a block");
   assert.ok(!/also checked/.test(refOnly), "with no bound rows there is no earlier figure for 'also' to refer back to");
   assert.ok(!/that figure/.test(refOnly), "a dangling 'that figure' points at a number the sentence never stated");
   assert.ok(/no bound row of this constant has been read against its source yet/.test(refOnly),
@@ -1027,14 +1035,14 @@ function selftest() {
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
   assert.ok(unreadOnly.includes('<ul class="audit">'), "positive control: the unreachable-only page renders a block");
-  assert.ok(!/have been read against their cited source/.test(unreadOnly),
+  assert.ok(!/have been checked against material for their cited source/.test(unreadOnly),
     "a source that could not be read must not be counted as read");
   assert.ok(/Attempted, and the source could NOT be read/.test(unreadOnly),
     "an attempted-but-unreachable row must be disclosed as its own category");
   // (h4b) THE HEADING SAYS WHAT HAPPENED, AND THE ROW IS NAMED (2026-09-29, round 3). The block was
   //       headed "Read against its cited source" over a bullet saying the source could not be read at
   //       all, and it counted "1 further bound row(s)" without saying which. MEANING first, pins last.
-  assert.ok(!unreadOnly.includes("<dt>Read against its cited source</dt>"), "a block where nothing was read must not be headed as a reading");
+  assert.ok(!unreadOnly.includes("<dt>Checked against material for its cited source</dt>"), "a block where nothing was read must not be headed as a reading");
   assert.ok(unreadOnly.includes("<dt>Tried, could not open its cited source (2026-09-16)</dt>"), "and is headed as an attempt, with the attempt's date");
   assert.ok(unreadOnly.includes("could not be read at all (tried 2026-09-16)"), "the attempted row's own line carries the date the index line promised");
   assert.ok(!/further bound row/.test(unreadOnly), "with nothing read there is nothing for 'further' to be further than");
@@ -1051,7 +1059,7 @@ function selftest() {
   assert.ok(/one of the last-listed rows shown above/.test(shownUnread), "an attempt of a displayed row must say it is one of those shown");
   assert.ok(shownUnread.includes("<dt>Tried, could not open its cited source</dt>"), "an undated attempt gives the heading without a guessed date");
   // A page with a READING keeps the reading heading.
-  assert.ok(audited.includes("<dt>Read against its cited source</dt>"), "a block with a reading keeps the reading heading");
+  assert.ok(audited.includes("<dt>Checked against material for its cited source</dt>"), "a block with a reading keeps the reading heading");
   // (h4c) Review R3 (2026-09-29): a citation-check READING beside a bound row that could only be
   //       TRIED was headed as a reading over the attempt. A block holding both is headed as both.
   const citeReadBoundTried = renderPage(row, "abc1234def", {
@@ -1061,9 +1069,9 @@ function selftest() {
     ],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
-  assert.ok(!citeReadBoundTried.includes("<dt>Read against its cited source</dt>"), "an attempt must not sit under a reading-only heading because a citation check was read");
+  assert.ok(!citeReadBoundTried.includes("<dt>Checked against material for its cited source</dt>"), "an attempt must not sit under a reading-only heading because a citation check was read");
   assert.ok(!citeReadBoundTried.includes("<dt>Tried, could not open"), "nor a reading under an attempt-only heading");
-  assert.ok(citeReadBoundTried.includes("<dt>Read or tried against its cited source</dt>"), "a block with both is headed as both");
+  assert.ok(citeReadBoundTried.includes("<dt>Checked or tried against material for its cited source</dt>"), "a block with both is headed as both");
   // (h4d) Review R2 (2026-09-29): a row that was tried AND later read is a read row. Naming it among
   //       the attempted rows printed "That row is not counted as read" beside a count that included it.
   const triedThenRead = renderPage(row, "abc1234def", {
@@ -1073,7 +1081,7 @@ function selftest() {
     ],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
-  assert.ok(/1 bound row\(s\) here have been read/.test(triedThenRead), "positive control: the row is counted as read");
+  assert.ok(/1 bound row\(s\) here have been checked/.test(triedThenRead), "positive control: the row is counted as read");
   assert.ok(!/not counted as read/.test(triedThenRead), "a row that was read must never also be named as not counted as read");
 
   // (h5) A REPEAT AUDIT OF THE SAME ROW IS ONE ROW. Counting entries let a recheck inflate apparent
@@ -1097,7 +1105,7 @@ function selftest() {
     audits: [{ ...pinned, id: "T-W" }],
     corpus: { citedRows: 999, measuredAt: '<img src=x onerror=alert(1)>' },
   });
-  assert.ok(hostileWhen.includes("Read against its cited source"), "positive control: the hostile-date page renders a block");
+  assert.ok(hostileWhen.includes("Checked against material for its cited source"), "positive control: the hostile-date page renders a block");
   assert.ok(!/<img src=x/.test(hostileWhen), "a hostile measuredAt reached the page as markup");
 
   // (h8) A MALFORMED FIELD TYPE must not abort generation of every page.
@@ -1117,7 +1125,7 @@ function selftest() {
     ],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
-  assert.ok(mixed.includes("Read against its cited source"), "positive control: the mixed-selection page renders a block");
+  assert.ok(mixed.includes("Checked against material for its cited source"), "positive control: the mixed-selection page renders a block");
   assert.ok(mixed.includes("drawn by its position in the list of cited rows, not because it looked wrong"), "a systematic row must say how it was drawn, in plain words that match the count sentence");
   assert.ok(!mixed.includes("drawn by position before it was read"), "the retired jargon label must not come back");
   assert.ok(mixed.includes("chosen because something already looked wrong"), "a suspicion-drawn row must say so on the page, not only in the store");
@@ -1165,7 +1173,7 @@ function selftest() {
     ],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
-  assert.ok(drawnUnread.includes("<dt>Read or tried against its cited source</dt>"), "positive control: the drawn-but-unread fixture renders a block, headed as both");
+  assert.ok(drawnUnread.includes("<dt>Checked or tried against material for its cited source</dt>"), "positive control: the drawn-but-unread fixture renders a block, headed as both");
   assert.ok(/ledger 2 row\(s\) have been drawn by position/.test(drawnUnread), "a drawn row whose source could not be read is still a draw, and is counted as one");
   assert.ok(/the sources of 1 were read and 1 could not be read at all/.test(drawnUnread), "the sentence says how many drawn rows were read and how many were not");
 
@@ -1191,7 +1199,7 @@ function selftest() {
     ],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
-  assert.ok(valued.includes("<dt>Read or tried against its cited source</dt>"), "positive control: the valued page renders a block (a reading and an unreachable citation check, so headed as both)");
+  assert.ok(valued.includes("<dt>Checked or tried against material for its cited source</dt>"), "positive control: the valued page renders a block (a reading and an unreachable citation check, so headed as both)");
   assert.ok(valued.includes("0.380876"), "a VERIFIED bound row must show the value that was checked, not only its line and citation");
   assert.ok(!valued.includes("9.111111"), "a reference entry must not print a first cell as though it were a checked bound");
 
@@ -1204,7 +1212,7 @@ function selftest() {
     assert.ok(html.includes("says nothing about the row there now"), `(${msg}) a pinned audit that fails identity must render as HISTORICAL`);
     assert.ok(!html.includes("supports the claim we checked"), `(${msg}) and must NOT say the cited source supports the row there now`);
     assert.ok(!/9z\.md#L24/.test(html), `(${msg}) and must NOT link the live line a reader would land on`);
-    assert.ok(!/have been read against their cited source/.test(html), `(${msg}) and must NOT be counted as read`);
+    assert.ok(!/have been checked against material for their cited source/.test(html), `(${msg}) and must NOT be counted as read`);
     assert.ok(/no longer match the current table/.test(html), `(${msg}) and the page must disclose it rather than drop it`);
     return html;
   };
@@ -1268,7 +1276,7 @@ function selftest() {
     audits: [{ id: "T-OV", constant: "9z", citedRef: "RO", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/ov", rowText: { toString: null } }],
     corpus: { citedRows: 999 },
   });
-  assert.ok(oddValue.includes("Read against its cited source"), "a malformed rowText must neither crash rendering nor drop the row");
+  assert.ok(oddValue.includes("Checked against material for its cited source"), "a malformed rowText must neither crash rendering nor drop the row");
   assert.match(valued, /<code style="display:inline;padding:\.1rem \.3rem">\$0\.380876\$<\/code>/, "and the value renders as an inline code span, exactly");
 
   // (i) MEANING: only THIS constant's audits appear.
@@ -1278,9 +1286,9 @@ function selftest() {
   // (j) BOTH POLARITIES: no audits, no block — and the page still renders.
   const unaudited = renderPage(row, "abc1234def", { audits: [], corpus: { citedRows: 999 } });
   assert.ok(unaudited.length > 800, "positive control: the unaudited page must still render");
-  assert.ok(!unaudited.includes("Read against its cited source"), "a constant nobody has audited must carry no audit block");
+  assert.ok(!unaudited.includes("Checked against material for its cited source"), "a constant nobody has audited must carry no audit block");
   assert.ok(!unaudited.includes('<ul class="audit">'), "no block under either heading");
-  assert.ok(audited.includes("Read against its cited source"), "positive control: the heading IS present when there are audits");
+  assert.ok(audited.includes("Checked against material for its cited source"), "positive control: the heading IS present when there are audits");
 
   // (k) A missing corpus renders a COUNT and explicitly refuses to imply a proportion.
   const noCorpus = renderPage(row, "abc1234def", { audits: [store.audits[0]], corpus: null });
