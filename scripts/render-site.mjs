@@ -580,8 +580,12 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   // below the 393x659 fold. Only the VISUAL order moves: the DOM order, and with it reading and focus
   // order, is unchanged, and the badges stay inside the th. Measured in Chromium that the row keeps
   // its rowheader with display:contents; Safari is not measured. A th with no box cannot carry the
-  // landed-row marker (tr:target th's inset shadow), so the card layout puts it on the tr. The trimmed .wrap and .lede spacing
-  // here is the last few pixels; the freshness line and its not-the-record caveat are untouched.
+  // landed-row marker (tr:target th's inset shadow), so the card layout puts it on the tr and clears
+  // the cells' own target background, which would paint over the stripe. With the th's padding gone
+  // the badges' cap subtracts their two .8rem margins (review round 1, 2026-10-02). Screen-reader
+  // order still reads the badge before the values, as it did before this change. The trimmed .wrap
+  // and .lede spacing here is the last few pixels; the freshness line and its not-the-record caveat
+  // are untouched.
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
 <th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}</th>
@@ -659,9 +663,10 @@ tbody th{display:contents}
 tbody th>*{order:0;margin-left:.8rem;margin-right:.8rem}
 tbody th>a:first-child{padding-top:.7rem}
 tbody td{order:1}
-tbody th>.ours,tbody th>.read,tbody th>.tried{order:2;margin-top:0;margin-bottom:.45rem}
+tbody th>.ours,tbody th>.read,tbody th>.tried{order:2;margin-top:0;margin-bottom:.45rem;max-width:calc(100% - 1.6rem)}
 tbody td.src{order:3}
 tr:target{box-shadow:inset 3px 0 0 var(--accent);background:var(--code)}
+tr:target>td{background:none}
 .lede{margin-bottom:1rem}
 td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
 .src{white-space:normal;padding-bottom:.7rem}
@@ -918,9 +923,10 @@ async function selftest() {
     "tbody th>*{order:0;margin-left:.8rem;margin-right:.8rem}",
     "tbody th>a:first-child{padding-top:.7rem}",
     "tbody td{order:1}",
-    "tbody th>.ours,tbody th>.read,tbody th>.tried{order:2;margin-top:0;margin-bottom:.45rem}",
+    "tbody th>.ours,tbody th>.read,tbody th>.tried{order:2;margin-top:0;margin-bottom:.45rem;max-width:calc(100% - 1.6rem)}",
     "tbody td.src{order:3}",
     "tr:target{box-shadow:inset 3px 0 0 var(--accent);background:var(--code)}",
+    "tr:target>td{background:none}",
   ].join("\n")), "the card-order rules are pinned exactly, in this order");
   // (2) THE PURE FUNCTION: the longest COMPLETED gap. Duplicates collapse, input order does not
   //     matter, malformed dates are ignored, fewer than two dates is null (a shallow clone), and a
