@@ -675,7 +675,7 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 </select>
 </div>
 </div>
-<p class="fresh">Snapshot: this mirror last changed on <strong>${esc(generatedOn)}</strong>, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Read <a href="#notes">the notes below the table</a> before citing a number.</p>
+<p class="fresh">Snapshot: this mirror last changed on <strong>${esc(generatedOn)}</strong>, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Each row is the last-listed row of its table, not a claim about which bound is &ldquo;the record.&rdquo; Read <a href="#notes">the notes below the table</a> before citing a number.</p>
 <p class="count" id="count">${rows.length} constants</p>
 
 <div class="empty" id="empty" hidden>
@@ -844,17 +844,24 @@ async function selftest() {
   assert.ok(freshStart > -1, "positive control: the freshness line must exist above the table");
   const fresh = html.slice(freshStart, html.indexOf("</p>", freshStart));
   assert.match(fresh, /not the last time it was checked/, "the freshness line must say the change date is not the last check");
-  assert.match(fresh, /actions\/workflows\/reverify\.yml/, "the freshness line must link the live read");
+  assert.ok(fresh.includes('href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml"'), "the freshness line must link THIS repository's run history, exactly");
   assert.match(fresh, /href="#notes"/, "the freshness line must point to the notes below the table");
-  assert.doesNotMatch(fresh.replace(/<[^>]+>/g, ""), /\b(held|holds|steady|current|up to date|unchanged)\b/i, "the freshness line must not promise the numbers held");
+  assert.match(fresh, /not a claim about which bound is &ldquo;the record\.&rdquo;/, "the freshness line must carry the last-listed, not-the-record caveat above the table (review 2026-10-02)");
+  assert.doesNotMatch(fresh.replace(/<[^>]+>/g, ""), /\b(held|holds|steady|current|up to date|unchanged|guaranteed|certified)\b/i, "the freshness line must not promise the numbers held");
   // ORDER: filter, freshness line, count, table, then the notes holding the snapshot note and hints.
   const at = (needle) => { const i = html.indexOf(needle); assert.ok(i > -1, `positive control: ${needle} must be on the page`); return i; };
-  const pageOrder = ['<input id="q"', '<p class="fresh">', '<p class="count"', '<div class="scroll">', '<section id="notes"', '<div class="note">', '<p class="hint">'];
+  const pageOrder = ['<input id="q"', '<p class="fresh">', '<p class="count"', '<div class="scroll">', "</table>", '<section id="notes"', '<div class="note">', '<p class="hint">'];
   for (let i = 1; i < pageOrder.length; i++) assert.ok(at(pageOrder[i - 1]) < at(pageOrder[i]), `${pageOrder[i - 1]} must come before ${pageOrder[i]}`);
+  // The notes sit OUTSIDE the table's scroll box: only whitespace between the box's close and the section.
+  assert.match(html.slice(at("</table>"), at('<section id="notes"')), /^<\/table>\s*<\/div>\s*$/, "the notes must follow the closed scroll box, not sit inside it");
+  // ...and are never hidden, by attribute or by a stylesheet rule naming them.
+  assert.equal(html.slice(at('<section id="notes"'), html.indexOf(">", at('<section id="notes"')) + 1), '<section id="notes" aria-label="How to read this page">', "the notes section carries no hidden or style attribute");
+  const css = html.slice(at("<style>"), at("</style>"));
+  assert.deepEqual(css.match(/#notes[^{]*\{[^}]*\}/g), ["#notes{margin-top:2rem}"], "the only stylesheet rule naming #notes is its margin");
   assert.ok(at('<p class="lede">') < at('<input id="q"'), "the filter comes after the lede");
-  assert.equal(html.slice(at('<p class="lede">'), at('<input id="q"')).includes("<p>"), false, "nothing but the controls sits between the lede and the filter");
-  assert.equal(fresh.replace(/<[^>]+>/g, "").replace(/&mdash;/g, "--").replace(/\s+/g, " ").trim(),
-    "Snapshot: this mirror last changed on 2026-08-20, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (run history). Read the notes below the table before citing a number.");
+  assert.match(html.slice(at('<p class="lede">'), at('<div class="controls">')), /^<p class="lede">[^<]*<\/p>\s*$/, "nothing sits between the lede and the controls");
+  assert.equal(fresh.replace(/<[^>]+>/g, "").replace(/&mdash;/g, "--").replace(/&ldquo;|&rdquo;/g, '"').replace(/\s+/g, " ").trim(),
+    "Snapshot: this mirror last changed on 2026-08-20, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (run history). Each row is the last-listed row of its table, not a claim about which bound is \"the record.\" Read the notes below the table before citing a number.");
   // (2) THE PURE FUNCTION: the longest COMPLETED gap. Duplicates collapse, input order does not
   //     matter, malformed dates are ignored, fewer than two dates is null (a shallow clone), and a
   //     tie keeps the earliest gap.
