@@ -2576,7 +2576,7 @@
     {
       "id": "A-68",
       "type": "active",
-      "status": "open",
+      "status": "closed",
       "title": "On a phone, a pasted number's matching row shows its name but its first bound value starts below the first screen",
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-10-09",
@@ -2587,6 +2587,43 @@
       "onTrigger": "By 2026-10-09 or the next front-page round: make the first bound value of a single matched row visible on a 393x659 first screen without removing the freshness line or its caveat. Candidates, measure before choosing: a shorter lede or h1 margin on narrow screens, scrolling the single remaining match into view after filtering, or showing the matched bound value inside the card's first line. Measure 393x659 and 390x844 before and after, and 1440x900 for no change. Cross-family review before the push.",
       "closeWhen": "On the live index with 10.02 typed, at 393x659 the matched row's first bound value (the first td code) has its bottom inside window.innerHeight; 1440x900 still shows both values; the freshness line and its not-the-record caveat are unchanged; render-site --check passes.",
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check — PASS means index.html matches its renderer; the position is a browser read: playwright-cli goto the live index, resize 393 659, fill #q with 10.02, then compare the first visible row's first td code getBoundingClientRect().bottom with window.innerHeight (711 against 659 on 2026-10-02 means still open; below 659 means fixed)",
+      "created": "2026-10-02",
+      "updated": "2026-10-02",
+      "closedAt": "2026-10-02",
+      "lastEvaluated": "2026-10-02",
+      "notes": " | CLOSED 2026-10-02 at round 3's close, on the live read at f2e545f (commits 2b6a9e7 and f2e545f; P3 bus 08693714; orchestrator review 342b5054: COMPLETED). closeWhen met, each leg read: live index https://u00dxk2.github.io/bounds-ledger/ with 10.02 in #q (playwright-cli, about 21:27Z): at 393x659 the first td code is 615-646, bottom inside innerHeight 659 (was 680-711); the .read badge moved 605 -> 859, below the value; 390x844 identical; 1440x900 row top 483, values end 597 and 633, unchanged. The freshness line and its not-the-record caveat are unchanged (the A-67 exact first-screen pin in render-site --selftest still passes). render-site --check: the pre-commit hook printed \"RESULT: PASS — index.html matches committed state (115 constants @ 2c1968c)\" on f2e545f, and npm run verify exited 0 at f2e545f (21:21:24Z). npm run served: \"SERVED index.html 325900 bytes\" at anchor f2e545f; check-ci-status GREEN at f2e545f. Two Codex read-only rounds (banner workdir C:\\dev\\skylark\\bounds-ledger): round 1 three findings, two fixed in f2e545f, one DELIBERATE (screen-reader order) carried to A-69 with the Safari rowheader read and matched-cell marking; round 2 no new defects. Encounter blind (A-59)."
+    },
+    {
+      "id": "A-69",
+      "type": "active",
+      "status": "open",
+      "title": "On a phone the index shows a matched row's values before its verdict line, but a screen reader still hears the verdict first, and the matched value is not marked",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-10-13",
+      "links": [
+        "A-68"
+      ],
+      "note": "FILED 2026-10-02 at round 3's close, on the orchestrator's P3 review (bus 342b5054), which asked for ONE row carrying three things A-68 left. (a) READING ORDER: since f2e545f the card layout (below 60rem) shows name, id, bound values, then the badges (.ours/.read/.tried); the DOM, so reading and focus order, is name, id, badges, values, as it was before A-68. Codex round 1 on 2b6a9e7 rated the mismatch MEDIUM; it was kept DELIBERATELY because aligning the DOM means moving the badges out of the th, which changes the desktop column. (b) SAFARI ROWHEADER: the card layout sets the row's th to display:contents. In Chromium the row keeps its rowheader (playwright-cli aria snapshot, 2026-10-02); WebKit/VoiceOver is NOT measured. The orchestrator's hypothesis: WebKit is the engine most likely to drop it, and the card layout already made th/td display:block before A-68, so a loss may predate it. (c) MATCHED-CELL MARKING (the P1 review's suggestion): not done, because a filter match can come through an alias (fraction, radical, power forms), an earlier pinned value or a table value that is not displayed, so a mark on the shown cell would sometimes be wrong or absent.",
+      "onTrigger": "By 2026-10-13 or the next front-page round: first measure (b) with a WebKit engine (playwright-cli open with a webkit browser, resize 393 659, snapshot the matched row) and record whether the row keeps a rowheader at f2e545f and at e120c4d (before the card layout changes of 2026-10-02). Then decide (a): either make DOM order match visual order on the card layout without changing the desktop table, or record why the current order is the better one for a screen-reader user. (c) only with a rule that marks a cell solely when its displayed text contains the typed string, and says nothing otherwise.",
+      "closeWhen": "(b) has a WebKit read recorded on this row; (a) is shipped or explicitly kept with a reason and a cross-family review; (c) is shipped with that rule or declined with the reason recorded.",
+      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check — PASS means index.html matches its renderer; the reads are browser reads: playwright-cli with a WebKit browser on the live index at 393x659, 10.02 typed into #q, then snapshot and look for a rowheader on row c-22a",
+      "created": "2026-10-02",
+      "updated": "2026-10-02"
+    },
+    {
+      "id": "A-70",
+      "type": "active",
+      "status": "open",
+      "title": "On a phone the index rows' page and cite links are 20 to 22px tall, and the citation block has no copy button",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-10-13",
+      "links": [
+        "A-68"
+      ],
+      "note": "FILED 2026-10-02 at round 3's close, from the orchestrator's round-2 cold walk (skylark-site tmp/walks-2026-10-02-r2/bounds-ledger.md, findings 3 and 4; synthetic, not a real-user encounter), as round 3's P1 packet said the close would. OBSERVED there at 393x659 on the matched row: the page link 32x20 CSS px, the cite summary 325x22, both under the 44pt touch minimum, and source / page / looks wrong? sit inline a dot apart. The cite block is a multi-line monospace block with no copy control, so a phone reader long-presses and drag-selects about 9 lines. Not re-measured at round 3; f2e545f did not touch the .src cell.",
+      "onTrigger": "By 2026-10-13 or the next front-page round: on the card layout only, give the row's source / page / looks wrong? links and the cite summary a touch target of at least 44px, and add a copy-citation button inside the cite block that copies the block's text. Measure the four controls at 393x659 before and after, and 1440x900 for no change. The page loads nothing from another host and has no analytics, and the button must keep both true. Cross-family review before the push.",
+      "closeWhen": "On the live index at 393x659 each of the four row controls measures at least 44px tall; the cite block has a working copy button whose copied text equals the block text; 1440x900 unchanged; render-site --check passes.",
+      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check — PASS means index.html matches its renderer; the sizes are a browser read: playwright-cli on the live index at 393x659, 10.02 typed into #q, then getBoundingClientRect() of row c-22a's .src links and cite summary",
       "created": "2026-10-02",
       "updated": "2026-10-02"
     }

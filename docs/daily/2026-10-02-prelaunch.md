@@ -238,3 +238,74 @@ ACTION: COMPLETED · item `A-67` (on the index a pasted number's matching row la
 - **Process:** `npm test` through the PowerShell tool hung more than ten minutes inside `render-constant-pages --selftest`; the same selftest passed alone through Bash in seconds, and the whole suite exited 0 through Bash. Run the suite through Bash.
 - **Pending reads, each on its row:** 2026-10-03 `A-47` slice 12. 2026-10-04 `A-54` census session 5. 2026-10-06 `A-63` and `A-65`. 2026-10-08 at the latest, the `A-54` blocked-paper retry. 2026-10-09 `A-68`. 2026-10-28 `A-59`.
 - **UNRESOLVED at the close:** none.
+
+## Round 3
+
+### Selection packet (P1 — evidence and choice, round 3)
+
+**Outcome:** on a phone, the first number a reader sees in the row that matches their pasted value is that value, not a different number in a warning colour. Item `A-68` (on a 393×659 phone the matched row's first bound value starts below the first screen), minted at round 2's close. Its own trigger is "By 2026-10-09 or the next front-page round", and this round is a front-page round, so taking it now does not pull a dated read forward.
+
+**The user problem, in the user's words** (`docs/evangelism-bar.md`): "I got this constant from a page that says it was last edited in January. I don't know if that means it's current or that nobody has looked at it since." The index tells that reader to "paste a number you are about to cite". On a phone, after they paste `10.02`, the only number on the first screen is 12.63, inside a "⚠ checked against … another row, 12.63 [ACPR2011]" link. They can read that as "my number is wrong".
+
+#### Evidence
+
+- OBSERVED at this P1, live page, `playwright-cli` at 393×659 with `10.02` set in `#q` (about 20:29Z): 1 row shown, `c-22a`; box top 294, row top 553, the `.read` link top 605 (text "checked against material for its source, not settled: another row, 12.63 [ACPR2011]"), and the first bound `code` runs 680 to 711, under the 659 fold. These match round 2's close and the orchestrator's walk exactly.
+- OBSERVED by the orchestrator's round-2 cold walk (`skylark-site/tmp/walks-2026-10-02-r2/bounds-ledger.md`, finding 1; synthetic, not a real-user encounter; window 17:55Z to 18:00Z): the same 12.63-first reading, with a screenshot.
+- OBSERVED — `scripts/render-site.mjs` lines 639 to 659: the card layout (`max-width:60rem`) stacks the row's `th` (name, id, the `.read` link) above the `td` cells, so the `.read` link always sits above the bound values. The link lives inside the `th`, so reordering needs either a renderer change or a CSS layout that reaches across the `th`.
+- HYPOTHESIS (walk finding 2; playwright does not draw a soft keyboard): with a real keyboard up, about the bottom 40% of the screen is covered, so at 393×659 even the row top at 553 may be hidden. The fix is judged with that in mind, and P3 reads a keyboard-up proxy height as information, not as the acceptance.
+- OBSERVED — `check-cycle-rotation --lane bounds-ledger` (exit 0): "no product-love cycle picks this lane today".
+- OBSERVED — `answered-cards`: "NO waiting/answered/pending-verify cards for bounds-ledger".
+- OBSERVED — `check-due-gates-dispositioned --print` (exit 0): "0 gate(s) due on/before 2026-10-02".
+- PENDING at posting — `npm run verify` was started at this P1 through Bash on a clean tree at `c7a7e92`; the receipt on disk when this packet was written was still round 2's (sha `6b65190`). It is read before any P3 commit. This report, a doc-shaped file, was edited while it ran; no code path was.
+- MISSING — any read of a real person on the page. It is static with no analytics by design (`A-59`, the encounter read, dated 2026-10-28).
+- Prior retro finding that bears here (round 2, bus msgId 456e955c, Q0): a rendered-page guard grew by enumeration through two review rounds. This round's guard starts with the exact emitted shape pinned and states what it does not read.
+
+#### Not chosen this round
+
+- `A-47` slice 12 (the depth audit), dated 2026-10-03. The lead put it "first", and also said nothing dated 10-03 is due today; the banner rules: it is not pulled forward.
+- `A-63` (a constant page does not say which claim a verdict checked) stays the larger change and keeps 2026-10-06, for the reason round 2 gave: its sentence is a method sentence and needs its own review angle.
+- The 20 to 22px "page" and "cite" tap targets and the missing copy control on the cite block (walk findings 3 and 4) are not minted as rows at P1. They ride only if P3 has room after `A-68` is reviewed. Otherwise the close mints them.
+
+#### Permission
+
+- Lane-authorised: a layout change to the lane's own public index on the orchestrator's round-3 lead. `index.html` is not under the 2026-09-20 freeze (that covers `ramsey.html` and `copying.html`). No board card is open.
+- The `.read` link carries the depth audit's verdict and the not-the-record caveat sits above the table. Neither is dropped or reworded to win pixels. Moving the verdict below the bound values changes the order in which a disclaimer is read, so it gets a cross-family review before the push.
+
+#### Next action
+
+Kind: **improve**. First command, the baseline on a clean tree:
+
+```
+node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --selftest
+```
+
+#### Acceptance condition
+
+On the live index with `10.02` in `#q`: at 393×659 the matched row's first bound `code` ends at or above 659 (the `A-68` readCommand's comparison), and the row's `.read` link's top is below that `code`'s top, so the 12.63 in it is no longer the first number the reader meets. 390×844 gets the same read. At 1440×900 the row's layout is unchanged from round 2's close read (row top 483, both values end by 633). The `.read` verdict and its text are still in the row, and `render-site --check` passes after the commit.
+
+#### Delivery and encounter checks
+
+- Delivery: `npm run served` after the push, then the same browser reads on the live page.
+- Encounter: blind (`A-59`). The event that would show it is an outside issue filed through a per-row link, counted by `npm run reports`, readable at N = 1.
+
+**USER-FACING: yes.** Paths: `scripts/render-site.mjs` (the card-layout order of the verdict link and the bound cells, plus its selftest) and `index.html` (regenerated). The `c/` pages are not touched.
+
+#### HYGIENE INPUTS
+
+- (a) due rows not bearing on the choice: none — read "dated gates due today: 0" and `check-due-gates-dispositioned --print` "0 gate(s) due on/before 2026-10-02".
+- (b) owed child rows: none — read "rows owed to you in skylark-site's ledger: 0 of 739 considered".
+- (c) state reads marked CROSSED: none — read the kickoff's state reads. Two could not be judged and are not zeros: missingLinkedCommits "NOTHING SWEPT (0 of 0 considered)", and key numbers "no list yet".
+
+### Close (round 3)
+
+ACTION: COMPLETED · item `A-68` (on a phone, a pasted number's matching row showed another row's number first and its own value below the first screen) · P3 bus msgId 08693714
+
+- **Acceptance met on the live page,** read at about 21:27Z with `playwright-cli` on https://u00dxk2.github.io/bounds-ledger/, after `npm run served` printed "SERVED index.html 325900 bytes" at anchor `f2e545f` and `check-ci-status` read GREEN at `f2e545f`. With `10.02` typed: at 393×659 the first bound value runs 615 to 646 (it was 680 to 711) and the verdict badge moved from 605 to 859, below it; 390×844 reads the same; at 1440×900 the row top is 483 and the values end by 633, unchanged. The orchestrator's P3 review (bus msgId 342b5054) read it COMPLETED and confirmed the Pages build is `f2e545f8`.
+- **How:** below 60rem the row's th is `display:contents` and the row a flex column, ordering name and id, then the bound cells, then the badges, then the source links. Only the visual order moved. The freshness line and its caveat are unchanged.
+- **Review:** two Codex read-only rounds, banner workdir checked each time. Round 1 on `2b6a9e7`: three findings, two fixed in `f2e545f` (badge overflow, the landed-row stripe), one kept deliberately (a screen reader still hears the badge before the values). Round 2 on `f2e545f`: no new defects.
+- **Receipt:** the P3 receipt stands unchanged. Exposure is blind (`A-59`); the outcome is open.
+- **Hygiene draft (round 3): 0 lines — 0 accepted · 0 amended · 0 rejected.** No READ-MUTATED lines. Its two checks, quoted: wait-justification "RESULT: PASS — 1 of 84 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)"; engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable".
+- **Due gates:** `check-due-gates-dispositioned` printed "verdict: CLEAR — every gate due at Phase 0 was dispositioned." and "snapshot CURRENT: taken today (2026-10-02)".
+- **Ledger delta:** `A-68` closed with its live read. `A-69` minted, due 2026-10-13: the reading order on the phone card, the unmeasured Safari row-header read, and the matched-cell marking the P1 review suggested. `A-70` minted, due 2026-10-13: the walk's 20 to 22px "page" and "cite" tap targets and the cite block's missing copy button.
+- **Pending reads, each on its row:** 2026-10-03 `A-47` slice 12. 2026-10-04 `A-54` census session 5. 2026-10-06 `A-63` and `A-65`. 2026-10-08 at the latest, the `A-54` blocked-paper retry. 2026-10-13 `A-69` and `A-70`. 2026-10-28 `A-59`.
+- **UNRESOLVED at the close:** none.
