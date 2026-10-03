@@ -1434,12 +1434,12 @@
         "5f22082"
       ],
       "readCommandHistory": "node scripts/depth-audit.mjs # BUILT AND FIRST-RUN 2026-09-10; supersedes the check-claims placeholder kept at readCommandRetired2026_09_10, which correctly said no command answered this row while no audit store existed. LITERAL OUTPUT, pasted from the run rather than described: \"depth audit (A-47): 3 row(s) audited — 2 sound, 0 defective, 1 unresolved, 0 unreachable\" at exit 0. It prints the denominator and the SAMPLING RULE beside the count, and it REFUSES a bare zero: exit 2 when the store is missing or empty (a zero about the WORK, not about the records), exit 3 when the verdict counts do not sum to the row count. Both refusals red-armed 2026-09-10 with the mutations proven to land by sha256 and the restore verified against the original.\n\n — LITERAL OUTPUT RE-RECORDED 2026-09-11, because the line above is dated 2026-09-10 and a stale literal output is the defect this field exists to prevent: \"depth audit (A-47): 8 row(s) audited — 2 sound, 0 defective, 4 unresolved, 2 unreachable\" at exit 0. The verdict mix moved for two reasons on one day: slice 2 added five rows, and three earlier rows were downgraded to UNRESOLVED by adversarial review. A second command now answers the population half of this row: `node scripts/depth-audit.mjs --corpus`, which prints 770 bound rows across 115 constant files, 673 cited, 97 uncited, and refuses (exit 2) when either baseline cannot be established.",
-      "readCommandLastRun": "2026-10-01T17:26:48.010Z",
+      "readCommandLastRun": "2026-10-03T15:56:05.365Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 2022,
+      "readCommandLastDurationMs": 227,
       "readCommandLastOutputRef": {
         "lines": 169,
-        "sha256": "9f805b5c808d5170"
+        "sha256": "ebbf22480b2b9246"
       },
       "lastEvaluated": "2026-10-01",
       "notes": "RE-DATED 2026-09-16 → 2026-09-18 AFTER THE READ RAN, not instead of it. Slice 5 landed today (A-47-0020..0024, commit 739ce16, live on the public pages): positions 400, 500, 600, 25 and 75, drawn before any row was read, 3 SOUND and 2 UNREACHABLE. The store now holds 24 rows — 13 sound, 0 defective, 5 unresolved, 6 unreachable — with 10 systematic reads and 7 suspicion-drawn reads counted apart. The gate runner stamped the read today (exit 0, 210ms, sidecar continuity/read-outputs/A-47.txt, 81 lines; its content hash is in this row's readCommandLastOutputRef, printed by `check-due-gates-dispositioned --run A-47`).\n\nWHY 2026-09-18 AND NOT TOMORROW. Slice 6 is the next 25-offset step (125, 175, 225, 275, 325 are the untaken positions below 350), and A-51 — the upstream dead-link correction — is dated 2026-09-18 already; the depth read and that decision are the same kind of work on the same sources, so they share a day rather than splitting two.\n\nWHAT THIS ROW OWES AT THAT READ, unchanged: a count audited, a count sound, a count defective, a count UNREACHABLE — and if the audited count has not moved since today's 24, that is the finding and it gets reported as one.",
