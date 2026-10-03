@@ -1,7 +1,7 @@
 # read-output sidecar for A-47 — written by check-due-gates-dispositioned --run
 # readCommand: node scripts/depth-audit.mjs
-# ran: 2026-10-03T16:46:38.895Z · exit: 0
-# lines: 184 · sha256: 36e002dd0b1d2c9b (first 16 hex of the output below)
+# ran: 2026-10-03T16:56:05.417Z · exit: 0
+# lines: 184 · sha256: 56448f71b8c0c28b (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
 depth audit (A-47): 58 row(s) audited — 38 sound, 2 defective, 11 unresolved, 7 unreachable
@@ -177,7 +177,7 @@ depth audit (A-47): 58 row(s) audited — 38 sound, 2 defective, 11 unresolved, 
       source: https://arxiv.org/abs/2101.08600 (read: read in the body: arXiv v2 (19 Jun 2021, the version the entry's unversioned link resolves to), Theorem 1 on p. 2, read from the page image. The theorem is printed as d²(f) ≥ (√10 − 2)bs(f), which is the row's bound rearranged; the proof was not checked)
   A-47-0056  41a [Hammersley1968]  SOUND  (value-vs-source)  selection: systematic
       row: ledger/teorth-optimizationproblems/constants/41a.md:13 sha256:52aa23779c117235 — re-read the row there; it is never retyped into this store
-      source: https://archive.org/details/hammersley1968 (read: read in the cited Bulletin printing, as a scan a third party uploaded to the Internet Archive (printed pp. 66–85; not a publisher-hosted copy): Problem 8 on p. 84, read from the page image. The article sets "Prove that A<2√2" as an exercise for its readers and gives no proof of it. The volume number and the year are not printed on the pages read; they come from the scan's catalogue record)
+      source: https://archive.org/details/hammersley1968 (read: read in the cited Bulletin printing, as a scan a third party uploaded to the Internet Archive (printed pp. 66–85; not a publisher-hosted copy): Problem 8 on p. 84, read from the page image. The article sets "Prove that A<2√2" as an exercise for its readers and gives no proof of it. The publication volume and year are not printed on the pages read. The PDF's embedded keywords give volume 4 and 1968; the Internet Archive item record also gives 1968)
   A-47-0057  46a [WW2022]  SOUND  (value-vs-source)  selection: systematic
       row: ledger/teorth-optimizationproblems/constants/46a.md:25 sha256:f5841da6c437ffd6 — re-read the row there; it is never retyped into this store
       source: https://arxiv.org/abs/2210.03878 (read: read in the body: arXiv v2 (14 Oct 2022, the version the entry's unversioned link resolves to), Theorem 1.2 on p. 1, read from the page image. The theorem gives the range p > 3 + 3/14 for the paraboloid, with the L^p norm of f on the right; the paper's statement is not about the sphere, and the step to the sphere was not checked. The proof was not checked)
