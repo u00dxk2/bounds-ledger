@@ -1157,6 +1157,18 @@
         ],
         "bounds": 21,
         "order": "Planned and committed before any of these papers was opened. The commit that adds the readings comes after it in history. The next four keys of the derived census order, covering frame positions 28, 30, 32, 34, 54, 56, 67, 71, 73, 75, 85, 91 and 101 (Mac, 13 bounds), 29, 35, 55, 68 and 70 (ExT, 5), 31 (Ex16) and 33 and 51 (HaKr1). The tripwire in A-54.rebuildCheckpoint2026_09_28 was applied first and did not fire: 25 papers remaining against 4 x 8 census slots through 2026-10-16 (10-02 through 10-16, counting today) = 32. Four papers and not seven because Mac alone needs thirteen verdicts, which rebuildCheckpoint2026_09_28 named in advance; four is the floor for papers ATTEMPTED. Attempted and read are reported as two numbers."
+      },
+      {
+        "session": 5,
+        "plannedOn": "2026-10-04",
+        "keys": [
+          "Spe4",
+          "SuLL",
+          "Ex4",
+          "AnM4"
+        ],
+        "bounds": 9,
+        "order": "Planned and committed before any of these papers was opened. The commit that adds the readings comes after it in history. The next four keys of the derived census order, covering frame positions 36, 38, 40, 42, 44 and 52 (Spe4, 6 bounds), 37 (SuLL), 45 (Ex4) and 46 (AnM4). The tripwire in A-54.rebuildCheckpoint2026_09_28 was applied first and did not fire: 21 papers remaining (19 of Table Ia's 42 credited papers, plus AnM2 and AnM3, as census4_2026_10_02 counts them) against 4 x 7 census slots through 2026-10-16 (10-04 through 10-16, counting today) = 28. Four is the floor for papers ATTEMPTED. Attempted and read are reported as two numbers."
       }
     ]
   }
