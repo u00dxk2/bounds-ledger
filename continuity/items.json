@@ -2637,7 +2637,11 @@
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-10-04",
       "links": [],
-      "linkedCommits": [],
+      "linkedCommits": [
+        "2088a49",
+        "4baa57d",
+        "0050204"
+      ],
       "note": "OPENED 2026-10-03 round 4, on the orchestrator's /refactor-pass dispatch (bus e9f1f319; approved 0b6fc17a). Target 1 (pure): move esc, unesc, REPO and the issue-link builder out of render-site.mjs, render-constant-pages.mjs and render-ramsey.mjs into scripts/lib/html.mjs. Golden master: check:site, check:pages and check:ramsey re-render every published page and fail on any byte difference. Target 2 (test-add, depends on 1): node scripts/lib/html.mjs --selftest, wired into npm test and reverify.yml, each assertion red-armed. Codex executes; the lead commits.",
       "closeWhen": "Both targets committed and pushed with npm run verify green at the pushed code commit and every published page byte-identical; or a target aborted with the reason written here.",
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/lib/html.mjs --selftest",

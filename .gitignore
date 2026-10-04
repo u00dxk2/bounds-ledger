@@ -7,3 +7,4 @@ issue-body.md
 continuity/health.json
 .playwright-cli/
 continuity/continuity-disposition-events.jsonl
+.claude/p7-*
