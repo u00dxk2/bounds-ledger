@@ -232,6 +232,9 @@ jobs:
       # STALE), plus a derived path set that admits a page added later.
       - name: Self-test served-bytes check (no network)
         run: node scripts/check-served.mjs --selftest
+      # The shared HTML helper (escape, unescape, issue link) the three public-page renderers import. Network-free.
+      - name: Self-test shared HTML helper (no network)
+        run: node scripts/lib/html.mjs --selftest
       # Guards A-33 leg 1's differ. The danger it exists to prevent is the one note4 names: a
       # check that fires on 'a filed report is CLOSED' fires every day once #150 closes, and an
       # alarm that cannot go quiet is this lane's founding defect. The self-test asserts it stays
