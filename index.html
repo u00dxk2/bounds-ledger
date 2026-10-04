@@ -51,6 +51,8 @@ code{display:block;font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
 .cite{display:inline-block;vertical-align:top}
 .cite summary{cursor:pointer;color:var(--accent)}
 .cite code{display:block;white-space:pre-wrap;margin-top:.4rem;padding:.5rem;background:var(--code);font-size:.8rem;line-height:1.45;max-width:40rem;user-select:all}
+.copy{margin-top:.4rem;padding:.3rem .7rem;font:inherit;font-size:.85rem;color:var(--accent);background:var(--bg);border:1px solid var(--line);border-radius:6px;cursor:pointer}
+.copied{margin-left:.6rem;font-size:.8rem;color:var(--muted)}
 footer{margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;max-width:78ch}
 tr[hidden]{display:none}
 @media(max-width:60rem){
@@ -73,7 +75,10 @@ tr:target{box-shadow:inset 3px 0 0 var(--accent);background:var(--code)}
 tr:target>td{background:none}
 .lede{margin-bottom:1rem}
 td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
-.src{white-space:normal;padding-bottom:.7rem}
+.src{white-space:normal;padding:0 .5rem}
+.src a,.cite summary{padding:.7rem .3rem}
+.src a{display:inline-block}
+.copy{min-height:44px;margin-left:.3rem}
 .cite code{max-width:none}
 .wrap{padding-top:1rem}
 .controls{gap:.6rem 1.5rem}
@@ -1341,6 +1346,31 @@ https://u00dxk2.github.io/bounds-ledger/c/88b.html</code></details></td>
   }
   q.addEventListener('input',filter);
   s.addEventListener('change',order);
+})();
+</script>
+<script>
+(function(){
+  var cites=document.querySelectorAll('details.cite');
+  for(var i=0;i<cites.length;i++)add(cites[i]);
+  function add(d){
+    var code=d.querySelector('code');
+    if(!code)return;
+    var b=document.createElement('button'),st=document.createElement('span');
+    b.type='button';b.className='copy';b.textContent='Copy citation';
+    st.className='copied';st.setAttribute('role','status');
+    d.insertBefore(b,code);d.insertBefore(st,code);
+    b.addEventListener('click',function(){
+      var text=code.textContent;
+      function pick(){
+        var r=document.createRange();r.selectNodeContents(code);
+        var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);
+        st.textContent='Selected. Use your Copy command.';
+      }
+      var c=navigator.clipboard;
+      if(c&&c.writeText)c.writeText(text).then(function(){st.textContent='Copied';},pick);
+      else pick();
+    });
+  }
 })();
 </script>
 </html>

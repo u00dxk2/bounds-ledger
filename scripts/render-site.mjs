@@ -582,6 +582,14 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   // order still reads the badge before the values, as it did before this change. The trimmed .wrap
   // and .lede spacing here is the last few pixels; the freshness line and its not-the-record caveat
   // are untouched.
+  // NOTE on the row controls (A-70, 2026-10-04): below the breakpoint the source / page / looks wrong?
+  // links and the cite summary each carry .7rem of vertical padding, so each is a touch target of at
+  // least 44px (they measured 20 to 22px tall under iPhone 15 emulation). The links are inline-block
+  // so the padding takes up layout space rather than overlapping the cell above. The copy-citation
+  // button is inserted by the SECOND script, never written into the markup, so a reader without
+  // scripts never meets a button that does nothing. It copies the cite block's own textContent, so
+  // the copied text cannot drift from the shown text. When the clipboard refuses, it selects the
+  // block instead and says so, leaving the reader's own Copy to finish the job.
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
 <th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}</th>
@@ -643,6 +651,8 @@ code{display:block;font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
 .cite{display:inline-block;vertical-align:top}
 .cite summary{cursor:pointer;color:var(--accent)}
 .cite code{display:block;white-space:pre-wrap;margin-top:.4rem;padding:.5rem;background:var(--code);font-size:.8rem;line-height:1.45;max-width:40rem;user-select:all}
+.copy{margin-top:.4rem;padding:.3rem .7rem;font:inherit;font-size:.85rem;color:var(--accent);background:var(--bg);border:1px solid var(--line);border-radius:6px;cursor:pointer}
+.copied{margin-left:.6rem;font-size:.8rem;color:var(--muted)}
 footer{margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;max-width:78ch}
 tr[hidden]{display:none}
 @media(max-width:60rem){
@@ -665,7 +675,10 @@ tr:target{box-shadow:inset 3px 0 0 var(--accent);background:var(--code)}
 tr:target>td{background:none}
 .lede{margin-bottom:1rem}
 td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
-.src{white-space:normal;padding-bottom:.7rem}
+.src{white-space:normal;padding:0 .5rem}
+.src a,.cite summary{padding:.7rem .3rem}
+.src a{display:inline-block}
+.copy{min-height:44px;margin-left:.3rem}
 .cite code{max-width:none}
 .wrap{padding-top:1rem}
 .controls{gap:.6rem 1.5rem}
@@ -784,6 +797,31 @@ ${body}
   }
   q.addEventListener('input',filter);
   s.addEventListener('change',order);
+})();
+</script>
+<script>
+(function(){
+  var cites=document.querySelectorAll('details.cite');
+  for(var i=0;i<cites.length;i++)add(cites[i]);
+  function add(d){
+    var code=d.querySelector('code');
+    if(!code)return;
+    var b=document.createElement('button'),st=document.createElement('span');
+    b.type='button';b.className='copy';b.textContent='Copy citation';
+    st.className='copied';st.setAttribute('role','status');
+    d.insertBefore(b,code);d.insertBefore(st,code);
+    b.addEventListener('click',function(){
+      var text=code.textContent;
+      function pick(){
+        var r=document.createRange();r.selectNodeContents(code);
+        var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);
+        st.textContent='Selected. Use your Copy command.';
+      }
+      var c=navigator.clipboard;
+      if(c&&c.writeText)c.writeText(text).then(function(){st.textContent='Copied';},pick);
+      else pick();
+    });
+  }
 })();
 </script>
 </html>
@@ -924,6 +962,71 @@ async function selftest() {
     "tr:target{box-shadow:inset 3px 0 0 var(--accent);background:var(--code)}",
     "tr:target>td{background:none}",
   ].join("\n")), "the card-order rules are pinned exactly, in this order");
+
+  // --- A-70 (2026-10-04): the phone row controls and the copy-citation button. ---
+  // Same limit as above: this reads the stylesheet's SOURCE TEXT, never layout. The measured proof is
+  // the browser read under iPhone 15 emulation recorded on A-70. Meaning first, exact text last.
+  // (1) The touch height, COMPUTED from the rule rather than matched: the table's text is .9rem at
+  // line-height 1.55, so the padding must bring a 14.4px line to at least 44px.
+  const touch = card.match(/\n\.src a,\.cite summary\{padding:([\d.]+)rem [\d.]+rem\}\n/);
+  assert.ok(touch, "on the card layout the row links and the cite summary must carry their own vertical padding");
+  assert.ok(14.4 * 1.55 + 2 * Number(touch[1]) * 16 >= 44,
+    `the row controls must be at least 44px tall on a phone; padding ${touch[1]}rem gives ${(14.4 * 1.55 + 2 * Number(touch[1]) * 16).toFixed(1)}px`);
+  assert.ok(card.includes("\n.src a{display:inline-block}\n"),
+    "the links must be inline-block, or their padding overlaps the cell above instead of taking space");
+  assert.ok(card.includes("\n.copy{min-height:44px;"), "the copy button must be a 44px touch target on the card layout");
+  // (2) The desktop table is unchanged: no touch padding outside the card block.
+  assert.ok(!/\.src a[,{]/.test(html.slice(0, cardStart)), "the touch padding must not reach the desktop table");
+  // (3) No button in the markup: a reader without scripts must never meet a button that does nothing.
+  assert.ok(!html.includes("<button"), "the copy button must be inserted by the script, never written into the markup");
+
+  // (4) The copy script, EXTRACTED from the page and EXECUTED against a stub DOM (the 2026-08-21 rule).
+  const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+  const copyScript = scripts.find((s) => s.includes("details.cite"));
+  assert.ok(copyScript && copyScript.includes("clipboard"), "positive control: the page must carry the copy script");
+  const runCopy = (clipboard) => {
+    const made = [];
+    const node = (tag) => ({ tag, attrs: {}, textContent: "", setAttribute(k, v) { this.attrs[k] = v; },
+      addEventListener(ev, fn) { this["on" + ev] = fn; } });
+    const code = { textContent: "Grothendieck (10a): upper bound: $1.7822$ [exact block text]" };
+    const kids = [];
+    const details = { querySelector: (sel) => (sel === "code" ? code : null),
+      insertBefore: (n, ref) => { assert.equal(ref, code, "the button must sit above the citation, before its code"); kids.push(n); } };
+    const sel = { ranges: [], removeAllRanges() { this.ranges = []; }, addRange(r) { this.ranges.push(r); } };
+    const doc = {
+      querySelectorAll: (q) => (q === "details.cite" ? [details] : []),
+      createElement: (t) => { const n = node(t); made.push(n); return n; },
+      createRange: () => ({ selectNodeContents(n) { this.node = n; } }),
+    };
+    new Function("document", "navigator", "window", copyScript)(doc, { clipboard }, { getSelection: () => sel });
+    return { code, kids, sel, button: kids.find((k) => k.tag === "button"), status: kids.find((k) => k.tag === "span") };
+  };
+  // FIRES on the success path: one press puts the block's EXACT text on the clipboard and says "Copied".
+  let copied = null;
+  const ok = runCopy({ writeText: (t) => { copied = t; return Promise.resolve(); } });
+  assert.ok(ok.button && ok.status, "the script must insert a button and a status line into each cite block");
+  assert.equal(ok.button.attrs.type ?? ok.button.type, "button", "it must be type=button, never a form submit");
+  assert.equal(ok.button.textContent, "Copy citation", "the button must say what it does");
+  assert.equal(ok.status.attrs.role, "status", "the confirmation must be announced to a screen reader");
+  ok.button.onclick();
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(copied, ok.code.textContent, "the copied text must equal the block's own text, exactly");
+  assert.equal(ok.status.textContent, "Copied", "a successful copy must say so");
+  // The clipboard REFUSES: the block is selected instead, and the line says so rather than "Copied".
+  const refused = runCopy({ writeText: () => Promise.reject(new Error("denied")) });
+  refused.button.onclick();
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(refused.sel.ranges.length, 1, "a refused copy must select the block so the reader's own Copy works");
+  assert.equal(refused.sel.ranges[0].node, refused.code, "…and the selection must be the citation block itself");
+  assert.notEqual(refused.status.textContent, "Copied", "a refused copy must never claim it copied");
+  // No clipboard API at all: same fallback, synchronously.
+  const none = runCopy(undefined);
+  none.button.onclick();
+  assert.equal(none.sel.ranges[0]?.node, none.code, "with no clipboard API the block must still be selected");
+  assert.notEqual(none.status.textContent, "Copied", "…and the line must not claim a copy");
+  // The exact rules, pinned LAST so each guard above names the property a mutation broke.
+  assert.ok(card.includes("\n.src{white-space:normal;padding:0 .5rem}\n.src a,.cite summary{padding:.7rem .3rem}\n.src a{display:inline-block}\n.copy{min-height:44px;margin-left:.3rem}\n"),
+    "the A-70 card rules are pinned exactly, in this order");
   // (2) THE PURE FUNCTION: the longest COMPLETED gap. Duplicates collapse, input order does not
   //     matter, malformed dates are ignored, fewer than two dates is null (a shallow clone), and a
   //     tie keeps the earliest gap.
@@ -1962,7 +2065,7 @@ async function selftest() {
     }
   }
 
-  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match; a changed bound reads as a value change while an escaping-only edit and a changed citation detail both read as text edits with the bound held, a pin with no prior version gets no verdict, and all four reader-facing wordings are pinned; every row carries a c-prefixed id and a permalink that targets that row's OWN id in document order, with the landed row visibly marked; the filter haystack carries current AND previously-pinned bound values so a truncated stale citation matches, a row with no earlier pin contributes no phantom value, it also carries every value cell in the constant's mirrored tables — proven on a fixture where a value two rows above the pinned one is extracted while separators, headers and prose outside the table are not, and proven ABSENT from the visible page — the attribute is read back OUT of the rendered row rather than re-derived, a previously-pinned value is proven searchable and proven ABSENT from the visible page, and the page's own filter script, extracted and executed against the emitted attribute, reveals the right row and hides the rest; a row we filed an upstream report against discloses it and links the report, an unfiled row carries none and the count drops to zero when the record is emptied, the label reads open with no date for an open report, a neighbouring id inherits nothing, a hostile url reaches the page escaped, and neither the disclosure nor its explanatory prose claims our report caused anything; every row links to its OWN constant page, so a one-href-fits-all template passes the count and fails the per-id check; and every row's citation hands out that constant's canonical c/<id>.html address while the in-table anchor is proven absent from the cite blocks and proven still present as the row permalink, so the two address forms cannot swap jobs)");
+  console.log("render-site selftest: PASS (renders names, both pinned rows and the upstream sha; marks a missing side 'not pinned'; ids sort numerically and exclude hand claims; never asserts a record — checked after proving the page is non-empty; table content is escaped not injected; every row carries its own prefilled report link, with a hostile constant name percent-encoded before attribute-escaping and no raw markup reaching the href; no third-party asset referenced; a row publishes the LATER of its two dates as a sort key, an undated row publishes an empty one rather than a guess, and the page's own reorder script, extracted and executed against a stub DOM, puts newest first, undated last, and restores id order; a search matching nothing reveals an empty state that quotes the term back as TEXT and prefills a report link with it, and hides again on a match; a changed bound reads as a value change while an escaping-only edit and a changed citation detail both read as text edits with the bound held, a pin with no prior version gets no verdict, and all four reader-facing wordings are pinned; every row carries a c-prefixed id and a permalink that targets that row's OWN id in document order, with the landed row visibly marked; the filter haystack carries current AND previously-pinned bound values so a truncated stale citation matches, a row with no earlier pin contributes no phantom value, it also carries every value cell in the constant's mirrored tables — proven on a fixture where a value two rows above the pinned one is extracted while separators, headers and prose outside the table are not, and proven ABSENT from the visible page — the attribute is read back OUT of the rendered row rather than re-derived, a previously-pinned value is proven searchable and proven ABSENT from the visible page, and the page's own filter script, extracted and executed against the emitted attribute, reveals the right row and hides the rest; a row we filed an upstream report against discloses it and links the report, an unfiled row carries none and the count drops to zero when the record is emptied, the label reads open with no date for an open report, a neighbouring id inherits nothing, a hostile url reaches the page escaped, and neither the disclosure nor its explanatory prose claims our report caused anything; every row links to its OWN constant page, so a one-href-fits-all template passes the count and fails the per-id check; and every row's citation hands out that constant's canonical c/<id>.html address while the in-table anchor is proven absent from the cite blocks and proven still present as the row permalink, so the two address forms cannot swap jobs; on the card layout the row links and cite summary carry padding computed to at least 44px and none of it reaches the desktop table, and the copy-citation script, extracted and executed against a stub DOM, is inserted by script rather than markup, copies the block's exact text and says Copied, and on a refused or absent clipboard selects the block and never claims a copy)");
 }
 
 // Entry-point guard — review finding F2. Without it, ANY importer of renderHtml/buildRows runs the
