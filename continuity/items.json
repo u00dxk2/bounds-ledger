@@ -2616,7 +2616,9 @@
     {
       "id": "A-70",
       "type": "active",
-      "status": "open",
+      "status": "closed",
+      "closed": "2026-10-04",
+      "resolution": "CLOSED 2026-10-04 at P3, on its closeWhen and on the manager's replacement acceptance condition (bus e26a74ff), read on the LIVE index after the push of 3b445dc..b1e6b08. Shipped in 5f42ce7, with review fixes a371655, 5b6bd04, bd0d1fb and b1e6b08. iPHONE 15 (playwright-cli --device \"iPhone 15\"; touch proof pointer:coarse true, ontouchstart true; 393x659), row c-22a after 10.02 typed: BEFORE (live, about 16:11Z) source 42x20, page 32x20, looks wrong? 85x20, cite 38x22, no copy button; AFTER (live, about 17:19Z) source 51x45, page 41x45, looks wrong? 94x45, cite 47x45, scrollWidth 393, 115 copy buttons in 115 cite blocks. One tap on cite, one on Copy citation: the status line read 'Copied', the button measured 104x44, and the text pasted into a scratch textarea was 516 characters and equal to the block's textContent. At root font sizes of 14px and 12px (local render, iPhone 15) all four controls measured 44px: the floor is a px min-height. 1440x900, live, row c-22a with the cite block closed: row, all four cells, all four controls, the table box and the page height read identical before (about 16:21Z) and after (about 17:20Z). render-site --check PASS; npm run verify exit 0 at b1e6b08; reverify.yml GREEN at b1e6b08; npm run served PASS at anchor bd0d1fb. REVIEW: four Codex read-only rounds, the third a cold round against six stated invariants; every finding fixed or narrowed, each fix red-armed; closed on that enumeration rather than a fifth round. NOT MEASURED: WebKit/Safari (the emulation is Chromium with an iPhone user agent), and a real person pressing the button (encounter is blind, A-59).",
       "title": "On a phone the index rows' page and cite links are 20 to 22px tall, and the citation block has no copy button",
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-10-13",
@@ -2628,7 +2630,7 @@
       "closeWhen": "On the live index at 393x659 each of the four row controls measures at least 44px tall; the cite block has a working copy button whose copied text equals the block text; 1440x900 unchanged; render-site --check passes.",
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check — PASS means index.html matches its renderer; the sizes are a browser read: playwright-cli on the live index at 393x659, 10.02 typed into #q, then getBoundingClientRect() of row c-22a's .src links and cite summary",
       "created": "2026-10-02",
-      "updated": "2026-10-02"
+      "updated": "2026-10-04"
     },
     {
       "id": "A-71",
