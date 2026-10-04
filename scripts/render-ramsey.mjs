@@ -25,6 +25,7 @@ import { isEntryModule } from "./lib/entry-module.mjs";
 import { LEDGER } from "./extract-ds1.mjs";
 import { arrivalKind } from "./report-rate.mjs";
 import { frameOf, sameBound, readStore, STORE } from "./ds1-depth.mjs";
+import { REPO, esc, unesc, issueUrl } from "./lib/html.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 export const OUT = join(ROOT, "ramsey.html");
@@ -40,7 +41,6 @@ const PUBLISHED_ON = "2026-09-17";
 // The day the disclosure below was written. Stated on the page beside PUBLISHED_ON precisely
 // because the gap between them is the honest part.
 const WRITTEN_ON = "2026-09-20";
-const REPO = "https://github.com/u00dxk2/bounds-ledger";
 const SITE = "https://u00dxk2.github.io/bounds-ledger/";
 const AUTHOR_PAGE = "https://www.cs.rit.edu/~spr/ElJC/eline.html";
 const RUNS = `${REPO}/actions/workflows/reverify.yml`;
@@ -77,10 +77,6 @@ const RECORD_RES = [/\brecord\b(?!ed)/i, /\bbest[- ]known\b/i, /\bstrongest know
 // (adversarial review, 2026-09-20 — on the page whose whole job is to state that amount exactly).
 // The disclosure states both units and its guard recomputes them from the committed table.
 export const numbersIn = (rows) => rows.reduce((a, r) => a + ["exact", "lower", "upper"].filter((k) => r[k] !== undefined).length, 0);
-
-const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-// The guard reads reference keys back off the page, so it must undo what esc did to them.
-const unesc = (s) => String(s).replace(/&(amp|lt|gt|quot|#39);/g, (_, e) => ({ amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'" }[e]));
 
 const STYLE = `:root{--ink:#111;--muted:#666;--line:#ddd;--code:#f6f6f6;--accent:#0b5fff;--soft:#fafafa}
 *{box-sizing:border-box}body{margin:0;padding:1.5rem 1.25rem 3rem;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);max-width:52rem;margin-inline:auto}
@@ -202,7 +198,7 @@ function flagUrl(e, doc) {
     "",
     "Where you saw it (link or citation):",
   ].join("\n");
-  return `${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+  return issueUrl(title, body);
 }
 
 export function renderRamsey(doc, rows = []) {

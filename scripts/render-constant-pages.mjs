@@ -23,10 +23,10 @@ import assert from "node:assert/strict";
 import { buildRows, flagUrl, citation, reportLabel, whenLabel, readable } from "./render-site.mjs";
 import { boundCell } from "./lookup.mjs";
 import crypto from "node:crypto";
+import { REPO, esc } from "./lib/html.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUTDIR = join(ROOT, "c");
-const REPO = "https://github.com/u00dxk2/bounds-ledger";
 const SITE = "https://u00dxk2.github.io/bounds-ledger/";
 const RUNS = `${REPO}/actions/workflows/reverify.yml`;
 
@@ -53,9 +53,6 @@ const RUNS = `${REPO}/actions/workflows/reverify.yml`;
  */
 export const FRESHNESS =
   "This row is re-checked against upstream every day by a scheduled job, so an old date above does not mean nobody has looked. The dates and values above change only after an upstream change has been verified and published here, so an old date does not prove nothing has moved upstream either.";
-
-const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
-  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 const STYLE = `:root{--ink:#111;--muted:#666;--line:#ddd;--code:#f6f6f6;--accent:#0b5fff}
 *{box-sizing:border-box}body{margin:0;padding:1.5rem 1.25rem 3rem;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);max-width:52rem;margin-inline:auto}

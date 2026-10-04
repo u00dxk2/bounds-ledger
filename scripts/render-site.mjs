@@ -29,6 +29,7 @@ import { pinsFor, lastChanged, changeFor, changeKind, boundCell } from "./lookup
 import { loadAudits, badgeFor, attemptDate, refuseDroppedAudits, DEFAULT_AUDIT_STORE } from "./render-constant-pages.mjs";
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
+import { REPO, esc, issueUrl } from "./lib/html.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "index.html");
@@ -49,11 +50,6 @@ export function constantIds(claims) {
     return na === nb ? a.localeCompare(b) : na - nb;
   });
 }
-
-const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
-  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-
-const REPO = "https://github.com/u00dxk2/bounds-ledger";
 
 // The row's two document links are for a HUMAN to read, and until 2026-08-31 neither of them
 // rendered. `claims.json` holds the CHECKER's fetch URL — raw.githubusercontent, `text/plain` — and
@@ -96,7 +92,7 @@ export function flagUrl(r, sha) {
     "",
     "Where you saw it (link or citation):",
   ].join("\n");
-  return `${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+  return issueUrl(title, body);
 }
 
 const SITE = "https://u00dxk2.github.io/bounds-ledger/";
