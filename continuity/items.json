@@ -2632,7 +2632,8 @@
     {
       "id": "A-71",
       "type": "active",
-      "status": "open",
+      "status": "resolved",
+      "resolution": "RESOLVED 2026-10-03 round 4. Both targets landed. 4baa57d (pure): scripts/lib/html.mjs holds esc, unesc, REPO and issueUrl for the three renderers; every published page re-rendered byte-identical, and the three page --check legs exited 1 on a mutation of the shared esc and 0 after restore. 0050204 (test-add): node scripts/lib/html.mjs --selftest, in npm test and reverify.yml, each of checks a to f shown failing on its own mutation (Codex ran all six; the lead reproduced c and e). npm run verify exited 0 at 154c688 (receipt exitCode 0, at 2026-10-04T00:39:12Z). Pushed in the same single push as this close; the served read follows in the bus task-complete.",
       "title": "P7 refactor session 2026-10-03: one shared HTML-escape module for the three page renderers, with its own self-test",
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-10-04",
