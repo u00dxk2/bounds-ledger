@@ -76,7 +76,7 @@ tr:target>td{background:none}
 .lede{margin-bottom:1rem}
 td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
 .src{white-space:normal;padding:0 .5rem}
-.src a,.cite summary{padding:.7rem .3rem}
+.src a,.cite summary{padding:.7rem .3rem;min-height:44px}
 .src a{display:inline-block}
 .copy{min-height:44px;margin-left:.3rem}
 .cite code{max-width:none}
@@ -1359,15 +1359,17 @@ https://u00dxk2.github.io/bounds-ledger/c/88b.html</code></details></td>
     b.type='button';b.className='copy';b.textContent='Copy citation';
     st.className='copied';st.setAttribute('role','status');
     d.insertBefore(b,code);d.insertBefore(st,code);
+    var last=0;
     b.addEventListener('click',function(){
-      var text=code.textContent;
+      var text=code.textContent,me=++last;
       st.textContent='';
       function pick(){
+        if(me!==last)return;
         var r=document.createRange();r.selectNodeContents(code);
         var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);
         st.textContent='Selected. Use your Copy command.';
       }
-      try{navigator.clipboard.writeText(text).then(function(){st.textContent='Copied';},pick);}
+      try{navigator.clipboard.writeText(text).then(function(){if(me===last)st.textContent='Copied';},pick);}
       catch(e){pick();}
     });
   }
