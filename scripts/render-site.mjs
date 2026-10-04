@@ -589,7 +589,10 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   // button is inserted by the SECOND script, never written into the markup, so a reader without
   // scripts never meets a button that does nothing. It copies the cite block's own textContent, so
   // the copied text cannot drift from the shown text. When the clipboard refuses, it selects the
-  // block instead and says so, leaving the reader's own Copy to finish the job.
+  // block instead and says so, leaving the reader's own Copy to finish the job. ONE try around the
+  // whole call chain (review round 2): a missing API, a synchronous throw or a result with no usable
+  // .then all land on that fallback. "Copied" means exactly that the browser's clipboard promise
+  // fulfilled; nothing here can tell a non-conforming promise that lies, and the page does not claim to.
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
 <th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}</th>
@@ -818,10 +821,8 @@ ${body}
         var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);
         st.textContent='Selected. Use your Copy command.';
       }
-      var c=navigator.clipboard,p=null;
-      try{if(c&&c.writeText)p=c.writeText(text);}catch(e){p=null;}
-      if(p&&p.then)p.then(function(){st.textContent='Copied';},pick);
-      else pick();
+      try{navigator.clipboard.writeText(text).then(function(){st.textContent='Copied';},pick);}
+      catch(e){pick();}
     });
   }
 })();
@@ -986,15 +987,18 @@ async function selftest() {
   const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
   const copyScript = scripts.find((s) => s.includes("details.cite"));
   assert.ok(copyScript && copyScript.includes("clipboard"), "positive control: the page must carry the copy script");
+  // The expected text is a LITERAL, so a script that altered the block itself before copying cannot
+  // move the expectation with it (review round 2).
+  const CITE_FIXTURE = "Bounds Ledger — Grothendieck (10a)\nupper bound: $1.7822$ (tracked since 2026-07-24)\n" +
+    "a listing position, not a statement that this bound is the strongest or most recent\n" +
+    "A snapshot at that sha, not a live read: https://u00dxk2.github.io/bounds-ledger/c/10a.html";
   const runCopy = (clipboard) => {
     const made = [];
     const node = (tag) => ({ tag, attrs: {}, textContent: "", setAttribute(k, v) { this.attrs[k] = v; },
       addEventListener(ev, fn) { this["on" + ev] = fn; } });
     // Multi-line, non-ASCII and carrying both caveats, like a real citation (review r1 on 5f42ce7: a
     // one-line ASCII fixture let `text.split('\n')[0]` pass while dropping every caveat).
-    const code = { textContent: "Bounds Ledger — Grothendieck (10a)\nupper bound: $1.7822$ (tracked since 2026-07-24)\n" +
-      "a listing position, not a statement that this bound is the strongest or most recent\n" +
-      "A snapshot at that sha, not a live read: https://u00dxk2.github.io/bounds-ledger/c/10a.html" };
+    const code = { textContent: CITE_FIXTURE };
     const kids = [];
     const details = { querySelector: (sel) => (sel === "code" ? code : null),
       insertBefore: (n, ref) => { assert.equal(ref, code, "the button must sit above the citation, before its code"); kids.push(n); } };
@@ -1016,7 +1020,8 @@ async function selftest() {
   assert.equal(ok.status.attrs.role, "status", "the confirmation must be announced to a screen reader");
   ok.button.onclick();
   await new Promise((r) => setTimeout(r, 0));
-  assert.equal(copied, ok.code.textContent, "the copied text must equal the block's own text, exactly");
+  assert.equal(copied, CITE_FIXTURE, "the copied text must equal the block's own text, exactly");
+  assert.equal(ok.code.textContent, CITE_FIXTURE, "the script must never alter the block it copies");
   assert.equal(ok.status.textContent, "Copied", "a successful copy must say so");
   // The clipboard REFUSES: the block is selected instead, and the line says so rather than "Copied".
   const refused = runCopy({ writeText: () => Promise.reject(new Error("denied")) });
@@ -1027,7 +1032,9 @@ async function selftest() {
   assert.notEqual(refused.status.textContent, "Copied", "a refused copy must never claim it copied");
   // No clipboard API at all: same fallback, synchronously.
   const none = runCopy(undefined);
-  none.button.onclick();
+  let noneThrown = null;
+  try { none.button.onclick(); } catch (e) { noneThrown = e; }
+  assert.equal(noneThrown, null, "a browser with no clipboard API must not throw out of the click handler");
   assert.equal(none.sel.ranges[0]?.node, none.code, "with no clipboard API the block must still be selected");
   assert.notEqual(none.status.textContent, "Copied", "…and the line must not claim a copy");
   // A second press clears the line at once, so the status region CHANGES and the next "Copied" is
@@ -1036,15 +1043,17 @@ async function selftest() {
   const again = runCopy(flaky);
   again.button.onclick();
   await new Promise((r) => setTimeout(r, 0));
-  assert.equal(again.status.textContent, "Copied", "positive control: the first press copied");
-  flaky.writeText = () => new Promise(() => {});
+  assert.equal(again.status.textContent, "Copied", "setup: the first press copied");
+  let settle = null;
+  flaky.writeText = () => new Promise((r) => { settle = r; });
   again.button.onclick();
   assert.equal(again.status.textContent, "", "a new press must clear the line before its own result arrives");
-  // writeText THROWS synchronously (review r1 on 5f42ce7), on a button that already said "Copied":
-  // the fallback must still run, and the earlier "Copied" must not survive the failed press.
-  flaky.writeText = () => Promise.resolve();
-  again.button.onclick();
+  settle();
   await new Promise((r) => setTimeout(r, 0));
+  assert.equal(again.status.textContent, "Copied", "every successful press must announce, not only the first");
+  // writeText THROWS synchronously (review r1 on 5f42ce7), on a button that already says "Copied":
+  // the fallback must still run, and the earlier "Copied" must not survive the failed press.
+  assert.equal(again.status.textContent, "Copied", "precondition: \"Copied\" is standing before the failing press");
   flaky.writeText = () => { throw new Error("NotAllowedError"); };
   let thrown = null;
   try { again.button.onclick(); } catch (e) { thrown = e; }
@@ -1052,6 +1061,12 @@ async function selftest() {
   assert.equal(thrown, null, "a clipboard that throws synchronously must not escape the click handler");
   assert.equal(again.sel.ranges[0]?.node, again.code, "a clipboard that throws synchronously must still select the block");
   assert.notEqual(again.status.textContent, "Copied", "a failed press must not leave an earlier \"Copied\" standing");
+  // A result with no usable .then (review round 2): the fallback, never an escaped TypeError.
+  const odd = runCopy({ writeText: () => ({ then: true }) });
+  let oddThrown = null;
+  try { odd.button.onclick(); } catch (e) { oddThrown = e; }
+  assert.equal(oddThrown, null, "a writeText result with no callable .then must not escape the click handler");
+  assert.equal(odd.sel.ranges[0]?.node, odd.code, "…and must fall back to selecting the block");
   // The exact rules, pinned LAST so each guard above names the property a mutation broke.
   assert.ok(card.includes("\n.src{white-space:normal;padding:0 .5rem}\n.src a,.cite summary{padding:.7rem .3rem}\n.src a{display:inline-block}\n.copy{min-height:44px;margin-left:.3rem}\n"),
     "the A-70 card rules are pinned exactly, in this order");
