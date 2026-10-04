@@ -812,13 +812,15 @@ ${body}
     d.insertBefore(b,code);d.insertBefore(st,code);
     b.addEventListener('click',function(){
       var text=code.textContent;
+      st.textContent='';
       function pick(){
         var r=document.createRange();r.selectNodeContents(code);
         var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);
         st.textContent='Selected. Use your Copy command.';
       }
-      var c=navigator.clipboard;
-      if(c&&c.writeText)c.writeText(text).then(function(){st.textContent='Copied';},pick);
+      var c=navigator.clipboard,p=null;
+      try{if(c&&c.writeText)p=c.writeText(text);}catch(e){p=null;}
+      if(p&&p.then)p.then(function(){st.textContent='Copied';},pick);
       else pick();
     });
   }
@@ -988,7 +990,11 @@ async function selftest() {
     const made = [];
     const node = (tag) => ({ tag, attrs: {}, textContent: "", setAttribute(k, v) { this.attrs[k] = v; },
       addEventListener(ev, fn) { this["on" + ev] = fn; } });
-    const code = { textContent: "Grothendieck (10a): upper bound: $1.7822$ [exact block text]" };
+    // Multi-line, non-ASCII and carrying both caveats, like a real citation (review r1 on 5f42ce7: a
+    // one-line ASCII fixture let `text.split('\n')[0]` pass while dropping every caveat).
+    const code = { textContent: "Bounds Ledger — Grothendieck (10a)\nupper bound: $1.7822$ (tracked since 2026-07-24)\n" +
+      "a listing position, not a statement that this bound is the strongest or most recent\n" +
+      "A snapshot at that sha, not a live read: https://u00dxk2.github.io/bounds-ledger/c/10a.html" };
     const kids = [];
     const details = { querySelector: (sel) => (sel === "code" ? code : null),
       insertBefore: (n, ref) => { assert.equal(ref, code, "the button must sit above the citation, before its code"); kids.push(n); } };
@@ -1024,6 +1030,28 @@ async function selftest() {
   none.button.onclick();
   assert.equal(none.sel.ranges[0]?.node, none.code, "with no clipboard API the block must still be selected");
   assert.notEqual(none.status.textContent, "Copied", "…and the line must not claim a copy");
+  // A second press clears the line at once, so the status region CHANGES and the next "Copied" is
+  // announced afresh rather than left as the same text. Read while the second copy is still pending.
+  const flaky = { writeText: () => Promise.resolve() };
+  const again = runCopy(flaky);
+  again.button.onclick();
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(again.status.textContent, "Copied", "positive control: the first press copied");
+  flaky.writeText = () => new Promise(() => {});
+  again.button.onclick();
+  assert.equal(again.status.textContent, "", "a new press must clear the line before its own result arrives");
+  // writeText THROWS synchronously (review r1 on 5f42ce7), on a button that already said "Copied":
+  // the fallback must still run, and the earlier "Copied" must not survive the failed press.
+  flaky.writeText = () => Promise.resolve();
+  again.button.onclick();
+  await new Promise((r) => setTimeout(r, 0));
+  flaky.writeText = () => { throw new Error("NotAllowedError"); };
+  let thrown = null;
+  try { again.button.onclick(); } catch (e) { thrown = e; }
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(thrown, null, "a clipboard that throws synchronously must not escape the click handler");
+  assert.equal(again.sel.ranges[0]?.node, again.code, "a clipboard that throws synchronously must still select the block");
+  assert.notEqual(again.status.textContent, "Copied", "a failed press must not leave an earlier \"Copied\" standing");
   // The exact rules, pinned LAST so each guard above names the property a mutation broke.
   assert.ok(card.includes("\n.src{white-space:normal;padding:0 .5rem}\n.src a,.cite summary{padding:.7rem .3rem}\n.src a{display:inline-block}\n.copy{min-height:44px;margin-left:.3rem}\n"),
     "the A-70 card rules are pinned exactly, in this order");
