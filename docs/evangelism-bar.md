@@ -202,6 +202,39 @@ P3 was the pass. Its seven steps, answered:
    judgment.** The first such arrival is a single event, not a rate, and is worth surfacing the day
    it lands rather than folding into a weekly line.
 
+### 2026-10-04 — the citing act itself, on a phone
+
+The rotation read `check-cycle-rotation.mjs --lane bounds-ledger` printed `evangelism-pass DUE — P3 IS
+the pass` (exit 3), and P3 was the pass.
+
+1. **The core problem, unchanged:** is the number I already have still true, and how would I find
+   out without redoing last year's literature search.
+2. **The moment, and the gap.** The page's own heading asks "Is the number you cited still
+   current?", and each row's cite block is the one control built for the act of citing. On a phone
+   it was a 22px-tall summary a dot away from three 20px links. Once opened, it gave the reader no
+   way to take the citation away except a long press and a drag across about nine lines. Getting
+   the answer was easy; carrying it into the reader's own paper was the step that failed.
+3. **The proving metric is NOT READABLE**, exactly as the metric section above says. A copy press is
+   not counted and will not be: the page has no analytics, and that is an enforced invariant.
+4. **Real-user evidence: none.** The evidence is a synthetic cold walk (the orchestrator's,
+   2026-10-02) plus this session's own measurements. Neither is a real reader, so this ships on
+   judgment, as the 09-17 pass did.
+5. **Expert best-practice:** the 44px touch-target floor is the one the walk measured against. The
+   copy button follows this repository's own rules: it is inserted by script, so a reader without
+   scripts never sees a dead control, and it copies the block's own text, so the copied citation
+   cannot drift from the shown one.
+6. **What shipped (`A-70`, 5f42ce7 with review fixes through b1e6b08):** on the live index under
+   iPhone 15 emulation, row c-22a's four controls went from 20 to 22px tall to 45px. Each citation
+   block has a "Copy citation" button: one tap showed "Copied", and the pasted text equalled the
+   block's text, all 516 characters. When the clipboard refuses, the block is selected instead and
+   the line says so, never "Copied". The desktop layout read identical before and after. **No
+   freeze was in play.** `index.html` is outside the 2026-09-20 freeze on `ramsey.html` and
+   `copying.html`.
+7. **The pre-registered read**, since the metric is unreadable: the only arrival this page can show
+   is a report filed through a row's "looks wrong?" link, now a larger target, counted by `npm run
+   reports` and readable at N = 1. It read 0 outside arrivals of 32 raw issues on the morning of the
+   pass. Nothing about the copy button itself is observable, by design.
+
 ## Review
 
 Re-read this whenever coverage changes materially, when an arrival instrument first produces a
