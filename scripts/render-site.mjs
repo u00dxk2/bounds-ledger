@@ -988,6 +988,11 @@ async function selftest() {
   const cardEnd = html.indexOf("\n}\n", cardStart);
   const outsideCard = html.slice(0, cardStart) + html.slice(cardEnd);
   assert.ok(!/\.src a[,{\s]/.test(outsideCard), "the touch rules must not reach the desktop table");
+  // …and the cite summary's desktop rule carries no sizing (round 4: it is the fourth control).
+  const deskSummary = [...outsideCard.matchAll(/\.cite summary\{([^}]*)\}/g)].map((m) => m[1]);
+  assert.ok(deskSummary.length > 0, "positive control: the desktop .cite summary rule must be found before its absence of sizing is asserted");
+  assert.ok(deskSummary.every((d) => !/\b(min-height|height|padding)\s*:/.test(d)),
+    "the touch sizing must not reach the desktop cite summary");
   // (3) No button in the markup, in any case (round 3): a reader without scripts must never meet a
   // button that does nothing.
   assert.ok(!/<button/i.test(html), "the copy button must be inserted by the script, never written into the markup");
@@ -1088,10 +1093,25 @@ async function selftest() {
   overlap.button.onclick();
   resolvers[1].rej(new Error("denied"));
   await new Promise((r) => setTimeout(r, 0));
-  assert.equal(overlap.sel.ranges[0]?.node, overlap.code, "setup: the second, failed press selected the block");
+  const FALLBACK = "Selected. Use your Copy command.";
+  assert.equal(overlap.status.textContent, FALLBACK, "setup: the second, failed press reported the fallback");
   resolvers[0].res();
   await new Promise((r) => setTimeout(r, 0));
-  assert.notEqual(overlap.status.textContent, "Copied", "an older press settling late must not overwrite a newer failure");
+  assert.equal(overlap.status.textContent, FALLBACK, "an older press settling late must leave the newer failure's message exactly as it was");
+  // The other order (round 4): an older press REJECTS while the newer one is still pending. The line
+  // stays clear for the newer press and nothing is selected on the older one's behalf; the newer
+  // press then reports its own success.
+  const pending2 = [];
+  const overlap2 = runCopy({ writeText: () => new Promise((res, rej) => { pending2.push({ res, rej }); }) });
+  overlap2.button.onclick();
+  overlap2.button.onclick();
+  pending2[0].rej(new Error("denied"));
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(overlap2.status.textContent, "", "an older press failing must not write over a newer press still in flight");
+  assert.equal(overlap2.sel.ranges.length, 0, "…nor select the block on the superseded press's behalf");
+  pending2[1].res();
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(overlap2.status.textContent, "Copied", "the newer press then reports its own success");
   // A result with no usable .then (review round 2): the fallback, never an escaped TypeError.
   const odd = runCopy({ writeText: () => ({ then: true }) });
   let oddThrown = null;
