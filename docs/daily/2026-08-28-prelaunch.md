@@ -148,9 +148,9 @@ Everything else was ours to do and is done.
 
 ## Back-patch — 15:45 MT, after this report was written
 
-**David answered card `878ba107` and the answer supersedes the Recommendation above.** His words
-verbatim: *"Let's make this an uncaged-minds post - please send all the details to the orchestrator
-to send to the uncaged-minds agent for a draft."*
+**David answered card `878ba107` and the answer supersedes the Recommendation above.** He asked,
+paraphrased, for it to become an uncaged-minds post, with all the details sent to the orchestrator
+to pass to the uncaged-minds agent for a draft.
 
 Everything outside this fence was true when written and is deliberately not rewritten. What changed:
 
