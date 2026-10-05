@@ -21,19 +21,29 @@ sentry_open_p2: null
 
 ## BLUF
 
-P1 picks `A-63`: a constant page tells a reader a source was read, and never says which part of the row that reading checked.
+Each constant page now says which claim a reading checked, or says plainly that it does not yet say: 25 verdicts name their claim, and 29 say the page does not yet name it.
 
 ## What changed
 
-P1 only so far. Nothing is committed yet.
+- `A-63` (a constant page does not say which claim in a row was checked), round 1, commits `a75eea8` and `e920910`. Each read verdict names its claim before the source link, for example on `c/15a.html`: "the claim we checked: that the cited paper proves the upper bound 2.371866 and introduces the asymmetric modification of the laser method that the row's comment names. What we read supports it. This verdict does not cover the comment's words 'and subsequent improvements'." A verdict whose claim was never named before its reading says "This page does not yet say which part of the row that reading checked." Those claims are not written after the fact.
+- `A-47` (the depth audit) slice 13, draw `eee7fe3` pushed first, readings `f5f0037`: 80a UNRESOLVED and 9a UNRESOLVED (the cited edition was not reached; what was read supports the claim), 85a SOUND, and retries of 5b and 71a, both SOUND. `node scripts/depth-audit.mjs`: "61 audited, 39 sound, 2 defective, 13 unresolved, 7 unreachable".
+- Reviews by the other model family, all read-only with the banner workdir checked: r1 on the 20 claim sentences before any code (2 BLOCKER, 6 SHOULD, 1 NIT, all taken), r2 on `a75eea8` (3 SHOULD, 1 NIT, fixed in `e920910`), r3 on `f5f0037` (6 SHOULD, 1 NIT: five SHOULD and the NIT taken, one refuted).
 
 ## Inputs (controllable)
 
-Filled at P3.
+- The renderer's self-test was red-armed with three mutations over four runs, each ending on its own guard: the fallback sentence removed; the named branch disabled (run twice: the first run tripped only the DEFECTIVE check, so a guard was added that names the dropped claim, and the second run tripped it); and an extra result appended. control: each run's `AssertionError` line names the guard that fired, in `tmp/rcp-redarm-1.txt`, `-2.txt`, `-2b.txt` and `-3.txt`, and the restored code passed (`tmp/rcp-selftest-4.txt`, exit 0).
+- Acceptance read over `c/*.html` (`tmp/a63-acceptance.mjs`): 115 pages, 61 audit lines = 25 named + 29 unnamed + 7 unreachable. 0 lines carry the vague phrase alone. No internal process text reached a page (positive control: the same patterns match in the store).
 
 ## Outputs (lagging)
 
-Filled at P3.
+- The bar's metric is NOT MEASURABLE (no analytics, no request log). The encounter read is `A-59`, 2026-10-28.
+- `npm run reports`: 0 outside arrivals of 32 raw issues (32 + 0 + 0 = 32), read this morning.
+- Findings classification: no record-facing catch today. The one citation-quality observation, 71a's entry title appearing in neither cited item, was already recorded on 2026-09-25, so it is a re-observation. Everything else today was instrument- or wording-facing: the vague verdict text, and provenance wording in the store.
+
+<!-- findings:begin -->
+- Correction to the P1 packet: its acceptance line for `c/26a.html` ("says the attribution was checked and the bound cell was not") already passed before the change, as the orchestrator's review pointed out. The real defect there was placement, and the claim is now named before the source link.
+- `continuity-edit --extend` sets `expectedSignalBy` and appends to `closeWhen`; it does not move `nextCheckDate`. Used on `A-47` and `A-63` today, it was reverted by hand from HEAD before any commit, and `nextCheckDate` was set instead.
+<!-- findings:end -->
 
 ## Recommendation
 
