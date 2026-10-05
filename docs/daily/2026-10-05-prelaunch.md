@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-Each constant page now says which claim a reading checked, or says plainly that it does not yet say: 25 verdicts name their claim, and 29 say the page does not yet name it.
+Each constant page now says which claim a reading checked: 25 verdicts name their claim, and 29 say the page does not name it yet.
 
 ## What changed
 
@@ -47,11 +47,16 @@ Each constant page now says which claim a reading checked, or says plainly that 
 
 ## Recommendation
 
-Filled at the close.
+Tomorrow's order lives in the primer (`docs/cold-starts/2026-10-06.md`), written at this close.
+
+- [B] 2026-10-06: `A-54` census session 6, `A-65` (the 10c page's stale source line), and three standing reads: `W-13` (someone must call the served-bytes check), `W-4` (every new detector shows both answers) and `W-8` (an amended outward artifact goes back to David).
+- [B] 2026-10-07: `A-47` slice 14. It needs a new grid, written on `A-47` before the draw is pushed.
+- [A — user-visible] by 2026-10-12: fix `A-63`'s five raw-markup claims and the 26a repeat, and refuse that markup in `claimText` (`A-63.roundOneDefects2026_10_05`).
 
 ## On hold pending data
 
-Filled at the close.
+- **The encounter with today's change:** blind until `A-59`'s read on 2026-10-28.
+- **`A-9` (the engineering-health backlog):** held until 2026-11-04 for the quarterly audit, which has not run and has no date.
 
 ## State Appendix
 
@@ -140,3 +145,23 @@ It read "frame: 691 cited bound row(s)", "store: 2 of 5 drawn position(s) land o
 - Step 0.9, the binding constraint is retention and word of mouth. This change does not move a measurable metric, and its encounter is unmeasured (`A-59`).
 - Step 0.10, yesterday's recommendations: `A-47` slice 13 → carrying today, drawn above; `A-63`/`A-65` dated 2026-10-06 → `A-63` pulled into today by its own "next product round" trigger, and `A-65` carrying → 2026-10-06; `A-54` census session 6 → carrying → 2026-10-06; `A-54` blocked-paper retry → carrying → by 2026-10-08.
 - Step 0.11, harness: running 2.1.289 · fleet UNIFORM · installed 2.1.289 (SAME).
+
+### Close
+
+ACTION: COMPLETED · item A-63 · P3 bus msgId 07151aef. The acceptance in force was the P1 review's redirect: the claim is named in the verdict sentence itself, before the source link. The orchestrator's P3 review (bus fd4ef947) read c/26a.html and confirmed it met.
+
+Changed since the P3 post:
+- The orchestrator's review found two defects in the shipped pages. Five named claims carry raw TeX-style markup on pages with no math renderer: 20b, 26a, 3b, 84a and 9a. This session re-ran a Grep of c/ for `the claim we checked: [^<]*(\^\{|_\{|\\[a-z])`, which matched those 5 files, and a Grep for katex or mathjax in c/26a.html, which returned 0. Separately, c/26a.html states the bound-cell limit twice. Both are recorded with dated fix shapes as `A-63.roundOneDefects2026_10_05`, due by 2026-10-12.
+- The P3 receipt still holds; no bracket has changed. The encounter stays blind (bug row A-59).
+
+Ledger delta (continuity-edit):
+- `A-2`: `nextCheckDate` set to 2026-10-12 (hygiene draft, AMENDED: set directly rather than through `--extend`).
+- `A-9`: held to 2026-11-04 with its reason, and its readCommand re-pointed. The old one is kept as `readCommandBefore2026_10_05` (hygiene draft, ACCEPTED).
+- `A-63`: `roundOneDefects2026_10_05` added.
+- Earlier today: `A-47` (`slice13Result2026_10_05`, `nextCheckDate` 2026-10-07) and `A-63` (`round1Shipped2026_10_05`, `nextCheckDate` 2026-10-12).
+
+hygiene draft: 3 lines — 2 accepted · 1 amended · 0 rejected. READ-MUTATED: "none — 2 reads guarded". check-wait-justification: "RESULT: PASS — 1 of 87 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)". check-engineering-zero: "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)".
+
+Due-gate verification: `check-due-gates-dispositioned` printed "snapshot CURRENT: taken today (2026-10-05); this verdict certifies today's Phase-0 due set of 3 row(s)" and "RESULT: PASS (exit 0)".
+
+Pending reads, each dated on its row: `A-47` slice 14 on 2026-10-07; `A-63` by 2026-10-12; `A-2` on 2026-10-12; `A-59` on 2026-10-28; `A-9` on 2026-11-04.
