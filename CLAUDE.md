@@ -59,4 +59,4 @@ Moved to `docs/gotchas.md` 2026-09-18 (context budget; same move `Layout` took o
 - **ONE command per Bash call, absolute paths.** A compound, a pipe, a `$VAR` or a relative path can park this machine's permission classifier at a silent prompt that is indistinguishable from a hang. Anything compound goes through the PowerShell tool; file reads go through Read/Grep/Glob.
 - **`UNREACHABLE` is not `BROKEN`.** BROKEN means the source was read and the pinned string is gone (a record moved); UNREACHABLE means it was never read. The run goes red either way, but only true drift gets a `Drift:` title.
 - **Never kill a node process by name, by age, or because it looks orphaned** — the process table is shared by every pane on this machine. Only a PID from your own pidfile, or one whose command line names this repo.
-- **Never run `doppler` in any form** — it prints its token into the transcript, and this lane does not use it.
+- **Never run `doppler` in any form** — this lane does not use it, and a secrets CLI's output belongs nowhere near a transcript.

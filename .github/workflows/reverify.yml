@@ -107,6 +107,12 @@ jobs:
         run: node scripts/check-quoted-replies.mjs --selftest
       - name: Check no tracked file quotes David (no network)
         run: node scripts/check-quoted-replies.mjs --tree
+      # This repo runs nothing on Render, so any Render resource id in it names another
+      # project's infrastructure.
+      - name: Self-test Render resource-id check (no network)
+        run: node scripts/check-render-ids.mjs --selftest
+      - name: Check no tracked file carries a Render resource id (no network)
+        run: node scripts/check-render-ids.mjs
       # Guards the G-2 gap-table value parser: numeric cells must parse (rightmost
       # literal), symbolic/exponent cells must stay null, and an inverted gap must
       # flag parseSuspect (instrument error, never a mathematical claim).
