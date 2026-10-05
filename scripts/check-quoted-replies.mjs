@@ -84,24 +84,50 @@ export function findQuotes(raw, { json = false } = {}) {
   return hits;
 }
 
-const git = (args) => execFileSync("git", args, { encoding: "utf8", maxBuffer: 512 * 1024 * 1024 });
+// core.quotePath=false so a non-ASCII path arrives as itself; a path git still quotes (a tab, a
+// quote mark, a backslash) is decoded by unquoteGitPath. Until review on 2026-10-05 a quoted path
+// failed both readers and its lines were silently never read.
+const git = (args) => execFileSync("git", ["-c", "core.quotePath=false", ...args], { encoding: "utf8", maxBuffer: 512 * 1024 * 1024 });
 const SELF = "scripts/check-quoted-replies.mjs";
-const SKIP = (f) => f === SELF || f.startsWith("ledger/") || /\.(png|jpg|pdf|svg)$/i.test(f);
+// Skipped: this file (its fixtures are quote-shaped by design) and the byte mirror of an upstream
+// repository, whose text is upstream's own and is never written by this lane. Nothing else.
+const SKIP = (f) => f === SELF || f.startsWith("ledger/teorth-optimizationproblems/");
+
+export function unquoteGitPath(p) {
+  if (!p.startsWith('"')) return p;
+  const bytes = [];
+  for (let i = 1; i < p.length - 1; i++) {
+    const c = p[i];
+    if (c !== "\\") { bytes.push(...Buffer.from(c, "utf8")); continue; }
+    const n = p[++i];
+    if (/[0-7]/.test(n)) { bytes.push(parseInt(p.slice(i, i + 3), 8)); i += 2; }
+    else bytes.push({ n: 10, t: 9, r: 13, '"': 34, "\\": 92, a: 7, b: 8, f: 12, v: 11 }[n] ?? n.charCodeAt(0));
+  }
+  return Buffer.from(bytes).toString("utf8");
+}
 
 function readTree() {
-  const files = git(["ls-files", "--cached"]).split(/\r?\n/).filter((f) => f && !SKIP(f) && /\.(md|json|mjs|yml|txt|html)$/.test(f));
+  const files = git(["ls-files", "-z", "--cached"]).split("\0").filter((f) => f && !SKIP(f));
   const lines = [];
-  for (const f of files) git(["show", `:${f}`]).split(/\r?\n/).forEach((text, i) => lines.push({ file: f, line: i + 1, text }));
-  return { lines, files: files.length };
+  const binary = [];
+  for (const f of files) {
+    const blob = git(["show", `:${f}`]);
+    // A blob with a NUL byte is not text and is not judged; it is COUNTED and named, never dropped silently.
+    if (blob.includes("\0")) { binary.push(f); continue; }
+    blob.split(/\r?\n/).forEach((text, i) => lines.push({ file: f, line: i + 1, text }));
+  }
+  return { lines, files: files.length - binary.length, binary };
 }
 
 function readStaged() {
-  const diff = git(["diff", "--cached", "--no-color", "-U0"]);
+  const diff = git(["diff", "--cached", "--no-color", "--text", "-U0"]);
   const lines = [];
   let file = null, at = 0;
   for (const raw of diff.split(/\r?\n/)) {
-    const fm = raw.match(/^\+\+\+ (?:b\/(.+)|\/dev\/null)$/);
-    if (fm) { file = fm[1] ?? null; continue; }
+    // Every file's diff starts here; forget the previous file so an unparsed path can never inherit it.
+    if (raw.startsWith("diff --git ")) { file = null; continue; }
+    const fm = raw.match(/^\+\+\+ (?:(b\/.+|"b\/.+")|\/dev\/null)$/);
+    if (fm) { file = fm[1] ? unquoteGitPath(fm[1]).replace(/^"?b\//, "").replace(/"$/, "") : null; continue; }
     const hm = raw.match(/^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
     if (hm) { at = Number(hm[1]); continue; }
     if (file && !SKIP(file) && raw.startsWith("+") && !raw.startsWith("+++")) lines.push({ file, line: at++, text: raw.slice(1) });
@@ -118,7 +144,7 @@ function report(lines, scope) {
   }
   console.log(`QUOTED REPLY — ${hits.length} quoted span(s) attributed to David (${scope}). This repository is public; his words are paraphrased here, never quoted:`);
   for (const h of hits) console.log(`  ${h.file}:${h.line}:${h.column}  "${h.preview}…"`);
-  console.log(`Paraphrase it, keeping the decision and the reasoning. If the quoted words are NOT his, add \`pragma: quoted-not-david\` on that line.`);
+  console.log(`Paraphrase it, keeping the decision and the reasoning. If the quoted words are NOT his, put "(not David's words)" right after the closing quote mark (within 40 characters).`);
   return 1;
 }
 
@@ -126,21 +152,28 @@ function selftest() {
   const fails = [];
   const fire = (t, why) => { if (findQuotes(t).length !== 1) fails.push(`did not fire: ${why}`); };
   const quiet = (t, why) => { if (findQuotes(t).length !== 0) fails.push(`fired: ${why}`); };
-  fire(`David, verbatim: *"when do we start on the next thing please"*`, "a markdown verbatim quote");
+  // EVERY fixture below is INVENTED: no real reply, card id or quotation. This file is the one path
+  // the tree check skips, so a real quotation placed here would be published unchecked (it happened
+  // in this file's first version and was caught by review on 2026-10-05).
+  fire(`David, verbatim: *"please water the ferns before lunch"*`, "a markdown verbatim quote");
   const fireJson = (t, why) => { if (findQuotes(t, { json: true }).length !== 1) fails.push(`did not fire: ${why}`); };
-  fireJson(`      "note": "first \\"one two\\" then his words on card 1a2b3c4d: \\"Yes - make the new top goal\\" end",`, "a JSON-escaped quote after a card id, behind an earlier short quote");
-  fire(`approved on card 4ea78b83 ('Go ahead and strip it from that commit message too.')`, "a single-quoted reply after a card id");
+  fireJson(`      "note": "first \\"one two\\" then his words on card 0a0a0a0a: \\"Yes - paint the fence green\\" end",`, "a JSON-escaped quote after a card id, behind an earlier short quote");
+  fire(`approved on card 0b0b0b0b ('Go ahead and move the blue folder to the top shelf.')`, "a single-quoted reply after a card id");
   quiet(`David's ruling stands and he's sure it's the one we'd keep for now`, "apostrophes, not quotes");
-  fire(`he answered "ship the partial table and mark the rest"`, "a quote after 'he answered'");
-  fire(`DAVID: “go with depth and read our own records”`, "a curly quote after 'David:'");
-  quiet(`he said so, and then, much later in the same long paragraph, after a great deal of unrelated discussion of the mirror, the page reads "I got this constant from a page"`, "a phrase cue more than 100 characters before an unrelated quote");
-  fire(`David approved it today on the board, after the review and the runner check: *"Yes - build the page."*`, "a quote whose only cue is the name, within 250 characters");
-  fire(`David's answer on card \x60bb4df56c\x60 ends: *"Then show me the rewritten history and the diff of what`, "a quote that wraps onto the next line");
+  fire(`he answered "bring the ladder and the green paint"`, "a quote after 'he answered'");
+  fire(`DAVID: “close the garden gate behind you”`, "a curly quote after 'David:'");
+  quiet(`he said so, and then, much later in the same long paragraph, after a great deal of unrelated discussion of the mirror, the page reads "a sentence printed on some page"`, "a phrase cue more than 100 characters before an unrelated quote");
+  fire(`David approved it today on the board, after the review and the runner check: *"Yes - plant the tulips."*`, "a quote whose only cue is the name, within 250 characters");
+  fire(`David's answer on card \x600c0c0c0c\x60 ends: *"Then fold the towels and stack them by the`, "a quote that wraps onto the next line");
   quiet(`he answered "yes" to the card`, "a quote shorter than four words");
-  quiet(`the upstream README says "claimed proof of the conjecture here"`, "a quote with no attribution cue");
-  quiet(`David cited the paper by "DAVID BELTRAN AND TWO CO-AUTHORS" (not David's words)`, "a waived quote");
-  fire(`the reviewer said "this part is fine as written" (not David's words), and David said "ship the partial table now"`, "a real quote on a line whose other quote is waived");
-  quiet(`David approved it on 2026-08-20 and nothing was quoted at all`, "a cue with no quote");
+  quiet(`the upstream README says "an invented sentence for this test"`, "a quote with no attribution cue");
+  quiet(`David cited the paper by "DAVID EXAMPLE AND TWO CO-AUTHORS" (not David's words)`, "a waived quote");
+  fire(`the reviewer said "this part is fine as written" (not David's words), and David said "sweep the porch steps today"`, "a real quote on a line whose other quote is waived");
+  quiet(`David approved it on a date and nothing was quoted at all`, "a cue with no quote");
+  // Git quotes a path holding a tab, a quote mark or (without core.quotePath=false) non-ASCII bytes.
+  if (unquoteGitPath('"docs/r\\303\\251sum\\303\\251.md"') !== "docs/résumé.md") fails.push("a git-quoted octal path did not decode");
+  if (unquoteGitPath('"docs/a\\tb.md"') !== "docs/a\tb.md") fails.push("a git-quoted tab path did not decode");
+  if (unquoteGitPath("docs/plain.md") !== "docs/plain.md") fails.push("an unquoted path was altered");
   if (fails.length) {
     for (const f of fails) console.error(`check-quoted-replies selftest FAIL: ${f}`);
     return 1;
@@ -154,11 +187,14 @@ if (isMain) try {
   if (process.argv.includes("--selftest")) process.exitCode = selftest();
   else {
     const staged = process.argv.includes("--staged");
-    const { lines, files } = staged ? readStaged() : readTree();
+    const { lines, files, binary = [] } = staged ? readStaged() : readTree();
     if (!staged && !lines.length) {
       console.log("REFUSED — no tracked text line was read; a clean result would mean nothing.");
       process.exitCode = 2;
-    } else process.exitCode = report(lines, staged ? `${lines.length} added line(s) in ${files} staged file(s)` : `${lines.length} line(s) in ${files} tracked file(s)`);
+    } else {
+      const skipped = binary.length ? `; ${binary.length} binary file(s) not judged: ${binary.join(", ")}` : "";
+      process.exitCode = report(lines, staged ? `${lines.length} added line(s) in ${files} staged file(s)` : `${lines.length} line(s) in ${files} tracked text file(s)${skipped}`);
+    }
   }
 } catch (err) {
   console.error(`check-quoted-replies: could not run (${err.message.split("\n")[0]})`);

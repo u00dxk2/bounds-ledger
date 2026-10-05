@@ -34,9 +34,9 @@
     "ci": "the network-free self-tests and tree checks that `npm test` runs (each has its own workflow step, which reverify.test.mjs asserts), then the live mirror-drift check and the cross-surface claim check; a red run files a finding issue titled with what actually moved",
     "preCommit": [
       "node scripts/history-sweep.mjs --staged — refuses a commit whose staged diff carries secret-shaped content",
-      "node scripts/check-orphan-shas.mjs — refuses a citation of a commit removed by a history rewrite",
-      "node scripts/check-quoted-replies.mjs --staged — refuses a new verbatim quotation of the maintainer's private replies",
-      "node scripts/check-render-ids.mjs — refuses another project's hosting identifier"
+      "node scripts/check-orphan-shas.mjs — refuses a citation of a listed commit that a history rewrite removed",
+      "node scripts/check-quoted-replies.mjs --staged — refuses an unmarked quotation of four or more words near the maintainer's name or an attribution cue (a stated rule, and a floor)",
+      "node scripts/check-render-ids.mjs — refuses a Render resource id"
     ],
     "additional": [
       "reverify.test.mjs asserts every self-test in `npm test` has a workflow step, so a check cannot be added without CI coverage",
@@ -46,7 +46,7 @@
   "secretScanning": {
     "preCommit": "present — core.hooksPath is set to .githooks and the hook runs the repo's own pattern set over the staged diff (2026-08-09)",
     "pushProtection": "enabled",
-    "verifiedHistorySweep": "scheduled daily — .github/workflows/history-sweep.yml runs scripts/history-sweep.mjs --scheduled at fetch-depth 0 over every reachable commit, merge diffs included; it refuses a shallow or partial scan, accounts for each known test fixture by a written disposition, and files an issue when it is red. Commits no ref reaches are outside its reach."
+    "verifiedHistorySweep": "scheduled daily — .github/workflows/history-sweep.yml runs scripts/history-sweep.mjs --scheduled at fetch-depth 0 over every reachable commit, merge diffs included; it refuses a shallow checkout or a scan that walked fewer commits than are reachable, accounts for each known test fixture by a written disposition, and files an issue when it is red. Commits no ref reaches are outside its reach."
   },
   "branchProtection": {
     "main": "protected by repository ruleset `main-history-integrity` (id 20607202, enforcement active, no bypass actors): deletion and non-fast-forward pushes are both blocked",

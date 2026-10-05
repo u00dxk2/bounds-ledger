@@ -355,7 +355,20 @@ assert.equal(unguarded.length, 0, `piped workflow step(s) missing \`shell: bash\
 // a newly-added self-test cannot be CI-less either. KP-78: prove the instrument can fail.
 const pkg = JSON.parse(await readFile(join(ROOT, "package.json"), "utf8"));
 const testCmds = pkg.scripts.test.split("&&").map((c) => c.trim()).filter(Boolean);
-const uncied = testCmds.filter((c) => !wf.includes(c));
+// EXACT command match, not a substring: `wf.includes(c)` let `node x.mjs` pass because the
+// workflow ran `node x.mjs --selftest`, so deleting a tree-check step left this green (review,
+// 2026-10-05). Every executed line is collected: one-line `run:` values and each line of a block.
+const runCmds = new Set();
+{
+  const rl = wf.split(/\r?\n/);
+  for (let i = 0; i < rl.length; i++) {
+    const m = rl[i].match(/^(\s*)run:\s*(.*)$/);
+    if (!m) continue;
+    if (!/^[|>]-?\s*$/.test(m[2])) { runCmds.add(m[2].trim()); continue; }
+    for (let j = i + 1; j < rl.length && (rl[j].trim() === "" || rl[j].match(/^\s*/)[0].length > m[1].length); j++) if (rl[j].trim()) runCmds.add(rl[j].trim());
+  }
+}
+const uncied = testCmds.filter((c) => !runCmds.has(c));
 assert.equal(uncied.length, 0, `self-test(s) run by \`npm test\` but absent from the workflow — unguarded in CI:\n${uncied.join("\n")}`);
 
 // repo-health.json is a PUBLIC statement of this repo's controls, so it must not go stale against
@@ -366,8 +379,12 @@ const health = JSON.parse(await readFile(join(ROOT, "repo-health.json"), "utf8")
 const statedTests = health.requiredChecks.ci.match(/(\d+)\s+network-free self-tests/);
 if (statedTests) assert.equal(Number(statedTests[1]), testCmds.length, `repo-health.json says ${statedTests[1]} network-free self-tests; npm test runs ${testCmds.length}`);
 const sweepWf = await readFile(join(ROOT, ".github", "workflows", "history-sweep.yml"), "utf8");
+// BOTH directions: a scheduled workflow must not be called unscheduled, and the manifest must not
+// claim a daily sweep the workflow no longer schedules.
 if (/^\s*schedule:\s*$/m.test(sweepWf.replace(/^[ \t]*#.*$/gm, ""))) {
   assert.doesNotMatch(health.secretScanning.verifiedHistorySweep, /not yet scheduled|on-demand/i, "repo-health.json calls the history sweep unscheduled, but history-sweep.yml runs on a schedule");
+} else {
+  assert.doesNotMatch(health.secretScanning.verifiedHistorySweep, /scheduled daily|daily/i, "repo-health.json claims a daily history sweep, but history-sweep.yml has no schedule");
 }
 
 // b1 must STAY. A branch with no path to a runner is how `guard-catch-count` sat unvalidated for a

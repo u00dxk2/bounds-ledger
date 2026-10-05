@@ -80,7 +80,22 @@ const ALLOW = [
 // disagree about what "all of history" means. See the header for why each flag is there.
 const LOG_ARGS = ["log", "-p", "--all", "--no-color", "--text", "--diff-merges=first-parent"];
 let gitCwd; // set only by the selftest, which runs the real modes against a scratch repository
-const git = (args, maxBuffer = 512 * 1024 * 1024) => execFileSync("git", args, { encoding: "utf8", maxBuffer, cwd: gitCwd });
+// core.quotePath=false: a non-ASCII path arrives as itself. A path git still quotes is decoded by
+// unquoteGitPath, so the "+++" line always names the file it belongs to.
+const git = (args, maxBuffer = 512 * 1024 * 1024) => execFileSync("git", ["-c", "core.quotePath=false", ...args], { encoding: "utf8", maxBuffer, cwd: gitCwd });
+
+export function unquoteGitPath(p) {
+  if (!p.startsWith('"')) return p;
+  const bytes = [];
+  for (let i = 1; i < p.length - 1; i++) {
+    const c = p[i];
+    if (c !== "\\") { bytes.push(...Buffer.from(c, "utf8")); continue; }
+    const n = p[++i];
+    if (/[0-7]/.test(n)) { bytes.push(parseInt(p.slice(i, i + 3), 8)); i += 2; }
+    else bytes.push({ n: 10, t: 9, r: 13, '"': 34, "\\": 92, a: 7, b: 8, f: 12, v: 11 }[n] ?? n.charCodeAt(0));
+  }
+  return Buffer.from(bytes).toString("utf8");
+}
 
 function scan(text, label) {
   const hits = [];
@@ -94,8 +109,12 @@ function scan(text, label) {
     // the known hits: a secret-shaped line quoted in one commit's message was reported as living in
     // a script it has never appeared in. The hit was real; the location was fiction.
     if (/^commit [0-9a-f]{40}$/.test(line)) { file = "(commit message)"; continue; }
-    const fm = line.match(/^\+\+\+ b\/(.+)$/);
-    if (fm) { file = fm[1]; continue; }
+    // Every file's diff starts with this line. Forget the previous file HERE, so a "+++" line this
+    // parser cannot read never leaves the previous file's name — possibly the exempt one — in force.
+    // Found by review 2026-10-05: a quoted path after the exempt file inherited its exemption.
+    if (line.startsWith("diff --git ") || line.startsWith("diff --cc ") || line.startsWith("diff --combined ")) { file = "(unparsed path)"; continue; }
+    const fm = line.match(/^\+\+\+ (b\/.+|"b\/.+")$/);
+    if (fm) { file = unquoteGitPath(fm[1]).replace(/^b\//, ""); continue; }
     if (ALLOW.some((re) => re.test(file))) continue;
     for (const [name, re] of PATTERNS) {
       if (re.test(line)) hits.push({ name, file, line: line.slice(0, 160), full: line, where: label });
@@ -362,6 +381,23 @@ function selftest() {
   const own = scan("+++ b/scripts/history-sweep.mjs\n+  [\"github-pat\", \"ghp_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8\"],", "fixture");
   if (own.length) {
     console.error("history-sweep selftest FAIL: the scanner's own fixture file is no longer skipped");
+    return 1;
+  }
+  // The exemption must END at the next file's diff, even when that file's path is one this parser
+  // has to decode, or cannot read at all.
+  const spill = scan([
+    "diff --git a/scripts/history-sweep.mjs b/scripts/history-sweep.mjs",
+    "+++ b/scripts/history-sweep.mjs",
+    "+fixture line",
+    "diff --git \"a/docs/\\303\\251.txt\" \"b/docs/\\303\\251.txt\"",
+    "+++ \"b/docs/\\303\\251.txt\"",
+    "+token ghp_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8",
+    "diff --git a/x b/x",
+    "+++ an unparseable header",
+    "+token ghp_Z9y8X7w6V5u4T3s2R1q0P9o8N7m6L5k4J3i2",
+  ].join("\n"), "fixture");
+  if (spill.length !== 2 || spill[0].file !== "docs/é.txt" || spill[1].file !== "(unparsed path)") {
+    console.error(`history-sweep selftest FAIL: the exempt file's name carried into later files (${JSON.stringify(spill.map((h) => h.file))})`);
     return 1;
   }
   const real = realHistoryLegs();

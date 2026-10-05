@@ -54,7 +54,10 @@ export function findCitations(lines, orphaned = ORPHANED) {
 function readIndex() {
   let out;
   try {
-    out = execFileSync("git", ["grep", "--cached", "-I", "-n", "-i", "-E", "[0-9a-f]{7}"], {
+    // -a: a file git classes as binary is searched as text, never skipped (review, 2026-10-05: `-I`
+    // let a NUL byte hide a citation). -z: path, line number and text are NUL-separated, so a path
+    // or a line containing ":12:" cannot be mis-split.
+    out = execFileSync("git", ["-c", "core.quotePath=false", "grep", "--cached", "-a", "-z", "-n", "-i", "-E", "[0-9a-f]{7}"], {
       encoding: "utf8",
       maxBuffer: 512 * 1024 * 1024,
     });
@@ -64,8 +67,8 @@ function readIndex() {
   }
   const lines = [];
   for (const raw of out.split(/\r?\n/)) {
-    const m = raw.match(/^(.+?):(\d+):(.*)$/);
-    if (m) lines.push({ file: m[1], line: Number(m[2]), text: m[3] });
+    const [file, line, ...rest] = raw.split("\0");
+    if (file && /^\d+$/.test(line ?? "")) lines.push({ file, line: Number(line), text: rest.join("\0") });
   }
   return lines;
 }

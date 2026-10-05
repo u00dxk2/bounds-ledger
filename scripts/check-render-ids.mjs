@@ -29,7 +29,8 @@ export function findIds(lines) {
 function check() {
   let out;
   try {
-    out = execFileSync("git", ["grep", "--cached", "-I", "-n", "-E", "(srv|crn|tea|dpg)-[a-z0-9]{20}", "--", ".", ":!scripts/check-render-ids.mjs"], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+    // -a: binary-classed files are searched as text, never skipped. -z: NUL-separated fields.
+    out = execFileSync("git", ["-c", "core.quotePath=false", "grep", "--cached", "-a", "-z", "-n", "-E", "(srv|crn|tea|dpg)-[a-z0-9]{20}", "--", ".", ":!scripts/check-render-ids.mjs"], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
   } catch (err) {
     if (err.status !== 1) throw err;
     out = "";
@@ -39,7 +40,7 @@ function check() {
     console.log("REFUSED — the index lists no files; the tree was not read.");
     return 2;
   }
-  const lines = out.split(/\r?\n/).map((r) => r.match(/^(.+?):(\d+):(.*)$/)).filter(Boolean).map((m) => ({ file: m[1], line: Number(m[2]), text: m[3] }));
+  const lines = out.split(/\r?\n/).map((r) => r.split("\0")).filter(([f, n]) => f && /^\d+$/.test(n ?? "")).map(([file, n, ...rest]) => ({ file, line: Number(n), text: rest.join("\0") }));
   const hits = findIds(lines);
   if (!hits.length) {
     console.log(`render-id check: none (${files} tracked file(s) searched in the index)`);
