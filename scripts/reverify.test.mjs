@@ -359,10 +359,13 @@ const testCmds = pkg.scripts.test.split("&&").map((c) => c.trim()).filter(Boolea
 // because the workflow ran `node x.mjs --selftest` (review, 2026-10-05), and a second review showed
 // that reading lines out of a block scalar accepts a command YAML folds into an `echo`. So the
 // rule is stated, not parsed: every `npm test` command must be the whole value of a one-line
-// `run:`. A step written as a block fails this test, which is the safe direction.
+// `run:` at STEP indentation (eight spaces in this workflow). A step written as a block fails.
+// CEILING, stated: this guards against a step being dropped or mistyped, not against a deliberate
+// rewrite of the workflow (text inside a heredoc can imitate a step line), which could just as
+// well delete this assertion.
 const runCmds = new Set();
 for (const line of wf.split(/\r?\n/)) {
-  const m = line.match(/^\s*run:\s*(.*?)\s*$/);
+  const m = line.match(/^ {8}run: (.*?)\s*$/);
   if (m && m[1] && !/^[|>]/.test(m[1])) runCmds.add(m[1]);
 }
 const uncied = testCmds.filter((c) => !runCmds.has(c));

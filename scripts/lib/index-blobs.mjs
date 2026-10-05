@@ -21,8 +21,9 @@ export function readIndexBlobs({ cwd, skip = () => false } = {}) {
     const tab = rec.indexOf("\t");
     const [mode, sha] = rec.slice(0, tab).split(" ");
     const file = rec.slice(tab + 1);
-    // 160000 is a submodule pointer and 120000 a symlink: neither is file content in this tree.
-    if (mode === "160000" || mode === "120000" || skip(file)) continue;
+    // 160000 is a submodule pointer (its object lives in another repository). A symlink (120000)
+    // IS read: its blob is the link target's text, committed and public like any other file.
+    if (mode === "160000" || skip(file)) continue;
     entries.push({ file, sha });
   }
   if (!entries.length) return [];

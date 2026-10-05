@@ -24,6 +24,8 @@
 // rewrite.
 
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { readIndexBlobs, toLines } from "./lib/index-blobs.mjs";
 
 const ORPHANED = new Set([
@@ -91,6 +93,9 @@ function selftest() {
   quiet("xabcdef1", "a token glued to a letter");
   quiet("abcdef", "a run shorter than seven characters");
   if (ORPHANED.size !== 6 || [...ORPHANED].some((k) => !/^[0-9a-f]{64}$/.test(k))) fails.push("the list must hold six sha256 hex digests");
+  // This file is read by the tree check like any other, so its own source must cite no listed commit.
+  const own = readFileSync(fileURLToPath(import.meta.url), "utf8").split(/\r?\n/).map((text, i) => ({ file: "self", line: i + 1, text }));
+  if (findCitations(own).length) fails.push("this file's own source cites a listed commit");
   if (fails.length) {
     for (const f of fails) console.error(`check-orphan-shas selftest FAIL: ${f}`);
     return 1;

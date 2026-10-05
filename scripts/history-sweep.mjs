@@ -107,13 +107,16 @@ function scan(text, label) {
     // whatever file the PREVIOUS commit happened to end on. Found 2026-09-17 while dispositioning
     // the known hits: a secret-shaped line quoted in one commit's message was reported as living in
     // a script it has never appeared in. The hit was real; the location was fiction.
-    if (/^commit [0-9a-f]{40}$/.test(line)) { file = "(commit message)"; continue; }
-    // Every file's diff starts with this line. Forget the previous file HERE, so a "+++" line this
-    // parser cannot read never leaves the previous file's name — possibly the exempt one — in force.
-    // Found by review 2026-10-05: a quoted path after the exempt file inherited its exemption.
-    if (line.startsWith("diff --git ") || line.startsWith("diff --cc ") || line.startsWith("diff --combined ")) { file = "(unparsed path)"; continue; }
-    const fm = line.match(/^\+\+\+ (b\/.+|"b\/.+")$/);
-    if (fm) { file = unquoteGitPath(fm[1]).replace(/^b\//, ""); continue; }
+    // Header-shaped lines UPDATE THE LABEL and are then judged like every other line: none of these
+    // branches skips matching. Until 2026-10-05 each ended in `continue`, so an added CONTENT line
+    // that happened to begin "+++ b/" (a file containing "++ b/" before a token) was taken for a
+    // header and never matched — the label decided what was read. Now it decides only what is printed.
+    if (/^commit [0-9a-f]{40}$/.test(line)) file = "(commit message)";
+    else if (line.startsWith("diff --git ") || line.startsWith("diff --cc ") || line.startsWith("diff --combined ")) file = "(unparsed path)";
+    else {
+      const fm = line.match(/^\+\+\+ (b\/.+|"b\/.+")$/);
+      if (fm) file = unquoteGitPath(fm[1]).replace(/^b\//, "");
+    }
     for (const [name, re] of PATTERNS) {
       if (re.test(line)) hits.push({ name, file, line: line.slice(0, 160), full: line, where: label });
     }
@@ -389,6 +392,12 @@ function selftest() {
   const inSelf = scanT("+++ b/scripts/history-sweep.mjs\n+  token gh§p_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8", "fixture");
   if (!inSelf.some((h) => h.name === "github-pat")) {
     console.error("history-sweep selftest FAIL: a secret in this script's own file was skipped — no file may be exempt");
+    return 1;
+  }
+  // A CONTENT line shaped like a diff header is still judged.
+  const headerShaped = scanT("+++ b/docs/x.md\n+++ b/gh§p_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8", "fixture");
+  if (!headerShaped.some((h) => h.name === "github-pat")) {
+    console.error("history-sweep selftest FAIL: a line shaped like a '+++ b/' header was taken for a header and never matched");
     return 1;
   }
   // So this file's own source must match nothing, or the scheduled sweep goes red on it.
