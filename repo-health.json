@@ -25,7 +25,7 @@
   "secrets": {
     "source": "operator environment at run time",
     "envFiles": "none — this repo has no .env of any kind",
-    "repoSecrets": "none. Deliberate and load-bearing: two local checks need a credential and BOTH are allowed to report unverified in CI rather than have a credential added to a public repo's Actions secrets. `check-brief.mjs` reads CC_PROMPTS_PIN from the operator's environment; `traffic-snapshot.mjs` delegates entirely to the `gh` CLI and never handles a token itself.",
+    "repoSecrets": "none. Deliberate and load-bearing: no check is allowed to need a credential that would have to be added to a public repo's Actions secrets. `check-brief.mjs` sends no credential (its page is behind an interactive sign-in, so it reports unverified); `traffic-snapshot.mjs` delegates entirely to the `gh` CLI and never handles a token itself.",
     "ciCredential": "the ephemeral github.token issued per workflow run, used only to file a finding issue on drift",
     "shippedKeys": []
   },

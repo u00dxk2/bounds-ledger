@@ -82,7 +82,7 @@ function datedBlocks(md) {
 
 // Pure verdict logic, so every branch is reachable from --selftest without a network.
 // Returns { code, lines }.
-function assess(md, page, redirectedTo, noPin) {
+function assess(md, page, redirectedTo) {
   const lines = [];
   const title = sourceTitle(md);
   const blocks = datedBlocks(md);
@@ -92,10 +92,9 @@ function assess(md, page, redirectedTo, noPin) {
     lines.push(`BRIEF UNVERIFIABLE — the response from ${URL} is not the brief.`);
     lines.push(`  the source's title ("${title}") is absent from what came back`);
     if (redirectedTo) lines.push(`  the request was REDIRECTED to ${redirectedTo} — a wall, not a stale port`);
-    if (noPin) lines.push(`  CC_PROMPTS_PIN was NOT set, so the request went out anonymous — but SETTING IT`);
-    if (noPin) lines.push(`  WOULD NOT HELP: /t/* went Google-session-only on 2026-09-04 and the cc_pin`);
-    if (noPin) lines.push(`  cookie was retired, so an x-cc-pin header no longer signs anyone in. There is`);
-    if (noPin) lines.push(`  no credential that makes this leg pass today; that is A-41, not your setup.`);
+    lines.push(`  the request goes out anonymous by design: /t/* went Google-session-only on`);
+    lines.push(`  2026-09-04 and no header signs anyone in, so no credential is sent and none`);
+    lines.push(`  makes this leg pass today; that is A-41, not your setup.`);
     lines.push(``);
     lines.push(`This is NOT evidence that the re-port is behind: staleness cannot be assessed from`);
     lines.push(`a page we never received. Check whether the route is gated or renamed first.`);
@@ -124,39 +123,61 @@ function assess(md, page, redirectedTo, noPin) {
   return { code: 1, lines };
 }
 
-async function run(pageFile) {
+async function run(pageFile, fetchImpl = fetch, log = console.log) {
   const md = await readFile(SOURCE, "utf8");
 
   let page;
   let redirectedTo = null;
-  let hadNoPin = false;
   if (pageFile) {
     page = textOf(await readFile(pageFile, "utf8"));
   } else {
-    // /t/* went behind a Google sign-in wall on 2026-08-02 (intentional — skylark-site 53c87f83,
-    // the human wall over David-facing CC surfaces). An anonymous fetch can no longer see this
-    // page at all, so the check now takes the MACHINE credential path the orchestrator pointed at:
-    // the x-cc-pin header. The gate did not change; our probe did.
-    // Never log the pin — only whether it was present.
+    // /t/* is Google-session-only since 2026-09-04 and the PIN cookie was retired, so no header
+    // signs this request in. It goes out anonymous ON PURPOSE: an x-cc-pin header used to be sent
+    // here, and after 09-04 it authenticated nothing while still carrying the credential to the
+    // page. The selftest asserts no header carries it. Reaching the page again is A-41.
     const headers = { "user-agent": "bounds-ledger-brief-check" };
-    if (process.env.CC_PROMPTS_PIN) headers["x-cc-pin"] = process.env.CC_PROMPTS_PIN;
-    else hadNoPin = true;
 
-    const res = await fetch(URL, { headers });
+    const res = await fetchImpl(URL, { headers });
     if (!res.ok) throw new Error(`GET ${URL}: HTTP ${res.status}`);
     if (res.redirected && res.url !== URL) redirectedTo = res.url;
     page = textOf(await res.text());
   }
 
-  const { code, lines } = assess(md, page, redirectedTo, hadNoPin);
-  console.log(lines.join("\n"));
+  const { code, lines } = assess(md, page, redirectedTo);
+  log(lines.join("\n"));
   return code;
 }
 
 // Both sides of the gate branch, plus proof it stays SILENT while a real stale page still
 // fires — a gate check that swallowed the stale verdict would pass "can it fire" and blind
 // the alarm it lives inside (W-4 / KP-78: the second question is what it can no longer see).
-function selftest() {
+async function selftest() {
+  // The page is Google-session-only, so no credential belongs on this request: a value sent
+  // there authenticates nothing and only travels. Drive the REAL fetch path with a credential in
+  // the environment and a stub transport, and assert no header carries it.
+  const DUMMY = "selftest-dummy-credential-0123456789";
+  const saved = process.env.CC_PROMPTS_PIN;
+  process.env.CC_PROMPTS_PIN = DUMMY;
+  const sent = [];
+  const stub = async (_url, init) => {
+    sent.push(init?.headers ?? {});
+    return { ok: true, redirected: true, url: "https://skylarkcreations.com/t/signin", text: async () => "<h1>Sign in</h1>" };
+  };
+  try {
+    await run(null, stub, () => {});
+  } finally {
+    if (saved === undefined) delete process.env.CC_PROMPTS_PIN;
+    else process.env.CC_PROMPTS_PIN = saved;
+  }
+  if (sent.length !== 1) {
+    console.error(`check-brief selftest FAIL: the stub transport saw ${sent.length} request(s), expected 1 — the credential test did not exercise the fetch path`);
+    return 1;
+  }
+  if (Object.values(sent[0]).some((v) => String(v).includes(DUMMY))) {
+    console.error(`check-brief selftest FAIL: a request header carries the CC_PROMPTS_PIN value to a page it cannot authenticate`);
+    return 1;
+  }
+
   const md = [
     `# A test brief title`,
     ``,
@@ -190,14 +211,14 @@ function selftest() {
     console.error(`check-brief selftest FAIL: wall verdict still blames the port`);
     return 1;
   }
-  console.log(`check-brief selftest: PASS (${cases.length} verdict cases + wall-not-blamed-on-port guard)`);
+  console.log(`check-brief selftest: PASS (${cases.length} verdict cases + wall-not-blamed-on-port guard + no credential header on the live request)`);
   return 0;
 }
 
 const args = process.argv.slice(2);
 const pf = args.indexOf("--page-file");
 try {
-  process.exitCode = args.includes("--selftest") ? selftest() : await run(pf >= 0 ? args[pf + 1] : null);
+  process.exitCode = args.includes("--selftest") ? await selftest() : await run(pf >= 0 ? args[pf + 1] : null);
 } catch (err) {
   console.error(`error: ${err.message}`);
   process.exitCode = 2;
