@@ -2645,7 +2645,7 @@
     {
       "id": "A-71",
       "type": "active",
-      "status": "resolved",
+      "status": "closed",
       "resolution": "RESOLVED 2026-10-03 round 4. Both targets landed. 4baa57d (pure): scripts/lib/html.mjs holds esc, unesc, REPO and issueUrl for the three renderers; every published page re-rendered byte-identical, and the three page --check legs exited 1 on a mutation of the shared esc and 0 after restore. 0050204 (test-add): node scripts/lib/html.mjs --selftest, in npm test and reverify.yml, each of checks a to f shown failing on its own mutation (Codex ran all six; the lead reproduced c and e). npm run verify exited 0 at 154c688 (receipt exitCode 0, at 2026-10-04T00:39:12Z). Pushed in the same single push as this close; the served read follows in the bus task-complete.",
       "title": "P7 refactor session 2026-10-03: one shared HTML-escape module for the three page renderers, with its own self-test",
       "owner": "bounds-ledger",
@@ -2660,11 +2660,13 @@
       "closeWhen": "Both targets committed and pushed with npm run verify green at the pushed code commit and every published page byte-identical; or a target aborted with the reason written here.",
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/lib/html.mjs --selftest",
       "created": "2026-10-03",
-      "updated": "2026-10-03"
+      "updated": "2026-10-05",
+      "statusNormalized2026_10_05": "Status was the non-canonical string resolved (set 2026-10-03); mapped to closed at the 2026-10-05 security-round close because continuity-check reported it CRITICAL (a row outside the vocabulary is invisible to the stale and closeWhen checks). Its closeWhen was already met per its own notes."
     }
   ],
   "meta": {
     "untrackedCommits": {
+      "1940337": "2026-10-05 afternoon security fix round, item S4 (same dispatch as e738abf).",
       "8153032": "2026-09-15 daily-report fix: the report's FIRST ACTION line named the gate for a seventh consecutive day and now names the file and row — reports are not item work; same class as afac67d.",
       "8172726": "2026-09-12 close-out appended to tomorrow's primer — rail bookkeeping; the work it describes carries its own commits (3d65a09, 2a40d62, e035373).",
       "c8473d8": "2026-09-10 hygiene pass: the day's report plus a correction to tomorrow's primer banner — reports and primers are not item work; the items they describe carry their own commits.",
@@ -2702,7 +2704,16 @@
       "423a725": "2026-09-11 close-out naming A-48's delivery date and that night's sweep result — rail bookkeeping; same class as 8172726.",
       "8a16efd": "2026-09-11 hygiene pass: the day's report, tomorrow's primer, and the yardstick nobody had documented — rail bookkeeping; same class as 7a7a636.",
       "afac67d": "2026-09-13 daily-report wording fix naming the baseline for the 9-to-7 coverage movement — reports are not item work; the ship it describes carries its own commits (f95006d, 2bd8292).",
-      "bd61fc9": "2026-09-15 hygiene pass: today's report, tomorrow's primer, the day's commits on their rows and a W-6 traffic sample — rail bookkeeping; same class as 8a16efd. Its subject says 'Hygiene pass' rather than the exempt 'Hygiene <date>' shape, which is why it is listed here."
+      "bd61fc9": "2026-09-15 hygiene pass: today's report, tomorrow's primer, the day's commits on their rows and a W-6 traffic sample — rail bookkeeping; same class as 8a16efd. Its subject says 'Hygiene pass' rather than the exempt 'Hygiene <date>' shape, which is why it is listed here.",
+      "e738abf": "2026-10-05 afternoon security fix round (orchestrator dispatch, bus 26eaf921), item BL-S1. Dispatched work with no ledger row of its own; the round's account is the bus task-complete b3d9b987.",
+      "c122203": "2026-10-05 afternoon security fix round, item S5 (same dispatch as e738abf).",
+      "086e57d": "2026-10-05 afternoon security fix round, item BL-S2 (same dispatch as e738abf).",
+      "4f4333d": "2026-10-05 afternoon security fix round, item S3 (same dispatch as e738abf).",
+      "1fc3dc6": "2026-10-05 afternoon security fix round, item S6 (same dispatch as e738abf).",
+      "4769ab9": "2026-10-05 afternoon security fix round, cross-family review round 1 fixes (same dispatch as e738abf).",
+      "c169b5b": "2026-10-05 afternoon security fix round, review round 2 shape change (same dispatch as e738abf).",
+      "517f2ad": "2026-10-05 afternoon security fix round, review round 3 fixes (same dispatch as e738abf).",
+      "1f67a3a": "2026-10-05 afternoon security fix round, three short quotes found by the post-push live read (same dispatch as e738abf)."
     },
     "signalDateField": "expectedSignalBy",
     "updated": "2026-08-27",
