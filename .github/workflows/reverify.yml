@@ -93,6 +93,13 @@ jobs:
       # is guarded here, and the scheduled run guards the history.
       - name: Self-test history-sweep patterns (no network)
         run: node scripts/history-sweep.mjs --selftest
+      # A commit removed by a history rewrite stays reachable on GitHub by sha until its cached
+      # views are purged, so the tracked tree must not cite one. The second step reads the
+      # checked-out tree itself; the first proves the matcher fires and stays silent.
+      - name: Self-test orphaned-commit citation check (no network)
+        run: node scripts/check-orphan-shas.mjs --selftest
+      - name: Check no tracked file cites an orphaned pre-rewrite commit (no network)
+        run: node scripts/check-orphan-shas.mjs
       # Guards the G-2 gap-table value parser: numeric cells must parse (rightmost
       # literal), symbolic/exponent cells must stay null, and an inverted gap must
       # flag parseSuspect (instrument error, never a mathematical claim).

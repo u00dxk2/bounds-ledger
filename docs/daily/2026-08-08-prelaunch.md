@@ -73,7 +73,7 @@ The instrument lesson is worth more than the fix and belongs in how we check any
 
 - ~~**The second yes for going public.**~~ **Given, and done.** He asked to see the result before deciding, which was the right condition and is what produced the day's finding.
 - **Proof that the two new security controls actually fire.** They report as on, which is a state reading and not a demonstration. Owed, not claimed.
-- ~~**The last copy of the address**, in commit `03186f8`'s message.~~ **Resolved the same day.** He approved it, the safety system refused the command exactly as it did on the 7th, it was not worked around, and he ran it himself at the pane. Three commits restamped from `03186f8` forward; the fingerprint of the current files is unchanged, so nothing moved.
+- ~~**The last copy of the address**, in a pre-rewrite commit's message.~~ **Resolved the same day.** He approved it, the safety system refused the command exactly as it did on the 7th, it was not worked around, and he ran it himself at the pane. Three commits restamped from that commit forward; the fingerprint of the current files is unchanged, so nothing moved.
 - ~~**The no-secrets scanner reports 4 hits and fails.**~~ **Decided in writing and shipped failing.** All four are the fake token planted to prove the scanner works. Not silenced with an ignore entry, because that is how a scanner like this quietly stops working.
 - Upstream response on #141. Nothing to do but wait.
 
@@ -84,4 +84,4 @@ The instrument lesson is worth more than the fix and belongs in how we check any
 - **A-13 — the launch item:** two blocker legs closed and pushed, one carded to David, two adjudicated closed. Repository private, verified rather than assumed.
 - **W-3 — the watch on the source page:** no movement, both legs read from this machine.
 - Open continuity items: 11. Weekly forced-decision pass not due today.
-- Head commit `a2dd590` after the message rewrite (`03186f8→4cb9723`, `95adb9f→497b7cc`, `7f1f803→a2dd590`; `fa4fb5b` and everything before it untouched). 123 commits, working tree clean.
+- Head commit `a2dd590` after the message rewrite (three commits restamped to `4cb9723`, `497b7cc` and `a2dd590`; `fa4fb5b` and everything before it untouched). 123 commits, working tree clean.

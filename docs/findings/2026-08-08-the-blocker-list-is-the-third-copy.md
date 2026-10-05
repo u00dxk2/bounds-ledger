@@ -16,7 +16,7 @@ the documentation of the rewrite that removed it from every author field.
 |---|---|
 | `continuity/items.json` note20 | the rewrite record, naming the address it replaced |
 | `docs/cold-starts/2026-08-08.md` ×3 | the pre-flight facts line, the `--email-callback` command, the before/after table |
-| `HEAD` (`03186f8`, now `4cb9723`) commit body | the same before/after line |
+| `HEAD` (since restamped as `4cb9723`) commit body | the same before/after line |
 
 The 8/07 verification was not wrong about what it measured. It ran `git log --format='%ae%n%ce'`
 and got one noreply address, which is true. That probe licenses the claim *no author or committer
@@ -62,8 +62,8 @@ on a positive control present in the same files.
 
 **Resolved the same day.** David approved the message rewrite, and the safety classifier refused it
 exactly as it refused 8/07's — so it was not worked around, and he ran the one command at the pane.
-`git-filter-repo --message-callback` restamped the three commits from `03186f8` forward
-(`03186f8→4cb9723`, `95adb9f→497b7cc`, `7f1f803→a2dd590`); everything from `fa4fb5b` back is
+`git-filter-repo --message-callback` restamped the three commits from that HEAD forward
+(to `4cb9723`, `497b7cc` and `a2dd590`; the pre-rewrite shas are not cited); everything from `fa4fb5b` back is
 untouched. HEAD's tree hash is `733cc02e` before and after, compared against the backup bundle
 rather than a remembered number — so no file moved.
 
