@@ -358,6 +358,18 @@ const testCmds = pkg.scripts.test.split("&&").map((c) => c.trim()).filter(Boolea
 const uncied = testCmds.filter((c) => !wf.includes(c));
 assert.equal(uncied.length, 0, `self-test(s) run by \`npm test\` but absent from the workflow — unguarded in CI:\n${uncied.join("\n")}`);
 
+// repo-health.json is a PUBLIC statement of this repo's controls, so it must not go stale against
+// the controls themselves. It read "10 network-free self-tests" while npm test ran 33, and called
+// the history sweep "not yet scheduled" three weeks after history-sweep.yml began running daily.
+// A count it states must equal the live one; the sweep's status must agree with the workflow.
+const health = JSON.parse(await readFile(join(ROOT, "repo-health.json"), "utf8"));
+const statedTests = health.requiredChecks.ci.match(/(\d+)\s+network-free self-tests/);
+if (statedTests) assert.equal(Number(statedTests[1]), testCmds.length, `repo-health.json says ${statedTests[1]} network-free self-tests; npm test runs ${testCmds.length}`);
+const sweepWf = await readFile(join(ROOT, ".github", "workflows", "history-sweep.yml"), "utf8");
+if (/^\s*schedule:\s*$/m.test(sweepWf.replace(/^[ \t]*#.*$/gm, ""))) {
+  assert.doesNotMatch(health.secretScanning.verifiedHistorySweep, /not yet scheduled|on-demand/i, "repo-health.json calls the history sweep unscheduled, but history-sweep.yml runs on a schedule");
+}
+
 // b1 must STAY. A branch with no path to a runner is how `guard-catch-count` sat unvalidated for a
 // day, and A-8's lesson is that a hand-added workflow line with nothing asserting it stays can be
 // deleted silently. Asserted on the comment-stripped text so a commented-out trigger cannot pass.

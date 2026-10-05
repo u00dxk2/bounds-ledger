@@ -2,9 +2,14 @@
 
 This repository holds no secrets, by design and by verification:
 
-- **No credentials live in the repo or its history.** Verified during the 2026-07-29 engineering-health
-  review: no secret-shaped path exists in any commit. The only credential any code here touches is the
-  CI-injected `GITHUB_TOKEN` (used by the workflow to file finding issues), which is never written to disk.
+- **No credentials live in the repo or its history.** History does contain a few secret-SHAPED strings
+  that are not credentials: a fake token planted to prove the secret scanner fires, and the example key
+  from a cloud provider's public documentation, quoted in one commit message about a dismissed
+  scanner alert. Each is dispositioned in writing in
+  `continuity/history-sweep-dispositions.json`, and a scheduled sweep of every reachable commit
+  (`.github/workflows/history-sweep.yml`) fails on any secret-shaped line that is not. The only credential
+  any code here touches is the CI-injected `GITHUB_TOKEN` (used by the workflows to file issues), which is
+  never written to disk.
 - **Zero runtime dependencies.** Node stdlib + `fetch` only; `npm install` is a no-op. The remaining
   supply chain is Node itself and two first-party GitHub Actions (`actions/checkout`,
   `actions/setup-node`), which are pinned by **release tag, not commit SHA** — a tag is mutable, so a
