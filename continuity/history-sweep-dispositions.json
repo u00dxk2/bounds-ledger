@@ -31,6 +31,262 @@
       "reason": "The same planted line as the github-pat record above, matched by a second pattern. One line can fire more than one pattern, and each needs its own disposition — which is why dispositioning one of them does not silence the other (asserted in the scanner's selftest).",
       "dispositionedOn": "2026-09-17",
       "dispositionedBy": "A-7 R7, on the orchestrator's licence (bus b5932dd5)"
+    },
+    {
+      "pattern": "github-pat",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "0fbb9d569d07ed0a991c43ee64c1711b596be6c96217a668699b6afde72d0c0d",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "github-pat",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "81ecd1d09dd833e3f78614b749ef36691296da1392fbb83238f94d285702da70",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "jwt",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "353a95abaad5e8fc069cff8aa10a5d1f9f764b05011fbd5cfcadc5da784f793e",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "db-url-with-password",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "d4da6e94fd1a6e430359d3421c7acb5feba8cf4a6f8de8498ec0ec9bd49ff239",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "secret-assignment",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "5eb7c1939cc90b68b03347b6fe0c05f89da81f05badc2772e166ec4dbbd8e4bd",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "doppler-token",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "da3a8ff90d20c4036c049fdbcebfb662411377218a75b52bdc5844e9416daf2b",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "sendgrid-key",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "1595849c15534aa48646e9d2b1df9d0dd58b12e1a37ba075cd59833fca307d13",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "google-api-key",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "3d25fef46bcd272fa646eb54560597f10e0eb6a270ee7e0cb17eca0c7a506ef5",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "render-api-key",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "db99df180da391f489168ff59250dc9c096704a0ce8a5dbc10c2c2e55920cc61",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "posthog-personal-key",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "a3ab478ee88452209f24afe616e23d1fbbf76c53a4b306794ded259e4c93f500",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "github-pat",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "254c2486a37dfc745334c95f42202f1673265ac67ef1f8d47d37979404ae1a9f",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "github-pat",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "4e3c4b53f8a5157101fff0f01fde94f78a29029fc004add63d07decf820b6629",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "github-pat",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "0dc67d847d01fad53824a9dc2bd6b3196b221b2e1f6644a86bf408e33925a75a",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "github-pat",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "99d3de8209d649b339c31eef1380849b84f0e5ff0ea82f3a2901e68130ade1f0",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "secret-assignment",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "110f396ceb2e0d3abb871a7d848ab2af12d68ce3e4b2c917fdde1f89fcc6d1cf",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "github-pat",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "429bc4e76ec491cd0bddb1493e27535e5ae2fccf1dabe75e5cb05815719becfd",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "secret-assignment",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "b4869583eb68ebc50d04321bf6a4ea064a117ab493e8d695959a8690b2114354",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "github-pat",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "2fd61a37591093eb3ce65d1d6707dfdc7a6f58460fea68cd7791abeb8025c2d7",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "github-pat",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "79ce336a67f046004ecb6080c6d986f36022fcfb7c99cfaeebb865313aaa4d1c",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "secret-assignment",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "b09cafb26114246d53d10084568c5746e2be18dfc27a58d252dcef5f1840cdff",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "github-fine-grained-pat",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "ad99e4612d722bff0248b77072f0d7a17382ec6a375b075d5419c6cde3202510",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "github-oauth",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "b34db862a48d4ff064036144dc00422cb26d7cd9ae565a4a659bc0cd979b1d35",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "anthropic-key",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "76647e1be91b3a98003a3ba1a72921816a9e400a167c4baf1cabbded0804d282",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "openai-key",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "9e48e0ac82334b5a3360ec0fe6df4e60616f5e6755951a35949022f5fffaf45d",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "stripe-live-key",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "de7ee39d7251ac9f872db3c7e3f84f09ddf7df519eda92d2971d62bf5a6aeaf0",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "aws-access-key",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "6dba214f7f8a7540b03443fda4e70a38e7cd577a866efdf2db9c677183d1f31d",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "slack-token",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "c56690afc0d3beaaaec37f116b97e9d7575b09a7a2e7acf5fcd113892267f493",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "sentry-auth-token",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "724c83404796603d3a69a8efe11279c271c441f0a502fe046c9a70b46df01710",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "private-key-block",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "feb47dde0feae37fb1e21cd41949711c3dd18051e292fcbd23520ed2b0ae7e1e",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "jwt",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "ddc55716c9f05090929cf5a92273ec42589ba58824881b7f6caa598bbe6faa20",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "db-url-with-password",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "e623a653b16e420b25654eb31e5c3ecf8ecc7bb3ce48aa24dd23d92154667cc7",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
+    },
+    {
+      "pattern": "secret-assignment",
+      "file": "scripts/history-sweep.mjs",
+      "sha256": "bcd496062f5b89b8d88a06b34187972662c51cfa9fac1b685214cd342237a89c",
+      "reason": "A line in an earlier version of the scanner itself: a synthetic positive fixture, a pattern definition, or a comment naming a pattern. Until 2026-10-05 the scanner skipped its own file, so these were never judged; the skip was removed because a crafted diff could borrow it, and the current file assembles its fixtures at run time so its source matches nothing. Each of these lines was read before it was dispositioned: none is a real credential.",
+      "dispositionedOn": "2026-10-05",
+      "dispositionedBy": "security fix round 2026-10-05, on the orchestrator's dispatch"
     }
   ]
 }

@@ -34,9 +34,9 @@
     "ci": "the network-free self-tests and tree checks that `npm test` runs (each has its own workflow step, which reverify.test.mjs asserts), then the live mirror-drift check and the cross-surface claim check; a red run files a finding issue titled with what actually moved",
     "preCommit": [
       "node scripts/history-sweep.mjs --staged — refuses a commit whose staged diff carries secret-shaped content",
-      "node scripts/check-orphan-shas.mjs — refuses a citation of a listed commit that a history rewrite removed",
-      "node scripts/check-quoted-replies.mjs --staged — refuses an unmarked quotation of four or more words near the maintainer's name or an attribution cue (a stated rule, and a floor)",
-      "node scripts/check-render-ids.mjs — refuses a Render resource id"
+      "node scripts/check-orphan-shas.mjs — checks every index blob for a citation of a listed commit that a history rewrite removed",
+      "node scripts/check-quoted-replies.mjs --staged — checks every index blob for an unmarked quotation of four or more words near the maintainer's name or an attribution cue (a stated rule, and a floor)",
+      "node scripts/check-render-ids.mjs — checks every index blob for a Render resource id with one of four prefixes"
     ],
     "additional": [
       "reverify.test.mjs asserts every self-test in `npm test` has a workflow step, so a check cannot be added without CI coverage",

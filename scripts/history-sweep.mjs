@@ -66,15 +66,14 @@ const PATTERNS = [
   ["secret-assignment", /\b[A-Z0-9_]*(?:SECRET|PASSWORD|PASSWD|API_?KEY|ACCESS_?TOKEN|AUTH_?TOKEN|PRIVATE_?KEY|CREDENTIAL|_PIN|_TOKEN|_KEY)[A-Z0-9_]*\s*[=:]\s*["']?(?!\s*$)(?!.*(?:\$\{|<|xxx|XXX|your|YOUR|example|EXAMPLE|placeholder|PLACEHOLDER|redacted|REDACTED|\*\*\*))[^\s"'`]{20,}/],
 ];
 
-// FILES whose diffs are not judged — each needs a reason, and the list is deliberately tiny.
-// An allowlist is where a secrets sweep goes to die. It is matched against the FILE a diff line
-// belongs to, never against the line's text: until 2026-10-05 it was also tested against each
-// line, so any line that merely MENTIONED this script's path (a commit message, a doc) was
-// skipped whatever secret it carried.
-const ALLOW = [
-  // The scanner's own pattern definitions and fixtures.
-  /^scripts\/history-sweep\.mjs$/,
-];
+// NO FILE IS EXEMPT (since 2026-10-05). This file used to skip its own path for its fixtures; the
+// skip was first also tested against each LINE (so any line naming this script was skipped), and
+// then a review showed that a crafted diff line looking like a "+++ b/<this file>" header could
+// borrow the exemption for the lines after it. The fixtures are now assembled at run time (see J()
+// below), so this file's source matches nothing, and the file label a diff header gives is used
+// only to REPORT a hit and to key its disposition, never to skip one. Its older versions in
+// history, written before this, carry literal fixtures; each such line is dispositioned in
+// continuity/history-sweep-dispositions.json like any other known fixture.
 
 // Shared by every mode that reads history, so the gate, the monitor and the key lister can never
 // disagree about what "all of history" means. See the header for why each flag is there.
@@ -115,7 +114,6 @@ function scan(text, label) {
     if (line.startsWith("diff --git ") || line.startsWith("diff --cc ") || line.startsWith("diff --combined ")) { file = "(unparsed path)"; continue; }
     const fm = line.match(/^\+\+\+ (b\/.+|"b\/.+")$/);
     if (fm) { file = unquoteGitPath(fm[1]).replace(/^b\//, ""); continue; }
-    if (ALLOW.some((re) => re.test(file))) continue;
     for (const [name, re] of PATTERNS) {
       if (re.test(line)) hits.push({ name, file, line: line.slice(0, 160), full: line, where: label });
     }
@@ -253,9 +251,14 @@ function scheduled({ dispositions: given, drill = false, log: out = console.log 
 // catch a secret already committed (that is `sweep()`), and it is a local hook, so it protects
 // this machine and not the repository — core.hooksPath is per-clone config, never a repo-wide
 // guarantee. It is the cheap first layer of a three-layer stack, not the stack.
-function staged() {
+function staged({ log: out = console.log } = {}) {
+  const console = { log: out }; // eslint-disable-line no-shadow -- lets the selftest silence it
   const diff = git(["diff", "--cached", "--no-color", "--text"], 64 * 1024 * 1024);
-  const hits = scan(diff, "staged");
+  // Judge only what this commit ADDS. Removed and context lines are content that already exists in
+  // history, where the scheduled sweep judges it; judging a REMOVED line refused the very commit
+  // that deleted a secret-shaped string (found 2026-10-05, removing this file's literal fixtures).
+  const added = diff.split(/\r?\n/).filter((l) => l.startsWith("diff --") || l.startsWith("+")).join("\n");
+  const hits = scan(added, "staged");
   if (!hits.length) {
     console.log(`pre-commit sweep — CLEAN (${PATTERNS.length} pattern(s) over the staged diff).`);
     return 0;
@@ -270,26 +273,32 @@ function staged() {
 // W-4/KP-78: a sweep that has never been shown to FIRE is indistinguishable from a sweep that
 // cannot. Each pattern gets a positive fixture (must match) and the corpus gets a negative one
 // (realistic repo content that must NOT match), so "clean" carries information.
+// Fixtures are written with a section sign inside each credential prefix and assembled by J()
+// at run time, so this file's SOURCE matches no pattern and needs no exemption (it had one until
+// 2026-10-05; review showed a crafted diff could borrow it).
+const J = (s) => s.replaceAll("\u00a7", "");
+const scanT = (text, label) => scan(J(text), label);
+
 function selftest() {
   const FIRE = [
-    ["github-pat", "  GITHUB_TOKEN=ghp_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8"],
-    ["github-fine-grained-pat", "github_pat_11ABCDEFG0abcdefghijklmnopqrstuvwxyz012345"],
-    ["github-oauth", "token: gho_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8"],
-    ["anthropic-key", "key = 'sk-ant-api03-AAAAAAAAAAAAAAAAAAAAAAAAAAAA'"],
-    ["openai-key", "OPENAI: sk-proj-abcdefghijklmnopqrstuvwxyz0123456789"],
-    ["stripe-live-key", "sk_live_abcdefghijklmnopqrstuvwx"],
-    ["aws-access-key", "aws_access_key_id = AKIAIOSFODNN7EXAMPLE"],
-    ["slack-token", "xoxb-123456789012-abcdefghijklmnop"],
-    ["sentry-auth-token", "sntrys_abcdefghijklmnopqrstuvwxyz0123"],
-    ["private-key-block", "-----BEGIN RSA PRIVATE KEY-----"],
-    ["jwt", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.abc"],
-    ["db-url-with-password", "DATABASE_URL=postgres://user:hunter2hunter2@db.host:5432/x"],
-    ["secret-assignment", "CC_PROMPTS_PIN=8f3a2b91c0d4e5f6a7b8c9d0e1f2a3b4"],
-    ["doppler-token", "token dp" + ".st.dev_personal.AbCdEfGhIjKlMnOpQrStUvWxYz0123456789"],
-    ["sendgrid-key", "SG" + ".AbCdEfGhIjKlMnOpQrStUv.WxYz0123456789AbCdEfGhIjKlMnOpQrStUvWxYz012"],
-    ["google-api-key", "key=AI" + "zaSyA1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q"],
-    ["render-api-key", "Authorization: Bearer rn" + "d_AbCdEfGhIjKlMnOpQrStUvWx"],
-    ["posthog-personal-key", "ph" + "x_AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AbCd"],
+    ["github-pat", "  GITHUB_TOKEN§=gh§p_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8"],
+    ["github-fine-grained-pat", "github§_pat_11ABCDEFG0abcdefghijklmnopqrstuvwxyz012345"],
+    ["github-oauth", "token: gh§o_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8"],
+    ["anthropic-key", "key = 'sk§-ant-api03-AAAAAAAAAAAAAAAAAAAAAAAAAAAA'"],
+    ["openai-key", "OPENAI: sk§-proj-abcdefghijklmnopqrstuvwxyz0123456789"],
+    ["stripe-live-key", "sk§_live_abcdefghijklmnopqrstuvwx"],
+    ["aws-access-key", "aws_access_key_id = AK§IAIOSFODNN7EXAMPLE"],
+    ["slack-token", "xo§xb-123456789012-abcdefghijklmnop"],
+    ["sentry-auth-token", "sn§trys_abcdefghijklmnopqrstuvwxyz0123"],
+    ["private-key-block", "-----BEGIN RSA PRIV§ATE KEY-----"],
+    ["jwt", "ey§JhbGciOiJIUzI1NiJ9.ey§JzdWIiOiIxMjM0NTY3ODkwIn0.abc"],
+    ["db-url-with-password", "DATABASE_URL=postgres§://user:hunter2hunter2@db.host:5432/x"],
+    ["secret-assignment", "CC_PROMPTS_PIN§=8f3a2b91c0d4e5f6a7b8c9d0e1f2a3b4"],
+    ["doppler-token", "token dp§.st.dev_personal.AbCdEfGhIjKlMnOpQrStUvWxYz0123456789"],
+    ["sendgrid-key", "S§G.AbCdEfGhIjKlMnOpQrStUv.WxYz0123456789AbCdEfGhIjKlMnOpQrStUvWxYz012"],
+    ["google-api-key", "key=AI§zaSyA1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q"],
+    ["render-api-key", "Authorization: Bearer rn§d_AbCdEfGhIjKlMnOpQrStUvWx"],
+    ["posthog-personal-key", "ph§x_AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AbCd"],
   ];
   // Every pattern must own a fixture. Without this, adding a pattern with no fixture leaves it
   // untested and the sweep still prints CLEAN — which is how two broken patterns (sentry-auth-token,
@@ -302,7 +311,7 @@ function selftest() {
   }
 
   for (const [want, line] of FIRE) {
-    const hits = scan(`+++ b/fixture.txt\n${line}`, "fixture");
+    const hits = scanT(`+++ b/fixture.txt\n${line}`, "fixture");
     if (!hits.some((h) => h.name === want)) {
       console.error(`history-sweep selftest FAIL: pattern "${want}" did not fire on its own fixture`);
       console.error(`  line: ${line}`);
@@ -323,7 +332,7 @@ function selftest() {
     `$$\\sup_{x \\in [-2,2]} \\int_{-1}^1 f(t) g(x+t)\\ dt\\geq C_{1b}$$`,
   ];
   for (const line of SILENT) {
-    const hits = scan(`+++ b/fixture.txt\n${line}`, "fixture");
+    const hits = scanT(`+++ b/fixture.txt\n${line}`, "fixture");
     if (hits.length) {
       console.error(`history-sweep selftest FAIL: false positive [${hits[0].name}] on realistic content`);
       console.error(`  line: ${line}`);
@@ -333,8 +342,8 @@ function selftest() {
   // A-7 R7: the disposition mechanism, both polarities. A dispositioned hit must pass; the SAME
   // file with a DIFFERENT line must still fire (which is what an allowlist by path would not do);
   // and a disposition matching nothing must fail rather than sit there rotting.
-  const hitsFor = (line, file = "fixture.txt") => scan(`+++ b/${file}\n${line}`, "fixture");
-  const planted = hitsFor("  GITHUB_TOKEN=ghp_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8", "docs/findings/known.md");
+  const hitsFor = (line, file = "fixture.txt") => scanT(`+++ b/${file}\n${line}`, "fixture");
+  const planted = hitsFor("  GITHUB_TOKEN§=gh§p_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8", "docs/findings/known.md");
   // One planted line fires TWO patterns, so a disposition is written per (pattern, file, line):
   // dispositioning one of them must NOT silence the other.
   const keyOf = (h) => createHash("sha256").update(`${h.name}|~|${h.file}|~|${h.full}`).digest("hex");
@@ -349,18 +358,18 @@ function selftest() {
     console.error("history-sweep selftest FAIL: dispositioning ONE pattern on a line must leave the line's other pattern firing");
     return 1;
   }
-  const other = partitionHits(hitsFor("  GITHUB_TOKEN=ghp_Z9y8X7w6V5u4T3s2R1q0P9o8N7m6L5k4J3i2", "docs/findings/known.md"), list);
+  const other = partitionHits(hitsFor("  GITHUB_TOKEN§=gh§p_Z9y8X7w6V5u4T3s2R1q0P9o8N7m6L5k4J3i2", "docs/findings/known.md"), list);
   if (other.undispositioned.length !== planted.length || other.stale.length !== list.length) {
     console.error("history-sweep selftest FAIL: a DIFFERENT secret in the same file must still fire, and the unmatched dispositions must read as stale");
     return 1;
   }
   // A secret-shaped line in a COMMIT MESSAGE is reported as one, and never attributed to the file
   // the previous commit ended on.
-  const msgHits = scan([
+  const msgHits = scanT([
     "+++ b/scripts/innocent.mjs",
     "+const x = 1;",
     "commit 0123456789abcdef0123456789abcdef01234567",
-    "    dismissing an alert for ghp_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8",
+    "    dismissing an alert for gh§p_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8",
   ].join("\n"), "fixture");
   if (msgHits.length !== 1 || msgHits[0].file !== "(commit message)") {
     console.error(`history-sweep selftest FAIL: a secret-shaped line in a commit message was reported as ${JSON.stringify(msgHits.map((h) => h.file))}, expected ["(commit message)"]`);
@@ -371,30 +380,36 @@ function selftest() {
     console.error("history-sweep selftest FAIL: a disposition matching nothing must be reported as stale");
     return 1;
   }
-  // The allowlist is judged against the FILE, never the line: a line that merely names this
-  // script's path must still fire when it carries a secret.
-  const named = scan("+++ b/docs/notes.md\n+see scripts/history-sweep.mjs; token ghp_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8", "fixture");
+  // No file is exempt: a line naming this script, and a line IN this script, both fire.
+  const named = scanT("+++ b/docs/notes.md\n+see scripts/history-sweep.mjs; token gh§p_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8", "fixture");
   if (!named.some((h) => h.name === "github-pat")) {
     console.error("history-sweep selftest FAIL: a line mentioning the script's own path was skipped although it carries a secret");
     return 1;
   }
-  const own = scan("+++ b/scripts/history-sweep.mjs\n+  [\"github-pat\", \"ghp_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8\"],", "fixture");
-  if (own.length) {
-    console.error("history-sweep selftest FAIL: the scanner's own fixture file is no longer skipped");
+  const inSelf = scanT("+++ b/scripts/history-sweep.mjs\n+  token gh§p_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8", "fixture");
+  if (!inSelf.some((h) => h.name === "github-pat")) {
+    console.error("history-sweep selftest FAIL: a secret in this script's own file was skipped — no file may be exempt");
+    return 1;
+  }
+  // So this file's own source must match nothing, or the scheduled sweep goes red on it.
+  const ownSource = readFileSync(fileURLToPath(import.meta.url), "utf8");
+  const ownHits = scan(`+++ b/scripts/history-sweep.mjs\n${ownSource}`, "self");
+  if (ownHits.length) {
+    console.error(`history-sweep selftest FAIL: this file's own source matches ${ownHits.length} pattern(s) (${[...new Set(ownHits.map((h) => h.name))].join(", ")}); write the fixture with a section sign inside its prefix`);
     return 1;
   }
   // The exemption must END at the next file's diff, even when that file's path is one this parser
   // has to decode, or cannot read at all.
-  const spill = scan([
+  const spill = scanT([
     "diff --git a/scripts/history-sweep.mjs b/scripts/history-sweep.mjs",
     "+++ b/scripts/history-sweep.mjs",
     "+fixture line",
     "diff --git \"a/docs/\\303\\251.txt\" \"b/docs/\\303\\251.txt\"",
     "+++ \"b/docs/\\303\\251.txt\"",
-    "+token ghp_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8",
+    "+token gh§p_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8",
     "diff --git a/x b/x",
     "+++ an unparseable header",
-    "+token ghp_Z9y8X7w6V5u4T3s2R1q0P9o8N7m6L5k4J3i2",
+    "+token gh§p_Z9y8X7w6V5u4T3s2R1q0P9o8N7m6L5k4J3i2",
   ].join("\n"), "fixture");
   if (spill.length !== 2 || spill[0].file !== "docs/é.txt" || spill[1].file !== "(unparsed path)") {
     console.error(`history-sweep selftest FAIL: the exempt file's name carried into later files (${JSON.stringify(spill.map((h) => h.file))})`);
@@ -405,7 +420,7 @@ function selftest() {
     console.error(`history-sweep selftest FAIL: ${real}`);
     return 1;
   }
-  console.log("history-sweep selftest: real-history legs PASS (a secret introduced ONLY in a merge commit's conflict resolution is found; a clean history reads CLEAN; --drill exits 1; the scheduled output never prints the matched text; a shallow clone is refused)");
+  console.log("history-sweep selftest: real-history legs PASS (a secret introduced ONLY in a merge commit's conflict resolution is found; a clean history reads CLEAN; --drill exits 1; the scheduled output never prints the matched text; the staged scan passes a removal and refuses an addition; a shallow clone is refused)");
   console.log(`history-sweep selftest: PASS (${FIRE.length} patterns each fired on their fixture; ${SILENT.length} realistic lines stayed silent; a dispositioned hit passes, a different secret in the same file still fires, and a disposition matching nothing reads as stale)`);
   return 0;
 }
@@ -418,7 +433,7 @@ function realHistoryLegs() {
   const repo = join(root, "repo");
   const sh = (args, cwd = repo) => execFileSync("git", args, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
   const write = (name, text) => writeFileSync(join(repo, name), text);
-  const TOKEN = "ghp_Z9y8X7w6V5u4T3s2R1q0P9o8N7m6L5k4J3i2";
+  const TOKEN = J("gh§p_Z9y8X7w6V5u4T3s2R1q0P9o8N7m6L5k4J3i2");
   const saved = gitCwd;
   try {
     mkdirSync(repo);
@@ -442,6 +457,12 @@ function realHistoryLegs() {
     lines.length = 0;
     if (scheduled({ dispositions: [], ...quiet }) !== 1) return `a secret introduced only in a merge resolution was not found:\n${lines.join("\n")}`;
     if (lines.some((l) => l.includes(TOKEN))) return "the scheduled output printed the matched secret";
+    // The pre-commit scan judges what a commit ADDS: removing the secret must pass, adding it must not.
+    write("x.txt", "clean\n"); sh(["add", "x.txt"]);
+    if (staged({ log: () => {} }) !== 0) return "the staged scan refused a commit that only REMOVES a secret-shaped line";
+    write("y.txt", `${TOKEN}\n`); sh(["add", "y.txt"]);
+    if (staged({ log: () => {} }) !== 1) return "the staged scan passed a commit that ADDS a secret-shaped line";
+    sh(["reset", "-q", "--hard"]);
     const clone = join(root, "shallow");
     sh(["clone", "-q", "--depth", "1", `file://${repo.replace(/\\/g, "/")}`, clone], root);
     gitCwd = clone;

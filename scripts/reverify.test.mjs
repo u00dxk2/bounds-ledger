@@ -355,18 +355,15 @@ assert.equal(unguarded.length, 0, `piped workflow step(s) missing \`shell: bash\
 // a newly-added self-test cannot be CI-less either. KP-78: prove the instrument can fail.
 const pkg = JSON.parse(await readFile(join(ROOT, "package.json"), "utf8"));
 const testCmds = pkg.scripts.test.split("&&").map((c) => c.trim()).filter(Boolean);
-// EXACT command match, not a substring: `wf.includes(c)` let `node x.mjs` pass because the
-// workflow ran `node x.mjs --selftest`, so deleting a tree-check step left this green (review,
-// 2026-10-05). Every executed line is collected: one-line `run:` values and each line of a block.
+// EXACT command match against ONE-LINE `run:` values only. `wf.includes(c)` let `node x.mjs` pass
+// because the workflow ran `node x.mjs --selftest` (review, 2026-10-05), and a second review showed
+// that reading lines out of a block scalar accepts a command YAML folds into an `echo`. So the
+// rule is stated, not parsed: every `npm test` command must be the whole value of a one-line
+// `run:`. A step written as a block fails this test, which is the safe direction.
 const runCmds = new Set();
-{
-  const rl = wf.split(/\r?\n/);
-  for (let i = 0; i < rl.length; i++) {
-    const m = rl[i].match(/^(\s*)run:\s*(.*)$/);
-    if (!m) continue;
-    if (!/^[|>]-?\s*$/.test(m[2])) { runCmds.add(m[2].trim()); continue; }
-    for (let j = i + 1; j < rl.length && (rl[j].trim() === "" || rl[j].match(/^\s*/)[0].length > m[1].length); j++) if (rl[j].trim()) runCmds.add(rl[j].trim());
-  }
+for (const line of wf.split(/\r?\n/)) {
+  const m = line.match(/^\s*run:\s*(.*?)\s*$/);
+  if (m && m[1] && !/^[|>]/.test(m[1])) runCmds.add(m[1]);
 }
 const uncied = testCmds.filter((c) => !runCmds.has(c));
 assert.equal(uncied.length, 0, `self-test(s) run by \`npm test\` but absent from the workflow — unguarded in CI:\n${uncied.join("\n")}`);

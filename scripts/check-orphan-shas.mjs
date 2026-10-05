@@ -10,7 +10,7 @@
 // a link a reader can follow straight to it. The fix is to cite such a commit by a neutral label,
 // never by sha, and this check keeps it that way.
 //
-// WHAT IT READS: the INDEX (`git grep --cached`), so in CI it reads the checked-out commit and in
+// WHAT IT READS: every INDEX blob, by object id, so in CI it reads the checked-out commit and in
 // the pre-commit hook it reads exactly what is about to be committed. Every tracked text file is
 // read, the mirror under ledger/ included.
 //
@@ -23,8 +23,8 @@
 // rewrite creates new orphans this list does not know; add them in the commit that does the
 // rewrite.
 
-import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
+import { readIndexBlobs, toLines } from "./lib/index-blobs.mjs";
 
 const ORPHANED = new Set([
   "47955a4558386a26f3a5f2413e9d2a3d392ae0e56d14674adcaeb06ad213aeff",
@@ -51,26 +51,11 @@ export function findCitations(lines, orphaned = ORPHANED) {
   return hits;
 }
 
+// Every index blob, read by object id (scripts/lib/index-blobs.mjs), so no path or line is ever
+// parsed out of a text stream. Two review rounds found ways to hide a line from the earlier
+// `git grep` reader (a NUL byte; a newline in a filename); this removes the parse.
 function readIndex() {
-  let out;
-  try {
-    // -a: a file git classes as binary is searched as text, never skipped (review, 2026-10-05: `-I`
-    // let a NUL byte hide a citation). -z: path, line number and text are NUL-separated, so a path
-    // or a line containing ":12:" cannot be mis-split.
-    out = execFileSync("git", ["-c", "core.quotePath=false", "grep", "--cached", "-a", "-z", "-n", "-i", "-E", "[0-9a-f]{7}"], {
-      encoding: "utf8",
-      maxBuffer: 512 * 1024 * 1024,
-    });
-  } catch (err) {
-    if (err.status === 1) out = ""; // git grep: no line matched at all
-    else throw err;
-  }
-  const lines = [];
-  for (const raw of out.split(/\r?\n/)) {
-    const [file, line, ...rest] = raw.split("\0");
-    if (file && /^\d+$/.test(line ?? "")) lines.push({ file, line: Number(line), text: rest.join("\0") });
-  }
-  return lines;
+  return toLines(readIndexBlobs()).filter((l) => /[0-9a-f]{7}/i.test(l.text));
 }
 
 function check() {
@@ -78,7 +63,7 @@ function check() {
   // Positive control: this repo's own manifests carry 40-character shas, so a read that returns no
   // hex-bearing line at all means the read failed, never that the tree is clean.
   if (!lines.length) {
-    console.log("REFUSED — git grep returned no hex-bearing line from the index; the tree was not read, so a clean result would mean nothing.");
+    console.log("REFUSED — no hex-bearing line was read from the index; the tree was not read, so a clean result would mean nothing.");
     return 2;
   }
   const files = new Set(lines.map((l) => l.file)).size;
