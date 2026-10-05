@@ -114,7 +114,7 @@ Pending reads, each dated on its row:
 
 ### Selection packet (P1, round 2)
 
-Round 2 (David, about 14:00 MT: "Yes to your 1 -> 2"): `A-47` slice 10, pulled forward from 2026-10-01. The full packet is the P1 round-2 bus post, and the key lines are here.
+Round 2 (David, about 14:00 MT, approved the proposed move from 1 to 2): `A-47` slice 10, pulled forward from 2026-10-01. The full packet is the P1 round-2 bus post, and the key lines are here.
 
 - **Draw:** `node scripts/depth-audit.mjs --draw 412 462 512 562 612` (the offset-12 grid in the 691-row frame): 4b [Kra2026], 55a [GKZ2018], 65a [Xyl2011], 77a [Lee2004], 84a [E1946]. It is pushed as `A-47.slice10Draw2026_09_30` before any source is opened.
 - **Draw collision:** position 512 is the same row and fingerprint as `A-47-0021` (UNREACHABLE on 2026-09-16, drawn at position 500 of the older 673-row frame). It is kept and read as a retry of that row's source, with the result recorded on `A-47-0021`, not as a new row. Slice 10 adds at most 4 rows.

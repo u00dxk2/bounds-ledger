@@ -5,6 +5,8 @@
 node scripts/history-sweep.mjs --staged || exit 1
 # The index must not cite a commit a history rewrite removed (GitHub still serves those by sha).
 node scripts/check-orphan-shas.mjs || exit 1
+# Added lines must not quote David: this repo is public and his words are paraphrased here.
+node scripts/check-quoted-replies.mjs --staged || exit 1
 
 # ── WHERE THE SHARED skylark-site SCRIPTS LIVE (S-20260906-75, 2026-09-06) ──
 # `../skylark-site/scripts` is correct from the lane ROOT and WRONG from every linked worktree,

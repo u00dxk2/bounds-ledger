@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // depth-audit.mjs — A-47's read. Renders a figure and NO verdict.
 //
-// David ruled depth on 2026-09-09 ("start reading our own 543 records against
-// their sources on a schedule") and on 2026-09-10 made it this project's interim
-// yardstick ("judge the project meanwhile on how much of our own material stands
-// up when we check it"). This prints what that audit has actually established.
+// David ruled depth on 2026-09-09 (read our own 543 records against their
+// sources on a schedule) and on 2026-09-10 made it this project's interim
+// yardstick (the project is judged for now on how much of its own material
+// holds up when checked). This prints what that audit has actually established.
 //
 // IT REFUSES TO PRINT A BARE ZERO, the same way report-rate.mjs does and for the
 // same reason: a zero from a dead probe is indistinguishable from a measured one.

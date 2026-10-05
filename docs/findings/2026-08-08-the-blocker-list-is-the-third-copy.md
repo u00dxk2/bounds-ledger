@@ -4,8 +4,8 @@
 
 ## What happened
 
-David's answer on card `bb4df56c` ends: *"Then show me the rewritten history and the diff of what
-changed before anything goes public — the flip still needs a second yes from me after I've seen it."*
+David's answer on card `bb4df56c` ends by asking to see the rewritten history and the diff of
+what changed before anything goes public, with the flip still needing his second yes after that.
 
 Building that evidence meant cloning the remote fresh and enumerating what a flip would publish,
 rather than re-reading what we wrote. The enumeration found his personal email address still in the

@@ -108,7 +108,7 @@ Pending reads, each dated on its row:
 - OBSERVED · `npm run verify` receipt at 15:27:59Z, sha `f603e18963a9c4c5d0dcdb0c58424f6b91d5938a`, exitCode 0 · includes both due rows' readCommands: "No drift. 116 files match upstream <upstream teorth/optimizationproblems sha, elided because it does not exist in this repo; reprint with `node scripts/reverify.mjs --check`>." and "244 claim(s): 242 hold, 0 broken/unreachable, 2 unverified (manual)."
 - MISSING · how many readers open ramsey.html at all. The pages are static and carry no analytics.
 
-**Permission:** `A-54` is open and not parked. The census is the rebuild David ruled for on 2026-09-20. Census rows are written to the store and held off both public pages by `pageRows()` while his freeze stands ("Until that is done, leave the page as written"). The alternation (census day, then A-47 day) and the census-day receipt were approved by the orchestrator (bus 64c23ecf). No card is open on the item.
+**Permission:** `A-54` is open and not parked. The census is the rebuild David ruled for on 2026-09-20. Census rows are written to the store and held off both public pages by `pageRows()` while his freeze stands (the page stays as written until the rebuild is done). The alternation (census day, then A-47 day) and the census-day receipt were approved by the orchestrator (bus 64c23ecf). No card is open on the item.
 
 **Next action — kind: improve (census reads), with the checkpoint read beside it.**
 

@@ -113,6 +113,6 @@ page is stale — we know we cannot read it. Two separate questions now go to th
 2. Independently: are the four dated blocks ported? Unknown since 8/01, and only someone who can
    authenticate can answer it.
 
-Do **not** escalate A-12 to David on 8/07 as "an outward artifact wrong for two weeks" until (1) is
+Do **not** escalate A-12 to David on 8/07 as "an outward artifact wrong for two weeks" (not David's words) until (1) is
 answered. The honest escalation, if one is owed, is that we lost read access to our own outward
 artifact — a different problem with a different owner.

@@ -100,6 +100,13 @@ jobs:
         run: node scripts/check-orphan-shas.mjs --selftest
       - name: Check no tracked file cites an orphaned pre-rewrite commit (no network)
         run: node scripts/check-orphan-shas.mjs
+      # David's words are paraphrased in this public repository, never quoted (his 2026-08-07
+      # ruling, A-13 note19). The rule is mechanical: a 4+ word quotation near his name or an
+      # attribution cue is refused unless "(not David's words)" follows it. A floor, not a proof.
+      - name: Self-test quoted-reply check (no network)
+        run: node scripts/check-quoted-replies.mjs --selftest
+      - name: Check no tracked file quotes David (no network)
+        run: node scripts/check-quoted-replies.mjs --tree
       # Guards the G-2 gap-table value parser: numeric cells must parse (rightmost
       # literal), symbolic/exponent cells must stay null, and an inverted gap must
       # flag parseSuspect (instrument error, never a mathematical claim).
@@ -260,8 +267,8 @@ jobs:
       # full coverage.
       - name: Self-test stale-value resolvability indicator (no network, no git history)
         run: node scripts/check-resolvability.mjs --selftest
-      # A-47 is the interim yardstick David set on 2026-09-10 ("judge the project meanwhile on
-      # how much of our own material stands up when we check it"), so its reader must not be able
+      # A-47 is the interim yardstick David set on 2026-09-10 (the project is judged for now on
+      # how much of its own material holds up when checked), so its reader must not be able
       # to drift unnoticed. Both polarities: a populated store reads clean, while a missing, empty
       # or unparseable store REFUSES rather than reporting a zero, and an unrecognised verdict
       # trips the sum-check. Not piped, no network. The indicator ITSELF never gates a build --

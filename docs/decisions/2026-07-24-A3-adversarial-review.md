@@ -62,7 +62,7 @@ what the review changed, is the part that matters here:
 
 ## Angle 6 — added at the pre-send check (2026-07-24): **SUSTAINED — the review missed this**
 
-*Attack (David's pre-send read, not the review's):* the draft's own evidence sentence claimed "cross-checked against the curated table **and the source-paper abstracts**."
+*Attack (David's pre-send read, not the review's):* the draft's own evidence sentence claimed "cross-checked against the curated table **and the source-paper abstracts**." (not David's words)
 
 *Result:* **false.** Verified 2026-07-24 by fetching all three abstracts — SimpleTES `2604.19341`, White `2201.05704`, TTT-Discover `2601.16175` — **none states its numeric bound**. (SimpleTES's abstract does claim "new Erdos minimum overlap constructions that surpass the best-known results", but prints no digits.) The clause was inherited from the W-2 Haugland work on 7/23, where the abstract genuinely *did* carry the value, and was never re-examined when the draft was rewritten for a different constant.
 

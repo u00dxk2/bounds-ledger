@@ -137,7 +137,7 @@ The `text:` lines are omitted here and kept in full on the ledger row. The five 
 
 #### Permission
 
-- Lane-authorised and David-ruled: `A-47` is his 2026-09-09 ruling, "Go with depth — start reading our own 543 records against their sources on a schedule" (board card `2f90980a`, quoted from the row). No board card is open.
+- Lane-authorised and David-ruled: `A-47` is his 2026-09-09 ruling to go with depth and read our own 543 records against their sources on a schedule (board card `2f90980a`, paraphrased from the row). No board card is open.
 - `index.html` and the `c/` pages are not under the 2026-09-20 freeze, which covers `ramsey.html` and `copying.html`.
 - Outward gate: nothing beyond the ordinary Pages publish. The five readings (of the rows listed in the draw above) are public sentences about other people's papers, so they get a review from the other model family before the readings are pushed. No author is contacted.
 

@@ -150,8 +150,8 @@ conclude the selftest is the whole blocker and propose a server-side read as the
   **never page readers.** Neither may be quoted as readership.
 - Standing up a reach instrument is **not** a substrate task to self-approve. Whether to move to a
   surface that can be measured was `A-34`'s breadth-versus-depth question, and **David answered it on
-  2026-09-09: depth.** His words: *"Go with depth — start reading our own 543 records against their
-  sources on a schedule, and bring me the second-area comparison when it is ready."* So the answer is
+  2026-09-09: depth.** He ruled to go with depth: read our own 543 records against their
+  sources on a schedule, and bring him the second-area comparison once it is ready. So the answer is
   not "wait for a measurable surface" — the ruled work is on the corpus we already hold, which is
   auditable offline at any audience size. The scheduled reading is `A-47`; the comparison he asked for
   was delivered as `A-48` on 2026-09-16 (board card `ba297b25`). **What his 09-09 ruling did NOT settle:** adopting a second

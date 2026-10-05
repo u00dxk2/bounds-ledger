@@ -36,7 +36,7 @@ The first is `A-7`: the scheduled secret sweep runs at 10:43 UTC, and `A-7` clos
 
 ## What changed
 
-**David ruled ADOPT, and his words were not my wording** (`ba297b25`, typed 2026-09-16T18:57:51Z, surfaced to this pane 20.2 hours later). The card asked whether to adopt a second area; my recommendation was *not yet, run a small trial first*, with a drafted reply he did not send. He wrote: *"Yes let's do it! Scope and let's do it with excellence."* I read that as adopt now, scoped — with the trial demoted from a gate to phase 4 — and recorded the divergence in `A-54.davidRuling2026_09_16` rather than quietly treating "Yes" as agreement with the draft.
+**David ruled ADOPT, and his words were not my wording** (`ba297b25`, typed 2026-09-16T18:57:51Z, surfaced to this pane 20.2 hours later). The card asked whether to adopt a second area; my recommendation was *not yet, run a small trial first*, with a drafted reply he did not send. He wrote back yes, asking for it to be scoped and done with excellence. I read that as adopt now, scoped — with the trial demoted from a gate to phase 4 — and recorded the divergence in `A-54.davidRuling2026_09_16` rather than quietly treating his yes as agreement with the draft.
 
 **The second watched area is Small Ramsey Numbers** (`9360084`, scope in `docs/decisions/2026-09-17-a54-adopt-small-ramsey-numbers.md`): Radziszowski's *Small Ramsey Numbers*, the Electronic Journal of Combinatorics dynamic survey DS1, currently revision #18. Four phases, eight named scope decisions, and an explicit statement of what is **not** covered — the survey's other sections, and every Ramsey number outside Tables Ia and Ib.
 
@@ -74,7 +74,7 @@ The first is `A-7`: the scheduled secret sweep runs at 10:43 UTC, and `A-7` clos
 
 ## On hold pending data
 
-**Waiting on David: nothing.** Today's card was answered and there is no open ask. positive control: `node scripts/sky.mjs answered-cards.mjs --project bounds-ledger` returned one row for this lane — `[answered] ba297b25 … "Yes let's do it! Scope and let's do it with excellence."` — so the reader sees this lane's cards, and the empty waiting list is a reading rather than a blind spot.
+**Waiting on David: nothing.** Today's card was answered and there is no open ask. positive control: `node scripts/sky.mjs answered-cards.mjs --project bounds-ledger` returned one row for this lane — `[answered] ba297b25 …` followed by his adopt reply — so the reader sees this lane's cards, and the empty waiting list is a reading rather than a blind spot.
 
 **`W-3`** (acknowledgement of the erdosproblems.com/36 correction, emailed 2026-07-24) reads 2026-09-24, and that read is a decision to retire or re-point rather than another re-date. **`G-4`** reads 2026-09-26. **`A-53`** (the audit store and the public page can disagree about how many rows were read) reads 2026-09-24. **`A-50`** reads 2026-09-30, **`A-9`** 2026-10-05, **`W-6`** — the read window for the README report-an-error channel — 2026-11-06. No item is overdue and no wait in this ledger is undated.
 
