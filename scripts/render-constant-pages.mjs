@@ -177,6 +177,36 @@ const VERDICT_PROSE = {
   UNREACHABLE: { text: "the cited source could not be read at all", link: "the source we could not read" },
 };
 
+/**
+ * WHICH CLAIM WAS CHECKED (A-63 round 1, 2026-10-05). The verdict text above says "the claim we
+ * checked" and never which one, so a reader of 15a or 26a took one checked claim for the whole row.
+ * An entry whose claim was named BEFORE its source was opened carries `claimReader`, a reader-facing
+ * restatement of that claim (the store's `claimChecked` is written for us and never published). The
+ * verdict sentence then names it in place of the vague phrase: "the claim we checked: <claimReader>.
+ * <result>." The result is CLAIM_RESULT's default for the verdict, or the entry's own `claimResult`
+ * where the claim is a question ("…, and whether it credits Lehec") that a bare "supports it" cannot
+ * answer; `claimNotCovered` adds what the verdict does not cover. Review r1 rewrote seven of the
+ * twenty restatements before any code existed.
+ *
+ * AN ENTRY WITH NO `claimReader` IS NEVER GIVEN ONE AFTER THE FACT: a claim named after the reading
+ * is the failure the depth audit exists to prevent. It keeps the generic verdict text and says so,
+ * with UNNAMED_CLAIM, which claims only what the page itself does not do. Review r1 refuted the first
+ * wording ("we did not record which claim that was"): several such entries' notes DO record their
+ * scope, just not before the reading.
+ */
+const CLAIM_RESULT = {
+  SOUND: "What we read supports it",
+  DEFECTIVE: "What we read does NOT support it",
+  UNRESOLVED: "What we read could not settle it",
+};
+const UNNAMED_CLAIM = (what) => `This page does not yet say which part of the ${what} that reading checked`;
+const optionalString = (v) => v === undefined || typeof v === "string";
+// A result or an exclusion with no claim to attach to would print beside the generic text and read
+// as if it answered "the claim we checked"; refused, like any other malformed entry.
+const claimFieldsOk = (a) => optionalString(a.claimReader) && optionalString(a.claimResult) && optionalString(a.claimNotCovered)
+  && (a.claimReader === undefined || a.claimReader.trim() !== "")
+  && (a.claimReader !== undefined || (a.claimResult === undefined && a.claimNotCovered === undefined));
+
 /** What each audit leg actually examined. A reference entry is NOT a bound row. */
 const LEG_LABEL = { "value-vs-source": "bound row", "citation-well-formed": "reference entry" };
 
@@ -224,6 +254,7 @@ export function usableAudit(a) {
     && Object.prototype.hasOwnProperty.call(VERDICT_PROSE, a.verdict)
     && (a.leg === undefined || typeof a.leg === "string")
     && (a.sourceRead === undefined || typeof a.sourceRead === "string")
+    && claimFieldsOk(a)
     && safeUrl(a.source) !== null;
 }
 
@@ -267,6 +298,7 @@ const UNUSABLE_CHECKS = [
   ["verdict is outside SOUND / DEFECTIVE / UNRESOLVED / UNREACHABLE", (a) => Object.prototype.hasOwnProperty.call(VERDICT_PROSE, a.verdict)],
   ["leg is not a string", (a) => a.leg === undefined || typeof a.leg === "string"],
   ["sourceRead is not a string", (a) => a.sourceRead === undefined || typeof a.sourceRead === "string"],
+  ["claimReader / claimResult / claimNotCovered malformed (a non-string, an empty claimReader, or a result or exclusion with no claimReader)", claimFieldsOk],
   ["source is not an http(s) URL", (a) => safeUrl(a.source) !== null],
 ];
 
@@ -564,8 +596,15 @@ export function auditBlock(id, store, shown = []) {
     const verdictText = stale
       ? (READ_VERDICTS.has(a.verdict) ? "this row was checked against material for its cited source on an earlier version of the table, and the row at that line has since changed or cannot be matched, so this verdict says nothing about the row there now" : "a check of this row was attempted on an earlier version of the table and the cited source could not be read; the row at that line has since changed or cannot be matched, so nothing is said about the row there now")
       : a.verdict === "UNREACHABLE" && attemptDate(a.fetchedAt) ? `${v.text} (tried ${attemptDate(a.fetchedAt)})`
-        // A reference-entry check is not a row (87a, found reading every rendered verdict line).
-        : leg === "reference entry" ? v.text.replace(/ in this row$/, " in this entry") : v.text;
+        // Which claim was checked (A-63): named where it was named before the reading, said to be
+        // unnamed where it was not. UNREACHABLE never reaches this branch (it read nothing).
+        : READ_VERDICTS.has(a.verdict) && a.claimReader
+          ? `the claim we checked: ${a.claimReader}. ${a.claimResult || CLAIM_RESULT[a.verdict]}` +
+            (a.claimNotCovered ? `. This verdict does not cover ${a.claimNotCovered}` : "")
+          : !READ_VERDICTS.has(a.verdict) ? v.text
+          // A reference-entry check is not a row (87a, found reading every rendered verdict line).
+            : leg === "reference entry" ? `${v.text.replace(/ in this row$/, " in this entry")}. ${UNNAMED_CLAIM("entry")}`
+              : `${v.text}. ${UNNAMED_CLAIM("row")}`;
     return `<li>${relation}${what}<code style="display:inline;padding:.1rem .3rem">[${esc(a.citedRef)}]</code> &mdash; ` +
       `${esc(verdictText)}. <a href="${esc(safeUrl(a.source))}">${esc(v.link)}</a>${note}. ` +
       `<span class="sel">Selected: ${esc(selectionNote(a))}.</span></li>`;
@@ -866,6 +905,59 @@ function selftest() {
   for (const claim of [/>the source we read</, />the source we reached</]) {
     assert.ok(!claim.test(audited), `a read verdict's link must not claim which copy was read — matched ${claim}`);
   }
+
+  // (b2) WHICH CLAIM WAS CHECKED (A-63 round 1, 2026-10-05). MEANING FIRST: every READ verdict either
+  //      names its claim before the source link or says the page does not name it; an UNREACHABLE line
+  //      says neither, because nothing was read. The exact pin comes last.
+  const claimStore = {
+    audits: [
+      { id: "T-C1", constant: "9z", citedRef: "RC1", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/c1", sourceRead: "read in the body", selection: "systematic",
+        claimReader: "that RC1 proves the bound 5.555555", claimNotCovered: "later work by others", ...pinId("| $5.555555$ | [RC1] | x |") },
+      { id: "T-C2", constant: "9z", citedRef: "RC2", leg: "value-vs-source", verdict: "DEFECTIVE", source: "https://example.invalid/c2", selection: "systematic",
+        claimReader: "that RC2 states 6.1", ...pinId("| $6.1$ | [RC2] | x |") },
+      { id: "T-C3", constant: "9z", citedRef: "RC3", leg: "value-vs-source", verdict: "SOUND", source: "https://example.invalid/c3", selection: "systematic",
+        claimReader: "whether RC3 credits Quux", claimResult: "What we read credits Quux by name", ...pinId("| $6.2$ | [RC3] | x |") },
+      { id: "T-C4", constant: "9z", citedRef: "RC4", leg: "value-vs-source", verdict: "UNRESOLVED", source: "https://example.invalid/c4", selection: "systematic", ...pinId("| $6.3$ | [RC4] | x |") },
+      { id: "T-C5", constant: "9z", citedRef: "RC5", leg: "citation-well-formed", verdict: "SOUND", source: "https://example.invalid/c5", selection: "systematic" },
+      { id: "T-C6", constant: "9z", citedRef: "RC6", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/c6", selection: "systematic", ...pinId("| $6.4$ | [RC6] | x |") },
+    ],
+    corpus: { citedRows: 999 },
+  };
+  const claimLis = [...renderPage(row, "abc1234def", claimStore).matchAll(/<li>[\s\S]*?<\/li>/g)].map((m) => m[0]).filter((l) => /\[RC\d\]/.test(l));
+  const claimLi = (n) => claimLis.find((l) => l.includes(`[RC${n}]`)) || "";
+  assert.equal(claimLis.length, 6, "positive control: all six claim fixtures must render as lines before anything is asserted about them");
+  for (const n of [1, 2, 3]) {
+    assert.ok(claimLi(n).includes(`the claim we checked: ${claimStore.audits[n - 1].claimReader}`), `an entry carrying claimReader must name that claim on the page (RC${n})`);
+  }
+  for (const l of claimLis) {
+    const read = !l.includes("could not be read at all");
+    const named = l.includes("the claim we checked: ");
+    const unnamed = l.includes("does not yet say which part of the");
+    assert.ok(read ? named !== unnamed : !named && !unnamed,
+      `a read verdict must name its claim or say it is unnamed (exactly one), and an UNREACHABLE line neither: ${l.slice(0, 160)}`);
+    if (named) {
+      assert.ok(!/the claim we checked in this/.test(l), "a line that names its claim must not also carry the vague phrase");
+      assert.ok(l.indexOf("the claim we checked: ") < l.indexOf(">source link<"), "the claim must be named BEFORE the source link (manager review, 2026-10-05)");
+    }
+  }
+  assert.ok(claimLi(2).includes("What we read does NOT support it") && !claimLi(2).includes("supports it."), "a DEFECTIVE named claim must take the DEFECTIVE result, never the SOUND one");
+  assert.ok(claimLi(3).includes("What we read credits Quux by name") && !claimLi(3).includes("What we read supports it"), "an entry's own claimResult must replace the default result, not sit beside it");
+  assert.ok(claimLi(1).includes("This verdict does not cover later work by others") && !claimLi(2).includes("does not cover"), "claimNotCovered renders where present and nowhere else");
+  assert.ok(claimLi(4).includes("could not settle the claim we checked in this row. This page does not yet say which part of the row that reading checked"), "an unnamed claim keeps the generic verdict and says the page does not name it");
+  assert.ok(claimLi(5).includes("in this entry. This page does not yet say which part of the entry that reading checked"), "a reference entry is an entry in the unnamed sentence too");
+  const hostileClaim = renderPage(row, "abc1234def", { audits: [{ ...claimStore.audits[0], claimReader: "<img src=x onerror=alert(1)>", claimNotCovered: "<b>y</b>" }], corpus: { citedRows: 999 } });
+  assert.ok(hostileClaim.includes("the claim we checked: &lt;img"), "positive control: the hostile claim rendered, escaped");
+  assert.ok(!/<img src=x|<b>y<\/b>/.test(hostileClaim), "a hostile claimReader or claimNotCovered reached the page as markup");
+  for (const [bad, why] of [[{ claimReader: 5 }, "a non-string claimReader"], [{ claimReader: " " }, "an empty claimReader"],
+    [{ claimResult: "What we read supports it" }, "a claimResult with no claimReader"], [{ claimNotCovered: "x" }, "a claimNotCovered with no claimReader"]]) {
+    const entry = { ...claimStore.audits[3], ...bad };
+    assert.ok(!usableAudit(entry), `${why} must be refused, not rendered beside the generic text`);
+    assert.equal(droppedAudits({ audits: [entry] }).length, 1, `${why} must be NAMED by the render-side refusal (A-53)`);
+  }
+  assert.ok(usableAudit(claimStore.audits[0]) && usableAudit(claimStore.audits[3]), "positive control: a well-formed named entry and a well-formed unnamed entry both pass");
+  // Exact pin, LAST.
+  assert.ok(claimLi(1).includes("&mdash; the claim we checked: that RC1 proves the bound 5.555555. What we read supports it. This verdict does not cover later work by others. <a href=\"https://example.invalid/c1\">source link</a> (read in the body)."),
+    "exact pin on the named-claim sentence");
 
   // (c) MEANING: the source is a real anchor pointing at the stored URL — a span containing the
   //     text would satisfy a substring check while giving the reader nothing to click.
