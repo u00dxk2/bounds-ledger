@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Verified no-secrets sweep over the FULL reachable git history — the A-13 public-flip gate.
 //
-// usage: history-sweep.mjs [--selftest | --staged | --scheduled | --list-keys]
+// usage: history-sweep.mjs [--selftest | --staged | --scheduled [--drill] | --list-keys]
 // exit 0 = no secret-shaped content found in any reachable commit · 1 = hits · 2 = error
 //
 // IT IS NOW BOTH A GATE AND A MONITOR. The no-flag `sweep()` is the one-time pre-flip gate (A-13):
@@ -12,11 +12,16 @@
 // fifty days with no fleet date (bus 63246b2b asked, b5932dd5 answered). It runs from
 // .github/workflows/history-sweep.yml at fetch-depth 0.
 //
-// CEILING (ponytail: named, not hidden): `git log -p --all` covers commits reachable from refs.
-// Dangling/unreachable objects are NOT scanned. That is the right scope for a pre-publish gate —
-// a cloner gets reachable history — but it is not the same as "no secret has ever existed in
-// this .git directory". If that stronger claim is ever needed, the upgrade is
-// `git cat-file --batch-all-objects`.
+// WHAT IS READ (LOG_ARGS below): every commit reachable from any ref, with `--text` so a file git
+// would call binary is still diffed, and `--diff-merges=first-parent` so a MERGE commit's own diff
+// is scanned. Plain `git log -p` prints no diff for a merge at all, so a secret introduced while
+// resolving a conflict was invisible; the selftest builds exactly that history and requires a hit.
+//
+// CEILING (named, not hidden): commits no ref reaches are NOT scanned, and that includes commits
+// a history rewrite removed — which GitHub can go on serving by sha until its cached views are
+// purged. A clone does not contain them and the sweep cannot fetch what it cannot name; naming
+// them in the repo would publish the very citations scripts/check-orphan-shas.mjs forbids. Their
+// remedy is the purge, not this scan.
 //
 // PATTERNS ARE STRUCTURAL, NOT ENTROPIC. A generic "long hex string" rule would fire on every
 // commit sha in ledger/**/manifest.json and on the mathematical content itself, and an alarm
@@ -25,7 +30,8 @@
 
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -45,6 +51,14 @@ const PATTERNS = [
   ["private-key-block", /-----BEGIN (?:RSA |EC |OPENSSH |PGP )?PRIVATE KEY-----/],
   ["jwt", /\beyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\./],
   ["db-url-with-password", /\b(?:postgres|postgresql|mysql|mongodb(?:\+srv)?|redis):\/\/[^\s:@/]+:[^\s@/]+@/],
+  // Vendor shapes added 2026-10-05: each has a distinctive prefix, so none of them can fire on a
+  // commit sha or on the mirror's mathematics.
+  // Personal tokens are dp.pt.<secret>; service tokens carry the config name first: dp.st.<config>.<secret>.
+  ["doppler-token", /\bdp\.(?:st|pt|sa|ct|scim|audit)\.(?:[A-Za-z0-9_-]+\.)?[A-Za-z0-9_-]{20,}/],
+  ["sendgrid-key", /\bSG\.[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{16,}/],
+  ["google-api-key", /\bAIza[0-9A-Za-z_-]{35}/],
+  ["render-api-key", /\brnd_[A-Za-z0-9]{20,}/],
+  ["posthog-personal-key", /\bphx_[A-Za-z0-9]{30,}/],
   // assignment shapes: KEY=<20+ non-space chars>, excluding obvious placeholders
   // Keyword set is deliberately broader than SECRET/PASSWORD: the portfolio's own credentials
   // include CC_PROMPTS_PIN, which the first draft of this pattern could not see. Caught by this
@@ -52,13 +66,21 @@ const PATTERNS = [
   ["secret-assignment", /\b[A-Z0-9_]*(?:SECRET|PASSWORD|PASSWD|API_?KEY|ACCESS_?TOKEN|AUTH_?TOKEN|PRIVATE_?KEY|CREDENTIAL|_PIN|_TOKEN|_KEY)[A-Z0-9_]*\s*[=:]\s*["']?(?!\s*$)(?!.*(?:\$\{|<|xxx|XXX|your|YOUR|example|EXAMPLE|placeholder|PLACEHOLDER|redacted|REDACTED|\*\*\*))[^\s"'`]{20,}/],
 ];
 
-// Lines that are allowed to match — each needs a reason, and the list is deliberately tiny.
-// An allowlist is where a secrets sweep goes to die, so anything added here belongs in the
-// sweep record with its justification.
+// FILES whose diffs are not judged — each needs a reason, and the list is deliberately tiny.
+// An allowlist is where a secrets sweep goes to die. It is matched against the FILE a diff line
+// belongs to, never against the line's text: until 2026-10-05 it was also tested against each
+// line, so any line that merely MENTIONED this script's path (a commit message, a doc) was
+// skipped whatever secret it carried.
 const ALLOW = [
-  // The scanner's own pattern definitions, once this file is itself in history.
-  /scripts\/history-sweep\.mjs/,
+  // The scanner's own pattern definitions and fixtures.
+  /^scripts\/history-sweep\.mjs$/,
 ];
+
+// Shared by every mode that reads history, so the gate, the monitor and the key lister can never
+// disagree about what "all of history" means. See the header for why each flag is there.
+const LOG_ARGS = ["log", "-p", "--all", "--no-color", "--text", "--diff-merges=first-parent"];
+let gitCwd; // set only by the selftest, which runs the real modes against a scratch repository
+const git = (args, maxBuffer = 512 * 1024 * 1024) => execFileSync("git", args, { encoding: "utf8", maxBuffer, cwd: gitCwd });
 
 function scan(text, label) {
   const hits = [];
@@ -74,7 +96,7 @@ function scan(text, label) {
     if (/^commit [0-9a-f]{40}$/.test(line)) { file = "(commit message)"; continue; }
     const fm = line.match(/^\+\+\+ b\/(.+)$/);
     if (fm) { file = fm[1]; continue; }
-    if (ALLOW.some((re) => re.test(line)) || ALLOW.some((re) => re.test(file))) continue;
+    if (ALLOW.some((re) => re.test(file))) continue;
     for (const [name, re] of PATTERNS) {
       if (re.test(line)) hits.push({ name, file, line: line.slice(0, 160), full: line, where: label });
     }
@@ -83,11 +105,8 @@ function scan(text, label) {
 }
 
 function sweep() {
-  const log = execFileSync("git", ["log", "-p", "--all", "--no-color"], {
-    encoding: "utf8",
-    maxBuffer: 512 * 1024 * 1024,
-  });
-  const commits = execFileSync("git", ["rev-list", "--all", "--count"], { encoding: "utf8" }).trim();
+  const log = git(LOG_ARGS);
+  const commits = git(["rev-list", "--all", "--count"]).trim();
   const hits = scan(log, "reachable-history");
 
   console.log(`history sweep — ${commits} reachable commit(s), ${PATTERNS.length} pattern(s), ${(log.length / 1e6).toFixed(2)} MB of diff scanned`);
@@ -141,7 +160,7 @@ export function partitionHits(hits, dispositions) {
 // keys on. This is how that file is BUILT — by copying keys a run produced, never by retyping a
 // line that contains secret-shaped text. It prints no matched text for the same reason.
 function listKeys() {
-  const log = execFileSync("git", ["log", "-p", "--all", "--no-color"], { encoding: "utf8", maxBuffer: 512 * 1024 * 1024 });
+  const log = git(LOG_ARGS);
   const hits = scan(log, "reachable-history");
   const seen = new Set();
   for (const h of hits) {
@@ -154,45 +173,56 @@ function listKeys() {
   return 0;
 }
 
-function scheduled() {
-  const shallow = execFileSync("git", ["rev-parse", "--is-shallow-repository"], { encoding: "utf8" }).trim();
+// THE RUN LOG IS PUBLIC (this repository is), so a scheduled run never prints a matched line: it
+// prints the pattern, the file and the line's sha256, which is enough to find the line locally
+// with --list-keys and not enough to read the secret off the Actions log.
+//
+// --drill adds one synthetic, clearly labelled hit so the whole red path can be exercised on
+// purpose — the exit code, the workflow's failure step and the issue it files. Without it the
+// sweep had never once been seen red, so nothing showed that a red would reach anyone.
+const DRILL_HIT = { name: "drill", file: "(synthetic drill hit — not a real finding)", line: "", full: "history-sweep drill", where: "drill" };
+
+function scheduled({ dispositions: given, drill = false, log: out = console.log } = {}) {
+  const shallow = git(["rev-parse", "--is-shallow-repository"]).trim();
   if (shallow !== "false") {
-    console.log(`REFUSED — this is a shallow checkout (${shallow}). A sweep here would scan a fraction of history and print CLEAN, which is worse than not running. Check out with fetch-depth: 0.`);
+    out(`REFUSED — this is a shallow checkout (${shallow}). A sweep here would scan a fraction of history and print CLEAN, which is worse than not running. Check out with fetch-depth: 0.`);
     return 2;
   }
-  const log = execFileSync("git", ["log", "-p", "--all", "--no-color"], { encoding: "utf8", maxBuffer: 512 * 1024 * 1024 });
-  const reachable = Number(execFileSync("git", ["rev-list", "--all", "--count"], { encoding: "utf8" }).trim());
+  const log = git(LOG_ARGS);
+  const reachable = Number(git(["rev-list", "--all", "--count"]).trim());
   const walked = (log.match(/^commit [0-9a-f]{40}$/gm) ?? []).length;
-  console.log(`scheduled history sweep — ${reachable} reachable commit(s) per git rev-list --all --count; the scan walked ${walked}; ${PATTERNS.length} pattern(s), ${(log.length / 1e6).toFixed(2)} MB of diff`);
+  out(`scheduled history sweep — ${reachable} reachable commit(s) per git rev-list --all --count; the scan walked ${walked}; ${PATTERNS.length} pattern(s), ${(log.length / 1e6).toFixed(2)} MB of diff`);
   if (walked !== reachable) {
-    console.log(`REFUSED — the scan walked ${walked} commit(s) but ${reachable} are reachable. It did not see all of history, so a CLEAN result would mean nothing.`);
+    out(`REFUSED — the scan walked ${walked} commit(s) but ${reachable} are reachable. It did not see all of history, so a CLEAN result would mean nothing.`);
     return 2;
   }
   if (reachable < 2) {
-    console.log(`REFUSED — only ${reachable} commit(s) are reachable; this is not a full history.`);
+    out(`REFUSED — only ${reachable} commit(s) are reachable; this is not a full history.`);
     return 2;
   }
-  const dispositions = existsSync(DISPOSITIONS) ? JSON.parse(readFileSync(DISPOSITIONS, "utf8")).dispositions : [];
-  const { dispositioned, undispositioned, stale } = partitionHits(scan(log, "reachable-history"), dispositions);
+  const dispositions = given ?? (existsSync(DISPOSITIONS) ? JSON.parse(readFileSync(DISPOSITIONS, "utf8")).dispositions : []);
+  const hits = scan(log, "reachable-history");
+  if (drill) hits.push(DRILL_HIT);
+  const { dispositioned, undispositioned, stale } = partitionHits(hits, dispositions);
 
   for (const { hit, disposition } of dispositioned) {
-    console.log(`DISPOSITIONED [${hit.name}] ${hit.file}\n    ${disposition.reason}\n    dispositioned ${disposition.dispositionedOn} · line sha256 ${disposition.sha256.slice(0, 16)}…`);
+    out(`DISPOSITIONED [${hit.name}] ${hit.file}\n    ${disposition.reason}\n    dispositioned ${disposition.dispositionedOn} · line sha256 ${disposition.sha256.slice(0, 16)}…`);
   }
   // BOTH are reported before returning. An earlier draft returned on the stale list first, which
   // would have let a stale record hide a genuinely new secret found in the same run — the more
   // urgent of the two, silenced by the less.
   if (undispositioned.length) {
-    console.log(`\nFOUND ${undispositioned.length} secret-shaped hit(s) with no disposition:`);
-    for (const { hit, key } of undispositioned) console.log(`  [${hit.name}] ${hit.file}\n      ${hit.line}\n      line sha256 ${key}`);
-    console.log("\nEvery hit is named and dispositioned in writing, or the sweep stays red. A hit nobody can account for is a finding, never an entry in that file.");
+    out(`\nFOUND ${undispositioned.length} secret-shaped hit(s) with no disposition (matched text withheld; this log is public):`);
+    for (const { hit, key } of undispositioned) out(`  [${hit.name}] ${hit.file}\n      line sha256 ${key}`);
+    out("\nFind each line locally with --list-keys. Every hit is named and dispositioned in writing, or the sweep stays red. A hit nobody can account for is a finding, never an entry in that file.");
   }
   if (stale.length) {
-    console.log(`\nSTALE DISPOSITION(S) — ${stale.length} recorded hit(s) no longer match anything in history:`);
-    for (const d of stale) console.log(`  [${d.pattern}] ${d.file} — ${d.sha256.slice(0, 16)}… (${d.reason})`);
-    console.log("History cannot normally lose a line, so this means the disposition file is wrong or history was rewritten. Re-derive the list; do not delete the entry to make this quiet.");
+    out(`\nSTALE DISPOSITION(S) — ${stale.length} recorded hit(s) no longer match anything in history:`);
+    for (const d of stale) out(`  [${d.pattern}] ${d.file} — ${d.sha256.slice(0, 16)}… (${d.reason})`);
+    out("History cannot normally lose a line, so this means the disposition file is wrong or history was rewritten. Re-derive the list; do not delete the entry to make this quiet.");
   }
   if (undispositioned.length || stale.length) return 1;
-  console.log(`\nCLEAN — ${dispositioned.length} known fixture hit(s), each dispositioned above; no secret-shaped content in reachable history that is not accounted for.`);
+  out(`\nCLEAN — ${dispositioned.length} known fixture hit(s), each dispositioned above; no secret-shaped content in reachable history that is not accounted for.`);
   return 0;
 }
 
@@ -205,10 +235,7 @@ function scheduled() {
 // this machine and not the repository — core.hooksPath is per-clone config, never a repo-wide
 // guarantee. It is the cheap first layer of a three-layer stack, not the stack.
 function staged() {
-  const diff = execFileSync("git", ["diff", "--cached", "--no-color"], {
-    encoding: "utf8",
-    maxBuffer: 64 * 1024 * 1024,
-  });
+  const diff = git(["diff", "--cached", "--no-color", "--text"], 64 * 1024 * 1024);
   const hits = scan(diff, "staged");
   if (!hits.length) {
     console.log(`pre-commit sweep — CLEAN (${PATTERNS.length} pattern(s) over the staged diff).`);
@@ -239,6 +266,11 @@ function selftest() {
     ["jwt", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.abc"],
     ["db-url-with-password", "DATABASE_URL=postgres://user:hunter2hunter2@db.host:5432/x"],
     ["secret-assignment", "CC_PROMPTS_PIN=8f3a2b91c0d4e5f6a7b8c9d0e1f2a3b4"],
+    ["doppler-token", "token dp" + ".st.dev_personal.AbCdEfGhIjKlMnOpQrStUvWxYz0123456789"],
+    ["sendgrid-key", "SG" + ".AbCdEfGhIjKlMnOpQrStUv.WxYz0123456789AbCdEfGhIjKlMnOpQrStUvWxYz012"],
+    ["google-api-key", "key=AI" + "zaSyA1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q"],
+    ["render-api-key", "Authorization: Bearer rn" + "d_AbCdEfGhIjKlMnOpQrStUvWx"],
+    ["posthog-personal-key", "ph" + "x_AbCdEfGhIjKlMnOpQrStUvWxYz0123456789AbCd"],
   ];
   // Every pattern must own a fixture. Without this, adding a pattern with no fixture leaves it
   // untested and the sweep still prints CLEAN — which is how two broken patterns (sentry-auth-token,
@@ -320,14 +352,76 @@ function selftest() {
     console.error("history-sweep selftest FAIL: a disposition matching nothing must be reported as stale");
     return 1;
   }
+  // The allowlist is judged against the FILE, never the line: a line that merely names this
+  // script's path must still fire when it carries a secret.
+  const named = scan("+++ b/docs/notes.md\n+see scripts/history-sweep.mjs; token ghp_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8", "fixture");
+  if (!named.some((h) => h.name === "github-pat")) {
+    console.error("history-sweep selftest FAIL: a line mentioning the script's own path was skipped although it carries a secret");
+    return 1;
+  }
+  const own = scan("+++ b/scripts/history-sweep.mjs\n+  [\"github-pat\", \"ghp_A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8\"],", "fixture");
+  if (own.length) {
+    console.error("history-sweep selftest FAIL: the scanner's own fixture file is no longer skipped");
+    return 1;
+  }
+  const real = realHistoryLegs();
+  if (real) {
+    console.error(`history-sweep selftest FAIL: ${real}`);
+    return 1;
+  }
+  console.log("history-sweep selftest: real-history legs PASS (a secret introduced ONLY in a merge commit's conflict resolution is found; a clean history reads CLEAN; --drill exits 1; the scheduled output never prints the matched text; a shallow clone is refused)");
   console.log(`history-sweep selftest: PASS (${FIRE.length} patterns each fired on their fixture; ${SILENT.length} realistic lines stayed silent; a dispositioned hit passes, a different secret in the same file still fires, and a disposition matching nothing reads as stale)`);
   return 0;
 }
 
+// Runs the REAL scheduled mode against scratch repositories built with git, so the legs that
+// depend on how git prints history (merge diffs, shallow clones) are exercised on real output,
+// never on a retyped imitation of it. Returns null on success or the failure text.
+function realHistoryLegs() {
+  const root = mkdtempSync(join(tmpdir(), "history-sweep-selftest-"));
+  const repo = join(root, "repo");
+  const sh = (args, cwd = repo) => execFileSync("git", args, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+  const write = (name, text) => writeFileSync(join(repo, name), text);
+  const TOKEN = "ghp_Z9y8X7w6V5u4T3s2R1q0P9o8N7m6L5k4J3i2";
+  const saved = gitCwd;
+  try {
+    mkdirSync(repo);
+    sh(["init", "-q", "-b", "main"]);
+    sh(["config", "user.email", "selftest@example.invalid"]);
+    sh(["config", "user.name", "selftest"]);
+    sh(["config", "commit.gpgsign", "false"]);
+    write("x.txt", "a\n"); sh(["add", "x.txt"]); sh(["commit", "-q", "-m", "base"]);
+    sh(["checkout", "-q", "-b", "side"]);
+    write("x.txt", "b\n"); sh(["commit", "-q", "-am", "side"]);
+    sh(["checkout", "-q", "main"]);
+    write("x.txt", "c\n"); sh(["commit", "-q", "-am", "main"]);
+    gitCwd = repo;
+    const lines = [];
+    const quiet = { log: (s) => lines.push(s) };
+    if (scheduled({ dispositions: [], ...quiet }) !== 0) return `a clean four-commit history did not read CLEAN:\n${lines.join("\n")}`;
+    if (scheduled({ dispositions: [], drill: true, log: () => {} }) !== 1) return "--drill did not exit 1";
+    // A conflict whose RESOLUTION introduces the secret: it exists in no parent, only in the merge.
+    try { sh(["merge", "-q", "side"]); } catch { /* conflict expected */ }
+    write("x.txt", `${TOKEN}\n`); sh(["add", "x.txt"]); sh(["commit", "-q", "-m", "merge"]);
+    lines.length = 0;
+    if (scheduled({ dispositions: [], ...quiet }) !== 1) return `a secret introduced only in a merge resolution was not found:\n${lines.join("\n")}`;
+    if (lines.some((l) => l.includes(TOKEN))) return "the scheduled output printed the matched secret";
+    const clone = join(root, "shallow");
+    sh(["clone", "-q", "--depth", "1", `file://${repo.replace(/\\/g, "/")}`, clone], root);
+    gitCwd = clone;
+    if (scheduled({ dispositions: [], log: () => {} }) !== 2) return "a shallow clone was not refused";
+    return null;
+  } finally {
+    gitCwd = saved;
+    rmSync(root, { recursive: true, force: true });
+  }
+}
+
 try {
+  const drill = process.argv.includes("--drill");
   const mode = process.argv.includes("--selftest") ? selftest
     : process.argv.includes("--staged") ? staged
-    : process.argv.includes("--scheduled") ? scheduled
+    : process.argv.includes("--scheduled") ? () => scheduled({ drill })
     : process.argv.includes("--list-keys") ? listKeys
     : sweep;
   process.exitCode = mode();

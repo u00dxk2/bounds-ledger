@@ -15,13 +15,25 @@ name: history-sweep
 # here: a sweep in a shallow checkout scans ONE commit and prints CLEAN, which is worse than no
 # sweep at all. `--scheduled` refuses a shallow repository, refuses a scan that walked fewer commits
 # than `git rev-list --all --count` reports, and prints both numbers on every run.
+#
+# A RED RUN FILES AN ISSUE (added 2026-10-05). Until then a failure surfaced only as a red mark
+# nobody was asked to read, and the job had never once been seen red, so nothing showed that a red
+# would reach anyone. The issue carries the run link and nothing else: the run log withholds the
+# matched text (the script prints a line hash, never the line), and so does the issue.
+# Dispatch with drill=true to exercise the whole red path on purpose.
 on:
   schedule:
     - cron: "43 10 * * *" # daily 10:43 UTC (04:43 MT), away from reverify's 09:17
   workflow_dispatch:
+    inputs:
+      drill:
+        description: "Add one synthetic, labelled hit so the red path (exit 1, then the issue) runs"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   sweep:
@@ -38,4 +50,16 @@ jobs:
       # output is the record — it prints the reachable-commit count, the count its own scan walked,
       # and every dispositioned hit with the reason it was dispositioned.
       - name: Sweep the full reachable history for secret-shaped content
-        run: node scripts/history-sweep.mjs --scheduled
+        env:
+          DRILL: ${{ inputs.drill && '--drill' || '' }}
+        run: node scripts/history-sweep.mjs --scheduled $DRILL
+      - name: File an issue when the sweep is red
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          KIND: ${{ inputs.drill && 'drill' || 'red' }}
+        run: |
+          title="History sweep ${KIND}: $(date -u +%F)"
+          printf 'The scheduled history sweep failed. Run: %s\n\nThe run log names each hit by pattern, file and line hash; the matched text is withheld from it and from this issue.\n' "$RUN_URL" > issue-body.md
+          gh issue create --title "$title" --body-file issue-body.md --repo "$GITHUB_REPOSITORY"
