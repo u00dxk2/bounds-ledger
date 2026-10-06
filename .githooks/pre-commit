@@ -104,8 +104,9 @@ fi
 # GitHub Pages builds on PUSH and waits for nothing: measured 2026-08-26, the Pages build for
 # c25cecd was created 23:06:53Z and its CI run started 23:06:55Z -- the publish is created TWO
 # SECONDS BEFORE CI begins. So any page check in CI reports a malformed page AFTER it is
-# already live. (Corrected 2026-10-01: CI runs only render-site --selftest, never --check, so
-# this hook and a local `npm run check` are the only places the committed page is compared.) On 2026-08-26 commit 784e4f4 shipped an index.html whose first 45 bytes were
+# already live. (Corrected 2026-10-01: CI then ran only render-site --selftest, never --check.
+# Since 2026-10-06 .github/workflows/page-check.yml runs render-site --check at full history on
+# every push to main, so CI now compares the committed page too, minutes AFTER the publish.) On 2026-08-26 commit 784e4f4 shipped an index.html whose first 45 bytes were
 # clobbered, and the only reason no visitor saw it is that Pages was erroring in an unrelated
 # outage -- which is luck, not a gate. This closes the window at COMMIT time instead, where it
 # costs nothing. It does NOT gate the publish; that question stays open as A-31 on 2026-09-09.
@@ -116,8 +117,10 @@ fi
 #   - an automatic merge commit (git runs pre-merge-commit, which this directory does not provide);
 #   - any commit made with --no-verify or from a clone without core.hooksPath.
 # Closing those is a publish gate, not a hook patch. A-31 declined one on 2026-09-10 partly because
-# "render-site --check ALSO runs in CI"; that premise is false (AGENTS.md, corrected 2026-10-01: CI
-# runs only its --selftest), so nothing catches these routes even after publish. Raised for re-decision.
+# "render-site --check ALSO runs in CI", which was false then. The orchestrator reopened A-31 and,
+# on 2026-10-06, .github/workflows/page-check.yml made it true: every push to main is compared at
+# full history, so all four routes above are caught for index.html, AFTER publish (a Pages legacy
+# build waits for nothing). Still uncaught by any automation: the c/ constant pages.
 # Every change STATUS is selected (--no-renames, no --diff-filter): an earlier --diff-filter=ACM
 # let a staged DELETION or RENAME of index.html skip this whole block, unpublishing the site with
 # the correct page still on disk (Codex r1 on a57d8a2, 2026-10-05).

@@ -1,0 +1,45 @@
+name: page-check
+# A-31 / A-72 (2026-10-06): compare the COMMITTED index.html against what render-site.mjs would
+# produce from the committed ledger, on every push to main and every pull request into it.
+#
+# Why this exists: A-31 (should the public page publish be CI-gated?) was declined on 2026-09-10
+# partly because "render-site --check ALSO runs in CI". It did not: reverify.yml runs only
+# render-site --selftest. The pre-commit hook was the only place the committed page was compared,
+# and it is per-clone and skippable (its header names the routes it cannot see: a renderer or data
+# change committed without re-rendering, a non-regular file mode, an automatic merge commit,
+# --no-verify). The orchestrator reopened A-31 and authorized this, the cheap form.
+#
+# What it is NOT: a publish gate. GitHub Pages (legacy build) publishes on push and waits for
+# nothing, so a stale page can still be live for the minutes before this job goes red. A gate before
+# publish is A-31's original shape (Pages build_type: workflow) and is a separate decision.
+#
+# Its own workflow, not a step in reverify.yml, for three reasons. (1) The page's dates and its
+# quiet-stretch figure come from `git log` over committed history, so this job needs fetch-depth: 0,
+# while reverify's check job stays at depth 1 on purpose (its lookup selftest exercises the shallow
+# path). (2) It can be dispatched on a branch without the drift run's ~450 network requests.
+# (3) A stale page is not a record moving, so it must never reach reverify's drift-issue filer,
+# which would title it as a self-test failure. Network-free; the run going red is the alarm.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  index-page:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # load-bearing: dates and the quiet-stretch figure read git history
+          persist-credentials: false # no step pushes; the token stays off disk
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check committed index.html matches render-site.mjs (full history, no network)
+        run: node scripts/render-site.mjs --check

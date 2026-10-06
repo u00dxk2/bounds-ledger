@@ -495,8 +495,9 @@ export function longestQuietStretch(dates) {
 // Null, never a guess, when history cannot be read. A shallow clone (CI checks out at depth 1) sees
 // one commit, so this returns ONE date if that commit happens to touch the manifest and ZERO lines
 // if it does not; both paths end at null through longestQuietStretch(), and the page then prints no
-// figure at all rather than a wrong one. `--check` is deliberately not in CI (reverify.yml runs the
-// selftest only), so a shallow runner never judges the page against a history it cannot see.
+// figure at all rather than a wrong one. `--check` never runs on a SHALLOW runner: reverify.yml runs
+// the selftest only, and the CI `--check` lives in page-check.yml, which checks out at fetch-depth 0
+// (2026-10-06, A-31/A-72), so no runner judges the page against a history it cannot see.
 export function manifestChangeDates(root = ROOT) {
   try {
     const out = execFileSync(
