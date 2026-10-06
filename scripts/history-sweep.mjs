@@ -203,6 +203,15 @@ function listKeys() {
 // --drill adds one synthetic, clearly labelled hit so the whole red path can be exercised on
 // purpose — the exit code, the workflow's failure step and the issue it files. Without it the
 // sweep had never once been seen red, so nothing showed that a red would reach anyone.
+// A file label is printed only if it is not itself secret-shaped. A content line beginning "++ b/"
+// prints in `git log -p` as a "+++ b/" header and becomes the label, and a real path can carry a
+// credential too; either way the label would publish what the withheld line hid (BL-R5, 2026-10-05).
+export function publicLabel(file) {
+  const hit = PATTERNS.find(([, re]) => re.test(String(file)));
+  if (!hit) return file;
+  return `(file label withheld: it matches [${hit[0]}]; label sha256 ${createHash("sha256").update(String(file)).digest("hex").slice(0, 16)}…)`;
+}
+
 const DRILL_HIT = { name: "drill", file: "(synthetic drill hit — not a real finding)", line: "", full: "history-sweep drill", where: "drill" };
 
 function scheduled({ dispositions: given, drill = false, log: out = console.log } = {}) {
@@ -229,19 +238,19 @@ function scheduled({ dispositions: given, drill = false, log: out = console.log 
   const { dispositioned, undispositioned, stale } = partitionHits(hits, dispositions);
 
   for (const { hit, disposition } of dispositioned) {
-    out(`DISPOSITIONED [${hit.name}] ${hit.file}\n    ${disposition.reason}\n    dispositioned ${disposition.dispositionedOn} · line sha256 ${disposition.sha256.slice(0, 16)}…`);
+    out(`DISPOSITIONED [${hit.name}] ${publicLabel(hit.file)}\n    ${disposition.reason}\n    dispositioned ${disposition.dispositionedOn} · line sha256 ${disposition.sha256.slice(0, 16)}…`);
   }
   // BOTH are reported before returning. An earlier draft returned on the stale list first, which
   // would have let a stale record hide a genuinely new secret found in the same run — the more
   // urgent of the two, silenced by the less.
   if (undispositioned.length) {
     out(`\nFOUND ${undispositioned.length} secret-shaped hit(s) with no disposition (matched text withheld; this log is public):`);
-    for (const { hit, key } of undispositioned) out(`  [${hit.name}] ${hit.file}\n      line sha256 ${key}`);
+    for (const { hit, key } of undispositioned) out(`  [${hit.name}] ${publicLabel(hit.file)}\n      line sha256 ${key}`);
     out("\nFind each line locally with --list-keys. Every hit is named and dispositioned in writing, or the sweep stays red. A hit nobody can account for is a finding, never an entry in that file.");
   }
   if (stale.length) {
     out(`\nSTALE DISPOSITION(S) — ${stale.length} recorded hit(s) no longer match anything in history:`);
-    for (const d of stale) out(`  [${d.pattern}] ${d.file} — ${d.sha256.slice(0, 16)}… (${d.reason})`);
+    for (const d of stale) out(`  [${d.pattern}] ${publicLabel(d.file)} —${d.sha256.slice(0, 16)}… (${d.reason})`);
     out("History cannot normally lose a line, so this means the disposition file is wrong or history was rewritten. Re-derive the list; do not delete the entry to make this quiet.");
   }
   if (undispositioned.length || stale.length) return 1;
@@ -482,6 +491,12 @@ function realHistoryLegs() {
     lines.length = 0;
     if (scheduled({ dispositions: [], ...quiet }) !== 1) return `a secret introduced only in a merge resolution was not found:\n${lines.join("\n")}`;
     if (lines.some((l) => l.includes(TOKEN))) return "the scheduled output printed the matched secret";
+    // BL-R5: a CONTENT line "++ b/<secret>" prints in `git log -p` as "+++ b/<secret>", which the
+    // scanner takes as a file label. The public log must not carry the secret through the label.
+    write("z.txt", `++ b/${TOKEN}\n`); sh(["add", "z.txt"]); sh(["commit", "-q", "-m", "header-shaped"]);
+    lines.length = 0;
+    if (scheduled({ dispositions: [], ...quiet }) !== 1) return `a secret on a header-shaped content line was not found:\n${lines.join("\n")}`;
+    if (lines.some((l) => l.includes(TOKEN))) return "the scheduled output printed the secret through a header-shaped FILE LABEL";
     // The pre-commit scan judges what a commit ADDS: removing the secret must pass, adding it must not.
     write("x.txt", "clean\n"); sh(["add", "x.txt"]);
     if (staged({ log: () => {} }) !== 0) return "the staged scan refused a commit that only REMOVES a secret-shaped line";
