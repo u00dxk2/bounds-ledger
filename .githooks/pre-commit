@@ -109,6 +109,15 @@ fi
 # clobbered, and the only reason no visitor saw it is that Pages was erroring in an unrelated
 # outage -- which is luck, not a gate. This closes the window at COMMIT time instead, where it
 # costs nothing. It does NOT gate the publish; that question stays open as A-31 on 2026-09-09.
+# CEILING, named rather than patched (Codex r2, 2026-10-05; two rounds on this block already).
+# This hook is per-clone and judges the page against the WORKING renderer and data. It does not see:
+#   - a commit whose staged renderer or ledger data differs from the working copy the check runs;
+#   - an index.html staged with a non-regular mode (e.g. 120000 under core.symlinks=false);
+#   - an automatic merge commit (git runs pre-merge-commit, which this directory does not provide);
+#   - any commit made with --no-verify or from a clone without core.hooksPath.
+# Closing those is a publish gate, not a hook patch. A-31 declined one on 2026-09-10 partly because
+# "render-site --check ALSO runs in CI"; that premise is false (AGENTS.md, corrected 2026-10-01: CI
+# runs only its --selftest), so nothing catches these routes even after publish. Raised for re-decision.
 # Every change STATUS is selected (--no-renames, no --diff-filter): an earlier --diff-filter=ACM
 # let a staged DELETION or RENAME of index.html skip this whole block, unpublishing the site with
 # the correct page still on disk (Codex r1 on a57d8a2, 2026-10-05).
