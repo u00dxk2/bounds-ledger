@@ -573,17 +573,18 @@ function rowLink(a) {
  */
 export function auditBlock(id, store, shown = []) {
   const all = (Array.isArray(store?.audits) ? store.audits : []).filter(usableAudit);
-  // ID ORDER IS RECORDING ORDER: entries are minted A-47-0001 upward and appended, so sorting by id
-  // puts an earlier reading of a row above a later one, which the "read again" label relies on.
-  const mine = all.filter((a) => a.constant === id).sort((x, y) => String(x.id).localeCompare(String(y.id)));
+  const mine = all.filter((a) => a.constant === id);
   if (mine.length === 0) return "";
 
   // A ROW READ MORE THAN ONCE (A-47 slice 14, P1 review 2026-10-06): c/10a line 32 carries a suspicion
   // reading and a later systematic one, and without a label the two looked like two different checks
-  // with nothing saying which came second. Only a bound row whose identity is provable can be matched.
+  // with nothing saying which came second. "Earlier" is STORE order, which is append order (the store
+  // is only ever appended to; a retry is a dated attempt on its existing entry). It is never sorted by
+  // id here: id text does not prove chronology (Codex r1, 2026-10-06). Only a READING counts on either
+  // side, so a failed attempt neither earns the label nor makes a later reading "read again" (same review).
   const readBefore = new Set();
   const items = mine.map((a) => {
-    const repeatKey = a.leg === "value-vs-source" && !isStale(a) ? rowKey(a) : null;
+    const repeatKey = isBoundRead(a) ? rowKey(a) : null;
     const again = repeatKey !== null && readBefore.has(repeatKey)
       ? `<span class="again">Read again: an earlier reading of this same row is listed above.</span> `
       : "";
@@ -1313,20 +1314,36 @@ function selftest() {
   assert.ok(!/1 drawn by position, 1 chosen because/.test(rechecked), "negative control: the double-counted split must not appear");
   assert.ok(/ledger 1 row\(s\) have been drawn by position/.test(rechecked), "and the ledger-wide figure counts it once");
   assert.ok(/0 more were chosen for suspicion/.test(rechecked), "with nothing left over in the suspicion set");
-  // A row read twice says so on the LATER reading only (A-47 slice 14). Listed in reverse id order on
-  // purpose, so the label must follow the id order the renderer sorts by, not the store's order.
+  // A row read twice says so on the LATER reading only (A-47 slice 14). "Later" is store order (the
+  // store is append-only); the ids are deliberately out of order so an id sort would put it wrong.
   const againLabel = "Read again: an earlier reading of this same row is listed above.";
+  const countAgain = (html) => html.split(againLabel).length - 1;
   const againHtml = renderPage(row, "abc1234def", {
     audits: [
-      { ...recheckPin, id: "T-R2", citedRef: "RR", selection: "systematic" },
-      { ...recheckPin, id: "T-R1", citedRef: "RR", selection: "suspicion" },
+      { ...recheckPin, id: "T-R9", citedRef: "RR", selection: "suspicion" },
+      { ...recheckPin, id: "T-R1", citedRef: "RR", selection: "systematic" },
     ],
     corpus: { citedRows: 999, measuredAt: "2026-01-02" },
   });
-  assert.strictEqual(againHtml.split(againLabel).length - 1, 1, "a row read twice carries the read-again label exactly once");
+  assert.strictEqual(countAgain(againHtml), 1, "a row read twice carries the read-again label exactly once");
   const earlierEnd = againHtml.indexOf("chosen because something already looked wrong.</span></li>");
   assert.ok(earlierEnd > -1 && earlierEnd < againHtml.indexOf(againLabel),
-    "the label sits on the later (higher-id) reading, below the earlier one");
+    "the label sits on the reading stored second, below the one stored first, whatever their ids");
+  // A failed attempt is not a reading on either side (Codex r1, 2026-10-06): it neither earns the label
+  // nor makes a later reading "read again".
+  const tried = { ...recheckPin, citedRef: "RR", verdict: "UNREACHABLE", selection: "systematic" };
+  const againTriedThenRead = renderPage(row, "abc1234def", {
+    audits: [{ ...tried, id: "T-U1" }, { ...recheckPin, id: "T-U2", citedRef: "RR", selection: "systematic" }],
+    corpus: { citedRows: 999, measuredAt: "2026-01-02" },
+  });
+  assert.ok(againTriedThenRead.includes("[RR]"), "positive control: the tried-then-read page renders the row");
+  assert.strictEqual(countAgain(againTriedThenRead), 0, "a reading after a failed attempt is not labelled read again");
+  const againReadThenTried = renderPage(row, "abc1234def", {
+    audits: [{ ...recheckPin, id: "T-U3", citedRef: "RR", selection: "systematic" }, { ...tried, id: "T-U4" }],
+    corpus: { citedRows: 999, measuredAt: "2026-01-02" },
+  });
+  assert.ok(againReadThenTried.includes("[RR]"), "positive control: the read-then-tried page renders the row");
+  assert.strictEqual(countAgain(againReadThenTried), 0, "a failed attempt after a reading is not labelled read again");
   assert.ok(!mixed.includes(againLabel), "negative control: two different rows never carry the read-again label");
 
   // ...and the UNLABELLED case goes to suspicion, the direction that understates coverage. An
