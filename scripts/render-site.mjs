@@ -2074,8 +2074,8 @@ async function selftest() {
     "a changed citation detail with a fixed bound must stay a text edit"
   );
 
-  // BL-R4 (2026-10-05): "bound unchanged" is asserted only when the bound cells match after the
-  // named formatting normalization. The digit-multiset comparison called an operand swap and a sign
+  // BL-R4 (2026-10-05): "bound unchanged" is asserted only when the bound cells are byte-identical
+  // (no normalization of any kind; round 3 deleted it). The digit-multiset comparison called an operand swap and a sign
   // flip "text", and the page then printed "bound unchanged" over a changed bound.
   assert.notEqual(changeKind(rowAt("$1/2$", "x"), rowAt("$2/1$", "x")), "text", "an operand swap must not read as bound unchanged");
   assert.notEqual(changeKind(rowAt("$-3$", "x"), rowAt("$3$", "x")), "text", "a sign change must not read as bound unchanged");
