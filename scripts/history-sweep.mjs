@@ -63,10 +63,14 @@ const PATTERNS = [
   // Keyword set is deliberately broader than SECRET/PASSWORD: the portfolio's own credentials
   // include CC_PROMPTS_PIN, which the first draft of this pattern could not see. Caught by this
   // file's own fixture, not by review.
-  // The placeholder lookahead is confined to the VALUE's own characters ([^\s"'`]*), not `.*`: on
-  // the whole rest of the line, a trailing comment saying "your" or "example" hid a real value
-  // (BL-R3, 2026-10-05).
-  ["secret-assignment", /\b[A-Z0-9_]*(?:SECRET|PASSWORD|PASSWD|API_?KEY|ACCESS_?TOKEN|AUTH_?TOKEN|PRIVATE_?KEY|CREDENTIAL|_PIN|_TOKEN|_KEY)[A-Z0-9_]*\s*[=:]\s*["']?(?!\s*$)(?![^\s"'`]*(?:\$\{|<|xxx|XXX|your|YOUR|example|EXAMPLE|placeholder|PLACEHOLDER|redacted|REDACTED|\*\*\*))[^\s"'`]{20,}/],
+  // THE PLACEHOLDER RULE IS POSITIONAL (BL-R3, 2026-10-05): a value is a placeholder only if it
+  // BEGINS with a placeholder marker. Nothing after the start of the value can exempt it. Two
+  // rounds found the same defect in the earlier shape, which searched for the marker anywhere in
+  // what followed: first `.*` (a trailing "# your ..." comment hid a real value), then the value's
+  // own character class (a comment glued on with ";#example" still sat inside it). A positional
+  // rule has no boundary to argue about. Its failure mode is a REFUSAL: a value that is masked
+  // mid-string ("sk-...xxxx") now fires and is dispositioned by a human, never silently passed.
+  ["secret-assignment", /\b[A-Z0-9_]*(?:SECRET|PASSWORD|PASSWD|API_?KEY|ACCESS_?TOKEN|AUTH_?TOKEN|PRIVATE_?KEY|CREDENTIAL|_PIN|_TOKEN|_KEY)[A-Z0-9_]*\s*[=:]\s*["']?(?!\s*$)(?!(?:\$\{|<|xxx|XXX|your|YOUR|example|EXAMPLE|placeholder|PLACEHOLDER|redacted|REDACTED|\*\*\*))[^\s"'`]{20,}/],
 ];
 
 // NO FILE IS EXEMPT (since 2026-10-05). This file used to skip its own path for its fixtures; the
@@ -385,6 +389,14 @@ function selftest() {
   if (!commented.some((h) => h.name === "secret-assignment")) {
     console.error("history-sweep selftest FAIL: a trailing comment containing a placeholder word suppressed a real secret-assignment");
     return 1;
+  }
+  // Round 2 (Codex r1 on d1f1bd7): a comment glued to the value with ";#" sat inside the value's
+  // character class and still reached the lookahead. The rule is now positional, so test both glues.
+  for (const glued of [";#example", "#your", ";# placeholder"]) {
+    if (!scanT(`+++ b/fixture.txt\nAPI_KEY=8f3a2b91c0d4e5f6a7b8c9d0e1f2a3b4${glued}`, "fixture").some((h) => h.name === "secret-assignment")) {
+      console.error(`history-sweep selftest FAIL: a comment glued to the value ("${glued}") suppressed a real secret-assignment`);
+      return 1;
+    }
   }
   const placeholderValue = scanT("+++ b/fixture.txt\nAPI_KEY=your-api-key-goes-right-here  # set it locally", "fixture");
   if (placeholderValue.length) {
