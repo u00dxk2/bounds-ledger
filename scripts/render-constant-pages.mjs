@@ -573,10 +573,21 @@ function rowLink(a) {
  */
 export function auditBlock(id, store, shown = []) {
   const all = (Array.isArray(store?.audits) ? store.audits : []).filter(usableAudit);
-  const mine = all.filter((a) => a.constant === id);
+  // ID ORDER IS RECORDING ORDER: entries are minted A-47-0001 upward and appended, so sorting by id
+  // puts an earlier reading of a row above a later one, which the "read again" label relies on.
+  const mine = all.filter((a) => a.constant === id).sort((x, y) => String(x.id).localeCompare(String(y.id)));
   if (mine.length === 0) return "";
 
+  // A ROW READ MORE THAN ONCE (A-47 slice 14, P1 review 2026-10-06): c/10a line 32 carries a suspicion
+  // reading and a later systematic one, and without a label the two looked like two different checks
+  // with nothing saying which came second. Only a bound row whose identity is provable can be matched.
+  const readBefore = new Set();
   const items = mine.map((a) => {
+    const repeatKey = a.leg === "value-vs-source" && !isStale(a) ? rowKey(a) : null;
+    const again = repeatKey !== null && readBefore.has(repeatKey)
+      ? `<span class="again">Read again: an earlier reading of this same row is listed above.</span> `
+      : "";
+    if (repeatKey !== null) readBefore.add(repeatKey);
     const v = VERDICT_PROSE[a.verdict];
     const leg = LEG_LABEL[a.leg];
     // THE VALUE IS THE THING CHECKED (orchestrator P3 ack, 2026-09-13): the page named the line and
@@ -617,7 +628,7 @@ export function auditBlock(id, store, shown = []) {
           // A reference-entry check is not a row (87a, found reading every rendered verdict line).
             : leg === "reference entry" ? `${v.text.replace(/ in this row$/, " in this entry")}. ${UNNAMED_CLAIM("entry")}`
               : `${v.text}. ${UNNAMED_CLAIM("row")}`;
-    return `<li>${relation}${what}<code style="display:inline;padding:.1rem .3rem">[${esc(a.citedRef)}]</code> &mdash; ` +
+    return `<li>${relation}${again}${what}<code style="display:inline;padding:.1rem .3rem">[${esc(a.citedRef)}]</code> &mdash; ` +
       `${esc(verdictText)}. <a href="${esc(safeUrl(a.source))}">${esc(v.link)}</a>${note}. ` +
       `<span class="sel">Selected: ${esc(selectionNote(a))}.</span></li>`;
   }).join("");
@@ -1302,6 +1313,21 @@ function selftest() {
   assert.ok(!/1 drawn by position, 1 chosen because/.test(rechecked), "negative control: the double-counted split must not appear");
   assert.ok(/ledger 1 row\(s\) have been drawn by position/.test(rechecked), "and the ledger-wide figure counts it once");
   assert.ok(/0 more were chosen for suspicion/.test(rechecked), "with nothing left over in the suspicion set");
+  // A row read twice says so on the LATER reading only (A-47 slice 14). Listed in reverse id order on
+  // purpose, so the label must follow the id order the renderer sorts by, not the store's order.
+  const againLabel = "Read again: an earlier reading of this same row is listed above.";
+  const againHtml = renderPage(row, "abc1234def", {
+    audits: [
+      { ...recheckPin, id: "T-R2", citedRef: "RR", selection: "systematic" },
+      { ...recheckPin, id: "T-R1", citedRef: "RR", selection: "suspicion" },
+    ],
+    corpus: { citedRows: 999, measuredAt: "2026-01-02" },
+  });
+  assert.strictEqual(againHtml.split(againLabel).length - 1, 1, "a row read twice carries the read-again label exactly once");
+  const earlierEnd = againHtml.indexOf("chosen because something already looked wrong.</span></li>");
+  assert.ok(earlierEnd > -1 && earlierEnd < againHtml.indexOf(againLabel),
+    "the label sits on the later (higher-id) reading, below the earlier one");
+  assert.ok(!mixed.includes(againLabel), "negative control: two different rows never carry the read-again label");
 
   // ...and the UNLABELLED case goes to suspicion, the direction that understates coverage. An
   // entry with no `selection` must never be counted into the systematic figure by default.
