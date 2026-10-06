@@ -110,6 +110,15 @@ fi
 # outage -- which is luck, not a gate. This closes the window at COMMIT time instead, where it
 # costs nothing. It does NOT gate the publish; that question stays open as A-31 on 2026-09-09.
 if git diff --cached --name-only --diff-filter=ACM | grep -qx 'index.html'; then
+  # render-site --check reads the WORKING file, but the commit carries the STAGED one (BL-R1,
+  # 2026-10-05): stage a stale page, regenerate, forget to re-stage, and the check passed on the
+  # correct copy while the stale one shipped. So the two must be identical before the check runs.
+  if ! git diff --quiet -- index.html; then
+    echo ""
+    echo "x pre-commit: staged index.html differs from the working copy, and the page check reads the working copy."
+    echo "  Re-stage it (git add index.html) so the check judges what is committed."
+    exit 1
+  fi
   if ! node scripts/render-site.mjs --check; then
     echo ""
     echo "x pre-commit: staged index.html is not what render-site.mjs would produce."
