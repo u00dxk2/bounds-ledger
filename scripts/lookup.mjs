@@ -83,9 +83,8 @@ export function lastChanged(expect, root = ROOT) {
 // whole row would call a changed citation year a value change, which overclaims in exactly the
 // direction that misleads.
 //
-// ponytail: no parsing of mathematics. "Unchanged" needs the bound cells to match after a named
-// formatting normalization (normalizeBound); a numeral multiset that moved is a value change; and
-// anything between the two is only "edited". Until BL-R4 (2026-10-05) set-equality on digit strings
+// ponytail: no parsing of mathematics. "Unchanged" needs byte-identical bound cells; a numeral
+// multiset that moved is a value change; and anything between the two is only "edited". Until BL-R4 (2026-10-05) set-equality on digit strings
 // decided "unchanged" alone, and called 1/2 -> 2/1 and a sign flip unchanged. A cell we cannot
 // interpret is never given a verdict we cannot support.
 
@@ -104,14 +103,13 @@ export function numbersIn(text) {
   return (m || []).slice().sort();
 }
 
-// The ONE formatting difference "bound unchanged" may look past (BL-R4, 2026-10-05): a backslash
-// escaping a markdown-active character (upstream's 2026-08-24 edit, `\_` for `_`). Anything else
-// in the bound cell is an edit to the expression, which we do not interpret.
-// Whitespace WAS normalized in the first fix and is not any more: it can end a LaTeX command, so
-// `\sin h(1)` and `\sinh(1)` collapsed to one string (Codex r1). Claiming less beats a longer list.
-export function normalizeBound(cell) {
-  return String(cell == null ? "" : cell).replace(/\\([*_`|~])/g, "$1");
-}
+// NO NORMALIZATION (BL-R4, 2026-10-05). "Bound unchanged" needs byte-identical bound cells. Three
+// review rounds each found a normalization merging two different bounds: digit multisets (1/2 vs
+// 2/1), whitespace (`\sin h(1)` vs `\sinh(1)`), and markdown-escape removal, which is wrong inside
+// a code span where the backslash is content (`$a_1$` vs `$a\_1$`). Same defect class three times,
+// so the mechanism was deleted rather than patched: byte equality cannot merge two cells. The cost
+// is stated, not hidden: an escape-only or whitespace-only edit now reads "bound cell edited"
+// (8a:L, d834f10), which is true and claims less.
 
 // The bound cell FOR COMPARISON. boundCell() splits on every pipe, so a bound containing an
 // escaped pipe (`\|\|A\|\|_2 \le 0.41`) is cut at the first `\|` and two different bounds compare
@@ -125,8 +123,7 @@ export function compareCell(row) {
 }
 
 // Three verdicts, and null:
-//   "text"       the bound cells match after normalizeBound — the edit was elsewhere in the row, or
-//                was formatting only. The page says "bound unchanged", so this is the one verdict
+//   "text"       the bound cells are byte-identical — the edit was elsewhere in the row. The page says "bound unchanged", so this is the one verdict
 //                that must never be reached by a lossy comparison.
 //   "value"      the bound cell's numerals changed as a multiset — a number moved.
 //   "expression" same numerals, different bound cell: an operand swap (1/2 -> 2/1), a sign, an
@@ -138,7 +135,7 @@ export function changeKind(prevExpect, nowExpect) {
   if (prevExpect == null) return null;
   const was = compareCell(prevExpect);
   const now = compareCell(nowExpect);
-  if (normalizeBound(was) === normalizeBound(now)) return "text";
+  if (was === now) return "text";
   return numbersIn(was).join(",") === numbersIn(now).join(",") ? "expression" : "value";
 }
 
