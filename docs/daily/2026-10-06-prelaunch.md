@@ -46,6 +46,9 @@ Five constant pages no longer show raw math markup where the checked claim shoul
 <!-- findings:begin -->
 - Codex's code review NIT on `e02fe09`'s commit body: (1) it says multi-symbol powers read "raised to the power", but 20b keeps `(log n)^2.082...`. That exponent is one decimal number, so it is not a multi-symbol power, but the sentence reads as if it covered every power. (2) It says the sibling sweep found "9 lines". That is the count of lines my Grep matched; Codex counted 11 claim fields under a wider pattern. Both counts agree on 6 carrying braces. The commit body was not rewritten, because the review attaches to that commit.
 - `A-65`'s readCommand cannot answer its own question: the runner executes only the part before " — ", so the link count never runs (the hygiene helper's read timed out at 60 s with 0 bytes). A replacement is drafted in `tmp/hygiene-draft-bounds-ledger-2026-10-06.md` for the close.
+- Evening round 2 (`A-47` — the depth audit, slice 14). Codex's claims pass on the readings commit refuted two sentences of the draw I had pushed before reading anything. (1) The grid rule, "halve the largest unused gap", does not give offset 6: the gaps are 12, 13, 12 and 13. Offset 6 bisects the lowest gap. (2) The promise that each claim "becomes that entry's claimReader as it stands" was broken for 10a and 19a. Both are corrected by a dated clause on `A-47.slice14Draw2026_10_06`, with the original text kept.
+- Evening round 2: the repeat-reading label was refuted twice for claiming chronology (r1: the id sort; r3: the store order, which backfills and in-place retries both break). On the second appearance the label changed shape to claim no order: "Another reading of this same row is listed above."
+- Evening round 2: the 19a reading agent proposed SOUND. I recorded UNRESOLVED instead, because the paper announces C < 0.82 without proof, and the claim named before reading included its method.
 <!-- findings:end -->
 
 ## Recommendation
@@ -63,16 +66,29 @@ ACTION: COMPLETED · item A-63 · P3 f07f33af
 - **Since the P3 post:** CI on `8a304b8` is GREEN (`check-ci-status --workflow reverify.yml`, exit 0). The orchestrator's review (bus e87df3bc) confirmed COMPLETED and found no defects. The full `npm run verify` was not re-run after `e02fe09`; tomorrow's first action runs it.
 - **Hygiene draft: 6 lines — 2 accepted · 4 amended · 0 rejected.**
   - `A-9` accepted: held to 2026-11-04, and the read printed the unchanged baseline sha.
-  - `W-4` accepted: `nextCheckDate` set to 2026-10-20.
+  - `W-4` (every new detector shows both answers) accepted: `nextCheckDate` set to 2026-10-20.
   - `A-54` amended: `expectedSignalBy` set to 2026-10-08 with `--set` instead of `--extend` (which appends to `closeWhen`), and the skipped slot recorded on `census6Skipped2026_10_06`.
-  - `W-13` amended: same form. Both of its clock fields were moved to 2026-10-13.
-  - `W-8` amended: same form, to 2026-10-20.
+  - `W-13` (someone must call the served-bytes check) amended: same form. Both of its clock fields were moved to 2026-10-13.
+  - `W-8` (does an amended outward artifact go back to David) amended: same form, to 2026-10-20.
   - `A-65` (undrafted, read timed out) amended: readCommand re-pointed to a hash-free `git grep`, run through the runner (`c/10c.html:1`, exit 0, still open), and re-dated to 2026-10-12 with the open choice written on `disposition2026_10_06`.
 - **Helper READ-MUTATED lines, quoted:** "READ-MUTATED A-54 continuity/depth-audit.json — NOT named in the readCommand: may be the lane's own concurrent P3 edit; lane checks" and "READ-MUTATED A-65 scripts/render-constant-pages.mjs — path named in the readCommand". Both were this session's own P3 edits to those files, made while the helper ran; HEAD did not move.
 - **Helper checks:** check-wait-justification "RESULT: PASS — 1 of 88 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)". check-engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable".
 - **Ledger delta:** `A-63.roundOneDefectsFixed2026_10_06` and `A-63.nextRead2026_10_06`. `A-63` stays open: its closeWhen waits on the 29 unnamed read verdicts, and their count is re-read on 2026-10-12. The re-dates above, the `A-54` skipped-slot field, and `A-65`'s readCommand and disposition.
 - **Due-gate verify:** `check-due-gates-dispositioned` (no flag): "verdict: CLEAR — every gate due at Phase 0 was dispositioned.", snapshot CURRENT (taken 2026-10-06).
 - **Pending reads:** `A-59` encounter, 2026-10-28. `A-63` unnamed-verdict count, 2026-10-12. `A-65` decision, 2026-10-12. `A-54` census, 2026-10-08.
+
+### Evening round 2 (orchestrator re-queue: P1 bus 0331e31d, P3 bus a9004a66)
+
+ACTION: COMPLETED · item A-47 · P3 a9004a66
+
+- **What shipped:** `A-47` (the depth audit) slice 14, live at `728fe02`. Five rows were read under claims named first: 10a SOUND, 13b SOUND, 19a UNRESOLVED, 20a SOUND, 24a SOUND. `node scripts/depth-audit.mjs` reads 66 audited, 43 sound, 2 defective, 14 unresolved, 7 unreachable. The draw `6b354e5` was pushed before any source was opened. Four Codex read-only rounds ran; r4 returned PUSH. The orchestrator's P5 review (bus 2dbe00d1) judged it COMPLETED and found no defects.
+- **Since the P3 post:** nothing changed in the shipped state.
+- **`A-63` (which claim a page's verdict checked):** still open. This slice added named verdicts but did not reduce the 29 unnamed ones.
+- **Hygiene draft: 1 line — 1 accepted · 0 amended · 0 rejected.** `A-9` (engineering-health P2 backlog): both drafted commands were run. The readCommand comment now marks the skylark-site path `dead-ref-ok`, which cleared the READ-PATH exit 3. `nextCheckDate` 2026-10-05 → 2026-11-04, matching the existing hold, with the reason appended to the row's notes. The evening helper wrote its draft over the morning's draft file, which this close had already applied, so only the evening line is new.
+- **Helper:** READ-MUTATED "none — 0 reads guarded". check-wait-justification "RESULT: PASS — 1 of 88 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)". check-engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable".
+- **Ledger delta:** `A-47` gained the fields `slice14Draw2026_10_06` (plus its dated correction) and `slice14Result2026_10_06`, and `nextCheckDate` 2026-10-07 → 2026-10-09 (slice 15 at positions 256–456). `A-73` (index badge vs page for a row read twice) was minted, next check 2026-10-12. Store entries `A-47-0062` to `A-47-0066` were added. `A-9` changed as above.
+- **Due-gate verify:** `check-due-gates-dispositioned` (no flag): "verdict: CLEAR — every gate due at Phase 0 was dispositioned.", snapshot CURRENT (taken 2026-10-06).
+- **Pending reads:** `A-47` slice 15, 2026-10-09. `A-73`, 2026-10-12. `A-59` encounter, 2026-10-28.
 
 ## On hold pending data
 
@@ -153,5 +169,13 @@ Then: rewrite the five `claimReader` values (`A-47-0040` 20b, `A-47-0041` 26a, `
 - Step 0.6, Codex: GREEN, from the kickoff's `[codex-probe: GREEN …]` line (14:53:10Z).
 - Step 0.7, CI: `check-ci-status --workflow reverify.yml` GREEN at `1ed5125d4c`, exit 0. Deploy drift: this is a GitHub Pages lane with no Render service, so the fleet table has no row for it (NOTHING SWEPT), which is neither a stop nor a pass. Pages serving is read by `npm run served` (above).
 - Step 0.9: the binding constraint is retention and word of mouth. This change does not move a measurable metric, and its encounter is unmeasured (`A-59`).
-- Step 0.10, yesterday's recommendations: `A-54` census session 6 → carrying today, beside the choice; `A-65` → read today, decision needed (above); `W-13`, `W-4`, `W-8` → read today (above); `A-47` slice 14 → carrying → 2026-10-07; `A-63`'s raw-markup claims and the 26a repeat → pulled into today as the selection.
+- Step 0.10, yesterday's recommendations: `A-54` census session 6 → carrying today, beside the choice; `A-65` → read today, decision needed (above); `W-13` (the served-bytes check), `W-4` (detectors show both answers), `W-8` (amended outward artifacts) → read today (above); `A-47` slice 14 → carrying → 2026-10-07; `A-63`'s raw-markup claims and the 26a repeat → pulled into today as the selection.
 - Step 0.11, harness: running 2.1.291 · fleet UNIFORM · installed 2.1.291 (SAME).
+
+### Evening state (as of 2026-10-06 ~23:40Z, written last from live commands)
+
+- `A-47` (the depth audit): `node scripts/depth-audit.mjs` printed "RESULT: PASS — 66 audited, 43 sound, 2 defective, 14 unresolved, 7 unreachable (exit 0)" at `728fe02`.
+- CI: `node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml` and `--workflow page-check.yml` were both GREEN at `728fe02`.
+- Pages: `npm run served` printed "2 checked — 2 served" at anchor `728fe02f48`. A live fetch of the five slice-14 pages returned HTTP 200 for each, with each page's named claim present.
+- `npm run verify`: receipt exitCode 0 at `728fe02f486ae4bac9b65bf43307629ab4ee2bb3`, 2026-10-06T23:17:14Z. This close's own commit is docs and ledger only, so the receipt still covers it.
+- `npm run reports`: 0 outside arrivals of 33, read this evening before the P1 post (its output carries only the MT date).
