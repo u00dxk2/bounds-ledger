@@ -2082,7 +2082,11 @@ async function selftest() {
   assert.notEqual(changeKind(rowAt("$1.292$", "x"), rowAt("$1.292*$", "x")), "text", "an added marker in the bound cell must not read as bound unchanged (1a:L, ce5a57c)");
   assert.equal(changeKind(rowAt("$1/2$", "x"), rowAt("$2/1$", "x")), "expression", "same numerals, different expression: say only that the cell was edited");
   assert.equal(changeKind(rowAt("$2/\\log \\gamma_{1}$", "x"), rowAt("$2/\\log \\gamma\\_{1}$", "x")), "text", "a markdown escape inside the bound cell stays a text edit (8a:L, d834f10)");
-  assert.equal(changeKind(rowAt("$3 $", "x"), rowAt("$3$", "x")), "text", "whitespace alone stays a text edit");
+  // Round 2 (Codex r1 on 19f7566): two more lossy routes to "text", both now refused.
+  assert.notEqual(changeKind("| $\\|\\|A\\|\\|_2 \\le 0.41$ | [B] |", "| $\\|\\|A\\|\\|_2 \\le 0.42$ | [B] |"), "text", "an escaped pipe must not truncate the bound before it is compared");
+  assert.equal(changeKind("| $\\|\\|A\\|\\|_2 \\le 0.41$ | [B] |", "| $\\|\\|A\\|\\|_2 \\le 0.42$ | [B] |"), "value", "a number after an escaped pipe that moved is a value change");
+  assert.notEqual(changeKind(rowAt("$\\sin h(1)$", "x"), rowAt("$\\sinh(1)$", "x")), "text", "whitespace can end a LaTeX command, so removing it can merge two bounds");
+  assert.equal(changeKind(rowAt("$3 $", "x"), rowAt("$3$", "x")), "expression", "whitespace is no longer normalized away: a whitespace-only edit claims only that the cell was edited");
   assert.ok(!/unchanged/.test(whenLabel("2026-10-05", "expression")), "the expression wording must not assert the bound held");
   assert.match(whenLabel("2026-10-05", "expression"), /2026-10-05/, "the expression wording still discloses the date");
   assert.equal(hasMoved("expression", "first"), true, "an edited bound cell is something we observed happen to the row");

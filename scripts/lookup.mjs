@@ -104,11 +104,24 @@ export function numbersIn(text) {
   return (m || []).slice().sort();
 }
 
-// The ONLY formatting differences "bound unchanged" may look past (BL-R4, 2026-10-05): whitespace,
-// and a backslash escaping a markdown-active character (upstream's 2026-08-24 edit, `\_` for `_`).
-// Anything else in the bound cell is an edit to the expression, which we do not interpret.
+// The ONE formatting difference "bound unchanged" may look past (BL-R4, 2026-10-05): a backslash
+// escaping a markdown-active character (upstream's 2026-08-24 edit, `\_` for `_`). Anything else
+// in the bound cell is an edit to the expression, which we do not interpret.
+// Whitespace WAS normalized in the first fix and is not any more: it can end a LaTeX command, so
+// `\sin h(1)` and `\sinh(1)` collapsed to one string (Codex r1). Claiming less beats a longer list.
 export function normalizeBound(cell) {
-  return String(cell == null ? "" : cell).replace(/\\([*_`|~])/g, "$1").replace(/\s+/g, "");
+  return String(cell == null ? "" : cell).replace(/\\([*_`|~])/g, "$1");
+}
+
+// The bound cell FOR COMPARISON. boundCell() splits on every pipe, so a bound containing an
+// escaped pipe (`\|\|A\|\|_2 \le 0.41`) is cut at the first `\|` and two different bounds compare
+// equal (Codex r1). This splits only on unescaped pipes. boundCell() itself is left alone: it also
+// feeds display and search, and its truncation there is a separate, pre-existing question.
+export function compareCell(row) {
+  const s = String(row == null ? "" : row);
+  if (!s.trimStart().startsWith("|")) return s;
+  const parts = s.split(/(?<!\\)\|/);
+  return parts.length > 1 ? parts[1] : s;
 }
 
 // Three verdicts, and null:
@@ -123,8 +136,8 @@ export function normalizeBound(cell) {
 // against, and inventing a verdict there would have no evidence under it.
 export function changeKind(prevExpect, nowExpect) {
   if (prevExpect == null) return null;
-  const was = boundCell(prevExpect);
-  const now = boundCell(nowExpect);
+  const was = compareCell(prevExpect);
+  const now = compareCell(nowExpect);
   if (normalizeBound(was) === normalizeBound(now)) return "text";
   return numbersIn(was).join(",") === numbersIn(now).join(",") ? "expression" : "value";
 }
