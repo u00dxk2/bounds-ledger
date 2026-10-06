@@ -15,8 +15,8 @@
 // pattern, and stays with the author and the review.
 
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { isEntryModule } from "./lib/entry-module.mjs";
 import { readIndexBlobs, toLines } from "./lib/index-blobs.mjs";
 
 const RENDER_ID = /\b(?:srv|crn|tea|dpg)-[a-z0-9]{20}\b/g;
@@ -65,8 +65,9 @@ function selftest() {
   return 0;
 }
 
-const isMain = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isMain) try {
+// Junction-proof (BL-R2, 2026-10-05): a plain path comparison reads FALSE through a junction or
+// symlink, and the script then exits 0 having checked nothing.
+if (isEntryModule(import.meta.url)) try {
   process.exitCode = process.argv.includes("--selftest") ? selftest() : check();
 } catch (err) {
   console.error(`check-render-ids: could not run (${err.message.split("\n")[0]})`);

@@ -25,8 +25,8 @@
 // should not need. The cue rule runs anywhere and its failure mode is a refusal.
 
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { isEntryModule } from "./lib/entry-module.mjs";
 import { readIndexBlobs, toLines } from "./lib/index-blobs.mjs";
 
 const CUE = new RegExp(
@@ -145,8 +145,9 @@ function selftest() {
   return 0;
 }
 
-const isMain = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (isMain) try {
+// Junction-proof (BL-R2, 2026-10-05): a plain path comparison reads FALSE through a junction or
+// symlink, and the script then exits 0 having checked nothing.
+if (isEntryModule(import.meta.url)) try {
   if (process.argv.includes("--selftest")) process.exitCode = selftest();
   else {
     // --staged and --tree read the same thing, the index, which in the pre-commit hook IS what is
