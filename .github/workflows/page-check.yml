@@ -41,5 +41,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      # The comparison below reads index.html with readFileSync, which FOLLOWS a symlink: a committed
+      # index.html that is a link (mode 120000) to a correctly rendered file would read green while
+      # the published blob holds only a pathname (Codex review on dd8f25f, 2026-10-06). So the file's
+      # git mode is checked first. An absent index.html fails here too, with its own reason.
+      - name: Require index.html to be a regular tracked file
+        shell: bash
+        run: |
+          mode=$(git ls-files -s -- index.html | cut -d' ' -f1)
+          case "$mode" in
+            100644|100755) echo "index.html is a regular tracked file (mode $mode)" ;;
+            *) echo "index.html is not a regular tracked file (mode: ${mode:-absent}); the page check would read a link target or nothing"; exit 1 ;;
+          esac
       - name: Check committed index.html matches render-site.mjs (full history, no network)
         run: node scripts/render-site.mjs --check
