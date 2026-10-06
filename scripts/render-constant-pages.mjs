@@ -203,7 +203,13 @@ const UNNAMED_CLAIM = (what) => `This page does not yet say which part of the ${
 // Each claim field, when present, is non-blank text with no terminal punctuation of its own: the
 // renderer supplies the full stops, so "that X." would print "that X.." and "  " an empty clause
 // (code review r2, 2026-10-05).
-const claimText = (v) => v === undefined || (typeof v === "string" && v.trim() !== "" && !/[.;:]\s*$/.test(v));
+// No claim field may carry TeX-style markup: the pages load no math renderer, so "BH^{≤d}_{±1}"
+// reached 26a's readers as literal braces (A-63, round-one defects, 2026-10-05). Refused here and
+// NAMED by its own UNUSABLE_CHECKS reason. A bare "^2" or "C_32" is ordinary plain-text notation and
+// passes; only a braced group or a backslash command is refused.
+const TEX_MARKUP = /\^\{|_\{|\\[A-Za-z]/;
+const claimMarkupFree = (a) => [a.claimReader, a.claimResult, a.claimNotCovered].every((v) => typeof v !== "string" || !TEX_MARKUP.test(v));
+const claimText = (v) => v === undefined || (typeof v === "string" && v.trim() !== "" && !/[.;:]\s*$/.test(v) && !TEX_MARKUP.test(v));
 // A result or an exclusion with no claim to attach to would print beside the generic text and read
 // as if it answered "the claim we checked"; refused, like any other malformed entry. So is a claim on
 // an entry with no recognised leg: such an entry is never judged stale (isStale reads the leg), so a
@@ -303,6 +309,7 @@ const UNUSABLE_CHECKS = [
   ["verdict is outside SOUND / DEFECTIVE / UNRESOLVED / UNREACHABLE", (a) => Object.prototype.hasOwnProperty.call(VERDICT_PROSE, a.verdict)],
   ["leg is not a string", (a) => a.leg === undefined || typeof a.leg === "string"],
   ["sourceRead is not a string", (a) => a.sourceRead === undefined || typeof a.sourceRead === "string"],
+  ["a claim field carries TeX-style markup (^{, _{ or a backslash command), which no page renders", claimMarkupFree],
   ["claimReader / claimResult / claimNotCovered malformed (a non-string, an empty claimReader, or a result or exclusion with no claimReader)", claimFieldsOk],
   ["source is not an http(s) URL", (a) => safeUrl(a.source) !== null],
 ];
@@ -973,6 +980,19 @@ function selftest() {
     assert.ok(hostileClaim.includes(shown), `positive control: the hostile field rendered, escaped (${shown})`);
   }
   assert.ok(!/<img src=x|<i>z<\/i>|<b>y<\/b>/.test(hostileClaim), "a hostile claimReader, claimResult or claimNotCovered reached the page as markup");
+  // TeX-style markup in any claim field is refused and NAMED as markup, one field and one form at a
+  // time, so a red-arm says which form it caught (A-63 round-one defects). Before the exact pins.
+  for (const field of ["claimReader", "claimResult", "claimNotCovered"]) {
+    for (const [form, text] of [["^{", "that X is at most C^{d}"], ["_{", "that X_{n} is small"], ["a backslash command", "that X is at most \\sqrt{d}"]]) {
+      const entry = { ...claimStore.audits[3], claimReader: "that X", [field]: text };
+      assert.ok(!usableAudit(entry), `a ${field} carrying ${form} must be refused, not rendered`);
+      const dropped = droppedAudits({ audits: [entry] });
+      assert.ok(dropped.length === 1 && /TeX-style markup/.test(dropped[0].why), `a ${field} carrying ${form} must be NAMED as TeX-style markup by the render-side refusal: ${JSON.stringify(dropped)}`);
+    }
+  }
+  for (const plain of ["that bs(f) ≤ deg(f)^2 / (√10 − 2)", "that C_32 is at most 3.45", "that n raised to the power 1 + c/log log n is the order"]) {
+    assert.ok(usableAudit({ ...claimStore.audits[3], claimReader: plain }), `positive control: plain-text notation passes the markup refusal (${plain})`);
+  }
   for (const [bad, why] of [[{ claimReader: 5 }, "a non-string claimReader"], [{ claimReader: " " }, "an empty claimReader"],
     [{ claimResult: "What we read supports it" }, "a claimResult with no claimReader"], [{ claimNotCovered: "x" }, "a claimNotCovered with no claimReader"],
     [{ claimReader: "that X", claimResult: "  " }, "a blank claimResult"], [{ claimReader: "that X", claimNotCovered: " " }, "a blank claimNotCovered"],
