@@ -1,14 +1,14 @@
 # read-output sidecar for W-4 — written by check-due-gates-dispositioned --run
 # readCommand: node scripts/reverify.test.mjs
-# ran: 2026-09-22T13:28:48.746Z · exit: 0
-# lines: 77 · sha256: 714d3c093b6a8b1e (first 16 hex of the output below)
+# ran: 2026-10-06T16:22:38.301Z · exit: 0
+# lines: 77 · sha256: a4fb3e7dcb932430 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
 Retrying https://example.invalid/a20-transient: attempt 2/3 after HTTP 502
 A-20 transient recovery assertion: PASS (injected HTTP 502, read completed on attempt 2, retry logged)
 Retrying https://example.invalid/a20-persistent: attempt 2/3 after HTTP 503
 Retrying https://example.invalid/a20-persistent: attempt 3/3 after HTTP 503
-# Claim check — 2026-09-22T13:26:03.282Z
+# Claim check — 2026-10-06T16:18:43.087Z
 UNREACHABLE A-20-test  persistent transport failure
             https://example.invalid/a20-persistent — HTTP 503
 
@@ -27,26 +27,26 @@ Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; 
 Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8000ms, Retry-After: not-a-date)
 Retrying https://example.invalid/a39-exhausted: attempt 2/3 after HTTP 429 (rate limited; waiting 2000ms)
 Retrying https://example.invalid/a39-exhausted: attempt 3/3 after HTTP 429 (rate limited; waiting 8000ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2167ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8695ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2008ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9142ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2446ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9023ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2267ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8662ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2289ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9878ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2336ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8196ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2321ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9560ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2447ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8163ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2314ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8042ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2301ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9708ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2034ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8084ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2425ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9569ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2435ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8534ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2465ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9176ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2251ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8177ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2186ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9404ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2284ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8020ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2374ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8244ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2148ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9500ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2077ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9893ms)
 Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2250ms)
 Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9000ms)
 Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2250ms)
@@ -69,8 +69,8 @@ Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; 
 Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9000ms)
 A-39 rate-limit assertion: PASS (429 on its own ladder; Retry-After honoured at 5s and capped at 30s; unparseable header falls back; exhausted 429 still returned RED; ten jittered delays spread, and the constant-rng control lands on one value)
 A-20 F1 junction assertion: PASS (through a junction reverify reaches main and exits 2 with usage; check-claims --selftest runs and prints its PASS line)
-# Drift report — teorth/optimizationproblems (constants/ + README.md) — 2026-09-22T13:27:40.053Z
-Snapshot: 9d57db86c8564cb623ec9f9e41429a34efd819fb · Live: (local)
+# Drift report — teorth/optimizationproblems (constants/ + README.md) — 2026-10-06T16:20:19.270Z
+Snapshot: 2c1968cd520b60f1cf3cf50749f7285e800e4e15 · Live: (local)
 
 (A-33 leg 2 DID NOT RUN: ledger/upstream-reports.json could not be read — ENOENT: no such file or directory, open 'C:\dev\skylark\bounds-ledger\tmp\reverify-test-live\no-such-report-map.json'.
  No file below has been checked against the reports we have filed, so silence here means nothing.)
@@ -80,4 +80,4 @@ CHANGED constants/87a.md
 
 1 file(s) drifted. Re-verify against primary sources, then run --snapshot and commit.
 A-33 leg 2 assertion: PASS (fires on the reported-against file beside its CHANGED line, silent on a file we filed nothing against, suppressed under CI so the annotation never reaches the public issue while the CHANGED line still does, and an unreadable map says so instead of reading as nothing-filed)
-reverify.test: PASS (synthetic drift in 10a.md detected; pristine copy clean; README leg fires on an asterisked row, silent when restored, REMOVED when deleted, and untouched by a constants-only edit; A-20 retry recovers after one 502 with a visible retry and exhausts three 503 attempts as UNREACHABLE/exit 1; 39 workflow steps, piped steps pipefail-guarded; 31 self-tests present in CI; alarm titles a record movement Drift: and a transport failure Check error:, with the real move outranking a concurrent flake)
+reverify.test: PASS (synthetic drift in 10a.md detected; pristine copy clean; README leg fires on an asterisked row, silent when restored, REMOVED when deleted, and untouched by a constants-only edit; A-20 retry recovers after one 502 with a visible retry and exhausts three 503 attempts as UNREACHABLE/exit 1; 47 workflow steps, piped steps pipefail-guarded; 39 self-tests present in CI; alarm titles a record movement Drift: and a transport failure Check error:, with the real move outranking a concurrent flake)
