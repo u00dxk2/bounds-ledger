@@ -1434,7 +1434,10 @@
         "113e098",
         "b2dbe8f",
         "d100b70",
-        "5f22082"
+        "5f22082",
+        "eee7fe3",
+        "f5f0037",
+        "ce54d33"
       ],
       "readCommandHistory": "node scripts/depth-audit.mjs # BUILT AND FIRST-RUN 2026-09-10; supersedes the check-claims placeholder kept at readCommandRetired2026_09_10, which correctly said no command answered this row while no audit store existed. LITERAL OUTPUT, pasted from the run rather than described: \"depth audit (A-47): 3 row(s) audited — 2 sound, 0 defective, 1 unresolved, 0 unreachable\" at exit 0. It prints the denominator and the SAMPLING RULE beside the count, and it REFUSES a bare zero: exit 2 when the store is missing or empty (a zero about the WORK, not about the records), exit 3 when the verdict counts do not sum to the row count. Both refusals red-armed 2026-09-10 with the mutations proven to land by sha256 and the restore verified against the original.\n\n — LITERAL OUTPUT RE-RECORDED 2026-09-11, because the line above is dated 2026-09-10 and a stale literal output is the defect this field exists to prevent: \"depth audit (A-47): 8 row(s) audited — 2 sound, 0 defective, 4 unresolved, 2 unreachable\" at exit 0. The verdict mix moved for two reasons on one day: slice 2 added five rows, and three earlier rows were downgraded to UNRESOLVED by adversarial review. A second command now answers the population half of this row: `node scripts/depth-audit.mjs --corpus`, which prints 770 bound rows across 115 constant files, 673 cited, 97 uncited, and refuses (exit 2) when either baseline cannot be established.",
       "readCommandLastRun": "2026-10-05T16:07:05.584Z",
@@ -2498,7 +2501,11 @@
       "updated": "2026-10-05",
       "round1Shipped2026_10_05": "ROUND 1 SHIPPED 2026-10-05 (P3; selected at P1, bus 67db903f-4ef2-4956-9b15-5a61ec7ef579, approved by the orchestrator, bus 2ad96cb0-5042-480f-9ac5-3ed7cff2a444). Commits a75eea8c1c01c4e92f44ee3378aa73cfe668ce4b (renderer, 20 claimReader fields, 39 pages) and e920910 (review r2 fixes). Every read verdict on a constant page now either names its claim before the source link (\"the claim we checked: <claim>. What we read supports it.\", with an entry's own claimResult where the claim is a question and claimNotCovered for what the verdict does not cover) or says \"This page does not yet say which part of the row that reading checked.\" Acceptance read after slice 13 (tmp/a63-acceptance.mjs over c/*.html): 61 audit lines = 25 named + 29 unnamed + 7 unreachable, 0 carrying the vague phrase alone, internal process text on pages: none (positive control: the same patterns match in the store). REVIEWS: sentence review r1 before any code (2 BLOCKER, 6 SHOULD, 1 NIT, all applied; the first 31-entry wording, \"we did not record which claim that was\", was refuted because several such entries' notes record their scope after the reading); code review r2 on a75eea8 (0 BLOCKER, 3 SHOULD, 1 NIT, fixed in e920910). Red-armed three ways (fallback removed, named branch disabled, an extra result appended); each fired its own guard. WHAT IS LEFT for this row's closeWhen: the 29 unnamed read verdicts. Their claims must NOT be written after the fact; the honest route is that each is re-read under a named claim when the ladder or a retry reaches it, as slice 13's two retries (5b, 71a) were today. INHERITED, found by r2 and not fixed (predates A-63): an audit entry with a missing or unknown leg is never judged stale, and the page's summary counts every non-bound leg as a reference entry, including a reference-entry UNREACHABLE that its own bullet calls unread. The store holds none with a missing leg (59 value-vs-source, 2 citation-well-formed), and e920910 refuses a named claim on such an entry. The 40-hex value in this field is a commit of this repository.",
       "lastEvaluated": "2026-10-05",
-      "roundOneDefects2026_10_05": "DEFECT IN ROUND 1, recorded 2026-10-05 at the P5 close from the orchestrator's P3 review (bus fd4ef947-53e8-4df3-9705-4f9bf60cb0fc); FIX BEFORE OR WITH THE 2026-10-12 DECISION. (1) RAW TeX-STYLE MARKUP in five named claims, on pages that load no math renderer, so a reader sees the markup literally, e.g. \"BH^{≤d}_{±1} ≤ C^{√(d log d)}\" on c/26a.html. Confirmed by this session: Grep of c/ for `the claim we checked: [^<]*(\\^\\{|_\\{|\\\\[a-z])` matched one line each in c/20b.html, c/26a.html, c/3b.html, c/84a.html and c/9a.html (5 files; the positive control is that the pattern matches the 26a string quoted above), and a case-insensitive Grep for katex|mathjax in c/26a.html returned 0. The fields are claimReader on A-47-0040 (20b), A-47-0041 (26a), A-47-0043 (3b), A-47-0048 (84a) and A-47-0061 (9a). FIX SHAPE: rewrite those five claimReader values in plain words or Unicode (L_n ≤ C·(log n)^2.082…, 367^(1/5) and the like), keeping each claim's scope exactly as named before the reading; and add a render-side refusal (claimText) of `^{`, `_{` and backslash-letter sequences in claim fields, red-armed, so the next one cannot ship. (2) DUPLICATE LIMIT on c/26a.html: the bound-cell limit is now stated twice in one line, once in the new \"This verdict does not cover the row's bound cell …\" clause and again in the older sourceRead parenthetical (\"Only the comment's attribution was checked. The row's bound cell, infinity credited to 'Trivial', was not\"). Sentence review r1 judged that repetition harmless; the orchestrator's review names it as the repeat the P1 review asked to be caught. FIX SHAPE: drop claimNotCovered's bound-cell clause on A-47-0041 (the sourceRead note already carries it, and sourceRead is the historical record, not edited) and keep the comment-words exclusion. The same pass checks 37a and 46a, whose sourceRead notes also state scope."
+      "roundOneDefects2026_10_05": "DEFECT IN ROUND 1, recorded 2026-10-05 at the P5 close from the orchestrator's P3 review (bus fd4ef947-53e8-4df3-9705-4f9bf60cb0fc); FIX BEFORE OR WITH THE 2026-10-12 DECISION. (1) RAW TeX-STYLE MARKUP in five named claims, on pages that load no math renderer, so a reader sees the markup literally, e.g. \"BH^{≤d}_{±1} ≤ C^{√(d log d)}\" on c/26a.html. Confirmed by this session: Grep of c/ for `the claim we checked: [^<]*(\\^\\{|_\\{|\\\\[a-z])` matched one line each in c/20b.html, c/26a.html, c/3b.html, c/84a.html and c/9a.html (5 files; the positive control is that the pattern matches the 26a string quoted above), and a case-insensitive Grep for katex|mathjax in c/26a.html returned 0. The fields are claimReader on A-47-0040 (20b), A-47-0041 (26a), A-47-0043 (3b), A-47-0048 (84a) and A-47-0061 (9a). FIX SHAPE: rewrite those five claimReader values in plain words or Unicode (L_n ≤ C·(log n)^2.082…, 367^(1/5) and the like), keeping each claim's scope exactly as named before the reading; and add a render-side refusal (claimText) of `^{`, `_{` and backslash-letter sequences in claim fields, red-armed, so the next one cannot ship. (2) DUPLICATE LIMIT on c/26a.html: the bound-cell limit is now stated twice in one line, once in the new \"This verdict does not cover the row's bound cell …\" clause and again in the older sourceRead parenthetical (\"Only the comment's attribution was checked. The row's bound cell, infinity credited to 'Trivial', was not\"). Sentence review r1 judged that repetition harmless; the orchestrator's review names it as the repeat the P1 review asked to be caught. FIX SHAPE: drop claimNotCovered's bound-cell clause on A-47-0041 (the sourceRead note already carries it, and sourceRead is the historical record, not edited) and keep the comment-words exclusion. The same pass checks 37a and 46a, whose sourceRead notes also state scope.",
+      "linkedCommits": [
+        "a75eea8",
+        "e920910"
+      ]
     },
     {
       "id": "A-64",
@@ -2639,8 +2646,17 @@
       "closeWhen": "On the live index at 393x659 each of the four row controls measures at least 44px tall; the cite block has a working copy button whose copied text equals the block text; 1440x900 unchanged; render-site --check passes.",
       "readCommand": "npm --prefix C:/dev/skylark/bounds-ledger run reports — A-59's encounter read, the one pending read for this row: it prints the raw issue count, excludes our own authors, and requires the parts to reconcile; an OUTSIDE ARRIVAL through a row's 'looks wrong?' link is the only encounter this page can show. The ship's own regression read stays: node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check (PASS means index.html matches its renderer, whose self-test pins the 44px floor and the copy script).",
       "created": "2026-10-02",
-      "updated": "2026-10-04",
-      "lastEvaluated": "2026-10-04"
+      "updated": "2026-10-05",
+      "lastEvaluated": "2026-10-04",
+      "linkedCommits": [
+        "3b445dc",
+        "5f42ce7",
+        "a371655",
+        "5b6bd04",
+        "bd0d1fb",
+        "b1e6b08",
+        "7f3eb6b"
+      ]
     },
     {
       "id": "A-71",
@@ -2662,6 +2678,23 @@
       "created": "2026-10-03",
       "updated": "2026-10-05",
       "statusNormalized2026_10_05": "Status was the non-canonical string resolved (set 2026-10-03); mapped to closed at the 2026-10-05 security-round close because continuity-check reported it CRITICAL (a row outside the vocabulary is invisible to the stale and closeWhen checks). Its closeWhen was already met per its own notes."
+    },
+    {
+      "id": "A-72",
+      "title": "A-31 was declined on a false premise: CI never runs render-site --check, so a page that bypasses the commit hook is caught by nothing",
+      "status": "open",
+      "type": "active",
+      "note": "Found 2026-10-05 evening in the Astra fix round (orchestrator prompt 370d6bd5; bus task-complete 5657ef22). A-31 (Should the public page publish be CI-gated?) closed DECLINED 2026-09-10, and its resolution's trade rests on: render-site --check ALSO runs in CI, so a page that bypassed the hook is still caught, in parallel with the publish. That is false: CI runs only render-site.mjs --selftest (.github/workflows/reverify.yml:197, read by git grep 2026-10-05 with that line as the positive control), and AGENTS.md was already corrected to say so on 2026-10-01. Meanwhile Codex review r2 named three concrete routes past the pre-commit page block: a commit whose staged renderer/data differs from the working copy the check runs, an index.html staged with mode 120000 under core.symlinks=false, and an automatic merge commit (git runs pre-merge-commit, which .githooks does not provide); plus --no-verify and an unset hooksPath. They are recorded as a named ceiling in the .githooks/pre-commit header (e8cec41), deliberately not patched (two rounds already on that block). Two fix shapes, smallest first: (1) a reverify.yml step running render-site --check (and render-constant-pages --check) at fetch-depth 0, which restores the premise A-31 relied on, catching a bad page minutes after publish; (2) A-31's own build_type workflow, which gates before publish.",
+      "closeWhen": "Either a CI step running render-site.mjs --check lands and is red-armed (a deliberately stale committed index.html makes that step fail on a runner, then the restore passes), or A-31 is re-decided against the true premise and the decision is recorded on A-31 and here.",
+      "nextCheckDate": "2026-10-07",
+      "readCommand": "git grep -n render-site.mjs -- .github/workflows/reverify.yml # One line, the --selftest step (:197 as of 2026-10-05), means CI still never compares the committed page and this row stays open. A line with --check means fix shape (1) has landed; then red-arm it. POSITIVE CONTROL: the --selftest line must print; if nothing prints, the path is wrong, not the gap closed.",
+      "linkedCommits": [
+        "a57d8a2",
+        "71c6d7e",
+        "e8cec41"
+      ],
+      "created": "2026-10-05",
+      "updated": "2026-10-05"
     }
   ],
   "meta": {
@@ -2669,6 +2702,16 @@
       "1940337": "2026-10-05 afternoon security fix round, item S4 (same dispatch as e738abf).",
       "8153032": "2026-09-15 daily-report fix: the report's FIRST ACTION line named the gate for a seventh consecutive day and now names the file and row — reports are not item work; same class as afac67d.",
       "8172726": "2026-09-12 close-out appended to tomorrow's primer — rail bookkeeping; the work it describes carries its own commits (3d65a09, 2a40d62, e035373).",
+      "fcb33a4": "2026-10-05 P5 close-out (report, hygiene, primer) — rail bookkeeping; the items it describes carry their own commits (A-63, A-47).",
+      "4c61170": "2026-10-04 close-out (hygiene re-dates, primer) — rail bookkeeping; the items it describes carry their own commits (A-70).",
+      "b87df81": "2026-10-05 evening Astra fix round (orchestrator prompt 370d6bd5), BL-R2: one-off review finding, no ledger row; per-item proof on bus task-complete 5657ef22. The BL-R1 commits are linked on A-72 instead.",
+      "d1f1bd7": "2026-10-05 evening Astra fix round, BL-R3 (same dispatch as b87df81).",
+      "639f8ce": "2026-10-05 evening Astra fix round, BL-R3 round 2 (same dispatch as b87df81).",
+      "304fcdf": "2026-10-05 evening Astra fix round, BL-R5 (same dispatch as b87df81).",
+      "19f7566": "2026-10-05 evening Astra fix round, BL-R4 (same dispatch as b87df81).",
+      "800ca94": "2026-10-05 evening Astra fix round, BL-R4 round 2 (same dispatch as b87df81).",
+      "60ecc83": "2026-10-05 evening Astra fix round, BL-R4 round 3 (same dispatch as b87df81).",
+      "69f13ee": "2026-10-05 evening Astra fix round, BL-R4 comment fix from Codex r3 (same dispatch as b87df81).",
       "c8473d8": "2026-09-10 hygiene pass: the day's report plus a correction to tomorrow's primer banner — reports and primers are not item work; the items they describe carry their own commits.",
       "26dc939": "2026-09-10 cold-start primer, written after the date rolled — primers are not item work; same class as acadb9e.",
       "427e17c": "2026-08-15 daily report — reports are not item work; the items they describe carry their own commits.",
