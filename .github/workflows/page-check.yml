@@ -1,5 +1,5 @@
 name: page-check
-# A-31 / A-72 (2026-10-06): compare the COMMITTED index.html against what render-site.mjs would
+# A-31 / A-72 (2026-10-05): compare the COMMITTED index.html against what render-site.mjs would
 # produce from the committed ledger, on every push to main and every pull request into it.
 #
 # Why this exists: A-31 (should the public page publish be CI-gated?) was declined on 2026-09-10
@@ -43,7 +43,7 @@ jobs:
           node-version: 22
       # The comparison below reads index.html with readFileSync, which FOLLOWS a symlink: a committed
       # index.html that is a link (mode 120000) to a correctly rendered file would read green while
-      # the published blob holds only a pathname (Codex review on dd8f25f, 2026-10-06). So the file's
+      # the published blob holds only a pathname (Codex review on dd8f25f, 2026-10-05). So the file's
       # git mode is checked first. An absent index.html fails here too, with its own reason.
       - name: Require index.html to be a regular tracked file
         shell: bash

@@ -1243,13 +1243,14 @@
         "e391be7",
         "a3c8fe1"
       ],
-      "note4": "P4 2026-08-27 — EXPLICITLY HELD on its stated date 2026-09-09, not silently re-carried, and the hold is now cheaper because the concrete risk was mitigated today by other means. WHAT SHIPPED INSTEAD: .githooks/pre-commit now runs `node scripts/render-site.mjs --check` on a staged index.html and refuses the commit if the page is not what render-site would produce. That closes the window at COMMIT time, where it costs nothing, instead of at publish time, where it costs a publish-path rewrite. KP-78 both ways, at the hook layer: prepended a CLOBBERED line to index.html, proved the mutation landed (`git diff --cached --numstat` -> 1 line), and the commit was REFUSED at exit 1 with 'index.html is stale'; restoring the good file left the stage clean. WHY THE BIG QUESTION STILL WAITS: switching Pages to build_type=workflow changes the publish path of the ONLY surface a visitor sees, AGENTS.md says not to attempt it while Pages is degraded, and Pages was erroring in a GitHub outage as recently as 2026-08-26. The residual risk after today is narrow and named: a malformed page can still reach main via a route that bypasses the hook (a direct push from a clone with hooksPath unset, or a merge commit), and CI still reports it only after publish. That is the real remaining case A-31 must answer on 09-09.",
+      "note4": "P4 2026-08-27 — EXPLICITLY HELD on its stated date 2026-09-09, not silently re-carried, and the hold is now cheaper because the concrete risk was mitigated today by other means. WHAT SHIPPED INSTEAD: .githooks/pre-commit now runs `node scripts/render-site.mjs --check` on a staged index.html and refuses the commit if the page is not what render-site would produce. That closes the window at COMMIT time, where it costs nothing, instead of at publish time, where it costs a publish-path rewrite. KP-78 both ways, at the hook layer: prepended a CLOBBERED line to index.html, proved the mutation landed (`git diff --cached --numstat` -> 1 line), and the commit was REFUSED at exit 1 with 'index.html is stale'; restoring the good file left the stage clean. WHY THE BIG QUESTION STILL WAITS: switching Pages to build_type=workflow changes the publish path of the ONLY surface a visitor sees, AGENTS.md says not to attempt it while Pages is degraded, and Pages was erroring in a GitHub outage as recently as 2026-08-26. The residual risk after today is narrow and named: a malformed page can still reach main via a route that bypasses the hook (a direct push from a clone with hooksPath unset, or a merge commit), and CI still reports it only after publish. That is the real remaining case A-31 must answer on 09-09.\n\n | REOPENED 2026-10-05 late evening MT by the orchestrator (bus e8e6e2e5; paraphrased): the 2026-09-10 decline premise was false, because CI ran only render-site --selftest and never the real render check. The orchestrator authorized the cheap form only, and it shipped: .github/workflows/page-check.yml (dd8f25f, c0da07c) runs render-site --check at fetch-depth 0 on every push and pull request to main, red-armed on a runner (A-72's close receipt carries both outputs). This makes the resolution's premise true for index.html, minutes AFTER publish. Still open and OWNED BY THE ORCHESTRATOR: a gate BEFORE publish (Pages build_type workflow, note3's shape), and the c/ constant pages, which no CI job compares. Status deliberately left as is; the orchestrator decides the next step.",
       "readCommandLastRun": "2026-09-10T05:36:28.538Z",
       "readCommandLastExit": 0,
       "readCommandLastOutputRef": {
         "lines": 1,
         "sha256": "c49fea7425fa7f86"
-      }
+      },
+      "updated": "2026-10-05"
     },
     {
       "id": "A-32",
@@ -2682,7 +2683,7 @@
     {
       "id": "A-72",
       "title": "A-31 was declined on a false premise: CI never runs render-site --check, so a page that bypasses the commit hook is caught by nothing",
-      "status": "open",
+      "status": "closed",
       "type": "active",
       "note": "Found 2026-10-05 evening in the Astra fix round (orchestrator prompt 370d6bd5; bus task-complete 5657ef22). A-31 (Should the public page publish be CI-gated?) closed DECLINED 2026-09-10, and its resolution's trade rests on: render-site --check ALSO runs in CI, so a page that bypassed the hook is still caught, in parallel with the publish. That is false: CI runs only render-site.mjs --selftest (.github/workflows/reverify.yml:197, read by git grep 2026-10-05 with that line as the positive control), and AGENTS.md was already corrected to say so on 2026-10-01. Meanwhile Codex review r2 named three concrete routes past the pre-commit page block: a commit whose staged renderer/data differs from the working copy the check runs, an index.html staged with mode 120000 under core.symlinks=false, and an automatic merge commit (git runs pre-merge-commit, which .githooks does not provide); plus --no-verify and an unset hooksPath. They are recorded as a named ceiling in the .githooks/pre-commit header (e8cec41), deliberately not patched (two rounds already on that block). Two fix shapes, smallest first: (1) a reverify.yml step running render-site --check (and render-constant-pages --check) at fetch-depth 0, which restores the premise A-31 relied on, catching a bad page minutes after publish; (2) A-31's own build_type workflow, which gates before publish.\n\n | RULING 2026-10-06T02:22Z (orchestrator, bus c6fe34b7; paraphrased): this is an OPEN QUESTION FOR THE ORCHESTRATOR, which owns the next step on A-31. The lane does not reopen or change A-31, does not file a board card for David, and does not ship either candidate fix (a CI render-site --check step, or build_type workflow) before the orchestrator rules. Until then the hook-bypass routes named in .githooks/pre-commit are caught by nothing.",
       "closeWhen": "Either a CI step running render-site.mjs --check lands and is red-armed (a deliberately stale committed index.html makes that step fail on a runner, then the restore passes), or A-31 is re-decided against the true premise and the decision is recorded on A-31 and here.",
@@ -2691,10 +2692,15 @@
       "linkedCommits": [
         "a57d8a2",
         "71c6d7e",
-        "e8cec41"
+        "e8cec41",
+        "dd8f25f",
+        "c0da07c"
       ],
       "created": "2026-10-05",
-      "updated": "2026-10-05"
+      "updated": "2026-10-05",
+      "closedAt": "2026-10-05",
+      "lastEvaluated": "2026-10-05",
+      "notes": " | CLOSED 2026-10-05 (late evening MT) on its first branch: a CI step running render-site.mjs --check landed and was red-armed on a runner. The orchestrator reopened A-31 and authorized the cheap form (bus e8e6e2e5). .github/workflows/page-check.yml (dd8f25f, then c0da07c) runs on push and pull_request to main and on workflow_dispatch, at fetch-depth 0. It first requires index.html to be a regular tracked file (Codex review on dd8f25f found a symlinked index.html could read through to a correct page; CONFIRMED and fixed in c0da07c), then runs node scripts/render-site.mjs --check. GREEN on main: run 37413578174 at c0da07c printed \"index.html is a regular tracked file (mode 100644)\" and \"RESULT: PASS — index.html matches committed state (115 constants @ 2c1968c)\". RED on a scratch branch: run 37414497877 at ddc5c41 (a scratch commit on a branch deleted afterwards; it is in no branch of this repo) (one CSS rule changed in render-site.mjs, page not re-rendered; the pre-commit hook let it through because index.html was not staged, which is route 1 of the hook's ceiling) printed \"RESULT: FAIL — index.html is stale. Re-run `node scripts/render-site.mjs` and commit it.\" and failed with exit code 1. Scratch branch deleted afterwards. Limits, unchanged: this reports a stale page AFTER Pages publishes it (a legacy build waits for nothing), and it does not compare the c/ constant pages. A gate before publish (build_type workflow) remains A-31's open question, owned by the orchestrator."
     }
   ],
   "meta": {
