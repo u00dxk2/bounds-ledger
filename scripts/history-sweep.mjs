@@ -63,7 +63,10 @@ const PATTERNS = [
   // Keyword set is deliberately broader than SECRET/PASSWORD: the portfolio's own credentials
   // include CC_PROMPTS_PIN, which the first draft of this pattern could not see. Caught by this
   // file's own fixture, not by review.
-  ["secret-assignment", /\b[A-Z0-9_]*(?:SECRET|PASSWORD|PASSWD|API_?KEY|ACCESS_?TOKEN|AUTH_?TOKEN|PRIVATE_?KEY|CREDENTIAL|_PIN|_TOKEN|_KEY)[A-Z0-9_]*\s*[=:]\s*["']?(?!\s*$)(?!.*(?:\$\{|<|xxx|XXX|your|YOUR|example|EXAMPLE|placeholder|PLACEHOLDER|redacted|REDACTED|\*\*\*))[^\s"'`]{20,}/],
+  // The placeholder lookahead is confined to the VALUE's own characters ([^\s"'`]*), not `.*`: on
+  // the whole rest of the line, a trailing comment saying "your" or "example" hid a real value
+  // (BL-R3, 2026-10-05).
+  ["secret-assignment", /\b[A-Z0-9_]*(?:SECRET|PASSWORD|PASSWD|API_?KEY|ACCESS_?TOKEN|AUTH_?TOKEN|PRIVATE_?KEY|CREDENTIAL|_PIN|_TOKEN|_KEY)[A-Z0-9_]*\s*[=:]\s*["']?(?!\s*$)(?![^\s"'`]*(?:\$\{|<|xxx|XXX|your|YOUR|example|EXAMPLE|placeholder|PLACEHOLDER|redacted|REDACTED|\*\*\*))[^\s"'`]{20,}/],
 ];
 
 // NO FILE IS EXEMPT (since 2026-10-05). This file used to skip its own path for its fixtures; the
@@ -364,6 +367,19 @@ function selftest() {
   const other = partitionHits(hitsFor("  GITHUB_TOKEN§=gh§p_Z9y8X7w6V5u4T3s2R1q0P9o8N7m6L5k4J3i2", "docs/findings/known.md"), list);
   if (other.undispositioned.length !== planted.length || other.stale.length !== list.length) {
     console.error("history-sweep selftest FAIL: a DIFFERENT secret in the same file must still fire, and the unmatched dispositions must read as stale");
+    return 1;
+  }
+  // BL-R3 (2026-10-05): the placeholder exclusion judges the ASSIGNED VALUE, not the rest of the
+  // line, so a trailing comment saying "your" or "example" cannot hide a real value — and a value
+  // that IS a placeholder stays silent with or without a comment.
+  const commented = scanT("+++ b/fixture.txt\nCC_PROMPTS_PIN§=8f3a2b91c0d4e5f6a7b8c9d0e1f2a3b4  # your production credential, see example", "fixture");
+  if (!commented.some((h) => h.name === "secret-assignment")) {
+    console.error("history-sweep selftest FAIL: a trailing comment containing a placeholder word suppressed a real secret-assignment");
+    return 1;
+  }
+  const placeholderValue = scanT("+++ b/fixture.txt\nAPI_KEY=your-api-key-goes-right-here  # set it locally", "fixture");
+  if (placeholderValue.length) {
+    console.error("history-sweep selftest FAIL: a placeholder VALUE fired as a secret-assignment");
     return 1;
   }
   // A secret-shaped line in a COMMIT MESSAGE is reported as one, and never attributed to the file
