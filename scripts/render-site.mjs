@@ -244,9 +244,11 @@ export function newerOf(a, b) {
 //
 // `text` counts as moved. An editorial edit IS something we observed happen to the row, and this
 // repo's standing position is that editorial drift is real drift; the row's own cell already says
-// "bound unchanged", so the reader is told which kind it was.
+// "bound unchanged", so the reader is told which kind it was. `expression` (BL-R4) counts too: the
+// bound cell itself was edited.
+const OBSERVED_KINDS = new Set(["value", "text", "expression"]);
 export function hasMoved(upperKind, lowerKind) {
-  return [upperKind, lowerKind].some((k) => k === "value" || k === "text");
+  return [upperKind, lowerKind].some((k) => OBSERVED_KINDS.has(k));
 }
 
 // THE SAME DEFECT ONE LEVEL IN, found by adversarial review on this diff BEFORE it was committed,
@@ -266,8 +268,8 @@ export function hasMoved(upperKind, lowerKind) {
 // changing what a published attribute means is the kind of move this row exists to police.
 export function movementDate(upperChanged, upperKind, lowerChanged, lowerKind) {
   let out = null;
-  if (upperKind === "value" || upperKind === "text") out = newerOf(out, upperChanged || null);
-  if (lowerKind === "value" || lowerKind === "text") out = newerOf(out, lowerChanged || null);
+  if (OBSERVED_KINDS.has(upperKind)) out = newerOf(out, upperChanged || null);
+  if (OBSERVED_KINDS.has(lowerKind)) out = newerOf(out, lowerChanged || null);
   return out;
 }
 
@@ -295,6 +297,9 @@ export function movementDate(upperChanged, upperKind, lowerChanged, lowerKind) {
 export function whenLabel(changed, kind) {
   if (kind === "value") return `value changed ${esc(changed)}`;
   if (kind === "text") return `text edited ${esc(changed)} — bound unchanged`;
+  // BL-R4: same numerals, different bound cell. We do not interpret the expression, so we say what
+  // we saw and claim nothing about whether the bound moved.
+  if (kind === "expression") return `bound cell edited ${esc(changed)}`;
   if (kind === "first") return `tracked since ${esc(changed)} — no movement seen yet`;
   return `last changed ${esc(changed)}`;
 }
@@ -2068,6 +2073,20 @@ async function selftest() {
     "text",
     "a changed citation detail with a fixed bound must stay a text edit"
   );
+
+  // BL-R4 (2026-10-05): "bound unchanged" is asserted only when the bound cells match after the
+  // named formatting normalization. The digit-multiset comparison called an operand swap and a sign
+  // flip "text", and the page then printed "bound unchanged" over a changed bound.
+  assert.notEqual(changeKind(rowAt("$1/2$", "x"), rowAt("$2/1$", "x")), "text", "an operand swap must not read as bound unchanged");
+  assert.notEqual(changeKind(rowAt("$-3$", "x"), rowAt("$3$", "x")), "text", "a sign change must not read as bound unchanged");
+  assert.notEqual(changeKind(rowAt("$1.292$", "x"), rowAt("$1.292*$", "x")), "text", "an added marker in the bound cell must not read as bound unchanged (1a:L, ce5a57c)");
+  assert.equal(changeKind(rowAt("$1/2$", "x"), rowAt("$2/1$", "x")), "expression", "same numerals, different expression: say only that the cell was edited");
+  assert.equal(changeKind(rowAt("$2/\\log \\gamma_{1}$", "x"), rowAt("$2/\\log \\gamma\\_{1}$", "x")), "text", "a markdown escape inside the bound cell stays a text edit (8a:L, d834f10)");
+  assert.equal(changeKind(rowAt("$3 $", "x"), rowAt("$3$", "x")), "text", "whitespace alone stays a text edit");
+  assert.ok(!/unchanged/.test(whenLabel("2026-10-05", "expression")), "the expression wording must not assert the bound held");
+  assert.match(whenLabel("2026-10-05", "expression"), /2026-10-05/, "the expression wording still discloses the date");
+  assert.equal(hasMoved("expression", "first"), true, "an edited bound cell is something we observed happen to the row");
+  assert.equal(movementDate("2026-09-01", "expression", "2026-09-09", "first"), "2026-09-01", "an edited bound cell dates the row's movement");
 
   // A pin with no previous version gets no verdict at all — the honest answer, and separate from
   // the "first pinned" case, which is decided in changeFor where the parent read actually succeeded.

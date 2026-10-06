@@ -83,9 +83,11 @@ export function lastChanged(expect, root = ROOT) {
 // whole row would call a changed citation year a value change, which overclaims in exactly the
 // direction that misleads.
 //
-// ponytail: set-equality on digit strings, no parsing of mathematics. A symbolic cell that stays
-// symbolic reads as unchanged, which is correct — and a cell we cannot interpret is never given a
-// verdict we cannot support.
+// ponytail: no parsing of mathematics. "Unchanged" needs the bound cells to match after a named
+// formatting normalization (normalizeBound); a numeral multiset that moved is a value change; and
+// anything between the two is only "edited". Until BL-R4 (2026-10-05) set-equality on digit strings
+// decided "unchanged" alone, and called 1/2 -> 2/1 and a sign flip unchanged. A cell we cannot
+// interpret is never given a verdict we cannot support.
 
 // The first cell of a pipe table row. A row that is not a pipe table falls back to the whole
 // string rather than to an empty one: comparing everything is a weaker claim than comparing
@@ -102,13 +104,29 @@ export function numbersIn(text) {
   return (m || []).slice().sort();
 }
 
+// The ONLY formatting differences "bound unchanged" may look past (BL-R4, 2026-10-05): whitespace,
+// and a backslash escaping a markdown-active character (upstream's 2026-08-24 edit, `\_` for `_`).
+// Anything else in the bound cell is an edit to the expression, which we do not interpret.
+export function normalizeBound(cell) {
+  return String(cell == null ? "" : cell).replace(/\\([*_`|~])/g, "$1").replace(/\s+/g, "");
+}
+
+// Three verdicts, and null:
+//   "text"       the bound cells match after normalizeBound — the edit was elsewhere in the row, or
+//                was formatting only. The page says "bound unchanged", so this is the one verdict
+//                that must never be reached by a lossy comparison.
+//   "value"      the bound cell's numerals changed as a multiset — a number moved.
+//   "expression" same numerals, different bound cell: an operand swap (1/2 -> 2/1), a sign, an
+//                operator, an added marker. Until BL-R4 these read as "text" because the multiset
+//                comparison lost order, signs and operators. We say only that the cell was edited.
 // null means "we cannot say" — a pin appearing for the first time has nothing to be compared
-// against, and inventing "value" or "text" there would be a verdict with no evidence under it.
+// against, and inventing a verdict there would have no evidence under it.
 export function changeKind(prevExpect, nowExpect) {
   if (prevExpect == null) return null;
-  const before = numbersIn(boundCell(prevExpect)).join(",");
-  const after = numbersIn(boundCell(nowExpect)).join(",");
-  return before === after ? "text" : "value";
+  const was = boundCell(prevExpect);
+  const now = boundCell(nowExpect);
+  if (normalizeBound(was) === normalizeBound(now)) return "text";
+  return numbersIn(was).join(",") === numbersIn(now).join(",") ? "expression" : "value";
 }
 
 // One `git log` per pin, same as before — the sha rides along on the call that was already being
