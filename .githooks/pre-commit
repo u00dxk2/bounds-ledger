@@ -109,7 +109,16 @@ fi
 # clobbered, and the only reason no visitor saw it is that Pages was erroring in an unrelated
 # outage -- which is luck, not a gate. This closes the window at COMMIT time instead, where it
 # costs nothing. It does NOT gate the publish; that question stays open as A-31 on 2026-09-09.
-if git diff --cached --name-only --diff-filter=ACM | grep -qx 'index.html'; then
+# Every change STATUS is selected (--no-renames, no --diff-filter): an earlier --diff-filter=ACM
+# let a staged DELETION or RENAME of index.html skip this whole block, unpublishing the site with
+# the correct page still on disk (Codex r1 on a57d8a2, 2026-10-05).
+if git diff --cached --name-only --no-renames | grep -qx 'index.html'; then
+  if ! git cat-file -e :index.html 2>/dev/null; then
+    echo ""
+    echo "x pre-commit: this commit removes index.html from the index (a delete or a rename)."
+    echo "  It is the public page; Pages would publish the site without it. Restore it: git reset -- index.html"
+    exit 1
+  fi
   # render-site --check reads the WORKING file, but the commit carries the STAGED one (BL-R1,
   # 2026-10-05): stage a stale page, regenerate, forget to re-stage, and the check passed on the
   # correct copy while the stale one shipped. So the two must be identical before the check runs.
