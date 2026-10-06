@@ -1,0 +1,7 @@
+# read-output sidecar for A-65 — written by check-due-gates-dispositioned --run
+# readCommand: git -C C:/dev/skylark/bounds-ledger grep -c -E \.md.L[0-9] -- c/
+# ran: 2026-10-06T17:44:46.103Z · exit: 0
+# lines: 1 · sha256: cb9ce65871e6ef64 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+c/10c.html:1

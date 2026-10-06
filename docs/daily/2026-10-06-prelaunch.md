@@ -50,7 +50,29 @@ Five constant pages no longer show raw math markup where the checked claim shoul
 
 ## Recommendation
 
-Written at the close.
+Tomorrow's order lives in the primer (`docs/cold-starts/2026-10-07.md`), written at this close.
+
+- [B] 2026-10-07: `npm run verify` first (the receipt predates `e02fe09`), then `A-47` slice 14 on a new grid, plus the `A-57` and `A-58` reads.
+- [B] 2026-10-08: `A-54` census session 6 and the blocked-paper retry.
+- [A — user-visible] by 2026-10-12: decide `A-65`'s 10c source-link form without editing `sourceRead`, and ship it.
+
+## Close
+
+ACTION: COMPLETED · item A-63 · P3 f07f33af
+
+- **Since the P3 post:** CI on `8a304b8` is GREEN (`check-ci-status --workflow reverify.yml`, exit 0). The orchestrator's review (bus e87df3bc) confirmed COMPLETED and found no defects. The full `npm run verify` was not re-run after `e02fe09`; tomorrow's first action runs it.
+- **Hygiene draft: 6 lines — 2 accepted · 4 amended · 0 rejected.**
+  - `A-9` accepted: held to 2026-11-04, and the read printed the unchanged baseline sha.
+  - `W-4` accepted: `nextCheckDate` set to 2026-10-20.
+  - `A-54` amended: `expectedSignalBy` set to 2026-10-08 with `--set` instead of `--extend` (which appends to `closeWhen`), and the skipped slot recorded on `census6Skipped2026_10_06`.
+  - `W-13` amended: same form. Both of its clock fields were moved to 2026-10-13.
+  - `W-8` amended: same form, to 2026-10-20.
+  - `A-65` (undrafted, read timed out) amended: readCommand re-pointed to a hash-free `git grep`, run through the runner (`c/10c.html:1`, exit 0, still open), and re-dated to 2026-10-12 with the open choice written on `disposition2026_10_06`.
+- **Helper READ-MUTATED lines, quoted:** "READ-MUTATED A-54 continuity/depth-audit.json — NOT named in the readCommand: may be the lane's own concurrent P3 edit; lane checks" and "READ-MUTATED A-65 scripts/render-constant-pages.mjs — path named in the readCommand". Both were this session's own P3 edits to those files, made while the helper ran; HEAD did not move.
+- **Helper checks:** check-wait-justification "RESULT: PASS — 1 of 88 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)". check-engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable".
+- **Ledger delta:** `A-63.roundOneDefectsFixed2026_10_06` and `A-63.nextRead2026_10_06`. `A-63` stays open: its closeWhen waits on the 29 unnamed read verdicts, and their count is re-read on 2026-10-12. The re-dates above, the `A-54` skipped-slot field, and `A-65`'s readCommand and disposition.
+- **Due-gate verify:** `check-due-gates-dispositioned` (no flag): "verdict: CLEAR — every gate due at Phase 0 was dispositioned.", snapshot CURRENT (taken 2026-10-06).
+- **Pending reads:** `A-59` encounter, 2026-10-28. `A-63` unnamed-verdict count, 2026-10-12. `A-65` decision, 2026-10-12. `A-54` census, 2026-10-08.
 
 ## On hold pending data
 
