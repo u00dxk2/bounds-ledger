@@ -2356,12 +2356,12 @@
         "412cd1d"
       ],
       "correctionCandidate": true,
-      "readCommandLastRun": "2026-09-30T16:05:27.314Z",
+      "readCommandLastRun": "2026-10-07T15:06:57.264Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 947,
+      "readCommandLastDurationMs": 4152,
       "readCommandLastOutputRef": {
-        "lines": 52,
-        "sha256": "092742f4a87a4c1b"
+        "lines": 76,
+        "sha256": "8cf777d042bea8e9"
       },
       "expectedSignalBy": "2026-10-07",
       "lastEvaluated": "2026-09-30",
@@ -2386,9 +2386,9 @@
       "correctionCandidate": true,
       "created": "2026-09-26",
       "updated": "2026-09-30",
-      "readCommandLastRun": "2026-09-30T16:06:10.570Z",
+      "readCommandLastRun": "2026-10-07T15:08:14.874Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 8961,
+      "readCommandLastDurationMs": 6566,
       "readCommandLastOutputRef": {
         "lines": 1,
         "sha256": "6ab0e655afebfdc4"
@@ -2724,15 +2724,17 @@
       "status": "open",
       "title": "The index badge keeps an earlier UNRESOLVED reading of a row after a later reading of the same row settled it",
       "note": "Found 2026-10-06 by Codex review r1 of the A-47 slice 14 readings commit (9a9e8eab177a7bda316403b800b7927113958dbe), finding 4, CONFIRMED against source. c/10a line 32 now carries A-47-0002 (suspicion-drawn, UNRESOLVED, the strictness question) and A-47-0062 (systematic, SOUND, which answers that question), and the constant page labels the second as a later reading of the same row. The index badge for 10a still names that row under 'checked against material for its source, not settled', because badgeFor (scripts/render-constant-pages.mjs, the WORST VERDICT WINS comment) takes the worst verdict across ALL readings of a constant, row by row. That rule is deliberate: the badge exists to stop a citer trusting a number, never to reassure one. The page and the index now disagree about one row, which a reader comparing them will notice. Not changed on 2026-10-06 because it is a change to a deliberate rule, and the two readings did not check the same named claim (A-47-0002 names none). The manager's P1 review said to fix it in the renderer if cheap, otherwise file a row; this is that row. READ COMMAND, literal output on 2026-10-06: `index.html:1` (exit 0), the one index line carrying 10a's badge, which names [LSXCKKM26] as not settled. If the badge comes to take the latest reading per row, that key leaves the line and the command prints nothing (exit 1); the line stays for SLXCKKM26 either way.",
-      "closeWhen": "The index badge and the constant page agree about a row read more than once: either the badge stops naming a row as not settled when another reading of that row settled the claim (and, if it picks one reading over another, it rests on a stored reading date, never on id text or store order, neither of which proves chronology: Codex r1 and r3, 2026-10-06), with a selftest red-armed both ways; or this row closes with a written decision that worst-verdict-wins stays, stating what a reader sees on 10a and why that is acceptable.",
+      "closeWhen": "The index badge and the constant page agree about a row read more than once: a later reading that DECLARES the earlier reading it settles (a typed `settles` field on the later entry) sets that earlier reading aside on the index badge only when both are provable readings of the same row (same constant, cited key and row-text hash), the declaring reading is SOUND and the settled one is UNRESOLVED; a missing, dangling, cross-row or ambiguous link, a non-SOUND declarer, or a DEFECTIVE settled reading keeps worst-verdict-wins; no reading is ordered by date, id text or store order; a selftest red-armed both ways; the change reviewed by the other model family with every finding dispositioned; and `git grep -c LSXCKKM26 -- index.html` printing nothing on the LIVE page as well as the committed one. Or this row closes with a written decision that worst-verdict-wins stays, stating what a reader sees on 10a and why that is acceptable.",
       "nextCheckDate": "2026-10-12",
       "readCommand": "git -C C:/dev/skylark/bounds-ledger grep -c LSXCKKM26 -- index.html",
       "linkedCommits": [
-        "9a9e8ea"
+        "9a9e8ea",
+        "e6e6635"
       ],
       "created": "2026-10-06",
-      "updated": "2026-10-06",
-      "lastEvaluated": "2026-10-06"
+      "updated": "2026-10-07",
+      "lastEvaluated": "2026-10-07",
+      "closeWhenAmended2026_10_07": "2026-10-07: closeWhen amended on the manager's P1 review (bus 81f14a27). The old first branch said that picking one reading over another must rest on a STORED reading date. That cannot be met: no entry in continuity/depth-audit.json carries its own recordedAt (only meta does), and each fetchedAt is prose (\"Recorded for slice 14 on 2026-10-06 MT ...\"), so a date-ordered rule would rest on a guess. The new first branch replaces ordering with a declaration on the later reading (`settles`), checked against row identity, so no chronology is claimed at all. Shipped in e6e6635: A-47-0062 carries settles \"A-47-0002\". The old closeWhen text is in git history at dbd0cbf."
     }
   ],
   "meta": {
