@@ -2371,7 +2371,7 @@
     {
       "id": "A-58",
       "type": "action",
-      "status": "open",
+      "status": "closed",
       "title": "Four small defects in text upstream merged on 2026-09-26: decide whether any is worth a correction (nothing sent; outward contact is David-gated)",
       "nextCheckDate": "2026-10-07",
       "links": [
@@ -2386,7 +2386,7 @@
       "owner": "bounds-ledger",
       "correctionCandidate": true,
       "created": "2026-09-26",
-      "updated": "2026-09-30",
+      "updated": "2026-10-07",
       "readCommandLastRun": "2026-10-07T15:08:14.874Z",
       "readCommandLastExit": 0,
       "readCommandLastDurationMs": 6566,
@@ -2395,7 +2395,9 @@
         "sha256": "6ab0e655afebfdc4"
       },
       "expectedSignalBy": "2026-10-07",
-      "lastEvaluated": "2026-09-30"
+      "lastEvaluated": "2026-10-07",
+      "closedAt": "2026-10-07",
+      "notes": " | Decided 2026-10-07, all four dropped, nothing sent. Read: reverify --check exit 0 at upstream 2c1968cd (an upstream sha; it does not exist in this repo), with all four defects still present in the mirror. (1) 10c dead verification URL: the bound stands (we recomputed the certificate); only a convenience link is dead. (2) 74a quotation: only arXiv v1 was read and the journal edition returned 403, so the quote is not provably wrong. (3) 3c missing asterisk: marker consistency only; no reader is misled about the bound. (4) 47a BEL bytes: two \\approx render broken in one LaTeX line; the value is unaffected. Hygiene helper draft 2026-10-07, accepted at P5; manager review bus 0d8d1f96. pragma: allowlist sha"
     },
     {
       "id": "A-59",
@@ -2722,7 +2724,7 @@
     {
       "id": "A-73",
       "type": "active",
-      "status": "open",
+      "status": "closed",
       "title": "The index badge keeps an earlier UNRESOLVED reading of a row after a later reading of the same row settled it",
       "note": "Found 2026-10-06 by Codex review r1 of the A-47 slice 14 readings commit (9a9e8eab177a7bda316403b800b7927113958dbe), finding 4, CONFIRMED against source. c/10a line 32 now carries A-47-0002 (suspicion-drawn, UNRESOLVED, the strictness question) and A-47-0062 (systematic, SOUND, which answers that question), and the constant page labels the second as a later reading of the same row. The index badge for 10a still names that row under 'checked against material for its source, not settled', because badgeFor (scripts/render-constant-pages.mjs, the WORST VERDICT WINS comment) takes the worst verdict across ALL readings of a constant, row by row. That rule is deliberate: the badge exists to stop a citer trusting a number, never to reassure one. The page and the index now disagree about one row, which a reader comparing them will notice. Not changed on 2026-10-06 because it is a change to a deliberate rule, and the two readings did not check the same named claim (A-47-0002 names none). The manager's P1 review said to fix it in the renderer if cheap, otherwise file a row; this is that row. READ COMMAND, literal output on 2026-10-06: `index.html:1` (exit 0), the one index line carrying 10a's badge, which names [LSXCKKM26] as not settled. If the badge comes to take the latest reading per row, that key leaves the line and the command prints nothing (exit 1); the line stays for SLXCKKM26 either way.",
       "closeWhen": "The index badge and the constant page agree about a row read more than once: a later reading that DECLARES the earlier reading it settles (a typed `settles` field on the later entry) sets that earlier reading aside on the index badge only when both are provable readings of the same row (same constant, cited key and row-text hash), the declaring reading is SOUND and the settled one is UNRESOLVED; a missing, dangling, cross-row or ambiguous link, a non-SOUND declarer, or a DEFECTIVE settled reading keeps worst-verdict-wins; no reading is ordered by date, id text or store order; a selftest red-armed both ways; the change reviewed by the other model family with every finding dispositioned; and `git grep -c LSXCKKM26 -- index.html` printing nothing on the LIVE page as well as the committed one. Or this row closes with a written decision that worst-verdict-wins stays, stating what a reader sees on 10a and why that is acceptable.",
@@ -2735,7 +2737,9 @@
       "created": "2026-10-06",
       "updated": "2026-10-07",
       "lastEvaluated": "2026-10-07",
-      "closeWhenAmended2026_10_07": "2026-10-07: closeWhen amended on the manager's P1 review (bus 81f14a27). The old first branch said that picking one reading over another must rest on a STORED reading date. That cannot be met: no entry in continuity/depth-audit.json carries its own recordedAt (only meta does), and each fetchedAt is prose (\"Recorded for slice 14 on 2026-10-06 MT ...\"), so a date-ordered rule would rest on a guess. The new first branch replaces ordering with a declaration on the later reading (`settles`), checked against row identity, so no chronology is claimed at all. Shipped in e6e6635: A-47-0062 carries settles \"A-47-0002\". The old closeWhen text is in git history at dbd0cbf."
+      "closeWhenAmended2026_10_07": "2026-10-07: closeWhen amended on the manager's P1 review (bus 81f14a27). The old first branch said that picking one reading over another must rest on a STORED reading date. That cannot be met: no entry in continuity/depth-audit.json carries its own recordedAt (only meta does), and each fetchedAt is prose (\"Recorded for slice 14 on 2026-10-06 MT ...\"), so a date-ordered rule would rest on a guess. The new first branch replaces ordering with a declaration on the later reading (`settles`), checked against row identity, so no chronology is claimed at all. Shipped in e6e6635: A-47-0062 carries settles \"A-47-0002\". The old closeWhen text is in git history at dbd0cbf.",
+      "closedAt": "2026-10-07",
+      "notes": " | Closed 2026-10-07 on the live-surface read. The served https://u00dxk2.github.io/bounds-ledger/index.html returned 200, 328478 bytes, Last-Modified 2026-10-07T18:56:02Z, with 0 matches for LSXCKKM26 and 4 for SLXCKKM26 (the manager's own read, bus 0d8d1f96). The lane's `npm run served` at 18:51:10Z read SERVED index.html, 328478 bytes. closeWhen (amended 2026-10-07) is met. The later reading declares what it settles (A-47-0062 settles A-47-0002); the index honours that only for a SOUND declarer and an UNRESOLVED target with the same constant, cited key and row hash, and an id unique in the store. The selftest is red-armed (nine guards each trip their own assertion; the self-link guard is the one equivalent mutant). Two Codex rounds, all findings fixed. Commits e6e6635, 9e02b48, d40c7a7. CI green at d40c7a7 (reverify and page-check). Encounter stays blind (A-59)."
     }
   ],
   "meta": {

@@ -1,6 +1,88 @@
+---
+north_star_metric: an outside party acts on a watched record WITHOUT us filing the report (G-4; primary indicator = npm run reports, arrivals through the per-row links)
+north_star_value: 0
+north_star_status: expected-zero
+north_star_classification: expected-zero
+product: bounds-ledger
+date: 2026-10-07
+lifecycle_stage: launched
+last_deploy: e6e6635 (the last page-changing commit; npm run served read 1 of 1 served at 2026-10-07T18:51:10Z, Pages build of d40c7a7)
+on_hold_items: 1
+top_action_today: A-73, the public index stops naming 10a's row 32 as not settled after a later reading settled it
+# The four keys below have NO instrument in this lane and are left null rather than filled with a
+# zero nobody measured: pre-revenue, no billing, no analytics on the published page, no Sentry project.
+mrr_usd: null
+n_active_users_28d: null
+sentry_open_p1: null
+sentry_open_p2: null
+---
+
 # bounds-ledger — 2026-10-07 (Wednesday, MT)
 
-## Selection packet (P1 — evidence and choice)
+## BLUF
+
+The public index and the Grothendieck constant's own page now agree: the index stops calling a row unsettled after a later reading settled it.
+
+No first command — the change is live, and tomorrow's first command is in the primer.
+
+## What changed
+
+- `A-73` (the index badge named a row "not settled" after a later reading settled it), shipped in `e6e6635`, `9e02b48` and `d40c7a7`, and live since 18:56Z (the manager's read of the served page). A later reading now DECLARES which earlier reading it settles, in a typed `settles` field on its store entry. The index sets the earlier reading aside only when the declaring reading is SOUND, the settled one is UNRESOLVED, the two share constant, cited key and row-text hash, and the named id is unique in the whole store. Nothing is ordered by date, id or store order. `A-47-0062` carries `settles: "A-47-0002"`.
+- `A-57` (the 46a page credits 58/15 to the wrong Bourgain paper): the correction is drafted, reviewed twice and put to David on card `78c6bb41`. The recommended form is an issue, not a pull request, because the published chapter that would replace the citation was never read. Nothing sent.
+- `A-58` (four small defects in upstream text): closed, all four dropped with a reason each.
+
+## Inputs (controllable)
+
+- Red-arm on `settledIds`: ten mutations. Nine each tripped their own named assertion in `render-site --selftest`. The self-link guard is the one mutant that changes no output, and the code says so. Removing the malformed-`settles` refusal name trips its own assertion in `render-constant-pages --selftest`. Each file was restored byte-identical and its selftest passed. control: the same selftest on the restored file exits 0, so each failure came from its mutation, not from the harness.
+- Reviews by the other model family (Codex, read-only, foreground, banner workdir checked each time as `C:\dev\skylark\bounds-ledger`): A-73 r1 on `e6e6635` (2 findings, both CONFIRMED, fixed in `9e02b48`); A-73 r2 on `9e02b48` (1 LOW, CONFIRMED, fixed in `d40c7a7`); A-57 r1 (5 findings, all CONFIRMED, fixed in `e1f9ce6`); A-57 r2 (no new defects).
+- Sibling sweep for "an id-uniqueness map built after filtering": `new Map(` and id-keyed lookups across `render-constant-pages.mjs` and `render-site.mjs`, 7 hits. Only `settledIds` resolves an id; it was fixed.
+- `npm test` exit 0 (foreground, after the low-memory reap, on the orchestrator's go-ahead). `npm run verify` exit 0 at `d40c7a7` (receipt 2026-10-07T18:44:28Z).
+
+## Outputs (lagging)
+
+- The bar's metric is NOT MEASURABLE (no analytics, no request log). Encounter for today's change is blind, tracked on `A-59` (encounter is blind on the public pages), 2026-10-28.
+- `npm run reports`: 0 outside arrivals of 33 raw issues (33 + 0 + 0 = 33), read this morning.
+- Delivery: `npm run served` at 18:51:10Z read "1 checked — 1 served, 0 in flight, 0 stale, 0 unreachable" (index.html, 328478 bytes). The manager's own fetch of the live index at ~19:0xZ: 200, 328478 bytes, Last-Modified 18:56:02Z, 0 matches for LSXCKKM26 and 4 for SLXCKKM26 (bus 0d8d1f96). CI on `d40c7a7`: reverify and page-check both succeeded.
+- positive control: `npm run reports` fetched 33 raw issues and classified all 33 as ours, so its 0 comes from a probe that returns rows; the live-index fetch that found 0 LSXCKKM26 found SLXCKKM26 4 times, and `git grep -c SLXCKKM26 HEAD -- index.html` printed `HEAD:index.html:3`.
+
+<!-- findings:begin -->
+- The P1 packet's design was wrong, and the manager's review caught it before the build. It proposed ordering a row's readings by a stored reading date, but no entry in `continuity/depth-audit.json` carries its own `recordedAt` (only `meta` does), and every `fetchedAt` is prose. Built as planned, acceptance 1 would have failed. The redirect (a declared `settles` field) replaced it, and `A-73.closeWhen` was amended to match, with the reason on `A-73.closeWhenAmended2026_10_07`.
+- My first red-arm passed two mutants that the code was meant to catch, because their test cases could not tell the mutant from the correct code (a non-SOUND declarer, a duplicated id stored last). Both cases were reshaped before commit. Codex r1 then found that the duplicate-id check counted only filtered readings, and r2 found that the type guard I had called untestable is reachable. A guard written over my own new field failed review twice in one day; each round narrowed the claim rather than adding a matcher.
+- The `A-57` draft first recommended a pull request naming a chapter nobody here had read, and listed a volume number, a seminar date and a place that the Crossref record does not carry. The refute-it review blocked it; the issue form and a sourced-only reference replaced it. This is the same failure as the 2026-09-24 and 2026-09-27 instances in memory (`verdict-follows-the-reading.md`): an edition that was not read, presented as the source.
+- Today's findings are all instrument-facing: they are defects in our own design, tests and outward draft, and none is a fault found in a mirrored record. The 10-06 and recent reports carry no running count of consecutive instrument-facing days, so none is quoted here. The standing prediction is unchanged and was not tested today: the next record-facing catch will be a citation-quality defect in a mirrored upstream entry, found by a human reading the cited source in the depth audit (`A-47`), not by any alarm.
+<!-- findings:end -->
+
+## Recommendation
+
+- [B] 2026-10-08: `npm run verify` first, then the `A-54` census session 6 with its blocked-paper retry, and the `W-3` (watch for acknowledgement of the erdosproblems.com/36 correction) read.
+- [B] 2026-10-09: `A-47` slice 15 (offset-6 grid, positions 256 to 456).
+- [A — user-visible] by 2026-10-12: decide `A-65`'s 10c source-link form without editing `sourceRead`, and ship it.
+- On David's yes on card `78c6bb41`: open the `A-57` issue exactly as drafted, and record its link on the row.
+
+## On hold pending data
+
+- **The encounter with today's change:** blind until `A-59` (encounter is blind on the public pages) is read on 2026-10-28.
+- **`A-57` (the 46a credit correction):** David's answer on card `78c6bb41`.
+
+## State Appendix
+
+### Close
+
+ACTION: COMPLETED · item A-73 · P3 post (bus msgId) a1ce0ea1
+
+- **Since the P3 post:** the manager's review (bus 0d8d1f96) judged A-73 COMPLETED against the redirect's acceptance and found no defects. It read the live index itself: LSXCKKM26 0, SLXCKKM26 4, Last-Modified 18:56:02Z. It also confirmed that nothing was sent upstream (no issue, PR or comment by u00dxk2 on teorth/optimizationproblems since 2026-10-06).
+- **Hygiene draft: 2 lines — 1 accepted · 1 amended · 0 rejected.**
+  - `A-58` accepted: closed with the drafted reasons, (1) to (4).
+  - `A-57` amended: the draft proposed pursuing it with a drop date of 2026-10-09. The work was done the same day instead (draft, two reviews, card), so the row carries `decision2026_10_07` and waits on card `78c6bb41`, with both clocks at 2026-10-14.
+- **Helper READ-MUTATED, quoted:** "none — 2 reads guarded (HEAD commit dbd0cbf, unchanged before and after both reads; …)", shortened here.
+- **Helper checks:** check-wait-justification "RESULT: PASS — 1 of 89 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)". check-engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)".
+- **Ledger delta:** `A-73` closed on the live read, with its closeWhen amended and `e6e6635` linked. `A-58` closed. `A-57` gained `decision2026_10_07`, and `expectedSignalBy` and `nextCheckDate` moved to 2026-10-14. The A-57 and A-58 read stamps and sidecars were refreshed by the helper's `--run`. `continuity/depth-audit.json`: `A-47-0062.settles`.
+- **Close sweep for A-73 and A-58** (`Grep A-73\b|A-58\b` over `scripts/**`, `docs/**`, `*.md`): 31 occurrences in 17 files. `scripts/render-constant-pages.mjs` (2) and `scripts/render-site.mjs` (1) are comments citing A-73 as the provenance of the settlement rule, which stays correct. The rest are dated historical reports and primers, plus today's report, primer and A-57 draft. None treats either row as open.
+- **Due-gate verify:** `check-due-gates-dispositioned` (no flag): "verdict: CLEAR — every gate due at Phase 0 was dispositioned.", snapshot CURRENT (taken 2026-10-07).
+- **Pending reads:** `A-57` re-reads card `78c6bb41` on 2026-10-14, the only open trigger from today's work. `A-59` encounter, 2026-10-28.
+- **David:** `A-57` waits on his card `78c6bb41`, to open one issue upstream: yes or no. It is waiting on him, not in flight.
+
+### Selection packet (P1 — evidence and choice)
 
 **Outcome:** the public index stops telling a reader that a row is unsettled when that row's own page shows a reading that settled it. Item: `A-73` (the index badge keeps an earlier UNRESOLVED reading of a row after a later reading of the same row settled it).
 
