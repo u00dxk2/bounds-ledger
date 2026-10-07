@@ -265,6 +265,7 @@ export function usableAudit(a) {
     && Object.prototype.hasOwnProperty.call(VERDICT_PROSE, a.verdict)
     && (a.leg === undefined || typeof a.leg === "string")
     && (a.sourceRead === undefined || typeof a.sourceRead === "string")
+    && (a.settles === undefined || typeof a.settles === "string")
     && claimFieldsOk(a)
     && safeUrl(a.source) !== null;
 }
@@ -309,6 +310,7 @@ const UNUSABLE_CHECKS = [
   ["verdict is outside SOUND / DEFECTIVE / UNRESOLVED / UNREACHABLE", (a) => Object.prototype.hasOwnProperty.call(VERDICT_PROSE, a.verdict)],
   ["leg is not a string", (a) => a.leg === undefined || typeof a.leg === "string"],
   ["sourceRead is not a string", (a) => a.sourceRead === undefined || typeof a.sourceRead === "string"],
+  ["settles is not a string", (a) => a.settles === undefined || typeof a.settles === "string"],
   ["a claim field carries TeX-style markup (^{, _{ or a backslash command), which no page renders", claimMarkupFree],
   ["claimReader / claimResult / claimNotCovered malformed (a non-string, an empty claimReader, or a result or exclusion with no claimReader)", claimFieldsOk],
   ["source is not an http(s) URL", (a) => safeUrl(a.source) !== null],
@@ -393,11 +395,44 @@ const BADGE = {
 };
 const BADGE_SEVERITY = ["DEFECTIVE", "UNRESOLVED", "SOUND"];
 
+/**
+ * A DECLARED SETTLEMENT (A-73, 2026-10-07). Worst-verdict-wins made the index keep naming 10a's row 32
+ * as "not settled" after a second reading of that row answered the very question the first left open,
+ * while the constant's own page showed the answer: two of our pages disagreeing about one row.
+ *
+ * The later reading DECLARES what it settles (`settles: "<id>"`); nothing here infers an order. The
+ * store's dates are day-level prose and its id text and store order prove no chronology (Codex r1 and
+ * r3, 2026-10-06), so a rule that picked "the latest reading" would rest on a guess. A declaration is a
+ * human's statement on the entry that did the reading, and it is honoured only when it is checkable:
+ * both entries are provable readings of the SAME row (same constant, same cited key, same row-text
+ * hash; `reads` is already filtered to identity-verified rows by isBoundRead), the declaring reading is
+ * SOUND, and the one it settles is UNRESOLVED. A DEFECTIVE reading is never set aside by a declaration:
+ * a defect is overturned by fixing the row or the store, not by a later entry saying so. Any link that
+ * fails a condition, names no entry, or names an id held by more than one entry settles nothing, and
+ * the badge keeps the worst verdict exactly as before. Only the INDEX badge reads this; the constant's
+ * page still lists both readings.
+ */
+export function settledIds(reads) {
+  const byId = new Map();
+  for (const a of reads) byId.set(a.id, byId.has(a.id) ? null : a);
+  const out = new Set();
+  for (const r of reads) {
+    if (r.verdict !== "SOUND" || typeof r.settles !== "string" || r.settles === r.id) continue;
+    const s = byId.get(r.settles);
+    if (!s || s.verdict !== "UNRESOLVED") continue;
+    if (s.constant !== r.constant || s.citedRef !== r.citedRef || s.rowTextSha256 !== r.rowTextSha256) continue;
+    out.add(s.id);
+  }
+  return out;
+}
+
 export function badgeFor(id, store, shown = []) {
   const usable = (Array.isArray(store?.audits) ? store.audits : [])
     .filter(usableAudit)
     .filter((a) => a.constant === id);
-  const reads = usable.filter(isBoundRead);
+  const bound = usable.filter(isBoundRead);
+  const settled = settledIds(bound);
+  const reads = bound.filter((a) => !settled.has(a.id));
   const worst = BADGE_SEVERITY.find((v) => reads.some((a) => a.verdict === v));
   if (worst) return { verdict: worst, text: `${BADGE[worst]}: ${namedRows(reads.filter((a) => a.verdict === worst), shown)}` };
   return triedFor(usable, shown);
@@ -1016,6 +1051,14 @@ function selftest() {
     const dropped = droppedAudits({ audits: [entry] });
     assert.ok(dropped.length === 1 && dropped[0].at === "T-C4" && /claim/.test(dropped[0].why), `${why} must be NAMED, with its own entry and a claim reason, by the render-side refusal (A-53): ${JSON.stringify(dropped)}`);
   }
+  // A-73 (2026-10-07): a non-string `settles` is refused and NAMED, so a malformed declaration can
+  // neither crash a render nor vanish in silence.
+  assert.ok(usableAudit({ ...claimStore.audits[3], settles: "A-47-0002" }), "positive control: a string settles passes");
+  const badSettles = { ...claimStore.audits[3], settles: 2 };
+  assert.ok(!usableAudit(badSettles), "a non-string settles must be refused, not rendered");
+  const droppedSettles = droppedAudits({ audits: [badSettles] });
+  assert.ok(droppedSettles.length === 1 && /settles is not a string/.test(droppedSettles[0].why),
+    `a non-string settles must be NAMED by the render-side refusal: ${JSON.stringify(droppedSettles)}`);
   for (const n of [1, 3, 4, 5, 7, 8]) assert.ok(usableAudit(fixture(n)), `positive control: well-formed fixture RC${n} passes`);
   // Exact pins, LAST.
   assert.ok(claimLi(1)[0].includes("&mdash; the claim we checked: that RC1 proves the bound 5.555555. What we read supports it. This verdict does not cover later work by others. <a href=\"https://example.invalid/c1\">source link</a> (read in the body)."),

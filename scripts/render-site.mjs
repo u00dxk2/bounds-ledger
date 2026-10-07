@@ -26,7 +26,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { pinsFor, lastChanged, changeFor, changeKind, boundCell } from "./lookup.mjs";
-import { loadAudits, badgeFor, attemptDate, refuseDroppedAudits, DEFAULT_AUDIT_STORE } from "./render-constant-pages.mjs";
+import { loadAudits, badgeFor, settledIds, attemptDate, refuseDroppedAudits, DEFAULT_AUDIT_STORE } from "./render-constant-pages.mjs";
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { REPO, esc, issueUrl } from "./lib/html.mjs";
@@ -1457,6 +1457,46 @@ async function selftest() {
   // Review gap (2026-10-01 round 2): the badge names ONLY the rows carrying its own verdict.
   assert.match(mixed[1], /900\.0 \[Ref2026\]/, "the DEFECTIVE badge must name the row that earned it");
   assert.ok(!/857\.5662/.test(mixed[1]), "and must not name the SOUND row under a DEFECTIVE label");
+
+  // 5b. A DECLARED SETTLEMENT (A-73, 2026-10-07): a SOUND reading that names an UNRESOLVED reading of
+  // the SAME row in `settles` sets it aside on the index badge; every other shape keeps worst-wins.
+  // Meaning guards first ("not settled" present or absent), the exact-text pin last.
+  const open = readAudit({ verdict: "UNRESOLVED" });
+  const answer = (over = {}) => readAudit({ id: "A-47-T9", verdict: "SOUND", settles: "A-47-T1", ...over });
+  const NOT_SETTLED = /not settled/;
+  const unlinked = badgeOn(withAudits([open, answer({ settles: undefined })]), "87a");
+  assert.ok(unlinked, "positive control: the two-reading constant must badge at all");
+  assert.match(unlinked[1], NOT_SETTLED, "positive control: without a link, worst-wins names the row as not settled");
+  const settledBadge = badgeOn(withAudits([open, answer()]), "87a");
+  assert.ok(settledBadge, "a settled row still leaves a SOUND reading, so the constant must still badge");
+  assert.ok(!NOT_SETTLED.test(settledBadge[1]), "a valid declaration must set the UNRESOLVED reading aside on the index");
+  const stays = [
+    ["the link names no entry", [open, answer({ settles: "A-47-T404" })]],
+    ["the link names a reading of ANOTHER row", [open, readAudit({ id: "A-47-T8", verdict: "UNRESOLVED", rowLine: 6, ...auditRow("| 900.0 | [Ref2026] |") }), answer({ settles: "A-47-T8" })]],
+    ["the two readings carry different row hashes", [open, answer({ rowLine: 6, ...auditRow("| 900.0 | [Ref2026] |") })]],
+    ["the two readings cite different keys", [open, answer({ citedRef: "Other2027" })]],
+    ["the declaring reading is in another constant", [open, answer({ constant: "10a" })]],
+    ["the declaring reading is not SOUND", [open, answer({ verdict: "UNRESOLVED" })]],
+    // The duplicate is SOUND and stored FIRST, so honouring either copy of the id would leave no
+    // "not settled" on the badge (red-arm 2026-10-07: an UNRESOLVED duplicate hid the mutation).
+    ["the named id is held by two entries", [readAudit({ rowLine: 6, ...auditRow("| 900.0 | [Ref2026] |") }), open, answer()]],
+    ["settles is not a string", [open, answer({ settles: 2 })]],
+  ];
+  for (const [why, audits] of stays) {
+    const b = badgeOn(withAudits(audits), "87a");
+    assert.ok(b, `positive control (${why}): the constant must still badge`);
+    assert.match(b[1], NOT_SETTLED, `worst-wins must hold when ${why}`);
+  }
+  // A non-SOUND declarer keeps its own bad verdict on the same row, so the BADGE cannot show whether it
+  // settled anything (red-arm 2026-10-07: dropping the SOUND condition passed every badge assertion).
+  // The contract is pinned on settledIds itself instead.
+  assert.equal(settledIds([open, answer()]).size, 1, "positive control: a valid link settles one reading");
+  assert.equal(settledIds([open, answer({ verdict: "UNRESOLVED" })]).size, 0, "an UNRESOLVED reading settles nothing");
+  assert.equal(settledIds([open, answer({ verdict: "DEFECTIVE" })]).size, 0, "a DEFECTIVE reading settles nothing");
+  const defect = badgeOn(withAudits([readAudit({ verdict: "DEFECTIVE" }), answer()]), "87a");
+  assert.match(defect[1], /does not support/, "a declaration must never set a DEFECTIVE reading aside");
+  assert.equal(settledBadge[1], "checked against material for its cited source: another row, 857.5662 [Ref2026]",
+    "pin: the settled constant reads exactly as one SOUND reading of that row");
 
   // 6. NO RECORD CLAIM in any wording a badge can take.
   for (const verdict of ["SOUND", "UNRESOLVED", "DEFECTIVE"]) {

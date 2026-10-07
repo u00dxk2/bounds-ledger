@@ -1414,6 +1414,7 @@
       "source": "https://arxiv.org/abs/2606.03991",
       "sourceRead": "read in the body, in the LaTeX source of arXiv v1, v2 and v3 (11 Aug 2026), with Theorem 1.1 and Table 2 re-read in the v3 HTML; the entry names no version",
       "verdict": "SOUND",
+      "settles": "A-47-0002",
       "claimChecked": "Named before reading, verbatim from A-47.slice14Draw2026_10_06: \"10a [LSXCKKM26], that the cited reference proves the real Grothendieck constant is less than π / (2 ln(1+√2)) minus 6.039 × 10 raised to the power −5, with the inequality strict as the row writes it (the question A-47-0002 left UNRESOLVED)\". claimReader carries it without the closing parenthesis, which names a store entry and is not part of the claim.",
       "claimReader": "that the cited reference proves the real Grothendieck constant is less than π / (2 ln(1+√2)) minus 6.039 × 10 raised to the power −5, with the inequality strict as the row writes it",
       "claimResult": "What we read supports it, though not in one sentence: Theorem 1.1 says only \"at most\" at this threshold, while the paper's certified table (Table 2, degree 9) gives the constant at most 1.782153581, which is about 7.2 × 10 raised to the power −9 below the row's threshold, so the strict form follows by arithmetic we did",
