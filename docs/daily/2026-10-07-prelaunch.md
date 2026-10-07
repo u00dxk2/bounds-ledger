@@ -62,7 +62,7 @@ No first command — the change is live, and tomorrow's first command is in the 
 ## On hold pending data
 
 - **The encounter with today's change:** blind until `A-59` (encounter is blind on the public pages) is read on 2026-10-28.
-- **`A-57` (the 46a credit correction):** David's answer on card `78c6bb41`.
+- **`A-57` (the 46a credit correction):** no longer on hold. After the close, David approved it on card `78c6bb41` (19:32:30Z), on condition of full certainty and full adversarial review. It was sent as https://github.com/teorth/optimizationproblems/issues/218 at 19:39:29Z, the body was read back as identical to the reviewed draft, and the row is closed. Codex r1's finding 4 was refuted on recheck: upstream and our mirror both have an en dash. Recorded in the draft file.
 
 ## State Appendix
 

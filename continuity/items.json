@@ -2337,7 +2337,7 @@
     {
       "id": "A-57",
       "type": "action",
-      "status": "open",
+      "status": "closed",
       "title": "Draft a correction to the mirrored 46a entry's attribution (58/15 is proved in Bourgain's companion paper, not in [Bo1991]); adversarial review, then David decides whether it is sent",
       "nextCheckDate": "2026-10-14",
       "links": [
@@ -2366,7 +2366,9 @@
       "expectedSignalBy": "2026-10-14",
       "lastEvaluated": "2026-10-07",
       "redate2026_09_30": "2026-09-30 re-date to 2026-10-07: the readCommand ran (exit 0); no davidDecision field, and no draft under docs/decisions/, so the draft and refute-it review in onTrigger have not started. 2026-09-30 went to the A-54 census.",
-      "decision2026_10_07": "2026-10-07 DECIDED by the lane: pursue, and the onTrigger work is DONE. The companion's published form was identified from Crossref (DOI 10.1007/BFb0089225, Lecture Notes in Mathematics, pp. 179-191, 1991), but its body was NOT read (Springer sign-in). Draft: docs/decisions/2026-10-07-A57-46a-attribution-correction-draft.md (commit e1f9ce6). Two Codex refute-it rounds: round 1 found a BLOCKER that changed the recommended form from a pull request to an ISSUE, plus four fixes; round 2 found no new defects. Posted needs-decision bus 417939d7-a192-4f37-a9bc-bc8016adbe9b; David's board card 78c6bb41-cf08-45ae-9a68-da0f7a9b9084, the lane's recommended reply is to open the issue as drafted. NOTHING SENT. This row now waits on that card; the 2026-10-14 date is when to re-read the card, not a deadline for David. pragma: allowlist sha"
+      "decision2026_10_07": "2026-10-07 DECIDED by the lane: pursue, and the onTrigger work is DONE. The companion's published form was identified from Crossref (DOI 10.1007/BFb0089225, Lecture Notes in Mathematics, pp. 179-191, 1991), but its body was NOT read (Springer sign-in). Draft: docs/decisions/2026-10-07-A57-46a-attribution-correction-draft.md (commit e1f9ce6). Two Codex refute-it rounds: round 1 found a BLOCKER that changed the recommended form from a pull request to an ISSUE, plus four fixes; round 2 found no new defects. Posted needs-decision bus 417939d7-a192-4f37-a9bc-bc8016adbe9b; David's board card 78c6bb41-cf08-45ae-9a68-da0f7a9b9084, the lane's recommended reply is to open the issue as drafted. NOTHING SENT. This row now waits on that card; the 2026-10-14 date is when to re-read the card, not a deadline for David. pragma: allowlist sha",
+      "closedAt": "2026-10-07",
+      "notes": " | SENT 2026-10-07 at 19:39:29Z as https://github.com/teorth/optimizationproblems/issues/218, opened from u00dxk2; the body was read back and matches the reviewed draft exactly. David approved it on board card 78c6bb41 at 19:32:30Z: open the issue as drafted, on condition that the lane be fully certain and that it had been fully adversarially reviewed (paraphrased, not quoted). Checked at send time: upstream constants/46a.md still credited [Bo1991]; no existing issue matched \"46a OR Bourgain OR 58/15\" (positive control: the same probe lists #211, #190 and #168); two Codex refute-it rounds, the second clearing every sentence. Round 1's finding 4 (hyphen versus en dash) was REFUTED on recheck and reverted in the draft; it never touched the issue text. A maintainer reply is not watched by any row; a later session decides whether to mint one."
     },
     {
       "id": "A-58",

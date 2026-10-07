@@ -1,13 +1,15 @@
-# A-57 — draft correction to the 46a entry's attribution (NOT SENT)
+# A-57 — correction to the 46a entry's attribution (SENT as issue #218)
 
-Drafted 2026-10-07 (MT); revised the same day after a Codex refute-it review (round 1, read-only). Nothing in this file has been sent anywhere. Sending it is outward contact with the maintainers of `teorth/optimizationproblems`, so it waits for David's explicit approval.
+Drafted 2026-10-07 (MT); revised the same day after a Codex refute-it review (round 1, read-only). **Sent 2026-10-07 at 19:39:29Z as https://github.com/teorth/optimizationproblems/issues/218**, after David approved it on board card 78c6bb41 (19:32:30Z). He approved opening the issue as drafted, on condition that the lane be fully certain of it and that it had been fully adversarially reviewed (paraphrased; his words are not quoted in this public repository). The posted body was read back and matches the blockquote below exactly.
+
+**Before sending, checked against that condition:** upstream's `constants/46a.md`, fetched through the GitHub API at send time, still credits `[Bo1991]` with 4 − 2/15. An issue search for "46a OR Bourgain OR 58/15" returned none, and the positive control is that the same probe lists recent issues #211, #190 and #168. Each sentence of the issue rests on a reading in `continuity/depth-audit.json` entry `A-47-0030`. The absence of 58/15 in the GAFA paper rests on two independent grounds: a page-by-page reading of pp. 148-186, and the companion preprint's own p. 1.1, which describes that paper as giving 31/8. The one unread source, the Lecture Notes chapter, is offered as unverified.
 
 ## What the entry says now
 
 Upstream file `constants/46a.md` (the upstream path; our mirror of it is `ledger/teorth-optimizationproblems/constants/46a.md`), as mirrored at upstream `2c1968cd` (an upstream sha; it does not exist in this repo):
 
 - Row 18 of the upper-bounds table: `| $4-\frac{2}{15} \approx 3.86667$ | [Bo1991] | |`
-- Reference line 45: `- [Bo1991] Bourgain, J. *Besicovitch-type maximal operators and applications to Fourier analysis.* Geom. Funct. Anal. **1** (2) (1991), 147-187.`
+- Reference line 45: `- [Bo1991] Bourgain, J. *Besicovitch-type maximal operators and applications to Fourier analysis.* Geom. Funct. Anal. **1** (2) (1991), 147–187.` (en dash, as upstream and our mirror both have it; see the review record, finding 4)
 
 `[Bo1991]` is cited nowhere else in the file.
 
@@ -48,5 +50,5 @@ Codex refute-it review, round 1, 2026-10-07, read-only, workdir verified as this
 1. BLOCKER: a PR asserted an unread edition, so the form was changed to an issue.
 2. MAJOR: "1469", "(1989–90)" and "Berlin" were not in the Crossref record; all three were removed.
 3. MINOR: the agent's reading scope was widened; it is qualified to restriction, extension and multiplier exponents.
-4. MINOR: the quoted reference line used an en dash where the mirror has a hyphen; it now matches.
+4. MINOR, REFUTED on recheck at send time: the finding said the mirror's line 45 has a hyphen. It does not: upstream's file, decoded from the GitHub API at send time, has an en dash (`147–187`), and so does our mirror. Applying it introduced a misquotation into this file's internal quotation only, now reverted. The issue text was never affected, because it cites the pages in its own words.
 5. MINOR: the precedent was described as a dead-link fix; it is now described as an accepted change for stability.
