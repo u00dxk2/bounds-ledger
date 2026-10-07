@@ -408,16 +408,23 @@ const BADGE_SEVERITY = ["DEFECTIVE", "UNRESOLVED", "SOUND"];
  * hash; `reads` is already filtered to identity-verified rows by isBoundRead), the declaring reading is
  * SOUND, and the one it settles is UNRESOLVED. A DEFECTIVE reading is never set aside by a declaration:
  * a defect is overturned by fixing the row or the store, not by a later entry saying so. Any link that
- * fails a condition, names no entry, or names an id held by more than one entry settles nothing, and
- * the badge keeps the worst verdict exactly as before. Only the INDEX badge reads this; the constant's
- * page still lists both readings.
+ * fails a condition, names no entry, or names an id held by more than one entry ANYWHERE IN THE STORE
+ * settles nothing, and the badge keeps the worst verdict exactly as before. Uniqueness is counted over
+ * the whole store, not over the readings left after filtering (Codex r1, 2026-10-07): a duplicate that
+ * is stale or belongs to another constant would otherwise vanish from the count and make an ambiguous
+ * id look unique. Only the INDEX badge reads this; the constant's page still lists both readings.
+ * `store` is optional for direct calls; without it, uniqueness is counted over `reads`.
  */
-export function settledIds(reads) {
-  const byId = new Map();
-  for (const a of reads) byId.set(a.id, byId.has(a.id) ? null : a);
+export function settledIds(reads, store = null) {
+  const counts = new Map();
+  for (const a of Array.isArray(store?.audits) ? store.audits : reads) {
+    if (a && typeof a === "object") counts.set(a.id, (counts.get(a.id) || 0) + 1);
+  }
+  const byId = new Map(reads.map((a) => [a.id, a]));
   const out = new Set();
   for (const r of reads) {
     if (r.verdict !== "SOUND" || typeof r.settles !== "string" || r.settles === r.id) continue;
+    if (counts.get(r.settles) !== 1) continue;
     const s = byId.get(r.settles);
     if (!s || s.verdict !== "UNRESOLVED") continue;
     if (s.constant !== r.constant || s.citedRef !== r.citedRef || s.rowTextSha256 !== r.rowTextSha256) continue;
@@ -431,7 +438,7 @@ export function badgeFor(id, store, shown = []) {
     .filter(usableAudit)
     .filter((a) => a.constant === id);
   const bound = usable.filter(isBoundRead);
-  const settled = settledIds(bound);
+  const settled = settledIds(bound, store);
   const reads = bound.filter((a) => !settled.has(a.id));
   const worst = BADGE_SEVERITY.find((v) => reads.some((a) => a.verdict === v));
   if (worst) return { verdict: worst, text: `${BADGE[worst]}: ${namedRows(reads.filter((a) => a.verdict === worst), shown)}` };

@@ -1472,14 +1472,22 @@ async function selftest() {
   assert.ok(!NOT_SETTLED.test(settledBadge[1]), "a valid declaration must set the UNRESOLVED reading aside on the index");
   const stays = [
     ["the link names no entry", [open, answer({ settles: "A-47-T404" })]],
-    ["the link names a reading of ANOTHER row", [open, readAudit({ id: "A-47-T8", verdict: "UNRESOLVED", rowLine: 6, ...auditRow("| 900.0 | [Ref2026] |") }), answer({ settles: "A-47-T8" })]],
+    // No other UNRESOLVED reading here, so a wrongly cleared target leaves no "not settled" (Codex r1:
+    // with `open` beside it this case could not see the mutation).
+    ["the link names a reading of ANOTHER row", [readAudit({ id: "A-47-T8", verdict: "UNRESOLVED", rowLine: 6, ...auditRow("| 900.0 | [Ref2026] |") }), answer({ settles: "A-47-T8" })]],
     ["the two readings carry different row hashes", [open, answer({ rowLine: 6, ...auditRow("| 900.0 | [Ref2026] |") })]],
     ["the two readings cite different keys", [open, answer({ citedRef: "Other2027" })]],
     ["the declaring reading is in another constant", [open, answer({ constant: "10a" })]],
     ["the declaring reading is not SOUND", [open, answer({ verdict: "UNRESOLVED" })]],
-    // The duplicate is SOUND and stored FIRST, so honouring either copy of the id would leave no
-    // "not settled" on the badge (red-arm 2026-10-07: an UNRESOLVED duplicate hid the mutation).
-    ["the named id is held by two entries", [readAudit({ rowLine: 6, ...auditRow("| 900.0 | [Ref2026] |") }), open, answer()]],
+    // A duplicated id, in BOTH store orders, so neither "first copy wins" nor "last copy wins" passes
+    // (Codex r1, 2026-10-07: one order caught only last-wins). The duplicate is SOUND so that clearing
+    // `open` would leave no "not settled" on the badge.
+    ["the named id is held by two entries (duplicate first)", [readAudit({ rowLine: 6, ...auditRow("| 900.0 | [Ref2026] |") }), open, answer()]],
+    ["the named id is held by two entries (duplicate last)", [open, readAudit({ rowLine: 6, ...auditRow("| 900.0 | [Ref2026] |") }), answer()]],
+    // Codex r1's store shape: the duplicate is filtered out BEFORE settlement (stale here; another
+    // constant below), so only a store-wide count can see the ambiguity.
+    ["the named id is also held by a STALE entry", [open, readAudit({ verdict: "UNRESOLVED", inMirror: false }), answer()]],
+    ["the named id is also held by an entry of ANOTHER constant", [open, readAudit({ constant: "10a" }), answer()]],
     ["settles is not a string", [open, answer({ settles: 2 })]],
   ];
   for (const [why, audits] of stays) {
@@ -1493,6 +1501,13 @@ async function selftest() {
   assert.equal(settledIds([open, answer()]).size, 1, "positive control: a valid link settles one reading");
   assert.equal(settledIds([open, answer({ verdict: "UNRESOLVED" })]).size, 0, "an UNRESOLVED reading settles nothing");
   assert.equal(settledIds([open, answer({ verdict: "DEFECTIVE" })]).size, 0, "a DEFECTIVE reading settles nothing");
+  // Conditions the badge cannot see because badgeFor filters first (Codex r1 coverage table).
+  assert.equal(settledIds([open, answer({ constant: "10a" })]).size, 0, "a declarer in another constant settles nothing");
+  assert.equal(settledIds([open, answer({ settles: ["A-47-T1"] })]).size, 0, "a non-string settles settles nothing");
+  // TWO GUARDS NO ASSERTION CAN SEE, measured by red-arm 2026-10-07 (both mutants exit 0), kept as
+  // defence: `typeof r.settles !== "string"` (a non-string never matches a stored string id in the
+  // uniqueness count, and usableAudit refuses it first, red-armed in render-constant-pages' selftest)
+  // and `r.settles === r.id` (a self-link cannot be both the SOUND declarer and the UNRESOLVED target).
   const defect = badgeOn(withAudits([readAudit({ verdict: "DEFECTIVE" }), answer()]), "87a");
   assert.match(defect[1], /does not support/, "a declaration must never set a DEFECTIVE reading aside");
   assert.equal(settledBadge[1], "checked against material for its cited source: another row, 857.5662 [Ref2026]",
