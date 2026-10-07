@@ -2339,7 +2339,7 @@
       "type": "action",
       "status": "open",
       "title": "Draft a correction to the mirrored 46a entry's attribution (58/15 is proved in Bourgain's companion paper, not in [Bo1991]); adversarial review, then David decides whether it is sent",
-      "nextCheckDate": "2026-10-07",
+      "nextCheckDate": "2026-10-14",
       "links": [
         "A-47",
         "A-56",
@@ -2351,7 +2351,7 @@
       "readCommand": "node scripts/sky.mjs show-item.mjs A-57 # a field named davidDecision means the card was answered; its absence with nextCheckDate passed means the draft or review has not happened",
       "owner": "bounds-ledger",
       "created": "2026-09-26",
-      "updated": "2026-09-30",
+      "updated": "2026-10-07",
       "linkedCommits": [
         "412cd1d"
       ],
@@ -2363,9 +2363,10 @@
         "lines": 76,
         "sha256": "8cf777d042bea8e9"
       },
-      "expectedSignalBy": "2026-10-07",
-      "lastEvaluated": "2026-09-30",
-      "redate2026_09_30": "2026-09-30 re-date to 2026-10-07: the readCommand ran (exit 0); no davidDecision field, and no draft under docs/decisions/, so the draft and refute-it review in onTrigger have not started. 2026-09-30 went to the A-54 census."
+      "expectedSignalBy": "2026-10-14",
+      "lastEvaluated": "2026-10-07",
+      "redate2026_09_30": "2026-09-30 re-date to 2026-10-07: the readCommand ran (exit 0); no davidDecision field, and no draft under docs/decisions/, so the draft and refute-it review in onTrigger have not started. 2026-09-30 went to the A-54 census.",
+      "decision2026_10_07": "2026-10-07 DECIDED by the lane: pursue, and the onTrigger work is DONE. The companion's published form was identified from Crossref (DOI 10.1007/BFb0089225, Lecture Notes in Mathematics, pp. 179-191, 1991), but its body was NOT read (Springer sign-in). Draft: docs/decisions/2026-10-07-A57-46a-attribution-correction-draft.md (commit e1f9ce6). Two Codex refute-it rounds: round 1 found a BLOCKER that changed the recommended form from a pull request to an ISSUE, plus four fixes; round 2 found no new defects. Posted needs-decision bus 417939d7-a192-4f37-a9bc-bc8016adbe9b; David's board card 78c6bb41-cf08-45ae-9a68-da0f7a9b9084, the lane's recommended reply is to open the issue as drafted. NOTHING SENT. This row now waits on that card; the 2026-10-14 date is when to re-read the card, not a deadline for David. pragma: allowlist sha"
     },
     {
       "id": "A-58",
