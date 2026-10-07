@@ -1504,10 +1504,13 @@ async function selftest() {
   // Conditions the badge cannot see because badgeFor filters first (Codex r1 coverage table).
   assert.equal(settledIds([open, answer({ constant: "10a" })]).size, 0, "a declarer in another constant settles nothing");
   assert.equal(settledIds([open, answer({ settles: ["A-47-T1"] })]).size, 0, "a non-string settles settles nothing");
-  // TWO GUARDS NO ASSERTION CAN SEE, measured by red-arm 2026-10-07 (both mutants exit 0), kept as
-  // defence: `typeof r.settles !== "string"` (a non-string never matches a stored string id in the
-  // uniqueness count, and usableAudit refuses it first, red-armed in render-constant-pages' selftest)
-  // and `r.settles === r.id` (a self-link cannot be both the SOUND declarer and the UNRESOLVED target).
+  // The type guard IS reachable (Codex r2, 2026-10-07; round 1's "untestable" note here was wrong):
+  // usableAudit requires no `id` and allows an absent `settles`, so without the guard an id-less
+  // UNRESOLVED reading would be "settled" by any SOUND reading that declares nothing.
+  const idless = [readAudit({ id: undefined, verdict: "UNRESOLVED" }), answer({ settles: undefined })];
+  assert.equal(settledIds(idless, { audits: idless }).size, 0, "an absent settles must never match an absent id");
+  // ONE GUARD NO ASSERTION CAN SEE (red-arm 2026-10-07, mutant exits 0), kept as defence:
+  // `r.settles === r.id`, since a self-link cannot be both the SOUND declarer and the UNRESOLVED target.
   const defect = badgeOn(withAudits([readAudit({ verdict: "DEFECTIVE" }), answer()]), "87a");
   assert.match(defect[1], /does not support/, "a declaration must never set a DEFECTIVE reading aside");
   assert.equal(settledBadge[1], "checked against material for its cited source: another row, 857.5662 [Ref2026]",
