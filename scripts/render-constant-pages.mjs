@@ -16,7 +16,8 @@
 // pages are small enough that 114 of them cost nothing. Revisit if the mirror grows an order of
 // magnitude.
 
-import { writeFileSync, readFileSync, mkdirSync, readdirSync, rmSync, existsSync, realpathSync } from "node:fs";
+import { writeFileSync, readFileSync, mkdirSync, readdirSync, rmSync, existsSync, realpathSync, mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
@@ -137,6 +138,34 @@ export function mirrorHas(rowFile, rowLine, rowText, root = ROOT) {
   }
 }
 
+/**
+ * A SOURCE THAT IS A HEADING IN THE MIRROR (A-65, 2026-10-08). 10c's reading is a recomputation of a
+ * certificate printed in the constant's own file, so its source is a place in our mirror. It was stored
+ * as a link ending `#L281`, a hand-typed line number that an upstream row insertion had already made
+ * wrong (the heading was at 283), and that did nothing anyway, because GitHub opens a .md file rendered.
+ * So the store keeps the heading's TEXT, copied from the mirror bytes, and this finds its line at
+ * render time: the link lands on the heading, and there is no stored number to drift. Exactly one line
+ * must match; none or several returns null, and the entry is then refused by name (UNUSABLE_CHECKS),
+ * never linked to a guess. Accepted edge, the same one a deleted constant has: an upstream rename of
+ * the heading refuses the render until a human re-points the entry.
+ */
+export function headingLine(file, heading, root = ROOT) {
+  if (typeof file !== "string" || typeof heading !== "string") return null;
+  if (!file.startsWith(MIRROR_PREFIX) || file.includes("..")) return null;
+  const want = heading.trim();
+  if (!/^#{1,6} \S/.test(want)) return null;
+  let lines;
+  try { lines = readFileSync(join(root, file), "utf8").split(/\r?\n/); } catch { return null; }
+  const hits = [];
+  lines.forEach((l, i) => { if (l.trim() === want) hits.push(i + 1); });
+  return hits.length === 1 ? hits[0] : null;
+}
+
+/** The code view of one mirrored line; `?plain=1` is what makes the anchor work (see rowLink). */
+function mirrorLineHref(file, line) {
+  return `${REPO}/blob/main/${file.split("/").map(encodeURIComponent).join("/")}?plain=1#L${line}`;
+}
+
 /** Is this audit PROVABLY about the row that stands at its recorded line today? */
 export function identityVerified(a) {
   if (!a || typeof a.rowText !== "string" || typeof a.rowTextSha256 !== "string") return false;
@@ -214,6 +243,16 @@ const claimText = (v) => v === undefined || (typeof v === "string" && v.trim() !
 // as if it answered "the claim we checked"; refused, like any other malformed entry. So is a claim on
 // an entry with no recognised leg: such an entry is never judged stale (isStale reads the leg), so a
 // named claim there could print beside a row nobody can match (code review r2, finding 2).
+// THE THREE SOURCE-HEADING FIELDS COME TOGETHER OR NOT AT ALL (A-65). `sourceHeading` is the mirror's
+// exact heading line, TeX included, used only to find the line; `sourceHeadingReader` is what the page
+// prints, so it carries no markup and no `$`. A partial set, or a heading that is not exactly one line
+// of `sourceFile`, is refused: half a set would print a heading with no link to it, or the reverse.
+const sourceHeadingOk = (a) => {
+  if (a.sourceFile === undefined && a.sourceHeading === undefined && a.sourceHeadingReader === undefined) return true;
+  return typeof a.sourceHeadingReader === "string" && a.sourceHeadingReader.trim() !== ""
+    && !TEX_MARKUP.test(a.sourceHeadingReader) && !a.sourceHeadingReader.includes("$")
+    && headingLine(a.sourceFile, a.sourceHeading) !== null;
+};
 const claimFieldsOk = (a) => claimText(a.claimReader) && claimText(a.claimResult) && claimText(a.claimNotCovered)
   && (a.claimReader !== undefined || (a.claimResult === undefined && a.claimNotCovered === undefined))
   && (a.claimReader === undefined || Object.prototype.hasOwnProperty.call(LEG_LABEL, a.leg));
@@ -267,6 +306,7 @@ export function usableAudit(a) {
     && (a.sourceRead === undefined || typeof a.sourceRead === "string")
     && (a.settles === undefined || typeof a.settles === "string")
     && claimFieldsOk(a)
+    && sourceHeadingOk(a)
     && safeUrl(a.source) !== null;
 }
 
@@ -313,6 +353,7 @@ const UNUSABLE_CHECKS = [
   ["settles is not a string", (a) => a.settles === undefined || typeof a.settles === "string"],
   ["a claim field carries TeX-style markup (^{, _{ or a backslash command), which no page renders", claimMarkupFree],
   ["claimReader / claimResult / claimNotCovered malformed (a non-string, an empty claimReader, or a result or exclusion with no claimReader)", claimFieldsOk],
+  ["sourceFile / sourceHeading / sourceHeadingReader malformed (a partial set, a reader heading with markup, or a heading that is not exactly one line of the mirrored file)", sourceHeadingOk],
   ["source is not an http(s) URL", (a) => safeUrl(a.source) !== null],
 ];
 
@@ -600,8 +641,7 @@ function rowLink(a) {
   // view honours the anchor and highlights the line. Both callers reach here only for a row that still
   // stands at its recorded line (`!stale` at the verdict list, `isStale` inside attemptedRows), which
   // matters more now that the link points at one highlighted line.
-  const href = `${REPO}/blob/main/${a.rowFile.split("/").map(encodeURIComponent).join("/")}?plain=1#L${a.rowLine}`;
-  return ` <a href="${esc(href)}">line ${esc(String(a.rowLine))}</a>`;
+  return ` <a href="${esc(mirrorLineHref(a.rowFile, a.rowLine))}">line ${esc(String(a.rowLine))}</a>`;
 }
 
 /**
@@ -660,6 +700,10 @@ export function auditBlock(id, store, shown = []) {
     const cites = where === "credit" ? "citing" : where === "comment" ? "whose comment cites" : "audited against";
     const what = leg ? `${esc(leg)}${valueHtml}${leg === "bound row" && !stale ? rowLink(a) : ""} ${cites} ` : "";
     const note = a.sourceRead ? ` (${esc(a.sourceRead)})` : "";
+    // A heading source (A-65) links its line, found now, and names the heading in plain words.
+    const srcLine = a.sourceHeading !== undefined ? headingLine(a.sourceFile, a.sourceHeading) : null;
+    const srcHref = srcLine ? mirrorLineHref(a.sourceFile, srcLine) : safeUrl(a.source);
+    const atHeading = srcLine ? `, at the heading &ldquo;${esc(a.sourceHeadingReader)}&rdquo;` : "";
     const verdictText = stale
       ? (READ_VERDICTS.has(a.verdict) ? "this row was checked against material for its cited source on an earlier version of the table, and the row at that line has since changed or cannot be matched, so this verdict says nothing about the row there now" : "a check of this row was attempted on an earlier version of the table and the cited source could not be read; the row at that line has since changed or cannot be matched, so nothing is said about the row there now")
       : a.verdict === "UNREACHABLE" && attemptDate(a.fetchedAt) ? `${v.text} (tried ${attemptDate(a.fetchedAt)})`
@@ -673,7 +717,7 @@ export function auditBlock(id, store, shown = []) {
             : leg === "reference entry" ? `${v.text.replace(/ in this row$/, " in this entry")}. ${UNNAMED_CLAIM("entry")}`
               : `${v.text}. ${UNNAMED_CLAIM("row")}`;
     return `<li>${relation}${again}${what}<code style="display:inline;padding:.1rem .3rem">[${esc(a.citedRef)}]</code> &mdash; ` +
-      `${esc(verdictText)}. <a href="${esc(safeUrl(a.source))}">${esc(v.link)}</a>${note}. ` +
+      `${esc(verdictText)}. <a href="${esc(srcHref)}">${esc(v.link)}</a>${atHeading}${note}. ` +
       `<span class="sel">Selected: ${esc(selectionNote(a))}.</span></li>`;
   }).join("");
 
@@ -1066,8 +1110,44 @@ function selftest() {
   const droppedSettles = droppedAudits({ audits: [badSettles] });
   assert.ok(droppedSettles.length === 1 && /settles is not a string/.test(droppedSettles[0].why),
     `a non-string settles must be NAMED by the render-side refusal: ${JSON.stringify(droppedSettles)}`);
+  // A-65 (2026-10-08): a source that is a HEADING in the mirror. The line is found at render time from
+  // the stored heading text, against the real mirror file, so no line number is written here either.
+  const H_FILE = "ledger/teorth-optimizationproblems/constants/10c.md";
+  const H_TEXT = "## Certificate for the $7/\\sqrt{17}$ lower bound";
+  const hLine = headingLine(H_FILE, H_TEXT);
+  assert.ok(Number.isInteger(hLine), "positive control: the 10c certificate heading is exactly one line of the mirror");
+  assert.equal(readFileSync(join(ROOT, H_FILE), "utf8").split(/\r?\n/)[hLine - 1].trim(), H_TEXT, "the line found IS the heading");
+  const hEntry = { ...claimStore.audits[3], sourceFile: H_FILE, sourceHeading: H_TEXT, sourceHeadingReader: "Certificate for the 7/√17 lower bound", sourceRead: "recomputed" };
+  assert.ok(usableAudit(hEntry), "positive control: a complete heading source passes");
+  const hHtml = auditBlock(hEntry.constant, { audits: [hEntry] });
+  assert.ok(hHtml.includes(`10c.md?plain=1#L${hLine}">`), "the source link must land on the heading's line in the code view");
+  assert.ok(hHtml.includes(", at the heading &ldquo;Certificate for the 7/√17 lower bound&rdquo;"), "the heading must be named in plain words beside the link");
+  assert.ok(!hHtml.includes(esc(safeUrl(hEntry.source))), "a heading source must not also link the stored source URL");
+  for (const [bad, why] of [[{ sourceHeading: "## Certificate for the $9/\\sqrt{17}$ lower bound" }, "a heading absent from the mirror"],
+    [{ sourceHeadingReader: undefined }, "a heading with no reader text"], [{ sourceHeading: undefined }, "reader text with no heading"],
+    [{ sourceFile: "ledger/teorth-optimizationproblems/constants/10b.md" }, "a heading looked for in the wrong file"],
+    [{ sourceFile: "ledger/teorth-optimizationproblems/constants/../../../README.md" }, "a file outside the mirror"],
+    [{ sourceHeadingReader: "Certificate for the $7/\\sqrt{17}$ lower bound" }, "reader text carrying TeX"],
+    [{ sourceHeadingReader: "Certificate for the $7$ bound" }, "reader text carrying a dollar sign"], [{ sourceHeadingReader: " " }, "blank reader text"]]) {
+    const entry = { ...hEntry, ...bad };
+    assert.ok(!usableAudit(entry), `${why} must be refused, not rendered`);
+    const dropped = droppedAudits({ audits: [entry] });
+    assert.ok(dropped.length === 1 && /sourceHeading/.test(dropped[0].why), `${why} must be NAMED by the render-side refusal: ${JSON.stringify(dropped)}`);
+  }
+  const hRoot = mkdtempSync(join(tmpdir(), "a65-"));
+  try {
+    mkdirSync(join(hRoot, MIRROR_PREFIX), { recursive: true });
+    writeFileSync(join(hRoot, MIRROR_PREFIX, "x.md"), "# X\r\n\r\n## Certificate A\r\n\r\ntext\r\n## Certificate A\r\n## Certificate B\r\n");
+    const xf = `${MIRROR_PREFIX}x.md`;
+    assert.equal(headingLine(xf, "## Certificate B", hRoot), 7, "positive control: a unique heading is found at its line, CRLF or not");
+    assert.equal(headingLine(xf, "## Certificate A", hRoot), null, "a heading that appears twice must not be linked to either line");
+    assert.equal(headingLine(xf, "## Certificate C", hRoot), null, "an absent heading has no line");
+    assert.equal(headingLine(xf, "text", hRoot), null, "a line that is not a heading is not a heading source");
+  } finally { rmSync(hRoot, { recursive: true, force: true }); }
   for (const n of [1, 3, 4, 5, 7, 8]) assert.ok(usableAudit(fixture(n)), `positive control: well-formed fixture RC${n} passes`);
   // Exact pins, LAST.
+  assert.ok(hHtml.includes(`<a href="https://github.com/u00dxk2/bounds-ledger/blob/main/ledger/teorth-optimizationproblems/constants/10c.md?plain=1#L${hLine}">source link</a>, at the heading &ldquo;Certificate for the 7/√17 lower bound&rdquo; (recomputed). `),
+    "exact pin on the heading-source sentence");
   assert.ok(claimLi(1)[0].includes("&mdash; the claim we checked: that RC1 proves the bound 5.555555. What we read supports it. This verdict does not cover later work by others. <a href=\"https://example.invalid/c1\">source link</a> (read in the body)."),
     "exact pin on the named-claim sentence");
   assert.ok(claimLi(7)[0].includes("&mdash; the claim we checked: that RC7 reports 6.5 in bits. Only a preprint was reached, and it prints 6.5 in nats. This verdict does not cover the published edition. <a href=\"https://example.invalid/c7\">source link</a>."),
