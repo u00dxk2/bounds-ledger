@@ -29,7 +29,8 @@ No first command: the change is live, and tomorrow's first command is in the pri
 
 - `A-65` (the 10c page's source link named a line that had moved) shipped in `23562a9` and was hardened through four review rounds to `8ee420a`. It is live since 16:45:52Z and closed.
 - `A-54` (the Small Ramsey Numbers census) session 6 landed: 19 readings, `DS1-0067` to `DS1-0085`. The blocked-paper retry ran on its hard date and opened none of nine sources.
-- `W-14` (new) watches issue #218 for a maintainer reply. `W-3` (watch for acknowledgement of the erdosproblems.com/36 correction) is re-dated to 2026-10-22. Board card `78c6bb41` is dismissed as spent.
+- `W-14` (new: watch issue #218 for a maintainer reply) is minted. `W-3` (watch for acknowledgement of the erdosproblems.com/36 correction) is re-dated to 2026-10-22. Board card `78c6bb41` is dismissed as spent.
+
 ### P1 selection packet
 
 [P1 — Evidence and choice]
@@ -72,8 +73,8 @@ node C:/dev/skylark/bounds-ledger/scripts/render-constant-pages.mjs --selftest
 - CI: `check-ci-status --workflow reverify.yml` GREEN and `--workflow page-check.yml` GREEN at `999e0a3`. Deploy drift: NOTHING SWEPT for this lane, which is a Pages lane with no Render service. That is neither a stop nor a pass.
 - Harness: running 2.1.294 · fleet UNIFORM · installed 2.1.294 (SAME).
 - Product-love rotation: `check-cycle-rotation --lane bounds-ledger` exit 0, no cycle picks this lane today.
-- Due gates: `--snapshot` taken, "2 gate(s) due on/before 2026-10-08", namely `A-54` and `W-3`.
-- Yesterday's recommendations: (1) verify, `A-54` census 6, `W-3` read: carrying today → P3, beside the product work. (2) `A-47` slice 15 on 10-09: carrying → 10-09. (3) `A-65` user-visible by 10-12: carrying today → selected above. (4) open `A-57` on David's yes: executed (issue #218, 2026-10-07 19:39Z).
+- Due gates: `--snapshot` taken, "2 gate(s) due on/before 2026-10-08", namely `A-54` and `W-3` (watch for acknowledgement of the erdosproblems.com/36 correction).
+- Yesterday's recommendations: (1) verify, `A-54` census 6, the `W-3` (erdosproblems.com/36 acknowledgement watch) read: carrying today → P3, beside the product work. (2) `A-47` slice 15 on 10-09: carrying → 10-09. (3) `A-65` user-visible by 10-12: carrying today → selected above. (4) open `A-57` on David's yes: executed (issue #218, 2026-10-07 19:39Z).
 - Retro finding that bears on today: Q2 (a lookup done inline, then padded with unsourced fields). The new heading field must be copied from the mirror bytes, never typed from memory.
 
 **HYGIENE INPUTS**
@@ -144,10 +145,10 @@ ACTION: COMPLETED · item A-65 · P3 msgId 1f607c5d
 - **Since the P3 post:** nothing changed in the shipped work. The manager's review (bus `548f4df7`) re-read the live page at Last-Modified 17:25:42Z with the same counts.
 - **Hygiene draft:** 7 lines — 6 accepted · 1 amended · 0 rejected.
   - `A-54` re-date to 2026-10-10: accepted, already run in `5e7e090`.
-  - `W-3` re-date to 2026-10-22: accepted. Its stale-actionable line is the same run, also accepted.
+  - `W-3` (watch for acknowledgement of the erdosproblems.com/36 correction) re-date to 2026-10-22: accepted. Its stale-actionable line is the same run, also accepted.
   - Card `78c6bb41` dismissed: accepted.
   - Retro and key-numbers lines: accepted, nothing to run.
-  - The issue #218 watch: amended to a mint, as `W-14`, with a readCommand and a 2026-10-14 date.
+  - The issue #218 watch: amended to a mint, as `W-14` (watch issue #218 for a maintainer reply), with a readCommand and a 2026-10-14 date.
 - **Helper notes, quoted:**
   - "READ-MUTATED A-54 scripts/render-constant-pages.mjs — NOT named in the readCommand: may be the lane's own concurrent P3 edit; lane checks"
   - "READ-MUTATED W-3 scripts/render-constant-pages.mjs — NOT named in the readCommand: may be the lane's own concurrent P3 edit; lane checks"
@@ -163,3 +164,4 @@ ACTION: COMPLETED · item A-65 · P3 msgId 1f607c5d
 - **Pending reads:** 2026-10-09 `A-47` slice 15. 2026-10-10 `A-54` census 7. 2026-10-14 `W-14`. 2026-10-22 `W-3`. 2026-10-28 `A-59`.
 - **Primer:** `docs/cold-starts/2026-10-09.md` (generated for 2026-10-09; `--check` PASS). `docs/cold-starts/2026-10-08.md` carries the same banner and narrative.
 - **Codex:** 5 calls, all foreground read-only reviews.
+- **Today panel:** written for 2026-10-08 (`update-daily-brief` exit 0). The report linters read 8 of 8 clean after the item-id glosses were added (the close commit `a7059a1` had them at 6 of 8).
