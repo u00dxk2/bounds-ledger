@@ -270,7 +270,7 @@ const claimText = (v) => v === undefined || (typeof v === "string" && v.trim() !
 const sourceLineFree = (a) => {
   const pub = safeUrl(a.source);
   if (pub === null) return true; // refused by its own check below
-  return new URL(pub).hash === "";
+  return !pub.includes("#"); // not `.hash === ""`, which is also "" for a bare trailing `#` (review r4)
 };
 const sourceHeadingOk = (a) => {
   if (a.sourceFile === undefined && a.sourceHeading === undefined && a.sourceHeadingReader === undefined) return true;
@@ -1171,7 +1171,7 @@ function selftest() {
   assert.ok(droppedLine.length === 1 && /source carries a fragment/.test(droppedLine[0].why), `a stored fragment must be NAMED: ${JSON.stringify(droppedLine)}`);
   for (const variant of [`${REPO}/blob/main/${H_FILE}?plain=1#L281`, `https://GITHUB.COM/u00dxk2/bounds-ledger/blob/main/${H_FILE}#L281`,
     `https://github.com/%75%30%30dxk2/bounds-ledger/blob/main/${H_FILE}?plain=1#L281`, `https://www.github.com/u00dxk2/bounds-ledger/blob/main/${H_FILE}#L281`,
-    "https://example.invalid/paper#L5", "https://example.invalid/paper.pdf#page=3"]) {
+    "https://example.invalid/paper#L5", "https://example.invalid/paper.pdf#page=3", "https://example.invalid/paper#"]) {
     assert.ok(!usableAudit({ ...claimStore.audits[3], source: variant }), `a stored source with a fragment must be refused, whatever the host: ${variant}`);
   }
   assert.ok(usableAudit({ ...claimStore.audits[3], source: `${REPO}/blob/main/${H_FILE}` }), "positive control: a link into this repository with no fragment passes");
