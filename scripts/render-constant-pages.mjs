@@ -127,7 +127,7 @@ const MIRROR_PREFIX = "ledger/teorth-optimizationproblems/constants/";
 export function mirrorHas(rowFile, rowLine, rowText, root = ROOT) {
   if (typeof rowFile !== "string" || typeof rowText !== "string") return false;
   if (!Number.isInteger(rowLine) || rowLine < 1) return false;
-  if (!rowFile.startsWith(MIRROR_PREFIX) || rowFile.includes("..")) return false;
+  if (!mirrorFileExact(rowFile, root)) return false;
   const want = rowText.trim();
   if (!want) return false;
   try {
@@ -151,7 +151,7 @@ export function mirrorHas(rowFile, rowLine, rowText, root = ROOT) {
  */
 export function headingLine(file, heading, root = ROOT) {
   if (typeof file !== "string" || typeof heading !== "string") return null;
-  if (!file.startsWith(MIRROR_PREFIX) || file.includes("..")) return null;
+  if (!mirrorFileExact(file, root)) return null;
   const want = heading.trim();
   if (!/^#{1,6} \S/.test(want)) return null;
   let lines;
@@ -159,6 +159,19 @@ export function headingLine(file, heading, root = ROOT) {
   const hits = [];
   lines.forEach((l, i) => { if (l.trim() === want) hits.push(i + 1); });
   return hits.length === 1 ? hits[0] : null;
+}
+
+/**
+ * THE PATH WE READ MUST BE THE PATH WE PUBLISH (A-65 review r1, 2026-10-08). Both callers build a
+ * public URL from the same string they read the file with, and Windows reads `10C.md` or
+ * `constants/.\10c.md` as `10c.md` while GitHub serves neither. So the path must be the mirror prefix
+ * plus one plain file name, and that name must appear, case and all, in the mirror directory's listing.
+ */
+export function mirrorFileExact(file, root = ROOT) {
+  if (typeof file !== "string" || !file.startsWith(MIRROR_PREFIX)) return false;
+  const name = file.slice(MIRROR_PREFIX.length);
+  if (!/^[A-Za-z0-9_-]+\.md$/.test(name)) return false;
+  try { return readdirSync(join(root, MIRROR_PREFIX)).includes(name); } catch { return false; }
 }
 
 /** The code view of one mirrored line; `?plain=1` is what makes the anchor work (see rowLink). */
@@ -247,6 +260,10 @@ const claimText = (v) => v === undefined || (typeof v === "string" && v.trim() !
 // exact heading line, TeX included, used only to find the line; `sourceHeadingReader` is what the page
 // prints, so it carries no markup and no `$`. A partial set, or a heading that is not exactly one line
 // of `sourceFile`, is refused: half a set would print a heading with no link to it, or the reverse.
+// A `source` that is itself a line link into our repository is refused in every case (review r1): a
+// stored `#L<digits>` is exactly the unverified line number A-65 removed, and with no heading fields
+// nothing would check it. Row links are built by rowLink and never stored.
+const sourceLineFree = (a) => !(typeof a.source === "string" && a.source.startsWith(`${REPO}/`) && /#L\d/.test(a.source));
 const sourceHeadingOk = (a) => {
   if (a.sourceFile === undefined && a.sourceHeading === undefined && a.sourceHeadingReader === undefined) return true;
   return typeof a.sourceHeadingReader === "string" && a.sourceHeadingReader.trim() !== ""
@@ -307,6 +324,7 @@ export function usableAudit(a) {
     && (a.settles === undefined || typeof a.settles === "string")
     && claimFieldsOk(a)
     && sourceHeadingOk(a)
+    && sourceLineFree(a)
     && safeUrl(a.source) !== null;
 }
 
@@ -354,6 +372,7 @@ const UNUSABLE_CHECKS = [
   ["a claim field carries TeX-style markup (^{, _{ or a backslash command), which no page renders", claimMarkupFree],
   ["claimReader / claimResult / claimNotCovered malformed (a non-string, an empty claimReader, or a result or exclusion with no claimReader)", claimFieldsOk],
   ["sourceFile / sourceHeading / sourceHeadingReader malformed (a partial set, a reader heading with markup, or a heading that is not exactly one line of the mirrored file)", sourceHeadingOk],
+  ["source is a line link into this repository (#L<digits>), which nothing verifies; store the heading instead", sourceLineFree],
   ["source is not an http(s) URL", (a) => safeUrl(a.source) !== null],
 ];
 
@@ -1112,21 +1131,43 @@ function selftest() {
     `a non-string settles must be NAMED by the render-side refusal: ${JSON.stringify(droppedSettles)}`);
   // A-65 (2026-10-08): a source that is a HEADING in the mirror. The line is found at render time from
   // the stored heading text, against the real mirror file, so no line number is written here either.
-  const H_FILE = "ledger/teorth-optimizationproblems/constants/10c.md";
-  const H_TEXT = "## Certificate for the $7/\\sqrt{17}$ lower bound";
+  // THE STORED ENTRIES THEMSELVES are checked here (review r1, finding 2): a store edit that breaks a
+  // heading fails this selftest as well as --check, and a legitimate re-point keeps it green, because the
+  // fixtures below are taken from the store rather than typed.
+  const realHeadings = JSON.parse(readFileSync(DEFAULT_AUDIT_STORE, "utf8")).audits.filter((a) => a && a.sourceHeading !== undefined);
+  assert.ok(realHeadings.length >= 1, "positive control: the store holds at least one heading source (A-47-0023, 10c)");
+  for (const a of realHeadings) {
+    assert.ok(usableAudit(a), `stored heading source ${a.id} must pass: its heading must be exactly one line of ${a.sourceFile}`);
+    const n = headingLine(a.sourceFile, a.sourceHeading);
+    assert.equal(readFileSync(join(ROOT, a.sourceFile), "utf8").split(/\r?\n/)[n - 1].trim(), a.sourceHeading.trim(), `the line found for ${a.id} IS its heading`);
+  }
+  const real = realHeadings[0];
+  const H_FILE = real.sourceFile;
+  const H_TEXT = real.sourceHeading;
   const hLine = headingLine(H_FILE, H_TEXT);
-  assert.ok(Number.isInteger(hLine), "positive control: the 10c certificate heading is exactly one line of the mirror");
-  assert.equal(readFileSync(join(ROOT, H_FILE), "utf8").split(/\r?\n/)[hLine - 1].trim(), H_TEXT, "the line found IS the heading");
-  const hEntry = { ...claimStore.audits[3], sourceFile: H_FILE, sourceHeading: H_TEXT, sourceHeadingReader: "Certificate for the 7/√17 lower bound", sourceRead: "recomputed" };
+  const hEntry = { ...claimStore.audits[3], sourceFile: H_FILE, sourceHeading: H_TEXT, sourceHeadingReader: real.sourceHeadingReader, sourceRead: "recomputed" };
   assert.ok(usableAudit(hEntry), "positive control: a complete heading source passes");
+  // The path read must be the path published (review r1, finding 1): aliases that Windows would read as
+  // the same file are refused, with the real file and heading proven to pass just above.
+  for (const alias of [H_FILE.replace(/\/([^/]+)\.md$/, (_, stem) => `/${stem.toUpperCase()}.md`), H_FILE.replace(/\/([^/]+)$/, "/.\\$1"), H_FILE.replace(/\/([^/]+)$/, "/./$1")]) {
+    assert.notEqual(alias, H_FILE, `the alias fixture must differ from the real path (${alias})`);
+    assert.equal(headingLine(alias, H_TEXT), null, `a path alias must not be read: ${alias}`);
+    assert.equal(mirrorHas(alias, real.rowLine, real.rowText), false, `mirrorHas must not read a path alias either: ${alias}`);
+  }
+  assert.equal(mirrorHas(real.rowFile, real.rowLine, real.rowText), true, "positive control: mirrorHas still reads the canonical row path");
+  // A stored line link into this repository is refused even with no heading fields (review r1).
+  const lineLinked = { ...claimStore.audits[3], source: `${REPO}/blob/main/${H_FILE}#L281` };
+  assert.ok(!usableAudit(lineLinked), "a stored #L line link into this repository must be refused");
+  const droppedLine = droppedAudits({ audits: [lineLinked] });
+  assert.ok(droppedLine.length === 1 && /line link into this repository/.test(droppedLine[0].why), `a stored line link must be NAMED: ${JSON.stringify(droppedLine)}`);
+  assert.ok(usableAudit({ ...claimStore.audits[3], source: "https://example.invalid/paper#L5" }), "positive control: a #L anchor on another host is not this rule's business");
   const hHtml = auditBlock(hEntry.constant, { audits: [hEntry] });
   assert.ok(hHtml.includes(`10c.md?plain=1#L${hLine}">`), "the source link must land on the heading's line in the code view");
-  assert.ok(hHtml.includes(", at the heading &ldquo;Certificate for the 7/√17 lower bound&rdquo;"), "the heading must be named in plain words beside the link");
+  assert.ok(hHtml.includes(`, at the heading &ldquo;${esc(real.sourceHeadingReader)}&rdquo;`), "the heading must be named in plain words beside the link");
   assert.ok(!hHtml.includes(esc(safeUrl(hEntry.source))), "a heading source must not also link the stored source URL");
   for (const [bad, why] of [[{ sourceHeading: "## Certificate for the $9/\\sqrt{17}$ lower bound" }, "a heading absent from the mirror"],
     [{ sourceHeadingReader: undefined }, "a heading with no reader text"], [{ sourceHeading: undefined }, "reader text with no heading"],
     [{ sourceFile: "ledger/teorth-optimizationproblems/constants/10b.md" }, "a heading looked for in the wrong file"],
-    [{ sourceFile: "ledger/teorth-optimizationproblems/constants/../../../README.md" }, "a file outside the mirror"],
     [{ sourceHeadingReader: "Certificate for the $7/\\sqrt{17}$ lower bound" }, "reader text carrying TeX"],
     [{ sourceHeadingReader: "Certificate for the $7$ bound" }, "reader text carrying a dollar sign"], [{ sourceHeadingReader: " " }, "blank reader text"]]) {
     const entry = { ...hEntry, ...bad };
@@ -1143,10 +1184,17 @@ function selftest() {
     assert.equal(headingLine(xf, "## Certificate A", hRoot), null, "a heading that appears twice must not be linked to either line");
     assert.equal(headingLine(xf, "## Certificate C", hRoot), null, "an absent heading has no line");
     assert.equal(headingLine(xf, "text", hRoot), null, "a line that is not a heading is not a heading source");
+    // Confinement, with the heading PRESENT outside the mirror, so the prefix rule is the only thing
+    // that can refuse it (review r1, finding 3: README lacked the heading, so the old case passed anyway).
+    mkdirSync(join(hRoot, "other"), { recursive: true });
+    writeFileSync(join(hRoot, "other", "y.md"), "## Certificate B\n");
+    writeFileSync(join(hRoot, "ledger", "teorth-optimizationproblems", "y.md"), "## Certificate B\n");
+    assert.equal(headingLine("other/y.md", "## Certificate B", hRoot), null, "a file outside the mirror is never read, even when it holds the heading");
+    assert.equal(headingLine(`${MIRROR_PREFIX}../y.md`, "## Certificate B", hRoot), null, "a path climbing out of the mirror is never read, even when its target holds the heading");
   } finally { rmSync(hRoot, { recursive: true, force: true }); }
   for (const n of [1, 3, 4, 5, 7, 8]) assert.ok(usableAudit(fixture(n)), `positive control: well-formed fixture RC${n} passes`);
   // Exact pins, LAST.
-  assert.ok(hHtml.includes(`<a href="https://github.com/u00dxk2/bounds-ledger/blob/main/ledger/teorth-optimizationproblems/constants/10c.md?plain=1#L${hLine}">source link</a>, at the heading &ldquo;Certificate for the 7/√17 lower bound&rdquo; (recomputed). `),
+  assert.ok(hHtml.includes(`<a href="https://github.com/u00dxk2/bounds-ledger/blob/main/${H_FILE}?plain=1#L${hLine}">source link</a>, at the heading &ldquo;${esc(real.sourceHeadingReader)}&rdquo; (recomputed). `),
     "exact pin on the heading-source sentence");
   assert.ok(claimLi(1)[0].includes("&mdash; the claim we checked: that RC1 proves the bound 5.555555. What we read supports it. This verdict does not cover later work by others. <a href=\"https://example.invalid/c1\">source link</a> (read in the body)."),
     "exact pin on the named-claim sentence");
