@@ -1,12 +1,42 @@
+---
+north_star_metric: an outside party acts on a watched record WITHOUT us filing the report (G-4; primary indicator = npm run reports, arrivals through the per-row links)
+north_star_value: 0
+north_star_status: expected-zero
+north_star_classification: expected-zero
+product: bounds-ledger
+date: 2026-10-08
+lifecycle_stage: launched
+last_deploy: 23562a9 (the last page-changing commit; npm run served read 1 of 1 served at 16:46:05Z, Pages build of 8ee420a)
+on_hold_items: 1
+top_action_today: A-65, the 10c page's certificate source link lands on the certificate's own line
+# The four keys below have NO instrument in this lane and are left null rather than filled with a
+# zero nobody measured: pre-revenue, no billing, no analytics on the published page, no Sentry project.
+mrr_usd: null
+n_active_users_28d: null
+sentry_open_p1: null
+sentry_open_p2: null
+---
+
 # bounds-ledger — 2026-10-08 (Thursday, MT)
 
-## P1 selection packet
+## BLUF
+
+On the Spencer discrepancy constant's page, the link to the certificate we recomputed now opens on that certificate, and the page names it in plain words.
+
+No first command: the change is live, and tomorrow's first command is in the primer.
+
+## What changed
+
+- `A-65` (the 10c page's source link named a line that had moved) shipped in `23562a9` and was hardened through four review rounds to `8ee420a`. It is live since 16:45:52Z and closed.
+- `A-54` (the Small Ramsey Numbers census) session 6 landed: 19 readings, `DS1-0067` to `DS1-0085`. The blocked-paper retry ran on its hard date and opened none of nine sources.
+- `W-14` (new) watches issue #218 for a maintainer reply. `W-3` (watch for acknowledgement of the erdosproblems.com/36 correction) is re-dated to 2026-10-22. Board card `78c6bb41` is dismissed as spent.
+### P1 selection packet
 
 [P1 — Evidence and choice]
 
 **Outcome and item:** `A-65` (the 10c page's source link names a line of the mirrored file that has since moved). A reader who follows the source link for the 10c certificate reading reaches the right place in the file, and the page says where to look in words that the renderer has checked.
 
-**The user problem, in the user's words** (the bar's reader, `docs/evangelism-bar.md`): "I want to check what you checked." The 10c line says the certificate was recomputed, then offers a "source link" that points at line 281 of our mirror of `constants/10c.md`. The certificate's heading is at line 283, and line 281 closes a different certificate. GitHub opens a `.md` file rendered, where a `#L` anchor does nothing, so the link actually lands at the top of a 444-line file (line count read today).
+**The user problem** (the bar's reader, `docs/evangelism-bar.md`: someone about to cite a number who wants to check it without redoing the search). The 10c line says the certificate was recomputed, then offers a "source link" that points at line 281 of our mirror of `constants/10c.md`. The certificate's heading is at line 283, and line 281 closes a different certificate. GitHub opens a `.md` file rendered, where a `#L` anchor does nothing, so the link actually lands at the top of a 444-line file (line count read today).
 
 **Evidence**
 - OBSERVED: `git grep -n -E "\.md.L[0-9]" -- c/` on today's HEAD tree matches one line, `c/10c.html:30`, linking `.../constants/10c.md#L281`. Population: every committed constant page under `c/`. Window: HEAD today. Limit: it reads the committed pages, not the served ones. Positive control: the same line also carries the row link `10c.md?plain=1#L50`, which this pattern correctly does not match.
@@ -51,7 +81,7 @@ node C:/dev/skylark/bounds-ledger/scripts/render-constant-pages.mjs --selftest
 - (b) Owed child rows: none, read "rows owed to you in skylark-site's ledger: 0 of 747".
 - (c) State reads with a threshold line: board cards 1 of 1 SPENT (`78c6bb41`, dismiss it); prior-day retro 6 of 6 still on discipline; key numbers, no `docs/key-metrics.json` list (0 of 0); missingLinkedCommits NOTHING SWEPT (0 of 0). Also carried from the primer: whether to mint a row that watches issue #218 for a maintainer reply. Read today: OPEN, 0 comments, updatedAt 2026-10-07T19:39:29Z.
 
-## P3 product work
+### P3 product work
 
 **Action (improve), on the manager's redirect (bus d446207c):** the 10c source link now lands on the certificate. The store keeps the heading's text, the renderer finds its one line in the mirror at render time and links that line in the code view, and the page names the heading in plain words: "source link, at the heading “Certificate for the 7/√17 lower bound”". No line number is stored. `sourceRead` is unchanged.
 
@@ -63,10 +93,73 @@ node C:/dev/skylark/bounds-ledger/scripts/render-constant-pages.mjs --selftest
 
 **Outcome.** Open: no read of whether a reader's check went better exists.
 
-## A-54 census session 6 and the blocked-paper retry (dated read, due today)
+### A-54 census session 6 and the blocked-paper retry (dated read, due today)
 
 - Tripwire first: 17 papers remaining against 4 × 5 slots = 20, so it did not fire and completion stays 2026-10-20. The plan was pushed in `12055d3` before any source was opened.
 - Four papers attempted. Kuz (13 bounds) SOUND on arXiv 1505.07186v5, the edition cited. Ex25 UNRESOLVED: the arXiv file is not shown to be the cited "manuscript (2023)". It was stored SOUND and downgraded before push on the other-family review. CaET UNRESOLVED (manuscript read, journal edition not). HZ1 (4 bounds) UNREACHABLE.
 - Codex reviewed `97d54de` (read-only, from the saved files): FIX, six findings, all fixed in `3477c23`.
 - Blocked-paper retry (hard date today): nine sources tried, none opened. Each of the 17 affected entries gained a dated note, and no verdict moved.
 - `node scripts/ds1-depth.mjs`: "census: 80 of 122 bound(s), across 31 of 42 credited paper(s) — 45 sound, 0 defective, 19 unresolved, 16 unreachable" (exit 0). Next census slot 2026-10-10 (13 papers against 16).
+
+## Inputs (controllable)
+
+- Reviews by the other model family (Codex, read-only, foreground, banner workdir `C:\dev\skylark\bounds-ledger` checked each time):
+  - `A-65` r1 on `23562a9`: 3 findings, all CONFIRMED, fixed in `40cbfcf`.
+  - r2 on `40cbfcf`: 1, CONFIRMED, fixed in `90da398`.
+  - r3 on `90da398`: 2, CONFIRMED, answered by a change of shape in `762ff2c`.
+  - r4 on `762ff2c`: no material defect; its one note fixed in `8ee420a`.
+  - Census 6 readings on `97d54de`: 6 findings, all CONFIRMED, fixed in `3477c23`.
+- Red-arms: every new guard tripped its own named assertion when broken, and each file was restored byte-identical (`Get-FileHash` equal). control: the restored file's selftest passed every time, so each failure came from its mutation.
+- `npm run verify` receipt exit 0 at `8ee420a` (16:45:18Z). CI `reverify` and `page-check` green at `8ee420a` and at `5e7e090`.
+
+## Outputs (lagging)
+
+- The bar's metric is NOT MEASURABLE: there are no analytics and no request log. Encounter with today's change is blind, tracked on `A-59` (encounter is blind on the public pages), 2026-10-28.
+- `npm run reports`: 0 outside arrivals of 33 raw issues (33 + 0 + 0 = 33), read at P5. positive control: the probe fetched 33 issues and classified every one.
+- Delivery: `npm run served` read "1 checked — 1 served, 0 in flight, 0 stale, 0 unreachable" at 16:46:05Z. The live `c/10c.html` carries the new link once and `10c.md#L281` zero times. positive control: the line-50 row link was found once on the same page.
+
+<!-- findings:begin -->
+- My P1 packet gave the user problem "in the user's words" as a sentence that is in no source: I wrote it. `docs/evangelism-bar.md` has no such line. It was removed from this report at P5, and the P1 bus post (`1c673c3c`) still carries it. This is the method-sentence failure again, on a surface I did not think of as a claim.
+- The `A-65` guard took three rounds to stop finding new spellings of "a link into this repository". The fix was to stop recognising the repository at all (portable rule 2), recorded on `A-65.guardShape2026_10_08` so it is not reopened as a spelling list.
+- A census verdict was stored SOUND on an edition not shown to be the one cited (Ex25), and the review downgraded it before push. This is the same class as `verdict-follows-the-reading` in memory, this time in the positive direction.
+- Today's findings are all instrument-facing: defects in our own packet, guard and readings, none a fault found in a mirrored record. No running count of consecutive instrument-facing days was carried by recent reports, so none is quoted. The standing prediction is unchanged and was not tested today: the next record-facing catch will be a citation-quality defect in a mirrored upstream entry, found by a human reading the cited source in the depth audit (`A-47`), not by any alarm.
+<!-- findings:end -->
+
+## Recommendation
+
+- [B] 2026-10-09: `npm run verify` first, then `A-47` slice 15 at positions 256, 306, 356, 406 and 456, with the draw pushed before any source is opened.
+- [B] 2026-10-10: `A-54` census session 7, from HW+ (13 papers remaining against 16 slots of capacity).
+- [A — user-visible] by 2026-10-12: `A-63` (a constant page does not say which claim a verdict checked), its unnamed-verdict count.
+
+## On hold pending data
+
+- **The encounter with today's change:** blind until `A-59` (encounter is blind on the public pages) is read on 2026-10-28.
+
+## State Appendix
+
+### Close
+
+ACTION: COMPLETED · item A-65 · P3 msgId 1f607c5d
+
+- **Since the P3 post:** nothing changed in the shipped work. The manager's review (bus `548f4df7`) re-read the live page at Last-Modified 17:25:42Z with the same counts.
+- **Hygiene draft:** 7 lines — 6 accepted · 1 amended · 0 rejected.
+  - `A-54` re-date to 2026-10-10: accepted, already run in `5e7e090`.
+  - `W-3` re-date to 2026-10-22: accepted. Its stale-actionable line is the same run, also accepted.
+  - Card `78c6bb41` dismissed: accepted.
+  - Retro and key-numbers lines: accepted, nothing to run.
+  - The issue #218 watch: amended to a mint, as `W-14`, with a readCommand and a 2026-10-14 date.
+- **Helper notes, quoted:**
+  - "READ-MUTATED A-54 scripts/render-constant-pages.mjs — NOT named in the readCommand: may be the lane's own concurrent P3 edit; lane checks"
+  - "READ-MUTATED W-3 scripts/render-constant-pages.mjs — NOT named in the readCommand: may be the lane's own concurrent P3 edit; lane checks"
+  - Both were this session's own `A-65` edit, with HEAD unmoved.
+  - Wait-justification: "RESULT: PASS — 1 of 89 row(s) carry `waitJustification`; 0 warn / 0 info".
+  - Engineering-zero: "lane bounds-ledger: 0 finding(s), 0 unreadable, nothing to waive (both counts are zero)".
+- **Due gates:** `check-due-gates-dispositioned` reads "verdict: CLEAR — every gate due at Phase 0 was dispositioned." The snapshot is CURRENT (taken 2026-10-08).
+- **Ledger delta:**
+  - `A-65` closed (`127edb0`), plus `guardShape2026_10_08`. It stays closed: its closeWhen was met, and the encounter read lives on `A-59`.
+  - `A-54.census6_2026_10_08`, with `expectedSignalBy` 2026-10-10.
+  - `W-3.disposition2026_10_08`, with `expectedSignalBy` 2026-10-22.
+  - `W-14` minted.
+- **Pending reads:** 2026-10-09 `A-47` slice 15. 2026-10-10 `A-54` census 7. 2026-10-14 `W-14`. 2026-10-22 `W-3`. 2026-10-28 `A-59`.
+- **Primer:** `docs/cold-starts/2026-10-09.md` (generated for 2026-10-09; `--check` PASS). `docs/cold-starts/2026-10-08.md` carries the same banner and narrative.
+- **Codex:** 5 calls, all foreground read-only reviews.
