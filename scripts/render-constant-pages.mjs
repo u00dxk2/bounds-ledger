@@ -263,7 +263,17 @@ const claimText = (v) => v === undefined || (typeof v === "string" && v.trim() !
 // A `source` that is itself a line link into our repository is refused in every case (review r1): a
 // stored `#L<digits>` is exactly the unverified line number A-65 removed, and with no heading fields
 // nothing would check it. Row links are built by rowLink and never stored.
-const sourceLineFree = (a) => !(typeof a.source === "string" && a.source.startsWith(`${REPO}/`) && /#L\d/.test(a.source));
+// It judges the URL AS PUBLISHED, after safeUrl's normalisation (review r2: a raw-string prefix test let
+// `https://GITHUB.COM/...#L281` through, and safeUrl then printed it lower-cased). GitHub treats the
+// owner and repository names case-insensitively, so the path comparison does too.
+const sourceLineFree = (a) => {
+  const pub = safeUrl(a.source);
+  if (pub === null) return true; // refused by its own check below
+  const u = new URL(pub);
+  const repo = new URL(REPO);
+  const ours = u.host === repo.host && u.pathname.toLowerCase().startsWith(`${repo.pathname.toLowerCase()}/`);
+  return !(ours && /^#L\d/.test(u.hash));
+};
 const sourceHeadingOk = (a) => {
   if (a.sourceFile === undefined && a.sourceHeading === undefined && a.sourceHeadingReader === undefined) return true;
   return typeof a.sourceHeadingReader === "string" && a.sourceHeadingReader.trim() !== ""
@@ -1160,7 +1170,12 @@ function selftest() {
   assert.ok(!usableAudit(lineLinked), "a stored #L line link into this repository must be refused");
   const droppedLine = droppedAudits({ audits: [lineLinked] });
   assert.ok(droppedLine.length === 1 && /line link into this repository/.test(droppedLine[0].why), `a stored line link must be NAMED: ${JSON.stringify(droppedLine)}`);
+  for (const variant of [`${REPO}/blob/main/${H_FILE}?plain=1#L281`, `${REPO.replace("https://github.com", "https://GITHUB.COM")}/blob/main/${H_FILE}#L281`,
+    `${REPO.replace("u00dxk2/bounds-ledger", "U00DXK2/Bounds-Ledger")}/blob/main/${H_FILE}#L281`]) {
+    assert.ok(!usableAudit({ ...claimStore.audits[3], source: variant }), `a line link into this repository written another way must be refused too: ${variant}`);
+  }
   assert.ok(usableAudit({ ...claimStore.audits[3], source: "https://example.invalid/paper#L5" }), "positive control: a #L anchor on another host is not this rule's business");
+  assert.ok(usableAudit({ ...claimStore.audits[3], source: `${REPO}/blob/main/${H_FILE}` }), "positive control: a link into this repository with no line anchor passes");
   const hHtml = auditBlock(hEntry.constant, { audits: [hEntry] });
   assert.ok(hHtml.includes(`10c.md?plain=1#L${hLine}">`), "the source link must land on the heading's line in the code view");
   assert.ok(hHtml.includes(`, at the heading &ldquo;${esc(real.sourceHeadingReader)}&rdquo;`), "the heading must be named in plain words beside the link");
