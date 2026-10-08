@@ -260,19 +260,17 @@ const claimText = (v) => v === undefined || (typeof v === "string" && v.trim() !
 // exact heading line, TeX included, used only to find the line; `sourceHeadingReader` is what the page
 // prints, so it carries no markup and no `$`. A partial set, or a heading that is not exactly one line
 // of `sourceFile`, is refused: half a set would print a heading with no link to it, or the reverse.
-// A `source` that is itself a line link into our repository is refused in every case (review r1): a
-// stored `#L<digits>` is exactly the unverified line number A-65 removed, and with no heading fields
-// nothing would check it. Row links are built by rowLink and never stored.
-// It judges the URL AS PUBLISHED, after safeUrl's normalisation (review r2: a raw-string prefix test let
-// `https://GITHUB.COM/...#L281` through, and safeUrl then printed it lower-cased). GitHub treats the
-// owner and repository names case-insensitively, so the path comparison does too.
+// A STORED SOURCE CARRIES NO FRAGMENT, on any host (A-65 reviews r1 to r3). A stored `#L281` was the
+// unverified line number A-65 removed, and nothing would check one that came back. The first two forms
+// of this rule tried to recognise "a link into this repository" and each round found another spelling
+// of it (upper-case host, percent-encoded owner, `www.`), so the matcher was dropped for a rule with no
+// equivalences to get wrong: the published URL has no `#…` at all. A line is pointed at only by a link
+// the renderer builds after checking that line (rowLink, the heading source). Measured when this rule was
+// written: 0 of the 66 stored sources carried a fragment; the pre-A-65 store carried exactly one.
 const sourceLineFree = (a) => {
   const pub = safeUrl(a.source);
   if (pub === null) return true; // refused by its own check below
-  const u = new URL(pub);
-  const repo = new URL(REPO);
-  const ours = u.host === repo.host && u.pathname.toLowerCase().startsWith(`${repo.pathname.toLowerCase()}/`);
-  return !(ours && /^#L\d/.test(u.hash));
+  return new URL(pub).hash === "";
 };
 const sourceHeadingOk = (a) => {
   if (a.sourceFile === undefined && a.sourceHeading === undefined && a.sourceHeadingReader === undefined) return true;
@@ -382,7 +380,7 @@ const UNUSABLE_CHECKS = [
   ["a claim field carries TeX-style markup (^{, _{ or a backslash command), which no page renders", claimMarkupFree],
   ["claimReader / claimResult / claimNotCovered malformed (a non-string, an empty claimReader, or a result or exclusion with no claimReader)", claimFieldsOk],
   ["sourceFile / sourceHeading / sourceHeadingReader malformed (a partial set, a reader heading with markup, or a heading that is not exactly one line of the mirrored file)", sourceHeadingOk],
-  ["source is a line link into this repository (#L<digits>), which nothing verifies; store the heading instead", sourceLineFree],
+  ["source carries a fragment (#…), which nothing verifies; point at a line with sourceFile and sourceHeading instead", sourceLineFree],
   ["source is not an http(s) URL", (a) => safeUrl(a.source) !== null],
 ];
 
@@ -1165,17 +1163,19 @@ function selftest() {
     assert.equal(mirrorHas(alias, real.rowLine, real.rowText), false, `mirrorHas must not read a path alias either: ${alias}`);
   }
   assert.equal(mirrorHas(real.rowFile, real.rowLine, real.rowText), true, "positive control: mirrorHas still reads the canonical row path");
-  // A stored line link into this repository is refused even with no heading fields (review r1).
+  // A stored source carries no fragment, on any host (reviews r1 to r3). The spellings below are the ones
+  // the earlier matcher forms missed or nearly missed; the rule refuses them without recognising any.
   const lineLinked = { ...claimStore.audits[3], source: `${REPO}/blob/main/${H_FILE}#L281` };
-  assert.ok(!usableAudit(lineLinked), "a stored #L line link into this repository must be refused");
+  assert.ok(!usableAudit(lineLinked), "a stored #L line link must be refused");
   const droppedLine = droppedAudits({ audits: [lineLinked] });
-  assert.ok(droppedLine.length === 1 && /line link into this repository/.test(droppedLine[0].why), `a stored line link must be NAMED: ${JSON.stringify(droppedLine)}`);
-  for (const variant of [`${REPO}/blob/main/${H_FILE}?plain=1#L281`, `${REPO.replace("https://github.com", "https://GITHUB.COM")}/blob/main/${H_FILE}#L281`,
-    `${REPO.replace("u00dxk2/bounds-ledger", "U00DXK2/Bounds-Ledger")}/blob/main/${H_FILE}#L281`]) {
-    assert.ok(!usableAudit({ ...claimStore.audits[3], source: variant }), `a line link into this repository written another way must be refused too: ${variant}`);
+  assert.ok(droppedLine.length === 1 && /source carries a fragment/.test(droppedLine[0].why), `a stored fragment must be NAMED: ${JSON.stringify(droppedLine)}`);
+  for (const variant of [`${REPO}/blob/main/${H_FILE}?plain=1#L281`, `https://GITHUB.COM/u00dxk2/bounds-ledger/blob/main/${H_FILE}#L281`,
+    `https://github.com/%75%30%30dxk2/bounds-ledger/blob/main/${H_FILE}?plain=1#L281`, `https://www.github.com/u00dxk2/bounds-ledger/blob/main/${H_FILE}#L281`,
+    "https://example.invalid/paper#L5", "https://example.invalid/paper.pdf#page=3"]) {
+    assert.ok(!usableAudit({ ...claimStore.audits[3], source: variant }), `a stored source with a fragment must be refused, whatever the host: ${variant}`);
   }
-  assert.ok(usableAudit({ ...claimStore.audits[3], source: "https://example.invalid/paper#L5" }), "positive control: a #L anchor on another host is not this rule's business");
-  assert.ok(usableAudit({ ...claimStore.audits[3], source: `${REPO}/blob/main/${H_FILE}` }), "positive control: a link into this repository with no line anchor passes");
+  assert.ok(usableAudit({ ...claimStore.audits[3], source: `${REPO}/blob/main/${H_FILE}` }), "positive control: a link into this repository with no fragment passes");
+  assert.ok(usableAudit({ ...claimStore.audits[3], source: "https://example.invalid/paper?x=1" }), "positive control: a query string is not a fragment");
   const hHtml = auditBlock(hEntry.constant, { audits: [hEntry] });
   assert.ok(hHtml.includes(`10c.md?plain=1#L${hLine}">`), "the source link must land on the heading's line in the code view");
   assert.ok(hHtml.includes(`, at the heading &ldquo;${esc(real.sourceHeadingReader)}&rdquo;`), "the heading must be named in plain words beside the link");
