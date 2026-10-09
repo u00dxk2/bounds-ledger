@@ -96,4 +96,23 @@ Written after the P3 post (bus `d652f60d`), from the commands named above. As of
 - **Ledger delta:** `A-47` (the depth audit) gained `slice15Draw2026_10_09` and `slice15Result2026_10_09`, with `nextCheckDate` 2026-10-11.
 - **Pending reads:** 2026-10-10 `A-54` (the Small Ramsey Numbers census) session 7. 2026-10-11 `A-47` (the depth audit). 2026-10-12 `A-63` (a constant page does not say which claim a verdict checked). 2026-10-14 `W-14` (watch issue #218 for a maintainer reply). 2026-10-22 `W-3` (watch for acknowledgement of the erdosproblems.com/36 correction). 2026-10-28 `A-59` (encounter is blind on the public pages).
 - **Codex:** 2 calls, both foreground read-only reviews.
-- **Close:** not run yet. The hygiene draft is at `tmp/hygiene-draft-bounds-ledger-2026-10-09.md` and is applied at the close.
+- **Close:** see the section below.
+
+### Close
+
+ACTION: COMPLETED · item A-47 · P3 msgId d652f60d
+
+- **Since the P3 post:** nothing changed in the shipped work. The manager's review (inbox `bd792f46`) re-read the five live pages and the counts and judged the action COMPLETED. It withdrew its own 3a hypothesis.
+- **The two entry-versus-source differences** (43a's title, 54a's page range) now have a dated row: `A-74` (two differences between a mirrored entry and its source sit only in unrendered notes), read 2026-10-11. On that day the pages either show them, with a guard and an other-family review, or the row records a decision to keep them notes-only. The lane's recommendation is to show them.
+- **The 5-versus-9 count the review asked about is two units, not an error.** `depth-audit.mjs` prints 9 suspicion ENTRIES. The pages print 5 suspicion ROWS. The 9 entries cover 8 distinct rows; 2 of those rows were later also drawn by position and count as drawn; 1 is a citation-format check and not a bound-row reading; that leaves 5. The page says "row(s)" throughout, so it is true as written. The script's first line calls entries "row(s)", which is loose; that wording is owed a look with slice 16. Recorded on `A-47.close2026_10_09`.
+- **An outside time for the draw's push:** `gh run list --commit 424bc068…` shows GitHub created CI runs for the draw commit at 16:53:33Z and 16:53:34Z, before the 18:18:20Z first requests. Recorded on the same field.
+- **Review label, kept:** `f34321e` changed public sentences on c/31a and c/54a after the second round and was checked BY-INSPECTION only.
+- **Hygiene draft:** 0 lines — 0 accepted · 0 amended · 0 rejected. The P1 packet carried no inputs, so the helper drafted nothing.
+  - READ-MUTATED, quoted: "none — 0 reads guarded (no `--run` was executed, so no stamp was written; `git status --porcelain` was empty after the two step-5 checks)".
+  - Wait-justification, quoted: "RESULT: PASS — 1 of 90 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)".
+  - Engineering-zero, quoted: "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable".
+- **Due gates: UNRESOLVED by the instrument.** `check-due-gates-dispositioned` printed "snapshot: tmp\due-gates-snapshot.json — STALE · 1 MT day(s) old (taken 2026-10-08)", so its CLEAR verdict is about 2026-10-08. Today's snapshot was never taken, because P1 ran from the primer before the kickoff arrived. By hand: the one gate the kickoff listed as due today, `A-47` (the depth audit), was read (slice 15) and re-dated to 2026-10-11.
+- **Ledger delta:** `A-47` (the depth audit) gained `close2026_10_09`. `A-74` minted.
+- **Pending reads:** 2026-10-10 `A-54` (the Small Ramsey Numbers census) session 7. 2026-10-11 `A-47` (the depth audit) slice 16 and `A-74` (the two differences). 2026-10-14 `W-14` (watch issue #218 for a maintainer reply). 2026-10-22 `W-3` (watch for acknowledgement of the erdosproblems.com/36 correction). 2026-10-28 `A-59` (encounter is blind on the public pages).
+- **Primer:** `docs/cold-starts/2026-10-10.md`, generated for 2026-10-10.
+- **Receipt:** unchanged from the P3 post.
