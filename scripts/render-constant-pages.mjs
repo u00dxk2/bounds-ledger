@@ -1207,6 +1207,15 @@ function selftest() {
     "positive control: GH1976's text is in the file but NOT on CH1978's line, so the elsewhere fixture tests what it says");
   assert.equal(referenceEntryLine(REAL_FILE, "NOKEY1"), null, "positive control: a key with no bold line in the file finds no line");
   assert.equal(referenceEntryLine(REAL_FILE, "GH1976".slice(0, 4)), null, "a key that is only a PREFIX of a real key (GH19) must find no line");
+  // Uniqueness (review r2, finding 1): no real mirror file repeats a key, so a temporary mirror does,
+  // with the quote on the FIRST of the two lines, where a first-match regression would find it.
+  const dupRoot = mkdtempSync(join(tmpdir(), "refnote-dup-"));
+  try {
+    mkdirSync(join(dupRoot, MIRROR_PREFIX), { recursive: true });
+    writeFileSync(join(dupRoot, MIRROR_PREFIX, "dup.md"), `- **[DUP1]** Quoted title.\n- **[DUP1]** Another title.\n- **[ONE1]** Quoted title.\n`);
+    assert.ok(referenceEntryLine(`${MIRROR_PREFIX}dup.md`, "ONE1", dupRoot)?.includes("Quoted title"), "positive control: the temporary mirror is read, and a single key there finds its line");
+    assert.equal(referenceEntryLine(`${MIRROR_PREFIX}dup.md`, "DUP1", dupRoot), null, "a key carried by TWO lines must find no line, even when the first of them holds the quote");
+  } finally { rmSync(dupRoot, { recursive: true, force: true }); }
   const row43 = { ...row, id: "43a" };
   const rnBase = { ...claimStore.audits[0], constant: "43a", rowFile: REAL_FILE };
   const rnShown = { ...rnBase, id: "T-RN1", citedRef: "GH1976", referenceNoteEntryText: REAL_TEXT,
@@ -1251,6 +1260,10 @@ function selftest() {
     [{ referenceNote: `${rnShown.referenceNote}.` }, "a referenceNote ending in a full stop"],
     [{ referenceNote: `${rnShown.referenceNote} at most C^{d}` }, "a referenceNote carrying TeX-style markup"],
     [{ referenceNote: "  ", referenceNoteEntryText: "  " }, "a blank referenceNote and entry text"],
+    // Review r2, finding 2: the entry text alone blank, inside an otherwise valid sentence, so only the
+    // entry-text guard can refuse it.
+    [{ referenceNoteEntryText: "" }, "an empty entry text beside a valid sentence"],
+    [{ referenceNote: `The paper prints the title as Alpha;  the table's reference entry gives it as ${REAL_TEXT}`, referenceNoteEntryText: "  " }, "a whitespace-only entry text contained in a valid sentence"],
   ]) {
     const entry = { ...rnShown, ...bad };
     assert.ok(!usableAudit(entry), `${why} must be refused, not rendered`);
