@@ -282,6 +282,51 @@ const claimFieldsOk = (a) => claimText(a.claimReader) && claimText(a.claimResult
   && (a.claimReader !== undefined || (a.claimResult === undefined && a.claimNotCovered === undefined))
   && (a.claimReader === undefined || Object.prototype.hasOwnProperty.call(LEG_LABEL, a.leg));
 
+/**
+ * WHAT THE PAPER PRINTS ABOUT ITS OWN CITATION (A-74, 2026-10-10). Reading the cited source for a bound
+ * sometimes shows that the table's reference entry and the paper disagree about the citation itself: on
+ * 43a the title, on 54a the page range. Neither is part of the verdict, which is about the bound, so until
+ * now both sat in `notes`, which is written for us and never published. `referenceNote` is the
+ * reader-facing sentence, printed version first; `referenceNoteEntryText` is the exact text of the entry
+ * that the sentence quotes, copied from the mirror bytes.
+ *
+ * Rules, each refused by name in UNUSABLE_CHECKS when broken:
+ * - the two fields come together or not at all, and the sentence must contain the entry text, so the
+ *   quote on the page is the quote we check;
+ * - only a READ verdict carries one: a paper that was never read cannot be said to print anything;
+ * - the entry's file must be THIS constant's own mirror file, because that is where the check reads.
+ * And one rule that is NOT a refusal: the sentence is WITHHELD unless the quoted entry text stands on the
+ * entry's OWN reference line, found by its exact bold key `**[<citedRef>]**`, and exactly one line carries
+ * that key. The reading is unchanged when upstream edits the entry, but "the entry gives X" would no longer
+ * be true, and refusing would stop every render on an upstream edit (see auditStoreRefusal). The first form
+ * searched the whole file, so an old wording surviving in another reference or a table row kept the
+ * sentence printed after the entry itself changed (cross-family review r1, 2026-10-10). What this still
+ * cannot see: a change elsewhere on that same line that leaves the quoted text intact.
+ */
+const referenceNoteOk = (a) => {
+  if (a.referenceNote === undefined && a.referenceNoteEntryText === undefined) return true;
+  return typeof a.referenceNote === "string" && claimText(a.referenceNote)
+    && typeof a.referenceNoteEntryText === "string" && a.referenceNoteEntryText.trim() !== ""
+    && a.referenceNote.includes(a.referenceNoteEntryText)
+    && READ_VERDICTS.has(a.verdict)
+    && a.rowFile === `${MIRROR_PREFIX}${a.constant}.md`
+    && mirrorFileExact(a.rowFile);
+};
+/** The one mirror line carrying the reference's exact bold key, or null when none or several do. */
+export function referenceEntryLine(file, citedRef, root = ROOT) {
+  if (typeof citedRef !== "string" || citedRef === "" || !mirrorFileExact(file, root)) return null;
+  let lines;
+  try { lines = readFileSync(join(root, file), "utf8").split(/\r?\n/); } catch { return null; }
+  const key = `**[${citedRef}]**`;
+  const hits = lines.filter((l) => l.includes(key));
+  return hits.length === 1 ? hits[0] : null;
+}
+const referenceNoteShown = (a, root = ROOT) => {
+  if (typeof a.referenceNote !== "string" || !referenceNoteOk(a)) return false;
+  const line = referenceEntryLine(a.rowFile, a.citedRef, root);
+  return line !== null && line.includes(a.referenceNoteEntryText);
+};
+
 /** What each audit leg actually examined. A reference entry is NOT a bound row. */
 const LEG_LABEL = { "value-vs-source": "bound row", "citation-well-formed": "reference entry" };
 
@@ -331,6 +376,7 @@ export function usableAudit(a) {
     && (a.sourceRead === undefined || typeof a.sourceRead === "string")
     && (a.settles === undefined || typeof a.settles === "string")
     && claimFieldsOk(a)
+    && referenceNoteOk(a)
     && sourceHeadingOk(a)
     && sourceLineFree(a)
     && safeUrl(a.source) !== null;
@@ -379,6 +425,7 @@ const UNUSABLE_CHECKS = [
   ["settles is not a string", (a) => a.settles === undefined || typeof a.settles === "string"],
   ["a claim field carries TeX-style markup (^{, _{ or a backslash command), which no page renders", claimMarkupFree],
   ["claimReader / claimResult / claimNotCovered malformed (a non-string, an empty claimReader, or a result or exclusion with no claimReader)", claimFieldsOk],
+  ["referenceNote / referenceNoteEntryText malformed (a partial pair, a sentence that does not contain the entry text, a note on an entry whose source was not read, or a rowFile that is not this constant's own mirror file)", referenceNoteOk],
   ["sourceFile / sourceHeading / sourceHeadingReader malformed (a partial set, a reader heading with markup, or a heading that is not exactly one line of the mirrored file)", sourceHeadingOk],
   ["source carries a fragment (#…), which nothing verifies; point at a line with sourceFile and sourceHeading instead", sourceLineFree],
   ["source is not an http(s) URL", (a) => safeUrl(a.source) !== null],
@@ -743,9 +790,14 @@ export function auditBlock(id, store, shown = []) {
           // A reference-entry check is not a row (87a, found reading every rendered verdict line).
             : leg === "reference entry" ? `${v.text.replace(/ in this row$/, " in this entry")}. ${UNNAMED_CLAIM("entry")}`
               : `${v.text}. ${UNNAMED_CLAIM("row")}`;
+    // A-74: what the paper prints about its own citation, beside what the table's entry gives. It says
+    // "not the bound" because the verdict before it is about the bound and this sentence never moves it.
+    const refNote = referenceNoteShown(a)
+      ? `<span class="refnote">About the reference itself, not the bound: ${esc(a.referenceNote)}.</span> `
+      : "";
     return `<li>${relation}${again}${what}<code style="display:inline;padding:.1rem .3rem">[${esc(a.citedRef)}]</code> &mdash; ` +
       `${esc(verdictText)}. <a href="${esc(srcHref)}">${esc(v.link)}</a>${atHeading}${note}. ` +
-      `<span class="sel">Selected: ${esc(selectionNote(a))}.</span></li>`;
+      `${refNote}<span class="sel">Selected: ${esc(selectionNote(a))}.</span></li>`;
   }).join("");
 
   const countRows = (rows) => new Set(rows.map(rowKey)).size;
@@ -1137,6 +1189,78 @@ function selftest() {
   const droppedSettles = droppedAudits({ audits: [badSettles] });
   assert.ok(droppedSettles.length === 1 && /settles is not a string/.test(droppedSettles[0].why),
     `a non-string settles must be NAMED by the render-side refusal: ${JSON.stringify(droppedSettles)}`);
+
+  // (b3) WHAT THE PAPER PRINTS ABOUT ITS OWN CITATION (A-74, 2026-10-10). MEANING FIRST: a sentence is
+  //      printed only when its quoted text stands on its OWN reference line; it is withheld when that text
+  //      survives only elsewhere in the file (cross-family review r1) or the key has no line; each note's
+  //      own text appears on its own entry's line and no other; it is escaped; and every malformed shape
+  //      is refused by name. The exact pin is LAST. These run on a stand-in for 43a's page, because the
+  //      check reads the constant's own mirror file.
+  const REAL_FILE = `${MIRROR_PREFIX}43a.md`;
+  const realLines = readFileSync(join(ROOT, REAL_FILE), "utf8").split(/\r?\n/);
+  const REAL_TEXT = "Remarks on steiner minimal trees";
+  const OTHER_TEXT = "A new bound for the steiner ratio";
+  // Positive controls: each fixture's premise holds in the real file before anything is asserted.
+  assert.ok(referenceEntryLine(REAL_FILE, "GH1976")?.includes(REAL_TEXT), "positive control: GH1976's own line carries its entry text");
+  assert.ok(referenceEntryLine(REAL_FILE, "DH1983")?.includes(OTHER_TEXT), "positive control: DH1983's own line carries its entry text");
+  assert.ok(referenceEntryLine(REAL_FILE, "CH1978") !== null && !referenceEntryLine(REAL_FILE, "CH1978").includes(REAL_TEXT) && realLines.some((l) => l.includes(REAL_TEXT)),
+    "positive control: GH1976's text is in the file but NOT on CH1978's line, so the elsewhere fixture tests what it says");
+  assert.equal(referenceEntryLine(REAL_FILE, "NOKEY1"), null, "positive control: a key with no bold line in the file finds no line");
+  assert.equal(referenceEntryLine(REAL_FILE, "GH1976".slice(0, 4)), null, "a key that is only a PREFIX of a real key (GH19) must find no line");
+  const row43 = { ...row, id: "43a" };
+  const rnBase = { ...claimStore.audits[0], constant: "43a", rowFile: REAL_FILE };
+  const rnShown = { ...rnBase, id: "T-RN1", citedRef: "GH1976", referenceNoteEntryText: REAL_TEXT,
+    referenceNote: `The paper prints the title as Alpha; the table's reference entry gives it as ${REAL_TEXT}` };
+  const rnOther = { ...rnBase, id: "T-RN3", citedRef: "DH1983", referenceNoteEntryText: OTHER_TEXT,
+    referenceNote: `The paper prints the title as Gamma; the table's reference entry gives it as ${OTHER_TEXT}` };
+  const rnElsewhere = { ...rnBase, id: "T-RN2", citedRef: "CH1978", referenceNoteEntryText: REAL_TEXT,
+    referenceNote: `The paper prints the title as Beta; the table's reference entry gives it as ${REAL_TEXT}` };
+  const rnNoKey = { ...rnBase, id: "T-RN4", citedRef: "NOKEY1", referenceNoteEntryText: "steiner",
+    referenceNote: "The paper prints the title as Delta; the table's reference entry gives it as steiner" };
+  const rnAll = [rnShown, rnOther, rnElsewhere, rnNoKey];
+  for (const a of rnAll) assert.ok(usableAudit(a), `positive control: ${a.id} is a well-formed entry`);
+  const rnLis = [...renderPage(row43, "abc1234def", { audits: [...claimStore.audits.map((a) => ({ ...a, constant: "43a" })), ...rnAll], corpus: { citedRows: 999 } })
+    .matchAll(/<li>[\s\S]*?<\/li>/g)].map((m) => m[0]);
+  const rnLine = (ref) => rnLis.filter((l) => l.includes(`[${ref}]`));
+  for (const a of rnAll) assert.equal(rnLine(a.citedRef).length, 1, `positive control: ${a.id} renders as exactly one line`);
+  for (const a of [rnShown, rnOther]) assert.ok(rnLine(a.citedRef)[0].includes(esc(a.referenceNote)), `${a.id}: a note whose text stands on its own reference line must be printed on its own entry's line`);
+  // WITHHELD before any count: with withholding weakened, these notes print and a count would trip first,
+  // naming the wrong property (red-arm M1, 2026-10-10).
+  assert.ok(!rnLine("CH1978")[0].includes("About the reference itself") && !rnLis.some((l) => l.includes("Beta")),
+    "a note whose quoted text survives ELSEWHERE in the file but not on its own reference line must be WITHHELD, because 'the entry gives' would not be true of that entry");
+  assert.ok(!rnLine("NOKEY1")[0].includes("About the reference itself") && !rnLis.some((l) => l.includes("Delta")),
+    "a note whose key has no reference line in the file must be WITHHELD");
+  // Attachment: each printed note's own text is on its own line and on NO other line (review r1, finding 2).
+  for (const a of [rnShown, rnOther]) {
+    const own = esc(a.referenceNote);
+    assert.equal(rnLis.filter((l) => l.includes(own)).length, 1, `${a.id}'s note must appear on exactly one line`);
+    assert.ok(rnLine(a.citedRef)[0].includes(own), `${a.id}'s note must be on ITS line, not another entry's`);
+  }
+  assert.equal(rnLis.filter((l) => l.includes("About the reference itself")).length, 2, "exactly the two printed notes carry the label");
+  assert.ok(rnLine("GH1976")[0].indexOf("About the reference itself") > rnLine("GH1976")[0].indexOf(">source link<"), "the reference note follows the verdict and its source link, so it is never read as the verdict");
+  const rnHostile = renderPage(row43, "abc1234def", { audits: [{ ...rnShown, referenceNote: `<b>x</b> ${REAL_TEXT}` }], corpus: { citedRows: 999 } });
+  assert.ok(rnHostile.includes(`&lt;b&gt;x&lt;/b&gt; ${REAL_TEXT}`) && !rnHostile.includes("<b>x</b>"), "a hostile referenceNote must reach the page escaped, never as markup");
+  for (const [bad, why] of [
+    [{ referenceNoteEntryText: undefined }, "a referenceNote with no entry text"],
+    [{ referenceNote: undefined }, "an entry text with no referenceNote"],
+    [{ referenceNote: "The paper prints Alpha; the entry gives something else" }, "a sentence that does not contain the entry text"],
+    [{ verdict: "UNREACHABLE" }, "a reference note on an entry whose source was not read"],
+    [{ rowFile: `${MIRROR_PREFIX}54a.md` }, "a reference note whose rowFile is another constant's file"],
+    [{ rowFile: `${MIRROR_PREFIX}no-such-file.md`, constant: "no-such-file" }, "a reference note with no mirror file to check"],
+    [{ rowFile: undefined }, "a reference note with no rowFile"],
+    [{ referenceNote: `${rnShown.referenceNote}.` }, "a referenceNote ending in a full stop"],
+    [{ referenceNote: `${rnShown.referenceNote} at most C^{d}` }, "a referenceNote carrying TeX-style markup"],
+    [{ referenceNote: "  ", referenceNoteEntryText: "  " }, "a blank referenceNote and entry text"],
+  ]) {
+    const entry = { ...rnShown, ...bad };
+    assert.ok(!usableAudit(entry), `${why} must be refused, not rendered`);
+    const dropped = droppedAudits({ audits: [entry] });
+    assert.ok(dropped.length === 1 && dropped[0].at === "T-RN1" && /referenceNote/.test(dropped[0].why),
+      `${why} must be NAMED, with its own entry and the referenceNote reason, by the render-side refusal: ${JSON.stringify(dropped)}`);
+  }
+  // Exact pin, LAST, so a mutation names the property above that it broke before this reports a diff.
+  assert.ok(rnLine("GH1976")[0].includes(`<span class="refnote">About the reference itself, not the bound: ${esc(rnShown.referenceNote)}.</span> <span class="sel">`),
+    "the reference note's exact shape");
   // A-65 (2026-10-08): a source that is a HEADING in the mirror. The line is found at render time from
   // the stored heading text, against the real mirror file, so no line number is written here either.
   // THE STORED ENTRIES THEMSELVES are checked here (review r1, finding 2): a store edit that breaks a
