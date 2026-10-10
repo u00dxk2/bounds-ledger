@@ -1658,6 +1658,18 @@
         ],
         "bounds": 19,
         "order": "Planned and committed before any of these papers was opened. The commit that adds the readings comes after it in history. The next four keys of the derived census order (ds1-depth --frame, credited keys by first appearance), covering frame positions 47 (Ex25), 48, 50, 69 and 87 (HZ1, 4 bounds), 49 (CaET) and 53, 57, 59, 61, 63, 72, 74, 78, 80, 88, 90, 102 and 104 (Kuz, 13 bounds). The tripwire in A-54.rebuildCheckpoint2026_09_28 was applied first and did not fire: 17 papers remaining (census5_2026_10_04) against 4 x 5 census slots through 2026-10-16 (10-08 through 10-16, counting today) = 20. Four papers and not more because Kuz alone needs thirteen verdicts, which rebuildCheckpoint2026_09_28 named in advance; four is the floor for papers ATTEMPTED. Attempted and read are reported as two numbers. The blocked-paper retry (A-54.blockedRetry2026_09_30, hard date this slot) runs after these four as its own named step and does not count toward them."
+      },
+      {
+        "session": 7,
+        "plannedOn": "2026-10-10",
+        "keys": [
+          "HW+",
+          "Tat",
+          "Math",
+          "HZ2"
+        ],
+        "bounds": 32,
+        "order": "Planned and committed before any of these papers was opened. The commit that adds the readings comes after it in history. The next four keys of the derived census order (ds1-depth --frame, credited keys by first appearance), covering frame positions 58, 60, 62, 64, 65, 77, 79, 81, 82, 83, 93, 95, 97, 98, 99, 106, 107, 109, 110, 111, 116, 117, 118, 121 and 122 (HW+, 25 bounds), 76 and 86 (Tat, 2 bounds), 84, 112 and 119 (Math, 3 bounds) and 89 and 105 (HZ2, 2 bounds). The tripwire in A-54.rebuildCheckpoint2026_09_28 was applied first and did not fire: 13 papers remaining (census6_2026_10_08: 11 of Table Ia's 42 credited papers, plus AnM2 and AnM3) against 4 x 4 census slots through 2026-10-16 (10-10 through 10-16, counting today) = 16. HW+ takes one access budget for all 25 of its bounds, as rebuildCheckpoint2026_09_28 said it should; four is the floor for papers ATTEMPTED. Attempted and read are reported as two numbers."
       }
     ]
   }
