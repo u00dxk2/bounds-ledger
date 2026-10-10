@@ -1,8 +1,39 @@
+---
+north_star_metric: an outside party acts on a watched record WITHOUT us filing the report (G-4; primary indicator = npm run reports, arrivals through the per-row links)
+north_star_value: 0
+north_star_status: expected-zero
+north_star_classification: expected-zero
+product: bounds-ledger
+date: 2026-10-10
+lifecycle_stage: launched
+last_deploy: 618565c (the last page-changing push; npm run served read 2 of 2 served at 16:54:19Z, and c/43a and c/54a matched HEAD byte for byte at 16:54:45Z)
+on_hold_items: 1
+top_action_today: A-74, two constant pages now say where the paper's own citation differs from the reference entry
+# The four keys below have NO instrument in this lane and are left null rather than filled with a
+# zero nobody measured: pre-revenue, no billing, no analytics on the published page, no Sentry project.
+mrr_usd: null
+n_active_users_28d: null
+sentry_open_p1: null
+sentry_open_p2: null
+---
+
 # bounds-ledger — 2026-10-10 (Saturday, MT)
 
-## P1 selection packet
+## BLUF
 
-Posted before any work. P5 folds it into the canonical sections.
+Two constant pages now tell a reader where the paper's own printed title or page range differs from the reference the table gives. We also read 32 more Small Ramsey Numbers bounds against their sources.
+
+No first command: the change is live, and tomorrow's first command is in the primer.
+
+## What changed
+
+- `A-74` (two differences between a mirrored entry and its source) shipped and closed. c/43a and c/54a each print a sentence after the reading, under "About the reference itself, not the bound", putting what the paper prints first and what the entry gives second. Commits `860fb33` and `618565c`; live since the Pages build of 16:50:28 GMT.
+- `A-54` (the Small Ramsey Numbers census) session 7 read 32 bounds: plan `2f6f487`, readings `8f5e0b8`. `node scripts/ds1-depth.mjs`: "census: 112 of 122 bound(s), across 35 of 42 credited paper(s) — 49 sound, 0 defective, 44 unresolved, 19 unreachable".
+- The ledger closed `A-74` and recorded census session 7 on `A-54` in `c686ccd`.
+
+### P1 selection packet
+
+Posted as bus `e972fc97` before any work, and approved (inbox `935db40f`).
 
 **Outcome:** two constant pages tell the reader where the paper's own printed citation differs from the citation the mirrored entry gives. Item `A-74` (two differences between a mirrored entry and its source, found by reading), option (a) on its own row: show them.
 
@@ -67,3 +98,119 @@ Then:
   - (3) Report upstream: not asked; David's call.
 
 **Prior-day retro finding that bears on the choice:** 10-09's Q4 (the two differences, row `A-74`) is exactly what is selected.
+
+### P3 product work
+
+**Action (improve):** the manager approved the selection (inbox `935db40f`). Its two points were checked, not assumed:
+- The 54a sentence states the disagreement and names Crossref as agreeing with the entry. Crossref's record was read today: "page: 3603-3613".
+- The title-case hypothesis held: the case-sensitive readCommand matches "A Remark on Steiner".
+
+The two sentences, as live:
+- c/43a: "About the reference itself, not the bound: The paper's first page (p. 177) prints its title in capitals as A REMARK ON STEINER MINIMAL TREES, that is, "A Remark on Steiner Minimal Trees"; the table's reference entry for [GH1976] gives the title as "Remarks on steiner minimal trees"."
+- c/54a: "About the reference itself, not the bound: The article's first page gives its pages as 3603–3612, and its last page is numbered 3612; the table's reference entry for [BJ2008] gives 3603–3613, as does Crossref's record for the article."
+
+Both were restated from page images viewed today: the 1976 scan on R. L. Graham's papers page, and the Internet Archive capture of the AMS PDF dated 2024-03-29.
+
+**Implementation:**
+- Two store fields on `A-47-0069` and `A-47-0071`: referenceNote and referenceNoteEntryText.
+- A renderer guard. The sentence is printed only when its quoted text stands on the entry's own reference line, found by the exact bold key with exactly one line carrying it. Otherwise it is withheld. Malformed shapes are refused by name.
+- Seven mutations, each tripping the assertion written for it; the list is in the bodies of `860fb33` and `618565c`.
+
+**Delivery:**
+- `npm run served` at 16:54:19Z: "2 checked — 2 served, 0 in flight, 0 stale, 0 unreachable".
+- A byte comparison at 16:54:45Z: both live pages equal `git show HEAD`.
+- `A-74`'s readCommand on HEAD printed `c/43a.html:1` and `c/54a.html:1` (exit 0). It printed nothing this morning.
+
+**Encounter:** blind, tracked on `A-59` (encounter is blind on the public pages), read 2026-10-28.
+
+**Outcome:** open.
+
+### Census session 7, beside it
+
+- **Tripwire:** it did not fire. 13 papers were left against 4 × 4 slots = 16.
+- **HZ2:** 2 SOUND. The 1998 paper's abstract and Table 2 state both bounds, and the page images were viewed.
+- **Tat:** 2 SOUND by recomputation of the credited graph files.
+  - R(6,11) ≥ 262 passed both exhaustive methods on 261 vertices in 57 minutes.
+  - The checker was re-armed today on a planted K7 and printed "RESULT: FAIL", exit 1.
+- **HW+:** 25 UNRESOLVED. Only the abstract has ever been reached, and Elsevier blocked the body.
+- **Math:** 3 UNREACHABLE. Only metadata was reached.
+- Census rows stay off both pages under the 2026-09-20 freeze.
+
+## Inputs (controllable)
+
+- Reviews by the other model family: three runs of Codex (read-only, foreground). The banner workdir was `C:\dev\skylark\bounds-ledger` each time, and every finding was taken before push.
+  - `A-74` round 1, on an earlier form of `860fb33`: FIX-THEN-PUSH.
+    - 1 BLOCKER: the first guard matched the quoted text anywhere in the file, so an old wording surviving elsewhere would keep the sentence printed after the entry changed.
+    - 1 SHOULD: the placement test counted the label, not the sentence.
+  - `A-74` round 2, on `860fb33`: FIX-THEN-PUSH, 2 SHOULD (two guards untested). Fixed in `618565c`.
+  - Census round 1, on an earlier form of `8f5e0b8`: FIX-THEN-PUSH, 2 SHOULD and 1 NIT.
+    - An HW+ note said the cells "are not the paper's own values" where the survey says "most"; it was narrowed in all 25 rows.
+    - Two commit-message sentences.
+- `npm run verify` receipt: exit 0 at `618565c` (16:49:53Z). CI GREEN at `618565c` for `reverify.yml` and `page-check.yml`. The manager's review reports `c686ccd`'s CI green too: page-check, reverify and the Pages build.
+- Hygiene helper: dispatched at P3 start; one draft line, applied at the close.
+- W-7 — the instrument read against its own claim today was `check-next-primer-exists.mjs`.
+  - It claims to say whether the next primer is on disk.
+  - At the close it printed "PRESENT docs/cold-starts/2026-10-10.md · primer offset +0", a file yesterday's close wrote, while tomorrow's `docs/cold-starts/2026-10-11.md` did not yet exist.
+  - This lane names a primer for the day it is FOR, while the checker reads the day it was WRITTEN. So before tonight's primer is written, it can only say PRESENT; its output could not have said otherwise.
+  - `npm run close:primer`, which checks tomorrow's MT date, is the lane's own read of that question.
+
+## Outputs (lagging)
+
+- The bar's metric is NOT MEASURABLE: there are no analytics and no request log. The encounter with today's change is blind, tracked on `A-59`, 2026-10-28.
+- `npm run reports` this morning: "OUTSIDE ARRIVALS: 0" of 33 raw issues (33 + 0 + 0 = 33). It was not re-run after the push.
+- positive control: the reports probe fetched 33 issues and classified every one; `check-engineering-zero`, which read 0 findings for this lane, named a finding in another lane (buddha-ur) in the same run; and the findings read below returned four instrument-facing findings, so each zero above came from a read that returned something.
+
+<!-- findings:begin -->
+- My first form of the `A-74` guard checked the quoted entry text against the whole mirror file. An old wording surviving in another reference, or in a table row, would have kept "the entry gives" printed after the entry itself changed. The cross-family review caught it before push, and the guard now reads the entry's own reference line.
+- Red-arm M1 first tripped a count assertion that sits before the withholding guard, so the guard it was meant to prove never ran. The assertions were reordered so each mutation names its own property. That is the assertion-order trap in this repo's KP-78 (prove the instrument can fail) notes, met again. control: the first run's log was overwritten by the re-run after the reorder, so tmp/a74/redarm-M1-no-withholding.txt now holds the WITHHELD message; the first run's count-assertion message survives only in this session's transcript, so that sentence rests on the transcript, not on a saved file.
+- A scripted form of mutation M6 failed on a ReferenceError (its replacement left `hits` undefined), not on the guard. It was not counted, and M6 was re-run by hand, where it tripped its own assertion. control: tmp/a74/redarm-M6-first-of-duplicates.txt prints "ReferenceError: hits is not defined", and tmp/a74/redarm-M6-by-hand.txt prints the duplicate-key assertion's message.
+- The harness refused file writes from the three reading agents ("Subagents should return findings as text"), so each report was saved by the lead from the returned text. One brief also carried a wrong publisher id for HW+, which the agent caught against Crossref.
+- Classification: today's window holds no record-facing finding and four instrument-facing ones (the whole-file guard, the M1 order, the M6 script, the reading-agent tooling). No counted catch is quoted, numeric or byte-only, because `npm run catches` was not run today and counts drift detection only. The run of consecutive instrument-facing days is 1 after today; 10-09 had two record-facing findings. The standing prediction is neither confirmed nor falsified, since no record-facing catch arrived: the next record-facing catch will be a citation-quality defect in a mirrored upstream entry, found by a human reading the cited source in the depth audit (`A-47`), not by any alarm.
+<!-- findings:end -->
+
+## Recommendation
+
+- [B] 2026-10-11: `A-47` (the depth audit) slice 16 at positions 506, 556, 606 and 656, with the draw pushed before any source is opened.
+- [B] 2026-10-12: `A-54` (the Small Ramsey Numbers census) session 8, from XXER, with the tripwire applied first: 9 papers against 4 × 3 slots = 12.
+
+## On hold pending data
+
+- **The encounter with today's change:** blind until `A-59` (encounter is blind on the public pages) is read on 2026-10-28.
+
+## State Appendix
+
+Written last, from the commands named. As of 17:47Z, HEAD was `c686ccd` and equal to origin/main; this report's own commit comes after it. Release: `git -C C:/dev/skylark/bounds-ledger rev-parse HEAD origin/main`.
+
+- **Ledger delta:**
+  - `A-74` (two differences between a mirrored entry and its source) closed, option (a).
+  - `A-54` (the Small Ramsey Numbers census) gained `census7_2026_10_10`, and `expectedSignalBy` moved 2026-10-10 → 2026-10-12.
+  - `A-54`'s read stamp came from the hygiene helper's `--run`.
+- **Census store:** `DS1-0086` to `DS1-0117` added.
+- **Audit store:** referenceNote fields on `A-47-0069` and `A-47-0071`.
+- **Pending reads,** the earliest dated field per open row, read from `continuity/items.json` at the close:
+  - 2026-10-11: `A-45` (the tier-1 leading indicator), `A-47` (the depth audit).
+  - 2026-10-12: `A-2` (the drift-resolution log), `A-54` (the census), `A-63` (a constant page does not say which claim a verdict checked).
+  - 2026-10-13: `W-13` (someone must call the served-bytes check), `A-69` (a matched row's values on a phone).
+  - 2026-10-14: `A-50` (importing a CLI script can run it), `W-14` (watch issue #218 for a maintainer reply).
+  - 2026-10-15: `W-11` (search the record before calling a claim decision-ready).
+  - 2026-10-20: `G-2` (contribute a verified bound improvement), `W-4` (prove each new detector both ways), `W-8` (does an amended outward artifact go back to David before it sends).
+  - 2026-10-22: `W-3` (the erdosproblems.com/36 acknowledgement).
+  - 2026-10-26: `G-4` (an outside party acts on a watched record).
+  - 2026-10-28: `A-59` (encounter is blind on the public pages), `A-70` (phone-sized row links and the citation copy button, monitoring).
+  - 2026-11-04: `A-9` (the engineering-health backlog).
+  - 2026-11-06: `W-6` (the report-an-error channel's read window).
+- **Codex:** 3 calls, all foreground read-only reviews.
+
+### Close
+
+ACTION: COMPLETED · item A-74 · P3 msgId 2d1c649e
+
+- **Since the P3 post:** nothing changed in the shipped work. The manager's review (inbox `9fc972f6`) re-read both live pages and judged the action COMPLETED with no defect. It also reported `c686ccd`'s CI green, which my P3 post had called pending.
+- **Hygiene draft:** 1 line — 0 accepted · 1 amended · 0 rejected.
+  - `A-54`'s re-date to 2026-10-12 was AMENDED from `--extend` to `--set` on `expectedSignalBy`, because `--extend` has rewritten other fields before. `git diff -U0` showed only `expectedSignalBy` and `lastEvaluated` changed.
+  - READ-MUTATED: none, with one read guarded. HEAD was commit `2f6f487` before and after; the tree was clean before, and afterwards only continuity/items.json and continuity/read-outputs/A-54.txt had changed, both excluded by design.
+  - Wait-justification, quoted: "RESULT: PASS — 1 of 91 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)".
+  - Engineering-zero, quoted: "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)".
+- **Due gates:** `check-due-gates-dispositioned` printed "verdict: CLEAR — every gate due at Phase 0 was dispositioned", with "snapshot: tmp\due-gates-snapshot.json — CURRENT (taken 2026-10-10)".
+- **Primer:** `docs/cold-starts/2026-10-11.md`, generated for 2026-10-11.
+- **Receipt:** unchanged from the P3 post.
