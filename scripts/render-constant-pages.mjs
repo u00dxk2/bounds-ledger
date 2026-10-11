@@ -1040,6 +1040,15 @@ async function selftest() {
   assert.equal(pageScripts.length, 1, "a constant page carries exactly one script: the copy button");
   const copyScript = pageScripts[0];
   assert.ok(copyScript.includes("clipboard"), "positive control: the one script is the copy script");
+  // Fetch nothing at runtime, by ANY route (Codex r1 on a0de5cc: a fetch() inside the one inline script
+  // passed the tag checks above). The script, the stylesheet and the markup are each held to it; the only
+  // <link> a page may carry is its canonical address, and anchors are navigation, not loads.
+  assert.ok(!/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket|EventSource|importScripts)\b|\bimport\s*\(/.test(copyScript),
+    "the copy script must make no network request of any kind");
+  assert.ok(!/url\(/i.test(css) && !/@import/i.test(css), "the stylesheet must load nothing (no url(), no @import)");
+  assert.ok(!/<(img|iframe|object|embed|video|audio|source|picture)\b/i.test(html), "a constant page must embed nothing that loads");
+  const links = [...html.matchAll(/<link\b[^>]*>/gi)].map((m) => m[0]);
+  assert.ok(links.length === 1 && /rel="canonical"/.test(links[0]), "the only <link> a constant page carries is its canonical address");
   // (3) THE WIRING (memory: test the wiring, not the helper). The selector is read OUT of the page's own
   // script and must match an element the page actually renders, holding the citation's <code>. A script
   // left querying 'details.cite' (the index's markup) would insert nothing here and fail this line.
@@ -1068,15 +1077,27 @@ async function selftest() {
       createElement: (t) => node(t), createRange: () => ({ selectNodeContents(n) { this.node = n; } }) };
     new Function("document", "navigator", "window", copyScript)(doc, { clipboard }, { getSelection: () => selection });
     return { code: first.code, selection, button: first.kids.find((k) => k.tag === "button"),
-      status: first.kids.find((k) => k.tag === "span"), secondButton: second.kids.find((k) => k.tag === "button") };
+      status: first.kids.find((k) => k.tag === "span"), secondButton: second.kids.find((k) => k.tag === "button"),
+      secondStatus: second.kids.find((k) => k.tag === "span") };
   };
-  let copied = null;
-  const ok = runCopy({ writeText: (t) => { copied = t; return Promise.resolve(); } });
-  assert.ok(ok.button && ok.status && ok.secondButton, "the script must give every cite block a button and a status line");
+  const writes = [];
+  const ok = runCopy({ writeText: (t) => { writes.push(t); return Promise.resolve(); } });
+  assert.ok(ok.button && ok.status, "the script must give a cite block a button and a status line");
+  assert.ok(ok.secondButton && ok.secondStatus, "…and every cite block, not only the first (Codex r1 NIT)");
   assert.equal(ok.button.type, "button", "it must be type=button, never a form submit");
+  // The class carries the 44px phone rule, and the text is the button's accessible name (Codex r1).
+  assert.equal(ok.button.className, "copy", "the button must carry the class the 44px phone rule targets");
+  assert.equal(ok.button.textContent, "Copy citation", "the button must say what it does: that text is its accessible name");
   assert.equal(ok.status.attrs.role, "status", "the confirmation must be announced to a screen reader");
+  // The SECOND block's own button copies the SECOND block's citation, not the first's.
+  ok.secondButton.onclick();
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(writes[0], "Bounds Ledger — Second constant (2a)\nupper bound: 2", "a block's button must copy that block's own citation");
+  assert.equal(ok.secondStatus.textContent, "Copied", "…and say so on that block's own status line");
+  const copiedBefore = writes.length;
   ok.button.onclick();
   await new Promise((r) => setTimeout(r, 0));
+  const copied = writes[copiedBefore] ?? null;
   assert.ok(copied !== null && !copied.includes("Cite this row") && !copied.includes("Copy citation"),
     "the copied text must be the citation alone, never the block's heading or the button's label");
   assert.equal(ok.status.textContent, "Copied", "a successful copy must say so");
