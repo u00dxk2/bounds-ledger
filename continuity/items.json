@@ -2793,6 +2793,23 @@
       "updated": "2026-10-10",
       "closedAt": "2026-10-10",
       "lastEvaluated": "2026-10-10"
+    },
+    {
+      "id": "A-75",
+      "type": "active",
+      "status": "open",
+      "title": "The index's self-test does not check the copy button's class or that its scripts make no runtime request",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-10-14",
+      "links": [
+        "A-70"
+      ],
+      "note": "FILED 2026-10-11 MT at the cycle-5 close (rail day 2026-10-10), on the manager's review (inbox b60ed59e-5971-48f0-859d-462986d1182e), which asked that this be carried as a row, not prose. FOUND during the cycle-5 sibling sweep after Codex's review of a0de5cc: the constant pages' self-test now asserts the copy button's class 'copy' (the class the 44px phone rule targets) and that the page's one inline script makes no network request (no fetch, XMLHttpRequest, sendBeacon, WebSocket, EventSource, importScripts or dynamic import), plus no url() or @import in the stylesheet. The index's self-test (scripts/render-site.mjs, around lines 1022-1024 at 3e4ea67) asserts two blocks, the button's type and its name 'Copy citation', but not its class, and its 'no third-party asset referenced' check reads tags, not a request made from a script. WHAT IS COVERED ALREADY: both pages run one function, copyCiteScript in scripts/lib/html.mjs, so removing the class in that function fails the constant pages' test today. WHAT IS NOT: a change to the index's own markup or stylesheet, or an index-only script, that drops the class rule or adds a runtime request.",
+      "onTrigger": "On 2026-10-14, or on the next change to scripts/render-site.mjs, whichever comes first: add to render-site.mjs's self-test (1) the copy button's class equal to 'copy' and the card-layout rule '.copy{min-height:44px' present, and (2) no fetch, XMLHttpRequest, sendBeacon, WebSocket, EventSource, importScripts or dynamic import in any of the page's inline scripts, and no url() or @import in its stylesheet. Red-arm each on a copy (remove the class; add a fetch() to one script) and record both outputs. Then close this row.",
+      "closeWhen": "render-site.mjs --selftest asserts the button's class and the absence of any runtime request in the index's scripts and stylesheet, each red-armed with its failing output recorded on this row; or this row is closed with a written reason not to.",
+      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --selftest — PASS today; the row stays open until the two assertions in onTrigger are in it and red-armed",
+      "created": "2026-10-11",
+      "updated": "2026-10-11"
     }
   ],
   "meta": {

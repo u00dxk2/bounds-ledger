@@ -429,3 +429,29 @@ As of 04:50Z on 2026-10-11 (22:50 MT on 10-10). This report's own commit comes a
 - **Primer:** the banner is rewritten in `docs/cold-starts/2026-10-10.md` and `docs/cold-starts/2026-10-11.md`. Neither file was regenerated tonight, so their generated "what shipped" lists stop at round 1; `git log` is the record.
 - **Receipt:** unchanged from the P3 post.
 - **Codex:** 3 calls this cycle, all foreground and read-only.
+
+### Cycle 5 close
+
+ACTION: COMPLETED · item A-70 · P3 msgId 0305f795
+
+As of 07:16:37Z on 2026-10-11 (01:16 MT, past midnight; this rail day stays 2026-10-10), by a clock read. This report's own commit comes after it. Release: `git -C C:/dev/skylark/bounds-ledger rev-parse HEAD origin/main`.
+
+- **Since the P3 post:** nothing changed in the shipped work. The manager's review (inbox `b60ed59e`) found `a0de5cc` and `9bd02e6` on origin/main, the Pages build successful for both pushes, and the live c/8a carrying the copy script and the 44px rule. It judged the action COMPLETED and found no defect in the shipped work. It did not re-run my browser reads, and says so.
+- **Hygiene draft (Cycle 5):** 0 lines — 0 accepted · 0 amended · 0 rejected.
+  - READ-MUTATED: none (no read was run).
+  - Wait-justification, quoted from the draft: "RESULT: PASS — 1 of 91 row(s) carry waitJustification; 0 warn / 0 info".
+  - Engineering-zero, quoted from the draft: "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable".
+- **Due gates:**
+  - For the rail day, `check-due-gates-dispositioned.mjs --today=2026-10-10` printed "verdict: CLEAR — every gate due at Phase 0 was dispositioned", with "snapshot: tmp\due-gates-snapshot.json — CURRENT (taken 2026-10-10)".
+  - Run with no flag it judges 2026-10-11 and printed "snapshot: tmp\due-gates-snapshot.json — STALE · 1 MT day(s) old (taken 2026-10-10)". So **due-gate verification for 2026-10-11 is UNRESOLVED**: no 10-11 snapshot exists yet. Taking it is the next cycle's Phase-0 job; it is not re-snapshotted at a close.
+- **Ledger delta:**
+  - `A-70` (phone-sized row controls and the copy button) gained `constantPages2026_10_10`. Its `closeWhen` now also requires that leg on the live c/8a. It stays `monitoring`; its encounter read is 2026-10-28.
+  - `A-75` minted (the index's self-test does not check the copy button's class, or that its scripts make no runtime request), next check 2026-10-14. That gap was found in cycle 5's sibling sweep; the manager asked for it as a row.
+- **Due today, 2026-10-11, not yet started:**
+  - `A-47` (the depth audit) slice 16: `nextCheckDate` 2026-10-11. Draw positions 506, 556, 606 and 656 with `node scripts/depth-audit.mjs --draw 506 556 606 656`, and push the draw before any source is opened. A new grid is owed after it.
+  - `A-45` (the tier-1 leading indicator): `expectedSignalBy` 2026-10-11. Read it with `node scripts/check-resolvability.mjs`, run locally.
+- **Not reached this cycle:** `A-69` (a screen reader still hears the verdict first, and the matched value is not marked). Its `nextCheckDate` stays 2026-10-13.
+- **Pending reads after today:** unchanged from the State Appendix above.
+- **Receipt:** unchanged from the P3 post.
+- **Codex:** 1 call this cycle, a foreground read-only review.
+- **Processes:** the local page server (pid 53428) was stopped by its PID and verified gone; the browser sessions were closed.
