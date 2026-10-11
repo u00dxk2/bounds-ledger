@@ -136,6 +136,60 @@ Both were restated from page images viewed today: the 1976 scan on R. L. Graham'
 - **Math:** 3 UNREACHABLE. Only metadata was reached.
 - Census rows stay off both pages under the 2026-09-20 freeze.
 
+### Cycle 4 — P1 selection packet
+
+Cycle 4 of a continuous session. The lead arrived as inbox `853f8a78` and this phase's prompt as `c4f16958`.
+
+**Outcome:** four more constant pages say WHICH claim their reading checked. Item `A-63` (a constant page does not say which claim in a row was checked). Today the two DEFECTIVE verdicts on the site (c/46a, c/8a) and two systematic UNRESOLVED ones (c/20a, c/35a) tell a reader that a source was read and does not support, or cannot settle, "the claim we checked in this row" — and then say "This page does not yet say which part of the row that reading checked."
+
+**The user problem, in the user's words** (`docs/evangelism-bar.md`): "is the number I already have still true". A reader about to cite 58/15 on 46a, or 9.64591 on 8a, is told our reading does not support the row. They cannot tell whether that verdict is about the value, the attribution or the reference. That is exactly the decision they came to make.
+
+**Evidence**
+- OBSERVED tonight, the store (`continuity/depth-audit.json`, a node read of every entry): 71 entries, 64 with a read verdict, 29 of those with no `claimReader`. Those are the same 29 the row recorded on 2026-10-05, so no slice since then has reached one.
+- OBSERVED tonight, the pages: Grep of `c/` for "This page does not yet say which part" matches 23 files. That reconciles with 29 entries: 10a carries 3 and 1b carries 5 (29 − 2 − 4 = 23). The positive control is that c/46a, c/8a, c/20a and c/35a are among the 23.
+- OBSERVED, the four entries: `A-47-0030` (46a, [Bo1991], DEFECTIVE), `A-47-0036` (8a, [S1970], DEFECTIVE), `A-47-0005` (20a, [KL2025], UNRESOLVED, whose sourceRead says "settles part of the row and cannot settle the rest"), and `A-47-0028` (35a, [B2015], UNRESOLVED, a "see, e.g." pointer under a Folklore credit). These are the only two DEFECTIVE verdicts in the store. 20a is the example `A-63`'s own note names.
+- OBSERVED tonight, real users: `npm run reports` printed "OUTSIDE ARRIVALS: 0" of 33 raw issues (33 + 0 + 0 = 33). The bar's metric is NOT MEASURABLE: there are no analytics and Pages provides no request log.
+- OBSERVED tonight: `check-cycle-rotation.mjs --lane bounds-ledger` printed "UNDETERMINED — journey-walk: no journey-walk artifact on record for bounds-ledger; the registry does not declare which lanes owe one" (exit 2, REVIEW). That is not "nothing due". It is a registry gap about journey-walk, the same gap this morning's exit-0 read did not show. `answered-cards.mjs`: no David-word cards.
+- HYPOTHESIS: the saved copies for 46a (`tmp/depth-reads/a56/gdz/`) and 8a (`tmp/depth-reads/slice8/8a/`) still exist, so those two re-reads need no new fetch. NOT checked yet. If they are gone, the sources are fetched again from the routes each entry records.
+- MISSING: any reader's report of confusion on these four pages. The case rests on the pages' own text, not on an observed reader.
+
+**Permission.** `A-63` is open, not parked, with no board card. Its row licenses this route in writing: the 29 "are never back-filled", and each "is re-read under a claim named first when the A-47 ladder or a retry reaches it". This is a retry under that rule, on lane authority, as a reader-facing page change (David's 80% product ruling). It is not outward contact. Because the pages are public, the four claim sentences get a read-only review from the other model family before any reading, since a claim sentence is a method sentence. The diff gets a second review before push (David, 2026-08-01).
+
+**Next action:** improve. Write the four claims first, in reader-facing words, scoped to what each row says. Store them on the `A-63` row and push before any source is opened. Then re-read each source under its claim and record the result on the existing entry (retry, under `collisionRule2026_10_01`'s shape). The verdict may move, and a moved verdict is reported as such. Finally re-render and red-arm. First command, the baseline count before anything changes:
+```
+node C:/dev/skylark/bounds-ledger/scripts/depth-audit.mjs
+```
+
+**Acceptance:**
+- Grep of `c/` for "This page does not yet say which part" matches 19 files, none of them 46a, 8a, 20a or 35a.
+- Each of those four pages carries "the claim we checked:" followed by the pre-pushed claim, verbatim.
+- The claim-push commit precedes every reading agent's first fetch timestamp.
+- `render-constant-pages.mjs --check` passes.
+- The live pages equal `git show HEAD:c/<id>.html` byte for byte.
+
+**Delivery and encounter:**
+- Delivery: `npm run served`, plus a byte comparison of all four pages after the Pages build.
+- Encounter: blind, tracked on `A-59`, read 2026-10-28. The only event that could appear is a report through one of these rows' "looks wrong?" links, counted by `npm run reports` and readable at N = 1. It reads 0 of 33 tonight.
+
+**USER-FACING: yes.** Paths: `continuity/depth-audit.json`, `c/46a.html`, `c/8a.html`, `c/20a.html`, `c/35a.html`; `index.html` only if a verdict moves; `scripts/render-constant-pages.mjs` only if the retry shape needs it; `continuity/items.json` (the `A-63` row, internal).
+
+**HYGIENE INPUTS**
+- (a) Due rows not bearing on the choice: none. Read: the kickoff's "dated gates due today", 0. The morning snapshot holds `A-54`, already worked in round 1. My re-snapshot tonight was refused (exit 2) because it would have dropped `A-54`, and the morning file is unchanged.
+- (b) Owed child rows: none. Read: the kickoff's "rows owed to you in skylark-site's ledger", 0 of 749.
+- (c) State reads marked CROSSED: none. Read: the kickoff's state block. Key numbers reads "no list yet", which is not measured, not a zero.
+
+**Section 0**
+- Primer read.
+- Listener 🟢: SSE hello at 02:15:20Z.
+- Codex GREEN: the probe line on `c4f16958`.
+- CI GREEN at `3dbcaf3` (the kickoff's read).
+- Deploy drift: not swept. This is a Pages lane with no Render service declared.
+- `npm run verify` receipt exit 0 at `3dbcaf3` (02:33:45Z): 244 claims, 242 hold, 0 broken or unreachable.
+- Free memory 17.3 GB.
+- Carried to 2026-10-11, not this cycle: `A-47` slice 16 (draw 506 556 606 656, pushed before reading) and `A-45`.
+
+**Prior-day retro finding that bears on the choice:** 10-09 Q0, "a field padded past what the entry's own evidence shows", recurred mildly that day. Writing four claims is exactly where it would recur, so each claim is scoped to the row's own words and nothing more, and that is the review's first angle.
+
 ## Inputs (controllable)
 
 - Reviews by the other model family: three runs of Codex (read-only, foreground). The banner workdir was `C:\dev\skylark\bounds-ledger` each time, and every finding was taken before push.
