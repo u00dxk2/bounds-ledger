@@ -308,3 +308,32 @@ ACTION: COMPLETED · item A-74 · P3 msgId 2d1c649e
 - **Due gates:** `check-due-gates-dispositioned` printed "verdict: CLEAR — every gate due at Phase 0 was dispositioned", with "snapshot: tmp\due-gates-snapshot.json — CURRENT (taken 2026-10-10)".
 - **Primer:** `docs/cold-starts/2026-10-11.md`, generated for 2026-10-11.
 - **Receipt:** unchanged from the P3 post.
+
+### Cycle 4 close
+
+ACTION: COMPLETED · item A-63 · P3 msgId f4034d13
+
+As of 04:50Z on 2026-10-11 (22:50 MT on 10-10). This report's own commit comes after it. Release: `git -C C:/dev/skylark/bounds-ledger rev-parse HEAD origin/main`.
+
+- **Since the P3 post:** nothing changed in the shipped work. The manager's review (inbox `5a98249c`) read all four live pages, found them byte-equal to origin/main with last-modified 04:28:18 GMT (the Pages build of the report commit `a89b956`), and judged the action COMPLETED.
+- **One small defect from that review, not fixed tonight:** c/46a and c/20a print "This verdict does not cover X, and Y", where "and" can read as joining something the verdict does state. It is carried on `A-63` (a constant page does not say which claim a verdict checked) as item 4 of `openAfterCycle4_2026_10_10`.
+- **Claims pass, per sentence** (the manager asked for the tally; both counts are rows of Codex's own tables):
+  - Round 1, on `89a2282`, 12 rows (7 + 2 + 1 + 2): 7 HOLDS; 2 HOLDS for the Russian original with the cited translation UNVERIFIABLE-HERE (both 8a); 1 UNVERIFIABLE-HERE (46a's whole-paper absence); 2 REFUTED-AS-WRITTEN in part (35a's opening "supports it", and 8a's "is the value" if numerical identity is meant, fixed as "rounds to"). 20a's page-image provenance was also marked UNVERIFIABLE-HERE inside one of the HOLDS rows.
+  - Round 2, on `faddb9d`, 10 rows: 10 HOLDS, 0 REFUTED-AS-WRITTEN. It notes that what 8a's unread translation prints, and whether 35a's conditions cover the constant's class, remain UNVERIFIABLE-HERE, which is what those two results now say.
+- **Hygiene draft:** 0 lines — 0 accepted · 0 amended · 0 rejected. The helper ran its two checks only.
+  - READ-MUTATED: none (no read was run).
+  - Wait-justification, quoted: "RESULT: PASS — 1 of 91 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)".
+  - Engineering-zero, quoted: "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)".
+- **Due gates:** `check-due-gates-dispositioned` printed "verdict: CLEAR — every gate due at Phase 0 was dispositioned", with "snapshot: tmp\due-gates-snapshot.json — CURRENT (taken 2026-10-10)".
+- **Ledger delta:**
+  - `A-63` gained `cycle4Draw2026_10_10`, `cycle4Result2026_10_10` and `openAfterCycle4_2026_10_10`. It stays open, next read 2026-10-12, on 25 read verdicts that name no claim.
+  - `A-47` (the depth audit) gained `settle8aReopened2026_10_10`: 8a's 2026-09-29 settlement is re-opened.
+- **Audit store:** four retries on `A-47-0005`, `A-47-0028`, `A-47-0030` and `A-47-0036`, and one narrowed sentence on `A-47-0032`. `node scripts/depth-audit.mjs` printed "71 row(s) audited — 48 sound, 1 defective, 15 unresolved, 7 unreachable".
+- **Open, for the next draw** (all on `A-63.openAfterCycle4_2026_10_10`):
+  - 8a needs the body of Mathematical Notes 8(4):706–711.
+  - 35a needs Section 6.1 of Bertsekas's book.
+  - 32a's "The preprint never prints 3.45" needs checking against what was read.
+- **Pending reads:** unchanged from the State Appendix above. The earliest are 2026-10-11: `A-45` (the tier-1 leading indicator) and `A-47` slice 16.
+- **Primer:** the banner is rewritten in `docs/cold-starts/2026-10-10.md` and `docs/cold-starts/2026-10-11.md`. Neither file was regenerated tonight, so their generated "what shipped" lists stop at round 1; `git log` is the record.
+- **Receipt:** unchanged from the P3 post.
+- **Codex:** 3 calls this cycle, all foreground and read-only.
