@@ -988,9 +988,20 @@ async function selftest() {
   // both, and this holds the index to the same rule. Positive controls first, so an empty read cannot pass.
   assert.ok(scripts.length >= 2 && scripts.some((s) => s.includes("addEventListener('input'")),
     `positive control: the index must carry its filter script and its copy script before they are judged (found ${scripts.length})`);
+  // Every script and style block is judged, not only the bare ones (review r1 on d5012e9: a
+  // `<script type="module">` and a second `<style>` escaped the bare-tag extraction). So every opening
+  // tag must BE bare: no type, no src, and exactly one stylesheet.
+  const scriptOpens = html.match(/<script\b[^>]*>/gi) || [];
+  assert.equal(scriptOpens.length, scripts.length, "every script tag on the index must be a bare <script>, so all of them are judged");
+  assert.ok(scriptOpens.every((t) => t === "<script>"), "no script tag on the index may carry attributes (type, src or any other)");
+  const styleOpens = html.match(/<style\b[^>]*>/gi) || [];
+  assert.deepEqual(styleOpens, ["<style>"], "the index carries exactly one bare stylesheet");
+  // A list of request routes is a FLOOR, not a proof: it names the browser's ways of loading something
+  // and cannot rule out one it does not name. It covers the routes a script on this page could
+  // plausibly reach for (r1 found `new Image()`), and the tags above close the markup routes.
   for (const s of scripts) {
-    assert.ok(!/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket|EventSource|importScripts)\b|\bimport\s*\(/.test(s),
-      "no inline script on the index may make a network request");
+    assert.ok(!/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket|EventSource|importScripts|Image|Audio|Worker|SharedWorker)\b|\bimport\s*\(|\.src\s*=/.test(s),
+      "no inline script on the index may make a network request by any listed route");
   }
   const indexCss = (html.match(/<style>([\s\S]*?)<\/style>/) || [, ""])[1];
   assert.ok(indexCss.length > 500, "positive control: the index stylesheet must be read before it is judged");

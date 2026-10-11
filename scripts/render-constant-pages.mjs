@@ -240,6 +240,13 @@ const VERDICT_PROSE = {
  * with UNNAMED_CLAIM, which claims only what the page itself does not do. Review r1 refuted the first
  * wording ("we did not record which claim that was"): several such entries' notes DO record their
  * scope, just not before the reading.
+ *
+ * THE ONE ROUTE BY WHICH SUCH AN ENTRY GAINS A CLAIM (stated 2026-10-11 after a cross-family review
+ * read the rule above as forbidding it): a RETRY. The claim is named and pushed first (A-63's draw
+ * fields), the source is then read again under it, and the new reading REPLACES the one the page
+ * shows; the earlier reading's fields are kept as `<field>Before<date>` and a dated `retry<date>`
+ * field records the attempt. The claim therefore precedes the reading the page shows, which is
+ * what the rule protects. Naming a claim for an entry WITHOUT a new reading stays forbidden.
  */
 const CLAIM_RESULT = {
   SOUND: "What we read supports it",
@@ -1038,13 +1045,18 @@ async function selftest() {
     "a constant page must load no script or stylesheet from anywhere, its own copy script included");
   const pageScripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
   assert.equal(pageScripts.length, 1, "a constant page carries exactly one script: the copy button");
+  // Sibling of the index's fix (review r1 on d5012e9): every opening tag is bare, so no `<script
+  // type="module">` or second `<style>` can sit beside the ones judged here.
+  assert.deepEqual(html.match(/<script\b[^>]*>/gi) || [], ["<script>"], "a constant page's only script tag is a bare <script>");
+  assert.deepEqual(html.match(/<style\b[^>]*>/gi) || [], ["<style>"], "a constant page carries exactly one bare stylesheet");
   const copyScript = pageScripts[0];
   assert.ok(copyScript.includes("clipboard"), "positive control: the one script is the copy script");
   // Fetch nothing at runtime, by ANY route (Codex r1 on a0de5cc: a fetch() inside the one inline script
   // passed the tag checks above). The script, the stylesheet and the markup are each held to it; the only
   // <link> a page may carry is its canonical address, and anchors are navigation, not loads.
-  assert.ok(!/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket|EventSource|importScripts)\b|\bimport\s*\(/.test(copyScript),
-    "the copy script must make no network request of any kind");
+  // A FLOOR, not a proof: these are the request routes a script here could plausibly reach for.
+  assert.ok(!/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket|EventSource|importScripts|Image|Audio|Worker|SharedWorker)\b|\bimport\s*\(|\.src\s*=/.test(copyScript),
+    "the copy script must make no network request by any listed route");
   assert.ok(!/url\(/i.test(css) && !/@import/i.test(css), "the stylesheet must load nothing (no url(), no @import)");
   assert.ok(!/<(img|iframe|object|embed|video|audio|source|picture)\b/i.test(html), "a constant page must embed nothing that loads");
   const links = [...html.matchAll(/<link\b[^>]*>/gi)].map((m) => m[0]);

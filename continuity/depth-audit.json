@@ -598,7 +598,7 @@
       "rowFile": "ledger/teorth-optimizationproblems/constants/1a.md",
       "rowLine": 34,
       "source": "https://arxiv.org/abs/2605.05193",
-      "sourceRead": "read in the arXiv preprint, version 1 (6 May 2026), the only version: Theorem 5 on p. 5 and its proof on pp. 16–17, from page images of a copy saved on 2026-09-21",
+      "sourceRead": "read in the arXiv preprint, version 1 (6 May 2026), the only version the saved abstract page listed: Theorem 5 on p. 5 and its proof on pp. 16–17, from page images of a copy saved on 2026-09-21",
       "verdict": "SOUND",
       "evidence": "Retry under the claim named in A-63.cycle6Draw2026_10_11. p. 5, Theorem 5: \"Let f : ℝ → ℝ≥0 be supported on [−1/4, 1/4]. Then for every such function f, the following holds true sup_{x∈ℝ} f∗f(x) ≥ 1.2802 (∫_{−1/4}^{1/4} f(x) dx)².\" p. 16, §2.4: \"Using the same computed value of b_{24,50}, this gives c ≥ 1.2802.\" p. 1: the constant \"is recorded as the C1a constant in a curated collection of optimization constants in mathematics\". The paper's set-up (f supported on [−1/4, 1/4], sup over all x) differs in form from the mirrored description; the reading agent's argument that they define the same constant is its own, not a sentence in the paper, and the paper names the constant C1a. Not checked: the computed value b_{24,50}, taken from Cloninger–Steinerberger.",
       "positiveControl": "p. 1: \"Grokability in five inequalities\", Paata Ivanisvili and Xinyuan Xie, side stamp \"arXiv:2605.05193v1 [math.PR] 6 May 2026\"; the saved abstract page lists only [v1]. Matches the entry [IX2026], arXiv:2605.05193.",
@@ -618,7 +618,8 @@
       "claimChecked": "Named before reading, verbatim from A-63.cycle6Draw2026_10_11: \"that the cited reference gives the lower bound this row lists, 1.2802 (the row's comment is empty, so the value is the whole claim)\".",
       "claimReader": "that the cited reference gives the lower bound this row lists, 1.2802 (the row's comment is empty, so the value is the whole claim)",
       "claimResult": "What we read supports it: Theorem 5 states that sup f∗f ≥ 1.2802 times (∫f)² for every non-negative f supported on [−1/4, 1/4], the constant the paper itself names C1a",
-      "retry2026_10_11": "RETRIED 2026-10-11 MT under A-63: a read verdict that named no claim, re-read under a claim named first (A-63.cycle6Draw2026_10_11, committed in 935349f and pushed at 08:02:13Z before any source was re-opened). Recorded here as a dated attempt on the existing entry (collisionRule2026_10_01's shape), so the audited count does not rise. The reading agent was not shown this store or any earlier verdict. The verdict is unchanged (SOUND)."
+      "retry2026_10_11": "RETRIED 2026-10-11 MT under A-63: a read verdict that named no claim, re-read under a claim named first (A-63.cycle6Draw2026_10_11, committed in 935349f and pushed at 08:02:13Z before any source was re-opened). Recorded here as a dated attempt on the existing entry (collisionRule2026_10_01's shape), so the audited count does not rise. The reading agent was not shown this store or any earlier verdict. The verdict is unchanged (SOUND).",
+      "review2026_10_11": " REVIEW r1 (Codex, read-only, on d5012e9c18d84f366cbfd53f27e3a44ffac20a25, 2026-10-11): sourceRead narrowed to what the saved evidence shows (SHOULD/UNVERIFIABLE-HERE taken)."
     },
     {
       "id": "A-47-0026",
@@ -629,9 +630,9 @@
       "rowFile": "ledger/teorth-optimizationproblems/constants/21a.md",
       "rowLine": 30,
       "source": "https://www.math.kent.edu/~varga/pub/paper_162.pdf",
-      "sourceRead": "read in the journal edition, Numerische Mathematik 52, pp. 483–497, from a scan of the printed pages: the main Theorem on p. 487 and the definitions on pp. 484–485; the proof on pp. 488–496 was not read. The journal's own header prints the year 1988; the reference entry gives 1987, the year the paper was received",
+      "sourceRead": "read in the journal edition, Numerische Mathematik 52, pp. 483–497, from a scan of the printed pages: the main Theorem on p. 487 and the definitions on pp. 484–485; the proof on pp. 488–496 was not read",
       "verdict": "SOUND",
-      "evidence": "Retry under the claim named in A-63.cycle6Draw2026_10_11. p. 487: \"Theorem. Let Λ be the de Bruijn-Newman constant of (11). Then, −50 < Λ. (26)\" and \"No special significance is attached to the number −50.\" p. 485, (11): Λ is the real number such that H_λ has only real zeros when λ ≥ Λ and some nonreal zeros when λ < Λ. p. 484, (9) and (3) define H_λ and Φ as the mirrored description does. Page 1 header: \"Numer. Math. 52, 483–497 (1988)\"; p. 497: \"Received June 24, 1987\". The strict inequality −50 < Λ is consistent with the row's value −50 as a lower bound.",
+      "evidence": "Retry under the claim named in A-63.cycle6Draw2026_10_11. p. 487: \"Theorem. Let Λ be the de Bruijn-Newman constant of (11). Then, −50 < Λ. (26)\" and \"No special significance is attached to the number −50.\" p. 485, (11): Λ is the real number such that H_λ has only real zeros when λ ≥ Λ and some nonreal zeros when λ < Λ. p. 484, (9) and (3) define H_λ and Φ as the mirrored description does. Page 1 header: \"Numer. Math. 52, 483–497 (1988)\"; p. 497: \"Received June 24, 1987\". The strict inequality −50 < Λ is consistent with the row's value −50 as a lower bound. CITATION NOTE, not on the page (review r1 SHOULD: a statement about the reference entry belongs in the referenceNote fields, whose renderer withholds it if the entry changes; this entry's plain-key reference line needs that helper extended first, carried on A-63.openAfterCycle6_2026_10_11): the journal header prints 1988, the reference entry gives 1987, and p. 497 reads \"Received June 24, 1987\".",
       "positiveControl": "p. 1: \"Numer. Math. 52, 483–497 (1988)\", \"Numerische Mathematik\", \"© Springer-Verlag 1988\", title \"A Lower Bound for the de Bruijn-Newman Constant Λ*\", authors G. Csordas, T.S. Norfolk and R.S. Varga; running heads on pp. 484–497.",
       "notes": "Systematic-sample position 175 of 673. Retried under A-63 on 2026-10-11 MT; the verdict is unchanged (SOUND) and the claim is now named. Earlier notes are kept as notesBefore2026_10_11.",
       "sourceReadInternal": "No network: tmp/depth-reads/slice6/21a-CNV1987/paper_162.pdf and its page images (saved 2026-09-21; the file name matches the entry's Kent State URL, which was not re-fetched).",
@@ -649,7 +650,8 @@
       "claimChecked": "Named before reading, verbatim from A-63.cycle6Draw2026_10_11: \"that the cited 1987 reference gives the lower bound this row lists, −50 (the row's comment is empty, so the value is the whole claim)\".",
       "claimReader": "that the cited 1987 reference gives the lower bound this row lists, −50 (the row's comment is empty, so the value is the whole claim)",
       "claimResult": "What we read supports it: the paper's main Theorem, its equation (26), states −50 < Λ for the de Bruijn–Newman constant, defined with the same normalization as this constant",
-      "retry2026_10_11": "RETRIED 2026-10-11 MT under A-63: a read verdict that named no claim, re-read under a claim named first (A-63.cycle6Draw2026_10_11, committed in 935349f and pushed at 08:02:13Z before any source was re-opened). Recorded here as a dated attempt on the existing entry (collisionRule2026_10_01's shape), so the audited count does not rise. The reading agent was not shown this store or any earlier verdict. The verdict is unchanged (SOUND)."
+      "retry2026_10_11": "RETRIED 2026-10-11 MT under A-63: a read verdict that named no claim, re-read under a claim named first (A-63.cycle6Draw2026_10_11, committed in 935349f and pushed at 08:02:13Z before any source was re-opened). Recorded here as a dated attempt on the existing entry (collisionRule2026_10_01's shape), so the audited count does not rise. The reading agent was not shown this store or any earlier verdict. The verdict is unchanged (SOUND).",
+      "review2026_10_11": " REVIEW r1 (Codex, read-only, on d5012e9c18d84f366cbfd53f27e3a44ffac20a25, 2026-10-11): sourceRead narrowed to what the saved evidence shows (SHOULD/UNVERIFIABLE-HERE taken)."
     },
     {
       "id": "A-47-0027",
@@ -1019,7 +1021,7 @@
       "rowFile": "ledger/teorth-optimizationproblems/constants/19a.md",
       "rowLine": 43,
       "source": "https://arxiv.org/abs/1111.6554",
-      "sourceRead": "read in the arXiv preprint, version 1 (28 Nov 2011), the only version: pp. 1–3, from page images",
+      "sourceRead": "read in the arXiv preprint, version 1 (28 Nov 2011), the only version the saved abstract page listed: pp. 1–3, from page images",
       "verdict": "SOUND",
       "evidence": "Retry under the claim named in A-63.cycle6Draw2026_10_11. Abstract, p. 1: \"… sharpens the upper estimate for C₀ still more to be C₀ < 0.4748.\" p. 3, Theorem 2: \"Δₙ ⩽ 0.33554 · (β₃ + 0.415)/√n.\" p. 3: \"Since 0.33554(β₃ + 0.415) ⩽ 0.33554 · 1.415β₃ < 0.4748β₃, we obtain\" Corollary 1: \"The classical Berry–Esseen inequality (1) holds with C₀ = 0.4748.\" p. 1, (1) defines C₀ for identically distributed summands with zero mean, unit variance and finite β₃. Not checked: the proofs from Section 2 on.",
       "positiveControl": "p. 1: side stamp \"arXiv:1111.6554v1 [math.PR] 28 Nov 2011\", title \"On the absolute constants in the Berry–Esseen type inequalities for identically distributed summands\", author Irina Shevtsova; the saved abstract page lists only [v1].",
@@ -1039,7 +1041,8 @@
       "claimChecked": "Named before reading, verbatim from A-63.cycle6Draw2026_10_11: \"that the cited 2011 reference gives the upper bound this row lists, 0.4748 (the row's comment is empty, so the value is the whole claim)\".",
       "claimReader": "that the cited 2011 reference gives the upper bound this row lists, 0.4748 (the row's comment is empty, so the value is the whole claim)",
       "claimResult": "What we read supports it: Corollary 1 states that the classical Berry–Esseen inequality holds with C₀ = 0.4748",
-      "retry2026_10_11": "RETRIED 2026-10-11 MT under A-63: a read verdict that named no claim, re-read under a claim named first (A-63.cycle6Draw2026_10_11, committed in 935349f and pushed at 08:02:13Z before any source was re-opened). Recorded here as a dated attempt on the existing entry (collisionRule2026_10_01's shape), so the audited count does not rise. The reading agent was not shown this store or any earlier verdict. The verdict is unchanged (SOUND)."
+      "retry2026_10_11": "RETRIED 2026-10-11 MT under A-63: a read verdict that named no claim, re-read under a claim named first (A-63.cycle6Draw2026_10_11, committed in 935349f and pushed at 08:02:13Z before any source was re-opened). Recorded here as a dated attempt on the existing entry (collisionRule2026_10_01's shape), so the audited count does not rise. The reading agent was not shown this store or any earlier verdict. The verdict is unchanged (SOUND).",
+      "review2026_10_11": " REVIEW r1 (Codex, read-only, on d5012e9c18d84f366cbfd53f27e3a44ffac20a25, 2026-10-11): sourceRead narrowed to what the saved evidence shows (SHOULD/UNVERIFIABLE-HERE taken)."
     },
     {
       "id": "A-47-0040",
@@ -1786,7 +1789,7 @@
       "rowFile": "ledger/teorth-optimizationproblems/constants/65a.md",
       "rowLine": 45,
       "source": "https://www.impan.pl/en/publishing-house/journals-and-series/acta-arithmetica/all/150/1/83078/on-the-least-prime-in-an-arithmetic-progression-and-estimates-for-the-zeros-of-dirichlet-l-functions",
-      "sourceRead": "read in the published edition, Acta Arithmetica 150, no. 1 (2011), the publisher's PDF: Table 1 on p. 65, Theorem 1.1 on p. 66 and the reference list on pp. 90–91, as page images",
+      "sourceRead": "read in the published edition, Acta Arithmetica 150, no. 1 (2011), the publisher's PDF, printed pp. 65, 66, 90 and 91, as page images",
       "verdict": "SOUND",
       "claimReader": "that the cited 2011 paper lists the upper bound 630 in its historical table, credited to Jutila (1971), as the row's comment says. The row's second link, [Xyl2011-historical-table], is checked only for whether it points at that table",
       "claimResult": "What we read supports it: Table 1 on p. 65, \"Admissible values for L\", lists 630 with the year 1971 and the author Jutila, and the row's second link points at that table",
@@ -1797,7 +1800,8 @@
       "selection": "systematic",
       "claimChecked": "Named before reading, verbatim from A-47.slice16Draw2026_10_11: \"65a [Xyl2011]: that the cited 2011 paper lists the upper bound 630 in its historical table, credited to Jutila (1971), as the row's comment says. The row's second link, [Xyl2011-historical-table], is checked only for whether it points at that table.\"",
       "rowText": "| $630$ | [[Xyl2011](#Xyl2011)] | Historical table entry (Jutila 1971). <a href=\"#Xyl2011-historical-table\">[Xyl2011-historical-table]</a> |",
-      "rowTextSha256": "3b573684c552be89"
+      "rowTextSha256": "3b573684c552be89",
+      "review2026_10_11": " REVIEW r1 (Codex, read-only, on d5012e9c18d84f366cbfd53f27e3a44ffac20a25, 2026-10-11): sourceRead narrowed to what the saved evidence shows (SHOULD/UNVERIFIABLE-HERE taken)."
     },
     {
       "id": "A-47-0073",
@@ -1830,7 +1834,7 @@
       "rowFile": "ledger/teorth-optimizationproblems/constants/83a.md",
       "rowLine": 28,
       "source": "https://link.springer.com/article/10.1007/BF01009039",
-      "sourceRead": "reached only at the publisher's abstract and metadata for Journal of Statistical Physics 47 (1987), pp. 149–171; the body is behind a subscription, and no archived or open copy was found",
+      "sourceRead": "reached only at the publisher's abstract and metadata for Journal of Statistical Physics 47 (1987), pp. 149–171; the body is behind a subscription, and the publisher's PDF link and the Internet Archive gave no copy",
       "verdict": "UNRESOLVED",
       "claimReader": "that the cited 1987 paper gives the upper bound 0.30366327 at its equation (5.20), certified by generalized Temple inequalities, as the row says",
       "claimResult": "What we read could not settle it: the abstract says the paper uses generalized Temple's inequalities to determine the relaxation time \"with great accuracy\", but gives no value and no equation number",
@@ -1841,7 +1845,8 @@
       "selection": "systematic",
       "claimChecked": "Named before reading, verbatim from A-47.slice16Draw2026_10_11: \"83a [MR1987]: that the cited 1987 paper gives the upper bound 0.30366327 at its equation (5.20), certified by generalized Temple inequalities, as the row says.\"",
       "rowText": "| $0.30366327$ | [MR1987], eq. (5.20) | Certified via generalized Temple inequalities |",
-      "rowTextSha256": "c2a5489bb9ea1a85"
+      "rowTextSha256": "c2a5489bb9ea1a85",
+      "review2026_10_11": " REVIEW r1 (Codex, read-only, on d5012e9c18d84f366cbfd53f27e3a44ffac20a25, 2026-10-11): sourceRead narrowed to what the saved evidence shows (SHOULD/UNVERIFIABLE-HERE taken)."
     },
     {
       "id": "A-47-0075",
@@ -1853,17 +1858,18 @@
       "rowLine": 17,
       "source": "https://gdz.sub.uni-goettingen.de/id/PPN356556735_0044",
       "sourceRead": "read in the cited journal edition, Inventiones Mathematicae 44 (1978), pp. 65–73, all nine pages, from the Göttingen Digitisation Centre's page images",
-      "verdict": "SOUND",
+      "verdict": "DEFECTIVE",
       "claimReader": "that the cited 1978 paper gives the upper bound 1058.565 through Martinet's construction of infinite 2-class field towers of totally real number fields, as the row's comment says",
-      "claimResult": "What we read supports it: the paper shows that the totally real field Q(√2, √(3·5·7·23·29)) has an infinite 2-class field tower (Proposition 4.1 and Example 4.2, p. 69) and gives the bound 2²(3·5·7·23·29)^(1/2) = 1058.565… for totally real fields (pp. 66 and 69)",
-      "evidence": "p. 65: « Le but de cet article est de donner des majorations de α(r₁, r₂) pour les corps totalement imaginaires (r₁ = 0) et totalement réels (r₂ = 0). » p. 66: « Nous améliorons ces majorations, obtenant: … α(1,0) ≤ 2²(3·5·7·23·29)^{1/2} < 1059. » and « La méthode consiste à trouver des corps K ayant une 2-tour de corps de classes infinie. » p. 69, §4 « Corps totalement réels », Exemple 4.2: « Le corps k' est le corps Q(√2, √(3·5·7·23·29)), pour lequel d_{k'}^{1/4} = 2²(3·5·7·23·29)^{1/2} = 1058,565…, d'où la majoration de α(1,0) donnée dans l'introduction. » NOT PART OF THE CLAIM: the row's comment calls this \"Martinet's original construction\"; p. 66 cites an earlier totally real bound of 5123.106… from applying Golod and Šafarevič directly to a real quadratic field, so 1058.565 improves on an earlier bound.",
+      "claimResult": "What we read does NOT support it as written: the paper's bound for totally real fields is 2²(3·5·7·23·29)^(1/2) = 4√70035 = 1058.56507…, printed as 1058,565… (Example 4.2, p. 69), through the infinite 2-class field tower of Q(√2, √(3·5·7·23·29)) (Proposition 4.1); the row's 1058.565 drops the trailing digits, and an upper bound cut short is very slightly stronger than what the paper proves",
+      "evidence": "p. 65: « Le but de cet article est de donner des majorations de α(r₁, r₂) pour les corps totalement imaginaires (r₁ = 0) et totalement réels (r₂ = 0). » p. 66: « Nous améliorons ces majorations, obtenant: … α(1,0) ≤ 2²(3·5·7·23·29)^{1/2} < 1059. » and « La méthode consiste à trouver des corps K ayant une 2-tour de corps de classes infinie. » p. 69, §4 « Corps totalement réels », Exemple 4.2: « Le corps k' est le corps Q(√2, √(3·5·7·23·29)), pour lequel d_{k'}^{1/4} = 2²(3·5·7·23·29)^{1/2} = 1058,565…, d'où la majoration de α(1,0) donnée dans l'introduction. » NOT PART OF THE CLAIM: the row's comment calls this \"Martinet's original construction\"; p. 66 cites an earlier totally real bound of 5123.106… from applying Golod and Šafarevič directly to a real quadratic field, so 1058.565 improves on an earlier bound. REVIEW r1 FINDING, taken: 4√(3·5·7·23·29) = 4√70035 = 1058.5650664933…; the paper prints \"1058,565…\" with an ellipsis and states the bound as \"< 1059\" on p. 66. As an UPPER bound, 1058.565 is below the proven 1058.56506…, so the row asserts slightly more than the paper proves. The construction and the edition are right; the defect is the row's truncation, by about 0.00007.",
       "positiveControl": "p. 65: running header \"Inventiones math. 44, 65–73 (1978)\", \"© by Springer-Verlag 1978\", title \"Tours de corps de classes et estimations de discriminants\", author \"Jacques Martinet\"; p. 73 \"Received May 27, 1977\". Matches the entry: Inventiones Mathematicae 44 (1978), no. 1, 65–73.",
-      "notes": "Systematic-sample position 656 of 691, slice 16 (A-47.slice16Draw2026_10_11), drawn and pushed before reading (44d1929). A different row from A-47-0003, which checks the [Mar2006] reference entry at 87a.md line 44. EuDML's only title match was a 1976–77 Bordeaux seminar note with the same title, not the cited article, and it was not used.",
+      "notes": "Systematic-sample position 656 of 691, slice 16 (A-47.slice16Draw2026_10_11), drawn and pushed before reading (44d1929). A different row from A-47-0003, which checks the [Mar2006] reference entry at 87a.md line 44. EuDML's only title match was a 1976–77 Bordeaux seminar note with the same title, not the cited article, and it was not used. VERDICT: DEFECTIVE on the row's precision, not on the construction. A sibling question is open: other upper-bound rows in the mirror may show a decimal cut short in the same direction (carried on A-63.openAfterCycle6_2026_10_11).",
       "fetchedAt": "2026-10-11, first request at 08:06:20Z, after the slice 16 draw was pushed (44d1929) and the A-63 draw (935349f, 08:02:13Z)",
       "selection": "systematic",
       "claimChecked": "Named before reading, verbatim from A-47.slice16Draw2026_10_11: \"87a [Mar1978]: that the cited 1978 paper gives the upper bound 1058.565 through Martinet's construction of infinite 2-class field towers of totally real number fields, as the row's comment says.\"",
       "rowText": "| $1058.565$ | [Mar1978] | Martinet's original construction of infinite $2$-class field towers of totally real number fields. |",
-      "rowTextSha256": "3863f7323cda1d8d"
+      "rowTextSha256": "3863f7323cda1d8d",
+      "review2026_10_11": " REVIEW r1 (Codex, read-only, on d5012e9c18d84f366cbfd53f27e3a44ffac20a25, 2026-10-11): BLOCKER taken: the lead had stored SOUND; the review computed 4√70035 = 1058.5650664… and held that an upper bound of that size does not establish the exact 1058.565 the claim names."
     }
   ]
 }
