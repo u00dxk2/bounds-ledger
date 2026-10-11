@@ -119,6 +119,78 @@ Manager review `30ff3e3f` (re-delivered as `eb996e5b`) approved the P1 route: cl
 
 **Why commit `d5012e9` touched 48 pages** (the manager's hypothesis, checked): every constant page that carries an audit list ends with the ledger-wide drawn-row sentence. Slice 16's four readings moved it, from "62 row(s) have been drawn by position … 56 were checked" to 66 and 60. Shown by `git diff -U0 --word-diff d5012e9~1 d5012e9 -- c/1b.html`, whose only change is that sentence. Counted by a scratch script that compares each page before and after with that sentence masked: "changed 48; only the count sentence 36; more 12". The 12 are exactly the eight re-read pages and the four slice-16 pages: 10a 13b 19a 1a 21a 28a 3e 65a 75a 83a 84b 87a. It was not a renderer change: that commit's only script change is to the self-test in scripts/render-site.mjs.
 
+### Day session round 1 — P1 selection packet
+
+Phase prompt inbox `5363e9be` (15:55Z). Verify receipt exit 0 at `7e1e548` (HEAD, 15:36Z).
+
+**Outcome:** more read verdicts on the constant pages say which claim they checked. Item `A-63` (a constant page does not say which claim in a row was checked).
+
+**The user problem, in the user's words** (the lead's, carried from cycle 6): "It says checked, but checked what?" On c/13a, for example, the read verdict still says "This page does not yet say which part of the row that reading checked."
+
+**Evidence**
+- OBSERVED, store: a node read of `continuity/depth-audit.json` in this session printed "entries: 75 · read verdicts (SOUND/DEFECTIVE/UNRESOLVED): 68 · with claimReader: 51 · without claimReader: 17". The 17 are the list on `A-63.openAfterCycle6_2026_10_11`, id for id.
+- OBSERVED, pages: a Grep of `c/` for "This page does not yet say which part" matches 12 files (10a 10c 13a 17a 1b 3a 4a 55a 77a 84a 87a 88a). Positive control: the same files are the ones the 17 entries sit on (1b carries five, 10a two).
+- OBSERVED: none of the nine entries drawn by position (A-47-0004 13a, 0008 55a, 0009 17a, 0011 3a, 0012 77a, 0013 88a, 0020 4a, 0022 84a, 0023 10c) has a saved source under `tmp/depth-reads/`: the listing has slice6 onward and cycle folders, and these nine were read in slices 1 to 5. So this batch fetches every source; cycle 6's batch did not.
+- HYPOTHESIS: most of the nine cite arXiv-hosted or open papers, so they are reachable. Untested until each reading opens its source.
+- OBSERVED, G-4 (an outside party acts on a watched record without us filing the report): `npm run reports` printed "raw issues fetched: 33 … ours … excluded: 33 … OUTSIDE ARRIVALS: 0", parts reconcile 33 + 0 + 0 = 33. Expected-zero; the bar's own metric stays NOT MEASURABLE (`docs/evangelism-bar.md`).
+- MISSING: any read of whether a person opened a constant page. Encounter is blind, tracked on `A-59`, read 2026-10-28.
+
+**Permission.** `A-63` is open, not parked, with no board card (`answered-cards`: none). Re-reading under a claim already pushed (`cycle6Draw2026_10_11`) is the route the row licenses. Lane authority, not outward contact. No dated freeze covers `c/` or the audit store.
+
+**Next action:** improve. Re-read the nine drawn-by-position entries under their pushed claims, each recorded as a dated retry on its existing entry, then re-render. A batch of nine is the plan; if review rounds run long, a smaller batch that lands reviewed is better than nine unreviewed. First command, the before count:
+```
+node C:/dev/skylark/bounds-ledger/scripts/render-constant-pages.mjs --check
+```
+
+**Acceptance:**
+- The store's unnamed count falls from 17 by exactly the number of entries re-read, and the `c/` Grep falls from 12 files, both printed before and after.
+- Each verdict follows its reading: the edition read is the edition the entry cites, or the entry says which edition was read. A verdict that moves is reported as moving.
+- `render-constant-pages --check` PASS after the commit, and `npm run served` reads the changed pages as served.
+
+**Delivery and encounter:** delivery by `npm run served`, CI on the push, and a live read of one newly named page. Encounter: blind (`A-59`).
+
+**USER-FACING: yes.** Paths: `continuity/depth-audit.json`, the `c/*.html` pages of the entries re-read, `index.html` if a verdict badge moves, `continuity/items.json` (`A-63`; internal).
+
+**Prior-day retro finding that bears on this:** "a field padded past what its evidence shows" (10-10). Here that means a verdict or sourceRead sentence that says more than the reading opened. The guard is the edition question, asked for every entry before its verdict.
+
+**HYGIENE INPUTS**
+- (a) Due rows not bearing on the choice: none. Read: the kickoff's "dated gates due today: 0", and the due-gates verify leg against today's snapshot, which printed "2 gate(s) were due at Phase 0" (`A-45`, `A-47`), both re-dated overnight, "verdict: CLEAR".
+- (b) Owed child rows: none. Read: the kickoff's "rows owed to you in skylark-site's ledger: 0 of 749".
+- (c) State reads marked CROSSED: none. Read: the kickoff's state block, on the phase prompt (inbox `5363e9be`). Its HEAD CI line read UNKNOWN (a 10 s gh timeout); re-read live in this session, `check-ci-status --workflow reverify.yml` printed GREEN for `7e1e548`.
+
+**Section 0**
+- Primer `docs/cold-starts/2026-10-11.md` read; its banner governs.
+- Listener: relaunched by the session-start hook, connected 15:32:25Z.
+- Codex: the `[codex-probe: GREEN …]` line on this prompt is the probe.
+- CI: GREEN at `7e1e548` (above). No deploy service is declared for this lane; the public page is GitHub Pages.
+- Due-gates: the `--snapshot` for 2026-10-11 already existed from the overnight session and refused a rewrite that would drop `A-45` and `A-47`; left as it was. The 10-12 snapshot belongs to tomorrow's first session.
+- Cycle rotation: "no product-love cycle due" (exit 0).
+
+### Day session round 1 — P3 product work
+
+Manager review: APPROVE (inbox `368462cc`). Kind: improve.
+
+**What a reader sees now:** nine more constant pages say which claim in the row was checked, and against which edition. On 88a the verdict moved from SOUND to UNRESOLVED, and the page says why.
+
+**Implementation:** `43bad4b` (nine retries, nine pages, `index.html`) and `2934316` (review r1 fix), pushed together (`7e1e548..2934316`). Each retry re-read its source under the claim pushed in `935349f` before any source was opened. The reading agents started at 16:19Z, read bodies rather than abstracts, and never saw the store. Their reports are saved under `tmp/depth-reads/c7/<id>/report.md`.
+- SOUND, now naming the claim: 13a (arXiv v2, the cited version), 55a (the arXiv correction the entry cites; the journal text answered 403), 17a (the repository's proof note; the verifier was not run), 3a (arXiv v3, checked against v1), 77a (arXiv v2; the cited journal edition reached only as its abstract), 4a (the published Nature article via Europe PMC), 84a (arXiv v1, the only version), 10c (certificate recomputed over all 131,072 sign vectors).
+- 88a, SOUND to UNRESOLVED. The edition the entry cites, Algebra & Number Theory 8 (2014), says 4680 came from "the first version of this paper [Polymath 2014a]", and that "The present version of the work of POLYMATH8 therefore contains only the statement and proof of these estimates." The theorem stating 4680 was read only in arXiv 1402.0811v2, which the entry does not cite.
+
+**Counts, before → after:**
+- Store (a node read of `continuity/depth-audit.json`): read verdicts without a named claim 17 → 8, and 51 → 60 named, of 68.
+- Pages (a Grep of `c/` for "This page does not yet say which part"): 12 → 3 files (10a, 1b, 87a).
+- Red-arm: with the store written and the pages not re-rendered, `render-constant-pages --check` printed "RESULT: FAIL — 0 missing, 0 orphaned, 9 stale constant page(s)", naming the nine (exit 1). After the re-render it printed PASS.
+
+**Review:** Codex r1, read-only, banner workdir `C:\dev\skylark\bounds-ledger`, on `43bad4b`. Verdict SHIP. It confirmed every `claimReader` is identical to the draw, and judged 88a's UNRESOLVED "defensible" rather than DEFECTIVE. One NIT: 55a's sentence dropped the ceiling in "⌈3.74(Δ−1)⌉+1". CONFIRMED, and the reviewer's sentence was taken verbatim in `2934316`.
+
+**Gates:** `npm test` exit 0; `render-constant-pages --check` and `render-site --check` PASS after the commit. Pre-commit hook clean on both commits.
+
+**Encounter:** blind (`A-59`, read 2026-10-28).
+
+**Record-facing, not instrument-facing:** 88a is a citation-quality defect in a mirrored upstream entry, found by reading the cited source in the depth audit, not by any alarm. That is the shape the standing prediction in `CLAUDE.md` names.
+
+**Left:** the 8 entries chosen for suspicion (10a ×2, 87a, 1b ×5), each with its claim already pushed. Recorded on `A-63.dayBatch2026_10_11`.
+
 ## Inputs (controllable)
 
 - Reviews by the other model family: four Codex calls, all foreground and read-only, with banner workdir `C:\dev\skylark\bounds-ledger`. Every finding was dispositioned before push.
