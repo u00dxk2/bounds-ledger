@@ -190,6 +190,46 @@ node C:/dev/skylark/bounds-ledger/scripts/depth-audit.mjs
 
 **Prior-day retro finding that bears on the choice:** 10-09 Q0, "a field padded past what the entry's own evidence shows", recurred mildly that day. Writing four claims is exactly where it would recur, so each claim is scoped to the row's own words and nothing more, and that is the review's first angle.
 
+### Cycle 4 — P3 product work
+
+**Action (improve):** the manager approved the selection (inbox `32e7624e`) with three holds: no repeats, read deeper, and a claims pass. Four pages now say which claim their reading checked.
+
+| Page | Entry | Live before | Live now | What the page says was found |
+|---|---|---|---|---|
+| c/46a | `A-47-0030` | does NOT support | does NOT support | The paper's condition works out to p > 31/8; 4 − 2/15 was not found in the pages read; its note added in proof points to Bourgain's companion paper. |
+| c/8a | `A-47-0036` | does NOT support | could not settle | The Russian original gives R = 9.65; the English translation the entry cites could not be read; Rosser and Schoenfeld's R rounds to 9.64591. |
+| c/20a | `A-47-0005` | could not settle | supports | Read in the body this time: Theorem 1.1 states the variance bound, and the paper says σ_n ≤ C follows. |
+| c/35a | `A-47-0028` | could not settle | could not settle | The book's overview states an O(1/k) bound under "some reasonable conditions"; whether those cover this constant's class was not checked. |
+
+**Implementation:**
+- Claims named first. Codex reviewed the four sentences before any reading (46a, 20a and 35a CHANGE; 8a OK; all applied). The draw went to `A-63` in `7908972`, committed 03:03:52Z and pushed before any source was opened. The agents' first requests were at 03:08:07Z, 03:08:36Z and 03:10:59Z; 46a used saved page images and no network.
+- Read deeper, as the manager asked. 20a was read in the paper's body and its verdict settled. 35a's Section 6.1 was tried by four routes (the author's site, Athena Scientific, Google Books, the Internet Archive) and not reached. So the manager's hypothesis held for 35a and not for 20a.
+- The retries are in `89a2282`; the review fixes are in `faddb9d`. No renderer change was needed.
+- Red-arm: with the store updated and the pages not re-rendered, `render-constant-pages.mjs --check` printed "RESULT: FAIL — 0 missing, 0 orphaned, 4 stale constant page(s)", naming 8a, 20a, 35a and 46a (exit 1).
+
+**What the review caught before the push.** Codex round 1 on `89a2282` returned HOLD with two blockers, and both were verdicts I had got wrong:
+- 8a: I kept DEFECTIVE although the English edition the entry cites was not read. That is the edition rule, broken again (46a on 09-24 and 8a itself on 09-27 are the earlier cases). It is now UNRESOLVED, which re-opens the 2026-09-29 settlement.
+- 35a: I stored SOUND, reasoning that the narrowed claim asks only what the book states. The review held that a conditional overview statement does not establish the listed exponent's scope. It stays UNRESOLVED.
+- Two SHOULDs and two NITs were also taken: 46a's absence claim was narrowed to the pages read, a repeated locator on 35a was cut, 8a says "rounds to", and 20a says who read text and who checked images.
+- Round 2 on `faddb9d` returned SHIP, with no changed public sentence refuted.
+
+**Sibling sweep** for whole-source absence claims in published result and source-note sentences (3 hits in `continuity/depth-audit.json`):
+- 5b (`A-47-0032`) said "it never prints 3/5 on its own" with six pages unread. It is narrowed to "the pages read".
+- 32a (`A-47-0042`) says "The preprint never prints 3.45". The entry does not record whether the whole preprint was read, so it is not changed and is carried on `A-63`.
+- The third hit is 8a's own new wording, scoped to the original, which was read in full.
+
+**Delivery:**
+- `npm run verify` receipt exit 0 at `faddb9d` (04:23:02Z).
+- `npm run served` at 04:24:51Z: "6 checked — 6 served, 0 in flight, 0 stale, 0 unreachable".
+- A direct read at 04:25:24Z: all four pages HTTP 200, last-modified 04:23:48 GMT, byte-equal to `git show HEAD`, each carrying "the claim we checked: that".
+- Grep of `c/` for "This page does not yet say which part": 19 files, none of the four (23 before). The store holds 25 read verdicts with no named claim (29 before).
+
+**Encounter:** blind, tracked on `A-59` (encounter is blind on the public pages), read 2026-10-28. `npm run reports` read 0 outside arrivals of 33 tonight.
+
+**Outcome:** open.
+
+**What remains:** `A-63` stays open on the 25 unnamed verdicts. 8a needs the body of Math. Notes 8(4):706–711. 35a needs Section 6.1 of the book. The 32a sentence is carried.
+
 ## Inputs (controllable)
 
 - Reviews by the other model family: three runs of Codex (read-only, foreground). The banner workdir was `C:\dev\skylark\bounds-ledger` each time, and every finding was taken before push.
