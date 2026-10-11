@@ -998,7 +998,9 @@ async function selftest() {
   assert.deepEqual(styleOpens, ["<style>"], "the index carries exactly one bare stylesheet");
   // A list of request routes is a FLOOR, not a proof: it names the browser's ways of loading something
   // and cannot rule out one it does not name. It covers the routes a script on this page could
-  // plausibly reach for (r1 found `new Image()`), and the tags above close the markup routes.
+  // plausibly reach for (r1 found `new Image()`). The tag assertions above close two markup routes
+  // only, an attributed script and a second stylesheet; other elements that load something (an image
+  // input, for one, found by r2) are outside this check.
   for (const s of scripts) {
     assert.ok(!/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket|EventSource|importScripts|Image|Audio|Worker|SharedWorker)\b|\bimport\s*\(|\.src\s*=/.test(s),
       "no inline script on the index may make a network request by any listed route");
