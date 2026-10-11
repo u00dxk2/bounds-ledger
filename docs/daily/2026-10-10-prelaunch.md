@@ -280,6 +280,48 @@ node C:/dev/skylark/bounds-ledger/scripts/render-constant-pages.mjs --selftest
 
 **Prior-day retro finding that bears on the choice:** none recurred. The 10-09 finding about a padded field does not apply to a control that copies existing text.
 
+### Cycle 5 — P3 product work
+
+**Action (improve):** the manager approved the selection (inbox `3a950b5c`). It confirmed my reading of "verdict date" and raised two hypotheses, both of which held:
+- Copying the whole cite block would carry its heading. The button copies the `<code>` text only, the same rule the index script already used.
+- `A-70`'s `closeWhen` named only the index. The constant-page acceptance is now on the row as `constantPages2026_10_10`, and `closeWhen` points at it.
+
+I declined its "Accessed <date>" suggestion. It would make the copied citation differ from the shown one, which is the property this button exists to keep.
+
+**Implementation:**
+- `9bd02e6`, after `a0de5cc`. The index's copy script moved unchanged into `scripts/lib/html.mjs` as `copyCiteScript(selector)`. `render-site --check` passed, so `index.html` is byte-identical. The constant pages use the same function on `div.cite`.
+- A phone-width block (the index's own 60rem breakpoint) gives the three action links and the button a 44px minimum height.
+- The renderer's self-test reads the selector back out of the page, proves the page renders a matching block holding the citation, and executes the script against a two-block stub DOM.
+- Red-arm: 11 mutations on copies of the scripts, each exiting 1 on its own assertion. Two first failed to apply on CRLF; the script printed NOT APPLIED rather than a pass, and they were rewritten.
+- Codex read-only review of `a0de5cc`: SHIP, 0 BLOCKER, 2 SHOULD and 1 NIT, all gaps in the test. All three were taken in `9bd02e6`: the button's class and name, any runtime request, and the second block.
+
+**Delivery** (live, after the Pages build):
+- `npm run served` at 06:49:31Z: "115 checked — 115 served, 0 in flight, 0 stale, 0 unreachable".
+- Live c/8a, iPhone 15 emulation, 393x659, pointer coarse, page width 393, read at 06:50:50Z:
+  - The three action links measure 112x45, 115x45 and 94x45; Copy citation measures 93x44.
+  - One press: the status line read "Copied". The clipboard held the 501-character citation, equal to the block's text once this Windows host's CRLF read-back is set to LF, with no "Cite this row" and no button label.
+  - Frames: `docs/evidence/2026-10-10-a70/a70-live-8a-393x659.png` (top of the page) and `docs/evidence/2026-10-10-a70/a70-live-8a-393x659-cite.png` (the links and the cite block after the press).
+- Live index, same device, row c-22a after typing 10.02 (06:52:25Z): source 51x45, page 41x45, looks wrong? 94x45, cite 47x45, the same as the 2026-10-04 read; 115 copy buttons in 115 cite blocks. Frame: `docs/evidence/2026-10-10-a70/a70-live-index-393x659.png`.
+- Desktop, 1440x900, live (old) against local (new), before the push: the three links, the actions bar, the cite block's top, its heading and its citation box were identical to the pixel. The only change was the button, at 93x21 beside the heading.
+- CI GREEN at `9bd02e6` for `reverify.yml` and `page-check.yml`. `npm run verify` receipt exit 0 at `9bd02e6` (06:44:17Z).
+
+**What was copied, pasted as evidence** (live c/8a):
+```
+Bounds Ledger — Classical zero-free region constant (8a)
+upper bound: $4.896$ (tracked since 2026-07-24 — no movement seen yet)
+lower bound: $2/\log \gamma\_{1} \approx 0.755106$ (bound cell edited 2026-09-05)
+Mirrored from teorth/optimizationproblems@2c1968c. These are the last-listed rows of that constant's bounds table — a listing position, not a statement that this bound is the strongest or most recent. A snapshot at that sha, not a live read.
+https://u00dxk2.github.io/bounds-ledger/c/8a.html
+```
+
+**Encounter:** blind, tracked on `A-59` (encounter is blind on the public pages), read 2026-10-28. A copy press is not counted, by design.
+
+**Outcome:** open.
+
+**Not measured:** WebKit/Safari. The emulation is Chromium with an iPhone user agent, as on 2026-10-04.
+
+**What remains:** `A-69` (a screen reader still hears the verdict first) was second if time allowed; it was not reached. Due today, 2026-10-11: `A-47` slice 16 and `A-45`.
+
 ## Inputs (controllable)
 
 - Reviews by the other model family: three runs of Codex (read-only, foreground). The banner workdir was `C:\dev\skylark\bounds-ledger` each time, and every finding was taken before push.
