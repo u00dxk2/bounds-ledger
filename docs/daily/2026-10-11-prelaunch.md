@@ -227,11 +227,13 @@ Manager review: APPROVE (inbox `368462cc`). Kind: improve.
 - No counted catch is quoted, numeric or byte-only, because `npm run catches` was not run today and counts drift detection only.
 - The run of consecutive instrument-facing days is 0 after today; 10-10 was 1.
 - The standing prediction is consistent with the 21a year, in shape. It is not counted as confirmed, because the year was not the claim that reading checked.
+- Day session: 88a (A-47-0013) moved SOUND → UNRESOLVED. The cited journal edition, Algebra & Number Theory 8 (2014), credits 4680 to "the first version of this paper [Polymath 2014a]", and the theorem stating it was read only in arXiv 1402.0811v2, which the entry does not cite. control: c/88a.html served live names the claim and the edition (byte compare of all ten changed files, Last-Modified 16:56:11 GMT).
+- Classification, day session: one record-facing finding (88a) and no instrument-facing ones. 88a is a citation-quality defect in a mirrored upstream entry, found by reading the cited source in the depth audit, not by an alarm. That is the standing prediction coming true. Unlike the 21a year, the defect sits inside the claim the reading checked, which was whether the cited source gives 4680, so it counts as confirmed. No counted catch is quoted, because `npm run catches` was not run and counts drift detection only. The run of consecutive instrument-facing days stays 0.
 <!-- findings:end -->
 
 ## Recommendation
 
-- [B] 2026-10-12: `A-63`, read the remaining 17 under their pushed claims, as many as can be read with care. Also `A-54` census session 8.
+- [B] 2026-10-12: `A-63`, read the remaining 8 under their pushed claims (all chosen for suspicion; 1b's five as one page). Also `A-54` census session 8. (Was 17 at the cycle-6 close; the day session read nine.)
 - [B] 2026-10-13: `A-47` slice 17 under a new grid, written down and computed before the draw.
 
 ## On hold pending data
@@ -286,3 +288,38 @@ Cycle 6 close, written 2026-10-11 06:05 MT, on the manager's review `309ff964` (
 - 2026-10-14: `A-76`.
 - 2026-10-18: `A-45`.
 - 2026-10-28: `A-59`, the encounter read.
+
+### Close — day session round 1
+
+Written on the manager's review (inbox `8a53e2c4`), verdict COMPLETED with no defects.
+
+`ACTION: COMPLETED · item A-63 · P3 9e4b8a40`. The acceptance in force, the P1 APPROVE, was met:
+- Store count 17 → 8.
+- Grep 12 → 3 files (the manager re-read it on origin/main).
+- All ten changed files served byte for byte (the manager's fetch re-confirmed it).
+- Codex r1 SHIP before any stranger could read the pages.
+
+**State changed since the P3 post:** none on the public pages. The manager read Last-Modified 16:58:55 GMT, the Pages build for `84beeca`. That commit changed no page.
+
+**Ledger delta:** `A-63.dayBatch2026_10_11`, recorded in `84beeca` before the P3 post. No other row changed today in this session. `A-63` stays open, with nextCheckDate 2026-10-12.
+
+**Hygiene draft:** 0 lines, so 0 accepted, 0 amended and 0 rejected. READ-MUTATED: "none — 0 reads guarded (no `--run` executed)". Its two checks:
+- check-wait-justification: "RESULT: PASS — 1 of 93 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)".
+- check-engineering-zero: "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)".
+
+**Due gates:** `check-due-gates-dispositioned.mjs` printed "verdict: CLEAR — every gate due at Phase 0 was dispositioned." against "snapshot: tmp\due-gates-snapshot.json — CURRENT (taken 2026-10-11)".
+
+**Today panel:** written with `--date 2026-10-11`. `update-daily-brief.mjs` printed `"ok": true` and "local sync OK".
+
+**Receipt:** P3's still holds (`9e4b8a40`); nothing new.
+
+**Pending reads:**
+- 2026-10-12: `A-63` (a constant page does not say which claim a verdict checked), the 8 suspicion entries (10a ×2, 87a, 1b ×5); `A-54` (the Small Ramsey Numbers census), session 8; `A-2` (the drift-resolution log).
+- 2026-10-13: `A-47` (the depth audit), slice 17 with its grid owed; `W-13` (someone must call the served-bytes check); `A-69` (a matched row's values on a phone).
+- 2026-10-14: `A-76` (upper-bound rows cut below their source); `A-50` (importing a CLI script can run it); `W-14` (watch issue #218 for a maintainer reply).
+- 2026-10-18: `A-45` (the tier-1 leading indicator).
+- 2026-10-28: `A-59` (encounter is blind on the public pages), the encounter read.
+
+**Not done, and not owed today:**
+- A reference note on c/88a through the `A-74` helper. This is lane authority.
+- Any upstream contact about 88a. That is outward: it needs an adversarial review and a card for David before anything is sent.
