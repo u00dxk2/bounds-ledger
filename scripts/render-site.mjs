@@ -983,6 +983,18 @@ async function selftest() {
   const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
   const copyScript = scripts.find((s) => s.includes("details.cite"));
   assert.ok(copyScript && copyScript.includes("clipboard"), "positive control: the page must carry the copy script");
+  // A-75 (2026-10-11): fetch nothing at runtime, by ANY route. The tag checks above cannot see a request
+  // made from inside a script or a url() inside the stylesheet; the constant pages' test already holds
+  // both, and this holds the index to the same rule. Positive controls first, so an empty read cannot pass.
+  assert.ok(scripts.length >= 2 && scripts.some((s) => s.includes("addEventListener('input'")),
+    `positive control: the index must carry its filter script and its copy script before they are judged (found ${scripts.length})`);
+  for (const s of scripts) {
+    assert.ok(!/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket|EventSource|importScripts)\b|\bimport\s*\(/.test(s),
+      "no inline script on the index may make a network request");
+  }
+  const indexCss = (html.match(/<style>([\s\S]*?)<\/style>/) || [, ""])[1];
+  assert.ok(indexCss.length > 500, "positive control: the index stylesheet must be read before it is judged");
+  assert.ok(!/url\(/i.test(indexCss) && !/@import/i.test(indexCss), "the index stylesheet must load nothing (no url(), no @import)");
   // The expected text is a LITERAL, so a script that altered the block itself before copying cannot
   // move the expectation with it (review round 2).
   const CITE_FIXTURE = "Bounds Ledger — Grothendieck (10a)\nupper bound: $1.7822$ (tracked since 2026-07-24)\n" +
@@ -1022,6 +1034,7 @@ async function selftest() {
   assert.ok(ok.secondButton && ok.secondStatus, "…every cite block, not only the first");
   assert.equal(ok.button.attrs.type ?? ok.button.type, "button", "it must be type=button, never a form submit");
   assert.equal(ok.button.textContent, "Copy citation", "the button must say what it does");
+  assert.equal(ok.button.className, "copy", "the button must carry the class the card layout's 44px rule targets (A-75)");
   assert.equal(ok.status.attrs.role, "status", "the confirmation must be announced to a screen reader");
   ok.button.onclick();
   await new Promise((r) => setTimeout(r, 0));
