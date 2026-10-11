@@ -78,3 +78,39 @@ node C:/Users/david/AppData/Local/Temp/claude/C--dev-skylark-bounds-ledger/3f94d
 - Verify receipt exit 0 at `9bd02e6`, the last code commit. HEAD has moved by doc and ledger commits only since then.
 - CI GREEN at `9bd02e6` for both workflows (read in cycle 5).
 - Codex: the cycle-4 probe line stands for the session.
+
+### Cycle 6 — P3 product work
+
+Manager review `30ff3e3f` (re-delivered as `eb996e5b`) approved the P1 route: claims pre-registered on `A-63`, then batched re-reads.
+
+**Shipped, user-visible.** Eight more read verdicts on the constant pages now say which claim they checked. The phone frame shows c/19a with its named claim at 393x659, with no horizontal scroll.
+
+**Commits, in order:**
+- `935349f`: the draw. The 25 claims, written to `A-63.cycle6Draw2026_10_11` after a Codex sentence review (4 BLOCKERs where "found by" turned a credit into a discovery claim, and one where 84b dropped its quantifiers; all 10 replacements taken). Pushed before any source was opened.
+- `d5012e9`: the readings.
+  - Eight re-reads, each stored as a dated retry on its existing entry with the old fields kept: A-47-0025 1a, 0026 21a, 0027 28a, 0029 3e, 0035 84b, 0037 10a, 0038 13b and 0039 19a. All eight are SOUND, so no verdict moved; each now names its claim.
+  - `A-47` slice 16, the four new rows:
+    - 65a SOUND.
+    - 75a SOUND. This rests on arXiv v3, the version the entry links; the journal edition was not reached.
+    - 83a UNRESOLVED (abstract only).
+    - 87a, see below.
+  - `A-75` (the index self-test gap).
+- `0c32a8d`: review r1. It moved 87a to DEFECTIVE. It also made the index and page tests refuse every non-bare script or style tag, plus `Image`, a module script and a second style; all six mutations were red-armed, and each fired. It also narrowed the wording on 21a, 1a, 19a and 83a.
+- `1e5b9fe`: review r2. 87a back to UNRESOLVED, with the exact expansion. Codex r3: SHIP.
+
+**87a, the one verdict that moved twice.** The row's 1058.565 is the paper's 4√70035 = 1058.565066… rounded to three decimals. Read as an exact upper bound, it is about 0.0000665 below the paper's. The paper cannot say which the row means, so the verdict is UNRESOLVED, not DEFECTIVE. r1 had overstated it, and r2 corrected that, along with my own wrong expansion "1058.56507…".
+
+**Acceptance, read:**
+- Store, read verdicts without `claimReader`: 25 before, 17 after (`a63pop.mjs`). That is down by exactly the 8 re-read. Entries: 75. Read verdicts: 68, of which 51 are named.
+- Durable Grep, files under `c/` carrying "This page does not yet say which part": 19 before, 12 after.
+- Live, read at 2026-10-11T09:18:41Z: 116 files byte-equal to HEAD, 0 differ, 0 errors. Live read-verdict lines: 51 named, 17 unnamed, on 12 pages.
+- `npm run served`: "2 checked — 2 served, 0 in flight, 0 stale, 0 unreachable".
+- Phone frame at 09:20:56Z: c/19a, viewport 393x659, scrollWidth 393, named=1, unnamed=0. Saved as `docs/evidence/2026-10-11-a63/a63-live-19a-393x659.png`.
+- `npm run verify`: exit 0 at `1e5b9fe` (09:09:26Z).
+- CI on `1e5b9fe` (read 09:26Z): GREEN for both `reverify.yml` and `page-check.yml`.
+
+**Not done:**
+- N of N: 17 entries remain unnamed. Their claims are already pushed, so a later batch only reads.
+- `A-69` was not reached.
+- New grid for slice 17: owed.
+- 87a's sibling question is open: are other upper-bound rows truncated downward?
