@@ -16,6 +16,38 @@ export function issueUrl(title, body) {
   return `${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
 }
 
+// THE COPY-CITATION SCRIPT (A-70), one source for the index (`details.cite`, 2026-10-04) and the
+// constant pages (`div.cite`, 2026-10-10). It copies each block's <code> text only, never the
+// block's heading or the button's own label, so the copied citation is the shown one. When the
+// clipboard refuses, or is absent, it selects the citation and says so, never "Copied". It is
+// inserted by script, so a reader without scripts never meets a button that does nothing. Each
+// renderer's self-test EXECUTES the emitted text against a stub DOM.
+export const copyCiteScript = (selector) => `(function(){
+  var cites=document.querySelectorAll('${selector}');
+  for(var i=0;i<cites.length;i++)add(cites[i]);
+  function add(d){
+    var code=d.querySelector('code');
+    if(!code)return;
+    var b=document.createElement('button'),st=document.createElement('span');
+    b.type='button';b.className='copy';b.textContent='Copy citation';
+    st.className='copied';st.setAttribute('role','status');
+    d.insertBefore(b,code);d.insertBefore(st,code);
+    var last=0;
+    b.addEventListener('click',function(){
+      var text=code.textContent,me=++last;
+      st.textContent='';
+      function pick(){
+        if(me!==last)return;
+        var r=document.createRange();r.selectNodeContents(code);
+        var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);
+        st.textContent='Selected. Use your Copy command.';
+      }
+      try{navigator.clipboard.writeText(text).then(function(){if(me===last)st.textContent='Copied';},pick);}
+      catch(e){pick();}
+    });
+  }
+})();`;
+
 function selftest() {
   const fail = (msg) => { console.error("html selftest FAIL: " + msg); return 1; };
 

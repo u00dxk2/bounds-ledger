@@ -24,7 +24,7 @@ import assert from "node:assert/strict";
 import { buildRows, flagUrl, citation, reportLabel, whenLabel, readable } from "./render-site.mjs";
 import { boundCell } from "./lookup.mjs";
 import crypto from "node:crypto";
-import { REPO, esc } from "./lib/html.mjs";
+import { REPO, esc, copyCiteScript } from "./lib/html.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUTDIR = join(ROOT, "c");
@@ -69,7 +69,12 @@ ul.audit{margin:.35rem 0 0;padding-left:1.1rem}ul.audit li{margin:.2rem 0}
 .ours{display:inline-block;margin-top:.6rem;font-size:.85rem}
 .actions{margin:1.6rem 0;padding-top:1rem;border-top:1px solid var(--line);font-size:.9rem}
 .cite code{user-select:all;margin-top:.5rem}
-footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}`;
+.copy{margin-left:.5rem}.copied{margin-left:.5rem;color:var(--muted);font-size:.85rem}
+footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
+@media(max-width:60rem){
+.actions a{display:inline-block;min-height:44px;padding:.7rem .3rem}
+.copy{min-height:44px}
+}`;
 
 /**
  * A-47 depth audit, surfaced. Until now a reader could see what we MIRROR and never what we have
@@ -941,6 +946,9 @@ ${auditBlock(r.id, audits, [r.upper, r.lower])}
 <footer><p>${esc(DISCLAIMER)}</p>
 <p>Mirrored from <code style="display:inline;padding:.1rem .3rem">teorth/optimizationproblems@${esc(String(sha).slice(0, 7))}</code> — a snapshot at that commit, not a live read.</p>
 <p>${esc(FRESHNESS)} The latest check and its verdict: <a href="${esc(RUNS)}">run history</a>.</p></footer>
+<script>
+${copyCiteScript("div.cite")}
+</script>
 </html>`;
 }
 
@@ -948,7 +956,7 @@ ${auditBlock(r.id, audits, [r.upper, r.lower])}
 // when the footer changes; an added sentence cannot slip in unreviewed.
 const FOOTER_PIN = "These are the LAST-LISTED rows of this constant&#39;s bounds table upstream — a listing position, not a statement that either bound is the strongest or most recent known. Upstream keeps superseded and inferior rows because the tables are histories. Read the source file before citing. Mirrored from teorth/optimizationproblems@abc1234 — a snapshot at that commit, not a live read. This row is re-checked against upstream every day by a scheduled job, so an old date above does not mean nobody has looked. The dates and values above change only after an upstream change has been verified and published here, so an old date does not prove nothing has moved upstream either. The latest check and its verdict: run history.";
 
-function selftest() {
+async function selftest() {
   const claims = [
     { id: "pin:9z:U", statement: "Last-listed upper-bound table row for Test Constant (9z.md)", url: "https://example.invalid/9z.md", expect: "| 2.5 |" },
     { id: "pin:9z:L", statement: "Last-listed lower-bound table row for Test Constant (9z.md)", url: "https://example.invalid/9z.md", expect: "| 1.5 |" },
@@ -1010,6 +1018,80 @@ function selftest() {
   );
   assert.ok(citation(row, "abc1234def").includes(`${SITE}c/9z.html`),
     "the shared citation itself must carry the canonical page URL, not a form this file patches afterwards");
+
+  // A-70 ON THE CONSTANT PAGES (2026-10-10): a thumb-sized row of links on a phone, and one tap to take
+  // the citation away. Meaning first, the exact-text equality last, so each mutation names what broke.
+  // (1) Touch targets: the 44px floor lives ONLY in the phone block, so the desktop page is unchanged.
+  const css = (html.match(/<style>([\s\S]*?)<\/style>/) || [, ""])[1];
+  assert.ok(css.length > 500, "positive control: the page must carry its stylesheet before rules are asserted in it");
+  const phone = (css.match(/@media\(max-width:60rem\)\{([\s\S]*?)\n\}/) || [, null])[1];
+  assert.ok(phone, "the constant page must carry a phone block, at the index's own card breakpoint");
+  assert.match(phone, /\.actions a\{[^}]*min-height:44px/, "on a phone each action link must be at least 44px tall");
+  assert.match(phone, /\.actions a\{[^}]*display:inline-block/, "…as an inline-block, or an inline link ignores min-height");
+  assert.match(phone, /\.copy\{[^}]*min-height:44px/, "on a phone the copy button must be at least 44px tall");
+  const desk = css.replace(/@media\(max-width:60rem\)\{[\s\S]*?\n\}/, "");
+  assert.ok(desk.includes(".actions{"), "positive control: the desktop rules are still there once the phone block is cut");
+  assert.ok(!/\.actions a\{/.test(desk), "the touch sizing must not reach the desktop page's links");
+  // (2) No button in the markup, and nothing loaded from another host.
+  assert.ok(!/<button/i.test(html), "the copy button must be inserted by the script, never written into the markup");
+  assert.ok(!/<script[^>]*\bsrc=/i.test(html) && !/<link[^>]*rel="stylesheet"/i.test(html),
+    "a constant page must load no script or stylesheet from anywhere, its own copy script included");
+  const pageScripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+  assert.equal(pageScripts.length, 1, "a constant page carries exactly one script: the copy button");
+  const copyScript = pageScripts[0];
+  assert.ok(copyScript.includes("clipboard"), "positive control: the one script is the copy script");
+  // (3) THE WIRING (memory: test the wiring, not the helper). The selector is read OUT of the page's own
+  // script and must match an element the page actually renders, holding the citation's <code>. A script
+  // left querying 'details.cite' (the index's markup) would insert nothing here and fail this line.
+  const sel = (copyScript.match(/querySelectorAll\('([a-z]+)\.([a-z-]+)'\)/) || []);
+  assert.ok(sel.length === 3, "the copy script must name its cite blocks by tag and class");
+  const wired = html.match(new RegExp(`<${sel[1]} class="${sel[2]}">([\\s\\S]*?)</${sel[1]}>`));
+  assert.ok(wired && /<code>[\s\S]+<\/code>/.test(wired[1]), `the page must render a ${sel[1]}.${sel[2]} block holding the citation's <code>, which is what the script queries`);
+  // (4) The script, EXECUTED against a two-block stub DOM. Each block carries a heading as well as the
+  // code, so a script that copied the whole block would carry "Cite this row" and fail.
+  const CITE_FIXTURE = "Bounds Ledger — Classical zero-free region constant (8a)\nupper bound: $4.896$ (tracked since 2026-07-24 — no movement seen yet)\n" +
+    "Mirrored from teorth/optimizationproblems@2c1968c. These are the last-listed rows of that constant's bounds table — a listing position.\n" +
+    "https://u00dxk2.github.io/bounds-ledger/c/8a.html";
+  const runCopy = (clipboard) => {
+    const node = (tag) => ({ tag, attrs: {}, textContent: "", setAttribute(k, v) { this.attrs[k] = v; },
+      addEventListener(ev, fn) { this["on" + ev] = fn; } });
+    const block = (text) => {
+      const heading = { textContent: "Cite this row" }, code = { textContent: text }, kids = [];
+      const div = { textContent: heading.textContent + text,
+        querySelector: (q) => (q === "code" ? code : null),
+        insertBefore: (n, ref) => { assert.equal(ref, code, "the button must sit inside the block, just above the citation"); kids.push(n); } };
+      return { code, kids, div };
+    };
+    const first = block(CITE_FIXTURE), second = block("Bounds Ledger — Second constant (2a)\nupper bound: 2");
+    const selection = { ranges: [], removeAllRanges() { this.ranges = []; }, addRange(r) { this.ranges.push(r); } };
+    const doc = { querySelectorAll: (q) => (q === `${sel[1]}.${sel[2]}` ? [first.div, second.div] : []),
+      createElement: (t) => node(t), createRange: () => ({ selectNodeContents(n) { this.node = n; } }) };
+    new Function("document", "navigator", "window", copyScript)(doc, { clipboard }, { getSelection: () => selection });
+    return { code: first.code, selection, button: first.kids.find((k) => k.tag === "button"),
+      status: first.kids.find((k) => k.tag === "span"), secondButton: second.kids.find((k) => k.tag === "button") };
+  };
+  let copied = null;
+  const ok = runCopy({ writeText: (t) => { copied = t; return Promise.resolve(); } });
+  assert.ok(ok.button && ok.status && ok.secondButton, "the script must give every cite block a button and a status line");
+  assert.equal(ok.button.type, "button", "it must be type=button, never a form submit");
+  assert.equal(ok.status.attrs.role, "status", "the confirmation must be announced to a screen reader");
+  ok.button.onclick();
+  await new Promise((r) => setTimeout(r, 0));
+  assert.ok(copied !== null && !copied.includes("Cite this row") && !copied.includes("Copy citation"),
+    "the copied text must be the citation alone, never the block's heading or the button's label");
+  assert.equal(ok.status.textContent, "Copied", "a successful copy must say so");
+  const refused = runCopy({ writeText: () => Promise.reject(new Error("denied")) });
+  refused.button.onclick();
+  await new Promise((r) => setTimeout(r, 0));
+  assert.equal(refused.selection.ranges[0]?.node, refused.code, "a refused copy must select the citation so the reader's own Copy works");
+  assert.notEqual(refused.status.textContent, "Copied", "a refused copy must never claim it copied");
+  const absent = runCopy(undefined);
+  assert.doesNotThrow(() => absent.button.onclick(), "a browser with no clipboard API must not throw out of the click handler");
+  assert.equal(absent.selection.ranges[0]?.node, absent.code, "with no clipboard API the citation must still be selected");
+  assert.notEqual(absent.status.textContent, "Copied", "…and the line must not claim a copy");
+  // Equality LAST: the clipboard receives the citation's exact text, multi-line and non-ASCII intact.
+  assert.equal(copied, CITE_FIXTURE, "the copied text must equal the citation's own text, exactly");
+  assert.equal(ok.code.textContent, CITE_FIXTURE, "the script must never alter the citation it copies");
 
   // A missing side reads as "not pinned" rather than vanishing.
   const [oneSided] = buildRows([claims[0]], { withDates: false, reports: [] });
@@ -1845,7 +1927,7 @@ function selftest() {
   assert.match(withReport, /we reported this row/);
   assert.ok(!/we reported this row/.test(html), "a constant we filed nothing against must carry no disclosure");
 
-  console.log(`render-constant-pages selftest: PASS (renders title, both pinned rows and the upstream sha after proving the page is non-empty; carries a canonical URL, and its cite block quotes the SHARED citation unchanged — so the table and the page hand out the same address for the same constant, and a re-added local substitution fails here; a missing side reads "not pinned"; a hostile title is escaped, with the raw fixture proven to contain the markup so the check tests the renderer; the filed-report disclosure appears only for a mapped constant; and the A-47 audit block carries the no-record prohibition on the AUDITED page rather than only the unaudited one, drops an unrecognised verdict instead of printing it, matches link text to verdict so UNREACHABLE never offers 'the source we read', links each source as an anchor whose href IS that source, refuses a javascript: scheme, escapes hostile citedRef and sourceRead, survives a null entry beside a good one, renders the denominator FROM THE STORE with a fixture of 999 proving it is not baked in, carries the date it was measured, counts bound rows separately from reference entries against a bound-row denominator, shows only THIS constant's rows with the other proven present in the fixture, is ABSENT for an unaudited constant, says 'not recorded' rather than implying a proportion when the corpus is missing, and — since 2026-09-13 — tells the reader how each row was CHOSEN, counts the ledger-wide coverage figure from rows drawn by position ONLY — and, since 2026-09-21, counts every drawn row whether or not its source could be read and says how many were read, files an unlabelled row with the suspicion set rather than as coverage, and carries the no-record prohibition on that selection-labelled surface too)`);
+  console.log(`render-constant-pages selftest: PASS (renders title, both pinned rows and the upstream sha after proving the page is non-empty; carries a canonical URL, and its cite block quotes the SHARED citation unchanged — so the table and the page hand out the same address for the same constant, and a re-added local substitution fails here; a missing side reads "not pinned"; a hostile title is escaped, with the raw fixture proven to contain the markup so the check tests the renderer; the filed-report disclosure appears only for a mapped constant; and the A-47 audit block carries the no-record prohibition on the AUDITED page rather than only the unaudited one, drops an unrecognised verdict instead of printing it, matches link text to verdict so UNREACHABLE never offers 'the source we read', links each source as an anchor whose href IS that source, refuses a javascript: scheme, escapes hostile citedRef and sourceRead, survives a null entry beside a good one, renders the denominator FROM THE STORE with a fixture of 999 proving it is not baked in, carries the date it was measured, counts bound rows separately from reference entries against a bound-row denominator, shows only THIS constant's rows with the other proven present in the fixture, is ABSENT for an unaudited constant, says 'not recorded' rather than implying a proportion when the corpus is missing, and — since 2026-09-13 — tells the reader how each row was CHOSEN, counts the ledger-wide coverage figure from rows drawn by position ONLY — and, since 2026-09-21, counts every drawn row whether or not its source could be read and says how many were read, files an unlabelled row with the suspicion set rather than as coverage, and carries the no-record prohibition on that selection-labelled surface too; and, since 2026-10-10 (A-70), puts a 44px floor on the action links and the copy button in the phone block only, carries exactly one inline script and nothing from another host, and runs that script — its selector read back out of the page and proven to match the page's own cite block — against a two-block stub DOM: it copies the citation alone, exactly, says Copied, and on a refused or absent clipboard selects the citation and never claims a copy)`);
 }
 
 export function main({ check = false, storePath = DEFAULT_AUDIT_STORE } = {}) {
@@ -1904,7 +1986,9 @@ const entry = process.argv[1] ? pathToFileURL(realpathSync(process.argv[1])).hre
 const isMain = entry === import.meta.url;
 
 if (isMain) {
-  if (process.argv.includes("--selftest")) selftest();
+  // The self-test is async since A-70's constant-page leg (2026-10-10): the copy button's success path
+  // resolves a promise. A failed assertion is a rejection, so it must set the exit code, never vanish.
+  if (process.argv.includes("--selftest")) selftest().catch((e) => { console.error(e); process.exitCode = 1; });
   else main({ check: process.argv.includes("--check") });
 } else if (process.argv[1]?.endsWith("render-constant-pages.mjs")) {
   console.error("render-constant-pages: COULD NOT RUN — invoked as main but module identity did not match");

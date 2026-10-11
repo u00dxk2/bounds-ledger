@@ -29,7 +29,7 @@ import { pinsFor, lastChanged, changeFor, changeKind, boundCell } from "./lookup
 import { loadAudits, badgeFor, settledIds, attemptDate, refuseDroppedAudits, DEFAULT_AUDIT_STORE } from "./render-constant-pages.mjs";
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { REPO, esc, issueUrl } from "./lib/html.mjs";
+import { REPO, esc, issueUrl, copyCiteScript } from "./lib/html.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "index.html");
@@ -813,31 +813,7 @@ ${body}
 })();
 </script>
 <script>
-(function(){
-  var cites=document.querySelectorAll('details.cite');
-  for(var i=0;i<cites.length;i++)add(cites[i]);
-  function add(d){
-    var code=d.querySelector('code');
-    if(!code)return;
-    var b=document.createElement('button'),st=document.createElement('span');
-    b.type='button';b.className='copy';b.textContent='Copy citation';
-    st.className='copied';st.setAttribute('role','status');
-    d.insertBefore(b,code);d.insertBefore(st,code);
-    var last=0;
-    b.addEventListener('click',function(){
-      var text=code.textContent,me=++last;
-      st.textContent='';
-      function pick(){
-        if(me!==last)return;
-        var r=document.createRange();r.selectNodeContents(code);
-        var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);
-        st.textContent='Selected. Use your Copy command.';
-      }
-      try{navigator.clipboard.writeText(text).then(function(){if(me===last)st.textContent='Copied';},pick);}
-      catch(e){pick();}
-    });
-  }
-})();
+${copyCiteScript("details.cite")}
 </script>
 </html>
 `;

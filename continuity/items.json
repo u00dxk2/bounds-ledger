@@ -2678,11 +2678,11 @@
       ],
       "note": "FILED 2026-10-02 at round 3's close, from the orchestrator's round-2 cold walk (skylark-site tmp/walks-2026-10-02-r2/bounds-ledger.md, findings 3 and 4; synthetic, not a real-user encounter), as round 3's P1 packet said the close would. OBSERVED there at 393x659 on the matched row: the page link 32x20 CSS px, the cite summary 325x22, both under the 44pt touch minimum, and source / page / looks wrong? sit inline a dot apart. The cite block is a multi-line monospace block with no copy control, so a phone reader long-presses and drag-selects about 9 lines. Not re-measured at round 3; f2e545f did not touch the .src cell.",
       "onTrigger": "By 2026-10-13 or the next front-page round: on the card layout only, give the row's source / page / looks wrong? links and the cite summary a touch target of at least 44px, and add a copy-citation button inside the cite block that copies the block's text. Measure the four controls at 393x659 before and after, and 1440x900 for no change. The page loads nothing from another host and has no analytics, and the button must keep both true. Cross-family review before the push.",
-      "closeWhen": "On the live index at 393x659 each of the four row controls measures at least 44px tall; the cite block has a working copy button whose copied text equals the block text; 1440x900 unchanged; render-site --check passes.",
+      "closeWhen": "On the live index at 393x659 each of the four row controls measures at least 44px tall; the cite block has a working copy button whose copied text equals the block text; 1440x900 unchanged; render-site --check passes.\n\n AND, since 2026-10-10, the constant-page leg in constantPages2026_10_10 holds on the live c/8a.html.",
       "readCommand": "npm --prefix C:/dev/skylark/bounds-ledger run reports — A-59's encounter read, the one pending read for this row: it prints the raw issue count, excludes our own authors, and requires the parts to reconcile; an OUTSIDE ARRIVAL through a row's 'looks wrong?' link is the only encounter this page can show. The ship's own regression read stays: node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check (PASS means index.html matches its renderer, whose self-test pins the 44px floor and the copy script).",
       "created": "2026-10-02",
-      "updated": "2026-10-05",
-      "lastEvaluated": "2026-10-04",
+      "updated": "2026-10-11",
+      "lastEvaluated": "2026-10-11",
       "linkedCommits": [
         "3b445dc",
         "5f42ce7",
@@ -2691,7 +2691,8 @@
         "bd0d1fb",
         "b1e6b08",
         "7f3eb6b"
-      ]
+      ],
+      "constantPages2026_10_10": "CONSTANT-PAGE LEG, added 2026-10-10 MT (cycle 5; selected at P1, bus bbe89920-5654-43a2-82ff-b0ade58a8eb6; approved by the manager, inbox 3a950b5c-df80-4df1-afa1-aa60239f7043). The 2026-10-04 ship covered only the index; closeWhen names only the live index, as the manager's review hypothesised and this row's own text confirms. ACCEPTANCE FOR THIS LEG, judged at the 2026-10-28 read with the rest of this row: on the live c/8a.html at 393x659, each of the three action links (\"the mirrored file\", \"upstream source\", \"looks wrong?\") measures at least 44px tall and the cite block carries a \"Copy citation\" button at least 44px tall; one tap puts on the clipboard exactly the text of the cite block's <code>, without the \"Cite this row\" heading or the button's label; at 1440x900 the action links and the cite block are unchanged apart from the button itself; all 115 constant pages carry the one inline copy script and load nothing from another host; render-constant-pages --check passes. DESIGN: the copy script is one function in scripts/lib/html.mjs (copyCiteScript), used by the index with 'details.cite' (index.html byte-identical, render-site --check PASS) and by the constant pages with 'div.cite'. DECLINED, the manager's suggestion to add an \"Accessed <date>\" line at copy time: it would make the copied citation differ from the shown one, which is the property this button exists to keep, and it is new public text. If it is wanted, the honest place is the shown cite block itself, so the reader sees what they copy."
     },
     {
       "id": "A-71",

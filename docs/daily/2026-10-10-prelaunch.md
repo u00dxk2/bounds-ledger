@@ -230,6 +230,56 @@ node C:/dev/skylark/bounds-ledger/scripts/depth-audit.mjs
 
 **What remains:** `A-63` stays open on the 25 unnamed verdicts. 8a needs the body of Math. Notes 8(4):706–711. 35a needs Section 6.1 of the book. The 32a sentence is carried.
 
+### Cycle 5 — P1 selection packet
+
+Cycle 5 of the rolling session. The lead and this phase's prompt arrived together as inbox `034e8dcf`.
+
+**Outcome:** a reader on any constant page can take the citation away with one tap, and reach the page's links with a thumb. Item `A-70` (on a phone the index rows' page and cite links are 20 to 22px tall, and the citation block has no copy button), extended from the index to the 115 constant pages.
+
+**The user problem, in the user's words** (the lead's, after `docs/evangelism-bar.md`): "Let me just cite this." The constant page is where a reader lands from a search or a shared link, and it ends in a "Cite this row" block. To take that citation away today, a phone reader long-presses and drags across five or more lines of monospace text.
+
+**Evidence**
+- OBSERVED, the lead's premise is half stale. The index half of `A-70` shipped on 2026-10-04 (`5f42ce7` through `b1e6b08`; the row's `shipped2026_10_04` field records 45px controls and 115 copy buttons, read live that day). The row has been `monitoring` since.
+- OBSERVED tonight, the live index, without a browser (a fetch at 05:06:13Z): HTTP 200, last-modified 04:51:14 GMT, byte-equal to `git show HEAD:index.html`. It carries "min-height:44px" twice, one "Copy citation" in its script, one clipboard call, 115 cite blocks for 115 rows, and no script or stylesheet from another host. So the 10-04 ship is still being served.
+- OBSERVED tonight, the constant pages: Grep of `c/` for "Copy citation" or a script tag returns 0 matches in 0 files. The positive control is that the same search for the cite block's class matches all 115 pages. So no constant page has a copy button, and none carries any script at all.
+- OBSERVED, c/8a.html lines 32 to 41: three inline links a dot apart ("the mirrored file", "upstream source", "looks wrong?") and a five-line "Cite this row" block. Each bound's line in that block already carries its dated label, such as "(tracked since 2026-07-24 — no movement seen yet)".
+- MISSING: every pixel measurement. Free memory read 7.56 GB a few minutes before the 05:06Z fetch above, under the 10 GB bar for a browser job, so the 393x659 read of the live index and of a constant page is not taken yet. It is the first step of the work, once memory allows.
+- MISSING: WebKit. The 10-04 measurements were Chromium with an iPhone user agent, and the row says so.
+- OBSERVED tonight, real users: `npm run reports` read 0 outside arrivals of 33 raw issues earlier tonight, before the cycle-4 selection post of 02:40Z (33 + 0 + 0 = 33). The bar's metric is NOT MEASURABLE.
+- OBSERVED tonight: `check-cycle-rotation.mjs --lane bounds-ledger` printed "UNDETERMINED — journey-walk: no journey-walk artifact on record for bounds-ledger" (exit 2, REVIEW), the same registry gap as in cycle 4. `answered-cards.mjs`: no David-word cards.
+
+**Permission.** `A-70` is `monitoring`, not parked, with no board card. Its encounter read stays owed on 2026-10-28 and is untouched by this. The change is to our own pages under lane authority (David's 80% product ruling). It is not outward contact and adds no reader instrument: a copy press is not counted, and the pages keep loading nothing from another host. Because the pages are public, a read-only review from the other model family comes before the push.
+
+**One reading of the lead to confirm at review.** The lead asks for a button "that copies the citation with the verdict date in it". I read "verdict date" as the dated label each bound's line already carries in the cite block. The button will copy the block's own text, so the copied citation cannot differ from the shown one. I do not plan to add the depth-reading verdicts ("supports", "could not settle") to the citation: that would be new public text about our own method, and it would need its own claims pass. Say so if the reading verdict is what was meant.
+
+**Next action:** improve. First, when 10 GB is free, measure the live index and c/8a at 393x659 (iPhone 15 emulation). Then, in `scripts/render-constant-pages.mjs`: a 44px floor on the three action links at phone width only, and a "Copy citation" button inserted by script inside the cite block, copying the block's text, with the same fall-back the index has when the clipboard refuses. Then a self-test with both answers, a red-arm, the Codex review, the push and the live read. First command:
+```
+node C:/dev/skylark/bounds-ledger/scripts/render-constant-pages.mjs --selftest
+```
+
+**Acceptance:**
+- On the live c/8a at 393x659, each of the three action links measures at least 44px tall, and the cite block has a "Copy citation" button of at least 44px.
+- One tap copies text equal to the cite block's text; the pasted text is quoted in the post.
+- 1440x900 reads unchanged for the action links and the cite block's position.
+- All 115 constant pages carry the button's script, and none loads anything from another host.
+- `render-constant-pages.mjs --check` passes, and the live pages are byte-equal to HEAD.
+- Frames of the live index and of one constant page at 393x659, taken after the deploy.
+
+**Delivery and encounter:**
+- Delivery: `npm run served`, a byte comparison, and the browser read above.
+- Encounter: blind, tracked on `A-59` (encounter is blind on the public pages), read 2026-10-28. The only event that could appear is a report through a "looks wrong?" link, counted by `npm run reports` and readable at N = 1.
+
+**USER-FACING: yes.** Paths: `scripts/render-constant-pages.mjs`, `c/*.html` (115 files); `continuity/items.json` (the `A-70` row, internal). `index.html` only if the live read finds a regression.
+
+**HYGIENE INPUTS** (copied from the cycle-4 kickoff's reads; this lead carried no state block of its own)
+- (a) Due rows not bearing on the choice: none. Read: "dated gates due today", 0. `check-due-gates-dispositioned` printed CLEAR against this morning's snapshot at the cycle-4 close.
+- (b) Owed child rows: none. Read: "rows owed to you in skylark-site's ledger", 0 of 749.
+- (c) State reads marked CROSSED: none. Key numbers reads "no list yet", which is not measured, not a zero.
+
+**Second, if time:** `A-69` (a screen reader still hears the verdict first, and the matched value is not marked). It needs a WebKit browser read first, which is also behind the 10 GB bar.
+
+**Prior-day retro finding that bears on the choice:** none recurred. The 10-09 finding about a padded field does not apply to a control that copies existing text.
+
 ## Inputs (controllable)
 
 - Reviews by the other model family: three runs of Codex (read-only, foreground). The banner workdir was `C:\dev\skylark\bounds-ledger` each time, and every finding was taken before push.
