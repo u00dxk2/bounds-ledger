@@ -276,6 +276,22 @@ The P1 review (APPROVE) and P3 prompt, inbox `896af847`, were marked surfaced at
 
 **Record-facing or instrument-facing:** no catch this round. The work was on the reader's path, not on a record.
 
+### Close — overnight round 4
+
+ACTION: COMPLETED · item F-2 (spot-check flow, rotation 9) · P3 3e984dc2
+
+Manager review of P3 (inbox `f70e755d`): COMPLETED, no defects. All three review checks were re-read on the served pages.
+
+**Hygiene draft:** 0 lines (no inputs), 0 accepted · 0 amended · 0 rejected. READ-MUTATED: none. Wait-justification: "RESULT: PASS — 1 of 93 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)". Engineering-zero: "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)".
+
+**Due-gate verification:** "verdict: CLEAR — every gate due at Phase 0 was dispositioned" (A-45 and A-47, both re-dated). The tool labels the snapshot STALE because it compares against 2026-10-12 MT, but the snapshot was taken on 2026-10-11, the rail day this round closes. No re-snapshot at close. 10-12's snapshot is the next session's first action.
+
+**Ledger delta:** none. No row changed this round: F-2 is a flow, not a ledger row, and `A-59` gets no new arrival to record.
+
+**Receipt:** unchanged from P3 (3e984dc2).
+
+**Pending reads:** `A-59` reader encounter, blind (next check 2026-10-28). Carried untouched, due 10-12: `A-54` census session 8 and `A-2`.
+
 ## Inputs (controllable)
 
 - Reviews by the other model family: four Codex calls, all foreground and read-only, with banner workdir `C:\dev\skylark\bounds-ledger`. Every finding was dispositioned before push.
