@@ -494,3 +494,43 @@ pinned URL for 1a returned HTTP 200 with `constants/1a.md` in the page.
 
 **Reader reach is unknown, for the reason the 09-03 rotation gives.** Nothing observable yet;
 shipped on judgment.
+
+## Rotation 10 (2026-10-12) — F-2, a bound row that printed its source as HTML
+
+**The genuinely great version, named first.** The cell reads like a citation: `$10^{143}$ |
+[Bru2002] | …`. A mathematician sees the number, its key and the claim, and the exact string we pin
+is still one tap away for anyone checking us.
+
+**What was wrong.** 73 shown bound cells, on 44 of 115 rows, printed upstream's citation anchors as
+escaped HTML: `| $10^{143}$ | <a href="#Bru2002">[Bru2002]</a> |`. All 130 anchors have exactly the
+form `<a href="#KEY">[KEY]</a>`. No doc or decision chose this. The recorded reason for showing the
+cell verbatim is the evangelism bar's promise of "the exact pinned string so you can check it
+yourself" (`docs/evangelism-bar.md:38-39`), and that promise is about the pin, which did not change.
+
+### Shipped (`f09451a`, review fixes `11dd2cb` and `aad5e7e`)
+
+`before →` 73 shown cells with anchor markup on the index, and the same 73 across 44 constant pages.
+`after  →` 0 and 0, read off the served pages. Each anchor of that one shape now shows as its link
+text, which is what upstream's own rendered page shows. Any other shape stays verbatim, never guessed
+at. This is DISPLAY ONLY. Pins, claims, the `data-find` search attribute and the plain-text citation
+are byte-identical to before: `findKey()` and `citation()` read only the bound value cell, and the
+anchors sit in the citation column. On each constant page, a cell whose display differs from its pin
+carries an "exact pinned row" disclosure with the raw pin. There are 73 such blocks, and Codex checked
+each one against `ledger/claims.json`.
+
+**A stated limit.** The rule matches a literal substring, not parsed Markdown or LaTeX. No live pin is
+affected, because all 130 anchors' link text equals `[KEY]` (reproduced by Codex review r5).
+
+### Validation status
+
+Red-arms:
+- Transform removed at either call site: both selftests went red.
+- Rule widened to any `<a …>`: the narrowness guard went red.
+- Exact-row block removed: its assertion went red.
+- Transform fed into `data-find`: the selftest stayed GREEN. That exposed the haystack and citation
+  assertions as equality pins this change cannot reach, and their messages now say so.
+
+Two Codex rounds. r5 found the exact-pinned-string gap (MED) and a missing lower-side case (LOW). r6
+found one more lower-side assertion gap (LOW). All were fixed and are recorded in the commit bodies.
+
+**Reader reach is unknown,** as in rotations 8 and 9. Shipped on judgment.
