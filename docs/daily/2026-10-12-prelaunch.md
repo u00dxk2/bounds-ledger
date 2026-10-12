@@ -133,7 +133,7 @@ Kickoff inbox `fdf989f1`. The full packet as posted is `tmp/p1-d2-packet.md`. In
 
 **Outcome:** a reader about to cite a watched constant that a claim in OpenAI's 2026-10-06 math release (github.com/openai/math) bears on sees a labelled, unrefereed-claim note on that constant's page and index row. The note carries the claim's family and a formal-proof / partial / none tag taken from the release's own Lean scope page. It is never called a record and never touches a bound cell. Asked for by David (skylark-site `docs/answers/2026-10-12-afternoon-plan-bounds-ledger-openai-math.md`). A new `A-` row will be minted at P3.
 
-**Evidence:** the release repo moved on 2026-10-08 (its tip is the sha pinned in `ledger/openai-math-map.json` `source.sha`, an upstream sha; it does not exist in this repo). Its `history.md` records 3 withdrawals and "300 / 719 = ~42%" formalized, so the 10-07 UT figures (722 / 162) are stale. For 15a, the mirror lists 2.371177 last, while release family 107's Lean page claims ω(F) < 2.371054886… over every field and ω(ℂ) ≤ 9/4. For 84a, the mirror's upper bound is 4/3, "not improved", while family 167's Lean page proves β < 4/3 with an inexplicit β. Its Comparator statement `PlanarUnitDistances.lean` (read after posting) asserts ∃ C β, 1 ≤ β < 4/3, u(n) ≤ C·n^β, which matches 84a's definition as an upper-bound claim. The page's earlier sentence "The separate unit-distance power-saving theorem is not included" most likely refers to the pinned-distance formalization only, so the page is ambiguous rather than self-contradictory. The P1 post said "contradicts itself", and a correction was posted. Our own record holds nothing on the release: 0 files, with a positive control. Encounter is MISSING (`A-59`).
+**Evidence:** the release repo moved on 2026-10-08 (its tip is the sha pinned in `ledger/openai-math-map.json` `source.sha`, an upstream sha; it does not exist in this repo). Its `history.md` records 3 withdrawals and "300 / 719 = ~42%" formalized, so the figures compiled on 10-07 (722 / 162) are stale. For 15a, the mirror lists 2.371177 last, while release family 107's Lean page claims ω(F) < 2.371054886… over every field and ω(ℂ) ≤ 9/4. For 84a, the mirror's upper bound is 4/3, "not improved", while family 167's Lean page proves β < 4/3 with an inexplicit β. Its Comparator statement `PlanarUnitDistances.lean` (read after posting) asserts ∃ C β, 1 ≤ β < 4/3, u(n) ≤ C·n^β, which matches 84a's definition as an upper-bound claim. The page's earlier sentence "The separate unit-distance power-saving theorem is not included" most likely refers to the pinned-distance formalization only, so the page is ambiguous rather than self-contradictory. The P1 post said "contradicts itself", and a correction was posted. Our own record holds nothing on the release: 0 files, with a positive control. Encounter is MISSING (`A-59`).
 
 **USER-FACING: yes.** Paths: a new `ledger/openai-math-map.json`, the site and constant-page renderers, `index.html`, touched `c/*.html`, a guard, `continuity/items.json`, `docs/key-user-flows.md`. Second item after it: the Uncaged Minds essay in `C:\dev\skylark\uncaged-minds\drafts`, behind a cross-family claims pass and one board card.
 
@@ -141,7 +141,7 @@ Kickoff inbox `fdf989f1`. The full packet as posted is `tmp/p1-d2-packet.md`. In
 
 ### Day session round 2 — P3 product work
 
-P1 review: REDIRECT (inbox `b2d45f3e`). Render a formal-proof tag only from a Lean statement read and matched against the constant's definition. Keep the whole-population map as data. Render only what was statement-checked today. Public repo: no UT-workspace text.
+P1 review: REDIRECT (inbox `b2d45f3e`). Render a formal-proof tag only from a Lean statement read and matched against the constant's definition. Keep the whole-population map as data. Render only what was statement-checked today. Public repo: no text from another publication's workspace.
 
 **Action (improve):** `A-78` opened. `ledger/openai-math-map.json` gives all 372 families of the release a verdict, at the openai/math commit pinned in its `source.sha` (an upstream sha): 23 bear on a watched constant and 349 do not, from the union of two independent screening passes (a Claude agent, 19 families; Codex, 23, a superset). 31 pairs: 8 statement-checked and rendered, 23 unchecked and data only. The rendered constants: 15a (ω(F) < 2.371054886… over every field; ω(ℂ) ≤ 9/4), 15b (α > 0.465), 84a (unit-distance exponent below 4/3), 27a (no proper 5-colouring of the plane), 28a (Borsuk fails in dimension 9), 7a (irrationality measure of π is 2), 2a (complete Crouzeix with constant 2, a value the table already lists). Each note quotes its Lean statement and names the file. Commits: `8cfdacb` (the change), `89e12c3` (Codex r1 fixes and the claims-pass narrowing).
 
@@ -161,7 +161,7 @@ P1 review: REDIRECT (inbox `b2d45f3e`). Render a formal-proof tag only from a Le
 
 ACTION: COMPLETED · item A-78 (OpenAI's math release mapped onto every watched constant; statement-checked claims shown on 7 pages) · P3 ad69ecd7 (bus msgId)
 
-Manager review of P3 (inbox `00965f18`): COMPLETED, no defects. It re-read the live 15a page, the Pages build list (the first build of this work is `89e12c3`, after the claims-pass narrowing), and a `git log -G` sweep of this round's commits for UT-workspace material, which returned nothing.
+Manager review of P3 (inbox `00965f18`): COMPLETED, no defects. It re-read the live 15a page, the Pages build list (the first build of this work is `89e12c3`, after the claims-pass narrowing), and a `git log -G` sweep of this round's commits for material from another publication's workspace, which returned nothing.
 
 **State changed since the P3 post:** the report commit `d180182` only.
 
@@ -174,14 +174,41 @@ Manager review of P3 (inbox `00965f18`): COMPLETED, no defects. It re-read the l
 **Receipt:** unchanged from P3 `ad69ecd7`.
 
 **Carried, FIRST item next round: the Uncaged Minds essay.** David asked for it today, and the P1 review moved it out of this round. The essay:
-- Adapts his v1 draft into `C:\dev\skylark\uncaged-minds\drafts` in his voice, with every Tomas quote, essay, frame and placeholder removed.
+- Adapts his v1 draft into `C:\dev\skylark\uncaged-minds\drafts` in his voice, with every quote, essay, frame and placeholder belonging to the other publication removed.
 - Refreshes its facts against openai/math at its then-current tip. The 10-07 figures are stale: 3 manuscripts were withdrawn and 14 revised, per the release's own history file.
-- Uses new charts only, with no UT name.
+- Uses new charts only, with no outside branding.
 - Gets a Codex claims pass, read-only with its banner workdir checked, over every factual sentence about OpenAI's papers before anything is published. Then ONE board card.
 
 **Pending reads:**
 - `A-78`, 2026-10-19: as above.
 - `A-59`: reader encounter, blind (2026-10-28).
+
+### Day session round 3 — P1 selection packet
+
+Kickoff inbox `02634ac2`; posted as `d7f2fef8`. **Outcome:** David gets a fact-checked Uncaged Minds draft introducing the ledger through OpenAI's math release, then one board card. It is a carry from `A-78` and has no row of its own, because the essay lives in the private uncaged-minds repo. **USER-FACING: yes**, as text for publication under David's name, though nothing is published by us. **HYGIENE INPUTS:** none on all three lists.
+
+### Day session round 3 — P3 product work
+
+P1 review: APPROVE (inbox `334c532f`). It came with four points to hold: use David's .docx as the source, settle the update date from the release's history, give the method sentence its own line in the claims pass, and leave out the erdosproblems.com/36 story.
+
+**Action (deliver built value):** the draft is `C:\dev\skylark\uncaged-minds\drafts\who-checks-the-ai-math.md` ("OpenAI Released 722 Math Papers. Who's Checking Them?"), with a fresh chart in `exports/assets/openai-math-what-got-checked.svg`. It is committed to the private uncaged-minds repo as `45af8b7` and pushed. Nothing from another publication's workspace is in this public repo.
+
+**Facts re-read today, not carried over:**
+- 722 at release (that commit's CONTENTS.md) and 719 now.
+- The update is dated 7 October in the release's own history file; its commit is stamped 2026-10-08T05:03Z UTC.
+- Lean scope pages: 235 at release, 242 now (contents API at both refs).
+- The catalogue's review status still reads `unchecked`, and issues are still disabled.
+- `HadwigerCounterexample.lean` returns 404 at the release commit and is present at the tip. So the earlier draft's "sharpest mismatch" went stale a few hours after it was written, and the essay is built on that.
+
+**Claims pass** (Codex, read-only, banner workdir checked each time):
+- Round 1: 99 verdicts, 86 HOLDS / 8 REFUTED-AS-WRITTEN / 5 UNVERIFIABLE-HERE. All 8 refuted items were fixed with the pass's narrower sentence. As the review predicted, one was the method sentence (Borsuk and Crouzeix match only through one extra step). The others: the family count's unit (21 constants and 2 Ramsey), Borsuk "9" becoming "at 9 or below", ω's full digits, α's field, Crouzeix's "independent route", the title, and the chart's third bar.
+- Round 2, on the changed sentences: 10 HOLDS / 0 / 5. Its catch: the body said "I read" in David's voice for readings the lane's agents did. They are now attributed to the agents. A sweep for first-person claims of that work found one more, which is fixed.
+
+**Voice rules, stated:** own-prose share is about 0%. The uncaged-minds harness (§3.1) asks for a fifteen-minute sitting when no David sentences exist. The draft was written because David asked for the adaptation by name, and the card offers the sitting as the alternative.
+
+**Card:** `49dabdc0`, filed by needs-decision `221bcad6`. It gives the path, a two-line summary, the claims-pass counts and "Publish as is, or edit first?".
+
+**Encounter:** David's reply on the card is the read; pending. **Outcome:** open.
 
 ## Inputs (controllable)
 
