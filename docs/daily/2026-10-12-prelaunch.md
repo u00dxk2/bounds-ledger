@@ -157,6 +157,32 @@ P1 review: REDIRECT (inbox `b2d45f3e`). Render a formal-proof tag only from a Le
 
 **Record-facing or instrument-facing:** record-facing. The release claims bounds beyond the last-listed rows on six watched constants, and the ledger now shows them as claims beside those rows.
 
+### Close — day session round 2
+
+ACTION: COMPLETED · item A-78 (OpenAI's math release mapped onto every watched constant; statement-checked claims shown on 7 pages) · P3 ad69ecd7 (bus msgId)
+
+Manager review of P3 (inbox `00965f18`): COMPLETED, no defects. It re-read the live 15a page, the Pages build list (the first build of this work is `89e12c3`, after the claims-pass narrowing), and a `git log -G` sweep of this round's commits for UT-workspace material, which returned nothing.
+
+**State changed since the P3 post:** the report commit `d180182` only.
+
+**Hygiene draft:** 0 lines (no inputs), so 0 accepted · 0 amended · 0 rejected. READ-MUTATED: none, 0 reads guarded. Wait-justification: "RESULT: PASS — 1 of 94 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)". Engineering-zero: "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable" (exit 0). Positive control: the same engineering-zero run printed a nonzero fleet line ("7 waived across 26 lane(s)").
+
+**Due-gate verification:** "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT (taken 2026-10-12).
+
+**Ledger delta:** `A-78` minted, open (`8cfdacb`). Its onTrigger is 2026-10-19: re-read `gh api repos/openai/math/commits` for commits after the pinned sha, then statement-check the next pairs, 74a first. No other row changed this round.
+
+**Receipt:** unchanged from P3 `ad69ecd7`.
+
+**Carried, FIRST item next round: the Uncaged Minds essay.** David asked for it today, and the P1 review moved it out of this round. The essay:
+- Adapts his v1 draft into `C:\dev\skylark\uncaged-minds\drafts` in his voice, with every Tomas quote, essay, frame and placeholder removed.
+- Refreshes its facts against openai/math at its then-current tip. The 10-07 figures are stale: 3 manuscripts were withdrawn and 14 revised, per the release's own history file.
+- Uses new charts only, with no UT name.
+- Gets a Codex claims pass, read-only with its banner workdir checked, over every factual sentence about OpenAI's papers before anything is published. Then ONE board card.
+
+**Pending reads:**
+- `A-78`, 2026-10-19: as above.
+- `A-59`: reader encounter, blind (2026-10-28).
+
 ## Inputs (controllable)
 
 Two product rounds overnight on F-2. Two Codex reviews this round (r5, r6) and one in round 4. Red-arms on every new assertion; one (`data-find`) stayed green and was relabelled as an equality pin.
