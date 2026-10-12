@@ -8,7 +8,7 @@ date: 2026-10-12
 lifecycle_stage: launched
 last_deploy: 6cc1076 (the last page-changing push; npm run served read 27 of 27 served at 08:14:51Z on 2026-10-12)
 on_hold_items: 1
-top_action_today: F-2, a shown bound row reads its source key instead of HTML anchor markup
+top_action_today: F-2, 46a discloses our open upstream issue 218 (overnight: a shown bound row reads its source key instead of HTML anchor markup)
 # The four keys below have NO instrument in this lane and are left null rather than filled with a
 # zero nobody measured: pre-revenue, no billing, no analytics on the published page, no Sentry project.
 mrr_usd: null
@@ -21,7 +21,9 @@ sentry_open_p2: null
 
 ## BLUF
 
-Overnight round 5 is choosing its change: 44 of the 115 public rows show upstream's HTML link markup as text where a reader expects a source key like [Bru2002].
+The public page for constant 46a now says we filed an open report upstream about it, with a link.
+
+Overnight, 44 rows stopped showing link markup as text.
 
 ## What changed
 
@@ -57,7 +59,7 @@ P1 review: APPROVE (inbox `5183e18d`), with one asked-for red-arm, a non-matchin
 
 ### Close — overnight round 5
 
-ACTION: COMPLETED · item F-2 (spot-check flow, rotation 10) · P3 4c12ad51
+ACTION: COMPLETED · item F-2 (spot-check flow, rotation 10) · P3 4c12ad51 (bus msgId)
 
 Manager review of P3 (inbox `7ef3318a`): COMPLETED, no defects. It re-read all 115 live constant pages and the index on its own. This P5 prompt never surfaced in the pane; it was found in the bus file after the retro and close-session prompts.
 
@@ -104,6 +106,26 @@ P1 review: APPROVE (inbox `7bc193d7`), with two extras: put the label beside the
 **Encounter:** blind, bug row `A-59`. **Outcome:** open.
 
 **Record-facing or instrument-facing:** instrument-facing. The defect was in our own disclosure data, and no record moved.
+
+### Close — day session round 1
+
+ACTION: COMPLETED · item F-2 (spot-check flow, rotation 11, disclosing our upstream issue 218) · P3 8017d8a5 (bus msgId)
+
+Manager review of P3 (inbox `5b67407e`): COMPLETED, no defects. It re-read both live pages and the commit stats on its own.
+
+**State changed since the P3 post:** none to the ship. The verify receipt at `7727c9d` (exitCode 0, no failed gates) is the one the P3 gates stamp cites.
+
+**Hygiene draft:** 0 lines (no inputs), so 0 accepted · 0 amended · 0 rejected. READ-MUTATED: none, 0 reads guarded. Wait-justification: "RESULT: PASS — 1 of 93 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)". Engineering-zero: "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable" (exit 0).
+
+positive control: the same engineering-zero run printed a nonzero fleet line ("8 waived across 26 lane(s)"), and one `check-upstream-reports.mjs` listing returned issue 150 as recorded beside issue 218 as UNRECORDED, so both instruments return non-empty when there is something to find.
+
+**Due-gate verification:** "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT (taken 2026-10-12).
+
+**Ledger delta:** `A-77` minted (`57756ec`), with its readCommand narrowed by Codex r1 (`544c465`). `W-14` (the watch on issue 218) has a dated note recording the disclosure; it is not re-dated, because issue 218 itself did not change.
+
+**Receipt:** unchanged from P3 `8017d8a5`.
+
+**Pending reads:** `A-77`, 2026-10-19: choose a caller for the upstream-report checker, which today runs only when someone remembers `npm run upstream` (why issue 218 sat undisclosed for five days), and decide whether merged pull requests are in scope. `W-14` (the watch on issue 218), 2026-10-14: read the issue for a maintainer reply. `A-59`: reader encounter, blind (2026-10-28).
 
 ## Inputs (controllable)
 

@@ -2779,12 +2779,12 @@
       "links": [
         "A-57"
       ],
-      "note": "MINTED 2026-10-08 at P5, from the hygiene draft's undecided line, AMENDED to mint. A-57 sent the 46a attribution correction as issue 218 on 2026-10-07 at 19:39:29Z on David's approval (card 78c6bb41) and closed, and no row watched the reply. Read 2026-10-08: gh issue view 218 printed state OPEN, comments [], updatedAt 2026-10-07T19:39:29Z. A maintainer reply would be G-3-shaped, never G-4, because our own issue is in the causal path. The drift alarm also sees the record leg on its own: if upstream changes the 46a citation, constants/46a.md moves and the mirror check goes red.",
+      "note": "MINTED 2026-10-08 at P5, from the hygiene draft's undecided line, AMENDED to mint. A-57 sent the 46a attribution correction as issue 218 on 2026-10-07 at 19:39:29Z on David's approval (card 78c6bb41) and closed, and no row watched the reply. Read 2026-10-08: gh issue view 218 printed state OPEN, comments [], updatedAt 2026-10-07T19:39:29Z. A maintainer reply would be G-3-shaped, never G-4, because our own issue is in the causal path. The drift alarm also sees the record leg on its own: if upstream changes the 46a citation, constants/46a.md moves and the mirror check goes red.\n\n | 2026-10-12 day session: issue 218 had never been recorded in ledger/upstream-reports.json, so the public 46a row and page did not disclose it. Recorded in 57756ec; the live index row c-46a and live c/46a.html now carry 'we reported this row · open' linking the issue (npm run served 2 of 2 SERVED, CI GREEN for 544c465). Not a reply or a state change on 218, so this row is NOT re-dated; its next read stays 2026-10-14. The checker that should have caught the gap has no caller: A-77.",
       "readCommand": "gh issue view 218 -R teorth/optimizationproblems --json state,comments,updatedAt",
       "onTrigger": "On a maintainer comment: record its substance paraphrased (never quoted at length) with its date, and do NOT reply. Any reply on the issue is outward contact, which needs an adversarial review and David's approval. On the issue closing, or constants/46a.md changing upstream: verify the change against the mirror through the drift cycle (verify, snapshot, re-pin) and record which happened. On no change: re-date one week.",
       "closeWhen": "A maintainer comment or a close of issue 218 is recorded on this row, with its date and the drift cycle's resolving sha if the record moved; or David decides the watch ends.",
       "created": "2026-10-08",
-      "updated": "2026-10-08"
+      "updated": "2026-10-12"
     },
     {
       "id": "A-74",
