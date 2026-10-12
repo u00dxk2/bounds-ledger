@@ -87,6 +87,24 @@ Kickoff inbox `32ddc6bb`. The full packet as posted is `tmp/p1-d1-packet.md`. In
 
 **HYGIENE INPUTS:** (a) none: 0 dated gates due (live `--print`; the overnight snapshot was not retaken). (b) none: 0 of 749. (c) none crossed: the kickoff state block.
 
+### Day session round 1 — P3 product work
+
+P1 review: APPROVE (inbox `7bc193d7`), with two extras: put the label beside the audit verdict if it is cheap and non-causal, and open a row for the checker that never runs in CI.
+
+**Action (deliver built value):** issue 218's baseline row in `ledger/upstream-reports.json`, every field copied from `gh issue view 218`. The disclosure code already existed and was unchanged. Commits: `57756ec` (the change, with `A-77` opened) and `544c465` (Codex r1's one finding, fixed).
+
+**Implementation:** `check-upstream-reports.mjs` went from "UNRECORDED — issue 218 is ours and has no baseline row" (exit 1) to "RESULT: PASS — 0 transition(s) across 2 recorded report(s)" (exit 0). The re-render changed one line in `index.html` and one in `c/46a.html` and no other page. `npm run verify` receipt: exitCode 0 at `57756ec`, no failed gates; `544c465` after it touches `continuity/` only.
+
+**Review:** Codex r1, read-only, on `57756ec`, banner workdir `C:\dev\skylark\bounds-ledger`. One finding, LOW, STATIC, CONFIRMED: A-77's readCommand claimed "every issue our account filed", but the checker reads one `gh issue list --limit 100`. Fixed in `544c465`. Sibling sweep for the phrase over the tracked repo: 0 further hits.
+
+**Delivery:** CI GREEN for `544c465` on `page-check.yml` and `reverify.yml`. `npm run served`: "2 checked — 2 served, 0 in flight, 0 stale, 0 unreachable" (anchor `57756ec`). Fetched directly, the live index row `c-46a` carries `we reported this row · open` linking issue 218, placed immediately before its existing badge "what we read does not support a claim in a row: … [Bo1991]". The live `c/46a.html` carries the same label under its heading.
+
+**The two extras:** (1) On the index, the label already sits beside the audit verdict, because both render in the row header. On the constant page it sits under the heading, a stated limit: the store keys a report to a file, never to a row. (2) `A-77` opened: the checker has no caller that does not depend on someone remembering, and it cannot see our two merged upstream pull requests.
+
+**Encounter:** blind, bug row `A-59`. **Outcome:** open.
+
+**Record-facing or instrument-facing:** instrument-facing. The defect was in our own disclosure data, and no record moved.
+
 ## Inputs (controllable)
 
 Two product rounds overnight on F-2. Two Codex reviews this round (r5, r6) and one in round 4. Red-arms on every new assertion; one (`data-find`) stayed green and was relabelled as an equality pin.
