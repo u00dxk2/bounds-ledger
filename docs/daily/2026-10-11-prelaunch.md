@@ -246,6 +246,18 @@ Manager review: APPROVE (inbox `93bbe54e`). Kind: improve.
 
 **Record-facing or instrument-facing:** no catch this round. The 87a title question is record-facing in shape but not settled.
 
+### Overnight round 4 — P1 selection packet
+
+Phase prompt inbox `34212844` (05:31Z on 2026-10-12, 23:31 MT on 10-11), the re-send of `9df41fb4`, which was marked surfaced but never reached the session. The full packet, as posted to the bus, is `tmp/p1-round4-packet.md`. Its substance:
+
+**Outcome:** the "bound cell edited" label links to upstream's history for that constant's file, so a reader can see the edit in one click. Flow `F-2` (spot-check one claim).
+
+**Evidence:** a cold walk at 390x844 of the index, c/1a.html and 2a. The slowest answer was 1a's lower bound, "bound cell edited 2026-09-26", which has no route but "upstream source", then history, then the diff. The label census reads 4 / 20 / 7 / 199 / 2 / 0 (bound cell edited / value changed / text edited / tracked since / last changed / date unknown), 232 labels over 115 rows. The four are 1a, 3b, 8a and 41a. Showing the previous cell inline is NOT chosen: `scripts/lookup.mjs:192-197` refuses it. Encounter is MISSING.
+
+**USER-FACING: yes.** Paths: `scripts/render-site.mjs`, `scripts/render-constant-pages.mjs`, `index.html`, `c/*.html`, `docs/key-user-flows.md`.
+
+**HYGIENE INPUTS:** (a) none: "0 gate(s) due on/before 2026-10-11". (b) none: 0 of 749. (c) none crossed: the kickoff state block.
+
 ## Inputs (controllable)
 
 - Reviews by the other model family: four Codex calls, all foreground and read-only, with banner workdir `C:\dev\skylark\bounds-ledger`. Every finding was dispositioned before push.

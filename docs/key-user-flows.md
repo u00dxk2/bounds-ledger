@@ -449,3 +449,48 @@ counts issue arrivals; neither is readership. Latest read 2026-09-03: ≤6 disti
 2 in the trailing 14. **Nothing observable yet; shipped on judgment.** What would be observed if it
 worked: a citation or inbound link naming `c/<id>.html` — the path is the tell, because it can only
 come from someone who used the cite control.
+
+## Rotation 9 (2026-10-12) — F-2, a label that says a row changed and then stops
+
+**The genuinely great version, named first.** One tap from "bound cell edited 2026-09-26" lands on
+upstream's own record of that edit, and it still lands there next month.
+
+**The walk.** A cold read of the live index and `c/1a.html` at 390x844, asking "is the number I'm
+about to cite current?" about two constants. 1a has a read verdict, and that part answered cleanly
+once A-63 had named every verdict's claim. 2a has none, and it answered at once too ("text edited
+2026-08-27 — bound unchanged"). The slowest answer was 1a's shown lower bound. "bound cell edited
+2026-09-26" says the cell moved and gives no way to see how, except "source", then upstream's
+history, then the diff. A census of the live labels read 4 bound cell edited, 20 value changed,
+7 text edited, 199 tracked since, 2 last changed and 0 date unknown: 232 labels over 115 rows. The
+four "bound cell edited" rows were 1a, 3b, 8a and 41a. The desktop leg was a text read only.
+
+**Not chosen, deliberately:** showing the previous cell inline. `lookup.mjs` refuses to display
+`prevExpect` (Brun's constant, 2026-09-01), because a current value, a change date and a previous
+value make a movement claim even when nothing was superseded.
+
+### Shipped (`6cc1076`)
+
+`before →` 31 labels recording an observed change, none of them linked.
+`after  →` each of those 31 links GitHub's commit history for that constant's upstream file,
+pinned to the sha the mirror records (`commits/<sha>/constants/<id>.md`), on the index and on all
+26 constant pages that carry one. "tracked since" stays unlinked, because it records no observed
+change. The plain-text citation is unchanged: the link is added at the two HTML call sites, never
+inside `whenLabel()`, which also feeds the cite block. A URL that is not upstream's raw constants path,
+or a ref that is not 40 hex, gets no link rather than a guessed one.
+
+**What the link does not claim.** The label's date is the day this ledger re-pinned the row, so the
+upstream commit can carry an earlier date, and the newest entry in that history is not always the
+edit the label dates (upstream may have touched another row of the same file). The link is
+upstream's record to read, not our statement about it.
+
+### Validation status
+
+Three mutations, each proven landed by grep before its verdict was read. Disabling the link turned
+both selftests red on their link assertions. Pinning to `main` turned `render-site --selftest` red on
+the "never `main`" guard, but only after that guard was moved ahead of the href check, which its
+first run had tripped instead. Putting the link inside `citation()` turned it red on "the plain-text
+citation must never carry link markup". Restored, both selftests and both `--check` legs pass. The
+pinned URL for 1a returned HTTP 200 with `constants/1a.md` in the page.
+
+**Reader reach is unknown, for the reason the 09-03 rotation gives.** Nothing observable yet;
+shipped on judgment.
