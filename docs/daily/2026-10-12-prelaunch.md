@@ -75,6 +75,18 @@ READ-MUTATED: 2, both this lane's own concurrent P3 edit (status `b7ffa0a1`). Wa
 
 **Pending reads:** `A-59` reader encounter, blind (next check 2026-10-28). `A-54` census slot, 2026-10-14. `A-2` drift re-read, 2026-10-19.
 
+### Day session round 1 — P1 selection packet
+
+Kickoff inbox `32ddc6bb`. The full packet as posted is `tmp/p1-d1-packet.md`. In brief:
+
+**Outcome:** a reader weighing 46a's row sees that we ourselves filed an open report upstream against it (issue 218), linked, as the index's notes already promise for every row we have reported. Flow `F-2`, rotation 11.
+
+**Evidence:** `node scripts/check-upstream-reports.mjs` printed "UNRECORDED — issue 218 is ours and has no baseline row" and exited 1. `ledger/upstream-reports.json` records issue 150 only. The live `c/46a.html` carries no disclosure, though it shows the depth audit's [Bo1991] reading. The checker needs `gh` and never runs in CI, so nothing raised this after 218 was sent on 2026-10-07. Out of scope today, as a stated limit: our two merged pull requests (194 on 1a and 1b, 141 on 15a), which the checker cannot see and the "we reported" wording would misdescribe. Encounter is MISSING (`A-59`).
+
+**USER-FACING: yes.** Paths: `ledger/upstream-reports.json`, `index.html`, `c/46a.html`, `docs/key-user-flows.md`.
+
+**HYGIENE INPUTS:** (a) none: 0 dated gates due (live `--print`; the overnight snapshot was not retaken). (b) none: 0 of 749. (c) none crossed: the kickoff state block.
+
 ## Inputs (controllable)
 
 Two product rounds overnight on F-2. Two Codex reviews this round (r5, r6) and one in round 4. Red-arms on every new assertion; one (`data-find`) stayed green and was relabelled as an equality pin.

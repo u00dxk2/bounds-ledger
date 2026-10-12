@@ -14,6 +14,17 @@
       "closedAt": "2026-08-23T17:15:35Z",
       "baselineRecordedAt": "2026-09-02",
       "baselineSource": "gh issue view 150 --repo teorth/optimizationproblems --json number,createdAt,closedAt,state,title,url — run 2026-09-02, every field above copied from its output rather than recalled"
+    },
+    {
+      "path": "constants/46a.md",
+      "issue": 218,
+      "url": "https://github.com/teorth/optimizationproblems/issues/218",
+      "title": "46a: the 4 − 2/15 bound is credited to Bourgain's GAFA 1991 paper, which proves 31/8",
+      "filed": "2026-10-07T19:39:29Z",
+      "state": "OPEN",
+      "closedAt": null,
+      "baselineRecordedAt": "2026-10-12",
+      "baselineSource": "gh issue view 218 --repo teorth/optimizationproblems --json number,createdAt,closedAt,state,title,url — run 2026-10-12, every field above copied from its output rather than recalled"
     }
   ]
 }

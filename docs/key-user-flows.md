@@ -540,3 +540,43 @@ Two Codex rounds. r5 found the exact-pinned-string gap (MED) and a missing lower
 found one more lower-side assertion gap (LOW). All were fixed and are recorded in the commit bodies.
 
 **Reader reach is unknown,** as in rotations 8 and 9. Shipped on judgment.
+
+## Rotation 11 (2026-10-12) — F-2, a row we reported upstream that did not say so
+
+**The genuinely great version, named first.** A reader on 46a who reads that a cited row is "NOT
+supported" by what we read can see, on the same page, that we raised it upstream and that it is still
+open, so they can judge our hand in the row for themselves.
+
+**The walk.** A cold read of the live `c/46a.html` at 390x844. Its audit block reports the [Bo1991]
+row as not supported by the pages read. The page carried no "we reported this row" link, although we
+filed issue 218 against `constants/46a.md` on 2026-10-07 (`A-57`, on David's approval). The index's
+notes promise that link on every row we have reported. `node scripts/check-upstream-reports.mjs`
+printed "UNRECORDED — issue 218 is ours and has no baseline row" and exited 1. It needs `gh` and runs
+only as `npm run upstream`, while CI runs only its `--selftest`, so nothing raised this for five days
+(`A-77`).
+
+### Shipped
+
+`before →` 1 of the 2 issues our account has filed upstream disclosed on the pages (87a, issue 150).
+`after  →` 2 of 2. `ledger/upstream-reports.json` gains issue 218's baseline row, every field copied from
+`gh issue view 218` rather than recalled. The 46a row on the index and `c/46a.html` now carry
+`we reported this row · open`, linking the issue. That rendering code (`reportFor`, `reportLabel`) is
+unchanged and already selftested, including its refusal of causal wording; this round ships its data.
+No other page's content changed.
+
+**Two stated limits.**
+- **The label sits under the page heading, not beside the audit verdict it concerns.** The store keys a
+  report to a FILE (`path`), never to a row, so nothing records which bound row issue 218 is about.
+  Placing it beside one audit entry would assert a link the data does not hold. Making that link
+  needs a row key in the store and its own guard, not a layout change.
+- **Our two merged pull requests upstream (194 on 1a and 1b, 141 on 15a) are not disclosed.** The
+  checker lists issues only, and "we reported this row" would misdescribe a merged edit. Whether and
+  how to disclose them is open on `A-77`.
+
+### Validation status
+
+`check-upstream-reports.mjs`: exit 1 with 218 UNRECORDED before; "RESULT: PASS — 0 transition(s)
+across 2 recorded report(s)" after. Re-render diff: one line in `index.html` and one in
+`c/46a.html`; `git diff --numstat` showed no other page changed.
+
+**Reader reach is unknown,** as in rotations 8 to 10. Shipped on judgment.

@@ -2844,6 +2844,25 @@
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/depth-audit.mjs --corpus — prints the bound-row population this question would be drawn from; the sibling count itself has no script yet, so this row is open until one exists",
       "created": "2026-10-11",
       "updated": "2026-10-11"
+    },
+    {
+      "id": "A-77",
+      "type": "active",
+      "status": "open",
+      "title": "The filed-report check runs only when someone remembers: issue 218 sat undisclosed on 46a for five days",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-10-19",
+      "links": [
+        "W-14",
+        "A-57",
+        "A-33"
+      ],
+      "note": "Opened 2026-10-12 MT at day-session P3, on the manager's review (inbox 7bc193d7). We sent issue 218 against constants/46a.md on 2026-10-07 (A-57) and never added it to ledger/upstream-reports.json, so the public 46a row and page did not carry the 'we reported this row' disclosure the index's notes promise. `node scripts/check-upstream-reports.mjs` was built to catch exactly this ('UNRECORDED — issue 218 is ours and has no baseline row', exit 1, read 2026-10-12 15:13Z), but it needs gh and runs only as `npm run upstream`; reverify.yml runs only its --selftest (line 268). Fixed for 218 in the day's P3 commit. A SECOND blind spot, not fixed: it lists issues only (`gh issue list --author u00dxk2`), so our two merged pull requests upstream (194 on 1a and 1b, 141 on 15a) are invisible to it, and whether a merged edit of ours should be disclosed at all, and in what words, is undecided.",
+      "onTrigger": "On 2026-10-19 or the next outward send, whichever comes first: decide the caller. Candidates: (a) run `npm run upstream` in the steward cadence beside `npm run verify`, written into docs/daily-config.md; (b) a scheduled workflow that runs it with the default GITHUB_TOKEN (public repo, read-only) and files or updates ONE issue on UNRECORDED or a transition, kept out of reverify.yml so a transient GitHub failure cannot turn that suite red. Whichever is chosen, red-arm it by removing a recorded row and showing it fires. Separately, decide whether merged pull requests are in scope, and if so the label wording, which must not say 'reported'.",
+      "closeWhen": "The check is run by something that does not depend on a person remembering it, with a recorded red-arm; and the pull-request question is either answered in code or closed with a written decision.",
+      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/check-upstream-reports.mjs — exit 0 '0 transition(s)' and no UNRECORDED line means every issue our account filed upstream has a baseline row; exit 1 names the issue. Blind to pull requests.",
+      "created": "2026-10-12",
+      "updated": "2026-10-12"
     }
   ],
   "meta": {
