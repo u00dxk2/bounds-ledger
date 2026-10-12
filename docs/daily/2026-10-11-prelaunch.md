@@ -378,3 +378,38 @@ Written on the manager's review (inbox `8a53e2c4`), verdict COMPLETED with no de
 **Not done, and not owed today:**
 - A reference note on c/88a through the `A-74` helper. This is lane authority.
 - Any upstream contact about 88a. That is outward: it needs an adversarial review and a card for David before anything is sent.
+
+### Close — day session round 3
+
+ACTION: COMPLETED · item A-63 · P3 4bc47d59
+
+The manager's review (inbox `726dea7d`) marks it COMPLETED with no defects, from its own read of origin/main and the live site. The acceptance condition was the P1 packet plus the APPROVE: every read verdict names its claim, and no page is left half-cleared. The store shows 0 of 68 read verdicts without a named claim, and `c/` has 0 pages with the unnamed line.
+
+**Verdicts that moved in round 3, recorded as found:**
+- 10a row 33 (A-47-0001) went from UNRESOLVED to SOUND.
+- 87a [Mar2006] (A-47-0003) went to DEFECTIVE in `08d5e80` and back to UNRESOLVED in `0d35938`, after Codex review r1.
+
+**State changed since the P3 post:** `718f624` (the report and ledger record, doc-only) was pushed. The manager's own read found index.html, the five changed pages, c/15a, c/26a and `continuity/depth-audit.json` all SHA-256-equal to their origin/main blobs.
+
+**Ledger delta:**
+- `A-63` CLOSED 2026-10-11, its note citing the three closeWhen legs: 0 of 68 unnamed; the self-test in `a75eea8` and `e920910`; c/15a and c/26a read live. The id sweep found 130 hits in 22 files. The 6 in `scripts/render-constant-pages.mjs` are provenance labels for code that stays; the other 21 files are dated primers and reports; top-level docs have 0.
+- `A-47.pending87aMar2006_2026_10_11`: 87a's open question, carried as a pending read rather than closed. What settles it is the thesis title page or a library record. Trigger: the next depth-audit session (nextCheckDate 2026-10-13) or any session with a library route.
+
+**Hygiene draft:** 0 lines (0 accepted, 0 amended, 0 rejected). READ-MUTATED: "none — 0 reads guarded (no `--run` executed)". Its two checks:
+- check-wait-justification: "RESULT: PASS — 1 of 93 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)".
+- check-engineering-zero: "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)".
+
+**Due gates:** "verdict: CLEAR — every gate due at Phase 0 was dispositioned.", against "snapshot: tmp\due-gates-snapshot.json — CURRENT (taken 2026-10-11)".
+
+**Today panel:** written with `--date 2026-10-11`; `"ok": true`, "local sync OK".
+
+**Receipt:** P3's (`4bc47d59`) still holds; nothing new.
+
+**Pending reads:**
+- 2026-10-12: `A-54` (the Small Ramsey Numbers census), session 8; `A-2` (the drift-resolution log).
+- 2026-10-13: `A-47` (the depth audit), slice 17 with its grid owed, plus the 87a pending read; `W-13` (someone must call the served-bytes check); `A-69` (a matched row's values on a phone).
+- 2026-10-14: `A-76` (upper-bound rows cut below their source); `A-50` (importing a CLI script can run it); `W-14` (watch issue #218).
+- 2026-10-18: `A-45` (the tier-1 leading indicator).
+- 2026-10-28: `A-59` (encounter is blind on the public pages).
+
+**Primer:** `docs/cold-starts/2026-10-12.md`, the date `npm run close:primer` expects. It printed "RESULT: FAIL — no cold-start primer for tomorrow (2026-10-12 MT)" before this close.
