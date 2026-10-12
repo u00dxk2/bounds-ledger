@@ -21,7 +21,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
-import { buildRows, flagUrl, citation, reportLabel, whenLabel, whenHtml, historyUrl, readable } from "./render-site.mjs";
+import { buildRows, flagUrl, citation, reportLabel, whenLabel, whenHtml, historyUrl, displayCell, readable } from "./render-site.mjs";
 import { boundCell } from "./lookup.mjs";
 import crypto from "node:crypto";
 import { REPO, esc, copyCiteScript } from "./lib/html.mjs";
@@ -913,7 +913,7 @@ export const DISCLAIMER =
 function side(label, row, changed, kind, hist = null) {
   if (!row) return `<dt>${esc(label)} bound</dt><dd class="none">not pinned</dd>`;
   const when = changed ? `<span class="when">${whenHtml(changed, kind, hist, esc)}</span>` : `<span class="when">date unknown</span>`;
-  return `<dt>${esc(label)} bound, last-listed row</dt><dd><code>${esc(row)}</code>${when}</dd>`;
+  return `<dt>${esc(label)} bound, last-listed row</dt><dd><code>${esc(displayCell(row))}</code>${when}</dd>`;
 }
 
 /**
@@ -1541,6 +1541,21 @@ async function selftest() {
     "a first-pin label records no observed change and must stay unlinked and unchanged");
   assert.ok(!renderPage({ ...row, upperChanged: "2026-09-26", upperKind: "value" }, histSha).includes("/commits/"),
     "a URL that is not upstream's raw constants path must get no history link");
+  // (c5) F-2 rotation 10 (2026-10-12): a shown bound cell reads an upstream citation anchor as its
+  //      link text, display only; any other anchor shape stays verbatim. Meaning first, exact last.
+  const anchorRow = { ...rawRow,
+    upper: '| $10^{143}$ | <a href="#Bru2002">[Bru2002]</a> | x |',
+    lower: '| $1$ | <a href="https://example.invalid/r">[Ext]</a> |' };
+  const anchorPage = renderPage(anchorRow, histSha);
+  const ddCells = [...anchorPage.matchAll(/<dd><code>([\s\S]*?)<\/code>/g)].map((m) => m[1]);
+  assert.equal(ddCells.length, 2, "positive control: both shown bound cells must render");
+  assert.ok(!ddCells[0].includes("&lt;a href") && ddCells[0].includes("[Bru2002]"),
+    "a shown bound cell must read the anchor's link text, not its markup");
+  assert.ok(ddCells[1].includes("&lt;a href=&quot;https://example.invalid/r&quot;&gt;[Ext]&lt;/a&gt;"),
+    "an anchor of any other shape must stay verbatim");
+  assert.ok(anchorPage.includes(`<code>${esc(citation(anchorRow, histSha))}</code>`), "the cite block must be unchanged, byte for byte");
+  assert.equal(ddCells[0], esc("| $10^{143}$ | [Bru2002] | x |"), "exact shown cell");
+
   // Codex review r1 finding 4: every observed kind, on the LOWER side too.
   for (const [k, word] of [["value", "value changed"], ["text", "text edited"], ["expression", "bound cell edited"]]) {
     const lowPage = renderPage({ ...histRow, upperKind: "first", upperChanged: "2026-07-24", lowerKind: k, lowerChanged: "2026-09-26" }, histSha);

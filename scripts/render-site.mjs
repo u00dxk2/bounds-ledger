@@ -330,6 +330,19 @@ export function historyUrl(url, sha) {
   return `https://github.com/teorth/optimizationproblems/commits/${sha}/constants/${file}`;
 }
 
+// F-2 rotation 10 (2026-10-12). 73 shown bound cells on 44 rows carried upstream's citation anchors
+// as escaped text — `| $10^{143}$ | <a href="#Bru2002">[Bru2002]</a> |` — so a reader checking a
+// number had to read HTML to find its source key. Upstream's own rendered page shows the link text,
+// `[Bru2002]`, and that is what the DISPLAYED cell now shows. DISPLAY ONLY: the pin, the claims, the
+// search haystack (data-find) and the plain-text citation keep the raw string, so the alarm and the
+// filter still read exactly what upstream wrote. The rewrite is NARROW on purpose: only the one shape
+// seen on all 130 live anchors, a fragment-only href and link text with no `<`. Any other shape (an
+// external href, extra attributes, a nested tag) stays verbatim rather than being guessed at.
+const UPSTREAM_ANCHOR = /<a href="#[^"<>]*">([^<]*)<\/a>/g;
+export function displayCell(row) {
+  return String(row).replace(UPSTREAM_ANCHOR, "$1");
+}
+
 /** The dated label as HTML: linked to upstream history when it records an observed change. */
 // `wrap` lets a caller keep its own existing treatment of the label text (the constant pages esc()
 // it), so a label this does NOT link renders byte-identical to before.
@@ -373,7 +386,7 @@ function cell(row, changed, kind, label, hist = null) {
   const when = changed
     ? `<span class="when ${kind === "text" ? "text-only" : ""}">${whenHtml(changed, kind, hist)}</span>`
     : `<span class="when">date unknown</span>`;
-  return `<td data-label="${esc(label)}"><code>${esc(row)}</code>${when}</td>`;
+  return `<td data-label="${esc(label)}"><code>${esc(displayCell(row))}</code>${when}</td>`;
 }
 
 // Every value cell in the constant's mirrored bound tables — not only the two rows we pin.
@@ -2065,6 +2078,33 @@ async function selftest() {
   }
   assert.ok(histPage.includes(`<a href="${histHref}" title="upstream's history of this file, at the commit this ledger mirrors">bound cell edited 2026-08-02</a>`),
     "exact markup of the linked label");
+
+  // --- F-2 rotation 10 (2026-10-12): a shown bound cell reads upstream's citation anchor as its
+  // link text, display only. Through renderHtml, so the call site is tested. Meaning first, exact
+  // markup last; the non-matching shapes are the narrowness guard the review asked for.
+  const anchorRow = {
+    ...moved, id: "79a",
+    upper: '| $10^{143}$ | <a href="#Bru2002">[Bru2002]</a> and <a href="#Bru2002-b">[Bru2002-b]</a> | x |',
+    lower: '| $1$ | <a href="https://example.invalid/r">[Ext]</a> <a href="#K" title="t">[Attr]</a> |',
+    upperChanged: null, lowerChanged: null, upperKind: null, lowerKind: null, changed: "",
+  };
+  const anchorPage = renderHtml([anchorRow], manifest, "2026-10-12");
+  const anchorTr = (anchorPage.match(/<tr id="c-79a"[\s\S]*?<\/tr>/) || [""])[0];
+  const shownCells = [...anchorTr.matchAll(/<td data-label="[^"]*"><code>([\s\S]*?)<\/code>/g)].map((m) => m[1]);
+  assert.equal(shownCells.length, 2, "positive control: both shown bound cells must render before their contents are asserted");
+  assert.ok(!shownCells[0].includes("&lt;a href"), "a shown bound cell must not print an upstream citation anchor as markup");
+  assert.ok(shownCells[0].includes("[Bru2002]") && shownCells[0].includes("[Bru2002-b]"),
+    "the anchor's link text, the source key, must stay in the shown cell");
+  assert.ok(shownCells[1].includes("&lt;a href=&quot;https://example.invalid/r&quot;&gt;[Ext]&lt;/a&gt;")
+    && shownCells[1].includes("&lt;a href=&quot;#K&quot; title=&quot;t&quot;&gt;[Attr]&lt;/a&gt;"),
+    "an anchor of any other shape (external href, extra attribute) must stay verbatim, never be guessed at");
+  // These two are equality pins, NOT red-armable guards against this change: findKey() and
+  // citation() read only the bound VALUE cell through boundCell(), and the anchors live in the
+  // citation column, so the transform cannot reach either (a mutation feeding displayCell into
+  // data-find left this selftest green, 2026-10-12). They pin that the two stay as they were.
+  assert.ok(anchorTr.includes(`data-find="${esc(findKey(anchorRow))}"`), "the search haystack must equal findKey() of the raw row");
+  assert.ok(anchorPage.includes(`<code>${esc(citation(anchorRow, manifest.sha))}</code>`), "the plain-text citation must equal citation() of the raw row");
+  assert.equal(shownCells[0], esc('| $10^{143}$ | [Bru2002] and [Bru2002-b] | x |'), "exact shown cell: the pin with each anchor replaced by its link text");
 
   // --- Search by the SLASH form of a fraction, added 2026-09-07. Both KP-78 answers, and read
   // back out of the rendered attribute for the same reason the seam above exists.
