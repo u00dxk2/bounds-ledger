@@ -304,6 +304,38 @@ export function whenLabel(changed, kind) {
   return `last changed ${esc(changed)}`;
 }
 
+// F-2 rotation 9 (2026-10-12). A label that says a row CHANGED, and then stops, was the slowest
+// answer on the page: "bound cell edited 2026-09-26" on 1a sent a reader out through "source", then
+// upstream's history, then the diff. So every label recording an observed change (value, text,
+// expression) now links upstream's own commit history for that file. It asserts nothing about what
+// the edit was; the prevExpect refusal above cell() still stands, and this is upstream's record, not
+// ours. PINNED TO THE MIRROR'S SHA, never `main`: after the next upstream edit, a `main` history's
+// first entry stops being the edit this label dates. The label date is the day WE re-pinned, so
+// upstream's own date for the commit can sit a day earlier; the history page shows both truthfully.
+// A URL this function cannot place (not upstream's raw constants path, or a sha that is not 40 hex)
+// gets NO link rather than a guessed one.
+//
+// THE LINK IS ADDED AT THE HTML CALL SITES, NEVER INSIDE whenLabel(). whenLabel() also feeds the
+// plain-text cite block (citation() above) and the constant pages esc() it, so markup inside it would
+// print a literal `<a href=…>` into every copied citation. The selftest pins both halves.
+const UPSTREAM_RAW_CONSTANTS = "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/";
+export function historyUrl(url, sha) {
+  const u = String(url || "");
+  if (!u.startsWith(UPSTREAM_RAW_CONSTANTS) || !/^[0-9a-f]{40}$/.test(String(sha))) return null;
+  const file = u.slice(UPSTREAM_RAW_CONSTANTS.length);
+  if (!/^[A-Za-z0-9_-]+\.md$/.test(file)) return null;
+  return `https://github.com/teorth/optimizationproblems/commits/${sha}/constants/${file}`;
+}
+
+/** The dated label as HTML: linked to upstream history when it records an observed change. */
+// `wrap` lets a caller keep its own existing treatment of the label text (the constant pages esc()
+// it), so a label this does NOT link renders byte-identical to before.
+export function whenHtml(changed, kind, hist, wrap = (s) => s) {
+  const text = wrap(whenLabel(changed, kind));
+  if (!hist || !OBSERVED_KINDS.has(kind)) return text;
+  return `<a href="${esc(hist)}" title="upstream's history of this file, at the commit this ledger mirrors">${text}</a>`;
+}
+
 // `label` is rendered as a data-label attribute and surfaced by CSS ::before ONLY below the
 // card-stacking breakpoint, where <thead> is hidden. Without it a phone reader meets two code
 // blocks with no way to tell the upper bound from the lower one — the column header is the only
@@ -328,7 +360,7 @@ export function whenLabel(changed, kind) {
 //
 // It stays in the SEARCH HAYSTACK (see findKey), because matching asserts nothing. A visitor who
 // pastes $2.288513$ still lands on the row and reads the live table for themselves.
-function cell(row, changed, kind, label) {
+function cell(row, changed, kind, label, hist = null) {
   if (!row) return `<td class="none" data-label="${esc(label)}">not pinned</td>`;
   // Second half of review finding F1. Omitting the element when the date is null made "we could
   // not compute a date" indistinguishable from "this page does not date rows" — the zero-versus-
@@ -336,7 +368,7 @@ function cell(row, changed, kind, label) {
   // explicitly instead. With the escaped-needle fix all 222 pins now date, so this path should be
   // unreachable in practice; it stays because the day it becomes reachable is the day it matters.
   const when = changed
-    ? `<span class="when ${kind === "text" ? "text-only" : ""}">${whenLabel(changed, kind)}</span>`
+    ? `<span class="when ${kind === "text" ? "text-only" : ""}">${whenHtml(changed, kind, hist)}</span>`
     : `<span class="when">date unknown</span>`;
   return `<td data-label="${esc(label)}"><code>${esc(row)}</code>${when}</td>`;
 }
@@ -606,8 +638,8 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
 <th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}</th>
-${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)")}
-${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)")}
+${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)", historyUrl(r.url, sha))}
+${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)", historyUrl(r.url, sha))}
 <td class="src"><a href="${esc(readable(r.url))}">source</a> · <a href="c/${esc(r.id)}.html" aria-label="The page for ${esc(r.title)}">page</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(r.title)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
 </tr>`).join("\n");
 
@@ -1991,6 +2023,36 @@ async function selftest() {
   assert.ok(emitted[1].includes("6.521845710923046575"), "the emitted attribute must carry the current value");
   assert.ok(emitted[1].includes("6.514326913930565372"),
     "the emitted attribute must carry the previously-pinned value — the whole point, and the half a findKey-only test cannot see");
+
+  // --- F-2 rotation 9 (2026-10-12): a label recording an observed change links upstream's history
+  // of that file, pinned to the mirrored sha. Read back OUT of the rendered page, through renderHtml,
+  // so the call site is what is tested and not only the helper (2026-09-22). The guards carrying the
+  // meaning run first and the exact-markup pin last, so each mutation names the property it broke.
+  const histRow = {
+    ...moved, url: "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/71a.md",
+    lower: "| $C_{71} \\ge 1$ | [Low] |",
+    upperChanged: "2026-08-02", lowerChanged: "2026-07-24", upperKind: "expression", lowerKind: "first", changed: "2026-08-02",
+  };
+  const histPage = renderHtml([histRow], manifest, "2026-10-12");
+  const histHref = `https://github.com/teorth/optimizationproblems/commits/${manifest.sha}/constants/71a.md`;
+  assert.ok(histPage.includes('<tr id="c-71a"') && histPage.includes("bound cell edited 2026-08-02"),
+    "positive control: the row and its observed-change label must render before the link is asserted");
+  assert.ok(!/optimizationproblems\/commits\/main\//.test(histPage),
+    "the history link must be pinned to the mirrored sha, never `main`, or it drifts after the next upstream edit");
+  assert.ok(histPage.includes(`<a href="${histHref}"`),
+    "a label recording an observed change must link upstream's history of that file — the F-2 rotation 9 fix");
+  const histCite = (histPage.match(/<details class="cite">[\s\S]*?<code>([\s\S]*?)<\/code>/) || [])[1];
+  assert.ok(histCite && histCite.includes("bound cell edited 2026-08-02"),
+    "positive control: the cite block must carry the dated label before link markup is asserted absent from it");
+  assert.ok(!histCite.includes("&lt;a") && !histCite.includes("<a"),
+    "the plain-text citation must never carry link markup — the link belongs at the HTML call site, not in whenLabel()");
+  assert.ok(histPage.includes("tracked since 2026-07-24 — no movement seen yet</span>"),
+    "a first-pin label records no observed change and must stay unlinked");
+  assert.equal(historyUrl("https://example.invalid/71a.md", manifest.sha), null,
+    "a URL that is not upstream's raw constants path must get no link, never a guessed one");
+  assert.equal(historyUrl(histRow.url, "main"), null, "a ref that is not a 40-hex sha must get no link");
+  assert.ok(histPage.includes(`<a href="${histHref}" title="upstream's history of this file, at the commit this ledger mirrors">bound cell edited 2026-08-02</a>`),
+    "exact markup of the linked label");
 
   // --- Search by the SLASH form of a fraction, added 2026-09-07. Both KP-78 answers, and read
   // back out of the rendered attribute for the same reason the seam above exists.

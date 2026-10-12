@@ -21,7 +21,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
-import { buildRows, flagUrl, citation, reportLabel, whenLabel, readable } from "./render-site.mjs";
+import { buildRows, flagUrl, citation, reportLabel, whenLabel, whenHtml, historyUrl, readable } from "./render-site.mjs";
 import { boundCell } from "./lookup.mjs";
 import crypto from "node:crypto";
 import { REPO, esc, copyCiteScript } from "./lib/html.mjs";
@@ -907,9 +907,12 @@ export function auditBlock(id, store, shown = []) {
 export const DISCLAIMER =
   "These are the LAST-LISTED rows of this constant's bounds table upstream — a listing position, not a statement that either bound is the strongest or most recent known. Upstream keeps superseded and inferior rows because the tables are histories. Read the source file before citing.";
 
-function side(label, row, changed, kind) {
+// `hist` is upstream's history for this file at the mirrored sha (render-site historyUrl, F-2
+// rotation 9). whenHtml links only labels that record an observed change and passes esc() through,
+// so every other label renders exactly as before.
+function side(label, row, changed, kind, hist = null) {
   if (!row) return `<dt>${esc(label)} bound</dt><dd class="none">not pinned</dd>`;
-  const when = changed ? `<span class="when">${esc(whenLabel(changed, kind))}</span>` : `<span class="when">date unknown</span>`;
+  const when = changed ? `<span class="when">${whenHtml(changed, kind, hist, esc)}</span>` : `<span class="when">date unknown</span>`;
   return `<dt>${esc(label)} bound, last-listed row</dt><dd><code>${esc(row)}</code>${when}</dd>`;
 }
 
@@ -940,8 +943,8 @@ export function renderPage(r, sha, audits = loadAudits()) {
 <div class="id">${esc(r.id)}</div>
 ${r.report ? `<a class="ours" href="${esc(r.report.url)}">${esc(reportLabel(r.report))}</a>` : ""}
 <dl>
-${side("Upper", r.upper, r.upperChanged, r.upperKind)}
-${side("Lower", r.lower, r.lowerChanged, r.lowerKind)}
+${side("Upper", r.upper, r.upperChanged, r.upperKind, historyUrl(r.url, sha))}
+${side("Lower", r.lower, r.lowerChanged, r.lowerKind, historyUrl(r.url, sha))}
 ${auditBlock(r.id, audits, [r.upper, r.lower])}
 </dl>
 <div class="actions">
@@ -1519,6 +1522,27 @@ async function selftest() {
   assert.match(rawPage, /<a href="https:\/\/github\.com\/teorth\/optimizationproblems\/blob\/main\/constants\/9z\.md">upstream source<\/a>/,
     "upstream source must link the rendered GitHub page");
   assert.ok(!rawPage.includes("raw.githubusercontent.com"), "no raw.githubusercontent.com link may survive on a constant page");
+
+  // (c4) F-2 rotation 9 (2026-10-12): an observed-change label links upstream's history of the file
+  //      at the mirrored sha, through renderPage so the CALL SITE is what is tested. Meaning first,
+  //      exact markup last. The label is esc()'d on this page, so a link built inside whenLabel()
+  //      would print as literal text: the `&lt;a` guard is that half.
+  const histSha = "e70b4a45ae3a6218785088591e26521c20cfd49f";
+  const histRow = { ...rawRow, upperChanged: "2026-09-26", upperKind: "expression", lowerChanged: "2026-07-24", lowerKind: "first" };
+  const histPage = renderPage(histRow, histSha);
+  const histHref = `https://github.com/teorth/optimizationproblems/commits/${histSha}/constants/9z.md`;
+  assert.ok(histPage.includes("bound cell edited 2026-09-26"), "positive control: the observed-change label must render");
+  assert.ok(histPage.includes(`<a href="${histHref}"`), "an observed-change label must link upstream's history of the file at the mirrored sha");
+  assert.ok(!histPage.includes("&lt;a"), "no link markup may print as literal text anywhere on the page");
+  const histCite = (histPage.match(/<div class="cite"><strong>Cite this row<\/strong><code>([\s\S]*?)<\/code>/) || [])[1];
+  assert.ok(histCite && histCite.includes("bound cell edited 2026-09-26") && !histCite.includes("<a") && !histCite.includes("&lt;a"),
+    "the cite block must carry the dated label as plain text, with no link markup in it");
+  assert.ok(histPage.includes('<span class="when">tracked since 2026-07-24 — no movement seen yet</span>'),
+    "a first-pin label records no observed change and must stay unlinked and unchanged");
+  assert.ok(!renderPage({ ...row, upperChanged: "2026-09-26", upperKind: "value" }, histSha).includes("/commits/"),
+    "a URL that is not upstream's raw constants path must get no history link");
+  assert.ok(histPage.includes(`<span class="when"><a href="${histHref}" title="upstream's history of this file, at the commit this ledger mirrors">bound cell edited 2026-09-26</a></span>`),
+    "exact markup of the linked label");
 
   // (d) MEANING: only http(s) is rendered. `javascript:` survives attribute escaping.
   const hostileUrl = renderPage(row, "abc1234def", { audits: [{ id: "T-J", constant: "9z", citedRef: "R", leg: "value-vs-source", verdict: "SOUND", source: "javascript:alert(1)" }], corpus: { citedRows: 999 } });
