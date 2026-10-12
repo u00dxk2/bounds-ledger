@@ -201,7 +201,7 @@ P1 review: APPROVE (inbox `334c532f`). It came with four points to hold: use Dav
 - `HadwigerCounterexample.lean` returns 404 at the release commit and is present at the tip. So the earlier draft's "sharpest mismatch" went stale a few hours after it was written, and the essay is built on that.
 
 **Claims pass** (Codex, read-only, banner workdir checked each time):
-- Round 1: 99 verdicts, 86 HOLDS / 8 REFUTED-AS-WRITTEN / 5 UNVERIFIABLE-HERE. All 8 refuted items were fixed with the pass's narrower sentence. As the review predicted, one was the method sentence (Borsuk and Crouzeix match only through one extra step). The others: the family count's unit (21 constants and 2 Ramsey), Borsuk "9" becoming "at 9 or below", ω's full digits, α's field, Crouzeix's "independent route", the title, and the chart's third bar.
+- Round 1: 99 verdicts, 86 HOLDS / 8 REFUTED-AS-WRITTEN / 5 UNVERIFIABLE-HERE. All 8 refuted items were fixed with the pass's narrower sentence. As the review predicted, one was the method sentence (Borsuk and Crouzeix match only through one extra step). The others: the family count's unit (21 constants and 2 Ramsey), Borsuk "9" becoming "at 9 or below", ω's full digits, Crouzeix's "independent route", the title, and the chart twice (its description and its third bar). α was rated HOLDS (3j); its field was added for precision only. (This list named "α's field" as a refutation until the close; corrected on the manager's review.)
 - Round 2, on the changed sentences: 10 HOLDS / 0 / 5. Its catch: the body said "I read" in David's voice for readings the lane's agents did. They are now attributed to the agents. A sweep for first-person claims of that work found one more, which is fixed.
 
 **Voice rules, stated:** own-prose share is about 0%. The uncaged-minds harness (§3.1) asks for a fifteen-minute sitting when no David sentences exist. The draft was written because David asked for the adaptation by name, and the card offers the sitting as the alternative.
@@ -209,6 +209,27 @@ P1 review: APPROVE (inbox `334c532f`). It came with four points to hold: use Dav
 **Card:** `49dabdc0`, filed by needs-decision `221bcad6`. It gives the path, a two-line summary, the claims-pass counts and "Publish as is, or edit first?".
 
 **Encounter:** David's reply on the card is the read; pending. **Outcome:** open.
+
+### Close — day session round 3
+
+ACTION: COMPLETED · item A-79 (David's essay drafted, fact-checked and carded; carry from A-78) · P3 4ddbe9bb (bus msgId)
+
+Manager review of P3 (inbox `2329eeb3`): COMPLETED, with three low items:
+1. **Hadwiger wording.** The draft and the card now say the same narrow thing: a Lean formalization of the disproof, not compiled here (uncaged-minds `04b0a94`). The formalization directory at the tip holds 276 entries (`gh api …/lean/OAI/Combinatorics/HadwigerCounterexample`).
+2. **Refutation list.** It named α as refuted when α held. Corrected in the draft note and in this report.
+3. **Draft note.** It still carries internal mentions; it is stripped at export by its own instruction.
+
+**State changed since the P3 post:** uncaged-minds `04b0a94` (the two fixes). This report and the ledger row land in the close commit.
+
+**Hygiene draft:** 0 lines (no inputs), so 0 accepted · 0 amended · 0 rejected. READ-MUTATED: none, 0 reads guarded. Wait-justification: "RESULT: PASS — 1 of 95 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)". Engineering-zero: "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable" (exit 0). Positive control: the same run printed a nonzero fleet line ("1 finding(s) … 6 waived across 26 lane(s)").
+
+**Due-gate verification:** "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT (taken 2026-10-12).
+
+**Ledger delta:** `A-79` minted, open, next check 2026-10-13. Its read is David's answer on card `49dabdc0` (publish / edit / talk-through). It also carries his call on the author name left in commit `1718940`'s history; the recommendation is to leave it. That is not resolved.
+
+**Receipt:** unchanged from P3 `4ddbe9bb`: none, because the draft is unpublished.
+
+**Pending reads:** `A-79`, 2026-10-13: David's card answer. `A-78`, 2026-10-19: re-read the release after the pinned sha, then statement-check the next pairs, 74a first. `A-59`: reader encounter, blind (2026-10-28).
 
 ## Inputs (controllable)
 
