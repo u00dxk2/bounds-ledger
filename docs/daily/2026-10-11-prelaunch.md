@@ -258,6 +258,24 @@ Phase prompt inbox `34212844` (05:31Z on 2026-10-12, 23:31 MT on 10-11), the re-
 
 **HYGIENE INPUTS:** (a) none: "0 gate(s) due on/before 2026-10-11". (b) none: 0 of 749. (c) none crossed: the kickoff state block.
 
+### Overnight round 4 — P3 product work
+
+The P1 review (APPROVE) and P3 prompt, inbox `896af847`, were marked surfaced at 06:11:44Z and never reached the session. The orchestrator pointed to them on disk at 06:28Z (inbox `3d5dc793`).
+
+**Action (improve):** each label that records an observed change now links GitHub's commit history for that constant's upstream file, pinned to the sha the mirror records. Commits: `6cc1076` (the change), `d8a49b5` (the Codex review r1 fixes), `9375115` (docs).
+
+**Implementation:** `npm run verify` exit 0 at `d8a49b5` (receipt; it covers HEAD's tree). It printed "No drift. 116 files match upstream" (an upstream sha, not one in this repo) and "244 claim(s): 242 hold, 0 broken/unreachable, 2 unverified (manual)". Both page `--check` legs passed. Red-arms: link disabled, pinned to `main`, markup in the citation, the lower call site's link dropped, and only one kind linked. Each turned its selftest red on the matching assertion.
+
+**Review:** Codex r1 on `6cc1076`, read-only, banner workdir checked. Four questions found nothing. Two LOW findings were confirmed and fixed in `d8a49b5`: a code comment implied the pinned history's first entry is the dated edit, and the tests covered only an upper `expression` label. The fixes changed tests and a comment, no rendered byte, so they were not re-reviewed.
+
+**Delivery:** `npm run served`: "27 checked — 27 served, 0 in flight, 0 stale, 0 unreachable" against anchor `6cc1076`. CI GREEN for `9375115` (3 completed successes, 0 failures).
+
+**Encounter:** blind. Static Pages, no analytics, no request log. Bug row `A-59`. `npm run reports`: 33 raw issues, 33 ours, 0 outside arrivals.
+
+**Outcome:** open. No read exists.
+
+**Record-facing or instrument-facing:** no catch this round. The work was on the reader's path, not on a record.
+
 ## Inputs (controllable)
 
 - Reviews by the other model family: four Codex calls, all foreground and read-only, with banner workdir `C:\dev\skylark\bounds-ledger`. Every finding was dispositioned before push.
