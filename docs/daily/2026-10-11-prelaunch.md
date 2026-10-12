@@ -191,6 +191,61 @@ Manager review: APPROVE (inbox `368462cc`). Kind: improve.
 
 **Left:** the 8 entries chosen for suspicion (10a ×2, 87a, 1b ×5), each with its claim already pushed. Recorded on `A-63.dayBatch2026_10_11`.
 
+### Day session round 3 — P1 selection packet
+
+Phase prompt inbox `ac2963bf` (01:04Z on 2026-10-12, 19:04 MT on 10-11). It is labelled round 3; round 1 is the last round this report records. The full packet, as posted to the bus, is `tmp/p1-round3-packet.md`. Its substance:
+
+**Outcome:** every read verdict on a constant page says which claim in its row was checked. Item `A-63` (a constant page does not say which claim in a row was checked).
+
+**Evidence:** the store reads "entries: 75 · read verdicts: 68 · with claimReader: 60 · without: 8". The 8 are A-47-0001 and 0002 (10a), 0003 (87a), and 0014, 0015, 0017, 0018 and 0019 (1b). The `c/` Grep finds 3 files: 10a, 1b and 87a. All 8 claims were pushed in `935349f`, so the batch only reads. No source is saved locally, so every one is fetched again. Encounter is MISSING (`A-59`).
+
+**Next action:** improve. Re-read the 8 under their pushed claims with `tmp/reading-brief-c7.md`, store each as a dated retry, red-arm, re-render, run a Codex review, push, then check served bytes. A verdict that moves is reported as found.
+
+**Acceptance:** the unnamed count falls from 8, and the Grep from 3 files, by what was read, with both printed before and after.
+
+**USER-FACING: yes.** Paths: `continuity/depth-audit.json`, `c/10a.html`, `c/1b.html`, `c/87a.html`, `index.html` if a badge moves, and `continuity/items.json`.
+
+**HYGIENE INPUTS:** (a) none: "0 gate(s) due on/before 2026-10-11". (b) none: 0 of 749. (c) none crossed: the kickoff state block.
+
+### Day session round 3 — P3 product work
+
+Manager review: APPROVE (inbox `93bbe54e`). Kind: improve.
+
+**What a reader sees now:** every constant page with a read verdict says which claim in the row was checked. c/1b, c/10a and c/87a no longer say "This page does not yet say which part of the row that reading checked." On c/10a, row 33 ([SLXCKKM26]) reads SOUND, and the index badge for 10a changed to match.
+
+**Implementation:** `08d5e80` (the eight retries and the 32a sentence) and `0d35938` (review r1 fixes), pushed together (`8529fae..0d35938`). The eight readings started at 01:28Z on 2026-10-12 UTC, under claims pushed in `935349f`. The reports are under `tmp/depth-reads/c8/`.
+- 10a row 33, A-47-0001: UNRESOLVED to SOUND. Theorem 4.2 proves K_G ≤ 1.7818666069360661, strictly below the row's threshold of 1.78211397819….
+- 10a row 32, A-47-0002: UNRESOLVED, unchanged. The note now points to A-47-0062, which already settles it from the appendix table. I caught this against the store before review.
+- 87a [Mar2006], A-47-0003: UNRESOLVED, unchanged. No matching work was located. The records found give Jason Martin's 2006 Cornell thesis a different title, and the thesis itself was not read. I first stored this as DEFECTIVE; review r1 refuted that.
+- 1b: four SOUND entries now name their claim; A-47-0019 [H2016] stays UNRESOLVED (0.380926 is 0.3809268534330870 cut to six decimals).
+
+**Counts, before → after:** in the store, read verdicts without a named claim went from 8 to 0 (68 of 68 named, out of 75 entries). In the pages, a Grep of `c/` for "This page does not yet say which part" went from 3 files to 0 (positive control: `scripts/render-constant-pages.mjs:256`).
+
+**Red-arm:**
+- `render-constant-pages --check` before the re-render: "RESULT: FAIL — 0 missing, 0 orphaned, 4 stale constant page(s)" (exit 1).
+- After the r1 fix, before the re-render: the same line with "2 stale constant page(s)" (exit 1).
+- PASS after each re-render.
+
+**Delivery:**
+- Live at 2026-10-12T01:57:20Z: 7 pages HTTP 200 and byte-equal to HEAD `0d35938`, including c/15a and c/26a, each naming its claim.
+- `npm run served`: 2 of 2 served.
+- CI GREEN at `0d35938` for both workflows.
+- `npm run verify`: exit 0 at `0d35938` (02:02:52Z).
+
+**Encounter:** blind (`A-59`). **Outcome:** open.
+
+**Reviews:**
+- Codex r1 on `08d5e80`: HOLD. 1 BLOCKER (the 87a DEFECTIVE), 2 SHOULD (two 10a row-32 sentences), 1 NIT. All four confirmed and fixed in `0d35938`.
+- Codex r2 on `0d35938`: SHIP.
+
+**Fold-ins:**
+- c/32a's absence sentence now names what was searched.
+- The ", and" wording: declined. Seven pre-registered fields share it, and under "does not cover" a joined list reads as none of them.
+
+**`A-63`:** closeWhen met. Recorded on `A-63.round3_2026_10_11`. Closing the row, with the id sweep, is left to the close.
+
+**Record-facing or instrument-facing:** no catch this round. The 87a title question is record-facing in shape but not settled.
+
 ## Inputs (controllable)
 
 - Reviews by the other model family: four Codex calls, all foreground and read-only, with banner workdir `C:\dev\skylark\bounds-ledger`. Every finding was dispositioned before push.
