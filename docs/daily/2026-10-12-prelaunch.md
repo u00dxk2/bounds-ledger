@@ -55,17 +55,37 @@ P1 review: APPROVE (inbox `5183e18d`), with one asked-for red-arm, a non-matchin
 
 **Record-facing or instrument-facing:** no catch this round. The work was on the reader's path, not on a record.
 
+### Close — overnight round 5
+
+ACTION: COMPLETED · item F-2 (spot-check flow, rotation 10) · P3 4c12ad51
+
+Manager review of P3 (inbox `7ef3318a`): COMPLETED, no defects. It re-read all 115 live constant pages and the index on its own. This P5 prompt never surfaced in the pane; it was found in the bus file after the retro and close-session prompts.
+
+**Hygiene draft:** 2 lines, 1 accepted · 1 amended · 0 rejected.
+- `A-2`: ACCEPTED on its own condition: `npm run verify` at `aad5e7e` printed "No drift."; the helper's own read was a GitHub API 403. Re-dated to 2026-10-19 with `--set`; the read is on `A-2.read2026_10_12`.
+- `A-54`: AMENDED. Re-dated `expectedSignalBy` to 2026-10-14 with `--set`, not the drafted `--extend`. The tripwire fired (9 papers against 8 slots through 10-16), so completion is restated from 2026-10-20 to 2026-10-22 in onTrigger and closeWhen, recorded on `A-54.census8Skipped2026_10_12`.
+
+READ-MUTATED: 2, both this lane's own concurrent P3 edit (status `b7ffa0a1`). Wait-justification: "RESULT: PASS — 1 of 93 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)". Engineering-zero: "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)".
+
+**Due-gate verification:** "verdict: CLEAR — every gate due at Phase 0 was dispositioned" — snapshot CURRENT (taken 2026-10-12).
+
+**Stated limit recorded (the review's one thing):** the "other anchor shape stays verbatim" guarantee is test-only. All 130 live anchors have the matching shape. Recorded in `docs/key-user-flows.md`, rotation 10.
+
+**Receipt:** unchanged from P3 `4c12ad51`.
+
+**Pending reads:** `A-59` reader encounter, blind (next check 2026-10-28). `A-54` census slot, 2026-10-14. `A-2` drift re-read, 2026-10-19.
+
 ## Inputs (controllable)
 
-Pending this round's close.
+Two product rounds overnight on F-2. Two Codex reviews this round (r5, r6) and one in round 4. Red-arms on every new assertion; one (`data-find`) stayed green and was relabelled as an equality pin.
 
 ## Outputs (lagging)
 
-Pending this round's work.
+Encounter blind (`A-59`). `npm run reports`: 33 raw issues, all ours, 0 outside arrivals (read 2026-10-12).
 
 ## Recommendation
 
-Pending this round's work.
+Next F-2 rotation: the slowest remaining answer on a constant page, read in a fresh cold walk rather than carried from this one.
 
 ## On hold pending data
 

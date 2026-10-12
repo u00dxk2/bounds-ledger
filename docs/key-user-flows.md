@@ -521,6 +521,12 @@ each one against `ledger/claims.json`.
 **A stated limit.** The rule matches a literal substring, not parsed Markdown or LaTeX. No live pin is
 affected, because all 130 anchors' link text equals `[KEY]` (reproduced by Codex review r5).
 
+**A second stated limit, recorded at the manager's review of P3.** The guarantee that an anchor of any
+OTHER shape stays verbatim is TEST-ONLY. All 130 raw anchors in `ledger/claims.json` have the matching
+shape, so no served page can show the verbatim arm tonight. It is proven only by the selftest assertion
+(`render-site.mjs`, "an anchor of any other shape … must stay verbatim") and the red-arm that widened
+the rule. The first upstream pin with a different anchor shape is the first live test of it.
+
 ### Validation status
 
 Red-arms:
