@@ -127,6 +127,36 @@ positive control: the same engineering-zero run printed a nonzero fleet line ("8
 
 **Pending reads:** `A-77`, 2026-10-19: choose a caller for the upstream-report checker, which today runs only when someone remembers `npm run upstream` (why issue 218 sat undisclosed for five days), and decide whether merged pull requests are in scope. `W-14` (the watch on issue 218), 2026-10-14: read the issue for a maintainer reply. `A-59`: reader encounter, blind (2026-10-28).
 
+### Day session round 2 — P1 selection packet
+
+Kickoff inbox `fdf989f1`. The full packet as posted is `tmp/p1-d2-packet.md`. In brief:
+
+**Outcome:** a reader about to cite a watched constant that a claim in OpenAI's 2026-10-06 math release (github.com/openai/math) bears on sees a labelled, unrefereed-claim note on that constant's page and index row. The note carries the claim's family and a formal-proof / partial / none tag taken from the release's own Lean scope page. It is never called a record and never touches a bound cell. Asked for by David (skylark-site `docs/answers/2026-10-12-afternoon-plan-bounds-ledger-openai-math.md`). A new `A-` row will be minted at P3.
+
+**Evidence:** the release repo moved on 2026-10-08 (its tip is the sha pinned in `ledger/openai-math-map.json` `source.sha`, an upstream sha; it does not exist in this repo). Its `history.md` records 3 withdrawals and "300 / 719 = ~42%" formalized, so the 10-07 UT figures (722 / 162) are stale. For 15a, the mirror lists 2.371177 last, while release family 107's Lean page claims ω(F) < 2.371054886… over every field and ω(ℂ) ≤ 9/4. For 84a, the mirror's upper bound is 4/3, "not improved", while family 167's Lean page proves β < 4/3 with an inexplicit β. Its Comparator statement `PlanarUnitDistances.lean` (read after posting) asserts ∃ C β, 1 ≤ β < 4/3, u(n) ≤ C·n^β, which matches 84a's definition as an upper-bound claim. The page's earlier sentence "The separate unit-distance power-saving theorem is not included" most likely refers to the pinned-distance formalization only, so the page is ambiguous rather than self-contradictory. The P1 post said "contradicts itself", and a correction was posted. Our own record holds nothing on the release: 0 files, with a positive control. Encounter is MISSING (`A-59`).
+
+**USER-FACING: yes.** Paths: a new `ledger/openai-math-map.json`, the site and constant-page renderers, `index.html`, touched `c/*.html`, a guard, `continuity/items.json`, `docs/key-user-flows.md`. Second item after it: the Uncaged Minds essay in `C:\dev\skylark\uncaged-minds\drafts`, behind a cross-family claims pass and one board card.
+
+**HYGIENE INPUTS:** (a) none: 0 dated gates due (live `--print`; a re-snapshot was refused because it would drop A-2 and A-54, so the morning snapshot stands). (b) none: 0 of 749. (c) none crossed: the kickoff state block.
+
+### Day session round 2 — P3 product work
+
+P1 review: REDIRECT (inbox `b2d45f3e`). Render a formal-proof tag only from a Lean statement read and matched against the constant's definition. Keep the whole-population map as data. Render only what was statement-checked today. Public repo: no UT-workspace text.
+
+**Action (improve):** `A-78` opened. `ledger/openai-math-map.json` gives all 372 families of the release a verdict, at the openai/math commit pinned in its `source.sha` (an upstream sha): 23 bear on a watched constant and 349 do not, from the union of two independent screening passes (a Claude agent, 19 families; Codex, 23, a superset). 31 pairs: 8 statement-checked and rendered, 23 unchecked and data only. The rendered constants: 15a (ω(F) < 2.371054886… over every field; ω(ℂ) ≤ 9/4), 15b (α > 0.465), 84a (unit-distance exponent below 4/3), 27a (no proper 5-colouring of the plane), 28a (Borsuk fails in dimension 9), 7a (irrationality measure of π is 2), 2a (complete Crouzeix with constant 2, a value the table already lists). Each note quotes its Lean statement and names the file. Commits: `8cfdacb` (the change), `89e12c3` (Codex r1 fixes and the claims-pass narrowing).
+
+**Implementation:** `scripts/openai-math.mjs --selftest`, wired into `npm test` and its own `reverify.yml` step. Red-armed on the live files, each restored: "record" in a claim → exit 1 naming 7a; 7a's statement path emptied → exit 1; the page renderer altering the Upper cell when a note is present → exit 1 on all 7 pages; "record" only in the badge's aria-label → exit 1 on all 7 badges; the map hidden → exit 1. `npm run verify` receipt: exitCode 0 at `89e12c3`, no failed gates.
+
+**Review:** Codex r1 (read-only, head `8cfdacb`, banner workdir `C:\dev\skylark\bounds-ledger`): three MED, all CONFIRMED and fixed in `89e12c3`: the word ban skipped the aria-label; a checked pair could render with no statement; an absent map passed. Codex r2 (head `89e12c3`, same banner): all three FIXED. One new LOW, rejected as deliberate: a future class name containing "record" would be refused, which fails toward refusing. Cross-family claims pass (Codex, read-only, banner workdir = the release clone's folder): every claim and match sentence HOLDS. Two shared sentences were UNVERIFIABLE-HERE and are narrowed: "unrefereed" becomes "a claim in a preprint release", and "nothing in the rows above was changed because of it" becomes "this ledger has not changed the rows above because of it". Sibling sweep: "unrefereed" over the tracked scripts, pages, index and AGENTS.md returned 0 after the fix.
+
+**Delivery:** pushed `082a808..89e12c3`. CI GREEN at `89e12c3` on `reverify.yml` and `page-check.yml` (`check-ci-status --wait`). `npm run served`: "8 checked — 8 served, 0 in flight, 0 stale, 0 unreachable" (anchor `89e12c3`). Live reads (playwright-cli): the index carries 7 `a.oai` badges, on c-2a, c-7a, c-15a, c-15b, c-27a, c-28a and c-84a. At 390 px the page scroll width is 390. At 1440 px the table's scroll box is 1058 of 1058 (no sideways scroll), and 15a's badge is 336 px inside a 382 px cell. The live `c/28a.html` shows the note with its Lean statement and no overflow at 390 px. The one console error is the site-wide favicon 404, which predates this change.
+
+**Encounter:** blind, bug row `A-59`. **Outcome:** open.
+
+**Not done, stated:** no proof compiled and no paper read. The 23 unchecked pairs include 46a (family 077), which has our open upstream issue 218. No upstream contact was drafted today. The essay is the next round's first item, per the review.
+
+**Record-facing or instrument-facing:** record-facing. The release claims bounds beyond the last-listed rows on six watched constants, and the ledger now shows them as claims beside those rows.
+
 ## Inputs (controllable)
 
 Two product rounds overnight on F-2. Two Codex reviews this round (r5, r6) and one in round 4. Red-arms on every new assertion; one (`data-find`) stayed green and was relabelled as an equality pin.
