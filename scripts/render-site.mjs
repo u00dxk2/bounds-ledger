@@ -309,9 +309,12 @@ export function whenLabel(changed, kind) {
 // upstream's history, then the diff. So every label recording an observed change (value, text,
 // expression) now links upstream's own commit history for that file. It asserts nothing about what
 // the edit was; the prevExpect refusal above cell() still stands, and this is upstream's record, not
-// ours. PINNED TO THE MIRROR'S SHA, never `main`: after the next upstream edit, a `main` history's
-// first entry stops being the edit this label dates. The label date is the day WE re-pinned, so
-// upstream's own date for the commit can sit a day earlier; the history page shows both truthfully.
+// ours. PINNED TO THE MIRROR'S SHA, never `main`: the pin fixes the history's CUTOFF at the commit we
+// mirror, so the page a reader lands on cannot grow edits we have not seen. It does NOT make the
+// first entry the edit this label dates: upstream may have edited other lines of the same file
+// since (Codex review r1, 2026-10-12: 3a's pinned history opens on a prose edit), so the reader finds
+// the dated edit in that list, not necessarily at its top. The label date is the day WE re-pinned,
+// so upstream's own date for the commit can sit earlier.
 // A URL this function cannot place (not upstream's raw constants path, or a sha that is not 40 hex)
 // gets NO link rather than a guessed one.
 //
@@ -2051,6 +2054,15 @@ async function selftest() {
   assert.equal(historyUrl("https://example.invalid/71a.md", manifest.sha), null,
     "a URL that is not upstream's raw constants path must get no link, never a guessed one");
   assert.equal(historyUrl(histRow.url, "main"), null, "a ref that is not a 40-hex sha must get no link");
+  // Codex review r1 finding 4: the cases above link only an UPPER `expression` label, so dropping
+  // the lower call site's argument, or linking one kind only, passed them. Every observed kind, on
+  // the LOWER side too.
+  for (const [k, word] of [["value", "value changed"], ["text", "text edited"], ["expression", "bound cell edited"]]) {
+    const lowPage = renderHtml([{ ...histRow, upperKind: "first", upperChanged: "2026-07-24", lowerKind: k, lowerChanged: "2026-09-26" }], manifest, "2026-10-12");
+    assert.ok(lowPage.includes(`${word} 2026-09-26`), `positive control: the lower ${k} label must render`);
+    assert.ok(lowPage.includes(`<a href="${histHref}" title="upstream's history of this file, at the commit this ledger mirrors">${word} 2026-09-26`),
+      `a LOWER-bound ${k} label must link upstream's history too`);
+  }
   assert.ok(histPage.includes(`<a href="${histHref}" title="upstream's history of this file, at the commit this ledger mirrors">bound cell edited 2026-08-02</a>`),
     "exact markup of the linked label");
 

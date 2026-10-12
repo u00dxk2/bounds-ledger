@@ -1541,6 +1541,13 @@ async function selftest() {
     "a first-pin label records no observed change and must stay unlinked and unchanged");
   assert.ok(!renderPage({ ...row, upperChanged: "2026-09-26", upperKind: "value" }, histSha).includes("/commits/"),
     "a URL that is not upstream's raw constants path must get no history link");
+  // Codex review r1 finding 4: every observed kind, on the LOWER side too.
+  for (const [k, word] of [["value", "value changed"], ["text", "text edited"], ["expression", "bound cell edited"]]) {
+    const lowPage = renderPage({ ...histRow, upperKind: "first", upperChanged: "2026-07-24", lowerKind: k, lowerChanged: "2026-09-26" }, histSha);
+    assert.ok(lowPage.includes(`${word} 2026-09-26`), `positive control: the lower ${k} label must render`);
+    assert.ok(lowPage.includes(`<span class="when"><a href="${histHref}" title="upstream's history of this file, at the commit this ledger mirrors">${word} 2026-09-26`),
+      `a LOWER-bound ${k} label must link upstream's history too`);
+  }
   assert.ok(histPage.includes(`<span class="when"><a href="${histHref}" title="upstream's history of this file, at the commit this ledger mirrors">bound cell edited 2026-09-26</a></span>`),
     "exact markup of the linked label");
 
