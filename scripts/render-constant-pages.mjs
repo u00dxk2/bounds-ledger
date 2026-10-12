@@ -1569,6 +1569,10 @@ async function selftest() {
   const lowCells = [...lowAnchor.matchAll(/<dd><code>([\s\S]*?)<\/code>/g)].map((m) => m[1]);
   assert.ok(lowCells.length === 2 && lowCells[1].includes("[Low1]") && !lowCells[1].includes("&lt;a href"),
     "a LOWER-bound cell must read a matching anchor as its link text too");
+  // Codex review r6 (c): the LOWER cell's exact-row block, asserted inside its own <dd>.
+  const lowDd = [...lowAnchor.matchAll(/<dd>[\s\S]*?<\/dd>/g)].map((m) => m[0]).filter((d) => d.includes("[Low1]"));
+  assert.ok(lowDd.length === 1 && lowDd[0].includes(`<details class="pin"><summary>exact pinned row</summary><code>${esc('| $1$ | <a href="#Low1">[Low1]</a> |')}</code></details>`),
+    "a LOWER-bound cell whose display differs must carry its own exact pinned row");
   assert.ok(anchorPage.includes(`<code>${esc(citation(anchorRow, histSha))}</code>`), "the cite block must be unchanged, byte for byte");
   assert.equal(ddCells[0], esc("| $10^{143}$ | [Bru2002] | x |"), "exact shown cell");
 
