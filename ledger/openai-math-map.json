@@ -958,7 +958,7 @@
             "theorem": "main_theorem",
             "text": "theorem main_theorem :\n    IsCompact projectorSet ∧\n    projectorSet ⊆ traceOneSymmetric ∧\n    Metric.diam projectorSet = Real.sqrt 2 ∧\n    ¬ HasTenSmallCover"
           },
-          "match": "The file's set is the 4 × 4 matrices u·uᵀ for unit vectors u in four dimensions. The statement places it among the symmetric matrices of trace 1, a flat 9-dimensional slice with the usual distance, gives its diameter as √2, and says it cannot be split into 10 pieces of smaller diameter. Since 10 = 9 + 1, that is a counterexample in dimension 9, against 63 in this constant's last-listed upper-bound row. Reading the slice as 9-dimensional is our step; the file does not state it.",
+          "match": "The file's set is the 4 × 4 matrices u·uᵀ for unit vectors u in four dimensions. The statement places it among the symmetric matrices of trace 1, a flat 9-dimensional slice with the usual distance, gives its diameter as √2, and says it cannot be split into 10 pieces of smaller diameter. Since 10 = 9 + 1, that is a counterexample in dimension 9, against 63 in this constant's last-listed upper-bound row. Reading the slice as 9-dimensional is our step; the statement file does not state it.",
           "screenedBy": [
             "claude",
             "codex"

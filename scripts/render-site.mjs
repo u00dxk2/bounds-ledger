@@ -180,7 +180,7 @@ export function loadReports(root = ROOT) {
 export function buildRows(claims, { withDates = true, root = ROOT, reports = null, audits = null, oaiMap = undefined } = {}) {
   const filed = reports ?? loadReports(root);
   const store = audits ?? loadAudits();
-  // A-78: unrefereed claims from OpenAI's math release, statement-checked pairs only. Kept OUT of
+  // A-78: preprint claims from OpenAI's math release, statement-checked pairs only. Kept OUT of
   // every bound field below; the notes ride beside the row and never touch upper/lower.
   const oai = oaiMap === undefined ? loadMap(root) : oaiMap;
   return constantIds(claims).map((id) => {

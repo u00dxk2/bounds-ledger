@@ -13,7 +13,7 @@
 // family 167's page was ambiguous about its own scope). Every rendered note:
 //   - sits OUTSIDE the bound cells, which stay byte-identical to the mirror. The curated table and
 //     a live claim are tracked side by side and never blended (CLAUDE.md, curated vs live);
-//   - never uses the word "record". The release is an unrefereed claim, and "record" is a judgment
+//   - never uses the word "record". The release is a set of preprint claims, and "record" is a judgment
 //     this ledger only lets a human make about a curated row;
 //   - names its Lean statement file and quotes the statement. A `formal-proof` or `partial` tag with
 //     no statement path is refused, because that tag is exactly the thing a reader cannot check.
@@ -99,7 +99,10 @@ function validateRecord(n, r, constantExists) {
   if (!OTHER_RECORDS.has(r.id) && !constantExists(r.id)) errs.push(`${where}: no mirrored constant has that id`);
   if (!(r.tag in TAGS)) errs.push(`${where}: tag ${JSON.stringify(r.tag)} is not one of ${Object.keys(TAGS).join(", ")}`);
   if (r.statementChecked !== true && r.tag !== "unchecked") errs.push(`${where}: only a statement we read and matched may carry "${r.tag}"; an unread pair is "unchecked"`);
-  if (r.tag === "formal-proof" || r.tag === "partial") {
+  // A RENDERED pair is one whose statement we read, so it must carry a proof tag and the statement
+  // itself (Codex r1, 2026-10-12: checked + "unchecked" + an empty statement used to render bare).
+  if (r.statementChecked === true && r.tag !== "formal-proof" && r.tag !== "partial") errs.push(`${where}: a statement-checked pair renders, so it must be tagged "formal-proof" or "partial", not "${r.tag}"`);
+  if (r.statementChecked === true || r.tag === "formal-proof" || r.tag === "partial") {
     const s = r.statement || {};
     if (!STATEMENT_PATH.test(String(s.path || ""))) errs.push(`${where}: a "${r.tag}" tag needs the Lean statement's path (lean/ComparatorChallenges/<name>.lean)`);
     if (!s.text || !String(s.text).trim()) errs.push(`${where}: a "${r.tag}" tag needs the statement text quoted`);
@@ -126,7 +129,7 @@ export function notesFor(id, map) {
 /** The index badge. Short, flat, and says "claim". */
 export function badgeText(notes) {
   const fams = [...new Set(notes.map((n) => n.family))];
-  return `an unrefereed claim bears on this row · OpenAI release, family ${fams.join(", ")}`;
+  return `a preprint claim bears on this row · OpenAI release, family ${fams.join(", ")}`;
 }
 
 const statementUrl = (sha, path) => `${RELEASE}/blob/${sha}/${path}`;
@@ -143,7 +146,7 @@ export function noteBlock(notes) {
       : "";
     return `<li><p><a href="${esc(familyUrl(sha))}">Family ${esc(n.family)}</a>, “${esc(n.familyTitle)}”, claims ${esc(n.claim)}</p>${st}<p>${esc(n.match || "")}</p><p class="tag">Status: ${esc(TAGS[n.tag])}.</p></li>`;
   }).join("");
-  return `<dt>Outside the source table: a claim in OpenAI's math release</dt><dd><ul class="oai">${items}</ul><span class="when">An unrefereed claim, read at <a href="${esc(`${RELEASE}/tree/${sha}`)}">openai/math@${esc(sha.slice(0, 7))}</a> on ${esc(source.readAt)}. It is not in the source table, and nothing in the rows above was changed because of it.</span></dd>`;
+  return `<dt>Outside the source table: a claim in OpenAI's math release</dt><dd><ul class="oai">${items}</ul><span class="when">A claim in a preprint release, read at <a href="${esc(`${RELEASE}/tree/${sha}`)}">openai/math@${esc(sha.slice(0, 7))}</a> on ${esc(source.readAt)}. It is not in the source table, and this ledger has not changed the rows above because of it.</span></dd>`;
 }
 
 /**
@@ -156,7 +159,7 @@ export async function boundCellGuard(root = ROOT) {
   const site = await import("./render-site.mjs");
   const pages = await import("./render-constant-pages.mjs");
   const map = loadMap(root);
-  if (!map) return [];
+  if (!map) return ["the map ledger/openai-math-map.json is absent, so this guard compared nothing"];
   const claims = JSON.parse(readFileSync(join(root, "ledger", "claims.json"), "utf8"));
   const manifest = JSON.parse(readFileSync(join(root, "ledger", "teorth-optimizationproblems", "manifest.json"), "utf8"));
   const withN = site.buildRows(claims, { withDates: false, root, oaiMap: map });
@@ -170,14 +173,19 @@ export async function boundCellGuard(root = ROOT) {
     const block = noteBlock(r.oai);
     if (!a.includes(block)) { errs.push(`${r.id}: the page does not carry its note block`); continue; }
     if (a.replace(block, "") !== b) errs.push(`${r.id}: the page differs from its no-note render by more than the note block`);
-    for (const n of r.oai) if (!block.includes(esc(n.statement.path))) errs.push(`${r.id}: a rendered note does not name its Lean statement file`);
+    for (const n of r.oai) {
+      const p = n.statement && n.statement.path;
+      if (!p || !STATEMENT_PATH.test(p) || !block.includes(esc(p))) errs.push(`${r.id}: a rendered note does not name its Lean statement file`);
+    }
   }
   const ia = site.renderHtml(withN, manifest, "2026-10-12");
   const ib = site.renderHtml(without, manifest, "2026-10-12");
   const badges = ia.match(/<a class="oai"[^>]*>[^<]*<\/a>/g) || [];
   if (badges.length !== touched.length) errs.push(`the index carries ${badges.length} claim badge(s) for ${touched.length} noted constant(s)`);
   if (ia.replace(/<a class="oai"[^>]*>[^<]*<\/a>/g, "") !== ib) errs.push("the index differs from its no-note render by more than the claim badges");
-  for (const s of [...badges, ...touched.map((r) => noteBlock(r.oai))]) if (FORBIDDEN.test(s.replace(/<[^>]+>/g, " "))) errs.push(`rendered claim text uses the word "record": ${s.slice(0, 80)}`);
+  // Judged on the RAW markup, attributes included: an aria-label is read aloud, so it is rendered
+  // text too (Codex r1, 2026-10-12: stripping tags first let "record" ride in the badge's aria-label).
+  for (const s of [...badges, ...touched.map((r) => noteBlock(r.oai))]) if (FORBIDDEN.test(s)) errs.push(`rendered claim markup uses the word "record": ${s.slice(0, 80)}`);
   return errs;
 }
 
@@ -206,6 +214,9 @@ export async function selftest() {
   assert.ok(m((c) => { c.families[1].records[0].statement.text = " "; }).some((e) => /statement text quoted/.test(e)), "formal-proof with no quoted statement must be refused");
   // 3. An unread pair carrying a proof tag.
   assert.ok(m((c) => { c.families[1].records[0].statementChecked = false; }).some((e) => /only a statement we read and matched/.test(e)), "an unchecked pair cannot carry formal-proof");
+  // 3b. A RENDERED pair (statementChecked) with an "unchecked" tag and an empty statement (Codex r1).
+  assert.ok(m((c) => { c.families[1].records[0].tag = "unchecked"; c.families[1].records[0].statement = { path: "", text: "" }; }).some((e) => /must be tagged "formal-proof" or "partial"/.test(e)), "a statement-checked pair cannot carry the unchecked tag");
+  assert.ok(m((c) => { c.families[1].records[0].tag = "unchecked"; c.families[1].records[0].statement = { path: "", text: "" }; }).some((e) => /needs the Lean statement's path/.test(e)), "a statement-checked pair needs its statement path whatever its tag");
   // 4. The whole population: the verdicts must sum to the family count, once each.
   assert.ok(m((c) => { c.families.pop(); }).some((e) => /verdicts cover 2 families; the release has 3/.test(e)), "a missing family must be refused");
   assert.ok(m((c) => { c.families[2].family = "001"; }).some((e) => /more than one verdict/.test(e)), "a duplicate family must be refused");
@@ -222,9 +233,11 @@ export async function selftest() {
   assert.equal(noteBlock([]), "", "no notes, no block");
   assert.ok(!FORBIDDEN.test(badgeText(notesFor("15a", good))), "the badge never says 'record'");
 
-  // The committed map, if present, validates against the real mirror.
+  // The committed map is REQUIRED (Codex r1, 2026-10-12: an absent map used to skip both legs and
+  // still print PASS), then validates against the real mirror.
   const real = loadMap();
-  if (real) {
+  assert.ok(real, "the committed map ledger/openai-math-map.json is absent; this self-test checks it and refuses to pass without it");
+  {
     const errs = validateMap(real, (id) => existsSync(join(ROOT, "ledger", "teorth-optimizationproblems", "constants", `${id}.md`)));
     assert.deepEqual(errs, [], `the committed map is invalid:\n${errs.join("\n")}`);
     const guard = await boundCellGuard();
