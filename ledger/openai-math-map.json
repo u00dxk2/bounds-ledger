@@ -1,0 +1,2011 @@
+{
+  "schema": 1,
+  "item": "A-78",
+  "source": {
+    "repo": "openai/math",
+    "sha": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+    "readAt": "2026-10-12",
+    "familyCount": 372,
+    "manuscriptCount": 719
+  },
+  "method": "Every family in CONTENTS.md at source.sha has a verdict. Two independent screening passes (a Claude agent and Codex, each reading every family headline against every watched constant definition, plus Erdos problem 36 and the classical Ramsey numbers) were unioned; any family either named is \"bears\". Only pairs whose Lean statement file was read by hand against the constant definition carry statementChecked true and render on the site; every other pair is \"unchecked\" and is data only. No proof was compiled.",
+  "families": [
+    {
+      "family": "001",
+      "verdict": "none"
+    },
+    {
+      "family": "002",
+      "verdict": "none"
+    },
+    {
+      "family": "003",
+      "verdict": "bears",
+      "title": "The quasi-Riemann hypothesis",
+      "leanDoc": "lean/docs/003.md",
+      "records": [
+        {
+          "id": "8a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "claude",
+            "codex"
+          ],
+          "confidence": {
+            "claude": "high",
+            "codex": "high"
+          }
+        },
+        {
+          "id": "65a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "claude",
+            "codex"
+          ],
+          "confidence": {
+            "claude": "low",
+            "codex": "low"
+          }
+        },
+        {
+          "id": "21a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "codex"
+          ],
+          "confidence": {
+            "codex": "low"
+          }
+        },
+        {
+          "id": "62a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "codex"
+          ],
+          "confidence": {
+            "codex": "low"
+          }
+        },
+        {
+          "id": "62b",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "codex"
+          ],
+          "confidence": {
+            "codex": "low"
+          }
+        }
+      ]
+    },
+    {
+      "family": "004",
+      "verdict": "none"
+    },
+    {
+      "family": "005",
+      "verdict": "none"
+    },
+    {
+      "family": "006",
+      "verdict": "none"
+    },
+    {
+      "family": "007",
+      "verdict": "none"
+    },
+    {
+      "family": "008",
+      "verdict": "none"
+    },
+    {
+      "family": "009",
+      "verdict": "none"
+    },
+    {
+      "family": "010",
+      "verdict": "none"
+    },
+    {
+      "family": "011",
+      "verdict": "none"
+    },
+    {
+      "family": "012",
+      "verdict": "none"
+    },
+    {
+      "family": "013",
+      "verdict": "none"
+    },
+    {
+      "family": "014",
+      "verdict": "none"
+    },
+    {
+      "family": "015",
+      "verdict": "none"
+    },
+    {
+      "family": "016",
+      "verdict": "none"
+    },
+    {
+      "family": "017",
+      "verdict": "bears",
+      "title": "The irrationality exponent of π is 2",
+      "leanDoc": "lean/docs/017.md",
+      "records": [
+        {
+          "id": "7a",
+          "tag": "formal-proof",
+          "statementChecked": true,
+          "familyTitle": "The irrationality exponent of π is 2",
+          "claim": "that the irrationality measure of π is exactly 2.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/PiExponent.lean",
+            "theorem": "main",
+            "text": "theorem main :\n  (∀ ν : ℝ, 2 < ν → ∃ Q : ℤ, 2 ≤ Q ∧\n    ∀ p q : ℤ, Q ≤ q →\n      (q : ℝ) ^ (-ν) ≤ |Real.pi - (p : ℝ) / (q : ℝ)|) ∧\n  sSup {ν : ℝ | 0 < ν ∧\n    Set.Infinite {r : ℚ | 2 ≤ r.den ∧\n      0 < |Real.pi - (r : ℝ)| ∧\n      |Real.pi - (r : ℝ)| < (r.den : ℝ) ^ (-ν)}} = 2"
+          },
+          "match": "Same quantity: the first half says that for every ν > 2, |π − p/q| ≥ q^(−ν) once q is large enough, and the second that the supremum of exponents with infinitely many such approximations is 2. That makes this constant 2, against 7.103205334137 in its last-listed upper-bound row.",
+          "screenedBy": [
+            "claude",
+            "codex"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "018",
+      "verdict": "none"
+    },
+    {
+      "family": "019",
+      "verdict": "none"
+    },
+    {
+      "family": "020",
+      "verdict": "none"
+    },
+    {
+      "family": "021",
+      "verdict": "none"
+    },
+    {
+      "family": "022",
+      "verdict": "none"
+    },
+    {
+      "family": "023",
+      "verdict": "none"
+    },
+    {
+      "family": "024",
+      "verdict": "none"
+    },
+    {
+      "family": "025",
+      "verdict": "none"
+    },
+    {
+      "family": "026",
+      "verdict": "none"
+    },
+    {
+      "family": "027",
+      "verdict": "none"
+    },
+    {
+      "family": "028",
+      "verdict": "none"
+    },
+    {
+      "family": "029",
+      "verdict": "none"
+    },
+    {
+      "family": "030",
+      "verdict": "none"
+    },
+    {
+      "family": "031",
+      "verdict": "none"
+    },
+    {
+      "family": "032",
+      "verdict": "none"
+    },
+    {
+      "family": "033",
+      "verdict": "none"
+    },
+    {
+      "family": "034",
+      "verdict": "none"
+    },
+    {
+      "family": "035",
+      "verdict": "none"
+    },
+    {
+      "family": "036",
+      "verdict": "none"
+    },
+    {
+      "family": "037",
+      "verdict": "none"
+    },
+    {
+      "family": "038",
+      "verdict": "none"
+    },
+    {
+      "family": "039",
+      "verdict": "bears",
+      "title": "Nagata’s conjecture and maximal Seshadri constants",
+      "leanDoc": "lean/docs/039.md",
+      "records": [
+        {
+          "id": "74a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "claude",
+            "codex"
+          ],
+          "confidence": {
+            "claude": "high",
+            "codex": "high"
+          }
+        }
+      ]
+    },
+    {
+      "family": "040",
+      "verdict": "none"
+    },
+    {
+      "family": "041",
+      "verdict": "none"
+    },
+    {
+      "family": "042",
+      "verdict": "none"
+    },
+    {
+      "family": "043",
+      "verdict": "none"
+    },
+    {
+      "family": "044",
+      "verdict": "none"
+    },
+    {
+      "family": "046",
+      "verdict": "none"
+    },
+    {
+      "family": "047",
+      "verdict": "none"
+    },
+    {
+      "family": "048",
+      "verdict": "none"
+    },
+    {
+      "family": "049",
+      "verdict": "none"
+    },
+    {
+      "family": "050",
+      "verdict": "none"
+    },
+    {
+      "family": "051",
+      "verdict": "none"
+    },
+    {
+      "family": "052",
+      "verdict": "none"
+    },
+    {
+      "family": "053",
+      "verdict": "none"
+    },
+    {
+      "family": "054",
+      "verdict": "none"
+    },
+    {
+      "family": "055",
+      "verdict": "none"
+    },
+    {
+      "family": "056",
+      "verdict": "none"
+    },
+    {
+      "family": "057",
+      "verdict": "none"
+    },
+    {
+      "family": "058",
+      "verdict": "none"
+    },
+    {
+      "family": "059",
+      "verdict": "none"
+    },
+    {
+      "family": "060",
+      "verdict": "none"
+    },
+    {
+      "family": "062",
+      "verdict": "none"
+    },
+    {
+      "family": "063",
+      "verdict": "none"
+    },
+    {
+      "family": "064",
+      "verdict": "none"
+    },
+    {
+      "family": "065",
+      "verdict": "none"
+    },
+    {
+      "family": "066",
+      "verdict": "none"
+    },
+    {
+      "family": "067",
+      "verdict": "none"
+    },
+    {
+      "family": "068",
+      "verdict": "none"
+    },
+    {
+      "family": "069",
+      "verdict": "none"
+    },
+    {
+      "family": "071",
+      "verdict": "none"
+    },
+    {
+      "family": "072",
+      "verdict": "bears",
+      "title": "Brennan's conjecture and the integral-means spectrum",
+      "leanDoc": "lean/docs/072.md",
+      "records": [
+        {
+          "id": "67a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "claude",
+            "codex"
+          ],
+          "confidence": {
+            "claude": "high",
+            "codex": "high"
+          }
+        }
+      ]
+    },
+    {
+      "family": "073",
+      "verdict": "bears",
+      "title": "The Falconer distance conjecture",
+      "leanDoc": "lean/docs/073.md",
+      "records": [
+        {
+          "id": "34a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "claude",
+            "codex"
+          ],
+          "confidence": {
+            "claude": "high",
+            "codex": "high"
+          }
+        }
+      ]
+    },
+    {
+      "family": "074",
+      "verdict": "none"
+    },
+    {
+      "family": "075",
+      "verdict": "none"
+    },
+    {
+      "family": "076",
+      "verdict": "bears",
+      "title": "Real ultraflat Littlewood polynomials and unbounded binary merit factors",
+      "leanDoc": "lean/docs/076.md",
+      "records": [
+        {
+          "id": "23b",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "codex"
+          ],
+          "confidence": {
+            "codex": "high"
+          }
+        }
+      ]
+    },
+    {
+      "family": "077",
+      "verdict": "bears",
+      "title": "Fourier restriction for positively curved surfaces",
+      "leanDoc": null,
+      "records": [
+        {
+          "id": "46a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "claude",
+            "codex"
+          ],
+          "confidence": {
+            "claude": "high",
+            "codex": "high"
+          }
+        }
+      ]
+    },
+    {
+      "family": "078",
+      "verdict": "bears",
+      "title": "The three-dimensional Bochner–Riesz conjecture",
+      "leanDoc": null,
+      "records": [
+        {
+          "id": "77a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "claude",
+            "codex"
+          ],
+          "confidence": {
+            "claude": "high",
+            "codex": "high"
+          }
+        },
+        {
+          "id": "46a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "codex"
+          ],
+          "confidence": {
+            "codex": "low"
+          }
+        }
+      ]
+    },
+    {
+      "family": "079",
+      "verdict": "bears",
+      "title": "Local smoothing in three dimensions",
+      "leanDoc": null,
+      "records": [
+        {
+          "id": "77a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "codex"
+          ],
+          "confidence": {
+            "codex": "low"
+          }
+        },
+        {
+          "id": "46a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "codex"
+          ],
+          "confidence": {
+            "codex": "low"
+          }
+        }
+      ]
+    },
+    {
+      "family": "080",
+      "verdict": "none"
+    },
+    {
+      "family": "081",
+      "verdict": "none"
+    },
+    {
+      "family": "082",
+      "verdict": "none"
+    },
+    {
+      "family": "083",
+      "verdict": "none"
+    },
+    {
+      "family": "084",
+      "verdict": "none"
+    },
+    {
+      "family": "085",
+      "verdict": "none"
+    },
+    {
+      "family": "086",
+      "verdict": "none"
+    },
+    {
+      "family": "087",
+      "verdict": "bears",
+      "title": "The Mahler conjectures, functional inequalities and polar-product symplectic width",
+      "leanDoc": "lean/docs/087.md",
+      "records": [
+        {
+          "id": "25a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "claude",
+            "codex"
+          ],
+          "confidence": {
+            "claude": "high",
+            "codex": "high"
+          }
+        }
+      ]
+    },
+    {
+      "family": "088",
+      "verdict": "none"
+    },
+    {
+      "family": "089",
+      "verdict": "none"
+    },
+    {
+      "family": "090",
+      "verdict": "none"
+    },
+    {
+      "family": "091",
+      "verdict": "none"
+    },
+    {
+      "family": "092",
+      "verdict": "none"
+    },
+    {
+      "family": "093",
+      "verdict": "none"
+    },
+    {
+      "family": "094",
+      "verdict": "none"
+    },
+    {
+      "family": "095",
+      "verdict": "none"
+    },
+    {
+      "family": "096",
+      "verdict": "none"
+    },
+    {
+      "family": "097",
+      "verdict": "none"
+    },
+    {
+      "family": "098",
+      "verdict": "none"
+    },
+    {
+      "family": "099",
+      "verdict": "none"
+    },
+    {
+      "family": "100",
+      "verdict": "none"
+    },
+    {
+      "family": "101",
+      "verdict": "bears",
+      "title": "The sharp simplex conjecture for isotropic constants",
+      "leanDoc": null,
+      "records": [
+        {
+          "id": "20b",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "claude",
+            "codex"
+          ],
+          "confidence": {
+            "claude": "high",
+            "codex": "high"
+          }
+        }
+      ]
+    },
+    {
+      "family": "102",
+      "verdict": "bears",
+      "title": "The Unique Games Conjecture and optimal approximation thresholds",
+      "leanDoc": "lean/docs/102.md",
+      "records": [
+        {
+          "id": "50a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "claude",
+            "codex"
+          ],
+          "confidence": {
+            "claude": "low",
+            "codex": "low"
+          }
+        }
+      ]
+    },
+    {
+      "family": "103",
+      "verdict": "none"
+    },
+    {
+      "family": "104",
+      "verdict": "none"
+    },
+    {
+      "family": "105",
+      "verdict": "none"
+    },
+    {
+      "family": "106",
+      "verdict": "none"
+    },
+    {
+      "family": "107",
+      "verdict": "bears",
+      "title": "Matrix multiplication with exponent at most 9/4",
+      "leanDoc": "lean/docs/107.md",
+      "records": [
+        {
+          "id": "15a",
+          "tag": "formal-proof",
+          "statementChecked": true,
+          "familyTitle": "Matrix multiplication with exponent at most 9/4",
+          "claim": "that the matrix multiplication exponent is below 2.371054886006746 over every field.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/MatrixFields.lean",
+            "theorem": "omega_lt_source_constant",
+            "text": "theorem omega_lt_source_constant (F : Type u) [Field F] :\n    Arithmetic.omega F < (2371054886006746 : ℝ) / 10 ^ 15 ∧\n    (2371054886006746 : ℝ) / 10 ^ 15 < (2371056 : ℝ) / 10 ^ 6"
+          },
+          "match": "Same quantity as this constant: the exponent of the arithmetic cost of multiplying two n × n matrices over a field. The file counts additions, subtractions and multiplications in programs with no division, a narrower model than general arithmetic, so a bound in it is also a bound here. 2.371054886… is below this constant's last-listed upper-bound row.",
+          "screenedBy": [
+            "claude",
+            "codex"
+          ]
+        },
+        {
+          "id": "15a",
+          "tag": "formal-proof",
+          "statementChecked": true,
+          "familyTitle": "Matrix multiplication with exponent at most 9/4",
+          "claim": "that the matrix multiplication exponent over the complex numbers is at most 9/4 = 2.25.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/MatrixMultiplication.lean",
+            "theorem": "complex_omega_le_nine_quarters",
+            "text": "theorem complex_omega_le_nine_quarters :\n    Arithmetic.omega ℂ ≤ (9 : ℝ) / 4"
+          },
+          "match": "Same quantity, over the complex numbers, in the same model with no division (defined in the file).",
+          "screenedBy": [
+            "claude",
+            "codex"
+          ]
+        },
+        {
+          "id": "15b",
+          "tag": "formal-proof",
+          "statementChecked": true,
+          "familyTitle": "Matrix multiplication with exponent at most 9/4",
+          "claim": "that the dual matrix multiplication exponent α is greater than 93/200 = 0.465 over the complex numbers.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/MatrixMultiplication.lean",
+            "theorem": "complex_alpha_gt_93_div_200",
+            "text": "theorem complex_alpha_gt_93_div_200 :\n    (93 : ℝ) / 200 < Arithmetic.complexAlpha"
+          },
+          "match": "Same quantity: the file defines α as the supremum of the k in [0, 1] for which multiplying an n × n^k matrix by an n^k × n matrix has exponent 2. Leaving out k > 1 changes nothing, since the exponent is then above 2. 0.465 is above this constant's last-listed lower-bound row.",
+          "screenedBy": [
+            "claude",
+            "codex"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "108",
+      "verdict": "none"
+    },
+    {
+      "family": "109",
+      "verdict": "none"
+    },
+    {
+      "family": "110",
+      "verdict": "none"
+    },
+    {
+      "family": "111",
+      "verdict": "none"
+    },
+    {
+      "family": "112",
+      "verdict": "none"
+    },
+    {
+      "family": "113",
+      "verdict": "none"
+    },
+    {
+      "family": "114",
+      "verdict": "none"
+    },
+    {
+      "family": "115",
+      "verdict": "none"
+    },
+    {
+      "family": "116",
+      "verdict": "none"
+    },
+    {
+      "family": "117",
+      "verdict": "none"
+    },
+    {
+      "family": "118",
+      "verdict": "none"
+    },
+    {
+      "family": "119",
+      "verdict": "none"
+    },
+    {
+      "family": "120",
+      "verdict": "none"
+    },
+    {
+      "family": "121",
+      "verdict": "none"
+    },
+    {
+      "family": "122",
+      "verdict": "none"
+    },
+    {
+      "family": "124",
+      "verdict": "none"
+    },
+    {
+      "family": "125",
+      "verdict": "none"
+    },
+    {
+      "family": "126",
+      "verdict": "none"
+    },
+    {
+      "family": "127",
+      "verdict": "none"
+    },
+    {
+      "family": "128",
+      "verdict": "none"
+    },
+    {
+      "family": "129",
+      "verdict": "none"
+    },
+    {
+      "family": "130",
+      "verdict": "none"
+    },
+    {
+      "family": "131",
+      "verdict": "none"
+    },
+    {
+      "family": "132",
+      "verdict": "none"
+    },
+    {
+      "family": "133",
+      "verdict": "none"
+    },
+    {
+      "family": "134",
+      "verdict": "none"
+    },
+    {
+      "family": "135",
+      "verdict": "none"
+    },
+    {
+      "family": "136",
+      "verdict": "none"
+    },
+    {
+      "family": "137",
+      "verdict": "none"
+    },
+    {
+      "family": "138",
+      "verdict": "none"
+    },
+    {
+      "family": "139",
+      "verdict": "none"
+    },
+    {
+      "family": "140",
+      "verdict": "none"
+    },
+    {
+      "family": "141",
+      "verdict": "none"
+    },
+    {
+      "family": "142",
+      "verdict": "none"
+    },
+    {
+      "family": "143",
+      "verdict": "none"
+    },
+    {
+      "family": "144",
+      "verdict": "none"
+    },
+    {
+      "family": "145",
+      "verdict": "none"
+    },
+    {
+      "family": "146",
+      "verdict": "none"
+    },
+    {
+      "family": "147",
+      "verdict": "none"
+    },
+    {
+      "family": "148",
+      "verdict": "none"
+    },
+    {
+      "family": "149",
+      "verdict": "none"
+    },
+    {
+      "family": "150",
+      "verdict": "none"
+    },
+    {
+      "family": "151",
+      "verdict": "none"
+    },
+    {
+      "family": "152",
+      "verdict": "none"
+    },
+    {
+      "family": "153",
+      "verdict": "none"
+    },
+    {
+      "family": "154",
+      "verdict": "none"
+    },
+    {
+      "family": "155",
+      "verdict": "none"
+    },
+    {
+      "family": "156",
+      "verdict": "bears",
+      "title": "Borsuk's conjecture fails in dimension nine",
+      "leanDoc": "lean/docs/156.md",
+      "records": [
+        {
+          "id": "28a",
+          "tag": "formal-proof",
+          "statementChecked": true,
+          "familyTitle": "Borsuk's conjecture fails in dimension nine",
+          "claim": "that Borsuk's conjecture fails in dimension 9.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/BorsukNine.lean",
+            "theorem": "main_theorem",
+            "text": "theorem main_theorem :\n    IsCompact projectorSet ∧\n    projectorSet ⊆ traceOneSymmetric ∧\n    Metric.diam projectorSet = Real.sqrt 2 ∧\n    ¬ HasTenSmallCover"
+          },
+          "match": "The file's set is the 4 × 4 matrices u·uᵀ for unit vectors u in four dimensions. The statement places it among the symmetric matrices of trace 1, a flat 9-dimensional slice with the usual distance, gives its diameter as √2, and says it cannot be split into 10 pieces of smaller diameter. Since 10 = 9 + 1, that is a counterexample in dimension 9, against 63 in this constant's last-listed upper-bound row. Reading the slice as 9-dimensional is our step; the file does not state it.",
+          "screenedBy": [
+            "claude",
+            "codex"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "157",
+      "verdict": "none"
+    },
+    {
+      "family": "158",
+      "verdict": "bears",
+      "title": "The Euclidean plane cannot be colored with five colors",
+      "leanDoc": "lean/docs/158.md",
+      "records": [
+        {
+          "id": "27a",
+          "tag": "formal-proof",
+          "statementChecked": true,
+          "familyTitle": "The Euclidean plane cannot be colored with five colors",
+          "claim": "that the plane cannot be coloured with five colours so that every two points at distance one get different colours.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/EuclideanFiveColor.lean",
+            "theorem": "no_proper_five_coloring",
+            "text": "theorem no_proper_five_coloring : ¬ ∃ coloring : ℂ → Fin 5, ProperColoring 5 coloring"
+          },
+          "match": "Same quantity: the file takes the plane as the complex numbers with the usual distance, so the statement says this constant is at least 6, above the 5 in its last-listed lower-bound row. The same family's other Lean file, a 7-colouring, is the long-known upper bound.",
+          "screenedBy": [
+            "claude",
+            "codex"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "159",
+      "verdict": "none"
+    },
+    {
+      "family": "160",
+      "verdict": "none"
+    },
+    {
+      "family": "161",
+      "verdict": "none"
+    },
+    {
+      "family": "162",
+      "verdict": "none"
+    },
+    {
+      "family": "164",
+      "verdict": "none"
+    },
+    {
+      "family": "165",
+      "verdict": "none"
+    },
+    {
+      "family": "166",
+      "verdict": "none"
+    },
+    {
+      "family": "167",
+      "verdict": "bears",
+      "title": "Planar distinct distances and unit-distance bounds",
+      "leanDoc": "lean/docs/167.md",
+      "records": [
+        {
+          "id": "84a",
+          "tag": "formal-proof",
+          "statementChecked": true,
+          "familyTitle": "Planar distinct distances and unit-distance bounds",
+          "claim": "that n points in the plane determine at most C·n^β pairs at distance one, for fixed constants C and β with β < 4/3.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/PlanarUnitDistances.lean",
+            "theorem": "main",
+            "text": "theorem main : ∃ C β : ℝ, 0 < C ∧ 1 ≤ β ∧ β < (4 : ℝ) / 3 ∧\n    ∀ n : ℕ, (u n : ℝ) ≤ C * (n : ℝ) ^ β"
+          },
+          "match": "Same quantity: the file's u(n) is the largest number of unit-distance pairs among n points in the plane, as in this constant's definition, so the statement bounds the exponent by β, below the 4/3 in this constant's last-listed upper-bound row. No value of β is given.",
+          "screenedBy": [
+            "claude",
+            "codex"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "168",
+      "verdict": "none"
+    },
+    {
+      "family": "169",
+      "verdict": "none"
+    },
+    {
+      "family": "170",
+      "verdict": "bears",
+      "title": "Sharp logarithmic exponents for off-diagonal Ramsey numbers",
+      "leanDoc": "lean/docs/170.md",
+      "records": [
+        {
+          "id": "ramsey-classical",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "claude",
+            "codex"
+          ],
+          "confidence": {
+            "claude": "low",
+            "codex": "low"
+          }
+        }
+      ]
+    },
+    {
+      "family": "171",
+      "verdict": "none"
+    },
+    {
+      "family": "172",
+      "verdict": "none"
+    },
+    {
+      "family": "173",
+      "verdict": "none"
+    },
+    {
+      "family": "174",
+      "verdict": "bears",
+      "title": "Deterministic construction of strong thin spanning trees",
+      "leanDoc": "lean/docs/174.md",
+      "records": [
+        {
+          "id": "75a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "codex"
+          ],
+          "confidence": {
+            "codex": "low"
+          }
+        }
+      ]
+    },
+    {
+      "family": "175",
+      "verdict": "none"
+    },
+    {
+      "family": "176",
+      "verdict": "none"
+    },
+    {
+      "family": "177",
+      "verdict": "none"
+    },
+    {
+      "family": "178",
+      "verdict": "none"
+    },
+    {
+      "family": "179",
+      "verdict": "none"
+    },
+    {
+      "family": "180",
+      "verdict": "none"
+    },
+    {
+      "family": "181",
+      "verdict": "none"
+    },
+    {
+      "family": "182",
+      "verdict": "bears",
+      "title": "Power savings for intersective polynomial differences and prime arguments",
+      "leanDoc": "lean/docs/182.md",
+      "records": [
+        {
+          "id": "4b",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "claude",
+            "codex"
+          ],
+          "confidence": {
+            "claude": "high",
+            "codex": "high"
+          }
+        }
+      ]
+    },
+    {
+      "family": "183",
+      "verdict": "none"
+    },
+    {
+      "family": "184",
+      "verdict": "bears",
+      "title": "Correspondence coloring with a fixed forbidden subgraph",
+      "leanDoc": "lean/docs/184.md",
+      "records": [
+        {
+          "id": "ramsey-classical",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "codex"
+          ],
+          "confidence": {
+            "codex": "low"
+          }
+        }
+      ]
+    },
+    {
+      "family": "185",
+      "verdict": "none"
+    },
+    {
+      "family": "186",
+      "verdict": "none"
+    },
+    {
+      "family": "187",
+      "verdict": "none"
+    },
+    {
+      "family": "188",
+      "verdict": "none"
+    },
+    {
+      "family": "189",
+      "verdict": "none"
+    },
+    {
+      "family": "190",
+      "verdict": "none"
+    },
+    {
+      "family": "191",
+      "verdict": "none"
+    },
+    {
+      "family": "192",
+      "verdict": "none"
+    },
+    {
+      "family": "193",
+      "verdict": "none"
+    },
+    {
+      "family": "194",
+      "verdict": "none"
+    },
+    {
+      "family": "195",
+      "verdict": "none"
+    },
+    {
+      "family": "196",
+      "verdict": "none"
+    },
+    {
+      "family": "197",
+      "verdict": "none"
+    },
+    {
+      "family": "198",
+      "verdict": "none"
+    },
+    {
+      "family": "199",
+      "verdict": "none"
+    },
+    {
+      "family": "200",
+      "verdict": "none"
+    },
+    {
+      "family": "201",
+      "verdict": "none"
+    },
+    {
+      "family": "202",
+      "verdict": "none"
+    },
+    {
+      "family": "203",
+      "verdict": "none"
+    },
+    {
+      "family": "204",
+      "verdict": "none"
+    },
+    {
+      "family": "205",
+      "verdict": "none"
+    },
+    {
+      "family": "206",
+      "verdict": "none"
+    },
+    {
+      "family": "207",
+      "verdict": "none"
+    },
+    {
+      "family": "208",
+      "verdict": "none"
+    },
+    {
+      "family": "209",
+      "verdict": "none"
+    },
+    {
+      "family": "210",
+      "verdict": "none"
+    },
+    {
+      "family": "211",
+      "verdict": "none"
+    },
+    {
+      "family": "212",
+      "verdict": "none"
+    },
+    {
+      "family": "213",
+      "verdict": "none"
+    },
+    {
+      "family": "214",
+      "verdict": "none"
+    },
+    {
+      "family": "215",
+      "verdict": "none"
+    },
+    {
+      "family": "216",
+      "verdict": "none"
+    },
+    {
+      "family": "217",
+      "verdict": "none"
+    },
+    {
+      "family": "218",
+      "verdict": "none"
+    },
+    {
+      "family": "219",
+      "verdict": "none"
+    },
+    {
+      "family": "220",
+      "verdict": "none"
+    },
+    {
+      "family": "221",
+      "verdict": "none"
+    },
+    {
+      "family": "222",
+      "verdict": "bears",
+      "title": "Perceptron free energies and microscopic jamming exponents",
+      "leanDoc": "lean/docs/222.md",
+      "records": [
+        {
+          "id": "80a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "claude",
+            "codex"
+          ],
+          "confidence": {
+            "claude": "low",
+            "codex": "low"
+          }
+        }
+      ]
+    },
+    {
+      "family": "223",
+      "verdict": "none"
+    },
+    {
+      "family": "224",
+      "verdict": "none"
+    },
+    {
+      "family": "225",
+      "verdict": "none"
+    },
+    {
+      "family": "226",
+      "verdict": "none"
+    },
+    {
+      "family": "227",
+      "verdict": "none"
+    },
+    {
+      "family": "228",
+      "verdict": "none"
+    },
+    {
+      "family": "229",
+      "verdict": "none"
+    },
+    {
+      "family": "230",
+      "verdict": "none"
+    },
+    {
+      "family": "231",
+      "verdict": "none"
+    },
+    {
+      "family": "232",
+      "verdict": "none"
+    },
+    {
+      "family": "233",
+      "verdict": "none"
+    },
+    {
+      "family": "234",
+      "verdict": "none"
+    },
+    {
+      "family": "235",
+      "verdict": "bears",
+      "title": "Limiting random SAT thresholds, sharp variance and computability",
+      "leanDoc": "lean/docs/235.md",
+      "records": [
+        {
+          "id": "52a",
+          "tag": "unchecked",
+          "statementChecked": false,
+          "screenedBy": [
+            "claude",
+            "codex"
+          ],
+          "confidence": {
+            "claude": "medium",
+            "codex": "high"
+          }
+        }
+      ]
+    },
+    {
+      "family": "236",
+      "verdict": "none"
+    },
+    {
+      "family": "237",
+      "verdict": "none"
+    },
+    {
+      "family": "238",
+      "verdict": "none"
+    },
+    {
+      "family": "239",
+      "verdict": "none"
+    },
+    {
+      "family": "240",
+      "verdict": "none"
+    },
+    {
+      "family": "241",
+      "verdict": "none"
+    },
+    {
+      "family": "242",
+      "verdict": "none"
+    },
+    {
+      "family": "243",
+      "verdict": "none"
+    },
+    {
+      "family": "244",
+      "verdict": "none"
+    },
+    {
+      "family": "245",
+      "verdict": "none"
+    },
+    {
+      "family": "246",
+      "verdict": "none"
+    },
+    {
+      "family": "247",
+      "verdict": "none"
+    },
+    {
+      "family": "248",
+      "verdict": "none"
+    },
+    {
+      "family": "249",
+      "verdict": "none"
+    },
+    {
+      "family": "250",
+      "verdict": "none"
+    },
+    {
+      "family": "251",
+      "verdict": "none"
+    },
+    {
+      "family": "252",
+      "verdict": "none"
+    },
+    {
+      "family": "253",
+      "verdict": "none"
+    },
+    {
+      "family": "254",
+      "verdict": "none"
+    },
+    {
+      "family": "255",
+      "verdict": "none"
+    },
+    {
+      "family": "256",
+      "verdict": "none"
+    },
+    {
+      "family": "257",
+      "verdict": "none"
+    },
+    {
+      "family": "258",
+      "verdict": "none"
+    },
+    {
+      "family": "259",
+      "verdict": "none"
+    },
+    {
+      "family": "260",
+      "verdict": "none"
+    },
+    {
+      "family": "261",
+      "verdict": "none"
+    },
+    {
+      "family": "262",
+      "verdict": "none"
+    },
+    {
+      "family": "263",
+      "verdict": "none"
+    },
+    {
+      "family": "264",
+      "verdict": "none"
+    },
+    {
+      "family": "265",
+      "verdict": "none"
+    },
+    {
+      "family": "266",
+      "verdict": "none"
+    },
+    {
+      "family": "267",
+      "verdict": "none"
+    },
+    {
+      "family": "268",
+      "verdict": "none"
+    },
+    {
+      "family": "269",
+      "verdict": "none"
+    },
+    {
+      "family": "270",
+      "verdict": "none"
+    },
+    {
+      "family": "271",
+      "verdict": "none"
+    },
+    {
+      "family": "272",
+      "verdict": "none"
+    },
+    {
+      "family": "273",
+      "verdict": "none"
+    },
+    {
+      "family": "274",
+      "verdict": "none"
+    },
+    {
+      "family": "275",
+      "verdict": "none"
+    },
+    {
+      "family": "276",
+      "verdict": "none"
+    },
+    {
+      "family": "277",
+      "verdict": "none"
+    },
+    {
+      "family": "278",
+      "verdict": "none"
+    },
+    {
+      "family": "279",
+      "verdict": "none"
+    },
+    {
+      "family": "280",
+      "verdict": "none"
+    },
+    {
+      "family": "281",
+      "verdict": "none"
+    },
+    {
+      "family": "282",
+      "verdict": "none"
+    },
+    {
+      "family": "283",
+      "verdict": "none"
+    },
+    {
+      "family": "284",
+      "verdict": "none"
+    },
+    {
+      "family": "285",
+      "verdict": "none"
+    },
+    {
+      "family": "286",
+      "verdict": "none"
+    },
+    {
+      "family": "287",
+      "verdict": "none"
+    },
+    {
+      "family": "288",
+      "verdict": "none"
+    },
+    {
+      "family": "289",
+      "verdict": "none"
+    },
+    {
+      "family": "290",
+      "verdict": "none"
+    },
+    {
+      "family": "291",
+      "verdict": "none"
+    },
+    {
+      "family": "292",
+      "verdict": "none"
+    },
+    {
+      "family": "293",
+      "verdict": "none"
+    },
+    {
+      "family": "294",
+      "verdict": "none"
+    },
+    {
+      "family": "295",
+      "verdict": "none"
+    },
+    {
+      "family": "296",
+      "verdict": "none"
+    },
+    {
+      "family": "297",
+      "verdict": "none"
+    },
+    {
+      "family": "298",
+      "verdict": "none"
+    },
+    {
+      "family": "299",
+      "verdict": "none"
+    },
+    {
+      "family": "300",
+      "verdict": "none"
+    },
+    {
+      "family": "301",
+      "verdict": "none"
+    },
+    {
+      "family": "302",
+      "verdict": "none"
+    },
+    {
+      "family": "303",
+      "verdict": "none"
+    },
+    {
+      "family": "304",
+      "verdict": "none"
+    },
+    {
+      "family": "305",
+      "verdict": "none"
+    },
+    {
+      "family": "306",
+      "verdict": "none"
+    },
+    {
+      "family": "307",
+      "verdict": "none"
+    },
+    {
+      "family": "308",
+      "verdict": "none"
+    },
+    {
+      "family": "309",
+      "verdict": "none"
+    },
+    {
+      "family": "310",
+      "verdict": "none"
+    },
+    {
+      "family": "311",
+      "verdict": "none"
+    },
+    {
+      "family": "312",
+      "verdict": "none"
+    },
+    {
+      "family": "313",
+      "verdict": "none"
+    },
+    {
+      "family": "314",
+      "verdict": "none"
+    },
+    {
+      "family": "315",
+      "verdict": "none"
+    },
+    {
+      "family": "316",
+      "verdict": "none"
+    },
+    {
+      "family": "317",
+      "verdict": "none"
+    },
+    {
+      "family": "318",
+      "verdict": "none"
+    },
+    {
+      "family": "319",
+      "verdict": "none"
+    },
+    {
+      "family": "320",
+      "verdict": "none"
+    },
+    {
+      "family": "321",
+      "verdict": "none"
+    },
+    {
+      "family": "322",
+      "verdict": "none"
+    },
+    {
+      "family": "323",
+      "verdict": "none"
+    },
+    {
+      "family": "324",
+      "verdict": "none"
+    },
+    {
+      "family": "325",
+      "verdict": "bears",
+      "title": "The complete Crouzeix conjecture",
+      "leanDoc": "lean/docs/325.md",
+      "records": [
+        {
+          "id": "2a",
+          "tag": "formal-proof",
+          "statementChecked": true,
+          "familyTitle": "The complete Crouzeix conjecture",
+          "claim": "the complete Crouzeix inequality with constant 2, and that no smaller constant works.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/CompleteCrouzeix.lean",
+            "theorem": "main",
+            "text": "theorem main : UniversalBound 2 ∧ ∀ C : ℝ, UniversalBound C → 2 ≤ C"
+          },
+          "match": "With one-by-one coefficient matrices (m = 1) the file's inequality is this constant's, with C = 2: the value this constant's table already lists last as an upper bound. The second half, that no constant below 2 works, is about the version with matrix coefficients.",
+          "screenedBy": [
+            "claude",
+            "codex"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "326",
+      "verdict": "none"
+    },
+    {
+      "family": "327",
+      "verdict": "none"
+    },
+    {
+      "family": "328",
+      "verdict": "none"
+    },
+    {
+      "family": "329",
+      "verdict": "none"
+    },
+    {
+      "family": "330",
+      "verdict": "none"
+    },
+    {
+      "family": "331",
+      "verdict": "none"
+    },
+    {
+      "family": "332",
+      "verdict": "none"
+    },
+    {
+      "family": "333",
+      "verdict": "none"
+    },
+    {
+      "family": "334",
+      "verdict": "none"
+    },
+    {
+      "family": "335",
+      "verdict": "none"
+    },
+    {
+      "family": "336",
+      "verdict": "none"
+    },
+    {
+      "family": "337",
+      "verdict": "none"
+    },
+    {
+      "family": "338",
+      "verdict": "none"
+    },
+    {
+      "family": "339",
+      "verdict": "none"
+    },
+    {
+      "family": "340",
+      "verdict": "none"
+    },
+    {
+      "family": "341",
+      "verdict": "none"
+    },
+    {
+      "family": "342",
+      "verdict": "none"
+    },
+    {
+      "family": "343",
+      "verdict": "none"
+    },
+    {
+      "family": "344",
+      "verdict": "none"
+    },
+    {
+      "family": "345",
+      "verdict": "none"
+    },
+    {
+      "family": "346",
+      "verdict": "none"
+    },
+    {
+      "family": "347",
+      "verdict": "none"
+    },
+    {
+      "family": "348",
+      "verdict": "none"
+    },
+    {
+      "family": "349",
+      "verdict": "none"
+    },
+    {
+      "family": "350",
+      "verdict": "none"
+    },
+    {
+      "family": "351",
+      "verdict": "none"
+    },
+    {
+      "family": "352",
+      "verdict": "none"
+    },
+    {
+      "family": "353",
+      "verdict": "none"
+    },
+    {
+      "family": "354",
+      "verdict": "none"
+    },
+    {
+      "family": "355",
+      "verdict": "none"
+    },
+    {
+      "family": "356",
+      "verdict": "none"
+    },
+    {
+      "family": "357",
+      "verdict": "none"
+    },
+    {
+      "family": "358",
+      "verdict": "none"
+    },
+    {
+      "family": "359",
+      "verdict": "none"
+    },
+    {
+      "family": "360",
+      "verdict": "none"
+    },
+    {
+      "family": "361",
+      "verdict": "none"
+    },
+    {
+      "family": "362",
+      "verdict": "none"
+    },
+    {
+      "family": "363",
+      "verdict": "none"
+    },
+    {
+      "family": "364",
+      "verdict": "none"
+    },
+    {
+      "family": "365",
+      "verdict": "none"
+    },
+    {
+      "family": "366",
+      "verdict": "none"
+    },
+    {
+      "family": "367",
+      "verdict": "none"
+    },
+    {
+      "family": "368",
+      "verdict": "none"
+    },
+    {
+      "family": "369",
+      "verdict": "none"
+    },
+    {
+      "family": "370",
+      "verdict": "none"
+    },
+    {
+      "family": "371",
+      "verdict": "none"
+    },
+    {
+      "family": "372",
+      "verdict": "none"
+    },
+    {
+      "family": "373",
+      "verdict": "none"
+    },
+    {
+      "family": "374",
+      "verdict": "none"
+    },
+    {
+      "family": "375",
+      "verdict": "none"
+    },
+    {
+      "family": "376",
+      "verdict": "none"
+    },
+    {
+      "family": "377",
+      "verdict": "none"
+    }
+  ]
+}

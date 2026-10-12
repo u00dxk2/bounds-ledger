@@ -17,6 +17,7 @@ dd{margin:.35rem 0 0}code{display:block;background:var(--code);padding:.6rem .7r
 .sel{color:var(--muted);font-size:.85rem}
 .none{color:var(--muted)}
 ul.audit{margin:.35rem 0 0;padding-left:1.1rem}ul.audit li{margin:.2rem 0}
+ul.oai{margin:.35rem 0 0;padding-left:1.1rem}ul.oai li{margin:.2rem 0 .8rem}ul.oai p{margin:.3rem 0}ul.oai .tag{color:var(--muted);font-size:.9rem}
 .ours{display:inline-block;margin-top:.6rem;font-size:.85rem}
 .actions{margin:1.6rem 0;padding-top:1rem;border-top:1px solid var(--line);font-size:.9rem}
 .cite code{user-select:all;margin-top:.5rem}
@@ -33,7 +34,14 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Upper bound, last-listed row</dt><dd><code>| $7.103205334137$ | [ZZ2020] | Current record bound. |</code><span class="when">tracked since 2026-07-24 — no movement seen yet</span></dd>
 <dt>Lower bound, last-listed row</dt><dd><code>| $2$ | [D1842] | Dirichlet&#39;s theorem; holds for every irrational number (in particular for $\pi$). |</code><span class="when">tracked since 2026-07-24 — no movement seen yet</span></dd>
-
+<dt>Outside the source table: a claim in OpenAI's math release</dt><dd><ul class="oai"><li><p><a href="https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/CONTENTS.md">Family 017</a>, “The irrationality exponent of π is 2”, claims that the irrationality measure of π is exactly 2.</p><p>Its Lean statement, <a href="https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/PiExponent.lean">PiExponent.lean</a>:</p><code>theorem main :
+  (∀ ν : ℝ, 2 &lt; ν → ∃ Q : ℤ, 2 ≤ Q ∧
+    ∀ p q : ℤ, Q ≤ q →
+      (q : ℝ) ^ (-ν) ≤ |Real.pi - (p : ℝ) / (q : ℝ)|) ∧
+  sSup {ν : ℝ | 0 &lt; ν ∧
+    Set.Infinite {r : ℚ | 2 ≤ r.den ∧
+      0 &lt; |Real.pi - (r : ℝ)| ∧
+      |Real.pi - (r : ℝ)| &lt; (r.den : ℝ) ^ (-ν)}} = 2</code><p>Same quantity: the first half says that for every ν &gt; 2, |π − p/q| ≥ q^(−ν) once q is large enough, and the second that the supremum of exponents with infinitely many such approximations is 2. That makes this constant 2, against 7.103205334137 in its last-listed upper-bound row.</p><p class="tag">Status: a Lean statement of it is published with a proof by its authors. We read the statement and it matches this constant&#39;s definition; we have not compiled the proof, and we have not read the paper.</p></li></ul><span class="when">An unrefereed claim, read at <a href="https://github.com/openai/math/tree/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb">openai/math@fd4aeeb</a> on 2026-10-12. It is not in the source table, and nothing in the rows above was changed because of it.</span></dd>
 </dl>
 <div class="actions">
 <a href="https://github.com/u00dxk2/bounds-ledger/blob/main/ledger/teorth-optimizationproblems/constants/7a.md">the mirrored file</a> &middot;

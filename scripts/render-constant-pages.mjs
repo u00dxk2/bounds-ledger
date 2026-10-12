@@ -25,6 +25,7 @@ import { buildRows, flagUrl, citation, reportLabel, whenLabel, whenHtml, history
 import { boundCell } from "./lookup.mjs";
 import crypto from "node:crypto";
 import { REPO, esc, copyCiteScript } from "./lib/html.mjs";
+import { noteBlock } from "./openai-math.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUTDIR = join(ROOT, "c");
@@ -67,6 +68,7 @@ dd{margin:.35rem 0 0}code{display:block;background:var(--code);padding:.6rem .7r
 .sel{color:var(--muted);font-size:.85rem}
 .none{color:var(--muted)}
 ul.audit{margin:.35rem 0 0;padding-left:1.1rem}ul.audit li{margin:.2rem 0}
+ul.oai{margin:.35rem 0 0;padding-left:1.1rem}ul.oai li{margin:.2rem 0 .8rem}ul.oai p{margin:.3rem 0}ul.oai .tag{color:var(--muted);font-size:.9rem}
 .ours{display:inline-block;margin-top:.6rem;font-size:.85rem}
 .actions{margin:1.6rem 0;padding-top:1rem;border-top:1px solid var(--line);font-size:.9rem}
 .cite code{user-select:all;margin-top:.5rem}
@@ -951,7 +953,7 @@ ${r.report ? `<a class="ours" href="${esc(r.report.url)}">${esc(reportLabel(r.re
 <dl>
 ${side("Upper", r.upper, r.upperChanged, r.upperKind, historyUrl(r.url, sha))}
 ${side("Lower", r.lower, r.lowerChanged, r.lowerKind, historyUrl(r.url, sha))}
-${auditBlock(r.id, audits, [r.upper, r.lower])}
+${auditBlock(r.id, audits, [r.upper, r.lower])}${noteBlock(r.oai)}
 </dl>
 <div class="actions">
 <a href="${esc(upstream)}">the mirrored file</a> &middot;

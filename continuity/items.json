@@ -2863,6 +2863,25 @@
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/check-upstream-reports.mjs — exit 0 '0 transition(s)' and no UNRECORDED line means every issue in its listing (`gh issue list --author u00dxk2 --state all --limit 100`, read once with no completeness check) has a baseline row whose state matches; exit 1 names the issue. Blind to pull requests, to issues past the first 100 returned, and to a closedAt, URL, title or path that changed while the state did not (Codex review r1, 2026-10-12).",
       "created": "2026-10-12",
       "updated": "2026-10-12"
+    },
+    {
+      "id": "A-78",
+      "type": "active",
+      "status": "open",
+      "title": "OpenAI's math release mapped onto every watched constant; statement-checked claims shown on their pages",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-10-19",
+      "links": [
+        "F-2",
+        "A-59",
+        "A-77"
+      ],
+      "note": "Opened 2026-10-12 MT at day-session P3 round 2, on David's ask (skylark-site docs/answers/2026-10-12-afternoon-plan-bounds-ledger-openai-math.md) and the manager's REDIRECT (inbox b2d45f3e): tag only from a Lean statement read and matched against the constant's definition. ledger/openai-math-map.json gives all 372 families at the openai/math commit pinned in its `source.sha` (an upstream sha; it does not exist in this repo) a verdict: 23 bear on a watched constant, 349 do not, from the union of two independent screening passes (a Claude agent and Codex, every headline against every definition). 31 pairs: 8 statement-checked and rendered (15a twice, 15b, 84a, 27a, 28a, 7a, 2a), 23 unchecked and data only. No proof compiled; no paper read. The release repo moves (3 withdrawals and 14 revisions on 2026-10-07), so the map is pinned to a sha and goes stale by design.",
+      "onTrigger": "On 2026-10-19: (1) re-read `gh api repos/openai/math/commits` for commits after the map's `source.sha`; if any, re-read history.md and re-check every rendered pair's statement file at the new tip before moving the pinned sha. (2) Statement-check the next unchecked pairs in order of screening agreement (both passes, high confidence first: 74a, 67a, 34a, 25a, 4b, 20b, 46a, 77a, 52a, 23b). (3) Draft, never send, an upstream note for any rendered pair whose constant page upstream still lacks it; any send is David's.",
+      "closeWhen": "Every pair in the map is either statement-checked (rendered with its tag) or dispositioned as not bearing after a read, at the then-current release tip; or David retires the watch.",
+      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/openai-math.mjs — prints families covered of the release's count at the pinned sha, how many bear, pairs by tag and how many render; exit 0 'RESULT: VALID', exit 1 names each invalid field, exit 2 when the map file is absent. It reads the committed map only; it does not fetch the release, so it cannot see a newer release commit (the onTrigger read does).",
+      "created": "2026-10-12",
+      "updated": "2026-10-12"
     }
   ],
   "meta": {

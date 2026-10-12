@@ -30,6 +30,7 @@ import { loadAudits, badgeFor, settledIds, attemptDate, refuseDroppedAudits, DEF
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { REPO, esc, issueUrl, copyCiteScript } from "./lib/html.mjs";
+import { loadMap, notesFor, badgeText } from "./openai-math.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "index.html");
@@ -176,9 +177,12 @@ export function loadReports(root = ROOT) {
   return Array.isArray(parsed.reports) ? parsed.reports : [];
 }
 
-export function buildRows(claims, { withDates = true, root = ROOT, reports = null, audits = null } = {}) {
+export function buildRows(claims, { withDates = true, root = ROOT, reports = null, audits = null, oaiMap = undefined } = {}) {
   const filed = reports ?? loadReports(root);
   const store = audits ?? loadAudits();
+  // A-78: unrefereed claims from OpenAI's math release, statement-checked pairs only. Kept OUT of
+  // every bound field below; the notes ride beside the row and never touch upper/lower.
+  const oai = oaiMap === undefined ? loadMap(root) : oaiMap;
   return constantIds(claims).map((id) => {
     const pins = pinsFor(id, claims);
     const upper = pins.find((p) => p.id.endsWith(":U"));
@@ -203,6 +207,7 @@ export function buildRows(claims, { withDates = true, root = ROOT, reports = nul
       audit: badgeFor(id, store, [upper && upper.expect, lower && lower.expect]),
       tableValues: tableValuesFor(id, root),
       aliases: aliasesFor(id, claims),
+      oai: notesFor(id, oai),
     };
   }).map((r) => ({
     ...r,
@@ -657,7 +662,7 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   // padding only centres the text.
   const sha = String(manifest.sha);
   const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
-<th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}</th>
+<th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}${r.oai && r.oai.length ? `<a class="oai" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(badgeText(r.oai))}. Open its page for the claim, its Lean statement and what we checked">${esc(badgeText(r.oai))}</a>` : ""}</th>
 ${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)", historyUrl(r.url, sha))}
 ${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)", historyUrl(r.url, sha))}
 <td class="src"><a href="${esc(readable(r.url))}">source</a> · <a href="c/${esc(r.id)}.html" aria-label="The page for ${esc(r.title)}">page</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(r.title)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
@@ -705,6 +710,7 @@ tbody th{font-weight:600;min-width:15rem}
 .read-unresolved::before,.read-defective::before{content:"⚠ "}
 .read-defective{font-weight:600}
 .tried{display:block;margin-top:.25rem;font-size:12px;width:max-content;max-width:22rem;color:var(--muted);font-style:italic}
+.oai{display:block;margin-top:.25rem;font-size:12px;width:max-content;max-width:22rem}
 .id:hover,.id:focus{text-decoration:underline}
 tr:target th{box-shadow:inset 3px 0 0 var(--accent)}
 tr:target>*{background:var(--code)}
@@ -728,13 +734,13 @@ tbody{display:block}
 tr{display:block;border:1px solid var(--line);border-radius:8px;margin:0 0 .75rem}
 th,td{display:block;border-bottom:0;padding:.45rem .8rem}
 tbody th{min-width:0;padding-top:.7rem}
-.ours,.read,.tried{max-width:100%}
+.ours,.read,.tried,.oai{max-width:100%}
 tbody tr{display:flex;flex-direction:column}
 tbody th{display:contents}
 tbody th>*{order:0;margin-left:.8rem;margin-right:.8rem}
 tbody th>a:first-child{padding-top:.7rem}
 tbody td{order:1}
-tbody th>.ours,tbody th>.read,tbody th>.tried{order:2;margin-top:0;margin-bottom:.45rem;max-width:calc(100% - 1.6rem)}
+tbody th>.ours,tbody th>.read,tbody th>.tried,tbody th>.oai{order:2;margin-top:0;margin-bottom:.45rem;max-width:calc(100% - 1.6rem)}
 tbody td.src{order:3}
 tr:target{box-shadow:inset 3px 0 0 var(--accent);background:var(--code)}
 tr:target>td{background:none}
@@ -992,7 +998,7 @@ async function selftest() {
   assert.ok(cardStart > -1, "positive control: the card-layout block must exist");
   const card = html.slice(cardStart, html.indexOf("\n}\n", cardStart));
   assert.ok(card.includes("\ntbody th{display:contents}\n"), "on the card layout the th must not box its badges above the bound cells");
-  assert.ok(card.includes("\ntbody th>.ours,tbody th>.read,tbody th>.tried{order:2;"), "on the card layout the badges must be ordered after the bound cells");
+  assert.ok(card.includes("\ntbody th>.ours,tbody th>.read,tbody th>.tried,tbody th>.oai{order:2;"), "on the card layout the badges must be ordered after the bound cells");
   assert.ok(card.includes("\ntr:target{box-shadow:inset 3px 0 0 var(--accent);"), "a th with no box cannot mark the landed row, so the card layout must mark the tr");
   assert.ok(card.includes([
     "tbody tr{display:flex;flex-direction:column}",
@@ -1000,7 +1006,7 @@ async function selftest() {
     "tbody th>*{order:0;margin-left:.8rem;margin-right:.8rem}",
     "tbody th>a:first-child{padding-top:.7rem}",
     "tbody td{order:1}",
-    "tbody th>.ours,tbody th>.read,tbody th>.tried{order:2;margin-top:0;margin-bottom:.45rem;max-width:calc(100% - 1.6rem)}",
+    "tbody th>.ours,tbody th>.read,tbody th>.tried,tbody th>.oai{order:2;margin-top:0;margin-bottom:.45rem;max-width:calc(100% - 1.6rem)}",
     "tbody td.src{order:3}",
     "tr:target{box-shadow:inset 3px 0 0 var(--accent);background:var(--code)}",
     "tr:target>td{background:none}",
