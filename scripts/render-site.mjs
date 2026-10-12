@@ -338,6 +338,10 @@ export function historyUrl(url, sha) {
 // filter still read exactly what upstream wrote. The rewrite is NARROW on purpose: only the one shape
 // seen on all 130 live anchors, a fragment-only href and link text with no `<`. Any other shape (an
 // external href, extra attributes, a nested tag) stays verbatim rather than being guessed at.
+// A STATED LIMIT (Codex review r5): the match is on the literal substring, not on parsed Markdown or
+// LaTeX, so that shape inside a code span or a formula would be rewritten too. No live pin has one
+// (all 130 anchors' link text equals "[" + KEY + "]", reproduced 2026-10-12). Each constant page
+// keeps the exact pinned row one tap away wherever the display differs from it.
 const UPSTREAM_ANCHOR = /<a href="#[^"<>]*">([^<]*)<\/a>/g;
 export function displayCell(row) {
   return String(row).replace(UPSTREAM_ANCHOR, "$1");
@@ -2104,6 +2108,11 @@ async function selftest() {
   // data-find left this selftest green, 2026-10-12). They pin that the two stay as they were.
   assert.ok(anchorTr.includes(`data-find="${esc(findKey(anchorRow))}"`), "the search haystack must equal findKey() of the raw row");
   assert.ok(anchorPage.includes(`<code>${esc(citation(anchorRow, manifest.sha))}</code>`), "the plain-text citation must equal citation() of the raw row");
+  // Codex review r5 (d): a MATCHING anchor on the LOWER side too.
+  const lowAnchorTr = (renderHtml([{ ...anchorRow, lower: '| $1$ | <a href="#Low1">[Low1]</a> |' }], manifest, "2026-10-12").match(/<tr id="c-79a"[\s\S]*?<\/tr>/) || [""])[0];
+  const lowShown = [...lowAnchorTr.matchAll(/<td data-label="[^"]*"><code>([\s\S]*?)<\/code>/g)].map((m) => m[1]);
+  assert.ok(lowShown.length === 2 && lowShown[1].includes("[Low1]") && !lowShown[1].includes("&lt;a href"),
+    "a LOWER-bound cell must read a matching anchor as its link text too");
   assert.equal(shownCells[0], esc('| $10^{143}$ | [Bru2002] and [Bru2002-b] | x |'), "exact shown cell: the pin with each anchor replaced by its link text");
 
   // --- Search by the SLASH form of a fraction, added 2026-09-07. Both KP-78 answers, and read

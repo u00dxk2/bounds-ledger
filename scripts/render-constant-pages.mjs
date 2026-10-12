@@ -63,6 +63,7 @@ a{color:var(--accent)}h1{font-size:1.4rem;line-height:1.3;margin:.2rem 0 .1rem}
 dl{margin:1.4rem 0;padding:0}dt{font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:1.1rem}
 dd{margin:.35rem 0 0}code{display:block;background:var(--code);padding:.6rem .7rem;font-size:.85rem;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
 .when{display:block;font-size:.8rem;color:var(--muted);margin-top:.3rem}
+.pin{font-size:.8rem;color:var(--muted);margin-top:.3rem}
 .sel{color:var(--muted);font-size:.85rem}
 .none{color:var(--muted)}
 ul.audit{margin:.35rem 0 0;padding-left:1.1rem}ul.audit li{margin:.2rem 0}
@@ -913,7 +914,12 @@ export const DISCLAIMER =
 function side(label, row, changed, kind, hist = null) {
   if (!row) return `<dt>${esc(label)} bound</dt><dd class="none">not pinned</dd>`;
   const when = changed ? `<span class="when">${whenHtml(changed, kind, hist, esc)}</span>` : `<span class="when">date unknown</span>`;
-  return `<dt>${esc(label)} bound, last-listed row</dt><dd><code>${esc(displayCell(row))}</code>${when}</dd>`;
+  // The EXACT pinned row stays one tap away whenever the display differs from it (Codex review r5,
+  // 2026-10-12): docs/evangelism-bar.md promises "the exact pinned string so you can check it
+  // yourself", and this page is where a reader goes to check. Absent when the two are equal.
+  const shown = displayCell(row);
+  const exact = shown === row ? "" : `<details class="pin"><summary>exact pinned row</summary><code>${esc(row)}</code></details>`;
+  return `<dt>${esc(label)} bound, last-listed row</dt><dd><code>${esc(shown)}</code>${exact}${when}</dd>`;
 }
 
 /**
@@ -1553,6 +1559,16 @@ async function selftest() {
     "a shown bound cell must read the anchor's link text, not its markup");
   assert.ok(ddCells[1].includes("&lt;a href=&quot;https://example.invalid/r&quot;&gt;[Ext]&lt;/a&gt;"),
     "an anchor of any other shape must stay verbatim");
+  // Codex review r5 (b): the exact pinned row must stay reachable wherever the display differs.
+  assert.ok(anchorPage.includes(`<details class="pin"><summary>exact pinned row</summary><code>${esc(anchorRow.upper)}</code></details>`),
+    "a cell whose display differs from its pin must offer the exact pinned row");
+  assert.equal((anchorPage.match(/<details class="pin">/g) || []).length, 1,
+    "only a cell whose display differs carries the exact-row block (the verbatim lower cell must not)");
+  // Codex review r5 (d): a MATCHING anchor on the LOWER side too.
+  const lowAnchor = renderPage({ ...rawRow, lower: '| $1$ | <a href="#Low1">[Low1]</a> |' }, histSha);
+  const lowCells = [...lowAnchor.matchAll(/<dd><code>([\s\S]*?)<\/code>/g)].map((m) => m[1]);
+  assert.ok(lowCells.length === 2 && lowCells[1].includes("[Low1]") && !lowCells[1].includes("&lt;a href"),
+    "a LOWER-bound cell must read a matching anchor as its link text too");
   assert.ok(anchorPage.includes(`<code>${esc(citation(anchorRow, histSha))}</code>`), "the cite block must be unchanged, byte for byte");
   assert.equal(ddCells[0], esc("| $10^{143}$ | [Bru2002] | x |"), "exact shown cell");
 
