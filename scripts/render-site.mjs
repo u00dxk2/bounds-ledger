@@ -888,7 +888,7 @@ ${body}
     count.textContent=n+(n===1?' constant':' constants')+(v?' matching “'+v+'”':'')+
       (!v||!n?'':!u?' — highlighted where it appears':
         u===n?' — nothing highlighted':
-        ' — highlighted where it appears; '+u+' of them have nothing highlighted');
+        ' — highlighted where it appears; '+u+(u===1?' of them has':' of them have')+' nothing highlighted');
     // A search that matches nothing used to leave an empty table and no explanation, so a visitor
     // could not tell "we do not track this" from "you spelled it differently". textContent, never
     // innerHTML — the term is visitor input and must never become markup.
@@ -2113,7 +2113,7 @@ async function selftest() {
   search("10.02");
   assert.equal(mcount.textContent, "1 constant matching “10.02” — highlighted where it appears");
   search("117/370");
-  assert.equal(mcount.textContent, "2 constants matching “117/370” — highlighted where it appears; 1 of them have nothing highlighted");
+  assert.equal(mcount.textContent, "2 constants matching “117/370” — highlighted where it appears; 1 of them has nothing highlighted");
   search("seshadri 74a");
   assert.equal(mcount.textContent, "1 constant matching “seshadri 74a” — nothing highlighted");
   // (7) Codex r1 coverage: every occurrence is marked, in order, without overlap.

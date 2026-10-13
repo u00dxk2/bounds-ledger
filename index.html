@@ -1353,7 +1353,7 @@ https://u00dxk2.github.io/bounds-ledger/c/88b.html</code></details></td>
     count.textContent=n+(n===1?' constant':' constants')+(v?' matching “'+v+'”':'')+
       (!v||!n?'':!u?' — highlighted where it appears':
         u===n?' — nothing highlighted':
-        ' — highlighted where it appears; '+u+' of them have nothing highlighted');
+        ' — highlighted where it appears; '+u+(u===1?' of them has':' of them have')+' nothing highlighted');
     // A search that matches nothing used to leave an empty table and no explanation, so a visitor
     // could not tell "we do not track this" from "you spelled it differently". textContent, never
     // innerHTML — the term is visitor input and must never become markup.
