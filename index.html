@@ -1346,12 +1346,14 @@ https://u00dxk2.github.io/bounds-ledger/c/88b.html</code></details></td>
     }
     // A row can match on text no single marked element contains (another row of its table, a typed
     // form such as 117/370 for a LaTeX fraction, or a name and id typed together), so the line says
-    // when a match has nothing to highlight. It names only what the marks cover: the badges are shown
-    // and never marked, so "no shown text contains it" would be false for a badge's number (Codex r1).
+    // when a match has nothing to highlight. It says ONLY that: whether a mark was drawn. Two review
+    // rounds each refuted a sentence about what the shown text contains (a badge shows numbers and is
+    // never marked; a length-changing lowercase text is skipped; a row may show one bound, not two),
+    // so the line no longer describes the text at all (Codex r1 and r2, 2026-10-13).
     count.textContent=n+(n===1?' constant':' constants')+(v?' matching “'+v+'”':'')+
       (!v||!n?'':!u?' — highlighted where it appears':
-        u===n?' — the name, id and two rows shown do not contain it as typed, so nothing is highlighted; the match may be in another row of the table':
-        ' — highlighted where it appears; for '+u+' of them the name, id and two rows shown do not contain it as typed, and the match may be in another row of the table');
+        u===n?' — nothing highlighted; each row’s source link has its full table':
+        ' — highlighted where it appears; '+u+' of them have nothing highlighted');
     // A search that matches nothing used to leave an empty table and no explanation, so a visitor
     // could not tell "we do not track this" from "you spelled it differently". textContent, never
     // innerHTML — the term is visitor input and must never become markup.

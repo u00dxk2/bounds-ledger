@@ -881,12 +881,14 @@ ${body}
     }
     // A row can match on text no single marked element contains (another row of its table, a typed
     // form such as 117/370 for a LaTeX fraction, or a name and id typed together), so the line says
-    // when a match has nothing to highlight. It names only what the marks cover: the badges are shown
-    // and never marked, so "no shown text contains it" would be false for a badge's number (Codex r1).
+    // when a match has nothing to highlight. It says ONLY that: whether a mark was drawn. Two review
+    // rounds each refuted a sentence about what the shown text contains (a badge shows numbers and is
+    // never marked; a length-changing lowercase text is skipped; a row may show one bound, not two),
+    // so the line no longer describes the text at all (Codex r1 and r2, 2026-10-13).
     count.textContent=n+(n===1?' constant':' constants')+(v?' matching “'+v+'”':'')+
       (!v||!n?'':!u?' — highlighted where it appears':
-        u===n?' — the name, id and two rows shown do not contain it as typed, so nothing is highlighted; the match may be in another row of the table':
-        ' — highlighted where it appears; for '+u+' of them the name, id and two rows shown do not contain it as typed, and the match may be in another row of the table');
+        u===n?' — nothing highlighted; each row’s source link has its full table':
+        ' — highlighted where it appears; '+u+' of them have nothing highlighted');
     // A search that matches nothing used to leave an empty table and no explanation, so a visitor
     // could not tell "we do not track this" from "you spelled it differently". textContent, never
     // innerHTML — the term is visitor input and must never become markup.
@@ -2111,9 +2113,9 @@ async function selftest() {
   search("10.02");
   assert.equal(mcount.textContent, "1 constant matching “10.02” — highlighted where it appears");
   search("117/370");
-  assert.equal(mcount.textContent, "2 constants matching “117/370” — highlighted where it appears; for 1 of them the name, id and two rows shown do not contain it as typed, and the match may be in another row of the table");
+  assert.equal(mcount.textContent, "2 constants matching “117/370” — highlighted where it appears; 1 of them have nothing highlighted");
   search("seshadri 74a");
-  assert.equal(mcount.textContent, "1 constant matching “seshadri 74a” — the name, id and two rows shown do not contain it as typed, so nothing is highlighted; the match may be in another row of the table");
+  assert.equal(mcount.textContent, "1 constant matching “seshadri 74a” — nothing highlighted; each row’s source link has its full table");
   // (7) Codex r1 coverage: every occurrence is marked, in order, without overlap.
   search("0");
   assert.deepEqual(marksIn(knot.targets[2]), ["0", "0", "0"], "every occurrence in a cell must be marked");
@@ -2128,6 +2130,9 @@ async function selftest() {
   assert.equal(dotted.hidden, false, "positive control: the row must match before its absent mark is asserted");
   assert.deepEqual(marksIn(dotted.targets[0]), [], "a text whose lowercase form changes length must carry no mark");
   assert.equal(dotted.targets[0].textContent, "İstanbul", "and its text must be untouched");
+  // Codex r2: the line must not then say the visible name lacks the term; it says only that nothing
+  // was highlighted.
+  assert.equal(dcount.textContent, "1 constant matching “stan” — nothing highlighted; each row’s source link has its full table");
 
   // --- Search by the number you cited, added 2026-09-01. Both KP-78 answers.
   // The page's headline asks "is the number you cited still current?" and until today the filter
