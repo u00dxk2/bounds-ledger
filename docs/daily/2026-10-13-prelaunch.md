@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-Today's pick: on a phone, the index card will read aloud in the order it looks, and a number you typed into the filter will be marked where it appears.
+On a phone, a number you type into the index filter is now highlighted where it appears, and a screen reader hears the bounds before the note about another row.
 
 ## What changed
 
@@ -37,9 +37,11 @@ The kickoff arrived at 16:46Z and a correction at 16:55Z, but neither was surfac
 
 **HYGIENE INPUTS:** (a) 3: `A-47` (depth audit slice 17), `A-79` (David's essay answer: he will edit the draft himself first, so we do not touch it; the P3 hygiene helper later read that his pass had already landed in the essay's own repository as `1d599d7`, an uncaged-minds sha that does not exist in this repo, at 23:08 MT on 10-12), `W-13` (served-bytes check). (b) none: 0 of 749. (c) none crossed: the kickoff state block.
 
+Positive control: `git -C C:/dev/skylark/uncaged-minds cat-file -t 1d599d7` printed `commit`, while the same command in this repo exited 128 with "Not a valid object name 1d599d7", so the sha resolves in the essay's repository and not here.
+
 ### Day session round 1 — P3 product work
 
-Manager review `2e21ac41`: APPROVE. **Kind: improve the product.** Commits `dba1472` (the change), `f46ebac` (Codex r1 fixes), `6437c2d` (r2 fixes), `7fb2e5c` (r3 fix), pushed together at about 19:44Z.
+Manager review `2e21ac41`: APPROVE. **Kind: improve the product.** Commits `dba1472` (the change), `f46ebac` (Codex r1 fixes), `6437c2d` (r2 fixes), `7fb2e5c` (r3 fix), pushed together at 19:35:55Z (13:35 MT; the local reflog of `origin/main`).
 
 **What a phone reader gets now.** A reader who types `10.02` on the index finds the number highlighted in the upper-bound row. A screen reader now reads the card in the order it is drawn: name, id, both bound rows, then the verdict line about another row (which it used to hear first). The desktop table is unchanged.
 
@@ -68,12 +70,56 @@ Rounds 1 to 3 each refuted a sentence the count line said about the shown text. 
 
 **Gates:** `npm test` exit 0 at `7fb2e5c`; `render-site --check` PASS at commit time.
 
+### Close — day session round 1
+
+ACTION: COMPLETED · item A-69 (phone card reading order and the matched value) · P3 5f5062a7 (bus msgId)
+
+**No P5 prompt arrived.** P3 was posted about 20:00Z, and a `P5 not queued +30m` status went out as bus msgId fc9609bb. David then said "continue" in this pane at about 15:30 MT, and the close ran on that word. The self-start was announced first as bus msgId fc4ce55e.
+
+**Manager review of P3** (P5 prompt, 21:38Z): COMPLETED. It raised one copy defect: the count line could read "1 of them have nothing highlighted". That is fixed in the close commit (the verb is now "has" when the count is 1), with the selftest pin updated. Checked by inspection, not sent to Codex: the change is a one-word agreement fix.
+
+**State changed since the P3 post:** the agreement fix above; `A-79` (David's essay answer) closed; `A-47` (the depth audit) and `W-13` (the served-bytes check) re-dated.
+
+**Hygiene draft:** 3 lines — 2 accepted · 1 amended · 0 rejected.
+- `A-47` AMENDED: re-dated to 2026-10-14, not the draft's 10-15, because slice 17 did not run today.
+- `A-79` ACCEPTED as close. The note paraphrases David's answer.
+- `W-13` (the standing served-bytes check) ACCEPTED: re-dated to 2026-10-20, using the served read taken after today's push.
+
+READ-MUTATED: none, 3 reads guarded. Wait-justification and engineering-zero: PASS (the helper ran both).
+
+**Due-gate verification:** "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT. The first run returned ROLLOVER on `W-13` (the served-bytes check): I had moved its `expectedSignalBy` but not its `nextCheckDate`, and the check resolves the earlier of the two. Moving the second field cleared it.
+
+**Ledger delta:**
+- `A-69` closed. The WebKit read is recorded on the row.
+- `A-79` closed: David's edit landed in the essay's own repository, and the rest is tracked there.
+- `A-47` (the depth audit) next check 2026-10-14. `W-13` (the served-bytes check) next check 2026-10-20.
+
+**Findings classification, one sentence of human judgment:** today's findings were all instrument-facing: three review rounds each refuted a sentence our own count line said about the text, and WebKit exposed hidden rows' generated text. Nothing record-facing was found, because no depth-audit slice ran.
+- **Byte-only catches:** no counted catch today, numeric or byte-only.
+- **Consecutive instrument-facing days: 1** counted today, by hand. The last stated count was 0 on 2026-10-04. The reports of 10-05 to 10-12 carry no classification sentence, so the run before today is UNREAD, not zero.
+- **The standing prediction, quoted from CLAUDE.md:** "the next record-facing catch will be a citation-quality defect in a mirrored upstream entry … found by a human reading the cited source in the depth audit (`A-47`), not by any alarm." Not tested today: there was no catch.
+
 ## Inputs (controllable)
+
+One product change (`A-69`), four commits, three Codex review rounds (5 findings, all fixed), six red-armed mutations. One background hygiene helper.
 
 ## Outputs (lagging)
 
+Encounter blind (`A-59`). `npm run reports` read 0 outside arrivals of 33 raw issues, every issue accounted for (read 2026-10-13).
+
 ## Recommendation
+
+Tomorrow (10-14): run `A-47` slice 17 first. Compute and push its new grid before the draw, because it has slid one day. Then `A-54`'s census read.
 
 ## On hold pending data
 
+`A-59`: reader encounter on the public pages, blind (next check 2026-10-28).
+
 ## State Appendix
+
+Written at close from live commands, as of about 21:55Z on 2026-10-13. A report cannot name the commit that lands it, so release each value with its command.
+- HEAD before the close commit: `5acca53`, equal to origin/main. Release: `git -C . log -1 --format=%h`.
+- CI at `7fb2e5c`, the last page-changing commit: reverify GREEN and page-check GREEN. Release: `node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml`, then the same with `page-check.yml`.
+- Served: `index.html` SERVED at `7fb2e5c`, 1 of 1. Release: `npm run served`.
+- Verify receipt: exit 0 at `5acca53`. Release: `npm run verify`.
+- Ledger: 96 rows, 76 closed, 19 open, 1 monitoring, read in the working tree after today's closes of `A-69` and `A-79`. Release: `node scripts/sky.mjs gen-primer-first-action.mjs --repo . --target-date 2026-10-14 --json`.
