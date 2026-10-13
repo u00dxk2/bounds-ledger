@@ -180,9 +180,13 @@ export async function boundCellGuard(root = ROOT) {
   }
   const ia = site.renderHtml(withN, manifest, "2026-10-12");
   const ib = site.renderHtml(without, manifest, "2026-10-12");
-  const badges = ia.match(/<a class="oai"[^>]*>[^<]*<\/a>/g) || [];
+  // Since A-69 (2026-10-13) the index emits each row's badges twice, in the th and as a card-layout
+  // copy in the links cell, and render-site's selftest holds the copy byte-equal to the th. So the
+  // badge COUNT is read in the th, and the strip also drops a copy wrapper the note alone filled.
+  const ths = (ia.match(/<th scope="row">[\s\S]*?<\/th>/g) || []).join("\n");
+  const badges = ths.match(/<a class="oai"[^>]*>[^<]*<\/a>/g) || [];
   if (badges.length !== touched.length) errs.push(`the index carries ${badges.length} claim badge(s) for ${touched.length} noted constant(s)`);
-  if (ia.replace(/<a class="oai"[^>]*>[^<]*<\/a>/g, "") !== ib) errs.push("the index differs from its no-note render by more than the claim badges");
+  if (ia.replace(/<a class="oai"[^>]*>[^<]*<\/a>/g, "").replace(/<div class="later"><\/div>/g, "") !== ib) errs.push("the index differs from its no-note render by more than the claim badges");
   // Judged on the RAW markup, attributes included: an aria-label is read aloud, so it is rendered
   // text too (Codex r1, 2026-10-12: stripping tags first let "record" ride in the badge's aria-label).
   for (const s of [...badges, ...touched.map((r) => noteBlock(r.oai))]) if (FORBIDDEN.test(s)) errs.push(`rendered claim markup uses the word "record": ${s.slice(0, 80)}`);

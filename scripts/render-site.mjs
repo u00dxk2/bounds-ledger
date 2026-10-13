@@ -395,7 +395,7 @@ function cell(row, changed, kind, label, hist = null) {
   const when = changed
     ? `<span class="when ${kind === "text" ? "text-only" : ""}">${whenHtml(changed, kind, hist)}</span>`
     : `<span class="when">date unknown</span>`;
-  return `<td data-label="${esc(label)}"><code>${esc(displayCell(row))}</code>${when}</td>`;
+  return `<td data-label="${esc(label)}"><code data-mark>${esc(displayCell(row))}</code>${when}</td>`;
 }
 
 // Every value cell in the constant's mirrored bound tables — not only the two rows we pin.
@@ -642,7 +642,8 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   // landed-row marker (tr:target th's inset shadow), so the card layout puts it on the tr and clears
   // the cells' own target background, which would paint over the stripe. With the th's padding gone
   // the badges' cap subtracts their two .8rem margins (review round 1, 2026-10-02). Screen-reader
-  // order still reads the badge before the values, as it did before this change. The trimmed .wrap
+  // order still read the badge before the values after this change; A-69 (2026-10-13, the reading-
+  // order note below) replaced the ordered th badges with a card-only copy in the links cell. The trimmed .wrap
   // and .lede spacing here is the last few pixels; the freshness line and its not-the-record caveat
   // are untouched.
   // NOTE on the row controls (A-70, 2026-10-04): below the breakpoint the source / page / looks wrong?
@@ -660,13 +661,26 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   // newer one is ignored, so the line always reports the reader's last press. The 44px is a
   // min-height in px (round 3), so it holds whatever the reader's default font size is; the rem
   // padding only centres the text.
+  // NOTE on the reading order (A-69, 2026-10-13): CSS order moves boxes, never the accessibility
+  // tree, so A-68's card order left a screen reader hearing the badges ("another row, 12.63") before
+  // the bound cells. The badges are therefore emitted TWICE: inside the th, shown on the desktop
+  // table, and at the head of the links cell, shown only on the card layout. Each layout hides the
+  // other copy with display:none, which takes it out of the accessibility tree and the focus order,
+  // so each layout exposes exactly one copy, in the order it is drawn. One string feeds both copies,
+  // and the selftest asserts they are byte-identical on every row, so they cannot drift.
+  // NOTE on the marks (A-69): name, id and the two bound cells carry data-mark, the only elements the
+  // filter may highlight in. Each holds a single text node, and the script restores that text before
+  // every search, so a mark is only ever drawn around text the reader can see.
   const sha = String(manifest.sha);
-  const body = rows.map((r) => `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
-<th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}">${esc(r.id)}</a>${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}${r.oai && r.oai.length ? `<a class="oai" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(badgeText(r.oai))}. Open its page for the claim, its Lean statement and what we checked">${esc(badgeText(r.oai))}</a>` : ""}</th>
+  const body = rows.map((r) => {
+    const badges = `${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}${r.oai && r.oai.length ? `<a class="oai" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(badgeText(r.oai))}. Open its page for the claim, its Lean statement and what we checked">${esc(badgeText(r.oai))}</a>` : ""}`;
+    return `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
+<th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md" data-mark>${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}" data-mark>${esc(r.id)}</a>${badges}</th>
 ${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)", historyUrl(r.url, sha))}
 ${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)", historyUrl(r.url, sha))}
-<td class="src"><a href="${esc(readable(r.url))}">source</a> · <a href="c/${esc(r.id)}.html" aria-label="The page for ${esc(r.title)}">page</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(r.title)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
-</tr>`).join("\n");
+<td class="src">${badges ? `<div class="later">${badges}</div>` : ""}<a href="${esc(readable(r.url))}">source</a> · <a href="c/${esc(r.id)}.html" aria-label="The page for ${esc(r.title)}">page</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(r.title)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
+</tr>`;
+  }).join("\n");
 
   return `<!doctype html>
 <html lang="en">
@@ -726,6 +740,10 @@ code{display:block;font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;
 .copied{margin-left:.6rem;font-size:.8rem;color:var(--muted)}
 footer{margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;max-width:78ch}
 tr[hidden]{display:none}
+tr[hidden] *::before{content:none!important}
+.later>*::before{content:none}
+.later{display:none}
+mark{background:#fff2a8;color:#16181d;border-radius:2px;padding:0 1px}
 @media(max-width:60rem){
 .scroll{overflow-x:visible;border:0;border-radius:0}
 table{min-width:0;display:block}
@@ -740,8 +758,12 @@ tbody th{display:contents}
 tbody th>*{order:0;margin-left:.8rem;margin-right:.8rem}
 tbody th>a:first-child{padding-top:.7rem}
 tbody td{order:1}
-tbody th>.ours,tbody th>.read,tbody th>.tried,tbody th>.oai{order:2;margin-top:0;margin-bottom:.45rem;max-width:calc(100% - 1.6rem)}
+tbody th>.ours,tbody th>.read,tbody th>.tried,tbody th>.oai{display:none}
+tbody th>.read::before{content:none}
 tbody td.src{order:3}
+.later{display:block;margin:0 .3rem}
+.later>.read-unresolved::before,.later>.read-defective::before{content:"⚠ "}
+.src .later>a{display:block;padding:0;min-height:0;margin:0 0 .45rem}
 tr:target{box-shadow:inset 3px 0 0 var(--accent);background:var(--code)}
 tr:target>td{background:none}
 .lede{margin-bottom:1rem}
@@ -824,14 +846,46 @@ ${body}
       rows=document.getElementById('rows'),count=document.getElementById('count'),
       empty=document.getElementById('empty'),emptyq=document.getElementById('emptyq'),
       ask=document.getElementById('emptyask');
-  var trs=[].slice.call(rows.getElementsByTagName('tr'));
-  function filter(){
-    var raw=q.value.trim(),v=raw.toLowerCase(),n=0;
-    for(var i=0;i<trs.length;i++){
-      var hit=!v||trs[i].getAttribute('data-find').indexOf(v)>-1;
-      trs[i].hidden=!hit; if(hit)n++;
+  var trs=[].slice.call(rows.getElementsByTagName('tr')),tg=null;
+  // Every element the filter may mark, with the text it shipped with, read once on the first search.
+  function targets(){
+    if(!tg)tg=trs.map(function(t){
+      return [].slice.call(t.querySelectorAll('[data-mark]')).map(function(e){return {e:e,t:e.textContent};});
+    });
+    return tg;
+  }
+  // Restore the shipped text, then mark each place it contains the term, ignoring case. Built from
+  // text nodes and textContent only: the term is visitor input and never becomes markup. A text whose
+  // lowercase form changes length is left unmarked, because its indices would no longer line up.
+  function mark(x,v){
+    x.e.textContent=x.t;
+    if(!v)return 0;
+    var low=x.t.toLowerCase(),at=low.indexOf(v),from=0,k=0;
+    if(at<0||low.length!==x.t.length)return 0;
+    x.e.textContent='';
+    while(at>-1){
+      if(at>from)x.e.appendChild(document.createTextNode(x.t.slice(from,at)));
+      var m=document.createElement('mark');m.textContent=x.t.slice(at,at+v.length);x.e.appendChild(m);k++;
+      from=at+v.length;at=low.indexOf(v,from);
     }
-    count.textContent=n+(n===1?' constant':' constants')+(v?' matching “'+v+'”':'');
+    if(from<x.t.length)x.e.appendChild(document.createTextNode(x.t.slice(from)));
+    return k;
+  }
+  function filter(){
+    var raw=q.value.trim(),v=raw.toLowerCase(),n=0,u=0,T=targets();
+    for(var i=0;i<trs.length;i++){
+      var hit=!v||trs[i].getAttribute('data-find').indexOf(v)>-1,k=0;
+      trs[i].hidden=!hit; if(hit)n++;
+      for(var j=0;j<T[i].length;j++)k+=mark(T[i][j],hit?v:'');
+      if(hit&&v&&!k)u++;
+    }
+    // A row can match on text no single shown element contains (another row of its table, a typed
+    // form such as 117/370 for a LaTeX fraction, or a name and id typed together), so the line says
+    // when a match has nothing to highlight, and claims no more than that about where the match is.
+    count.textContent=n+(n===1?' constant':' constants')+(v?' matching “'+v+'”':'')+
+      (!v||!n?'':!u?' — highlighted where it appears':
+        u===n?' — no text shown here contains it exactly, so nothing is highlighted; the match may be in another row of the table':
+        ' — highlighted where it appears; for '+u+' of them no text shown here contains it exactly, and the match may be in another row of the table');
     // A search that matches nothing used to leave an empty table and no explanation, so a visitor
     // could not tell "we do not track this" from "you spelled it differently". textContent, never
     // innerHTML — the term is visitor input and must never become markup.
@@ -998,7 +1052,19 @@ async function selftest() {
   assert.ok(cardStart > -1, "positive control: the card-layout block must exist");
   const card = html.slice(cardStart, html.indexOf("\n}\n", cardStart));
   assert.ok(card.includes("\ntbody th{display:contents}\n"), "on the card layout the th must not box its badges above the bound cells");
-  assert.ok(card.includes("\ntbody th>.ours,tbody th>.read,tbody th>.tried,tbody th>.oai{order:2;"), "on the card layout the badges must be ordered after the bound cells");
+  // A-69 (2026-10-13): CSS order cannot move the accessibility tree, so the th's badges are HIDDEN on
+  // the card layout and a copy at the head of the links cell is shown instead; on the desktop table it
+  // is the other way round. display:none on each hidden copy is what takes it out of the reading order.
+  assert.ok(card.includes("\ntbody th>.ours,tbody th>.read,tbody th>.tried,tbody th>.oai{display:none}\n"), "on the card layout the th's badges must leave the reading order, not only move visually");
+  assert.ok(card.includes("\n.later{display:block;"), "on the card layout the links cell's copy of the badges must be shown");
+  const outsideCardCss = html.slice(0, cardStart);
+  assert.ok(outsideCardCss.includes("\n.later{display:none}\n"), "on the desktop table the card copy must be out of the reading order");
+  // WebKit put a hidden element's ::before text ("⚠") into the accessibility tree (WebKit 26.5 aria
+  // snapshot, 2026-10-13), so generated content is switched off wherever its element is hidden.
+  // !important because the card layout's own ::before rules (the cell labels, the ⚠) are more
+  // specific, and a hidden row must generate no text whatever rule would otherwise apply.
+  assert.ok(outsideCardCss.includes("\ntr[hidden] *::before{content:none!important}\n.later>*::before{content:none}\n"), "a hidden row's or hidden copy's generated text must not reach a screen reader");
+  assert.ok(card.includes("\ntbody th>.read::before{content:none}\n"), "on the card layout the hidden th badge's warning sign must not reach a screen reader");
   assert.ok(card.includes("\ntr:target{box-shadow:inset 3px 0 0 var(--accent);"), "a th with no box cannot mark the landed row, so the card layout must mark the tr");
   assert.ok(card.includes([
     "tbody tr{display:flex;flex-direction:column}",
@@ -1006,8 +1072,12 @@ async function selftest() {
     "tbody th>*{order:0;margin-left:.8rem;margin-right:.8rem}",
     "tbody th>a:first-child{padding-top:.7rem}",
     "tbody td{order:1}",
-    "tbody th>.ours,tbody th>.read,tbody th>.tried,tbody th>.oai{order:2;margin-top:0;margin-bottom:.45rem;max-width:calc(100% - 1.6rem)}",
+    "tbody th>.ours,tbody th>.read,tbody th>.tried,tbody th>.oai{display:none}",
+    "tbody th>.read::before{content:none}",
     "tbody td.src{order:3}",
+    ".later{display:block;margin:0 .3rem}",
+    ".later>.read-unresolved::before,.later>.read-defective::before{content:\"⚠ \"}",
+    ".src .later>a{display:block;padding:0;min-height:0;margin:0 0 .45rem}",
     "tr:target{box-shadow:inset 3px 0 0 var(--accent);background:var(--code)}",
     "tr:target>td{background:none}",
   ].join("\n")), "the card-order rules are pinned exactly, in this order");
@@ -1349,13 +1419,34 @@ async function selftest() {
   assert.match(ours[0], /href="https:\/\/example\.invalid\/issues\/150"/, "the disclosure must link the report itself, not the repo");
   assert.equal(ours[1], "we reported this row · closed 2026-08-23");
 
-  // SILENT: exactly one disclosure on a two-row page, so the unmapped row carries none.
-  assert.equal((disclosed.match(/class="ours"/g) || []).length, 1, "a row we filed nothing against must carry no disclosure");
+  // SILENT: exactly one disclosure on a two-row page, so the unmapped row carries none. Counted in
+  // the th: since A-69 each badge is emitted twice (the th copy and the card-layout copy), and the
+  // copy test below holds the second to the first.
+  const thOf = (h) => (h.match(/<th scope="row">[\s\S]*?<\/th>/g) || []).join("\n");
+  assert.equal((thOf(disclosed).match(/class="ours"/g) || []).length, 1, "a row we filed nothing against must carry no disclosure");
 
   // Negative control on the SILENCE: with the fixture removed the count drops to zero, proving
   // the assertion above tracks the map rather than counting a string that is always there once.
   const undisclosed = renderHtml(buildRows(discloseClaims, { withDates: false, reports: [], audits: { audits: [] } }), manifest, "2026-09-02");
   assert.equal((undisclosed.match(/class="ours"/g) || []).length, 0, "the disclosure must disappear when nothing is filed");
+
+  // A-69: THE TWO COPIES ARE ONE STRING. Every row's card-layout copy must equal its th badges byte
+  // for byte, and a row with no badges must carry no copy at all.
+  const copiesHold = (h) => {
+    const trsHtml = h.match(/<tr id="c-[\s\S]*?<\/tr>/g) || [];
+    assert.ok(trsHtml.length > 0, "positive control: rows must render before their copies are compared");
+    let withBadges = 0;
+    for (const t of trsHtml) {
+      const th = t.match(/<th scope="row">[\s\S]*?<a class="id"[^>]*>[^<]*<\/a>([\s\S]*?)<\/th>/);
+      assert.ok(th, "every row must carry a th with its id link");
+      const later = t.match(/<td class="src"><div class="later">([\s\S]*?)<\/div><a /);
+      if (th[1]) { withBadges++; assert.ok(later, "a row with badges must carry their card-layout copy"); assert.equal(later[1], th[1], "the card-layout copy must equal the th's badges exactly"); }
+      else assert.ok(!/class="later"/.test(t), "a row with no badges must carry no card-layout copy");
+    }
+    return withBadges;
+  };
+  assert.equal(copiesHold(disclosed), 1, "the disclosed page carries exactly one row with badges");
+  assert.equal(copiesHold(undisclosed), 0, "the undisclosed page carries none");
 
   // NO CAUSAL CLAIM anywhere in the emitted disclosure or the prose that explains it.
   for (const forbidden of [/caused/i, /because of us/i, /candidate causal/i, /thanks to/i, /led to/i, /our report fixed/i]) {
@@ -1798,6 +1889,7 @@ async function selftest() {
   const tr = (id, changed, moved = true, movedDate = changed) => ({
     id,
     hidden: false,
+    querySelectorAll: () => [],
     getAttribute: (k) =>
       k === "data-changed" ? changed
       : k === "data-moved" ? (moved ? "1" : "0")
@@ -1941,6 +2033,72 @@ async function selftest() {
   qEl.value = "";
   qEl.oninput();
   assert.equal(emptyEl.hidden, true, "an empty search shows every row, so the empty state stays hidden");
+
+  // --- A-69 (2026-10-13): mark the term where the reader can see it, and say when nothing can be.
+  // Executed against the page's own script with a fake DOM that models text nodes, because the rule
+  // is about which TEXT is wrapped, never about a string in the source.
+  // What a mutation proves, in order: the meaning guards come first and the count line's wording last.
+  const created = [];
+  const fakeText = (s) => ({ nodeType: 3, textContent: s });
+  const fakeEl = (tag, text = "") => {
+    const e = { tag, kids: text ? [fakeText(text)] : [], appendChild(n) { this.kids.push(n); return n; } };
+    Object.defineProperty(e, "textContent", {
+      get() { return this.kids.map((k) => k.textContent).join(""); },
+      set(s) { this.kids = s ? [fakeText(String(s))] : []; },
+    });
+    return e;
+  };
+  const marksIn = (e) => e.kids.filter((k) => k.tag === "mark").map((k) => k.textContent);
+  const markRow = (id, find, texts) => {
+    const targets = texts.map((t) => fakeEl("code", t));
+    return { id, hidden: false, targets, getAttribute: (k) => (k === "data-find" ? find : ""),
+      querySelectorAll: (sel) => (sel === "[data-mark]" ? targets : []) };
+  };
+  const knot = markRow("c-22a", "tight knot constant 22a 10.02 1.105", ["Tight knot constant", "22a", "| 10.02| [Klotz2026] |", "| 1.105 | [BS1999] |"]);
+  const frac = markRow("c-74a", "seshadri 74a \\frac{117}{370} 117/370", ["Seshadri", "74a", "| $\\frac{117}{370}$ |"]);
+  const plain = markRow("c-9z", "plain 9z 117/370 <b>x</b>", ["Plain", "9z", "| 117/370 <b>x</b> |"]);
+  const mq = el({ value: "" }), mcount = el({ textContent: "" });
+  const mnodes = { q: mq, sort: el({ value: "id" }), rows: el({ getElementsByTagName: () => [knot, frac, plain], appendChild() {} }),
+    count: mcount, empty: el({ hidden: true }), emptyq: el({ textContent: "" }), emptyask: el({ href: "" }) };
+  new Function("document", script)({
+    getElementById: (i) => mnodes[i],
+    createElement: (t) => { created.push(t); return fakeEl(t); },
+    createTextNode: fakeText,
+  });
+  const search = (s) => { mq.value = s; mq.oninput(); };
+
+  // (1) FIRES: the pasted value is wrapped in the cell that shows it, and only there.
+  search("10.02");
+  assert.deepEqual(marksIn(knot.targets[2]), ["10.02"], "the typed value must be marked in the bound cell that shows it");
+  assert.equal(knot.targets[2].textContent, "| 10.02| [Klotz2026] |", "marking must not change the text a reader sees");
+  assert.deepEqual(marksIn(knot.targets[3]), [], "a cell that does not contain the term must carry no mark");
+  assert.equal(frac.hidden, true, "positive control: a row the term does not match is filtered out");
+  // (2) Case: the filter ignores case, so the mark must too, and keep the shown text's own case.
+  search("TIGHT");
+  assert.deepEqual(marksIn(knot.targets[0]), ["Tight"], "a name match must be marked in the shown case");
+  assert.deepEqual(marksIn(knot.targets[2]), [], "a new search must clear the previous search's marks");
+  // (3) NO FALSE MARK: a match through a typed form the cell does not show marks nothing.
+  search("117/370");
+  assert.equal(frac.hidden, false, "positive control: the alias-only row must still be found");
+  assert.deepEqual(frac.targets.flatMap(marksIn), [], "a row matched only through text it does not show must carry no mark");
+  assert.deepEqual(marksIn(plain.targets[2]), ["117/370"], "a row that shows the term is marked beside it");
+  // (4) The term is visitor input: markup in it is text inside a mark, never an element.
+  search("<b>x</b>");
+  assert.deepEqual(marksIn(plain.targets[2]), ["<b>x</b>"], "markup in the term must be marked as text");
+  assert.deepEqual([...new Set(created)], ["mark"], "the script may create mark elements and nothing else");
+  // (5) Clearing the box restores every shipped text with no marks left.
+  search("");
+  for (const r of [knot, frac, plain]) for (const t of r.targets) {
+    assert.deepEqual(marksIn(t), [], "an empty search must leave no mark anywhere");
+    assert.equal(t.kids.length, 1, "an empty search must restore the single shipped text node");
+  }
+  // (6) The count line, last: it must say when a match has nothing to highlight.
+  search("10.02");
+  assert.equal(mcount.textContent, "1 constant matching “10.02” — highlighted where it appears");
+  search("117/370");
+  assert.equal(mcount.textContent, "2 constants matching “117/370” — highlighted where it appears; for 1 of them no text shown here contains it exactly, and the match may be in another row of the table");
+  search("seshadri 74a");
+  assert.equal(mcount.textContent, "1 constant matching “seshadri 74a” — no text shown here contains it exactly, so nothing is highlighted; the match may be in another row of the table");
 
   // --- Search by the number you cited, added 2026-09-01. Both KP-78 answers.
   // The page's headline asks "is the number you cited still current?" and until today the filter
@@ -2100,7 +2258,7 @@ async function selftest() {
   };
   const anchorPage = renderHtml([anchorRow], manifest, "2026-10-12");
   const anchorTr = (anchorPage.match(/<tr id="c-79a"[\s\S]*?<\/tr>/) || [""])[0];
-  const shownCells = [...anchorTr.matchAll(/<td data-label="[^"]*"><code>([\s\S]*?)<\/code>/g)].map((m) => m[1]);
+  const shownCells = [...anchorTr.matchAll(/<td data-label="[^"]*"><code data-mark>([\s\S]*?)<\/code>/g)].map((m) => m[1]);
   assert.equal(shownCells.length, 2, "positive control: both shown bound cells must render before their contents are asserted");
   assert.ok(!shownCells[0].includes("&lt;a href"), "a shown bound cell must not print an upstream citation anchor as markup");
   assert.ok(shownCells[0].includes("[Bru2002]") && shownCells[0].includes("[Bru2002-b]"),
@@ -2116,7 +2274,7 @@ async function selftest() {
   assert.ok(anchorPage.includes(`<code>${esc(citation(anchorRow, manifest.sha))}</code>`), "the plain-text citation must equal citation() of the raw row");
   // Codex review r5 (d): a MATCHING anchor on the LOWER side too.
   const lowAnchorTr = (renderHtml([{ ...anchorRow, lower: '| $1$ | <a href="#Low1">[Low1]</a> |' }], manifest, "2026-10-12").match(/<tr id="c-79a"[\s\S]*?<\/tr>/) || [""])[0];
-  const lowShown = [...lowAnchorTr.matchAll(/<td data-label="[^"]*"><code>([\s\S]*?)<\/code>/g)].map((m) => m[1]);
+  const lowShown = [...lowAnchorTr.matchAll(/<td data-label="[^"]*"><code data-mark>([\s\S]*?)<\/code>/g)].map((m) => m[1]);
   assert.ok(lowShown.length === 2 && lowShown[1].includes("[Low1]") && !lowShown[1].includes("&lt;a href"),
     "a LOWER-bound cell must read a matching anchor as its link text too");
   assert.equal(shownCells[0], esc('| $10^{143}$ | [Bru2002] and [Bru2002-b] | x |'), "exact shown cell: the pin with each anchor replaced by its link text");
@@ -2221,7 +2379,7 @@ async function selftest() {
   // the ordering test above, and now fed from the EMITTED attribute rather than from findKey.
   const findScript = wasPage.match(/<script>([\s\S]*?)<\/script>/)[1];
   assert.ok(/data-find/.test(findScript), "positive control: the extracted script must be the filter, not an empty match");
-  const findTr = (id, hay) => ({ id, hidden: false, getAttribute: (k) => (k === "data-find" ? hay : "") });
+  const findTr = (id, hay) => ({ id, hidden: false, querySelectorAll: () => [], getAttribute: (k) => (k === "data-find" ? hay : "") });
   const findTrs = [findTr("71a", emitted[1]), findTr("2a", still)];
   const fNodes = {
     q: el({ value: "" }), sort: el({ value: "id" }),
@@ -2323,7 +2481,7 @@ async function selftest() {
     "the constant-name link must not point at the Pages-served .md, which browsers show as raw text");
   assert.ok(!/href="https:\/\/raw\.githubusercontent\.com[^"]*">source/.test(html),
     "the source link must not hand a reader the checker's raw URL");
-  assert.equal((html.match(/href="https:\/\/github\.com\/u00dxk2\/bounds-ledger\/blob\/main\/ledger\/[^"]*">/g) || []).length, rows.length,
+  assert.equal((html.match(/href="https:\/\/github\.com\/u00dxk2\/bounds-ledger\/blob\/main\/ledger\/[^"]*" data-mark>/g) || []).length, rows.length,
     "every row's name must link to our mirror copy in a form that renders");
   assert.ok(html.includes('href="https://github.com/teorth/optimizationproblems/blob/main/constants/10a.md">source'),
     "a raw-URL row must render its source link as the blob view");
