@@ -1,17 +1,23 @@
 # read-output sidecar for W-13 — written by check-due-gates-dispositioned --run
 # readCommand: npm run served
-# ran: 2026-10-06T16:14:19.346Z · exit: 0
-# lines: 11 · sha256: 9cc8a9c3c151072c (first 16 hex of the output below)
+# ran: 2026-10-13T17:39:23.815Z · exit: 0
+# lines: 17 · sha256: 68fc1e071c609ad6 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
 > bounds-ledger@0.0.0 served
 > node scripts/check-served.mjs
 
-# Served vs HEAD — 2026-10-06T16:14:16.276Z
-anchor 60ecc83d75 (2026-10-05T19:57:20-06:00), the last commit to touch a published page; 2 file(s) it changed, of 118 published
-SERVED      c/8a.html  6950 bytes
-SERVED      index.html  328584 bytes
+# Served vs HEAD — 2026-10-13T17:39:14.845Z
+anchor 89e12c379e (2026-10-12T13:36:37-06:00), the last commit to touch a published page; 8 file(s) it changed, of 118 published
+SERVED      c/15a.html  11505 bytes
+SERVED      c/15b.html  7918 bytes
+SERVED      c/27a.html  7508 bytes
+SERVED      c/28a.html  10562 bytes
+SERVED      c/2a.html  7728 bytes
+SERVED      c/7a.html  7618 bytes
+SERVED      c/84a.html  11052 bytes
+SERVED      index.html  331752 bytes
 
-2 checked — 2 served, 0 in flight, 0 stale, 0 unreachable.
+8 checked — 8 served, 0 in flight, 0 stale, 0 unreachable.
 This is an INDICATOR: it never gates a build and never runs in CI. A page can also be stale for a reader behind a cache this read does not share.
 RESULT: PASS — every file the last page-changing commit touched is being served as committed (exit 0)

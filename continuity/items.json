@@ -1445,12 +1445,12 @@
         "6b354e5"
       ],
       "readCommandHistory": "node scripts/depth-audit.mjs # BUILT AND FIRST-RUN 2026-09-10; supersedes the check-claims placeholder kept at readCommandRetired2026_09_10, which correctly said no command answered this row while no audit store existed. LITERAL OUTPUT, pasted from the run rather than described: \"depth audit (A-47): 3 row(s) audited — 2 sound, 0 defective, 1 unresolved, 0 unreachable\" at exit 0. It prints the denominator and the SAMPLING RULE beside the count, and it REFUSES a bare zero: exit 2 when the store is missing or empty (a zero about the WORK, not about the records), exit 3 when the verdict counts do not sum to the row count. Both refusals red-armed 2026-09-10 with the mutations proven to land by sha256 and the restore verified against the original.\n\n — LITERAL OUTPUT RE-RECORDED 2026-09-11, because the line above is dated 2026-09-10 and a stale literal output is the defect this field exists to prevent: \"depth audit (A-47): 8 row(s) audited — 2 sound, 0 defective, 4 unresolved, 2 unreachable\" at exit 0. The verdict mix moved for two reasons on one day: slice 2 added five rows, and three earlier rows were downgraded to UNRESOLVED by adversarial review. A second command now answers the population half of this row: `node scripts/depth-audit.mjs --corpus`, which prints 770 bound rows across 115 constant files, 673 cited, 97 uncited, and refuses (exit 2) when either baseline cannot be established.",
-      "readCommandLastRun": "2026-10-05T16:07:05.584Z",
+      "readCommandLastRun": "2026-10-13T17:38:22.011Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 494,
+      "readCommandLastDurationMs": 6637,
       "readCommandLastOutputRef": {
-        "lines": 193,
-        "sha256": "a30da19f9397f6ad"
+        "lines": 235,
+        "sha256": "b513487bce1b4f54"
       },
       "lastEvaluated": "2026-10-11",
       "notes": "RE-DATED 2026-09-16 → 2026-09-18 AFTER THE READ RAN, not instead of it. Slice 5 landed today (A-47-0020..0024, commit 739ce16, live on the public pages): positions 400, 500, 600, 25 and 75, drawn before any row was read, 3 SOUND and 2 UNREACHABLE. The store now holds 24 rows — 13 sound, 0 defective, 5 unresolved, 6 unreachable — with 10 systematic reads and 7 suspicion-drawn reads counted apart. The gate runner stamped the read today (exit 0, 210ms, sidecar continuity/read-outputs/A-47.txt, 81 lines; its content hash is in this row's readCommandLastOutputRef, printed by `check-due-gates-dispositioned --run A-47`).\n\nWHY 2026-09-18 AND NOT TOMORROW. Slice 6 is the next 25-offset step (125, 175, 225, 275, 325 are the untaken positions below 350), and A-51 — the upstream dead-link correction — is dated 2026-09-18 already; the depth read and that decision are the same kind of work on the same sources, so they share a day rather than splitting two.\n\nWHAT THIS ROW OWES AT THAT READ, unchanged: a count audited, a count sound, a count defective, a count UNREACHABLE — and if the audited count has not moved since today's 24, that is the finding and it gets reported as one.",
@@ -2307,12 +2307,12 @@
       "linkedCommits": [
         "ea25512"
       ],
-      "readCommandLastRun": "2026-10-06T16:14:19.346Z",
+      "readCommandLastRun": "2026-10-13T17:39:23.815Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 9944,
+      "readCommandLastDurationMs": 26341,
       "readCommandLastOutputRef": {
-        "lines": 11,
-        "sha256": "9cc8a9c3c151072c"
+        "lines": 17,
+        "sha256": "68fc1e071c609ad6"
       },
       "expectedSignalBy": "2026-10-13",
       "disposition2026_09_29": "DISPOSITION 2026-09-29. RE-DATED to 2026-10-06 by the hygiene helper's draft, as this row's onTrigger asks on exit 0. Two reads today, both literal. (1) The helper's --run, inside the helper's pass (its draft is stamped as finished at 13:44Z), anchored on 9ee0a9a: \"1 checked — 1 served, 0 in flight, 0 stale, 0 unreachable\", exit 0. That read was thin, since that commit touched one published file. (2) After slice 9's push, anchored on b2dbe8f (the last page-changing commit, 30 of 118 published files): \"30 checked — 30 served, 0 in flight, 0 stale, 0 unreachable\", \"RESULT: PASS — every file the last page-changing commit touched is being served as committed (exit 0)\". closeWhen (A) is still unmet: no served.yml workflow exists, so the row stays open."
@@ -2661,7 +2661,7 @@
     {
       "id": "A-69",
       "type": "active",
-      "status": "open",
+      "status": "closed",
       "title": "On a phone the index shows a matched row's values before its verdict line, but a screen reader still hears the verdict first, and the matched value is not marked",
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-10-13",
@@ -2673,7 +2673,11 @@
       "closeWhen": "(b) has a WebKit read recorded on this row; (a) is shipped or explicitly kept with a reason and a cross-family review; (c) is shipped with that rule or declined with the reason recorded.",
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check — PASS means index.html matches its renderer; the reads are browser reads: playwright-cli with a WebKit browser on the live index at 393x659, 10.02 typed into #q, then snapshot and look for a rowheader on row c-22a",
       "created": "2026-10-02",
-      "updated": "2026-10-02"
+      "updated": "2026-10-13",
+      "webkitRead2026_10_13": "WebKit 26.5 (playwright-cli, newly installed), 393x659, 10.02 typed. LIVE index at 3c13ad3 (before A-69): exactly one visible row c-22a (positive control); it KEEPS its rowheader with th display:contents; accessibility order was rowheader [name, id, the verdict link 'checked against material ... another row, 12.63'] then the two bound cells. LOCAL build at dba1472: rowheader [name, id], upper cell with a mark around 10.02, lower cell, then a cell holding the verdict link and the row links; Chromium the same. 1280x900 Chromium snapshot live vs local: 3406 lines each, 0 differ. Not read: WebKit at f2e545f or e120c4d (the row's optional before/after); the live read above already shows the rowheader survives display:contents in WebKit.",
+      "closedAt": "2026-10-13",
+      "lastEvaluated": "2026-10-13",
+      "notes": " | CLOSED 2026-10-13: (b) WebKit read recorded in webkitRead2026_10_13 (rowheader kept). (a) SHIPPED dba1472..7fb2e5c: card-only badge copy in the links cell, th copy hidden on the card layout, so the reading order is name, id, bounds, verdict (WebKit 26.5 + Chromium at 393x659; 1280 accessibility snapshot unchanged, 3406 lines, 0 differ); cross-family review Codex r1-r3, all findings fixed. (c) SHIPPED with the rule: a mark only inside name, id and the two bound cells where the shown text contains the typed term ignoring case; the count line says nothing highlighted otherwise. Served at 7fb2e5c (npm run served 1/1); reverify + page-check GREEN; live WebKit read shows the mark."
     },
     {
       "id": "A-70",
@@ -2898,7 +2902,14 @@
       "closeWhen": "David has answered the essay card 49dabdc0 and the answer is carried out. (The history question was ruled on 2026-10-12: leave it.)",
       "readCommand": "node C:/dev/skylark/skylark-site/scripts/answered-cards.mjs --project bounds-ledger — lists waiting/answered/pending-verify cards for this lane; card 49dabdc0 appears there once David answers it (an open, unanswered card does not).",
       "created": "2026-10-12",
-      "updated": "2026-10-12"
+      "updated": "2026-10-12",
+      "readCommandLastRun": "2026-10-13T17:38:41.917Z",
+      "readCommandLastExit": 0,
+      "readCommandLastDurationMs": 5351,
+      "readCommandLastOutputRef": {
+        "lines": 6,
+        "sha256": "5d348b1b5e7f9ba6"
+      }
     }
   ],
   "meta": {
