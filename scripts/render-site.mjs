@@ -879,13 +879,14 @@ ${body}
       for(var j=0;j<T[i].length;j++)k+=mark(T[i][j],hit?v:'');
       if(hit&&v&&!k)u++;
     }
-    // A row can match on text no single shown element contains (another row of its table, a typed
+    // A row can match on text no single marked element contains (another row of its table, a typed
     // form such as 117/370 for a LaTeX fraction, or a name and id typed together), so the line says
-    // when a match has nothing to highlight, and claims no more than that about where the match is.
+    // when a match has nothing to highlight. It names only what the marks cover: the badges are shown
+    // and never marked, so "no shown text contains it" would be false for a badge's number (Codex r1).
     count.textContent=n+(n===1?' constant':' constants')+(v?' matching “'+v+'”':'')+
       (!v||!n?'':!u?' — highlighted where it appears':
-        u===n?' — no text shown here contains it exactly, so nothing is highlighted; the match may be in another row of the table':
-        ' — highlighted where it appears; for '+u+' of them no text shown here contains it exactly, and the match may be in another row of the table');
+        u===n?' — the name, id and two rows shown do not contain it as typed, so nothing is highlighted; the match may be in another row of the table':
+        ' — highlighted where it appears; for '+u+' of them the name, id and two rows shown do not contain it as typed, and the match may be in another row of the table');
     // A search that matches nothing used to leave an empty table and no explanation, so a visitor
     // could not tell "we do not track this" from "you spelled it differently". textContent, never
     // innerHTML — the term is visitor input and must never become markup.
@@ -1442,11 +1443,25 @@ async function selftest() {
       const later = t.match(/<td class="src"><div class="later">([\s\S]*?)<\/div><a /);
       if (th[1]) { withBadges++; assert.ok(later, "a row with badges must carry their card-layout copy"); assert.equal(later[1], th[1], "the card-layout copy must equal the th's badges exactly"); }
       else assert.ok(!/class="later"/.test(t), "a row with no badges must carry no card-layout copy");
+      // DOM ORDER (Codex r1): the card copy only reads after the bounds because td.src FOLLOWS both
+      // bound cells in the document. CSS order cannot rescue a renderer that emits it first.
+      const at = ["<th scope=\"row\">", "data-label=\"Upper-bound row (last listed)\"", "data-label=\"Lower-bound row (last listed)\"", "<td class=\"src\">"].map((s) => t.indexOf(s));
+      assert.ok(at.every((i) => i > -1), "positive control: every row must carry the th, both bound cells and the links cell");
+      assert.ok(at[0] < at[1] && at[1] < at[2] && at[2] < at[3], "the document order must be th, upper cell, lower cell, links cell");
     }
     return withBadges;
   };
   assert.equal(copiesHold(disclosed), 1, "the disclosed page carries exactly one row with badges");
   assert.equal(copiesHold(undisclosed), 0, "the undisclosed page carries none");
+  // Every badge kind at once (Codex r1: the copy test ran only on the disclosure fixtures).
+  const allBadges = renderHtml([{ id: "5z", title: "All badges", url: "https://example.invalid/5z.md",
+    upper: "| 1 | X |", lower: "| 0 | Y |",
+    report: { url: "https://example.invalid/issues/1", state: "OPEN" },
+    audit: { kind: "read", verdict: "UNRESOLVED", text: "checked against material for its source, not settled" },
+    oai: [{ family: "107" }] }], manifest, "2026-10-13");
+  assert.equal(copiesHold(allBadges), 1, "a row carrying all three badge kinds must copy them exactly");
+  assert.match(allBadges, /<div class="later"><a class="ours"[\s\S]*?<a class="read read-unresolved"[\s\S]*?<a class="oai"/,
+    "positive control: the copy must carry the report, audit and claim badges in that order");
 
   // NO CAUSAL CLAIM anywhere in the emitted disclosure or the prose that explains it.
   for (const forbidden of [/caused/i, /because of us/i, /candidate causal/i, /thanks to/i, /led to/i, /our report fixed/i]) {
@@ -2096,9 +2111,23 @@ async function selftest() {
   search("10.02");
   assert.equal(mcount.textContent, "1 constant matching “10.02” — highlighted where it appears");
   search("117/370");
-  assert.equal(mcount.textContent, "2 constants matching “117/370” — highlighted where it appears; for 1 of them no text shown here contains it exactly, and the match may be in another row of the table");
+  assert.equal(mcount.textContent, "2 constants matching “117/370” — highlighted where it appears; for 1 of them the name, id and two rows shown do not contain it as typed, and the match may be in another row of the table");
   search("seshadri 74a");
-  assert.equal(mcount.textContent, "1 constant matching “seshadri 74a” — no text shown here contains it exactly, so nothing is highlighted; the match may be in another row of the table");
+  assert.equal(mcount.textContent, "1 constant matching “seshadri 74a” — the name, id and two rows shown do not contain it as typed, so nothing is highlighted; the match may be in another row of the table");
+  // (7) Codex r1 coverage: every occurrence is marked, in order, without overlap.
+  search("0");
+  assert.deepEqual(marksIn(knot.targets[2]), ["0", "0", "0"], "every occurrence in a cell must be marked");
+  assert.equal(knot.targets[2].textContent, "| 10.02| [Klotz2026] |", "repeated marks must not change the text");
+  // (8) A text whose lowercase form changes length is left unmarked rather than mis-marked.
+  const dotted = markRow("c-8z", "İstanbul 8z", ["İstanbul", "8z"]);
+  const dq = el({ value: "" }), dcount = el({ textContent: "" });
+  const dnodes = { q: dq, sort: el({ value: "id" }), rows: el({ getElementsByTagName: () => [dotted], appendChild() {} }),
+    count: dcount, empty: el({ hidden: true }), emptyq: el({ textContent: "" }), emptyask: el({ href: "" }) };
+  new Function("document", script)({ getElementById: (i) => dnodes[i], createElement: (t) => fakeEl(t), createTextNode: fakeText });
+  dq.value = "stan"; dq.oninput();
+  assert.equal(dotted.hidden, false, "positive control: the row must match before its absent mark is asserted");
+  assert.deepEqual(marksIn(dotted.targets[0]), [], "a text whose lowercase form changes length must carry no mark");
+  assert.equal(dotted.targets[0].textContent, "İstanbul", "and its text must be untouched");
 
   // --- Search by the number you cited, added 2026-09-01. Both KP-78 answers.
   // The page's headline asks "is the number you cited still current?" and until today the filter

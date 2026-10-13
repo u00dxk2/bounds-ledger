@@ -186,7 +186,9 @@ export async function boundCellGuard(root = ROOT) {
   const ths = (ia.match(/<th scope="row">[\s\S]*?<\/th>/g) || []).join("\n");
   const badges = ths.match(/<a class="oai"[^>]*>[^<]*<\/a>/g) || [];
   if (badges.length !== touched.length) errs.push(`the index carries ${badges.length} claim badge(s) for ${touched.length} noted constant(s)`);
-  if (ia.replace(/<a class="oai"[^>]*>[^<]*<\/a>/g, "").replace(/<div class="later"><\/div>/g, "") !== ib) errs.push("the index differs from its no-note render by more than the claim badges");
+  // The empty-wrapper strip is anchored to the head of the links cell, the one place the renderer
+  // emits it (Codex r1, 2026-10-13: an unanchored strip accepted an empty wrapper anywhere).
+  if (ia.replace(/<a class="oai"[^>]*>[^<]*<\/a>/g, "").replace(/<td class="src"><div class="later"><\/div>/g, '<td class="src">') !== ib) errs.push("the index differs from its no-note render by more than the claim badges");
   // Judged on the RAW markup, attributes included: an aria-label is read aloud, so it is rendered
   // text too (Codex r1, 2026-10-12: stripping tags first let "record" ride in the badge's aria-label).
   for (const s of [...badges, ...touched.map((r) => noteBlock(r.oai))]) if (FORBIDDEN.test(s)) errs.push(`rendered claim markup uses the word "record": ${s.slice(0, 80)}`);
