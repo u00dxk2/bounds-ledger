@@ -887,7 +887,7 @@ ${body}
     // so the line no longer describes the text at all (Codex r1 and r2, 2026-10-13).
     count.textContent=n+(n===1?' constant':' constants')+(v?' matching “'+v+'”':'')+
       (!v||!n?'':!u?' — highlighted where it appears':
-        u===n?' — nothing highlighted; each row’s source link has its full table':
+        u===n?' — nothing highlighted':
         ' — highlighted where it appears; '+u+' of them have nothing highlighted');
     // A search that matches nothing used to leave an empty table and no explanation, so a visitor
     // could not tell "we do not track this" from "you spelled it differently". textContent, never
@@ -2115,7 +2115,7 @@ async function selftest() {
   search("117/370");
   assert.equal(mcount.textContent, "2 constants matching “117/370” — highlighted where it appears; 1 of them have nothing highlighted");
   search("seshadri 74a");
-  assert.equal(mcount.textContent, "1 constant matching “seshadri 74a” — nothing highlighted; each row’s source link has its full table");
+  assert.equal(mcount.textContent, "1 constant matching “seshadri 74a” — nothing highlighted");
   // (7) Codex r1 coverage: every occurrence is marked, in order, without overlap.
   search("0");
   assert.deepEqual(marksIn(knot.targets[2]), ["0", "0", "0"], "every occurrence in a cell must be marked");
@@ -2132,7 +2132,7 @@ async function selftest() {
   assert.equal(dotted.targets[0].textContent, "İstanbul", "and its text must be untouched");
   // Codex r2: the line must not then say the visible name lacks the term; it says only that nothing
   // was highlighted.
-  assert.equal(dcount.textContent, "1 constant matching “stan” — nothing highlighted; each row’s source link has its full table");
+  assert.equal(dcount.textContent, "1 constant matching “stan” — nothing highlighted");
 
   // --- Search by the number you cited, added 2026-09-01. Both KP-78 answers.
   // The page's headline asks "is the number you cited still current?" and until today the filter
