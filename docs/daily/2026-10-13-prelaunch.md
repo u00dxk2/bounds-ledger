@@ -99,6 +99,20 @@ READ-MUTATED: none, 3 reads guarded. Wait-justification and engineering-zero: PA
 - **Consecutive instrument-facing days: 1** counted today, by hand. The last stated count was 0 on 2026-10-04. The reports of 10-05 to 10-12 carry no classification sentence, so the run before today is UNREAD, not zero.
 - **The standing prediction, quoted from CLAUDE.md:** "the next record-facing catch will be a citation-quality defect in a mirrored upstream entry … found by a human reading the cited source in the depth audit (`A-47`), not by any alarm." Not tested today: there was no catch.
 
+### Evening round — P1 selection packet
+
+The kickoff arrived at 04:50Z on 10-14 (22:50 MT 10-13). The full packet as posted is `tmp/p1-2026-10-13-evening-packet.md`. Its substance:
+
+**Outcome:** a reader who pastes the rounded number they are about to cite lands on its constant (new row `A-80`, minted with the change in P3). Typing `1.5029` on the live index (1a's upper row lists 1.502862) gives "0 constants matching", then "If yours is not among them, we are not watching it". That is false: 1a is watched.
+
+**Evidence:** WebKit at 393x852 on the live index, 23:00 to 23:14 MT. An in-page probe rounded each of the 143 decimals in the marked cells to every shorter length (647 forms): 256 find their own row, 52 land only on another constant, 339 find nothing. Encounter is MISSING (`A-59`, the encounter blind spot): `npm run reports` read 0 outside arrivals of 33 raw issues.
+
+**Next action:** improve. When a numeric query matches nothing, retry it shortened by trailing digits and say so. The typed string is shortened; cell values are never parsed.
+
+**USER-FACING: yes.** Paths: `scripts/render-site.mjs`, `index.html`, `continuity/items.json`.
+
+**HYGIENE INPUTS:** (a) none, 0 due on/before 2026-10-13. (b) none, 0 of 749. (c) none crossed.
+
 ## Inputs (controllable)
 
 One product change (`A-69`), four commits, three Codex review rounds (5 findings, all fixed), six red-armed mutations. One background hygiene helper.

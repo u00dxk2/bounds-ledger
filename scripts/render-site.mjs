@@ -713,6 +713,9 @@ input,select{width:100%;padding:.6rem .7rem;font-size:1rem;border:1px solid var(
 .empty p{margin:.35rem 0}
 #emptyq{font-weight:600}
 .empty[hidden]{display:none}
+.near{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:6px;padding:.6rem 1rem;margin:0 0 1rem;font-size:.92rem;max-width:78ch}
+.near p{margin:.35rem 0}
+.near[hidden]{display:none}
 .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
 table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:56rem}
 th,td{text-align:left;vertical-align:top;padding:.6rem .75rem;border-bottom:1px solid var(--line)}
@@ -802,6 +805,10 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 </div>
 <p class="fresh">Snapshot: this mirror last changed on <strong>${esc(generatedOn)}</strong>, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Each bound row shown is the last-listed row of its table, not a claim about which bound is &ldquo;the record.&rdquo; Read <a href="#notes">the notes below the table</a> before citing a number.</p>
 <p class="count" id="count">${rows.length} constants</p>
+<div class="near" id="near" hidden>
+<p id="nearmsg"></p>
+<p><a id="nearask" href="${esc(REPO)}/issues/new">Not the one you meant? Tell us what you were looking for &rarr;</a></p>
+</div>
 
 <div class="empty" id="empty" hidden>
 <p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the ${rows.length} constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
@@ -845,7 +852,8 @@ ${body}
   var q=document.getElementById('q'),s=document.getElementById('sort'),
       rows=document.getElementById('rows'),count=document.getElementById('count'),
       empty=document.getElementById('empty'),emptyq=document.getElementById('emptyq'),
-      ask=document.getElementById('emptyask');
+      ask=document.getElementById('emptyask'),near=document.getElementById('near'),
+      nearmsg=document.getElementById('nearmsg'),nearask=document.getElementById('nearask');
   var trs=[].slice.call(rows.getElementsByTagName('tr')),tg=null;
   // Every element the filter may mark, with the text it shipped with, read once on the first search.
   function targets(){
@@ -871,13 +879,36 @@ ${body}
     if(from<x.t.length)x.e.appendChild(document.createTextNode(x.t.slice(from)));
     return k;
   }
-  function filter(){
-    var raw=q.value.trim(),v=raw.toLowerCase(),n=0,u=0,T=targets();
+  // Show the rows whose haystack contains v and mark v in them; returns [rows shown, shown rows with no mark].
+  function apply(v){
+    var n=0,u=0,T=targets();
     for(var i=0;i<trs.length;i++){
       var hit=!v||trs[i].getAttribute('data-find').indexOf(v)>-1,k=0;
       trs[i].hidden=!hit; if(hit)n++;
       for(var j=0;j<T[i].length;j++)k+=mark(T[i][j],hit?v:'');
       if(hit&&v&&!k)u++;
+    }
+    return [n,u];
+  }
+  function filter(){
+    var raw=q.value.trim(),v=raw.toLowerCase(),r=apply(v),w=v;
+    // A-80: the number a reader is about to cite is often ROUNDED (1.5029 for 1.502862), and a rounded
+    // number is not a substring of the row, so it used to land on "we are not watching it". When a
+    // number with three or more decimals matches nothing, retry the TYPED STRING with trailing digits
+    // dropped, never below two decimals (one decimal, "0.3", matches a dozen constants). Only the typed
+    // string is shortened: no cell value is parsed or compared as a number, and the line says plainly
+    // that the rows shown matched a shortened form, which is not a claim that any of them is the one.
+    if(!r[0]&&/^-?\\d*\\.\\d{3,}$/.test(v)){
+      for(w=v.slice(0,-1);/\\.\\d{2,}$/.test(w);w=w.slice(0,-1)){r=apply(w);if(r[0])break;}
+      if(!r[0])w=v;
+    }
+    var n=r[0],u=r[1];
+    near.hidden=w===v;
+    if(w!==v){
+      nearmsg.textContent='Nothing matches “'+raw+'” exactly, so '+(n===1?'this shows the constant':'these are the '+n+' constants')+
+        ' matching its first digits, “'+w+'”. '+(n===1?'It is':'They are')+' not necessarily the one you meant. '+
+        'A number you cite is often rounded, so its last digit can differ from the row: check the row before citing it.';
+      nearask.href=askHref(raw,'It matched nothing exactly. The page showed what matched its first digits, '+w+'.\\n\\n');
     }
     // A row can match on text no single marked element contains (another row of its table, a typed
     // form such as 117/370 for a LaTeX fraction, or a name and id typed together), so the line says
@@ -885,8 +916,8 @@ ${body}
     // rounds each refuted a sentence about what the shown text contains (a badge shows numbers and is
     // never marked; a length-changing lowercase text is skipped; a row may show one bound, not two),
     // so the line no longer describes the text at all (Codex r1 and r2, 2026-10-13).
-    count.textContent=n+(n===1?' constant':' constants')+(v?' matching “'+v+'”':'')+
-      (!v||!n?'':!u?' — highlighted where it appears':
+    count.textContent=n+(n===1?' constant':' constants')+(w?' matching “'+w+'”':'')+
+      (!w||!n?'':!u?' — highlighted where it appears':
         u===n?' — nothing highlighted':
         ' — highlighted where it appears; '+u+(u===1?' of them has':' of them have')+' nothing highlighted');
     // A search that matches nothing used to leave an empty table and no explanation, so a visitor
@@ -895,9 +926,13 @@ ${body}
     empty.hidden=n>0;
     if(!n){
       emptyq.textContent='“'+raw+'”';
-      ask.href='${REPO}/issues/new?title='+encodeURIComponent('Constant not tracked: '+raw)+
-        '&body='+encodeURIComponent('I searched the ledger for: '+raw+'\\n\\nWhat I was trying to check:\\n\\nWhere the record lives (link or citation):\\n');
+      ask.href=askHref(raw,'');
     }
+  }
+  // Both ask links file the same title, so report-rate.mjs counts either as an empty-state arrival.
+  function askHref(raw,note){
+    return '${REPO}/issues/new?title='+encodeURIComponent('Constant not tracked: '+raw)+
+      '&body='+encodeURIComponent('I searched the ledger for: '+raw+'\\n\\n'+note+'What I was trying to check:\\n\\nWhere the record lives (link or citation):\\n');
   }
   function order(){
     var seq=trs.slice();
@@ -1916,13 +1951,15 @@ async function selftest() {
   const order = [];
   const trs = [tr("aug14", "2026-08-14"), tr("jul24", "2026-07-24"), tr("undated", ""), tr("aug02", "2026-08-02")];
   const el = (extra = {}) => ({ addEventListener(ev, fn) { this["on" + ev] = fn; }, ...extra });
+  // A-80's shortened-match notice: every stub page carries it, as the rendered page does.
+  const nearStub = () => ({ near: el({ hidden: true }), nearmsg: el({ textContent: "" }), nearask: el({ href: "" }) });
   const sortEl = el({ value: "id" });
   const qEl = el({ value: "" });
   const emptyEl = el({ hidden: true });
   const emptyqEl = el({ textContent: "" });
   const askEl = el({ href: "" });
   const rowsEl = el({ getElementsByTagName: () => trs, appendChild: (n) => order.push(n.id) });
-  const nodes = { q: qEl, sort: sortEl, rows: rowsEl, count: el({ textContent: "" }), empty: emptyEl, emptyq: emptyqEl, emptyask: askEl };
+  const nodes = { q: qEl, sort: sortEl, rows: rowsEl, count: el({ textContent: "" }), empty: emptyEl, emptyq: emptyqEl, emptyask: askEl, ...nearStub() };
   const stub = { getElementById: (i) => nodes[i] };
 
   new Function("document", script)(stub);
@@ -1963,7 +2000,7 @@ async function selftest() {
   const sortEl2 = el({ value: "id" });
   const rowsEl2 = el({ getElementsByTagName: () => trs2, appendChild: (n) => order2.push(n.id) });
   const nodes2 = { q: el({ value: "" }), sort: sortEl2, rows: rowsEl2, count: el({ textContent: "" }),
-    empty: el({ hidden: true }), emptyq: el({ textContent: "" }), emptyask: el({ href: "" }) };
+    empty: el({ hidden: true }), emptyq: el({ textContent: "" }), emptyask: el({ href: "" }), ...nearStub() };
   new Function("document", script)({ getElementById: (i) => nodes2[i] });
   sortEl2.value = "recent";
   sortEl2.onchange();
@@ -1992,7 +2029,7 @@ async function selftest() {
   const sortEl3 = el({ value: "id" });
   const rowsEl3 = el({ getElementsByTagName: () => trs3, appendChild: (n) => order3.push(n.id) });
   const nodes3 = { q: el({ value: "" }), sort: sortEl3, rows: rowsEl3, count: el({ textContent: "" }),
-    empty: el({ hidden: true }), emptyq: el({ textContent: "" }), emptyask: el({ href: "" }) };
+    empty: el({ hidden: true }), emptyq: el({ textContent: "" }), emptyask: el({ href: "" }), ...nearStub() };
   new Function("document", script)({ getElementById: (i) => nodes3[i] });
   sortEl3.value = "recent";
   sortEl3.onchange();
@@ -2076,7 +2113,7 @@ async function selftest() {
   const plain = markRow("c-9z", "plain 9z 117/370 <b>x</b>", ["Plain", "9z", "| 117/370 <b>x</b> |"]);
   const mq = el({ value: "" }), mcount = el({ textContent: "" });
   const mnodes = { q: mq, sort: el({ value: "id" }), rows: el({ getElementsByTagName: () => [knot, frac, plain], appendChild() {} }),
-    count: mcount, empty: el({ hidden: true }), emptyq: el({ textContent: "" }), emptyask: el({ href: "" }) };
+    count: mcount, empty: el({ hidden: true }), emptyq: el({ textContent: "" }), emptyask: el({ href: "" }), ...nearStub() };
   new Function("document", script)({
     getElementById: (i) => mnodes[i],
     createElement: (t) => { created.push(t); return fakeEl(t); },
@@ -2124,7 +2161,7 @@ async function selftest() {
   const dotted = markRow("c-8z", "İstanbul 8z", ["İstanbul", "8z"]);
   const dq = el({ value: "" }), dcount = el({ textContent: "" });
   const dnodes = { q: dq, sort: el({ value: "id" }), rows: el({ getElementsByTagName: () => [dotted], appendChild() {} }),
-    count: dcount, empty: el({ hidden: true }), emptyq: el({ textContent: "" }), emptyask: el({ href: "" }) };
+    count: dcount, empty: el({ hidden: true }), emptyq: el({ textContent: "" }), emptyask: el({ href: "" }), ...nearStub() };
   new Function("document", script)({ getElementById: (i) => dnodes[i], createElement: (t) => fakeEl(t), createTextNode: fakeText });
   dq.value = "stan"; dq.oninput();
   assert.equal(dotted.hidden, false, "positive control: the row must match before its absent mark is asserted");
@@ -2133,6 +2170,58 @@ async function selftest() {
   // Codex r2: the line must not then say the visible name lacks the term; it says only that nothing
   // was highlighted.
   assert.equal(dcount.textContent, "1 constant matching “stan” — nothing highlighted");
+
+  // --- A-80 (2026-10-13 evening): a ROUNDED number must find its constant, and say how it did.
+  // The live page answered "1.5029" (1a lists 1.502862) with "we are not watching it". Executed
+  // against the page's own script. Meaning guards first, the wording pins last.
+  const rA = markRow("c-1a", "autocorrelation 1a 1.502862 1.292", ["Autocorrelation", "1a", "| $1.502862$ | [T2026] |"]);
+  const rB = markRow("c-1b", "other 1b 0.380868", ["Other", "1b", "| 0.380868 |"]);
+  const rC = markRow("c-2b", "third 2b 0.380911", ["Third", "2b", "| 0.380911 |"]);
+  const rq = el({ value: "" }), rcount = el({ textContent: "" }), rempty = el({ hidden: true }), rask = el({ href: "" });
+  const rnodes = { q: rq, sort: el({ value: "id" }), rows: el({ getElementsByTagName: () => [rA, rB, rC], appendChild() {} }),
+    count: rcount, empty: rempty, emptyq: el({ textContent: "" }), emptyask: rask, ...nearStub() };
+  new Function("document", script)({ getElementById: (i) => rnodes[i], createElement: (t) => fakeEl(t), createTextNode: fakeText });
+  const rsearch = (s) => { rq.value = s; rq.oninput(); };
+  // (1) FIRES: the rounded value lands on its constant, never on the not-watching empty state.
+  rsearch("1.5029");
+  assert.equal(rA.hidden, false, "a rounded number must find the constant whose row it rounds");
+  assert.equal(rempty.hidden, true, "a rounded number that finds its constant must not say we are not watching it");
+  assert.equal(rB.hidden && rC.hidden, true, "positive control: rows the shortened form does not match stay hidden");
+  assert.deepEqual(marksIn(rA.targets[2]), ["1.502"], "the shortened form must be marked where the row shows it");
+  assert.equal(rnodes.near.hidden, false, "the reader must be told the match was on a shortened form");
+  assert.match(rnodes.nearmsg.textContent, /not necessarily the one you meant/, "a shortened match must never read as 'this is yours'");
+  assert.match(rnodes.nearask.href, /title=Constant%20not%20tracked%3A%201\.5029/,
+    "the notice must keep a way to ask, titled so report-rate counts it as an empty-state arrival");
+  // (2) Several constants share the shortened form: the line counts them and still disclaims.
+  rsearch("0.38077");
+  assert.equal(!rB.hidden && !rC.hidden, true, "both constants matching the shortened form must be shown");
+  assert.match(rnodes.nearmsg.textContent, /these are the 2 constants/, "a multi-match must say how many it shows");
+  assert.match(rnodes.nearmsg.textContent, /They are not necessarily/, "and disclaim all of them");
+  assert.match(rnodes.nearask.href, /title=Constant%20not%20tracked%3A%200\.38077/,
+    "a second shortened match must carry ITS term in the ask link, not the first search's (Codex r1)");
+  // (2b) A shortened form landing only on an UNRELATED constant (1.50999 shortens to 1.50, which
+  // 1a's 1.502862 contains) still disclaims the match and still offers the ask link (manager review).
+  rsearch("1.50999");
+  assert.equal(rA.hidden, false, "positive control: the shortened form 1.50 matches 1a");
+  assert.equal(rnodes.near.hidden, false, "a match on an unrelated constant must still show the notice");
+  assert.match(rnodes.nearmsg.textContent, /not necessarily the one you meant/, "and must not read as the reader's constant");
+  assert.match(rnodes.nearask.href, /title=Constant%20not%20tracked%3A%201\.50999/, "and must keep the way to ask");
+  // (3) SILENT: an exact match never shows the notice.
+  rsearch("1.50");
+  assert.equal(rnodes.near.hidden, true, "an exact substring match must not show the shortened-match notice");
+  // (4) The floor: shortening stops at two decimals, so "0.3999" never falls through to "0.3".
+  rsearch("0.3999");
+  assert.equal(rB.hidden && rC.hidden && rA.hidden, true, "shortening must stop at two decimals");
+  assert.equal(rempty.hidden, false, "below the floor the honest answer is the empty state");
+  assert.equal(rnodes.near.hidden, true, "and no shortened-match notice");
+  // (5) A number no shortened form matches still gets the empty state and its ask link.
+  rsearch("9.87612");
+  assert.equal(rempty.hidden, false, "a number found at no length must reveal the empty state");
+  assert.match(rask.href, /title=Constant%20not%20tracked%3A%209\.87612/, "with the reader's own term in the ask");
+  // (6) Wording, last.
+  rsearch("1.5029");
+  assert.equal(rcount.textContent, "1 constant matching “1.502” — highlighted where it appears");
+  assert.equal(rnodes.nearmsg.textContent, "Nothing matches “1.5029” exactly, so this shows the constant matching its first digits, “1.502”. It is not necessarily the one you meant. A number you cite is often rounded, so its last digit can differ from the row: check the row before citing it.");
 
   // --- Search by the number you cited, added 2026-09-01. Both KP-78 answers.
   // The page's headline asks "is the number you cited still current?" and until today the filter
@@ -2419,7 +2508,7 @@ async function selftest() {
     q: el({ value: "" }), sort: el({ value: "id" }),
     rows: el({ getElementsByTagName: () => findTrs, appendChild: () => {} }),
     count: el({ textContent: "" }), empty: el({ hidden: true }),
-    emptyq: el({ textContent: "" }), emptyask: el({ href: "" }),
+    emptyq: el({ textContent: "" }), emptyask: el({ href: "" }), ...nearStub(),
   };
   new Function("document", findScript)({ getElementById: (i) => fNodes[i] });
   fNodes.q.value = "6.5143";

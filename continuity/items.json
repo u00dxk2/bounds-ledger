@@ -2915,6 +2915,23 @@
       "closedAt": "2026-10-13",
       "lastEvaluated": "2026-10-13",
       "notes": " | CLOSED 2026-10-13: David answered card 49dabdc0 asking to edit the essay draft himself first; the draft was left for him and his hand edit landed in the essay's own repository as uncaged-minds 1d599d7 (v3, 2026-10-12 23:08 MT; an uncaged-minds sha that does not exist in this repo). The rest of his edit, a claims pass on the new glosses and publication are tracked in the uncaged-minds lane. The commit-history question (card 9815f6ca) was answered 2026-10-12: leave it."
+    },
+    {
+      "id": "A-80",
+      "type": "active",
+      "status": "open",
+      "title": "A rounded number typed into the index search finds its constant, says the match was on a shortened form, and keeps the ask link",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-10-14",
+      "links": [
+        "A-59",
+        "A-69"
+      ],
+      "context": "10-13 evening P1: typing 1.5029 on the live index (1a's upper row lists 1.502862) answered '0 constants matching' and 'we are not watching it', which is false. The filter is a substring test on the typed string. Fix: when a number with three or more decimals matches nothing, retry the TYPED string with trailing digits dropped, never below two decimals, and show a notice that the rows matched a shortened form, are not necessarily the one meant, and a link to ask. No cell value is parsed as a number. Manager review (skylark-site tmp/p1-review-bounds-ledger-2026-10-13-eve.md) asked for the two-decimal floor, a multi-match disclaimer, and an ask link on the notice with a selftest arm; all three are in.",
+      "closeWhen": "The change is pushed, CI is green at the push tip, and `npm run served` reports SERVED for index.html at that tip; then a live search for 1.5029 on the public page shows 1a with the shortened-match notice.",
+      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --selftest — exit 0 prints 'render-site selftest: PASS (...)'; the A-80 arm fails with 'a rounded number must find the constant whose row it rounds' if the retry is removed.",
+      "created": "2026-10-14",
+      "updated": "2026-10-14"
     }
   ],
   "meta": {

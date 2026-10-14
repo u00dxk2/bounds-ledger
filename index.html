@@ -29,6 +29,9 @@ input,select{width:100%;padding:.6rem .7rem;font-size:1rem;border:1px solid var(
 .empty p{margin:.35rem 0}
 #emptyq{font-weight:600}
 .empty[hidden]{display:none}
+.near{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:6px;padding:.6rem 1rem;margin:0 0 1rem;font-size:.92rem;max-width:78ch}
+.near p{margin:.35rem 0}
+.near[hidden]{display:none}
 .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
 table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:56rem}
 th,td{text-align:left;vertical-align:top;padding:.6rem .75rem;border-bottom:1px solid var(--line)}
@@ -118,6 +121,10 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 </div>
 <p class="fresh">Snapshot: this mirror last changed on <strong>2026-09-26</strong>, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Each bound row shown is the last-listed row of its table, not a claim about which bound is &ldquo;the record.&rdquo; Read <a href="#notes">the notes below the table</a> before citing a number.</p>
 <p class="count" id="count">115 constants</p>
+<div class="near" id="near" hidden>
+<p id="nearmsg"></p>
+<p><a id="nearask" href="https://github.com/u00dxk2/bounds-ledger/issues/new">Not the one you meant? Tell us what you were looking for &rarr;</a></p>
+</div>
 
 <div class="empty" id="empty" hidden>
 <p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the 115 constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
@@ -1310,7 +1317,8 @@ https://u00dxk2.github.io/bounds-ledger/c/88b.html</code></details></td>
   var q=document.getElementById('q'),s=document.getElementById('sort'),
       rows=document.getElementById('rows'),count=document.getElementById('count'),
       empty=document.getElementById('empty'),emptyq=document.getElementById('emptyq'),
-      ask=document.getElementById('emptyask');
+      ask=document.getElementById('emptyask'),near=document.getElementById('near'),
+      nearmsg=document.getElementById('nearmsg'),nearask=document.getElementById('nearask');
   var trs=[].slice.call(rows.getElementsByTagName('tr')),tg=null;
   // Every element the filter may mark, with the text it shipped with, read once on the first search.
   function targets(){
@@ -1336,13 +1344,36 @@ https://u00dxk2.github.io/bounds-ledger/c/88b.html</code></details></td>
     if(from<x.t.length)x.e.appendChild(document.createTextNode(x.t.slice(from)));
     return k;
   }
-  function filter(){
-    var raw=q.value.trim(),v=raw.toLowerCase(),n=0,u=0,T=targets();
+  // Show the rows whose haystack contains v and mark v in them; returns [rows shown, shown rows with no mark].
+  function apply(v){
+    var n=0,u=0,T=targets();
     for(var i=0;i<trs.length;i++){
       var hit=!v||trs[i].getAttribute('data-find').indexOf(v)>-1,k=0;
       trs[i].hidden=!hit; if(hit)n++;
       for(var j=0;j<T[i].length;j++)k+=mark(T[i][j],hit?v:'');
       if(hit&&v&&!k)u++;
+    }
+    return [n,u];
+  }
+  function filter(){
+    var raw=q.value.trim(),v=raw.toLowerCase(),r=apply(v),w=v;
+    // A-80: the number a reader is about to cite is often ROUNDED (1.5029 for 1.502862), and a rounded
+    // number is not a substring of the row, so it used to land on "we are not watching it". When a
+    // number with three or more decimals matches nothing, retry the TYPED STRING with trailing digits
+    // dropped, never below two decimals (one decimal, "0.3", matches a dozen constants). Only the typed
+    // string is shortened: no cell value is parsed or compared as a number, and the line says plainly
+    // that the rows shown matched a shortened form, which is not a claim that any of them is the one.
+    if(!r[0]&&/^-?\d*\.\d{3,}$/.test(v)){
+      for(w=v.slice(0,-1);/\.\d{2,}$/.test(w);w=w.slice(0,-1)){r=apply(w);if(r[0])break;}
+      if(!r[0])w=v;
+    }
+    var n=r[0],u=r[1];
+    near.hidden=w===v;
+    if(w!==v){
+      nearmsg.textContent='Nothing matches “'+raw+'” exactly, so '+(n===1?'this shows the constant':'these are the '+n+' constants')+
+        ' matching its first digits, “'+w+'”. '+(n===1?'It is':'They are')+' not necessarily the one you meant. '+
+        'A number you cite is often rounded, so its last digit can differ from the row: check the row before citing it.';
+      nearask.href=askHref(raw,'It matched nothing exactly. The page showed what matched its first digits, '+w+'.\n\n');
     }
     // A row can match on text no single marked element contains (another row of its table, a typed
     // form such as 117/370 for a LaTeX fraction, or a name and id typed together), so the line says
@@ -1350,8 +1381,8 @@ https://u00dxk2.github.io/bounds-ledger/c/88b.html</code></details></td>
     // rounds each refuted a sentence about what the shown text contains (a badge shows numbers and is
     // never marked; a length-changing lowercase text is skipped; a row may show one bound, not two),
     // so the line no longer describes the text at all (Codex r1 and r2, 2026-10-13).
-    count.textContent=n+(n===1?' constant':' constants')+(v?' matching “'+v+'”':'')+
-      (!v||!n?'':!u?' — highlighted where it appears':
+    count.textContent=n+(n===1?' constant':' constants')+(w?' matching “'+w+'”':'')+
+      (!w||!n?'':!u?' — highlighted where it appears':
         u===n?' — nothing highlighted':
         ' — highlighted where it appears; '+u+(u===1?' of them has':' of them have')+' nothing highlighted');
     // A search that matches nothing used to leave an empty table and no explanation, so a visitor
@@ -1360,9 +1391,13 @@ https://u00dxk2.github.io/bounds-ledger/c/88b.html</code></details></td>
     empty.hidden=n>0;
     if(!n){
       emptyq.textContent='“'+raw+'”';
-      ask.href='https://github.com/u00dxk2/bounds-ledger/issues/new?title='+encodeURIComponent('Constant not tracked: '+raw)+
-        '&body='+encodeURIComponent('I searched the ledger for: '+raw+'\n\nWhat I was trying to check:\n\nWhere the record lives (link or citation):\n');
+      ask.href=askHref(raw,'');
     }
+  }
+  // Both ask links file the same title, so report-rate.mjs counts either as an empty-state arrival.
+  function askHref(raw,note){
+    return 'https://github.com/u00dxk2/bounds-ledger/issues/new?title='+encodeURIComponent('Constant not tracked: '+raw)+
+      '&body='+encodeURIComponent('I searched the ledger for: '+raw+'\n\n'+note+'What I was trying to check:\n\nWhere the record lives (link or citation):\n');
   }
   function order(){
     var seq=trs.slice();
