@@ -117,6 +117,21 @@ The kickoff arrived at 04:50Z on 10-14 (22:50 MT 10-13). The full packet as post
 
 The pane died mid-P3 when Windows Update restarted the machine at 00:29 MT 10-14; the work-in-progress survived in the tree. `A-80` (a rounded number typed into the search finds its constant) shipped as `a827d4b`: when a number with three or more decimals matches nothing, the page retries the typed string with trailing digits dropped, never below two decimals, and says the rows matched a shortened form and are not necessarily the one meant, with an ask link. The manager review's two hypotheses (a two-decimal floor with a multi-match disclaimer; keep a way to ask on the fallback) were both measured as right and both built. Four red-armed mutations, each restored. Codex r1 (read-only, banner workdir checked): no blocking defect, one LOW test gap, confirmed and fixed before commit. `npm run verify` exit 0 at `a827d4b`; CI green on both workflows at that tip; `npm run served` SERVED; a live search for 1.5029 at 393x852 showed only 1a with the notice. `A-80` CLOSED.
 
+### Evening round — close (2026-10-14 morning)
+
+ACTION: COMPLETED · item `A-80` · P3 4c07aa0e
+
+**Acceptance clause 3**, which the manager review found unevidenced, was run at 15:25Z on the SERVED page (`7debb86`), not on a local build. The 10-13 probe script was never saved. I rebuilt it from the packet's definition, and the rebuild read a wider population: every 3+-place decimal in a row's visible cells, 168 decimals and 731 forms, against the packet's 143 and 647. On the same 731 forms, the old substring filter and the live page compare as follows:
+
+| | own row | another constant only | nothing |
+|---|---|---|---|
+| old filter | 303 | 58 | 370 |
+| live page | 531 | 117 | 83 |
+
+All 83 forms that still find nothing show the empty state; none hide it. Of the 370 that found nothing before, 228 now reach their own row, 59 land only on another constant under the "not necessarily the one you meant" notice, and 83 still find nothing. The 58 old other-only forms are kept separate (117 = 58 + 59). This counts forms, not readers. Encounter stays blind (`A-59`, the encounter blind spot).
+
+**Ledger delta:** `A-80` minted, then closed with evidence; clause 3 added to its notes. Hygiene draft: 0 lines. Due-gate check: UNRESOLVED, because the snapshot is from 10-13 (STALE) and `A-47` (the depth audit) reads as due on 10-14, which belongs to the day round. Pending reads: none owed by this round.
+
 ## Inputs (controllable)
 
 One product change (`A-69`), four commits, three Codex review rounds (5 findings, all fixed), six red-armed mutations. One background hygiene helper.
