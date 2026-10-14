@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-Pending: written at the close.
+Four more numbers on the public pages now say which paper was opened to check them: one holds up, and three could not be settled, each with its reason.
 
 ## What changed
 
@@ -43,7 +43,7 @@ The full packet, as posted to the bus, is `tmp/p1-2026-10-14-packet.md`. Its sub
 
 The manager approved offset 18 (bus `20057b9a`). It also raised a point to check: offsets 0 and 25 came from the 673-row frame, so in the 691-row frame they no longer pick the rows they once did. I measured that, and it is right, and it changes the grid. The rule and its positions below are committed and pushed before `--draw` runs for slice 17. The draw's record and the readings land in later commits, so `git log` shows the order.
 
-**How the held rows were located.** `depth-audit.mjs --draw 1 2 … 691` printed every position in the frame with its holder line, to `tmp/a47-fullframe-draw.txt` (exit 0; `store: 71 of 691 drawn position(s) land on a row already held, read against 75 audit store entries`). That run prints each row's text too. Only the position numbers and holder lines were extracted from it, by script. No row's text was read before this rule was fixed.
+**How the held rows were located.** `depth-audit.mjs --draw 1 2 … 691` printed every position in the frame with its holder line, to `tmp/a47-fullframe-draw.txt` (exit 0; `store: 71 of 691 drawn position(s) land on a row already held, read against 75 audit store entries`). That run prints each row's text too. Only the position numbers and holder lines were extracted from it, by script. No row's text was read before this rule was fixed. Positive control: the extraction script's own output was the 71 held positions with their holder labels and the residue line, and it printed no row text.
 
 **What it showed.** The 71 held rows sit at these residues mod 50: 2, 4, 5, 6, 7, 11, 12, 13, 25, 26, 27, 29, 30, 35, 36, 37, 38, 39. The old offset-0 and offset-25 slices now land on 2, 4, 5, 7, 11, 13 and 25 to 30. The suspicion-drawn rows add 35 to 39. So the declared offsets {0, 6, 12, 25, 37} were the wrong "used" set. Offset 18, picked from them at P1, sits 5 away from the held rows at residue 13.
 
@@ -81,14 +81,64 @@ The draw (`9f03b72`) was pushed before any source was opened. GitHub created its
 - **The entry-versus-source note cannot reach most entries.** `referenceNote` renders only when the entry line carries the bold key `**[Key]**`. In the mirror, 31 reference lines do and 621 plain `- [Key] ` lines in 66 files do not. So the 20c author difference could not go on its public page, and none was stored. The search space was lines starting `- **[` or `- [` in the 115 constant files.
 <!-- findings:end -->
 
-**Classification (by hand, not a counter):** the window holds one record-facing finding (the 20c author name) and one instrument-facing one (the note path's reach). The 1a value is a candidate that has not been confirmed. No counted catch moved today, numeric or byte-only. The standing prediction says "the next record-facing catch will be a citation-quality defect in a mirrored upstream entry … found by a human reading the cited source in the depth audit (`A-47`), not by any alarm". A reading agent found the author-name difference and the lead agent rechecked it against Crossref. That matches the predicted defect and the predicted channel (reading the cited source in `A-47`, not an alarm). No human confirmed it, so the prediction's "found by a human" part is not established.
+**Classification (by hand, not a counter):** the window holds one record-facing finding (the 20c author name) and one instrument-facing one (the note path's reach). The 1a value is a candidate that has not been confirmed. No counted catch moved today, numeric or byte-only. The standing prediction says "the next record-facing catch will be a citation-quality defect in a mirrored upstream entry … found by a human reading the cited source in the depth audit (`A-47`), not by any alarm". A reading agent found the author-name difference and the lead agent rechecked it against Crossref. That matches the predicted defect and the predicted channel (reading the cited source in `A-47`, not an alarm). No human confirmed it, so the prediction's "found by a human" part is not established. **Consecutive instrument-facing days: 0.** Today holds a record-facing finding, so yesterday's count of 1 ends here; this is counted by hand.
+
+### Close (2026-10-14 afternoon MT)
+
+**ACTION: COMPLETED** · item `A-47` (the depth audit) · P3 `23ac25b6`. The packet's acceptance condition was met, and the manager's review re-ran the counts (bus `b2adb6b8`):
+- The commits run grid `98e1f1f` → draw `9f03b72` → readings `483e926` → review fixes `bd6743b`, all on origin/main.
+- `depth-audit.mjs` printed 79 audited (51 sound, 1 defective, 20 unresolved, 7 unreachable), up from 75.
+- Each entry carries the claim named in its draw.
+- `npm run check` is covered: `npm run verify` runs `npm test && npm run check`. Its receipt at `bd6743b` records exit 0, with every check leg ran and exit 0 (check:drift, check:claims, check:ds1, check:state, check:site, check:pages, check:ramsey, check:deferrals), and check:brief UNVERIFIABLE as expected.
+
+**What David asked, and what he was told.** At 19:58Z, right after the P3 post, David pasted his essay on OpenAI's math release into this pane and asked whether it needed changes before he posts it. I answered in the pane before this close.
+- **Five fixes.** A missing word in the short version. "Still human" contradicting the essay's own account of agents doing the reading. "31 claims" should read "31 places" (one claim lands on 5 constants, and two families land on the same two constants), in three spots. Two double periods. A clearer Borsuk sentence.
+- **One call that is his.** The new text names the list's maintainer. The 10-12 draft named no upstream maintainer on purpose, and naming him can read as his involvement.
+- **Checked against the repo and holding.** The family counts (372, 23, 21+2), the 31 pairs, the 8 statement checks on 7 constants, all seven table values, all seven release claims, the claim note on all seven pages, and a report link on every row (116 links, 115 rows).
+- **Not re-checked today.** The release-history facts (dates, 722 to 719, 42%) passed the 10-12 claims rounds; OpenAI's repository was not re-read today.
+- **CLAIMS PASS OWED.** No cross-family claims pass has run on his new sentences. I offered one on the changed sentences only, about 15 minutes, before he posts. He had not answered at this close. If he posts first, the essay goes out with its edits checked only by this lane.
+- **The previous session had reviewed it too**, on the same essay. It raised three points this session did not: mixed date styles, mixed dashes, and the 1976 sentence. Those were passed back to David. It also asked whether "anything either pass flagged went on the list" (not David's words) was true. `ledger/openai-math-map.json`'s method field settles it: the two passes "were unioned; any family either named is 'bears'" (not David's words), so 23 is the union and the essay's sentence holds.
+- **Header image.** David asked where the cover made with GPT Image is. The previous session made two, 1536×1024, with the `gpt-image-2.5-sunburst` and `gpt-image-2.5-flare` variants (its account has no plain `gpt-image-2.5`). It recommended sunburst. Both were in that session's temporary scratch space. They were copied to David's own downloads folder, outside this public repo.
+
+**Ledger delta (hygiene draft: 4 lines — 2 accepted · 2 amended · 0 rejected):**
+- A-50, ACCEPTED: its read was re-pointed to `git log --oneline --grep=A-50 -- scripts/ .github/workflows/` (the old pass condition could not be reached), and it is re-dated to 10-28.
+- A-54, AMENDED to 10-15 rather than 10-16: today's census read did not happen because slice 17 used the day, and the census is next on the alternation.
+- A-76, AMENDED to `--set nextCheckDate 2026-10-21` rather than `--extend`, because the row's clock is `nextCheckDate`. Slice 17 drew no row of its shape. Positive control: the four drawn values are 3.65, 4, 1.5053 and C(log n)^5. Only 3.65 is a decimal, and its source gives "≈ 3.65" with no exact value beside it.
+- W-14 (the watch on upstream issue 218), ACCEPTED: re-dated to 10-21. Issue 218 is OPEN with 0 comments.
+- A-47 was re-dated at P3 to 10-16, carrying slice 18 (the offset-19 grid, 219 onward).
+
+The draft had no READ-MUTATED lines. Its checks read wait-justification PASS and engineering-zero PASS (0 findings for this lane). Positive control: the same engineering-zero run printed a RED for another lane's Sentry issue, so it read live data. `check-due-gates-dispositioned.mjs` read "verdict: CLEAR — every gate due at Phase 0 was dispositioned", with the snapshot CURRENT (taken 2026-10-14).
+
+**Receipt:** P3's receipt line in `23ac25b6` still holds. No bracket has changed.
 
 ## Inputs (controllable)
 
+- One depth-audit slice: a grid computed and pushed before the draw, four reading agents, one Codex read-only review round, and one sibling sweep.
+- The hygiene helper's four drafts, applied above.
+- David's essay, reviewed in the pane against the repo.
+
 ## Outputs (lagging)
+
+- `npm run reports`: 0 outside arrivals (33 raw, 33 ours; the parts sum). G-4 is still at expected zero.
+- Encounter is blind on the public pages (`A-59`).
 
 ## Recommendation
 
+- Run the claims pass on David's changed sentences if he says yes. If he posts first, record that in tomorrow's report.
+- Census read on 10-15 (`A-54`), then slice 18 on 10-16 (`A-47`).
+- The two upstream candidates found today stay behind the outward gate: 20c's "Jean" versus "Joseph" Lehec, and 1a line 18's 1.503164. Raising either needs an adversarial review and David's approval.
+- The reference-note path reaches 31 of 652 reference lines. That is a candidate for its own row if a citation-quality catch ever needs to reach its page.
+
 ## On hold pending data
 
+- G-4: an outside report through a per-row link. None yet.
+- W-14 (the watch on upstream issue 218): a maintainer reply there. Re-read on 10-21.
+
 ## State Appendix
+
+Written last, from live commands, as of the close commit's parent. This report cannot name the commit that lands it.
+- `git -C C:/dev/skylark/bounds-ledger rev-parse --short HEAD` before the close commit: `bd6743b`. CI GREEN there on reverify.yml and page-check.yml (`check-ci-status.mjs`, exit 0 each, read 19:54Z).
+- `node scripts/depth-audit.mjs`: 79 audited, 51 sound, 1 defective, 20 unresolved, 7 unreachable (exit 0).
+- `node scripts/depth-audit.mjs --corpus`: 691 cited of 788 bound rows.
+- `check-due-gates-dispositioned.mjs`: CLEAR, snapshot CURRENT.
+- Release: re-run those commands; never quote these values as current.
