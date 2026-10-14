@@ -1,0 +1,15 @@
+# read-output sidecar for A-76 — written by check-due-gates-dispositioned --run
+# readCommand: node C:/dev/skylark/bounds-ledger/scripts/depth-audit.mjs --corpus
+# ran: 2026-10-14T18:12:22.880Z · exit: 0
+# lines: 9 · sha256: 47f904e2f1fc2d1b (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+corpus: 788 bound row(s) across 115 constant file(s) — 691 cited, 97 uncited
+  bound row: a data row under "## Known upper bounds" / "## Known lower bounds" (extract-pins.mjs definition; HTML comments, table headers and separators excluded).
+  cited row: names at least one bracketed reference token anywhere in the row.
+  control (87a.md): 7 bound row(s), 6 cited, carries 857.5662 — pinned to the 7 and 6 A-47.note2 recorded, so an upstream edit to that file trips this rather than passing silently.
+  inventory: 115 constant file(s) against 115 in the mirror manifest, and every one contributed at least one bound row.
+  sections: all 230 section(s) the committed generated pins expect produced rows — this detects WHOLE-SECTION disappearance and nothing finer.
+  table syntax: no line inside a bounds table block fails to start with "|", so no row is being dropped as unreadable — the check for row loss WITHIN a section, which the section baseline cannot see.
+  partition: 691 + 97 = 788. This proves only that the two classes exhaust the rows the parser ENUMERATED. What it is NOT: a proof of completeness. The four checks above are each narrow — inventory catches missing files, per-file catches an empty file, sections catch a vanished section, table syntax catches a row this parser cannot read — and a row that is well-formed, present and simply absent from upstream is invisible to all of them, as it should be.
+RESULT: PASS — 691 cited of 788 bound row(s) (exit 0)
