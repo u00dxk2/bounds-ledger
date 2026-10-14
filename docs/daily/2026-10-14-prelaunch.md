@@ -62,6 +62,27 @@ grid positions already held: none
 
 **Slice 17 takes 19, 69, 119 and 169.** The other ten are later slices. No position is swapped after it has been seen. This replaces the P1 packet's offset 18 (positions 18, 68, 118, 168), which was never drawn.
 
+### Day session — P3: slice 17 read
+
+The draw (`9f03b72`) was pushed before any source was opened. GitHub created its runs at 18:32:46Z. Four reading agents read one source each and returned text, which is saved in `tmp/slice17-*.md`. In this session I re-read one page image per source: 14a p. 196, 1a p. 15, 10c p. 54 and 20c v2 p. 3. I also read Crossref's record for KL2022.
+
+| Row | Verdict | What decides it |
+|---|---|---|
+| 10c [Bel2013] | UNRESOLVED | The thesis credits Schmidt and the personal communication, but prints only "K ≈ 3.65". The agent proposed SOUND. |
+| 14a [LS1965] | SOUND | The cited JACM edition determines Σ(3) = 6 and SH(3) = 21. |
+| 1a [GGSWT2025] | UNRESOLVED | 1.5053 is printed only as a caption score. The stated bound is 1.5032, and the paper never says "May 2025". |
+| 20c [KL2022] | UNRESOLVED | arXiv v2 gives α = 5 and v1 gives 5 + o(1). The journal edition was not reached, and the paper never says "first". The agent leaned SOUND. |
+
+`node scripts/depth-audit.mjs` (exit 0): "79 row(s) audited — 51 sound, 1 defective, 20 unresolved, 7 unreachable". That is up from 75.
+
+<!-- findings:begin -->
+- **A citation defect in a mirrored entry, found by reading.** 20c.md line 91 names KL2022's second author "Jean Lehec". Crossref's record and arXiv v2 both give "Joseph Lehec". This is outside the claim checked. It is not filed upstream, because that is outward contact.
+- **A value the cited paper may not print.** 1a.md line 18 credits GGSWT2025 with 1.503164. The reading agent's text search of v1 and v3 found no "50316". I did not re-read this myself, and the row was not drawn.
+- **The entry-versus-source note cannot reach most entries.** `referenceNote` renders only when the entry line carries the bold key `**[Key]**`. In the mirror, 31 reference lines do and 621 plain `- [Key] ` lines in 66 files do not. So the 20c author difference could not go on its public page, and none was stored. The search space was lines starting `- **[` or `- [` in the 115 constant files.
+<!-- findings:end -->
+
+**Classification (by hand, not a counter):** the window holds one record-facing finding (the 20c author name) and one instrument-facing one (the note path's reach). The 1a value is a candidate that has not been confirmed. No counted catch moved today, numeric or byte-only. The standing prediction says "the next record-facing catch will be a citation-quality defect in a mirrored upstream entry … found by a human reading the cited source in the depth audit (`A-47`), not by any alarm". It held in substance. The author name is that shape, and it was found by reading the cited source in `A-47`, not by an alarm. A reading agent found it, though, and I confirmed it, so "a human reading" is true only of the confirmation.
+
 ## Inputs (controllable)
 
 ## Outputs (lagging)
