@@ -111,6 +111,47 @@ The draft had no READ-MUTATED lines. Its checks read wait-justification PASS and
 
 **Receipt:** P3's receipt line in `23ac25b6` still holds. No bracket has changed.
 
+### Evening session — P1 selection packet
+
+The full packet, as posted to the bus, is `tmp/p1-2026-10-14-evening-packet.md`. Its substance:
+
+**David's essay:** his "continue" at 20:47Z answered the usage-limit cut-off, not the claims-pass offer, and his image question was answered at 20:28Z. Nothing on the essay runs.
+
+**Outcome:** a reference note can reach the plain entry lines (the slice 17 instrument-facing finding, under `A-47`). `referenceEntryLine` matches only the bold `**[Key]**` form. Grep reads 621 plain `- [Key] ` lines in 66 files and 33 bold lines in 6 files, so the 20c author note ("Jean Lehec" in the entry; "Joseph Lehec" in Crossref and arXiv v2) cannot print.
+
+**Next action:** match a line starting `- [<citedRef>] ` as well, keeping exactly one hit across both forms. A failing self-test is in the working tree, uncommitted, and exits 1 on the plain-line assertion. The 20c note is stored only after a claims pass on its sentence.
+
+**USER-FACING: yes.** Paths: `scripts/render-constant-pages.mjs`, `continuity/depth-audit.json`, `c/20c.html`.
+
+**HYGIENE INPUTS:** (a) none: 0 due on/before 2026-10-14. (b) none: 0 of 754. (c) none crossed.
+
+### Evening session — P3: reference notes reach plain entry lines, and 20c's note is live
+
+The manager approved the packet (bus `79e23b83`). Three commits were pushed together (`bcaaa2d..50c11aa`).
+
+- `c5a5dd2` let a note attach to a line starting `- [Key] `.
+- `a371919` is the review fix. An entry line is now found only inside the file's one References section, after its `References` (or `Bibliography`) heading and before the next heading. A file with no such heading, or two, finds no line, so its notes are withheld.
+- `50c11aa` stores the 20c note and re-renders `c/20c.html`.
+
+**Why the rule changed after review.** Cross-family review r1 on `c5a5dd2` returned a BLOCKER: a comment bullet can open with the same key as an entry, as in 3a.md line 43, "- [K2026] generalizes …". My first rule counted those bullets. My commit message for `c5a5dd2` called its 14 refusals "7 keys that each sit on two entry lines", and that was wrong: they were comment bullets beside their entries. A pattern had now matched something that is not an entry for the second time in this function. So I did not patch the pattern again; I stated where an entry can be. Review r2 on `a371919` and `50c11aa` returned no findings. Its own call over every key in the 115 files found no wrong line: 1,192 keys gave 1,183 lines and 9 refusals.
+
+**Reach, measured over the 115 mirrored files.** 621 lines start with `- [Key] `. 8 of them are comment bullets and are refused. Of the other 613, which are real entries, 605 are found. The 8 not found are all in 56a.md, the one file with no References heading. All 31 bold entry lines are still found. Before this work, none of the plain lines could carry a note.
+
+**The 20c note, as served on its KL2022 line:** "About the reference itself, not the bound: Crossref's record for the journal article and arXiv's abstract page for version 2 of the preprint both give the second author as Joseph Lehec; the table's reference entry for [KL2022] gives the name as “Jean Lehec”." The cross-family claims pass found every claim HOLDS. Its one wording change was taken: "abstract page" for "listing". The sentence says only what each source gives. The verdict on the row stays UNRESOLVED. Nothing was filed upstream.
+
+**Delivery.**
+- `npm run served`: "SERVED c/20c.html 8830 bytes … RESULT: PASS" (anchor `50c11aa`).
+- `check-ci-status`: "GREEN — 3 completed non-scheduled success(es) for HEAD, 0 failures, 0 pending".
+- `npm run verify` receipt: exit 0 at `50c11aa`.
+
+**Encounter:** blind. A page view leaves no trace on this static site (`A-59`, the row that tracks that blindness).
+
+<!-- findings:begin -->
+- **A commit message misclassified what a matcher refused.** `c5a5dd2`'s message called 14 refused lines duplicate entries. They were comment bullets that open with a key, and review r1 found it. A refusal count needs its members read before they are named. `a371919`'s message corrects the record.
+<!-- findings:end -->
+
+**Classification (by hand, not a counter):** this evening's finding is instrument-facing (our own matcher and our own commit message). No record moved, and no counted catch moved.
+
 ## Inputs (controllable)
 
 - One depth-audit slice: a grid computed and pushed before the draw, four reading agents, one Codex read-only review round, and one sibling sweep.
