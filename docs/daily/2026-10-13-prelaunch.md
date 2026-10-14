@@ -113,6 +113,10 @@ The kickoff arrived at 04:50Z on 10-14 (22:50 MT 10-13). The full packet as post
 
 **HYGIENE INPUTS:** (a) none, 0 due on/before 2026-10-13. (b) none, 0 of 749. (c) none crossed.
 
+### Evening round — P3 (finished 2026-10-14 morning, after the reboot)
+
+The pane died mid-P3 when Windows Update restarted the machine at 00:29 MT 10-14; the work-in-progress survived in the tree. `A-80` (a rounded number typed into the search finds its constant) shipped as `a827d4b`: when a number with three or more decimals matches nothing, the page retries the typed string with trailing digits dropped, never below two decimals, and says the rows matched a shortened form and are not necessarily the one meant, with an ask link. The manager review's two hypotheses (a two-decimal floor with a multi-match disclaimer; keep a way to ask on the fallback) were both measured as right and both built. Four red-armed mutations, each restored. Codex r1 (read-only, banner workdir checked): no blocking defect, one LOW test gap, confirmed and fixed before commit. `npm run verify` exit 0 at `a827d4b`; CI green on both workflows at that tip; `npm run served` SERVED; a live search for 1.5029 at 393x852 showed only 1a with the notice. `A-80` CLOSED.
+
 ## Inputs (controllable)
 
 One product change (`A-69`), four commits, three Codex review rounds (5 findings, all fixed), six red-armed mutations. One background hygiene helper.

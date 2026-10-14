@@ -2919,7 +2919,7 @@
     {
       "id": "A-80",
       "type": "active",
-      "status": "open",
+      "status": "closed",
       "title": "A rounded number typed into the index search finds its constant, says the match was on a shortened form, and keeps the ask link",
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-10-14",
@@ -2931,7 +2931,10 @@
       "closeWhen": "The change is pushed, CI is green at the push tip, and `npm run served` reports SERVED for index.html at that tip; then a live search for 1.5029 on the public page shows 1a with the shortened-match notice.",
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --selftest — exit 0 prints 'render-site selftest: PASS (...)'; the A-80 arm fails with 'a rounded number must find the constant whose row it rounds' if the retry is removed.",
       "created": "2026-10-14",
-      "updated": "2026-10-14"
+      "updated": "2026-10-14",
+      "closedAt": "2026-10-14",
+      "lastEvaluated": "2026-10-14",
+      "notes": " | CLOSED 2026-10-14: pushed a827d4b; CI green at that tip on reverify.yml and page-check.yml (check-ci-status, both exit 0); npm run served: index.html SERVED at a827d4b; live search for 1.5029 at 393x852 showed only c-1a, the shortened-match notice visible, the empty state hidden, and the ask link titled 'Constant not tracked: 1.5029'."
     }
   ],
   "meta": {
