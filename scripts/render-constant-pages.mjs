@@ -311,8 +311,8 @@ const claimFieldsOk = (a) => claimText(a.claimReader) && claimText(a.claimResult
  * - only a READ verdict carries one: a paper that was never read cannot be said to print anything;
  * - the entry's file must be THIS constant's own mirror file, because that is where the check reads.
  * And one rule that is NOT a refusal: the sentence is WITHHELD unless the quoted entry text stands on the
- * entry's OWN reference line, found by its exact bold key `**[<citedRef>]**`, and exactly one line carries
- * that key. The reading is unchanged when upstream edits the entry, but "the entry gives X" would no longer
+ * entry's OWN reference line, found by its exact bold key `**[<citedRef>]**` or a line starting with the
+ * plain key `- [<citedRef>] ` (added 2026-10-14 evening), and exactly one line is that entry. The reading is unchanged when upstream edits the entry, but "the entry gives X" would no longer
  * be true, and refusing would stop every render on an upstream edit (see auditStoreRefusal). The first form
  * searched the whole file, so an old wording surviving in another reference or a table row kept the
  * sentence printed after the entry itself changed (cross-family review r1, 2026-10-10). What this still
@@ -327,13 +327,21 @@ const referenceNoteOk = (a) => {
     && a.rowFile === `${MIRROR_PREFIX}${a.constant}.md`
     && mirrorFileExact(a.rowFile);
 };
-/** The one mirror line carrying the reference's exact bold key, or null when none or several do. */
+/**
+ * The one mirror line that is the reference's entry, or null when none or several are. An entry is a line
+ * carrying the exact bold key `**[<citedRef>]**`, or a line that STARTS with the plain key `- [<citedRef>] `
+ * (most of the mirror is written the second way: 621 plain lines in 66 files against 33 bold, 2026-10-14).
+ * The plain form is anchored at the line start, because the same key in a table cell or inside a sentence
+ * is a citation of the reference, not its entry. Bold and plain hits are counted together, so a key
+ * written both ways is two lines and finds none.
+ */
 export function referenceEntryLine(file, citedRef, root = ROOT) {
   if (typeof citedRef !== "string" || citedRef === "" || !mirrorFileExact(file, root)) return null;
   let lines;
   try { lines = readFileSync(join(root, file), "utf8").split(/\r?\n/); } catch { return null; }
-  const key = `**[${citedRef}]**`;
-  const hits = lines.filter((l) => l.includes(key));
+  const bold = `**[${citedRef}]**`;
+  const plain = `- [${citedRef}] `;
+  const hits = lines.filter((l) => l.includes(bold) || l.startsWith(plain));
   return hits.length === 1 ? hits[0] : null;
 }
 const referenceNoteShown = (a, root = ROOT) => {
@@ -1341,7 +1349,31 @@ async function selftest() {
     writeFileSync(join(dupRoot, MIRROR_PREFIX, "dup.md"), `- **[DUP1]** Quoted title.\n- **[DUP1]** Another title.\n- **[ONE1]** Quoted title.\n`);
     assert.ok(referenceEntryLine(`${MIRROR_PREFIX}dup.md`, "ONE1", dupRoot)?.includes("Quoted title"), "positive control: the temporary mirror is read, and a single key there finds its line");
     assert.equal(referenceEntryLine(`${MIRROR_PREFIX}dup.md`, "DUP1", dupRoot), null, "a key carried by TWO lines must find no line, even when the first of them holds the quote");
+    // PLAIN entry lines (2026-10-14 evening): most of the mirror writes a reference as `- [Key] …`, not
+    // `- **[Key]** …` (621 plain lines in 66 files against 33 bold). Only a line that STARTS with the plain
+    // key is an entry; the same key in a table cell or inside a sentence is a citation of it, not the entry.
+    writeFileSync(join(dupRoot, MIRROR_PREFIX, "plain.md"), [
+      "| $x \\le 1$ | [PLN1] | a table row citing it |",
+      "- Progress came via [PLN1] and [PLN2].",
+      "- Compare the list form - [PLN1] used mid-line.",
+      "- [PLN1] Ann Author, Jean Name, *Quoted title*, J. **1** (2022).",
+      "- [PDUP] First, *One*.",
+      "- [PDUP] Second, *Two*.",
+      "- [PLN11] Other Author, *Longer key*.",
+      "- [MIX1] Plain form.",
+      "- **[MIX1]** Bold form.",
+      "",
+    ].join("\n"));
+    const PLAIN = `${MIRROR_PREFIX}plain.md`;
+    assert.ok(referenceEntryLine(PLAIN, "PLN1", dupRoot)?.startsWith("- [PLN1] Ann Author, Jean Name"), "a plain `- [Key] ` entry line must be found, and it must be the entry, not the table row or the sentence citing it");
+    assert.equal(referenceEntryLine(PLAIN, "PDUP", dupRoot), null, "a key carried by TWO plain entry lines must find no line");
+    assert.equal(referenceEntryLine(PLAIN, "PLN2", dupRoot), null, "a key cited only inside a sentence has no entry line");
+    assert.equal(referenceEntryLine(PLAIN, "MIX1", dupRoot), null, "a key with one plain and one bold entry line is two lines, so no line");
+    assert.equal(referenceEntryLine(PLAIN, "PLN", dupRoot), null, "a key that is only a PREFIX of a plain key (PLN) must find no line");
+    assert.ok(referenceEntryLine(PLAIN, "PLN11", dupRoot)?.includes("Longer key"), "positive control: a longer key sharing a prefix finds its own line");
   } finally { rmSync(dupRoot, { recursive: true, force: true }); }
+  // The real case that motivated it: 20c's KL2022 entry is a plain line.
+  assert.ok(referenceEntryLine(`${MIRROR_PREFIX}20c.md`, "KL2022")?.includes("Jean Lehec"), "20c's plain KL2022 entry line must be found, carrying the mirror's author text");
   const row43 = { ...row, id: "43a" };
   const rnBase = { ...claimStore.audits[0], constant: "43a", rowFile: REAL_FILE };
   const rnShown = { ...rnBase, id: "T-RN1", citedRef: "GH1976", referenceNoteEntryText: REAL_TEXT,
