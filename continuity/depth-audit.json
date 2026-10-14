@@ -2149,7 +2149,10 @@
       "claimChecked": "Named before reading, verbatim from A-47.slice17Draw2026_10_14: \"20c [KL2022]: that the cited 2022 paper proves the inverse Cheeger constant of isotropic log-concave measures in dimension n is at most a constant times (log n) to the power 5, and calls it the first polylogarithmic bound, as the row's comment says.\"",
       "rowText": "| $\\psi_n \\le C(\\log n)^5$ | [KL2022] | First polylogarithmic bound. |",
       "rowTextSha256": "4a4441bc21ba9871",
-      "review2026_10_14": " REVIEW r1 (Codex, read-only, on 483e926980b14be681156df765f3df773eadadf5, 2026-10-14): NIT taken: the concluding sentence is on printed p. 19, not p. 18, and its second constant is C′; corrected and re-read from the page image in this session."
+      "review2026_10_14": " REVIEW r1 (Codex, read-only, on 483e926980b14be681156df765f3df773eadadf5, 2026-10-14): NIT taken: the concluding sentence is on printed p. 19, not p. 18, and its second constant is C′; corrected and re-read from the page image in this session.",
+      "referenceNote": "Crossref's record for the journal article and arXiv's abstract page for version 2 of the preprint both give the second author as Joseph Lehec; the table's reference entry for [KL2022] gives the name as “Jean Lehec”",
+      "referenceNoteEntryText": "Jean Lehec",
+      "referenceNoteClaimsPass2026_10_14": "Cross-family claims pass (Codex, read-only, 2026-10-14 evening) on the draft sentence: Crossref author HOLDS (SUPPLIED from the lead's saved response; the lead fetched api.crossref.org for 10.1007/s00039-022-00612-9 in this session and read given \"Joseph\", family \"Lehec\"); arXiv v2 author HOLDS (REPRODUCED from the v2 abstract page); the mirror's \"Jean Lehec\" on 20c.md line 91 HOLDS; same work, by title, venue and arXiv id, HOLDS. Taken: \"arXiv's listing\" became \"arXiv's abstract page\", which names what was read. Its caution, also taken: the sentence states only what each source gives, and says neither which name is correct nor that the journal's own pages print Joseph (the journal edition was not read)."
     }
   ]
 }
