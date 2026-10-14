@@ -152,6 +152,24 @@ The manager approved the packet (bus `79e23b83`). Three commits were pushed toge
 
 **Classification (by hand, not a counter):** this evening's finding is instrument-facing (our own matcher and our own commit message). No record moved, and no counted catch moved.
 
+### Close (2026-10-14 evening MT)
+
+**ACTION: COMPLETED** · item `A-47` (the depth audit) · P3 `6eb3a240`. The packet's acceptance condition was met, and the manager's review (bus `d894fe65`) checked that `c5a5dd2`, `a371919`, `50c11aa` and `65a0f17` are all on origin/main.
+- Items 1 to 5: the plain-line, duplicate, comment, prefix and existing-note cases all pass in the selftest. `npm test` exits 0.
+- Item 6: `c/20c.html` prints the note on the KL2022 line. `npm run served` read SERVED at `50c11aa`, and a live fetch found one reference note, on KL2022.
+
+**Hygiene draft:** 0 lines (0 accepted · 0 amended · 0 rejected). READ-MUTATED: none. check-wait-justification: "RESULT: PASS — 1 of 97 row(s) carry waitJustification; 0 warn / 0 info (exit 0)". check-engineering-zero: "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)".
+
+**Ledger delta:** `A-47` gains `refnotePlainEntries2026_10_14`, which records the reach (605 of 613 real plain entries) and the 56a.md limit. No row was closed or re-dated this evening. `check-due-gates-dispositioned.mjs` read "verdict: CLEAR — every gate due at Phase 0 was dispositioned", with the snapshot CURRENT (taken 2026-10-14).
+
+**Pending reads:** `A-54`'s census read is due 2026-10-15 (`node scripts/ds1-depth.mjs`). `A-47` slice 18 is due 2026-10-16 (`node scripts/depth-audit.mjs --draw 219 269 319 369`, pushed before any source opens).
+
+**Stated limit:** 56a.md has no References heading, so its 8 entries cannot carry a note. Revisit only if a 56a row is drawn and its entry differs from its source.
+
+**David:** his 20:47Z "continue" answered the usage-limit cut-off, not the claims-pass offer on his essay. It is not consent to a claims pass. The essay was not touched, and nothing went upstream.
+
+**Receipt:** P3's receipt line in `6eb3a240` still holds. No bracket has changed.
+
 ## Inputs (controllable)
 
 - One depth-audit slice: a grid computed and pushed before the draw, four reading agents, one Codex read-only review round, and one sibling sweep.
