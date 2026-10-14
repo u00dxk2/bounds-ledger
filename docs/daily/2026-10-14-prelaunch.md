@@ -64,14 +64,14 @@ grid positions already held: none
 
 ### Day session — P3: slice 17 read
 
-The draw (`9f03b72`) was pushed before any source was opened. GitHub created its runs at 18:32:46Z. Four reading agents read one source each and returned text, which is saved in `tmp/slice17-*.md`. In this session I re-read one page image per source: 14a p. 196, 1a p. 15, 10c p. 54 and 20c v2 p. 3. I also read Crossref's record for KL2022.
+The draw (`9f03b72`) was pushed before any source was opened. GitHub created its runs at 18:32:46Z. Four reading agents read one source each and returned text. The 14a and 1a reports are saved in `tmp/`; the 10c and 20c reports were returned as text, and their substance is in the entries. In this session I re-read page images: 14a p. 196, 1a p. 15, 10c p. 54, and 20c v2 pp. 3 and 19 (p. 19 after review r1). I also read Crossref's record for KL2022.
 
 | Row | Verdict | What decides it |
 |---|---|---|
 | 10c [Bel2013] | UNRESOLVED | The thesis credits Schmidt and the personal communication, but prints only "K ≈ 3.65". The agent proposed SOUND. |
 | 14a [LS1965] | SOUND | The cited JACM edition determines Σ(3) = 6 and SH(3) = 21. |
-| 1a [GGSWT2025] | UNRESOLVED | 1.5053 is printed only as a caption score. The stated bound is 1.5032, and the paper never says "May 2025". |
-| 20c [KL2022] | UNRESOLVED | arXiv v2 gives α = 5 and v1 gives 5 + o(1). The journal edition was not reached, and the paper never says "first". The agent leaned SOUND. |
+| 1a [GGSWT2025] | UNRESOLVED | The number holds: the stated bound 1.5032 implies 1.5053, which also appears as a caption score. The passages read do not connect 1.5053 to the May 2025 announcement the row names. |
+| 20c [KL2022] | UNRESOLVED | arXiv v2 gives α = 5 and v1 gives 5 + o(1). The journal edition was not reached. The paragraph introducing Theorem 1.1 describes the improvement to a polylogarithmic bound without the word "first". The agent leaned SOUND. |
 
 `node scripts/depth-audit.mjs` (exit 0): "79 row(s) audited — 51 sound, 1 defective, 20 unresolved, 7 unreachable". That is up from 75.
 
@@ -81,7 +81,7 @@ The draw (`9f03b72`) was pushed before any source was opened. GitHub created its
 - **The entry-versus-source note cannot reach most entries.** `referenceNote` renders only when the entry line carries the bold key `**[Key]**`. In the mirror, 31 reference lines do and 621 plain `- [Key] ` lines in 66 files do not. So the 20c author difference could not go on its public page, and none was stored. The search space was lines starting `- **[` or `- [` in the 115 constant files.
 <!-- findings:end -->
 
-**Classification (by hand, not a counter):** the window holds one record-facing finding (the 20c author name) and one instrument-facing one (the note path's reach). The 1a value is a candidate that has not been confirmed. No counted catch moved today, numeric or byte-only. The standing prediction says "the next record-facing catch will be a citation-quality defect in a mirrored upstream entry … found by a human reading the cited source in the depth audit (`A-47`), not by any alarm". It held in substance. The author name is that shape, and it was found by reading the cited source in `A-47`, not by an alarm. A reading agent found it, though, and I confirmed it, so "a human reading" is true only of the confirmation.
+**Classification (by hand, not a counter):** the window holds one record-facing finding (the 20c author name) and one instrument-facing one (the note path's reach). The 1a value is a candidate that has not been confirmed. No counted catch moved today, numeric or byte-only. The standing prediction says "the next record-facing catch will be a citation-quality defect in a mirrored upstream entry … found by a human reading the cited source in the depth audit (`A-47`), not by any alarm". A reading agent found the author-name difference and the lead agent rechecked it against Crossref. That matches the predicted defect and the predicted channel (reading the cited source in `A-47`, not an alarm). No human confirmed it, so the prediction's "found by a human" part is not established.
 
 ## Inputs (controllable)
 
