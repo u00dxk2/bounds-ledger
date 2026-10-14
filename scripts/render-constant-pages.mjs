@@ -311,8 +311,9 @@ const claimFieldsOk = (a) => claimText(a.claimReader) && claimText(a.claimResult
  * - only a READ verdict carries one: a paper that was never read cannot be said to print anything;
  * - the entry's file must be THIS constant's own mirror file, because that is where the check reads.
  * And one rule that is NOT a refusal: the sentence is WITHHELD unless the quoted entry text stands on the
- * entry's OWN reference line, found by its exact bold key `**[<citedRef>]**` or a line starting with the
- * plain key `- [<citedRef>] ` (added 2026-10-14 evening), and exactly one line is that entry. The reading is unchanged when upstream edits the entry, but "the entry gives X" would no longer
+ * entry's OWN reference line in the References section (see referenceEntryLine: the bold key, or since
+ * 2026-10-14 evening the plain `- [<citedRef>] ` form), and exactly one line is that entry. The reading
+ * is unchanged when upstream edits the entry, but "the entry gives X" would no longer
  * be true, and refusing would stop every render on an upstream edit (see auditStoreRefusal). The first form
  * searched the whole file, so an old wording surviving in another reference or a table row kept the
  * sentence printed after the entry itself changed (cross-family review r1, 2026-10-10). What this still
@@ -328,20 +329,27 @@ const referenceNoteOk = (a) => {
     && mirrorFileExact(a.rowFile);
 };
 /**
- * The one mirror line that is the reference's entry, or null when none or several are. An entry is a line
- * carrying the exact bold key `**[<citedRef>]**`, or a line that STARTS with the plain key `- [<citedRef>] `
- * (most of the mirror is written the second way: 621 plain lines in 66 files against 33 bold, 2026-10-14).
- * The plain form is anchored at the line start, because the same key in a table cell or inside a sentence
- * is a citation of the reference, not its entry. Bold and plain hits are counted together, so a key
- * written both ways is two lines and finds none.
+ * The one mirror line that is the reference's entry, or null when none or several are. WHERE an entry can
+ * be is a stated rule, not a pattern over the whole file: a line in the file's References section, which
+ * is the lines after its one `## References` (or `Bibliography`) heading and before the next heading. A
+ * file with no such heading, or more than one, finds no line. Inside that section an entry is a line
+ * carrying the exact bold key `**[<citedRef>]**`, or a line whose first characters after any indentation
+ * are the plain key `- [<citedRef>] ` (most of the mirror is written the second way). The section rule
+ * exists because a bullet in the file's comments can open with the same key ("- [K2026] generalizes …",
+ * 3a.md; cross-family review r1 on c5a5dd2, 2026-10-14): that bullet cites the reference and is not its
+ * entry. Bold and plain hits are counted together, so a key whose entry is written twice finds none.
  */
 export function referenceEntryLine(file, citedRef, root = ROOT) {
   if (typeof citedRef !== "string" || citedRef === "" || !mirrorFileExact(file, root)) return null;
   let lines;
   try { lines = readFileSync(join(root, file), "utf8").split(/\r?\n/); } catch { return null; }
+  const heads = lines.flatMap((l, i) => (/^#+\s*(References|Bibliography)\s*$/.test(l) ? [i] : []));
+  if (heads.length !== 1) return null;
+  const next = lines.findIndex((l, i) => i > heads[0] && /^#/.test(l));
+  const section = lines.slice(heads[0] + 1, next < 0 ? lines.length : next);
   const bold = `**[${citedRef}]**`;
   const plain = `- [${citedRef}] `;
-  const hits = lines.filter((l) => l.includes(bold) || l.startsWith(plain));
+  const hits = section.filter((l) => l.includes(bold) || l.trimStart().startsWith(plain));
   return hits.length === 1 ? hits[0] : null;
 }
 const referenceNoteShown = (a, root = ROOT) => {
@@ -1346,31 +1354,51 @@ async function selftest() {
   const dupRoot = mkdtempSync(join(tmpdir(), "refnote-dup-"));
   try {
     mkdirSync(join(dupRoot, MIRROR_PREFIX), { recursive: true });
-    writeFileSync(join(dupRoot, MIRROR_PREFIX, "dup.md"), `- **[DUP1]** Quoted title.\n- **[DUP1]** Another title.\n- **[ONE1]** Quoted title.\n`);
+    writeFileSync(join(dupRoot, MIRROR_PREFIX, "dup.md"), `## References\n\n- **[DUP1]** Quoted title.\n- **[DUP1]** Another title.\n- **[ONE1]** Quoted title.\n`);
     assert.ok(referenceEntryLine(`${MIRROR_PREFIX}dup.md`, "ONE1", dupRoot)?.includes("Quoted title"), "positive control: the temporary mirror is read, and a single key there finds its line");
     assert.equal(referenceEntryLine(`${MIRROR_PREFIX}dup.md`, "DUP1", dupRoot), null, "a key carried by TWO lines must find no line, even when the first of them holds the quote");
     // PLAIN entry lines (2026-10-14 evening): most of the mirror writes a reference as `- [Key] …`, not
-    // `- **[Key]** …` (621 plain lines in 66 files against 33 bold). Only a line that STARTS with the plain
-    // key is an entry; the same key in a table cell or inside a sentence is a citation of it, not the entry.
+    // `- **[Key]** …`. An entry is a line in the ONE References section; the same key in a table cell, in
+    // a sentence, or opening a comment bullet ABOVE that section (3a.md's "- [K2026] generalizes …", review
+    // r1 on c5a5dd2) is a citation of it, not the entry. MEANING FIRST: the section rule, then the shapes.
     writeFileSync(join(dupRoot, MIRROR_PREFIX, "plain.md"), [
+      "## Bounds",
       "| $x \\le 1$ | [PLN1] | a table row citing it |",
+      "## Additional comments",
+      "- [PLN1] also generalizes [PLN2] in a comment bullet.",
+      "- [CMT1] opens a comment bullet and has no entry anywhere.",
       "- Progress came via [PLN1] and [PLN2].",
       "- Compare the list form - [PLN1] used mid-line.",
+      "## References",
       "- [PLN1] Ann Author, Jean Name, *Quoted title*, J. **1** (2022).",
       "- [PDUP] First, *One*.",
       "- [PDUP] Second, *Two*.",
       "- [PLN11] Other Author, *Longer key*.",
+      "- [SOLO11] Only a longer key, *Solo*.",
+      " - [IND1] One-space indented entry, *Indented*.",
+      "- [IDUP] Unindented, *A*.",
+      "  - [IDUP] Indented duplicate, *B*.",
       "- [MIX1] Plain form.",
       "- **[MIX1]** Bold form.",
+      "## Later section",
+      "- [AFTER1] A bullet after the References section ends.",
       "",
     ].join("\n"));
     const PLAIN = `${MIRROR_PREFIX}plain.md`;
-    assert.ok(referenceEntryLine(PLAIN, "PLN1", dupRoot)?.startsWith("- [PLN1] Ann Author, Jean Name"), "a plain `- [Key] ` entry line must be found, and it must be the entry, not the table row or the sentence citing it");
+    assert.equal(referenceEntryLine(PLAIN, "CMT1", dupRoot), null, "a comment bullet OUTSIDE the References section that opens with a key must never be returned as its entry");
+    assert.equal(referenceEntryLine(PLAIN, "AFTER1", dupRoot), null, "a bullet after the References section has ended is not an entry");
+    assert.ok(referenceEntryLine(PLAIN, "PLN1", dupRoot)?.startsWith("- [PLN1] Ann Author, Jean Name"), "a plain `- [Key] ` entry line must be found, and it must be the entry, not the table row, the sentence or the comment bullet citing it");
     assert.equal(referenceEntryLine(PLAIN, "PDUP", dupRoot), null, "a key carried by TWO plain entry lines must find no line");
-    assert.equal(referenceEntryLine(PLAIN, "PLN2", dupRoot), null, "a key cited only inside a sentence has no entry line");
+    assert.equal(referenceEntryLine(PLAIN, "IDUP", dupRoot), null, "an entry plus an INDENTED duplicate is two entries, so no line");
+    assert.ok(referenceEntryLine(PLAIN, "IND1", dupRoot)?.includes("Indented"), "an indented plain entry line inside the section is found");
+    assert.equal(referenceEntryLine(PLAIN, "PLN2", dupRoot), null, "a key cited only in comments has no entry line");
     assert.equal(referenceEntryLine(PLAIN, "MIX1", dupRoot), null, "a key with one plain and one bold entry line is two lines, so no line");
-    assert.equal(referenceEntryLine(PLAIN, "PLN", dupRoot), null, "a key that is only a PREFIX of a plain key (PLN) must find no line");
+    assert.equal(referenceEntryLine(PLAIN, "SOLO1", dupRoot), null, "a key that is only a PREFIX of exactly one longer key (SOLO1 of SOLO11) must find no line");
     assert.ok(referenceEntryLine(PLAIN, "PLN11", dupRoot)?.includes("Longer key"), "positive control: a longer key sharing a prefix finds its own line");
+    writeFileSync(join(dupRoot, MIRROR_PREFIX, "nohead.md"), "- [NH1] An entry in a file with no References heading.\n");
+    writeFileSync(join(dupRoot, MIRROR_PREFIX, "twohead.md"), "## References\n- [TH1] First.\n## References\n- [TH2] Second.\n");
+    assert.equal(referenceEntryLine(`${MIRROR_PREFIX}nohead.md`, "NH1", dupRoot), null, "a file with no References heading finds no line");
+    assert.equal(referenceEntryLine(`${MIRROR_PREFIX}twohead.md`, "TH1", dupRoot), null, "a file with two References headings finds no line");
   } finally { rmSync(dupRoot, { recursive: true, force: true }); }
   // The real case that motivated it: 20c's KL2022 entry is a plain line.
   assert.ok(referenceEntryLine(`${MIRROR_PREFIX}20c.md`, "KL2022")?.includes("Jean Lehec"), "20c's plain KL2022 entry line must be found, carrying the mirror's author text");
