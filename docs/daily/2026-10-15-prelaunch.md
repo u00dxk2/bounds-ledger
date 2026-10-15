@@ -91,6 +91,57 @@ The draft had no READ-MUTATED lines. Its checks read wait-justification PASS (1 
 
 **Classification (by hand, not a counter):** today's findings are all instrument-facing: our own live disclosure sentence, our own reading brief, and our own process (an unsearched assertion). No cited source contradicted its record; the census stored 0 DEFECTIVE. No counted catch moved, numeric or byte-only. The standing prediction (the next record-facing catch will be a citation-quality defect found by a human reading the cited source in `A-47`) was neither confirmed nor falsified today. **Consecutive instrument-facing days: 1**, counted by hand.
 
+### Evening session — P1 selection packet
+
+**Outcome:** `A-54` (Small Ramsey Numbers, the second watched area). Render the page with the census results, pulled forward from the 10-17 slot. Build it on a branch, not main: the freeze lifts only when it lands on 10-19, after its adversarial review. The `pageRows()` census filter is removed in the same commit. The `copying.html` undercount is fixed in the same change. Table Ib's 50 group-credited upper bounds get a marking, decided and written down.
+
+**The user problem, in the reader's words (our paraphrase, not a real user's; no real-user words exist, see MISSING):** "I'm about to cite R(5, 5) ≤ 46. Did anyone check that number against the paper it's credited to, or is this just the survey copied?"
+
+**Evidence:**
+- OBSERVED: `node scripts/ds1-depth.mjs`, 2026-10-15 evening, at `aa76440`: "census: 122 of 122 bound(s), across 42 of 42 credited paper(s) — 53 sound, 0 defective, 49 unresolved, 20 unreachable" (exit 0). The same run reads 127 readings stored: 5 bounds were also read in the 09-18 drawn slice. I checked each of those 5 pairs, and the drawn verdict equals the census verdict in all 5.
+- OBSERVED: the committed `ramsey.html` (`render-ramsey --check` PASS in tonight's verify) prints "So far, of the 128 values Table Ia prints: sound 2 … unresolved 2 … unreachable 1 · not yet read 117 · nothing to read it against 6". The census verdicts are invisible to a reader, as the freeze intends.
+- OBSERVED, re-measured tonight because my rule is to re-measure any figure I quote: the live `copying.html` says "5 of them so far". The review's pattern finds 45 rows (session 6: 15, session 7: 30). A wider read finds whole survey entries quoted for identification in rows that pattern misses: DS1-0058 (Spe4), DS1-0064 (SuLL), and DS1-0068, DS1-0070, DS1-0076 and DS1-0081 (HZ1), so DS1-0064 is a census session 5 row. **45 is a floor, not the count.** The 5 `surveyRefEntry` fields come on top of it. The exact count will be measured against the survey's own reference list, which is saved locally under `tmp/` and not stored in the repo, before the disclosure is rewritten. If the pass bar's "45" differs from that figure, the difference will be named.
+- OBSERVED: 69 census rows are UNRESOLVED or UNREACHABLE, and none carries a `pageNote`. The page guard refuses those verdicts without one (`render-ramsey.mjs` leg 7b), so the render owes 69 page notes. They fall into 22 groups of credited key and verdict.
+- OBSERVED: `npm run reports`, 2026-10-15 evening: 0 outside arrivals. 33 issues were fetched and all 33 are ours, and the parts sum.
+- MISSING: any real-user encounter with `ramsey.html`. Encounter on the public pages is blind (`A-59`), and the evangelism bar's metric is NOT MEASURABLE (`docs/evangelism-bar.md`).
+- MISSING: `check-cycle-rotation --lane bounds-ledger` exited 2, UNDETERMINED: "no real-user-evidence artifact on record for bounds-ledger; the registry does not declare which lanes owe one". That is not "nothing due"; it is an unread state.
+
+**Permission:** David ruled on 2026-09-20 to rebuild the table as our own arrangement and keep crediting the survey. His partial-table ruling the same day added: source whatever we can, and label the rest as credited to the survey and not independently checked. His freeze says to leave the page as written until the rebuild lands, so tonight's build stays on a branch and main's pages do not change. The 10-19 landing goes through an adversarial review first. No David decision is open: `answered-cards` read no waiting or answered cards. The Table Ib marking is a scoping choice inside his ruling, so I decide it and record why, and it goes into the review.
+
+**Next action (deliver built value):** the readings exist and no reader can see them. First command:
+
+```
+git -C C:/dev/skylark/bounds-ledger switch -c a54-render
+```
+
+Then, in order:
+1. Measure the copied-entry count against the survey's reference list, using an oracle that shares no code with the store.
+2. Write the 69 page notes from each group's `sourceRead`.
+3. Renderer changes: lift the filter; one state per bound, refusing a bound whose readings disagree; each value carries David's two states; Table Ib marked; the disclosure counts a structured field instead of a regex over free text; the lede and method sentences rewritten for a census.
+4. Selftests, with both answers shown.
+5. A Codex read-only round, with the method sentences as their own review call.
+6. Open a PR, so `page-check.yml` runs on the branch through its `pull_request` trigger.
+
+**Acceptance (pass bar):**
+- RED, live: `ramsey.html` shows no census verdict ("not yet read 117"), and `copying.html` says 5.
+- GREEN, on the branch: every Table Ia value shows its verdict and David's two-state label. The rendered counts read sound 53, defective 0, unresolved 49, unreachable 20, nothing to read it against 6. Every Table Ib value carries its marking.
+- `copying.html` states the count measured at step 1, with any difference from 45 named.
+- `node scripts/render-ramsey.mjs --check` and `--selftest` pass.
+- Positive controls: `node scripts/check-claims.mjs` exits 0, and `page-check` passes on the PR.
+
+**Delivery and encounter checks:** delivery is read when it lands on 10-19, by `npm run served` (SERVED for `ramsey.html` and `copying.html`). Encounter is blind (`A-59`). The one event that would show it is a looks-wrong report on a Ramsey entry, counted by `npm run reports`, and it is readable at N=1.
+
+**USER-FACING: yes.** Paths: `scripts/render-ramsey.mjs`, `ramsey.html`, `copying.html`, `continuity/depth-audit-ds1.json` (page notes and the copied-entry marker), `continuity/items.json`. Main's pages stay as they are until the 10-19 landing.
+
+**A finding of mine that recurred and bears on this:** "a measurement I quote gets re-measured at HEAD" (10-16 primer). The 45 handed on in the kickoff and in my own report was re-measured tonight and is a floor.
+
+**HYGIENE INPUTS:**
+- (a) none. Read: dated gates due today, 0 (`check-due-gates-dispositioned --print`, 97 rows swept).
+- (b) none. Read: rows owed in skylark-site's ledger, 0 of 754.
+- (c) none. Read: the kickoff's state reads; none is marked CROSSED. HEAD CI is GREEN on `aa76440` (3 successes, 0 failures), stale-actionable is 0 of 20, and missingLinkedCommits is NOTHING SWEPT, 0 of 0.
+
+**Already done tonight, outside the choice:** the `A-47` slice 18 draw was pushed before any source opened, as `0a8dd77` (origin/main; `git rev-list --count origin/main..HEAD` read 0).
+
 ## Inputs (controllable)
 
 - One census session: a tripwire, a plan pushed before any source opened, seven papers, six reading agents run twice (the first six readings voided), and three Codex read-only review rounds.
