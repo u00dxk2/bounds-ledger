@@ -2214,6 +2214,21 @@
         ],
         "bounds": 32,
         "order": "Planned and committed before any of these papers was opened. The commit that adds the readings comes after it in history. The next four keys of the derived census order (ds1-depth --frame, credited keys by first appearance), covering frame positions 58, 60, 62, 64, 65, 77, 79, 81, 82, 83, 93, 95, 97, 98, 99, 106, 107, 109, 110, 111, 116, 117, 118, 121 and 122 (HW+, 25 bounds), 76 and 86 (Tat, 2 bounds), 84, 112 and 119 (Math, 3 bounds) and 89 and 105 (HZ2, 2 bounds). The tripwire in A-54.rebuildCheckpoint2026_09_28 was applied first and did not fire: 13 papers remaining (census6_2026_10_08: 11 of Table Ia's 42 credited papers, plus AnM2 and AnM3) against 4 x 4 census slots through 2026-10-16 (10-10 through 10-16, counting today) = 16. HW+ takes one access budget for all 25 of its bounds, as rebuildCheckpoint2026_09_28 said it should; four is the floor for papers ATTEMPTED. Attempted and read are reported as two numbers."
+      },
+      {
+        "session": 8,
+        "plannedOn": "2026-10-15",
+        "keys": [
+          "XXER",
+          "XSR2",
+          "XuXR",
+          "BurR",
+          "Ea1",
+          "ShZ1",
+          "Shi2"
+        ],
+        "bounds": 10,
+        "order": "Planned and committed before any of these papers was opened. The commit that adds the readings comes after it in history. ALL seven remaining keys of the derived census order (ds1-depth --frame, credited keys by first appearance), covering frame positions 92 and 108 (XXER), 94 and 114 (XSR2), 96 (XuXR), 100 (BurR), 103 and 115 (Ea1), 113 (ShZ1) and 120 (Shi2). Seven papers and not four, on the orchestrator's P3 review (bus 5bb6bd4e): four a slot is a planning rate, not a cap, and these seven carry only 10 bounds. The tripwire in A-54.rebuildCheckpoint2026_09_28 was applied first and FIRED: 9 papers remaining (7 of Table Ia's 42 credited papers, plus AnM2 and AnM3) against 4 x 2 census slots through 2026-10-18 (10-15 and 10-17, counting today; the 10-14 slot went to A-47 slice 17 and the 10-16 and 10-18 slots are A-47's) = 8. The completion date is restated on A-54 today, from what this session lands. Ea1 is not a paper: the survey's entry reads 'Easy to obtain by simple combinatorics from other results, in particular by using graphs establishing lower bounds with smaller parameters.' There is no credited text to open beyond that entry. ShZ1 is a 2001 manuscript. Both are attempted under blockedSourceRule2026_09_25 like any other key. AnM2 and AnM3 (Table Ib's group credit; personal communications in the survey's references) are a stretch, outside this plan. Attempted and read are reported as two numbers."
       }
     ]
   }
