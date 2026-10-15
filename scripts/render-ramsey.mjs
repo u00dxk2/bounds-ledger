@@ -41,6 +41,8 @@ const PUBLISHED_ON = "2026-09-17";
 // The day the disclosure below was written. Stated on the page beside PUBLISHED_ON precisely
 // because the gap between them is the honest part.
 const WRITTEN_ON = "2026-09-20";
+// The day the census read its last credited source (A-54 census8_2026_10_15).
+const CENSUS_DONE = "2026-10-15";
 const SITE = "https://u00dxk2.github.io/bounds-ledger/";
 const AUTHOR_PAGE = "https://www.cs.rit.edu/~spr/ElJC/eline.html";
 const RUNS = `${REPO}/actions/workflows/reverify.yml`;
@@ -140,13 +142,89 @@ const ibText = (e) => (e.ib ? `${R(e.k, e.l)} ≤ ${e.ib.upper}` : "no entry in 
 
 const STORE_URL = `${REPO}/blob/main/continuity/depth-audit-ds1.json`;
 
-// THE FREEZE, IN CODE. David's ruling of 2026-09-20 (A-54 davidRuling2026_09_20): "Until that is
-// done, leave the page as written." Census readings (A-54 rebuildScope2026_09_21) are written to the
-// same store this page renders from, so without this filter the first census row would change
-// ramsey.html and copying.html, or turn `npm run check` STALE. They are still VALIDATED against the
-// table (readStore runs over every row); they are only held off the page. Remove this filter in the
-// commit that lands the rebuild, and not before.
-export const pageRows = (rows) => rows.filter((r) => r.selection !== "census");
+// THE REBUILD (A-54, David's rulings of 2026-09-20): the page is our own arrangement, the survey
+// stays credited, and every value is marked one of two ways — independently sourced, or credited
+// to the survey and not independently checked. The census (A-54 rebuildScope2026_09_21) read every
+// bound Table Ia credits to a paper, so census readings render here. The freeze filter that held
+// them off the page (`pageRows`, 2026-09-25 to the rebuild) was removed in the commit that lands it.
+//
+// ONE READING IS SHOWN PER BOUND. Five bounds were read twice, once in the drawn slice of 2026-09-18
+// and once in the census; the census reading is the one shown, and the readings of one bound must
+// carry the same verdict or the store is refused (readingConflicts), because showing either would
+// hide the other's disagreement.
+export function shownReading(rows, b) {
+  const all = rows.filter((r) => sameBound(r, b));
+  return all.find((r) => r.selection === "census") ?? all[0];
+}
+export function readingConflicts(rows) {
+  const by = new Map();
+  for (const r of rows) {
+    const k = `${r.k},${r.l},${r.bound},${r.value},${r.ref}`;
+    if (!by.has(k)) by.set(k, []);
+    by.get(k).push(r);
+  }
+  return [...by.values()].filter((rs) => new Set(rs.map((r) => r.verdict)).size > 1)
+    .map((rs) => `${R(rs[0].k, rs[0].l)} ${rs[0].bound} ${rs[0].value} [${rs[0].ref}] is read ${rs.map((r) => `${r.verdict} by ${r.id ?? "an unnamed row"}`).join(" and ")}`);
+}
+
+// David's two states (davidRuling2026_09_20_partialTable), close to his words. SOUND is the only
+// verdict that sources a value independently; DEFECTIVE is neither, because either label would
+// misstate a value its credited source contradicts (rebuildScope2026_09_21, DECISION 3).
+export const SOURCED = "independently sourced";
+export const SURVEY_ONLY = "credited to the survey and not independently checked";
+const stateOf = (verdict) => (verdict === "SOUND" ? SOURCED : verdict === "DEFECTIVE" ? null : SURVEY_ONLY);
+// Table Ib's marking, decided at the render (A-54 OPEN question, 2026-10-15). The census read Table
+// Ia only, so no Table Ib value was read against a source, and every one is marked credited to the
+// survey. The reason is said per value from the survey's own caption (revision #18, p. 7): "All of
+// them were obtained by Angeltveit and McKay in 2019 [AnM2] and 2023-2024 [AnM3, AnM4], except
+// R (4, 5) [MR4]" — a group credit for every value but one, which is why the frame left Table Ib out.
+// The one value the caption credits to a single paper can still be sourced: when Table Ia prints the
+// SAME upper bound credited to the SAME paper and its census reading is SOUND, that reading sources
+// this value too (Codex claims pass r1b, 2026-10-15: R(4, 5) <= 25 [MR4] is DS1-0033, SOUND). Derived
+// from the stored reading every render, never typed.
+const IB_OWN_CREDIT = { "4,5": "MR4" };
+const ibNote = (e, rows = []) => {
+  const own = IB_OWN_CREDIT[key(e.k, e.l)];
+  if (!own) return `${SURVEY_ONLY}: the census read Table Ia only; the survey credits Table Ib's values as a group to [AnM2], [AnM3] and [AnM4], not each to one paper`;
+  const twin = shownReading(rows, { k: e.k, l: e.l, bound: "upper", value: e.ib.upper, ref: own });
+  // DEFECTIVE takes NEITHER state (DECISION 3), here as in Table Ia (Codex r2, 2026-10-15).
+  if (twin?.verdict === "DEFECTIVE") return `marked neither way: the same bound, credited to [${own}] in Table Ia, was read there and its source does not support it (see the reading below)`;
+  return twin?.verdict === "SOUND"
+    ? `${SOURCED}: the survey credits this value to [${own}], and the same bound, credited to [${own}] in Table Ia, was found there (see the reading below)`
+    : `${SURVEY_ONLY}: the census read Table Ia only; the survey credits this Table Ib value to [${own}]`;
+};
+
+// WHAT THE REPOSITORY KEEPS OF THE SURVEY'S BIBLIOGRAPHY (A-54 disclosureUndercount2026_10_15). A row
+// keeps an entry when `surveyRefEntry` holds it, or when `surveyEntryQuoted` names the field whose
+// text quotes it. The count reads those two FIELDS and never parses free text: the live page counted
+// surveyRefEntry alone and said 5 while 51 more rows quoted entries in their notes. The marker was set
+// by a stated rule — a quotation that opens with a bracketed key, such as '[SuLL] — and the check
+// below holds it to that rule in both directions for the row's own key.
+// NOT COVERED, by name: an entry quoted WITHOUT its key, or under a key other than the row's own (or
+// an alias listed here). Nothing here would see either.
+const KEY_ALIASES = { "HW+": ["HW+", "HWSYZH"] };
+const KEY_QUOTE = /['"‘“]\s?\[([^\]\s]{1,12})\]/g;
+export const keepsSurveyEntry = (r) => Boolean(String(r.surveyRefEntry ?? "").trim() || String(r.surveyEntryQuoted ?? "").trim());
+export function quotedEntryViolations(rows) {
+  const v = [];
+  for (const r of rows) {
+    const keys = KEY_ALIASES[r.ref] ?? [r.ref];
+    const named = String(r.surveyEntryQuoted ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+    const quotesOwn = (val) => [...String(val).matchAll(KEY_QUOTE)].some((m) => keys.includes(m[1]));
+    for (const f of named) {
+      if (typeof r[f] !== "string" || !quotesOwn(r[f])) v.push(`${r.id}: surveyEntryQuoted names "${f}", which holds no quotation opening with the row's own key [${r.ref}]`);
+    }
+    // pageNote is PUBLISHED on ramsey.html, so a survey entry quoted there is refused outright rather
+    // than counted: it would put the survey's bibliography on the page whose disclosure says it is not
+    // there (Codex review r1, 2026-10-15 — an entry moved into pageNote dropped the count to 55).
+    if (quotesOwn(r.pageNote ?? "")) v.push(`${r.id}: its pageNote, which ramsey.html publishes, quotes the survey's entry for [${r.ref}]`);
+    for (const [f, val] of Object.entries(r)) {
+      if (typeof val !== "string" || f === "surveyRefEntry" || f === "pageNote" || f === "surveyEntryQuoted") continue;
+      if (quotesOwn(val) && !named.includes(f)) v.push(`${r.id}: its ${f} quotes the survey's entry for [${r.ref}] and surveyEntryQuoted does not name that field`);
+    }
+  }
+  return v;
+}
 // The ONE piece of markup a read state carries. Named here because the renderer writes it and leg 7b
 // strips exactly this and then requires everything left to be plain text.
 const HOW_LINK = `<a href="${esc(STORE_URL)}">How it was read</a>`;
@@ -173,16 +251,19 @@ function auditDds(e, bounds, rows) {
   if (!bounds.length) return [{ state: "nothing-to-read", html: `<dd class="none" data-state="nothing-to-read">Table Ia prints nothing here: ${NOTHING}</dd>` }];
   return bounds.map((b) => {
     const label = esc(boundLabel(b));
-    if (!b.inFrame) return { state: "nothing-to-read", html: `<dd class="none" data-state="nothing-to-read">${label}: ${NOTHING}</dd>` };
-    const row = rows.find((r) => sameBound(r, b));
+    // A value with nothing to read it against, or not yet read, is the survey's alone: David's
+    // second state, said on the line rather than left for the reader to infer.
+    if (!b.inFrame) return { state: "nothing-to-read", html: `<dd class="none" data-state="nothing-to-read">${label}: ${SURVEY_ONLY} — ${NOTHING}</dd>` };
+    const row = shownReading(rows, b);
     const o = row && OUTCOMES.find(([name]) => name === row.verdict);
-    if (!o) return { state: "not-yet-read", html: `<dd class="none" data-state="not-yet-read">${label}: ${NOT_YET}</dd>` };
+    if (!o) return { state: "not-yet-read", html: `<dd class="none" data-state="not-yet-read">${label}: ${SURVEY_ONLY} — ${NOT_YET}</dd>` };
     const how = row.selection === "hand-picked" ? " Picked by hand, not drawn." : "";
     // WHAT WAS ACTUALLY READ, in one clause. Without it the page said "the credited source was
     // read as far as it could be" for two bounds whose credited paper was never opened at all —
     // true of the reading, misleading about the source (adversarial review round 2, 2026-09-18).
     const note = row.pageNote ? ` ${esc(row.pageNote)}` : "";
-    return { state: o[0], html: `<dd data-state="${o[1]}">${label}: ${esc(o[1])} — ${esc(o[2])}.${note}${how} <a href="${esc(STORE_URL)}">How it was read</a></dd>` };
+    const state = stateOf(o[0]);
+    return { state: o[0], html: `<dd data-state="${o[1]}">${label}: ${state ? `${esc(state)} — ` : ""}${esc(o[1])}: ${esc(o[2])}.${note}${how} <a href="${esc(STORE_URL)}">How it was read</a></dd>` };
   });
 }
 
@@ -205,6 +286,7 @@ export function renderRamsey(doc, rows = []) {
   const entries = entriesOf(doc);
   const src = doc.source;
   const { frame, left } = frameOf(doc);
+  const sources = new Set(frame.map((b) => b.ref)).size;
   const counts = Object.fromEntries([...OUTCOMES.map(([n]) => [n, 0]), ["not-yet-read", 0], ["nothing-to-read", 0]]);
   const blocks = [];
   let lastK = null;
@@ -217,7 +299,7 @@ export function renderRamsey(doc, rows = []) {
 <h2><a href="#r-${e.k}-${e.l}">${esc(R(e.k, e.l))}</a></h2>
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">${esc(ia.value)}</span>${ia.refs ? `<span class="refs">${esc(ia.refs)}</span>` : ""}</dd>
-<dt>Table Ib prints</dt><dd${e.ib ? "" : ' class="none"'}>${esc(ibText(e))}</dd>
+<dt>Table Ib prints</dt><dd${e.ib ? "" : ' class="none"'}>${esc(ibText(e))}${e.ib ? `<span class="refs">${esc(ibNote(e, rows))}</span>` : ""}</dd>
 <dt>Read against its credited source</dt>
 ${dds.map((d) => d.html).join("\n")}
 </dl>
@@ -240,17 +322,17 @@ ${dds.map((d) => d.html).join("\n")}
 <style>${STYLE}</style>
 <a class="back" href="./">&larr; all constants</a>
 <h1>Small Ramsey numbers R(k, l)</h1>
-<p class="lede">What the survey <em>Small Ramsey Numbers</em> prints for the two-colour classical Ramsey numbers R(k, l) with 3 ≤ k ≤ 10 and k ≤ l ≤ 15, which is 72 of those 76 pairs because the survey gives no value for R(9, 14), R(9, 15), R(10, 13) or R(10, 14), exactly as printed, with the reference it credits for each value, and what this ledger has and has not checked about it.</p>
+<p class="lede">Our own arrangement of the two-colour classical Ramsey numbers R(k, l) with 3 ≤ k ≤ 10 and k ≤ l ≤ 15, which is 72 of those 76 pairs because the survey <em>Small Ramsey Numbers</em> gives no value for R(9, 14), R(9, 15), R(10, 13) or R(10, 14). Each value is the one the survey prints, shown with the reference the survey credits for it, and marked either <em>${SOURCED}</em>, where our own check of what that reference credits supports the value, or <em>${SURVEY_ONLY}</em>. Every value marked the second way says why beside it, and the notes kept on each reading say what was actually read or recomputed.</p>
 
 <nav class="jump" aria-label="Jump to an entry">
 ${jump}
 </nav>
 
 <div class="note">
-<p><strong>The source.</strong> Stanisław Radziszowski, <a href="${esc(src.landing)}">Small Ramsey Numbers</a>, The Electronic Journal of Combinatorics, dynamic survey ${esc(src.survey)}, <strong>revision #${esc(src.revision)}, ${esc(longDate(src.revisionDate))}</strong>, Section 2.1, Tables Ia and Ib. The survey is the authority. This page reproduces its values and reference keys, not the document. <a href="copying.html">What this page copies from the survey, and how to ask for a change</a>.</p>
+<p><strong>The source.</strong> Stanisław Radziszowski, <a href="${esc(src.landing)}">Small Ramsey Numbers</a>, The Electronic Journal of Combinatorics, dynamic survey ${esc(src.survey)}, <strong>revision #${esc(src.revision)}, ${esc(longDate(src.revisionDate))}</strong>, Section 2.1, Tables Ia and Ib. The survey is credited for every value here and remains the authority. This page is our arrangement of its values and reference keys, not a copy of the document. <a href="copying.html">What this page copies from the survey, and how to ask for a change</a>.</p>
 <p><strong>What is covered.</strong> Section 2.1 only: ${entries.length} values of R(k, l). Table Ia prints something for ${doc.tableIa.length} of them, and Table Ib prints a newer upper bound for ${doc.tableIb.length}. <strong>Not covered</strong>: everything else in the survey, including other graphs, more than two colours and hypergraphs, and any result published after revision #${esc(src.revision)}.</p>
 <p><strong>What is watched.</strong> Once a day a scheduled job checks the journal&rsquo;s page and the <a href="${esc(AUTHOR_PAGE)}">author&rsquo;s revision list</a> for a newer revision, and re-reads this table from the survey&rsquo;s PDF, whose fingerprint is pinned. A new revision turns that job red until a person has compared it with this page. The <a href="${esc(RUNS)}">run history</a> is the live read; this page is not.</p>
-<p><strong>What has been checked against its source.</strong> The survey credits each bound to a paper by the key shown beside it, such as [AnM4], and an entry can credit its lower and upper bound to different papers. So every bound carries its own state. A bound says <em>not yet read</em> until someone has tried to check it. Where one has been tried, the words beside it say what was actually read — sometimes the credited paper itself, sometimes only what could be reached when that paper could not be opened, and sometimes a construction the ledger recomputed rather than read. Bounds are chosen for reading by a fixed rule, written down and committed before any paper is opened, so the ones read are not the ones that looked easy. The <a href="${esc(STORE_URL)}">notes kept on each reading</a> name the paper, what exactly was read, and what it said. So far, of the ${total} values Table Ia prints: ${esc(countLine)}.</p>
+<p><strong>What has been checked against its source.</strong> The survey credits each bound to a paper by the key shown beside it, such as [AnM4], and an entry can credit its lower and upper bound to different papers. So every bound carries its own mark. Every bound Table Ia credits to a reference was taken in a census, completed on ${esc(longDate(CENSUS_DONE))}: the ${frame.length} bounds credited under ${sources} reference keys were each attempted, and the note kept on each records what was tried. What a key credits is usually a paper, but can be a thesis, a manuscript, a personal communication, a web page, a published graph file, or a derivation the survey gives itself. A bound is marked <em>${SOURCED}</em> only when the reading was SOUND: what the key credits, or a construction or derivation it gives, was reached and supports the value; the notes kept on each reading say which edition or file that was. Every other bound is marked <em>${SURVEY_ONLY}</em>, with a sentence saying why; that includes bounds whose value was seen only in an abstract or in a different edition from the one the survey cites. A bound whose credited source was read and does not support it would carry neither mark; ${counts.DEFECTIVE ? `${counts.DEFECTIVE} do` : "there are none"}. ${left.length} values Table Ia prints credit no source to read (no reference is printed, or the reference is an item of the survey&rsquo;s own Section 2.3), and Table Ib&rsquo;s upper bounds were outside the census; the one Table Ib value the survey credits to a single paper is marked by that paper&rsquo;s reading of the same bound in Table Ia. The <a href="${esc(STORE_URL)}">notes kept on each reading</a> name what was read and what it said. So far, of the ${total} bounds Table Ia prints (its ${numbersIn(doc.tableIa)} numbers, with an exact value counted twice where its lower and upper halves are credited to different references): ${esc(countLine)}. In all, ${counts.SOUND} are ${SOURCED} and ${total - counts.SOUND - counts.DEFECTIVE} are ${SURVEY_ONLY}.</p>
 <p><strong>Table Ia and Table Ib can print different upper bounds for the same number.</strong> Table Ib lists upper bounds from computations by Angeltveit and McKay ([AnM2], [AnM3], [AnM4]) and R(4, 5) from [MR4], and the survey says they improve on the upper bounds in Table Ia. Where both tables print one, this page shows both and does not choose between them for you.</p>
 <p><strong>[HW+]</strong> is the survey&rsquo;s own abbreviation of [HWSYZH], as enhanced in [Boza5]. A reference written as <em>item 2.3.h of the survey</em> points to a numbered item of its Section 2.3, not to a paper.</p>
 <p>If an entry disagrees with the survey or with the paper it credits, use <strong>looks wrong?</strong> on that entry. The report arrives already naming the entry and the revision.</p>
@@ -335,6 +417,9 @@ export function guardPage(page, doc, rows = []) {
       if (!new RegExp(`(^|[^0-9])${n}([^0-9]|$)`).test(body.split("Table Ib prints")[0])) v.push(`${R(e.k, e.l)}: Table Ia value ${n} is not shown`);
     }
     if (e.ib && !new RegExp(`≤ ${e.ib.upper}<`).test(body.split("Table Ib prints")[1] ?? "")) v.push(`${R(e.k, e.l)}: Table Ib value ${e.ib.upper} is not shown`);
+    // Every Table Ib value carries its mark too, in the same dd as the value: a Table Ib number with
+    // no mark beside it would read as checked by default.
+    if (e.ib && !((body.split("Table Ib prints</dt>")[1] ?? "").split("</dd>")[0] ?? "").includes(esc(ibNote(e, rows)))) v.push(`${R(e.k, e.l)}: Table Ib value ${e.ib.upper} does not carry its mark ("${ibNote(e, rows)}")`);
     // One read state per value Table Ia prints for the entry, and the machine state and the words
     // a reader sees must say the same thing.
     const auditPart = (body.split("Read against its credited source</dt>")[1] ?? "").split("</dl>")[0];
@@ -345,9 +430,12 @@ export function guardPage(page, doc, rows = []) {
       const ds = attrs.match(/data-state="([^"]+)"/)?.[1];
       const words = inner.replace(/<[^>]+>/g, "");
       const o = OUTCOMES.find(([, label]) => label === ds);
-      const ok = o ? words.includes(`: ${o[1]} — ${o[2]}.`)
-        : ds === "not-yet-read" ? words.endsWith(`: ${NOT_YET}`)
-        : ds === "nothing-to-read" ? words.endsWith(`: ${NOTHING}`)
+      // The verdict AND David's state it maps to, in the one form the renderer emits: a sound reading
+      // marked credited-to-the-survey, or an unresolved one marked independently sourced, is refused.
+      const st = o && stateOf(o[0]);
+      const ok = o ? words.includes(`: ${st ? `${st} — ` : ""}${o[1]}: ${o[2]}.`)
+        : ds === "not-yet-read" ? words.endsWith(`: ${SURVEY_ONLY} — ${NOT_YET}`)
+        : ds === "nothing-to-read" ? words.endsWith(`: ${SURVEY_ONLY} — ${NOTHING}`) || words === `Table Ia prints nothing here: ${NOTHING}`
         : false;
       if (!ok) v.push(`${R(e.k, e.l)}: read state ${JSON.stringify(ds)} with the words "${words}" is not one of the four outcomes, "${NOT_YET}" or "${NOTHING}"`);
       if (!o) continue;
@@ -388,7 +476,7 @@ export function guardPage(page, doc, rows = []) {
   // 6. It says what is covered and what has been read, and the counts add up.
   if (!html.includes(`revision #${doc.source.revision}`)) v.push("does not name the revision");
   if (!/<strong>Not covered<\/strong>/.test(html)) v.push("does not say what is not covered");
-  const so = html.match(/So far, of the (\d+) values Table Ia prints: ([^<]*)\./);
+  const so = html.match(/So far, of the (\d+) bounds Table Ia prints \([^)]*\): ([^<]*)\./);
   if (!so) v.push("does not state what has been checked");
   else {
     const nums = [...so[2].matchAll(/(sound|defective|unresolved|unreachable|not yet read|nothing to read it against) (\d+)/g)];
@@ -400,10 +488,14 @@ export function guardPage(page, doc, rows = []) {
   // 7. Every stored reading is on the page, ON ITS OWN BOUND, with its own verdict. A reading the
   //    store holds and the page does not show is the store-vs-page gap (A-53) in the new area's
   //    first week, so it is refused, not tolerated.
+  for (const c of readingConflicts(rows)) v.push(`two readings of one bound disagree: ${c}`);
   for (const r of rows) {
     const name = `${r.id ?? `${R(r.k, r.l)} ${r.bound}`} (${r.verdict} on the ${r.bound} bound ${r.value}, credited to [${r.ref}])`;
     const shown = shownReads.find((s) => sameBound(s, r) && s.verdict === r.verdict);
     if (!shown) { v.push(`the stored reading ${name} is not shown on the page`); continue; }
+    // A second reading of a bound already shown agrees with it (readingConflicts above) and is kept
+    // in the notes; the page shows the census reading, so only that one owes its pageNote ON the page.
+    if (shownReading(rows, r) !== r) continue;
     // 7b. A reading that did NOT reach its credited source owes the reader its own sentence. The four
     //     outcome phrases alone say the reading fell short and nothing about WHY, which on 2026-09-19
     //     read as an errand still open for two bounds whose value the survey credits to a personal
@@ -441,7 +533,8 @@ export function guardPage(page, doc, rows = []) {
       }
     }
   }
-  if (shownReads.length !== rows.length) v.push(`the page shows ${shownReads.length} reading(s) and the store holds ${rows.length}`);
+  const boundsRead = new Set(rows.map((r) => `${r.k},${r.l},${r.bound},${r.value},${r.ref}`)).size;
+  if (shownReads.length !== boundsRead) v.push(`the page shows ${shownReads.length} reading(s) and the store holds readings of ${boundsRead} bound(s)`);
   return v;
 }
 
@@ -457,7 +550,7 @@ export function renderCopying(doc, rows = []) {
   // and one keeps a sentence of the survey's own item 2.1.o. Found by adversarial review before
   // publication, 2026-09-20 — in the sentence describing our own position, which is where this
   // lane's defects land. The count is COMPUTED so it cannot drift from the store.
-  const refEntries = rows.filter((r) => String(r.surveyRefEntry ?? "").trim()).length;
+  const refEntries = rows.filter(keepsSurveyEntry).length;
   return `<!doctype html>
 <html lang="en">
 <meta charset="utf-8">
@@ -472,7 +565,7 @@ export function renderCopying(doc, rows = []) {
 
 <div class="note">
 <p><strong>What this page copies.</strong> From Section 2.1: ${ia} entries of Table Ia, which between them print <strong>${numbersIn(doc.tableIa)} numbers</strong> &mdash; an entry gives either one exact value or a lower and an upper bound &mdash; and ${ib} upper bounds from Table Ib, ${numbersIn(doc.tableIb)} numbers in all. Beside each, the reference key the survey credits for it, such as [AnM4]. That is everything the table itself reproduces.</p>
-<p><strong>What else the repository keeps.</strong> When a bound is read against the paper it credits, the note of that reading also keeps, word for word, the survey&rsquo;s own bibliography entry for that paper &mdash; ${refEntries} of them so far &mdash; so a reader can see which work was checked without going back to the survey. Where the survey&rsquo;s numbered items explain where a value came from, such a note also quotes the sentence that says so. These live in the audit notes, not on this table.</p>
+<p><strong>What else the repository keeps.</strong> The note kept on each attempt to check a bound, whether or not the attempt reached its source and whatever kind of source the survey credits, may also keep, word for word, the survey&rsquo;s own bibliography entry for that source, in full or in part &mdash; ${refEntries} of them so far, counted one per reading, so an entry kept in several readings counts each time &mdash; so a reader can see which work was checked without going back to the survey. Where the survey&rsquo;s numbered items explain where a value came from, such a note also quotes the sentence that says so. These live in the audit notes, not on this table.</p>
 <p><strong>What is not copied.</strong> The survey&rsquo;s PDF and its text: every other section, its figures, the rest of its commentary, the rest of its bibliography, and any table beyond Section 2.1. A fingerprint of the PDF is kept so a new revision can be detected; the file itself is never stored here or served from here.</p>
 <p><strong>No licence is claimed.</strong> <a href="${esc(src.landing)}">Small Ramsey Numbers</a>, revision #${esc(src.revision)} of ${esc(longDate(src.revisionDate))}, carries no licence permitting republication, and none is assumed here. The survey remains the authority; where this site and the survey disagree, the survey is right and this site has a bug.</p>
 <p><strong>Why copy the values at all.</strong> A bound and the paper credited for it are the two facts a reader needs to check a citation. This site exists to say whether anyone has actually opened that credited paper, which cannot be said without naming the bound it is about.</p>
@@ -510,7 +603,7 @@ export function guardCopying(page, doc, rows = []) {
   const saidNums = Number(html.match(/<strong>(\d+) numbers<\/strong>/)?.[1] ?? NaN);
   if (!Number.isFinite(saidNums)) v.push("does not state how many NUMBERS of Table Ia it reproduces");
   else if (saidNums !== wantNums) v.push(`says it reproduces ${saidNums} numbers from Table Ia, the committed table prints ${wantNums}`);
-  const want = rows.filter((r) => String(r.surveyRefEntry ?? "").trim()).length;
+  const want = rows.filter(keepsSurveyEntry).length;
   const said = text.match(/&mdash;\s*(\d+)\s*of them so far|—\s*(\d+)\s*of them so far/);
   const saidN = said ? Number(said[1] ?? said[2]) : null;
   if (saidN === null) v.push("does not state how many of the survey's bibliography entries the repository keeps");
@@ -554,12 +647,12 @@ function selftest() {
   // Each guard FIRES on a page carrying its condition. Meaning first.
   const fires = [
     ["record wording", html.replace("<h1>", "<h1>The record for "), /claims a record/],
-    ["best-known wording", html.replace("exactly as printed", "the best known values"), /claims a record/],
+    ["best-known wording", html.replace("Our own arrangement", "The best known arrangement"), /claims a record/],
     ["an external script", html.replace("</style>", '</style><script src="https://cdn.example/x.js"></script>'), /carries a <script>/],
     ["an unexpected host", html.replace('href="./"', 'href="https://example.org/"'), /unexpected host: example\.org/],
     ["a dropped entry", html.replace(/<section class="entry" id="r-6-14">[\s\S]*?<\/section>/, ""), /R\(6, 14\) is missing from the page/],
     ["a changed value", html.replace("43 ≤ R(5, 5) ≤ 46", "43 ≤ R(5, 5) ≤ 47"), /Table Ia value 46 is not shown/],
-    ["a merged audit state", html.replace(": not yet read</dd>", ": checked</dd>"), /is not one of the four outcomes/],
+    ["a merged audit state", html.replace("— not yet read</dd>", "— checked</dd>"), /is not one of the four outcomes/],
     ["a bound's read state dropped", html.replace(/\n<dd class="none" data-state="not-yet-read">the upper bound 46[^\n]*<\/dd>/, ""), /R\(5, 5\): lists 1 read state\(s\), Table Ia prints 2/],
     ["a looks-wrong title that report-rate would not count", html.replace("title=Row%20looks%20wrong%3A%20Small%20Ramsey%20Numbers%20R(5%2C%205)", "title=Wrong%20R(5%2C%205)"), /looks-wrong link has title/],
     ["counts that do not sum", html.replace("not yet read 7", "not yet read 6"), /counts sum to 8/],
@@ -597,7 +690,7 @@ function selftest() {
   ];
   const copyingWithRefs = renderCopying(doc, refRows);
   if (guardCopying(copyingWithRefs, doc, refRows).length) return fail(`copying.html with stored bibliography entries fails its guard: ${JSON.stringify(guardCopying(copyingWithRefs, doc, refRows))}`);
-  if (!/&mdash; 2 of them so far &mdash;/.test(copyingWithRefs)) return fail("copying.html does not state the number of bibliography entries the store holds");
+  if (!/&mdash; 2 of them so far, counted one per reading/.test(copyingWithRefs)) return fail("copying.html does not state the number of bibliography entries the store holds");
   // The number must track the STORE, not the page: the same page judged against a store holding a
   // different number of entries is a stale disclosure and is refused.
   if (!guardCopying(copyingWithRefs, doc, [...refRows, { surveyRefEntry: "[X] a third." }]).some((m) => /says the repository keeps 2 bibliography entr/.test(m))) {
@@ -655,27 +748,43 @@ function selftest() {
   // A reading renders on ITS bound only, moves the counts, and every stored reading must be shown.
   const row = { k: 5, l: 5, bound: "upper", value: 46, ref: "AnM4", verdict: "SOUND", selection: "systematic" };
   const audited = renderRamsey(doc, [row]);
-  // THE FREEZE, both answers: a census reading leaves both pages byte-identical, and the same
-  // reading labelled hand-picked changes the table page, so the filter is what holds it off.
-  const censusRead = { k: 5, l: 5, bound: "lower", value: 43, ref: "Ex4", verdict: "SOUND", selection: "census" };
-  if (renderRamsey(doc, pageRows([row, censusRead])) !== audited) return fail("a census reading changed ramsey.html while the freeze holds");
-  if (renderCopying(doc, pageRows([...refRows, censusRead])) !== renderCopying(doc, refRows)) return fail("a census reading changed copying.html while the freeze holds");
-  // ...and copying.html's guard is judged against EVERY stored row: a census row that stored a
-  // survey entry verbatim makes the frozen disclosure's count false, and is refused.
-  const frozenCopying = renderCopying(doc, pageRows([...refRows, censusRead]));
-  if (guardCopying(frozenCopying, doc, [...refRows, censusRead]).length) return fail("a census row with no survey entry tripped the disclosure guard");
-  if (!guardCopying(frozenCopying, doc, [...refRows, { ...censusRead, surveyRefEntry: "[Ex4] an entry." }]).some((m) => /says the repository keeps 2 bibliography entr/.test(m))) return fail("a census row storing a survey entry verbatim did not trip the disclosure guard");
-  if (renderRamsey(doc, pageRows([row, { ...censusRead, selection: "hand-picked" }])) === audited) return fail("positive control: a hand-picked reading of the same bound did not change the page, so the census test above proves nothing");
+  // THE REBUILD, both answers. A census reading now RENDERS (the freeze filter is gone), and changes
+  // both the page and, when it keeps a survey entry, copying.html's count.
+  const censusRead = { id: "C1", k: 5, l: 5, bound: "lower", value: 43, ref: "Ex4", verdict: "SOUND", selection: "census" };
+  const withCensus = renderRamsey(doc, [row, censusRead]);
+  if (withCensus === audited) return fail("a census reading did not change ramsey.html, so census verdicts are still held off the page");
+  if (!/the lower bound 43, credited to \[Ex4\]: independently sourced — sound: /.test(withCensus) || guardPage(withCensus, doc, [row, censusRead]).length) return fail(`a census reading did not render cleanly: ${JSON.stringify(guardPage(withCensus, doc, [row, censusRead]))}`);
+  const quotedRow = { ...censusRead, notes: "The survey's entry reads '[Ex4]* G. Exoo, an entry.'", surveyEntryQuoted: "notes" };
+  if (!/&mdash; 3 of them so far/.test(renderCopying(doc, [...refRows, quotedRow]))) return fail("copying.html does not count a census row whose notes quote a survey entry (the 2026-10-15 undercount)");
+  if (!guardCopying(renderCopying(doc, refRows), doc, [...refRows, quotedRow]).some((m) => /says the repository keeps 2 bibliography entr/.test(m))) return fail("the disclosure guard did not fire on a count that leaves out an entry quoted in a note");
+  // The marker is held to its stated rule in both directions, for the row's own key.
+  if (quotedEntryViolations([quotedRow]).length) return fail(`a correctly marked quotation was refused: ${quotedEntryViolations([quotedRow])}`);
+  const { surveyEntryQuoted: _m, ...unmarked } = quotedRow;
+  if (!quotedEntryViolations([unmarked]).some((m) => /quotes the survey's entry for \[Ex4\] and surveyEntryQuoted does not name/.test(m))) return fail("an unmarked quotation of the row's own entry was not refused");
+  if (!quotedEntryViolations([{ ...quotedRow, notes: "no quotation here" }]).some((m) => /holds no quotation opening with the row's own key/.test(m))) return fail("a marker naming a field with no quotation was not refused");
+  if (quotedEntryViolations([{ ...unmarked, notes: "checker printed '[A] max clique in colour 0 = 4'" }]).length) return fail("a quotation under a key that is not the row's own was refused (checker output is not a survey entry)");
+  if (!quotedEntryViolations([{ id: "H", ref: "HW+", positiveControl: "matching the survey's entry '[HWSYZH] (also abbreviated as HW+) … 760-763'" }]).length) return fail("an unmarked quotation under a listed alias ([HWSYZH] for [HW+]) was not refused");
+  // Two readings of one bound: agreeing, the census one is shown and the page passes; disagreeing,
+  // the guard refuses, because the page can show only one of them.
+  const drawnTwin = { ...censusRead, id: "D1", selection: "systematic", pageNote: "An earlier reading." };
+  const twins = renderRamsey(doc, [row, drawnTwin, censusRead]);
+  if (guardPage(twins, doc, [row, drawnTwin, censusRead]).length) return fail(`two agreeing readings of one bound failed the guard: ${JSON.stringify(guardPage(twins, doc, [row, drawnTwin, censusRead]))}`);
+  if (twins.includes("An earlier reading.")) return fail("the drawn reading was shown where the census reading should be");
+  if (!guardPage(twins, doc, [row, { ...drawnTwin, verdict: "UNRESOLVED" }, censusRead]).some((m) => /two readings of one bound disagree/.test(m))) return fail("two disagreeing readings of one bound were not refused");
   const g = (h) => guardPage(h, doc, [row]);
-  if (!/the upper bound 46, credited to \[AnM4\]: sound — the credited source was read, and it supports this bound\./.test(audited) || !/the lower bound 43, credited to \[Ex4\]: not yet read/.test(audited) || !/sound 1 \(the credited source was read/.test(audited) || g(audited).length) return fail(`an audited bound did not render cleanly: ${JSON.stringify(g(audited))}`);
+  if (!/the upper bound 46, credited to \[AnM4\]: independently sourced — sound: the credited source was read, and it supports this bound\./.test(audited) || !/the lower bound 43, credited to \[Ex4\]: credited to the survey and not independently checked — not yet read/.test(audited) || !/sound 1 \(the credited source was read/.test(audited) || g(audited).length) return fail(`an audited bound did not render cleanly: ${JSON.stringify(g(audited))}`);
   for (const [label, mutated, re] of [
-    ["a stored reading missing from the page", audited.replace(/<dd data-state="sound">the upper bound 46[^\n]*<\/dd>/, '<dd class="none" data-state="not-yet-read">the upper bound 46, credited to [AnM4]: not yet read</dd>'), /is not shown on the page/],
+    ["a stored reading missing from the page", audited.replace(/<dd data-state="sound">the upper bound 46[^\n]*<\/dd>/, '<dd class="none" data-state="not-yet-read">the upper bound 46, credited to [AnM4]: credited to the survey and not independently checked — not yet read</dd>'), /is not shown on the page/],
     ["a state whose words say another outcome", audited.replace('data-state="sound"', 'data-state="unresolved"'), /is not one of the four outcomes/],
+    // David's two states, mislabelled: a sound reading called credited-to-the-survey.
+    ["a sound reading marked credited to the survey", audited.replace("independently sourced — sound:", "credited to the survey and not independently checked — sound:"), /is not one of the four outcomes/],
+    ["a not-yet-read bound marked independently sourced", audited.replace("credited to the survey and not independently checked — not yet read", "independently sourced — not yet read"), /is not one of the four outcomes/],
+    ["a Table Ib value with its mark dropped", audited.replace(`<span class="refs">${esc(ibNote({ k: 5, l: 5 }))}</span>`, ""), /Table Ib value \d+ does not carry its mark/],
     // The count-preserving one: the verdict moves to the OTHER bound of the same entry, so the page
     // still shows exactly one reading and every count is unchanged.
     ["a verdict moved to another bound of the same entry",
-      audited.replace(/<dd data-state="sound">the upper bound 46, credited to \[AnM4\]:([^\n]*)<\/dd>/, '<dd class="none" data-state="not-yet-read">the upper bound 46, credited to [AnM4]: not yet read</dd>')
-        .replace('<dd class="none" data-state="not-yet-read">the lower bound 43, credited to [Ex4]: not yet read</dd>', '<dd data-state="sound">the lower bound 43, credited to [Ex4]: sound — the credited source was read, and it supports this bound. <a href="x">How it was read</a></dd>'),
+      audited.replace(/<dd data-state="sound">the upper bound 46, credited to \[AnM4\]:([^\n]*)<\/dd>/, '<dd class="none" data-state="not-yet-read">the upper bound 46, credited to [AnM4]: credited to the survey and not independently checked — not yet read</dd>')
+        .replace('<dd class="none" data-state="not-yet-read">the lower bound 43, credited to [Ex4]: credited to the survey and not independently checked — not yet read</dd>', '<dd data-state="sound">the lower bound 43, credited to [Ex4]: independently sourced — sound: the credited source was read, and it supports this bound. <a href="x">How it was read</a></dd>'),
       /is not shown on the page/],
   ]) {
     if (mutated === audited) return fail(`${label}: the mutation did not land`);
@@ -686,7 +795,7 @@ function selftest() {
   const unres = { k: 6, l: 14, bound: "upper", value: 5033, ref: "HW+", verdict: "UNRESOLVED", selection: "systematic", pageNote: "The credited paper could not be opened at all." };
   const withNote = renderRamsey(doc, [unres]);
   const gu = (h, rs = [unres]) => guardPage(h, doc, rs);
-  if (!withNote.includes("unresolved — what could be read did not settle this bound. The credited paper could not be opened at all.")) return fail("an unresolved reading did not render its pageNote");
+  if (!withNote.includes("credited to the survey and not independently checked — unresolved: what could be read did not settle this bound. The credited paper could not be opened at all.")) return fail("an unresolved reading did not render its pageNote");
   if (gu(withNote).length) return fail(`an unresolved reading carrying its note failed the guard: ${JSON.stringify(gu(withNote))}`);
   const stripped = withNote.replace(" The credited paper could not be opened at all.", "");
   if (stripped === withNote) return fail("the pageNote-stripping mutation did not land");
@@ -722,7 +831,38 @@ function selftest() {
   if (!gu(renderRamsey(doc, [noNote]), [noNote]).some((m) => /carries no pageNote/.test(m))) return fail("the guard did not fire on an unresolved reading with no pageNote");
   // A reading of a value the table no longer prints is not drawn on the page at all; --check refuses
   // it through readStore before rendering, which ds1-depth's own selftest shows firing.
-  if (/sound — /.test(renderRamsey(doc, [{ ...row, value: 47 }]))) return fail("a reading of a value the table does not print was rendered");
+  // Positive control first: the same reading on a printed value DOES render, so the absence below is
+  // about the value and not about a pattern that matches nothing (Codex r1: this assertion searched
+  // for "sound — " after the wording became "sound:").
+  if (!/data-state="sound">the upper bound 46/.test(renderRamsey(doc, [row]))) return fail("positive control: a sound reading of a printed value did not render");
+  if (/data-state="sound">the upper bound 47/.test(renderRamsey(doc, [{ ...row, value: 47 }]))) return fail("a reading of a value the table does not print was rendered");
+  // EVERY VERDICT'S STATE, pinned by literal strings and not through stateOf(), which the renderer
+  // and the guard share: a change to that one helper would move both together and pass every other
+  // check (Codex r1, 2026-10-15). DECISION 3 of A-54 rebuildScope2026_09_21, verdict by verdict.
+  for (const [verdict, ds, want] of [
+    ["SOUND", "sound", "independently sourced — sound:"],
+    ["UNRESOLVED", "unresolved", "credited to the survey and not independently checked — unresolved:"],
+    ["UNREACHABLE", "unreachable", "credited to the survey and not independently checked — unreachable:"],
+    ["DEFECTIVE", "defective", ": defective:"],
+  ]) {
+    const rd = { ...row, verdict, pageNote: "A note." };
+    const out = renderRamsey(doc, [rd]);
+    const dd = out.match(new RegExp(`<dd data-state="${ds}">the upper bound 46[^\\n]*</dd>`))?.[0] ?? "";
+    if (!dd.includes(want)) return fail(`a ${verdict} reading does not render "${want}": ${JSON.stringify(dd.slice(0, 160))}`);
+    if (verdict === "DEFECTIVE" && /independently sourced|credited to the survey/.test(dd)) return fail("a DEFECTIVE reading carries one of the two states, which DECISION 3 forbids");
+  }
+  // Table Ib's single-paper exception, both answers: R(4, 5) is sourced through Table Ia's identical
+  // bound only when that reading is SOUND.
+  const doc45 = { ...doc, tableIa: [...doc.tableIa, { k: 4, l: 5, exact: 25, lowerRef: "Ka1", upperRef: "MR4" }], tableIb: [...doc.tableIb, { k: 4, l: 5, upper: 25 }] };
+  const mr4 = { k: 4, l: 5, bound: "upper", value: 25, ref: "MR4", verdict: "SOUND", selection: "census" };
+  const ib45 = (rs) => renderRamsey(doc45, rs).match(/<section class="entry" id="r-4-5">[\s\S]*?Table Ib prints<\/dt><dd>([\s\S]*?)<\/dd>/)?.[1] ?? "";
+  if (!ib45([mr4]).includes("independently sourced: the survey credits this value to [MR4]")) return fail(`Table Ib R(4, 5) was not sourced through a SOUND Table Ia reading of the same bound: ${JSON.stringify(ib45([mr4]))}`);
+  if (!ib45([{ ...mr4, verdict: "UNRESOLVED", pageNote: "x" }]).includes("credited to the survey and not independently checked: the census read Table Ia only; the survey credits this Table Ib value to [MR4]")) return fail("Table Ib R(4, 5) was marked sourced although its Table Ia twin is not SOUND");
+  if (!ib45([{ ...mr4, verdict: "DEFECTIVE", pageNote: "x" }]).includes("marked neither way: the same bound, credited to [MR4] in Table Ia")) return fail("Table Ib R(4, 5) carried one of the two states although its Table Ia twin is DEFECTIVE (DECISION 3)");
+  if (/independently sourced|credited to the survey/.test(ib45([{ ...mr4, verdict: "DEFECTIVE", pageNote: "x" }]))) return fail("Table Ib R(4, 5) with a DEFECTIVE twin carries a state label");
+  if (guardPage(renderRamsey(doc45, [mr4]), doc45, [mr4]).length) return fail(`the R(4, 5) fixture failed its guard: ${JSON.stringify(guardPage(renderRamsey(doc45, [mr4]), doc45, [mr4]))}`);
+  if (!quotedEntryViolations([{ id: "P", ref: "Ex4", pageNote: "The survey's entry reads '[Ex4]* G. Exoo, an entry.'" }]).some((m) => /pageNote, which ramsey\.html publishes, quotes/.test(m))) return fail("a survey entry quoted in a published pageNote was not refused");
+  if (!quotedEntryViolations([{ ...quotedRow, notes: "checker printed '[A] max clique'" }]).some((m) => /holds no quotation opening with the row's own key/.test(m))) return fail("a marker naming a field whose only quotation is under another key was not refused");
   // A malformed store is REFUSED, never read as empty. Both answers.
   for (const [label, parsed] of [
     ["rows as an object keyed by id", { rows: { "DS1-0001": row } }],
@@ -743,7 +883,7 @@ function selftest() {
   if (crlf === html) return fail("the CRLF control did not convert anything");
   if (guard(crlf).length) return fail(`the same page with CRLF line endings failed its own guard: ${JSON.stringify(guard(crlf).slice(0, 3))}`);
   if (gu(withNote.replace(/\n/g, "\r\n")).length) return fail("a CRLF page carrying a real reading failed its own guard");
-  console.log(`render-ramsey selftest: PASS (${fires.length} guards each fire on their condition — record wording, an external script, an unexpected host, a dropped entry, a changed value, a merged audit state, a bound's state dropped, an uncounted report title, unsummed counts, no not-covered line; report-rate counts the row link; outcomes equal depth-audit.json's; markup escaped; a reading renders on its own bound only; a missing reading, a state whose words disagree, and a verdict moved to another bound of the same entry with every count preserved all fire; a reading of an unprinted value is not drawn; an unresolved reading renders its pageNote and the guard fires on all thirteen mutations tried against it — the note stripped from the page, the store carrying none, a dropped "How it was read" link, four ways of hiding the note in place (a hidden span, a CSS-hidden span, a hidden anchor, an HTML comment), the dd itself hidden by a bare attribute or by style, and six that leave the reading intact and hide its SURROUNDINGS (the dd wrapped in a comment, a template or a hidden div, the enclosing dl hidden, and the reading nested inside a dt's template under both LF and CRLF); those thirteen trip seven distinct assertions, not thirteen; and the real page passes in LF and in CRLF; the well-formed page passes; the jump links precede the note box and the table links copying.html; and copying.html's OWN guard fires on ten mutations — record wording, no not-copied statement, a dropped no-licence sentence, a dropped publication date, the disclosure rewritten to read as clearance obtained beforehand, a dropped promise to act, an external script, an unexpected host, a disclosure that omits the survey material kept outside the table, a bibliography count that disagrees with the audit store, and an ENTRY count stated where a NUMBER count belongs — and is silent on the page as rendered, with and without stored bibliography entries)`);
+  console.log(`render-ramsey selftest: PASS (${fires.length} guards each fire on their condition — record wording, an external script, an unexpected host, a dropped entry, a changed value, a merged audit state, a bound's state dropped, an uncounted report title, unsummed counts, no not-covered line; report-rate counts the row link; outcomes equal depth-audit.json's; markup escaped; a reading renders on its own bound only; a missing reading, a state whose words disagree, and a verdict moved to another bound of the same entry with every count preserved all fire; a reading of an unprinted value is not drawn; an unresolved reading renders its pageNote and the guard fires on all thirteen mutations tried against it — the note stripped from the page, the store carrying none, a dropped "How it was read" link, four ways of hiding the note in place (a hidden span, a CSS-hidden span, a hidden anchor, an HTML comment), the dd itself hidden by a bare attribute or by style, and six that leave the reading intact and hide its SURROUNDINGS (the dd wrapped in a comment, a template or a hidden div, the enclosing dl hidden, and the reading nested inside a dt's template under both LF and CRLF); those thirteen trip seven distinct assertions, not thirteen; and the real page passes in LF and in CRLF; the well-formed page passes; the jump links precede the note box and the table links copying.html; and copying.html's OWN guard fires on ten mutations — record wording, no not-copied statement, a dropped no-licence sentence, a dropped publication date, the disclosure rewritten to read as clearance obtained beforehand, a dropped promise to act, an external script, an unexpected host, a disclosure that omits the survey material kept outside the table, a bibliography count that disagrees with the audit store, and an ENTRY count stated where a NUMBER count belongs — and is silent on the page as rendered, with and without stored bibliography entries; THE REBUILD: a census reading renders and moves the page; a sound reading marked credited-to-the-survey, a not-yet-read bound marked independently sourced, and a Table Ib value with its mark dropped each fire; two agreeing readings of one bound show the census one and pass, two disagreeing ones are refused; copying.html counts an entry quoted in a note and its guard fires on a count that leaves one out; and the copied-entry marker is refused when missing for the row's own key or its alias, refused when it names a field with no quotation, and silent on checker output under another key)`);
   return 0;
 }
 
@@ -759,13 +899,15 @@ function main(args) {
   const got = storeGate(storeExists, parsed);
   if (got.error) { console.log(`REFUSED — continuity/depth-audit-ds1.json ${got.error}`); return args.includes("--check") ? 1 : 3; }
   const r = got.rows.length ? readStore(parsed, frameOf(doc).frame) : { code: 0 };
-  const rows = pageRows(got.rows);
-  // copying.html states how many survey bibliography entries the REPOSITORY keeps, so its guard is
-  // judged against every stored row, census included — never the filtered set. A census row that
-  // stored an entry verbatim would make the frozen page false, and this makes that a refusal
-  // (adversarial review, 2026-09-25). Census rows therefore record the key, not the entry.
+  // Every stored row renders since the rebuild landed; copying.html's count is judged against the
+  // same rows, which is now the whole store.
+  const rows = got.rows;
   const allRows = got.rows;
   if (r.code !== 0) { console.log(`REFUSED — continuity/depth-audit-ds1.json does not match the committed table:\n  ${r.lines.join("\n  ")}`); return args.includes("--check") ? 1 : 3; }
+  const conflicts = readingConflicts(rows);
+  if (conflicts.length) { console.log(`REFUSED — two readings of one bound disagree, and the page shows only one:\n  ${conflicts.join("\n  ")}`); return args.includes("--check") ? 1 : 3; }
+  const quoted = quotedEntryViolations(rows);
+  if (quoted.length) { console.log(`REFUSED — the copied-entry marker disagrees with the rows it describes, so copying.html's count would be wrong:\n  ${quoted.join("\n  ")}`); return args.includes("--check") ? 1 : 3; }
   const html = renderRamsey(doc, rows);
   const copying = renderCopying(doc, rows);
   if (args.includes("--check")) {
