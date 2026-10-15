@@ -202,13 +202,17 @@ export function quotedEntryViolations(rows) {
   for (const r of rows) {
     const keys = KEY_ALIASES[r.ref] ?? [r.ref];
     const named = String(r.surveyEntryQuoted ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+    const quotesOwn = (val) => [...String(val).matchAll(KEY_QUOTE)].some((m) => keys.includes(m[1]));
     for (const f of named) {
-      if (typeof r[f] !== "string" || !new RegExp(KEY_QUOTE.source).test(r[f])) v.push(`${r.id}: surveyEntryQuoted names "${f}", which holds no quotation opening with a bracketed key`);
+      if (typeof r[f] !== "string" || !quotesOwn(r[f])) v.push(`${r.id}: surveyEntryQuoted names "${f}", which holds no quotation opening with the row's own key [${r.ref}]`);
     }
+    // pageNote is PUBLISHED on ramsey.html, so a survey entry quoted there is refused outright rather
+    // than counted: it would put the survey's bibliography on the page whose disclosure says it is not
+    // there (Codex review r1, 2026-10-15 — an entry moved into pageNote dropped the count to 55).
+    if (quotesOwn(r.pageNote ?? "")) v.push(`${r.id}: its pageNote, which ramsey.html publishes, quotes the survey's entry for [${r.ref}]`);
     for (const [f, val] of Object.entries(r)) {
       if (typeof val !== "string" || f === "surveyRefEntry" || f === "pageNote" || f === "surveyEntryQuoted") continue;
-      const own = [...val.matchAll(KEY_QUOTE)].some((m) => keys.includes(m[1]));
-      if (own && !named.includes(f)) v.push(`${r.id}: its ${f} quotes the survey's entry for [${r.ref}] and surveyEntryQuoted does not name that field`);
+      if (quotesOwn(val) && !named.includes(f)) v.push(`${r.id}: its ${f} quotes the survey's entry for [${r.ref}] and surveyEntryQuoted does not name that field`);
     }
   }
   return v;
@@ -749,7 +753,7 @@ function selftest() {
   if (quotedEntryViolations([quotedRow]).length) return fail(`a correctly marked quotation was refused: ${quotedEntryViolations([quotedRow])}`);
   const { surveyEntryQuoted: _m, ...unmarked } = quotedRow;
   if (!quotedEntryViolations([unmarked]).some((m) => /quotes the survey's entry for \[Ex4\] and surveyEntryQuoted does not name/.test(m))) return fail("an unmarked quotation of the row's own entry was not refused");
-  if (!quotedEntryViolations([{ ...quotedRow, notes: "no quotation here" }]).some((m) => /holds no quotation opening with a bracketed key/.test(m))) return fail("a marker naming a field with no quotation was not refused");
+  if (!quotedEntryViolations([{ ...quotedRow, notes: "no quotation here" }]).some((m) => /holds no quotation opening with the row's own key/.test(m))) return fail("a marker naming a field with no quotation was not refused");
   if (quotedEntryViolations([{ ...unmarked, notes: "checker printed '[A] max clique in colour 0 = 4'" }]).length) return fail("a quotation under a key that is not the row's own was refused (checker output is not a survey entry)");
   if (!quotedEntryViolations([{ id: "H", ref: "HW+", positiveControl: "matching the survey's entry '[HWSYZH] (also abbreviated as HW+) … 760-763'" }]).length) return fail("an unmarked quotation under a listed alias ([HWSYZH] for [HW+]) was not refused");
   // Two readings of one bound: agreeing, the census one is shown and the page passes; disagreeing,
@@ -819,7 +823,28 @@ function selftest() {
   if (!gu(renderRamsey(doc, [noNote]), [noNote]).some((m) => /carries no pageNote/.test(m))) return fail("the guard did not fire on an unresolved reading with no pageNote");
   // A reading of a value the table no longer prints is not drawn on the page at all; --check refuses
   // it through readStore before rendering, which ds1-depth's own selftest shows firing.
-  if (/sound — /.test(renderRamsey(doc, [{ ...row, value: 47 }]))) return fail("a reading of a value the table does not print was rendered");
+  // Positive control first: the same reading on a printed value DOES render, so the absence below is
+  // about the value and not about a pattern that matches nothing (Codex r1: this assertion searched
+  // for "sound — " after the wording became "sound:").
+  if (!/data-state="sound">the upper bound 46/.test(renderRamsey(doc, [row]))) return fail("positive control: a sound reading of a printed value did not render");
+  if (/data-state="sound">the upper bound 47/.test(renderRamsey(doc, [{ ...row, value: 47 }]))) return fail("a reading of a value the table does not print was rendered");
+  // EVERY VERDICT'S STATE, pinned by literal strings and not through stateOf(), which the renderer
+  // and the guard share: a change to that one helper would move both together and pass every other
+  // check (Codex r1, 2026-10-15). DECISION 3 of A-54 rebuildScope2026_09_21, verdict by verdict.
+  for (const [verdict, ds, want] of [
+    ["SOUND", "sound", "independently sourced — sound:"],
+    ["UNRESOLVED", "unresolved", "credited to the survey and not independently checked — unresolved:"],
+    ["UNREACHABLE", "unreachable", "credited to the survey and not independently checked — unreachable:"],
+    ["DEFECTIVE", "defective", ": defective:"],
+  ]) {
+    const rd = { ...row, verdict, pageNote: "A note." };
+    const out = renderRamsey(doc, [rd]);
+    const dd = out.match(new RegExp(`<dd data-state="${ds}">the upper bound 46[^\\n]*</dd>`))?.[0] ?? "";
+    if (!dd.includes(want)) return fail(`a ${verdict} reading does not render "${want}": ${JSON.stringify(dd.slice(0, 160))}`);
+    if (verdict === "DEFECTIVE" && /independently sourced|credited to the survey/.test(dd)) return fail("a DEFECTIVE reading carries one of the two states, which DECISION 3 forbids");
+  }
+  if (!quotedEntryViolations([{ id: "P", ref: "Ex4", pageNote: "The survey's entry reads '[Ex4]* G. Exoo, an entry.'" }]).some((m) => /pageNote, which ramsey\.html publishes, quotes/.test(m))) return fail("a survey entry quoted in a published pageNote was not refused");
+  if (!quotedEntryViolations([{ ...quotedRow, notes: "checker printed '[A] max clique'" }]).some((m) => /holds no quotation opening with the row's own key/.test(m))) return fail("a marker naming a field whose only quotation is under another key was not refused");
   // A malformed store is REFUSED, never read as empty. Both answers.
   for (const [label, parsed] of [
     ["rows as an object keyed by id", { rows: { "DS1-0001": row } }],
