@@ -21,7 +21,8 @@ sentry_open_p2: null
 
 ## BLUF
 
-Written at the close.
+Every number on the Small Ramsey Numbers page has now been checked against the paper it credits, or says why it could not be.
+The page's release moves three days earlier, from 10-22 to 10-19.
 
 ## What changed
 
@@ -72,3 +73,51 @@ The manager redirected the packet (bus `5bb6bd4e`): read all seven remaining Tab
 - Parallel reading agents share the session scratchpad. A brief that confines output files but not helper scripts lets them overwrite each other. The census8b brief confines scripts too.
 - The live disclosure on `copying.html` understates what the repository copies from the survey (45 free-text rows against a stated 5).
 <!-- findings:end -->
+
+### Close (2026-10-15 afternoon MT)
+
+**ACTION: COMPLETED** · item `A-54` (the Small Ramsey Numbers census) · P3 `b6a328a4`. The redirect's acceptance condition was met: `ds1-depth.mjs` prints 42 of 42 papers. The manager's review re-ran it and got the same line, and found the plan `22491a7` and the readings `91e5536`, `406e3c9`, `24c0347` and `420f8e5` on origin/main, the plan first (bus `4bb0fd20`).
+
+**Since the P3 post:** the report went up as `430cf6a`. CI is GREEN on it for reverify.yml and page-check.yml.
+
+**Ledger delta (hygiene draft: 2 lines — 0 accepted · 2 amended · 0 rejected):**
+- W-11 (search our own record before calling a claim ready to send), AMENDED. The drafted read command was applied: `git grep -n -F 0.380926 -- ledger/claims.json docs/findings/` replaces a `grep` the runner's shell does not have. Its first real run exited 0 with 24 lines, hits in both expected files. The amendment: before re-dating, the 10-15 read the row asks for found ONE unsearched assertion. The A-57 correction was put to David as ready on 10-07 with no search of our record named in its draft or that day's report. A positive control proved the pattern works (2 hits on the A-51 draft). It is recorded as `W-11.read2026_10_15`. The re-date uses `--set expectedSignalBy 2026-11-15`, not the drafted `--extend`, because `--extend` also edits `closeWhen`.
+- W-11 (the same watch, on the stale-actionable list), AMENDED the same way. One execution answers both lists.
+- A-54 was re-dated at P3 to 10-17 (the render). The completion is 10-19, its census record is `census8_2026_10_15`, and the disclosure finding is `disclosureUndercount2026_10_15`.
+
+The draft had no READ-MUTATED lines. Its checks read wait-justification PASS (1 of 97 rows carry a wait) and engineering-zero PASS (0 findings for this lane). Positive control: the same engineering-zero run printed RED for two other lanes' Sentry issues (buddha-ur, frame-dial), so it read live data. `check-due-gates-dispositioned.mjs`: "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT (taken 2026-10-15).
+
+**Receipt:** P3's line in `b6a328a4` still holds (`USER-VISIBLE: none`, the readings held off the page until the landing). No bracket changed.
+
+**Classification (by hand, not a counter):** today's findings are all instrument-facing: our own live disclosure sentence, our own reading brief, and our own process (an unsearched assertion). No cited source contradicted its record; the census stored 0 DEFECTIVE. No counted catch moved, numeric or byte-only. The standing prediction (the next record-facing catch will be a citation-quality defect found by a human reading the cited source in `A-47`) was neither confirmed nor falsified today. **Consecutive instrument-facing days: 1**, counted by hand.
+
+## Inputs (controllable)
+
+- One census session: a tripwire, a plan pushed before any source opened, seven papers, six reading agents run twice (the first six readings voided), and three Codex read-only review rounds.
+- The hygiene helper's two drafts, applied above.
+
+## Outputs (lagging)
+
+- `npm run reports`: 0 outside arrivals (33 raw, 33 ours; the parts sum). G-4 is still at expected zero.
+- Encounter is blind on the public pages (`A-59`), and the census rows are held off `ramsey.html` until 10-19 by design.
+
+## Recommendation
+
+- Slice 18 of `A-47` on 10-16, at positions 219, 269, 319 and 369.
+- The Ramsey page render on 10-17: census verdicts on the page, the `pageRows()` filter removed in the same commit, and the `copying.html` undercount fixed. Review and land on 10-19.
+- New reading briefs copy `tmp/depth-reads/census8b/brief-common.md`, which keeps every helper script in its reader's own folder.
+- The two upstream candidates (20c's author name, 1a line 18's 1.503164) stay behind the outward gate.
+
+## On hold pending data
+
+- G-4: an outside report through a per-row link. None yet.
+- The Ramsey page's first outcome read is the 10-19 landing.
+- W-14 (the watch on upstream issue 218): re-read on 10-21.
+
+## State Appendix
+
+Written last, from live commands, as of the close commit's parent. This report cannot name the commit that lands it.
+- `git -C C:/dev/skylark/bounds-ledger rev-parse --short HEAD` before the close commit: `430cf6a`. CI GREEN there on reverify.yml and page-check.yml (`check-ci-status.mjs`, exit 0 each).
+- `node scripts/ds1-depth.mjs`: census 122 of 122 bounds, 42 of 42 papers, 53 sound, 0 defective, 49 unresolved, 20 unreachable (exit 0).
+- `check-due-gates-dispositioned.mjs`: CLEAR, snapshot CURRENT.
+- Release: re-run those commands; never quote these values as current.

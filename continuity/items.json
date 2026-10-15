@@ -1897,13 +1897,13 @@
       "type": "watch",
       "status": "open",
       "title": "Before asserting a claim is decision-ready, search this lane's own record for that claim's own terms",
-      "expectedSignalBy": "2026-10-15",
+      "expectedSignalBy": "2026-11-15",
       "note": "FILED FROM THE 2026-09-15 INSTANCE, and the orchestrator asked for the row in its P3 feedback (bus 3b912d14). That morning's P2 analysis concluded A-43's one-cell upstream correction was the supported report shape and that the row was decision-ready. It was refuted the same afternoon at P3 by re-reading the cited source: Haugland's own abstract states the bound as 0.380926..., so upstream's figure is the abstract's with the ellipsis dropped. BOTH HALVES OF THAT REFUTATION WERE ALREADY IN THIS REPO when the P2 analysis was written — hand claim C-4 pins the abstract's 0.380926..., and docs/findings/2026-07-23-haugland-final-digit.md had already judged the identical ellipsis-dropped form on Wikipedia to be common as citation shorthand and declined to act on it as low value. The record contained the answer and the analysis did not read it.",
       "note2": "IT IS A RETRIEVAL FAILURE, NOT A REASONING FAILURE, and that is why it gets a watch rather than a lesson. The P2 reasoning was sound on the evidence it held; nothing in it was careless. What was missing was a search. Re-deriving a fact from primary sources is the expensive path and it is the one this lane instinctively takes; reading what we already wrote down is cheap and was skipped. This is the mirror image of A-43's own defect — there a stale imperative outranked fresh evidence; here fresh evidence was gathered while the settled evidence sat unread.",
       "note3": "WHAT THE SEARCH COSTS. The readCommand below is the exact search that would have caught it, and it takes seconds. A search that returns NOTHING is a real and useful answer and must be reported as such, with the literal terms searched — an unreported empty search is indistinguishable from no search.",
       "onTrigger": "Before any post, draft, disposition or board card asserts that a claim is decision-ready, that an outward report is warranted, or that a question is settled: search this lane's own record for the claim's OWN terms — the value as it is written, the citation key, the source's name — across ledger/claims.json, docs/findings/ and continuity/items.json. Name in the post what the search returned, including 'nothing'. On 2026-10-15, read back over the posts since this row was filed and check whether any assertion of decision-readiness went out without that search named.",
       "closeWhen": "Standing watch — it does not close on a date. The 2026-10-15 read either records that every decision-ready assertion since carried its search (the watch keeps standing), or names one that did not, which is a finding and gets written up before the row is re-dated.",
-      "readCommand": "grep -rn \"0.380926\" ledger/claims.json docs/findings/ — the literal search that would have caught the 2026-09-15 miss. EXPECTED: hits in ledger/claims.json (hand claims C-2, C-4, C-5, C-6) and in docs/findings/2026-07-23-haugland-final-digit.md, which is the precedent the P2 analysis missed. This is a POSITIVE CONTROL on the search idiom itself, not a gate on the watch: if it returns nothing, the search is broken rather than the record being empty, and that is the finding.",
+      "readCommand": "git grep -n -F 0.380926 -- ledger/claims.json docs/findings/ — POSITIVE CONTROL on the search idiom, not a gate on the watch. EXPECTED: hits in ledger/claims.json (hand claims C-2, C-4, C-5, C-6) and in docs/findings/2026-07-23-haugland-final-digit.md. Nothing returned means the search is broken, not the record empty. git grep, not grep: the runner spawns through cmd.exe, which has no grep (SHELL_REJECTED 2026-10-15).",
       "links": [
         "docs/findings/2026-07-23-haugland-final-digit.md",
         "docs/findings/2026-09-15-a43-asserted-two-states-about-the-same-work.md",
@@ -1915,17 +1915,16 @@
         "2af6082"
       ],
       "created": "2026-09-15",
-      "updated": "2026-09-15",
-      "readCommandLastSpawnError": {
-        "at": "2026-10-15T18:14:50.852Z",
-        "code": "SHELL_REJECTED",
-        "reason": "the shell REJECTED the command line: \"'grep' is not recognized as an internal or external command,\" — the exit code is the shell's, not the read's",
-        "command": "grep -rn \"0.380926\" ledger/claims.json docs/findings/"
+      "updated": "2026-10-15",
+      "read2026_10_15": "THE 2026-10-15 READ, as onTrigger asks. FINDING: one assertion of decision-readiness since this row was filed did NOT name the search. The A-57 correction (the 46a credit) was drafted, reviewed and put to David as ready to send on card 78c6bb41 on 2026-10-07; neither docs/decisions/2026-10-07-A57-46a-attribution-correction-draft.md nor docs/daily/2026-10-07-prelaunch.md names a search of this lane's own record for the claim's terms. Method: Grep over that draft with the pattern (?i)claims\\.json|docs/findings|items\\.json|own record|searched|search(ed)? (this|our|the lane)|git grep|grep returned no match; POSITIVE CONTROL, the same pattern over docs/decisions/2026-09-21-A51-dead-link-pr-draft.md (the one draft known to name its search) returned 2. The one other instance found in the daily reports, 2026-09-18 (A-51), names the search. NOT SEARCHED: bus posts and board cards, which no stored read covers; this read covered the repository's docs/daily/ and docs/decisions/ only. Consequence: the A-57 draft's own defect was a different one (an unread edition, caught by review on 10-07), and the issue went out after David's yes; nothing shows the missing search changed what was sent. The rule held in one of the two instances found and failed in the other; the watch keeps standing.",
+      "readCommandLastRun": "2026-10-15T20:42:12.860Z",
+      "readCommandLastExit": 0,
+      "readCommandLastDurationMs": 2134,
+      "readCommandLastOutputRef": {
+        "lines": 24,
+        "sha256": "59de7463ee3cfc20"
       },
-      "readCommandUnstampable": {
-        "at": "2026-10-15T18:14:50.852Z",
-        "reason": "command-not-runnable-here (SHELL_REJECTED) — the shell REJECTED the command line: \"'grep' is not recognized as an internal or external command,\" — the exit code is the shell's, not the read's — the child never executed, so a runner-manufactured exit code would not be evidence about the read. Fix the runnable for the interpreter this box actually has, or waive it."
-      }
+      "lastEvaluated": "2026-10-15"
     },
     {
       "id": "A-49",
