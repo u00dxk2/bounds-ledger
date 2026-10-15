@@ -178,12 +178,18 @@ const stateOf = (verdict) => (verdict === "SOUND" ? SOURCED : verdict === "DEFEC
 // survey. The reason is said per value from the survey's own caption (revision #18, p. 7): "All of
 // them were obtained by Angeltveit and McKay in 2019 [AnM2] and 2023-2024 [AnM3, AnM4], except
 // R (4, 5) [MR4]" — a group credit for every value but one, which is why the frame left Table Ib out.
+// The one value the caption credits to a single paper can still be sourced: when Table Ia prints the
+// SAME upper bound credited to the SAME paper and its census reading is SOUND, that reading sources
+// this value too (Codex claims pass r1b, 2026-10-15: R(4, 5) <= 25 [MR4] is DS1-0033, SOUND). Derived
+// from the stored reading every render, never typed.
 const IB_OWN_CREDIT = { "4,5": "MR4" };
-const ibNote = (e) => {
+const ibNote = (e, rows = []) => {
   const own = IB_OWN_CREDIT[key(e.k, e.l)];
-  return own
-    ? `${SURVEY_ONLY}: the census read Table Ia only; the survey credits this Table Ib value to [${own}]`
-    : `${SURVEY_ONLY}: the census read Table Ia only; the survey credits Table Ib's values as a group to [AnM2], [AnM3] and [AnM4], not each to one paper`;
+  if (!own) return `${SURVEY_ONLY}: the census read Table Ia only; the survey credits Table Ib's values as a group to [AnM2], [AnM3] and [AnM4], not each to one paper`;
+  const twin = shownReading(rows, { k: e.k, l: e.l, bound: "upper", value: e.ib.upper, ref: own });
+  return twin?.verdict === "SOUND"
+    ? `${SOURCED}: the survey credits this value to [${own}], and the same bound, credited to [${own}] in Table Ia, was found there (see the reading below)`
+    : `${SURVEY_ONLY}: the census read Table Ia only; the survey credits this Table Ib value to [${own}]`;
 };
 
 // WHAT THE REPOSITORY KEEPS OF THE SURVEY'S BIBLIOGRAPHY (A-54 disclosureUndercount2026_10_15). A row
@@ -291,7 +297,7 @@ export function renderRamsey(doc, rows = []) {
 <h2><a href="#r-${e.k}-${e.l}">${esc(R(e.k, e.l))}</a></h2>
 <dl>
 <dt>Table Ia prints</dt><dd><span class="v">${esc(ia.value)}</span>${ia.refs ? `<span class="refs">${esc(ia.refs)}</span>` : ""}</dd>
-<dt>Table Ib prints</dt><dd${e.ib ? "" : ' class="none"'}>${esc(ibText(e))}${e.ib ? `<span class="refs">${esc(ibNote(e))}</span>` : ""}</dd>
+<dt>Table Ib prints</dt><dd${e.ib ? "" : ' class="none"'}>${esc(ibText(e))}${e.ib ? `<span class="refs">${esc(ibNote(e, rows))}</span>` : ""}</dd>
 <dt>Read against its credited source</dt>
 ${dds.map((d) => d.html).join("\n")}
 </dl>
@@ -314,7 +320,7 @@ ${dds.map((d) => d.html).join("\n")}
 <style>${STYLE}</style>
 <a class="back" href="./">&larr; all constants</a>
 <h1>Small Ramsey numbers R(k, l)</h1>
-<p class="lede">Our own arrangement of the two-colour classical Ramsey numbers R(k, l) with 3 ≤ k ≤ 10 and k ≤ l ≤ 15, which is 72 of those 76 pairs because the survey <em>Small Ramsey Numbers</em> gives no value for R(9, 14), R(9, 15), R(10, 13) or R(10, 14). Each value is the one the survey prints, shown with the reference the survey credits for it, and marked either <em>${SOURCED}</em>, where we found the value in that reference ourselves, or <em>${SURVEY_ONLY}</em>.</p>
+<p class="lede">Our own arrangement of the two-colour classical Ramsey numbers R(k, l) with 3 ≤ k ≤ 10 and k ≤ l ≤ 15, which is 72 of those 76 pairs because the survey <em>Small Ramsey Numbers</em> gives no value for R(9, 14), R(9, 15), R(10, 13) or R(10, 14). Each value is the one the survey prints, shown with the reference the survey credits for it, and marked either <em>${SOURCED}</em>, where our own check of what that reference credits supports the value, or <em>${SURVEY_ONLY}</em>. Every value marked the second way says why beside it, and the notes kept on each reading say what was actually read or recomputed.</p>
 
 <nav class="jump" aria-label="Jump to an entry">
 ${jump}
@@ -324,7 +330,7 @@ ${jump}
 <p><strong>The source.</strong> Stanisław Radziszowski, <a href="${esc(src.landing)}">Small Ramsey Numbers</a>, The Electronic Journal of Combinatorics, dynamic survey ${esc(src.survey)}, <strong>revision #${esc(src.revision)}, ${esc(longDate(src.revisionDate))}</strong>, Section 2.1, Tables Ia and Ib. The survey is credited for every value here and remains the authority. This page is our arrangement of its values and reference keys, not a copy of the document. <a href="copying.html">What this page copies from the survey, and how to ask for a change</a>.</p>
 <p><strong>What is covered.</strong> Section 2.1 only: ${entries.length} values of R(k, l). Table Ia prints something for ${doc.tableIa.length} of them, and Table Ib prints a newer upper bound for ${doc.tableIb.length}. <strong>Not covered</strong>: everything else in the survey, including other graphs, more than two colours and hypergraphs, and any result published after revision #${esc(src.revision)}.</p>
 <p><strong>What is watched.</strong> Once a day a scheduled job checks the journal&rsquo;s page and the <a href="${esc(AUTHOR_PAGE)}">author&rsquo;s revision list</a> for a newer revision, and re-reads this table from the survey&rsquo;s PDF, whose fingerprint is pinned. A new revision turns that job red until a person has compared it with this page. The <a href="${esc(RUNS)}">run history</a> is the live read; this page is not.</p>
-<p><strong>What has been checked against its source.</strong> The survey credits each bound to a paper by the key shown beside it, such as [AnM4], and an entry can credit its lower and upper bound to different papers. So every bound carries its own mark. Every bound Table Ia credits to a source was taken in a census, completed on ${esc(longDate(CENSUS_DONE))}: for each of the ${sources} sources the survey credits in Table Ia (papers, theses, manuscripts, web pages and published graph files), someone tried to open that source and find the value in it. A bound found there is marked <em>${SOURCED}</em>. Every other bound is marked <em>${SURVEY_ONLY}</em>, with a sentence saying why. ${left.length} values Table Ia prints credit no source to read (no reference is printed, or the reference is an item of the survey&rsquo;s own Section 2.3), and Table Ib&rsquo;s upper bounds were outside the census. The <a href="${esc(STORE_URL)}">notes kept on each reading</a> name what was read and what it said. So far, of the ${total} values Table Ia prints: ${esc(countLine)}. In all, ${counts.SOUND} are ${SOURCED} and ${total - counts.SOUND - counts.DEFECTIVE} are ${SURVEY_ONLY}.</p>
+<p><strong>What has been checked against its source.</strong> The survey credits each bound to a paper by the key shown beside it, such as [AnM4], and an entry can credit its lower and upper bound to different papers. So every bound carries its own mark. Every bound Table Ia credits to a reference was taken in a census, completed on ${esc(longDate(CENSUS_DONE))}: the ${frame.length} bounds credited under ${sources} reference keys were each attempted, and the note kept on each records what was tried. What a key credits is usually a paper, but can be a thesis, a manuscript, a personal communication, a web page, a published graph file, or a derivation the survey gives itself. A bound is marked <em>${SOURCED}</em> only when the reading was SOUND: what the key credits, or a construction or derivation it gives, was reached and supports the value; the notes kept on each reading say which edition or file that was. Every other bound is marked <em>${SURVEY_ONLY}</em>, with a sentence saying why; that includes bounds whose value was seen only in an abstract or in a different edition from the one the survey cites. ${left.length} values Table Ia prints credit no source to read (no reference is printed, or the reference is an item of the survey&rsquo;s own Section 2.3), and Table Ib&rsquo;s upper bounds were outside the census; the one Table Ib value the survey credits to a single paper is marked by that paper&rsquo;s reading of the same bound in Table Ia. The <a href="${esc(STORE_URL)}">notes kept on each reading</a> name what was read and what it said. So far, of the ${total} bounds Table Ia prints (its ${numbersIn(doc.tableIa)} numbers, with an exact value counted twice where its lower and upper halves are credited to different references): ${esc(countLine)}. In all, ${counts.SOUND} are ${SOURCED} and ${total - counts.SOUND - counts.DEFECTIVE} are ${SURVEY_ONLY}.</p>
 <p><strong>Table Ia and Table Ib can print different upper bounds for the same number.</strong> Table Ib lists upper bounds from computations by Angeltveit and McKay ([AnM2], [AnM3], [AnM4]) and R(4, 5) from [MR4], and the survey says they improve on the upper bounds in Table Ia. Where both tables print one, this page shows both and does not choose between them for you.</p>
 <p><strong>[HW+]</strong> is the survey&rsquo;s own abbreviation of [HWSYZH], as enhanced in [Boza5]. A reference written as <em>item 2.3.h of the survey</em> points to a numbered item of its Section 2.3, not to a paper.</p>
 <p>If an entry disagrees with the survey or with the paper it credits, use <strong>looks wrong?</strong> on that entry. The report arrives already naming the entry and the revision.</p>
@@ -411,7 +417,7 @@ export function guardPage(page, doc, rows = []) {
     if (e.ib && !new RegExp(`≤ ${e.ib.upper}<`).test(body.split("Table Ib prints")[1] ?? "")) v.push(`${R(e.k, e.l)}: Table Ib value ${e.ib.upper} is not shown`);
     // Every Table Ib value carries its mark too, in the same dd as the value: a Table Ib number with
     // no mark beside it would read as checked by default.
-    if (e.ib && !((body.split("Table Ib prints</dt>")[1] ?? "").split("</dd>")[0] ?? "").includes(esc(ibNote(e)))) v.push(`${R(e.k, e.l)}: Table Ib value ${e.ib.upper} is not marked ${SURVEY_ONLY}`);
+    if (e.ib && !((body.split("Table Ib prints</dt>")[1] ?? "").split("</dd>")[0] ?? "").includes(esc(ibNote(e, rows)))) v.push(`${R(e.k, e.l)}: Table Ib value ${e.ib.upper} does not carry its mark ("${ibNote(e, rows)}")`);
     // One read state per value Table Ia prints for the entry, and the machine state and the words
     // a reader sees must say the same thing.
     const auditPart = (body.split("Read against its credited source</dt>")[1] ?? "").split("</dl>")[0];
@@ -468,7 +474,7 @@ export function guardPage(page, doc, rows = []) {
   // 6. It says what is covered and what has been read, and the counts add up.
   if (!html.includes(`revision #${doc.source.revision}`)) v.push("does not name the revision");
   if (!/<strong>Not covered<\/strong>/.test(html)) v.push("does not say what is not covered");
-  const so = html.match(/So far, of the (\d+) values Table Ia prints: ([^<]*)\./);
+  const so = html.match(/So far, of the (\d+) bounds Table Ia prints \([^)]*\): ([^<]*)\./);
   if (!so) v.push("does not state what has been checked");
   else {
     const nums = [...so[2].matchAll(/(sound|defective|unresolved|unreachable|not yet read|nothing to read it against) (\d+)/g)];
@@ -557,7 +563,7 @@ export function renderCopying(doc, rows = []) {
 
 <div class="note">
 <p><strong>What this page copies.</strong> From Section 2.1: ${ia} entries of Table Ia, which between them print <strong>${numbersIn(doc.tableIa)} numbers</strong> &mdash; an entry gives either one exact value or a lower and an upper bound &mdash; and ${ib} upper bounds from Table Ib, ${numbersIn(doc.tableIb)} numbers in all. Beside each, the reference key the survey credits for it, such as [AnM4]. That is everything the table itself reproduces.</p>
-<p><strong>What else the repository keeps.</strong> When a bound is read against the paper it credits, the note of that reading may also keep, word for word, the survey&rsquo;s own bibliography entry for that paper, in full or in part &mdash; ${refEntries} of them so far, counted one per reading, so an entry kept in several readings counts each time &mdash; so a reader can see which work was checked without going back to the survey. Where the survey&rsquo;s numbered items explain where a value came from, such a note also quotes the sentence that says so. These live in the audit notes, not on this table.</p>
+<p><strong>What else the repository keeps.</strong> The note kept on each attempt to check a bound, whether or not the attempt reached its source and whatever kind of source the survey credits, may also keep, word for word, the survey&rsquo;s own bibliography entry for that source, in full or in part &mdash; ${refEntries} of them so far, counted one per reading, so an entry kept in several readings counts each time &mdash; so a reader can see which work was checked without going back to the survey. Where the survey&rsquo;s numbered items explain where a value came from, such a note also quotes the sentence that says so. These live in the audit notes, not on this table.</p>
 <p><strong>What is not copied.</strong> The survey&rsquo;s PDF and its text: every other section, its figures, the rest of its commentary, the rest of its bibliography, and any table beyond Section 2.1. A fingerprint of the PDF is kept so a new revision can be detected; the file itself is never stored here or served from here.</p>
 <p><strong>No licence is claimed.</strong> <a href="${esc(src.landing)}">Small Ramsey Numbers</a>, revision #${esc(src.revision)} of ${esc(longDate(src.revisionDate))}, carries no licence permitting republication, and none is assumed here. The survey remains the authority; where this site and the survey disagree, the survey is right and this site has a bug.</p>
 <p><strong>Why copy the values at all.</strong> A bound and the paper credited for it are the two facts a reader needs to check a citation. This site exists to say whether anyone has actually opened that credited paper, which cannot be said without naming the bound it is about.</p>
@@ -771,7 +777,7 @@ function selftest() {
     // David's two states, mislabelled: a sound reading called credited-to-the-survey.
     ["a sound reading marked credited to the survey", audited.replace("independently sourced — sound:", "credited to the survey and not independently checked — sound:"), /is not one of the four outcomes/],
     ["a not-yet-read bound marked independently sourced", audited.replace("credited to the survey and not independently checked — not yet read", "independently sourced — not yet read"), /is not one of the four outcomes/],
-    ["a Table Ib value with its mark dropped", audited.replace(`<span class="refs">${esc(ibNote({ k: 5, l: 5 }))}</span>`, ""), /Table Ib value \d+ is not marked/],
+    ["a Table Ib value with its mark dropped", audited.replace(`<span class="refs">${esc(ibNote({ k: 5, l: 5 }))}</span>`, ""), /Table Ib value \d+ does not carry its mark/],
     // The count-preserving one: the verdict moves to the OTHER bound of the same entry, so the page
     // still shows exactly one reading and every count is unchanged.
     ["a verdict moved to another bound of the same entry",
@@ -843,6 +849,14 @@ function selftest() {
     if (!dd.includes(want)) return fail(`a ${verdict} reading does not render "${want}": ${JSON.stringify(dd.slice(0, 160))}`);
     if (verdict === "DEFECTIVE" && /independently sourced|credited to the survey/.test(dd)) return fail("a DEFECTIVE reading carries one of the two states, which DECISION 3 forbids");
   }
+  // Table Ib's single-paper exception, both answers: R(4, 5) is sourced through Table Ia's identical
+  // bound only when that reading is SOUND.
+  const doc45 = { ...doc, tableIa: [...doc.tableIa, { k: 4, l: 5, exact: 25, lowerRef: "Ka1", upperRef: "MR4" }], tableIb: [...doc.tableIb, { k: 4, l: 5, upper: 25 }] };
+  const mr4 = { k: 4, l: 5, bound: "upper", value: 25, ref: "MR4", verdict: "SOUND", selection: "census" };
+  const ib45 = (rs) => renderRamsey(doc45, rs).match(/<section class="entry" id="r-4-5">[\s\S]*?Table Ib prints<\/dt><dd>([\s\S]*?)<\/dd>/)?.[1] ?? "";
+  if (!ib45([mr4]).includes("independently sourced: the survey credits this value to [MR4]")) return fail(`Table Ib R(4, 5) was not sourced through a SOUND Table Ia reading of the same bound: ${JSON.stringify(ib45([mr4]))}`);
+  if (!ib45([{ ...mr4, verdict: "UNRESOLVED", pageNote: "x" }]).includes("credited to the survey and not independently checked: the census read Table Ia only; the survey credits this Table Ib value to [MR4]")) return fail("Table Ib R(4, 5) was marked sourced although its Table Ia twin is not SOUND");
+  if (guardPage(renderRamsey(doc45, [mr4]), doc45, [mr4]).length) return fail(`the R(4, 5) fixture failed its guard: ${JSON.stringify(guardPage(renderRamsey(doc45, [mr4]), doc45, [mr4]))}`);
   if (!quotedEntryViolations([{ id: "P", ref: "Ex4", pageNote: "The survey's entry reads '[Ex4]* G. Exoo, an entry.'" }]).some((m) => /pageNote, which ramsey\.html publishes, quotes/.test(m))) return fail("a survey entry quoted in a published pageNote was not refused");
   if (!quotedEntryViolations([{ ...quotedRow, notes: "checker printed '[A] max clique'" }]).some((m) => /holds no quotation opening with the row's own key/.test(m))) return fail("a marker naming a field whose only quotation is under another key was not refused");
   // A malformed store is REFUSED, never read as empty. Both answers.
