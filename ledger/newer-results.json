@@ -1,0 +1,20 @@
+{
+  "purpose": "Newer constructions this ledger has checked itself that the mirrored source table does not list (A-82). Rendered as a note BESIDE a constant's table on its c/ page, never inside a bound cell; the mirrored rows stay byte-identical. Each entry is one construction we evaluated against the constant's own mirrored definition. Added only after a cross-family claims pass and an adversarial review, on David's 2026-10-16 decision (card 73149a3b; his words are paraphrased in this repo, on A-82.davidRuling2026_10_16).",
+  "checkedThrough": "2026-10-16",
+  "watchScope": "arXiv papers submitted since the mirror's fetch date (2026-09-26) whose abstracts name AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve",
+  "entries": [
+    {
+      "id": "1b",
+      "side": "upper",
+      "value": "0.3808590566149",
+      "exactMaximum": "0.38085905661480689909",
+      "rounding": "the exact maximum overlap, rounded UP at the 13th decimal, so the printed number is itself a valid upper bound",
+      "construction": "a step function with 512 equal steps on [-1, 1], posted publicly on GitHub",
+      "sourceUrl": "https://github.com/bzanghi/erdos-minimum-overlap-bochner/blob/1ff3e99d12c75755dfee5620d097e8f781420d3f/lp_research_state/data/ub_certified_search512.json",
+      "sourcePostedBy": "2026-07-26",
+      "foundVia": "https://arxiv.org/abs/2609.40340v1",
+      "evaluatedOn": "2026-10-16",
+      "method": "We evaluated the posted function ourselves, in exact rational arithmetic, against this page's definition: its values lie between 0 and 1, its integral is exactly 1, and we took the largest overlap over every shift of its grid, which is where the largest overlap of two step functions on one grid occurs."
+    }
+  ]
+}

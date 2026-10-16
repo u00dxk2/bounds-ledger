@@ -304,6 +304,11 @@ jobs:
       # table, the feed parser, every refusal of an incomplete reading, and the fetch's reconcile.
       - name: Self-test arXiv newer-result watcher (no network; refuses an incomplete reading)
         run: node scripts/arxiv-watch.mjs --selftest
+      # A-82: notes on a constant page for newer constructions this ledger checked itself. Network-free:
+      # the store's rules (a printed bound rounds the safe way, beats the table, links a pinned commit,
+      # never says "record") and the bound-cell guard over the committed 1b page.
+      - name: Self-test newer-results notes (no network; the bound-cell guard)
+        run: node scripts/newer-results.mjs --selftest
       # Not piped and deliberately network-free: this asserts README's published figures still
       # match COMMITTED repo state. A stale block is a falsifiable public error on the front
       # page of a repo whose pitch is that it notices stale numbers.

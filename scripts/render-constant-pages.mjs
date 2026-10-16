@@ -26,6 +26,7 @@ import { boundCell } from "./lookup.mjs";
 import crypto from "node:crypto";
 import { REPO, esc, copyCiteScript } from "./lib/html.mjs";
 import { noteBlock } from "./openai-math.mjs";
+import { newerBlock, newerFor, loadStore as loadNewerStore } from "./newer-results.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUTDIR = join(ROOT, "c");
@@ -952,7 +953,9 @@ function side(label, row, changed, kind, hist = null) {
  * and both surfaces quote the same block, byte for byte. One object, one address.
  */
 
-export function renderPage(r, sha, audits = loadAudits()) {
+// `newer` is A-82's store of constructions we checked ourselves (ledger/newer-results.json); null renders
+// none, which is how newer-results.mjs's guard proves the block is the ONLY difference it makes.
+export function renderPage(r, sha, audits = loadAudits(), newer = loadNewerStore()) {
   const upstream = `${REPO}/blob/main/ledger/teorth-optimizationproblems/constants/${encodeURIComponent(r.id)}.md`;
   return `<!doctype html>
 <html lang="en">
@@ -969,7 +972,7 @@ ${r.report ? `<a class="ours" href="${esc(r.report.url)}">${esc(reportLabel(r.re
 <dl>
 ${side("Upper", r.upper, r.upperChanged, r.upperKind, historyUrl(r.url, sha))}
 ${side("Lower", r.lower, r.lowerChanged, r.lowerKind, historyUrl(r.url, sha))}
-${auditBlock(r.id, audits, [r.upper, r.lower])}${noteBlock(r.oai)}
+${auditBlock(r.id, audits, [r.upper, r.lower])}${noteBlock(r.oai)}${newerBlock(newerFor(r.id, newer))}
 </dl>
 <div class="actions">
 <a href="${esc(upstream)}">the mirrored file</a> &middot;
