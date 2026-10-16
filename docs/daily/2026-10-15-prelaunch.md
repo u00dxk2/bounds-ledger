@@ -248,6 +248,18 @@ That is a read of the existing parser and population before building, so the wat
 
 **Encounter:** blind. The public pages carry no analytics (bug row `A-59`), and this change is not on them.
 
+### Night round (round 3) — Close
+
+`ACTION: COMPLETED` · item `A-81` · P3 b2553167. The packet's pass bar is met: every paper in the window has a verdict, both controls held, and `render-ramsey.mjs --check` passed.
+
+- **No P5 prompt reached this pane.** The status dabae69f (2026-10-16T08:03:13Z) said so. This close, sent with the close-session prompt, is the delta-only close.
+- **hygiene draft:** 0 lines — 0 accepted · 0 amended · 0 rejected. Wait-justification PASS and engineering-zero PASS, both read by the helper.
+- **Due gates:** `check-due-gates-dispositioned.mjs` printed `verdict: CLEAR — every gate due at Phase 0 was dispositioned` (A-54 closed, W-11 re-dated), against the 2026-10-15 snapshot. It flags the snapshot STALE only because the check ran after MT midnight.
+- **Engineering zero:** `check-engineering-zero.mjs --project bounds-ledger` printed `RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable`.
+- **Ledger delta:** `A-81` minted (open, nextCheckDate 2026-10-29). No other row changed.
+- **Pending reads:** `A-81` on 2026-10-29 (`node scripts/arxiv-watch.mjs --fetch`, a reading, then `--check`). `A-47` slice 18 is due 2026-10-16 (27b, 33a, 3c, 45a; draw `0a8dd77`).
+- **Receipt:** USER-VISIBLE: none. The watcher is private by design.
+
 ## Inputs (controllable)
 
 - One census session: a tripwire, a plan pushed before any source opened, seven papers, six reading agents run twice (the first six readings voided), and three Codex read-only review rounds.
