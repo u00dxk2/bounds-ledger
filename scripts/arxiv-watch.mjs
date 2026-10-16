@@ -721,12 +721,15 @@ function selftest() {
 
   // ---- the constants area ----
   // Cell parser: a decimal only when the cell IS one; everything else is unjudged, never guessed.
-  const cell = (raw, want) => { const p = parseBoundCell(raw); return JSON.stringify({ value: p.value, half: p.half, unjudged: p.unjudged }) === JSON.stringify(want); };
-  check("cell: a plain decimal is a rounding, one unit in its last place", cell("$1.502862$", { value: 1.502862, half: 1e-6 }));
-  check("cell: a bare integer is exact", cell("12", { value: 12, half: 0 }));
-  check("cell: \"= decimal\" with no \\dots is exact", cell("$1/2=0.5$", { value: 0.5, half: 0 }));
-  check("cell: \"= decimal\\dots\" is a rounding, one unit in its last place", cell("$\\pi/2 = 1.5707963\\dots$", { value: 1.5707963, half: 1e-7 }));
-  check("cell: \"\\approx decimal\" is a rounding, one unit in its last place", cell("$\\sinh(\\pi/2) \\approx 2.30130$", { value: 2.3013, half: 1e-5 }));
+  // Compared on the fields the comparison USES (the printed digits and the two flags), never on the
+  // floating-point value/half, which are for reading only and differ across Node builds (CI red on
+  // 4724ede: 10 ** -5 did not equal the literal 1e-5 on the runner).
+  const cell = (raw, want) => { const p = parseBoundCell(raw); return JSON.stringify({ digits: p.digits, exact: p.exact, approx: p.approx, unjudged: p.unjudged }) === JSON.stringify(want); };
+  check("cell: a plain decimal is a rounding, one unit in its last place", cell("$1.502862$", { digits: "1.502862", exact: false, approx: false }));
+  check("cell: a bare integer is exact", cell("12", { digits: "12", exact: true, approx: false }));
+  check("cell: \"= decimal\" with no \\dots is exact", cell("$1/2=0.5$", { digits: "0.5", exact: true, approx: false }));
+  check("cell: \"= decimal\\dots\" is a rounding, one unit in its last place", cell("$\\pi/2 = 1.5707963\\dots$", { digits: "1.5707963", exact: false, approx: true }));
+  check("cell: \"\\approx decimal\" is a rounding, one unit in its last place", cell("$\\sinh(\\pi/2) \\approx 2.30130$", { digits: "2.30130", exact: false, approx: true }));
   check("cell: an asterisk (unverified) is UNJUDGED", cell("$1.292*$", { unjudged: "unverified" }));
   check("cell: a symbolic cell is UNJUDGED", cell("$K_{DR} + 10^{-26}$", { unjudged: "symbolic" }));
   check("cell: a strict bound ending in \\approx is UNJUDGED, not the decimal it ends on", cell("$< \\dfrac{\\pi}{2} \\approx 1.57080$", { unjudged: "symbolic" }));
@@ -755,10 +758,10 @@ ${lowerTail}
 ## References
 `;
   const fx = parseConstant(constFixture("| $1.292*$ | [F] | Unverified |\n"));
-  check("the shown upper value is the BEST row (1.502862), not the last-listed or first one", fx.upper.value === 1.502862 && fx.upper.half === 1e-6);
+  check("the shown upper value is the BEST row (1.502862), not the last-listed or first one", fx.upper.digits === "1.502862" && fx.upper.exact === false);
   check("a side with an unverified row is UNJUDGED (the 1a lower-bound case)", fx.lower.unjudged === "unverified");
   const fxOk = parseConstant(constFixture(""));
-  check("without the unverified row the lower side ranks, best = largest (1.2802)", fxOk.lower.value === 1.2802);
+  check("without the unverified row the lower side ranks, best = largest (1.2802)", fxOk.lower.digits === "1.2802");
   const cshown = new Map([["fx", fxOk], ["fu", fx], ["fr", { title: "r", upper: parseBoundCell("$\\sinh(\\pi/2) \\approx 2.30130$"), lower: null }]]);
   const cmp = (constant, side, value) => compareConstant(cshown, { constant, side, value }).comparison;
   check("constants: an upper claim equal to the best row EQUALS", cmp("fx", "upper", "1.502862") === "equals");
@@ -791,7 +794,7 @@ ${lowerTail}
   const live = constantsShown();
   // In 1a the best upper row happens also to be the last-listed one, so this live check cannot tell the
   // two rules apart; the out-of-order fixture above is the check that does.
-  check("mirror: 1a's upper side shows 1.502862", live.get("1a")?.upper?.value === 1.502862);
+  check("mirror: 1a's upper side shows 1.502862", live.get("1a")?.upper?.digits === "1.502862");
   check("the constants query reaches the arXiv URL, the Ramsey query does not", decodeURIComponent(queryUrl("2026-09-26", "2026-10-16", 0, CONSTANTS_QUERY)).includes(CONSTANTS_QUERY) && !decodeURIComponent(queryUrl("2026-09-26", "2026-10-16", 0)).includes("AlphaEvolve"));
   check("mirror: 1a's lower side is UNJUDGED (its 1.292* row is marked unverified)", live.get("1a")?.lower?.unjudged === "unverified");
   check("mirror: every constant file parsed, and some sides rank and some do not", live.size >= 100 && [...live.values()].some((c) => c.upper?.value !== undefined) && [...live.values()].some((c) => c.upper?.unjudged));
