@@ -26,7 +26,7 @@ import { boundCell } from "./lookup.mjs";
 import crypto from "node:crypto";
 import { REPO, esc, copyCiteScript } from "./lib/html.mjs";
 import { noteBlock } from "./openai-math.mjs";
-import { newerBlock, newerFor, loadStore as loadNewerStore, validateStore as validateNewerStore } from "./newer-results.mjs";
+import { newerBlock, newerFor, loadStore as loadNewerStore, validateStore as validateNewerStore, STORE as NEWER_STORE } from "./newer-results.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUTDIR = join(ROOT, "c");
@@ -2104,8 +2104,15 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE } = {}) {
   // check mode (Codex r6: rendering used to print whatever the store held; only npm test validated it).
   // CC_NEWER_RESULTS_STORE is a test hook (newer-results.mjs's selftest points it at a bad store to
   // prove this refusal runs through main), not a setting.
-  const newer = loadNewerStore(process.env.CC_NEWER_RESULTS_STORE || undefined);
-  const newerErrs = newer ? validateNewerStore(newer) : [];
+  // A store that EXISTS is always validated, whatever it parses to (Codex r7: `false`, `0`, `""` or `null`
+  // used to read as "no store" and dropped the note without refusing). Only an ABSENT file means no notes.
+  const newerPath = process.env.CC_NEWER_RESULTS_STORE || NEWER_STORE;
+  let newer = null;
+  let newerErrs = [];
+  if (existsSync(newerPath)) {
+    try { newer = JSON.parse(readFileSync(newerPath, "utf8")); } catch { newerErrs = ["the store file is not valid JSON"]; }
+    if (!newerErrs.length) newerErrs = validateNewerStore(newer);
+  }
   if (newerErrs.length) {
     console.log(`RESULT: FAIL — render-constant-pages: the newer-results store is invalid, so nothing was composed or written: ${newerErrs.join("; ")}`);
     process.exitCode = 1;

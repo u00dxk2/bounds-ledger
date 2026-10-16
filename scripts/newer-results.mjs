@@ -216,6 +216,14 @@ export async function selftest() {
     writeFileSync(join(dir, "bad.json"), JSON.stringify(bad));
     const child = spawnSync(process.execPath, [join(ROOT, "scripts", "render-constant-pages.mjs"), "--check"], { encoding: "utf8", env: { ...process.env, CC_NEWER_RESULTS_STORE: join(dir, "bad.json") } });
     check("r6 #1: render-constant-pages --check REFUSES an invalid store through main(), exit 1, before composing", child.status === 1 && child.stdout.includes("the newer-results store is invalid, so nothing was composed or written"));
+    // r7: a store file that EXISTS but parses to a falsy value, or does not parse, is refused too.
+    const refusedFor = (content) => {
+      writeFileSync(join(dir, "odd.json"), content);
+      const c = spawnSync(process.execPath, [join(ROOT, "scripts", "render-constant-pages.mjs"), "--check"], { encoding: "utf8", env: { ...process.env, CC_NEWER_RESULTS_STORE: join(dir, "odd.json") } });
+      return c.status === 1 && c.stdout.includes("the newer-results store is invalid");
+    };
+    check("r7: a store file holding false, 0, \"\" or null is REFUSED through main(), never read as 'no store'", ["false", "0", '""', "null"].every(refusedFor));
+    check("r7: a store file that is not JSON is REFUSED through main()", refusedFor("{not json"));
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
