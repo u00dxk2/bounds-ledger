@@ -26,7 +26,7 @@ Papers on automated discovery systems (AlphaEvolve and its relatives) usually re
 
 - `value` is a string holding a plain decimal exactly as the paper prints it (`"1.5029"`, `"0.380868"`, `"12"`), so no digits are lost. If the paper prints a fraction or an expression, put the decimal the paper itself also prints; if it prints none, do not compute one: record the claim under `why` instead and leave it out of `claims`.
 - Which side: an upper bound on the constant (C ≤ x) is `upper`; a lower bound (C ≥ x) is `lower`. Read the constant's definition: some constants are minimised, some maximised, and a "score" in a results table may be either. If you cannot tell which side a number bounds, do not record it as a claim; say so in `why`.
-- `quote` is copied verbatim from the paper (LaTeX is fine) and must contain the `value` string exactly. When the paper's sentence prints the number differently (e.g. in a table cell), quote the row or sentence AND add the value in square brackets at the end, e.g. `"... | 0.38087 | ... [= 0.38087]"`.
+- `quote` is copied verbatim from the paper (LaTeX is fine) and must contain the `value` string exactly, as a whole number: the script splits the quote into numbers (digits joined by `.`, `,`, `{,}`, `\,` or a thin space count as ONE number, so `1.50\,286` is one number) and the value must equal one of them. When the paper's sentence prints the number differently (e.g. in a table cell), quote the row or sentence AND add the value in square brackets at the end, e.g. `"... | 0.38087 | ... [= 0.38087]"`.
 - Record claims on ANY listed constant the paper states, including ones it merely restates from earlier work. A restated known value is still a claim: record it.
 
 ## Output

@@ -173,7 +173,9 @@ const withinDec = (a, b, u) => { const s = Math.max(a.scale, b.scale, u.scale); 
 // in the last printed place when not exact, else 0), or { unjudged } when the script cannot rank it.
 // Never a guess: anything else is unjudged. value and half are Numbers for reading only; comparisons
 // use digits.
-const cellOf = (digits, exact) => ({ value: Number(digits), half: exact ? 0 : unitOf(digits), digits, exact });
+// approx: the cell printed "\approx" or "\dots", so its bound is the expression, not the decimal, and
+// even a claim EQUAL to the printed digits is not shown to be the same bound (Codex r2).
+const cellOf = (digits, exact, approx = false) => ({ value: Number(digits), half: exact ? 0 : unitOf(digits), digits, exact, approx });
 export function parseBoundCell(raw) {
   const cell = String(raw).trim();
   if (cell.includes("*")) return { unjudged: "unverified" };
@@ -182,11 +184,11 @@ export function parseBoundCell(raw) {
   // A decimal with fractional digits is itself a rounding to its last printed place (1b's 0.380868 is
   // 0.380867675827 at more digits; found by the first live run, 2026-10-16), so it carries one unit too.
   // A bare integer is exact.
-  if (plain) return cellOf(plain[1], !plain[2] && !plain[1].includes("."));
+  if (plain) return cellOf(plain[1], !plain[2] && !plain[1].includes("."), !!plain[2]);
   // A strict or perturbed expression ("< X", "X - \delta", "o(1)") is not the decimal it ends on.
   if (/[<>]|\\[lg]eq?\b|\\[lg]t\b|\\delta|\\epsilon|\\varepsilon|o\(/.test(inner)) return { unjudged: "symbolic" };
   const tail = inner.match(TAIL_CELL);
-  if (tail) return cellOf(tail[2], tail[1] === "=" && !tail[3]);
+  if (tail) return cellOf(tail[2], tail[1] === "=" && !tail[3], tail[1] !== "=" || !!tail[3]);
   return { unjudged: "symbolic" };
 }
 
@@ -210,7 +212,9 @@ export function parseConstant(body) {
       const p = parseBoundCell(firstCell(r));
       if (p.unjudged) { best = { unjudged: p.unjudged }; break; }
       const c = best ? cmpDec(toDec(p.digits), toDec(best.digits)) : 0;
-      if (!best || (side === "upper" ? c < 0 : c > 0)) best = p;
+      // On a tie the tighter print wins (exact, then more digits), so row order cannot widen the interval (Codex r2).
+      const tighter = best && c === 0 && (p.exact && !best.exact || p.exact === best.exact && p.half < best.half);
+      if (!best || (side === "upper" ? c < 0 : c > 0) || tighter) best = p;
     }
     out[side] = best;
   }
@@ -239,7 +243,10 @@ export function compareConstant(shown, claim) {
   const v = toDec(claim.value);
   const p = toDec(s.digits);
   const c = cmpDec(v, p);
-  if (c === 0) return { comparison: "equals" };
+  // A plain printed decimal IS upstream's stated bound, so equal digits are the same bound. A print after
+  // "\approx" or "\dots" stands for an expression: equal digits there are read by hand (Codex r2, 5b's
+  // 4/7 ~ 0.5714: a paper stating C <= 0.5714 is below 4/7).
+  if (c === 0) return { comparison: s.approx ? "within-precision" : "equals" };
   const unit = s.exact ? { n: 0n, scale: 0 } : { n: 1n, scale: fracLen(s.digits) };
   if (withinDec(v, p, unit)) return { comparison: "within-precision" };
   const stronger = claim.side === "lower" ? c > 0 : c < 0;
@@ -383,6 +390,7 @@ export const isShapedLine = (line) => SHAPE_RES.some((re) => re.test(line));
 const positiveInt = (n) => Number.isSafeInteger(n) && n >= 1;
 const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const DECIMAL_STRING = new RegExp(`^${DEC}$`);
+export const numberTokens = (text) => (String(text).match(/[-\u2212]?\d+(?:(?:\.|,|\{,\}|\\,|\\ |\u2009|\u202f)\d+)*/g) ?? []).map((t) => t.replace(/^\u2212/, "-"));
 
 // What differs between the two areas inside judge(): the refusal wording for a mismatched population,
 // the claim's shape, the comparison, and the coverage line. Everything else is shared.
@@ -401,9 +409,11 @@ export const AREAS = {
     startRefusal: "papers.json's window does not start at the mirror's fetch date",
     malformed: "a claim is malformed (a constant id this mirror carries, side lower or upper, a decimal value written as a string)",
     validClaim: (c, shown) => typeof c.constant === "string" && shown.has(c.constant) && ["lower", "upper"].includes(c.side) && typeof c.value === "string" && DECIMAL_STRING.test(c.value),
-    // The value must be a WHOLE number token in the quote: not preceded by a digit, a point or a minus
-    // sign, and not followed by a digit or by a point and a digit ("1" is not in "1.7"; Codex r1).
-    quoteHas: (quote, value) => new RegExp(`(^|[^0-9.\\u2212-])${escapeRe(value)}(?![0-9]|\\.[0-9])`).test(quote),
+    // A STATED RULE, not a matcher (changed shape after Codex r1 and r2 both beat the token regex): the
+    // quote is split into whole number tokens, a sign then digits joined by ".", ",", "{,}", "\,", "\ " or
+    // a thin space, so "1.50\,286" and "1{,}5" are ONE token each. The value must equal a token exactly
+    // (a unicode minus read as "-"). Anything else is refused, and the reader appends "[= value]".
+    quoteHas: (quote, value) => numberTokens(quote).includes(value),
     compare: (shown, c) => compareConstant(shown, c),
     coverage: (expect, to) => `coverage: this watcher's constants query · submitted ${expect.from} to ${to} (UTC dates), from the mirror's fetch date`,
   },
@@ -754,6 +764,13 @@ ${lowerTail}
   check("r1 #2: exact decimals — 1.750 EQUALS 1.75", one("$7/4 = 1.75$", "upper", "1.750") === "equals");
   check("r1 #3: the quote must hold the value as a whole token — \"1\" is NOT in \"C >= 1.7\"", !AREAS.constants.quoteHas("C >= 1.7", "1") && AREAS.constants.quoteHas("C >= 1.7", "1.7") && AREAS.constants.quoteHas("bound 1.", "1"));
   check("r1 #3: a minus sign is part of the token — \"1\" is NOT in \"x = -1\"", !AREAS.constants.quoteHas("x = -1", "1") && AREAS.constants.quoteHas("x = -1", "-1"));
+  // Codex r2 on b9950c2, one case per finding.
+  check("r2 #1: \"1.50\\,286\" is ONE token: neither \"286\" nor \"1.50286\" is in it, \"[= 1.50286]\" is", !AREAS.constants.quoteHas("C ≤ 1.50\\,286", "286") && !AREAS.constants.quoteHas("C ≤ 1.50\\,286", "1.50286") && AREAS.constants.quoteHas("C ≤ 1.50\\,286 [= 1.50286]", "1.50286"));
+  check("r2 #1: \"1{,}5\" is ONE token, so \"5\" is not in it; a unicode minus reads as \"-\"", !AREAS.constants.quoteHas("C = 1{,}5", "5") && AREAS.constants.quoteHas("C ≥ −0.5", "-0.5") && !AREAS.constants.quoteHas("C ≥ −0.5", "0.5"));
+  check("r2 #2: a claim EQUAL to the digits of an \\approx print is WITHIN-PRECISION, not EQUAL (5b: C <= 0.5714 is below 4/7)", one("$4/7 \\approx 0.5714$", "upper", "0.5714") === "within-precision");
+  check("r2 #2: a claim equal to a PLAIN printed decimal stays EQUAL (that decimal is upstream's stated bound)", one("$0.380868$", "upper", "0.380868") === "equals");
+  const tie = (rows) => parseConstant(`# t\n\n## Known upper bounds\n\n| Bound | Reference |\n| --- | --- |\n${rows.map((r) => `| ${r} | [X] |`).join("\n")}\n\n## References\n`).upper;
+  check("r2 #3: on equal values the tighter print wins whatever the row order (exact 3/2 = 1.5 over plain 1.5)", tie(["$1.5$", "$3/2 = 1.5$"]).exact === true && tie(["$3/2 = 1.5$", "$1.5$"]).exact === true);
   check("constants: a bare integer stays exact, so a stronger integer BEATS", (() => { const m = new Map([["i", { title: "i", upper: parseBoundCell("12"), lower: null }]]); return compareConstant(m, { constant: "i", side: "upper", value: "11" }).comparison === "beats"; })());
 
   // The live mirror, read as committed: the two points the 10-16 review asked about, on 1a itself.
