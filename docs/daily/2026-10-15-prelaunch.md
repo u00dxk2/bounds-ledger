@@ -22,7 +22,7 @@ sentry_open_p2: null
 ## BLUF
 
 Every number on the Small Ramsey Numbers page has now been checked against the paper it credits, or says why it could not be.
-The page's release moves three days earlier, from 10-22 to 10-19.
+That page went live this evening: each value now says whether we checked it ourselves or took it from the survey.
 
 ## What changed
 
@@ -165,6 +165,25 @@ Every fix that added a check was red-armed.
 - The claims pass refuted 11 of 37 sentences I wrote, eight of them notes or method sentences claiming more than their rows recorded. The method sentence is still where my defects land.
 - I reported a commit `9e3c4b1` that does not exist; the real one was `b31bf36`. That is the fabricated-sha shape again, in a chat status line rather than a post, where no `verify-sha` gate reads it.
 <!-- findings:end -->
+
+### Close (2026-10-15 evening MT)
+
+**ACTION: COMPLETED** · item `A-54` (the Small Ramsey Numbers rebuild) · P3 `bdf6bc90`. The acceptance condition in force was the P1 review's: render the census verdicts and land once the adversarial review passes. Codex r3 returned SHIP on `f77a401`, the merge followed as `b167f64`, and the manager's P3 review re-fetched both live pages (bus `3654d23b`).
+
+**Since the P3 post:** nothing on the page changed. The ledger and report went up as `e4e9411`.
+
+**Ledger delta:**
+- `A-54` CLOSED. The close note is on the row; the detail is in `rebuildLanded2026_10_15`. The fields that still scheduled a 10-17 render were retired before the close: `onTrigger` was rewritten as RETIRED, with its previous text kept verbatim in `onTriggerBeforeClose2026_10_15`; `expectedSignalBy` (2026-10-17) was deleted; `signalDateNote` gained a retirement line.
+- AGENTS.md: the line saying census rows are held off the pages by `pageRows()` was false after the landing. It is rewritten to describe the two states and the `surveyEntryQuoted` rule.
+- `A-47` slice 18 stays due 2026-10-16. Its draw is `0a8dd77`.
+
+**Hygiene draft:** 0 lines (`tmp/hygiene-draft-bounds-ledger-2026-10-15-evening.md`). Wait-justification PASS (1 of 97 rows carry a wait); engineering-zero PASS (0 findings). No READ-MUTATED lines. `check-due-gates-dispositioned.mjs`: "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT (taken 2026-10-15).
+
+**Receipt:** P3's line in `bdf6bc90` still holds. No bracket changed.
+
+**Pending reads:** `A-47` slice 18's reading on 10-16. The encounter on `ramsey.html` stays blind (`A-59`); its only signal is a filed report, read by `npm run reports`.
+
+**Correction, as the manager asked:** the evening P1 report section was committed as `b31bf36`; the id I first reported for it resolves to no commit.
 
 ## Inputs (controllable)
 
