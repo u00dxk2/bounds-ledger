@@ -21,13 +21,15 @@ sentry_open_p2: null
 
 ## BLUF
 
-(Written at close.)
+The new-paper watch now covers all 115 optimization constants, and its first run flagged three numbers that look better than our pages show.
+None is checked yet; they stay private until someone reads each paper's construction.
+Four more constant pages now say whether their cited source was read and what it showed.
 
 ## What changed
 
 ### Day round — P1 selection packet
 
-**Recap of the 10-15 night P3 (b2553167), which no manager review reached:**
+**Recap of the 10-15 night P3 (bus msgId b2553167), which no manager review reached:**
 1. `A-81` shipped `scripts/arxiv-watch.mjs`: it fetches the math.CO papers whose abstract says "Ramsey", submitted since the survey revision `ramsey.html` mirrors (2026-04-24).
 2. Reading agents record what each paper states. The script, never the reader, decides whether a stated bound is stronger than the value the page shows (the smaller of Table Ia's and Table Ib's upper bound).
 3. First run: 149 papers, 149 verdicts, 0 claims-a-better-bound, 10 mentions-only, 139 unrelated. Positive control 2409.15709v2 matched [AnM4] at 46.
@@ -94,22 +96,51 @@ That is the baseline: 53 cases PASS before any change. Then I extend the script 
 
 **Encounter:** blind. The public pages carry no analytics (bug row `A-59`).
 
+### Close (2026-10-16 day round)
+
+`ACTION: COMPLETED` · item `A-81` · P3 6353cedc. The packet's pass bar was met: every fetched paper has a verdict, the parts sum to the fetch, a missing verdict is refused, and both controls held. The manager review in the close prompt (bus fc272d5c) agreed, and found no defects in the shipped work.
+
+**Since the P3 post:** nothing in the shipped work changed. The receipt posted at P3 is still true.
+
+**Ledger delta (hygiene draft: 1 line — 0 accepted · 1 amended · 0 rejected):**
+- A-47, AMENDED: re-dated to 2026-10-18 with `--set A-47 --field nextCheckDate`, not the drafted `--extend` (which on 2026-10-05 wrote the wrong fields on this row). The draft's reasoning gave 2026-10-17 to the A-54 census, but A-54 closed on 2026-10-15. The note now says 2026-10-17 goes to A-82 instead, and slice 19 is 2026-10-18. Read stamped at 83 after slice 18 landed.
+- A-82, MINTED (as the manager review asked): the human read of the 3 candidates, nextCheckDate 2026-10-17. It also carries the next round's draft, a reader-facing line on each constant page saying "newer results checked through <date>", owed a claims pass, an adversarial review and David's gate before it reaches a page.
+- A-81: `constantsArea2026_10_16` records the new area, its rule, the first run's counts and the review rounds.
+- Helper checks: check-wait-justification "RESULT: PASS — 1 of 98 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)"; check-engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)"; READ-MUTATED none.
+- `check-due-gates-dispositioned.mjs`: "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT.
+
+**Pending reads:** A-82 on 2026-10-17 (the three candidates, read against each paper's construction). A-47 slice 19 on 2026-10-18. A-81's next Ramsey read on 2026-10-29. W-14 (the watch on upstream issue 218) on 2026-10-21.
+
 ## Inputs (controllable)
 
-(Written at close.)
+- One build: the constants area of the arXiv watch, one live run (8 papers, two reading agents, one hidden control paper), five Codex read-only reviews, and one CI fix.
+- One depth-audit slice: four reading agents, with page images re-read by the lead.
+- The hygiene helper's draft, applied above.
 
 ## Outputs (lagging)
 
-(Written at close.)
+- `npm run reports` was not re-read today. Its last read (2026-10-15) was 0 outside arrivals of 33 raw issues. G-4 is still at expected zero.
+- Encounter is blind on the public pages (`A-59`).
+
+**Classification (by hand, not a counter):** one instrument-facing finding (the upstream tables' decimals are roundings; the first live run counted a restatement as a better bound). One record-facing candidate that is not established: Schoof 1992, which cites the 1983 note credited on 33a's 2/9 row, gives that era's work 8/39 and dates Serre's 2/9 to 1985. It has the standing prediction's shape (an attribution defect found by reading a cited source in `A-47`) but nobody has read the 1983 note, so it does not confirm the prediction. The day holds no confirmed record-facing catch, so it counts as instrument-facing. Consecutive instrument-facing days: 2 (the 2026-10-15 report counted 1; counted by hand).
 
 ## Recommendation
 
-(Written at close.)
+- 2026-10-17: read the three candidates against the construction or proof each relies on (`A-82`).
+- 2026-10-18: `A-47` slice 19.
+- Next round: the per-constant query map, because most human-written work is outside today's query. Draft the "newer results checked through <date>" line, which is owed review and David's gate.
 
 ## On hold pending data
 
-(Written at close.)
+- G-4: an outside report through a per-row link. None yet.
+- The three candidates: unverified until read (`A-82`).
+- W-14 (the watch on upstream issue 218): re-read on 10-21.
 
 ## State Appendix
 
-(Written last, at close.)
+Written last, from live commands, as of the close commit's parent. This report cannot name the commit that lands it.
+- `git -C C:/dev/skylark/bounds-ledger rev-parse --short HEAD` before the close commit: `c30b484`. CI GREEN on `90fb209` for reverify.yml and page-check.yml (`check-ci-status.mjs`, exit 0 each). Later commits are doc and ledger only.
+- `node scripts/depth-audit.mjs`: "RESULT: PASS — 83 audited, 52 sound, 1 defective, 21 unresolved, 9 unreachable (exit 0)".
+- `node scripts/arxiv-watch.mjs --check --area constants`: COMPLETE, 3 candidates and 1 within precision (exit 1).
+- `npm run verify` receipt at `c30b484`: exit 0.
+- Release: re-run those commands; never quote these values as current.
