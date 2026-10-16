@@ -48,14 +48,30 @@
 //   mentions-only          class "bears", but nothing stated is stronger than what we show
 //   unrelated              class "unrelated", and no claims
 //
-// Exit codes for --check: 0 complete · 1 complete AND at least one candidate (something to read)
+// THE SECOND AREA (--area constants, 2026-10-16): the 115 constants mirrored from teorth/optimizationproblems
+// under ledger/teorth-optimizationproblems/. Every flag above takes --area; without it the area is ramsey
+// and that path is unchanged. Its window starts at the mirror's fetch date (manifest.json fetchedAt), since
+// the mirror has no revision date of its own; its query is CONSTANTS_QUERY, which reaches only papers whose
+// abstract names one of four automated-discovery systems (CONSTANTS_BLIND_TO says what that misses). The
+// value each claim is compared with is the BEST row on that side of the table (the smallest upper bound, the
+// largest lower bound), never the last-listed row, because upstream does not keep rows in order (1a). A
+// side the script cannot rank is UNJUDGED and every claim on it is counted "to read by hand": a side with
+// a row marked unverified ("*", README asterisk convention) or a row that is not a decimal (symbolic cells
+// such as $K_{DR}+10^{-26}$, which defeat numeric ranking). A shown decimal is a rounding to its last
+// printed place, with or without "\dots" or "\approx" (only a bare integer or an "= decimal" identity is
+// exact), so a claim within one unit of that place is also counted to read by hand rather than called a
+// candidate. Readers name a constant by its file id (1a, 46a…); the script
+// refuses an id the mirror does not carry.
+//
+// Exit codes for --check: 0 complete · 1 complete AND at least one candidate, or (constants) at least one
+// stated bound to read by hand (something to read)
 //             · 2 could not read (a missing or unparsable file) · 3 refused (incomplete, malformed, off
 //             the watcher's recorded population, or not reconciling). --fetch: 0 fetched · 2 arXiv
 //             unreachable (a network failure, a non-2xx answer, or a body that dies mid-read) · 3
 //             refused (a feed it cannot judge complete). Any other uncaught error, such as a failure to
 //             write papers.json, exits 2.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isEntryModule } from "./lib/entry-module.mjs";
@@ -124,6 +140,90 @@ export function compare(shown, claim) {
   return { comparison: row.exact ? "contradicts" : "beats", ours, ref };
 }
 
+// ---------- the constants area ----------
+
+export const CONSTANTS_DIR = join(ROOT, "ledger", "teorth-optimizationproblems", "constants");
+export const CONSTANTS_MANIFEST = join(ROOT, "ledger", "teorth-optimizationproblems", "manifest.json");
+export const CONSTANTS_QUERY = '(abs:AlphaEvolve OR abs:ThetaEvolve OR abs:"TTT-Discover" OR abs:OpenEvolve)';
+export const CONSTANTS_BLIND_TO = [
+  "every paper whose abstract does not name AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve, which is most human-written work on these constants (a per-constant query map is the next step, not built)",
+  "papers submitted before the mirror's fetch date that upstream has not credited yet",
+  "results announced anywhere but arXiv (a GitHub repository, a blog, a talk): 1a's smallest listed upper bound cites a repository",
+  "a bound on a constant this mirror does not carry, which a reader cannot record as a claim",
+  "anything the reader misreads: verdicts are a reading, and this script checks their shape and arithmetic, not their truth",
+];
+
+const DEC = "-?\\d+(?:\\.\\d+)?";
+const PLAIN_CELL = new RegExp(`^(${DEC})\\s*(\\\\dots|\\\\ldots)?$`);
+const TAIL_CELL = new RegExp(`(=|\\\\approx)\\s*(${DEC})\\s*(\\\\dots|\\\\ldots)?$`);
+const unitOf = (digits) => { const d = digits.split(".")[1]; return d ? 10 ** -d.length : 1; };
+
+// One bound cell -> { value, half } (half = how far the true value may sit from the printed one: 0 for a
+// bare integer or an "= decimal" identity, one unit in the last printed place for any other decimal), or
+// { unjudged } when the script cannot rank it. Never a guess: anything else is unjudged.
+export function parseBoundCell(raw) {
+  const cell = String(raw).trim();
+  if (cell.includes("*")) return { unjudged: "unverified" };
+  const inner = /^\$[^$]*\$$/.test(cell) ? cell.slice(1, -1).trim() : cell;
+  const plain = inner.match(PLAIN_CELL);
+  // A decimal with fractional digits is itself a rounding to its last printed place (1b's 0.380868 is
+  // 0.380867675827 at more digits; found by the first live run, 2026-10-16), so it carries one unit too.
+  // A bare integer is exact.
+  if (plain) return { value: Number(plain[1]), half: plain[2] || plain[1].includes(".") ? unitOf(plain[1]) : 0 };
+  // A strict or perturbed expression ("< X", "X - \delta", "o(1)") is not the decimal it ends on.
+  if (/[<>]|\\[lg]eq?\b|\\[lg]t\b|\\delta|\\epsilon|\\varepsilon|o\(/.test(inner)) return { unjudged: "symbolic" };
+  const tail = inner.match(TAIL_CELL);
+  if (tail) return { value: Number(tail[2]), half: tail[1] === "=" && !tail[3] ? 0 : unitOf(tail[2]) };
+  return { unjudged: "symbolic" };
+}
+
+const firstCell = (line) => line.replace(/^\|/, "").split(/(?<!\\)\|/)[0];
+
+// id -> { title, upper, lower }, each side { value, half } for its best row, { unjudged } when any row
+// on it cannot be ranked, or null when the file has no such table. Same section and row rules as
+// extract-pins.mjs (HTML comments dropped, header and separator lines skipped).
+export function parseConstant(body) {
+  const clean = body.replace(/<!--[\s\S]*?-->/g, "");
+  const title = clean.match(/^# (.+)$/m)?.[1]?.trim() ?? null;
+  const out = { title };
+  for (const [side, header] of [["upper", "Known upper bounds"], ["lower", "Known lower bounds"]]) {
+    const m = clean.match(new RegExp(`^## ${header}\\s*$([\\s\\S]*?)(?=^## |$(?![\\s\\S]))`, "m"));
+    const lines = m ? m[1].split("\n").map((l) => l.trim()).filter((l) => l.startsWith("|")) : [];
+    const isSep = (l) => l.replace(/^\|/, "").replace(/\|$/, "").split("|").every((c) => /^[-: ]*$/.test(c));
+    const rows = lines.slice(1).filter((l) => !isSep(l));
+    if (!rows.length) { out[side] = null; continue; }
+    let best = null;
+    for (const r of rows) {
+      const p = parseBoundCell(firstCell(r));
+      if (p.unjudged) { best = { unjudged: p.unjudged }; break; }
+      if (!best || (side === "upper" ? p.value < best.value : p.value > best.value)) best = p;
+    }
+    out[side] = best;
+  }
+  return out;
+}
+
+export function constantsShown(dir = CONSTANTS_DIR) {
+  const shown = new Map();
+  for (const f of readdirSync(dir).filter((x) => x.endsWith(".md")).sort()) shown.set(f.slice(0, -3), parseConstant(readFileSync(join(dir, f), "utf8")));
+  return shown;
+}
+
+// equals | weaker | beats | within-precision | unjudged | not-carried
+export function compareConstant(shown, claim) {
+  const row = shown.get(claim.constant);
+  const s = row ? row[claim.side] : null;
+  // No table on that side (none in the mirror today) is read by hand like an unrankable one, so a
+  // claim never drops out of the printed counts.
+  if (!s || s.unjudged) return { comparison: "unjudged" };
+  const v = Number(claim.value);
+  if (v === s.value) return { comparison: "equals" };
+  const stronger = claim.side === "lower" ? v > s.value : v < s.value;
+  if (!stronger) return { comparison: "weaker" };
+  if (Math.abs(v - s.value) <= s.half * (1 + 1e-9)) return { comparison: "within-precision" };
+  return { comparison: "beats" };
+}
+
 // The window's end is the UTC date at fetch time: arXiv's submittedDate is UTC, so an end built from
 // the Mountain Time date drops everything submitted after UTC midnight on a Denver evening (Codex r1).
 export const windowEnd = (now = new Date()) => now.toISOString().slice(0, 10);
@@ -159,21 +259,21 @@ export function parseFeed(xml) {
 }
 
 const yyyymmdd = (iso) => iso.replace(/-/g, "");
-export function queryUrl(from, to, start) {
-  const q = `${QUERY} AND submittedDate:[${yyyymmdd(from)}0000 TO ${yyyymmdd(to)}2359]`;
+export function queryUrl(from, to, start, query = QUERY) {
+  const q = `${query} AND submittedDate:[${yyyymmdd(from)}0000 TO ${yyyymmdd(to)}2359]`;
   return `${API}?search_query=${encodeURIComponent(q)}&start=${start}&max_results=${PAGE}&sortBy=submittedDate&sortOrder=ascending`;
 }
 
 // Pages through the window. Refuses (throws) a total it cannot read, a total past MAX_PAPERS, and a
 // fetch whose unique ids do not reconcile with the total the API stated.
-export async function fetchWindow(from, to, { fetchImpl = fetch, pause = () => new Promise((r) => setTimeout(r, 3100)) } = {}) {
+export async function fetchWindow(from, to, { fetchImpl = fetch, pause = () => new Promise((r) => setTimeout(r, 3100)), query = QUERY } = {}) {
   const byId = new Map();
   let total = null;
   for (let start = 0; ; start += PAGE) {
     if (start > 0) await pause(); // arXiv asks for three seconds between calls
     let res;
     try {
-      res = await fetchImpl(queryUrl(from, to, start), { headers: { "user-agent": "bounds-ledger arxiv-watch (+https://github.com/u00dxk2/bounds-ledger)" } });
+      res = await fetchImpl(queryUrl(from, to, start, query), { headers: { "user-agent": "bounds-ledger arxiv-watch (+https://github.com/u00dxk2/bounds-ledger)" } });
     } catch {
       throw Object.assign(new Error("arXiv API could not be reached (network failure)"), { unreachable: true });
     }
@@ -247,11 +347,44 @@ export const OUTPUT_SHAPES = [
   "candidate bound(s) beating or contradicting a value we show: {N} (details stay in verdicts.json, never printed)",
   "stated bounds EQUAL to a value we show: {N} · WEAKER than it: {N}",
   "stated bounds on rows this table does not carry: {N}",
+  // the constants area (--area constants)
+  "REFUSED — papers.json was fetched against a different mirror than the ledger holds",
+  "REFUSED — papers.json's window does not start at the mirror's fetch date",
+  "REFUSED — verdict #{N}: a claim is malformed (a constant id this mirror carries, side lower or upper, a decimal value written as a string)",
+  "coverage: this watcher's constants query · submitted {D} to {D} (UTC dates), from the mirror's fetch date",
+  "stated bounds on sides this script cannot rank (an unverified or symbolic row): {N} (to read by hand)",
+  "stated bounds within the printed precision of a value we show: {N} (to read by hand)",
 ];
 const SHAPE_RES = OUTPUT_SHAPES.map((s) => new RegExp("^" + s.split(/(\{N\}|\{D\})/).map((p) => (p === "{N}" ? "\\d+" : p === "{D}" ? "\\d{4}-\\d{2}-\\d{2}" : p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))).join("") + "$"));
 export const isShapedLine = (line) => SHAPE_RES.some((re) => re.test(line));
 
-export function judge(papersDoc, verdictsDoc, shown, expect = null) {
+const positiveInt = (n) => Number.isSafeInteger(n) && n >= 1;
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const DECIMAL_STRING = new RegExp(`^${DEC}$`);
+
+// What differs between the two areas inside judge(): the refusal wording for a mismatched population,
+// the claim's shape, the comparison, and the coverage line. Everything else is shared.
+export const AREAS = {
+  ramsey: {
+    revisionRefusal: "papers.json was fetched against a different survey revision than the ledger mirrors",
+    startRefusal: "papers.json's window does not start at the mirrored revision's date",
+    malformed: "a claim is malformed (positive integers k, l, value; side lower or upper)",
+    validClaim: (c) => [c.k, c.l, c.value].every(positiveInt) && ["lower", "upper"].includes(c.side),
+    compare: (shown, c) => compare(shown, c),
+    coverage: (expect, to) => `coverage: this watcher's query · submitted ${expect.from} to ${to} (UTC dates) · survey revision ${expect.revision}`,
+  },
+  constants: {
+    revisionRefusal: "papers.json was fetched against a different mirror than the ledger holds",
+    startRefusal: "papers.json's window does not start at the mirror's fetch date",
+    malformed: "a claim is malformed (a constant id this mirror carries, side lower or upper, a decimal value written as a string)",
+    validClaim: (c, shown) => typeof c.constant === "string" && shown.has(c.constant) && ["lower", "upper"].includes(c.side) && typeof c.value === "string" && DECIMAL_STRING.test(c.value),
+    compare: (shown, c) => compareConstant(shown, c),
+    coverage: (expect, to) => `coverage: this watcher's constants query · submitted ${expect.from} to ${to} (UTC dates), from the mirror's fetch date`,
+  },
+};
+
+export function judge(papersDoc, verdictsDoc, shown, expect = null, areaName = "ramsey") {
+  const area = AREAS[areaName];
   const refuse = (why) => ({ code: 3, lines: [`REFUSED — ${why}`], tally: null });
   const papers = Array.isArray(papersDoc?.papers) ? papersDoc.papers : null;
   if (!papers) return refuse("papers.json holds no papers array");
@@ -259,8 +392,8 @@ export function judge(papersDoc, verdictsDoc, shown, expect = null) {
   let windowTo = null;
   if (expect) {
     if (papersDoc.query !== expect.query) return refuse("papers.json was fetched with a different query than this watcher's");
-    if (papersDoc.revision !== expect.revision) return refuse("papers.json was fetched against a different survey revision than the ledger mirrors");
-    if (papersDoc.window?.from !== expect.from) return refuse("papers.json's window does not start at the mirrored revision's date");
+    if (papersDoc.revision !== expect.revision) return refuse(area.revisionRefusal);
+    if (papersDoc.window?.from !== expect.from) return refuse(area.startRefusal);
     const fetchedAt = new Date(papersDoc.fetchedAt);
     const to = papersDoc.window?.to;
     if (typeof to !== "string" || !ISO_DATE.test(to) || to < expect.from) return refuse("papers.json's window end is not a date on or after its start");
@@ -280,7 +413,8 @@ export function judge(papersDoc, verdictsDoc, shown, expect = null) {
   let equals = 0;
   let weaker = 0;
   let incomplete = 0;
-  const positive = (n) => Number.isSafeInteger(n) && n >= 1;
+  let unjudged = 0;
+  let withinPrecision = 0;
   for (const [i, v] of verdicts.entries()) {
     const at = `verdict #${i + 1}`;
     const p = fetched.get(v?.id);
@@ -299,11 +433,13 @@ export function judge(papersDoc, verdictsDoc, shown, expect = null) {
     }
     let beats = false;
     for (const c of claims) {
-      if (![c.k, c.l, c.value].every(positive) || !["lower", "upper"].includes(c.side)) return refuse(`${at}: a claim is malformed (positive integers k, l, value; side lower or upper)`);
+      if (!c || !area.validClaim(c, shown)) return refuse(`${at}: ${area.malformed}`);
       if (typeof c.quote !== "string" || !c.quote.trim()) return refuse(`${at}: a claim carries no quoted line`);
-      if (!new RegExp(`(^|[^0-9])${c.value}([^0-9]|$)`).test(c.quote)) return refuse(`${at}: a claim's quoted line does not contain the claimed value`);
-      const r = compare(shown, c);
+      if (!new RegExp(`(^|[^0-9.])${escapeRe(String(c.value))}([^0-9]|$)`).test(c.quote)) return refuse(`${at}: a claim's quoted line does not contain the claimed value`);
+      const r = area.compare(shown, c);
       if (r.comparison === "not-carried") notCarried++;
+      if (r.comparison === "unjudged") unjudged++;
+      if (r.comparison === "within-precision") withinPrecision++;
       if (r.comparison === "equals") equals++;
       if (r.comparison === "weaker") weaker++;
       if (r.comparison === "beats" || r.comparison === "contradicts") { beats = true; candidates++; }
@@ -317,50 +453,75 @@ export function judge(papersDoc, verdictsDoc, shown, expect = null) {
   // fetch by construction; it is printed as the reconcile line, not re-checked by a guard that could never fire.
   const sum = VERDICTS.reduce((s, k) => s + tally[k], 0);
   const lines = [
-    expect
-      ? `coverage: this watcher's query · submitted ${expect.from} to ${windowTo} (UTC dates) · survey revision ${expect.revision}`
-      : "CONTROL set: not a window run, so this makes no coverage claim",
+    expect ? area.coverage(expect, windowTo) : "CONTROL set: not a window run, so this makes no coverage claim",
     `papers fetched: ${papers.length} · verdicts: ${verdicts.length} · every fetched id has exactly one verdict`,
     ...VERDICTS.map((k) => `  ${k}: ${tally[k]}`),
     `parts reconcile: ${VERDICTS.map((k) => tally[k]).join(" + ")} = ${sum}`,
     `candidate bound(s) beating or contradicting a value we show: ${candidates} (details stay in verdicts.json, never printed)`,
     `stated bounds EQUAL to a value we show: ${equals} · WEAKER than it: ${weaker}`,
-    `stated bounds on rows this table does not carry: ${notCarried}`,
+    ...(areaName === "constants"
+      ? [
+          `stated bounds on sides this script cannot rank (an unverified or symbolic row): ${unjudged} (to read by hand)`,
+          `stated bounds within the printed precision of a value we show: ${withinPrecision} (to read by hand)`,
+        ]
+      : [`stated bounds on rows this table does not carry: ${notCarried}`]),
   ];
-  return { code: candidates ? 1 : 0, lines, tally, equals, weaker, candidates, notCarried };
+  const toHand = unjudged + withinPrecision;
+  return { code: candidates || toHand ? 1 : 0, lines, tally, equals, weaker, candidates, notCarried, unjudged, withinPrecision };
 }
 
 // ---------- main ----------
 
-function argOut(args) {
-  const i = args.indexOf("--out");
-  return i >= 0 && args[i + 1] ? args[i + 1] : defaultOut();
+function argValue(args, flag) {
+  const i = args.indexOf(flag);
+  return i >= 0 && args[i + 1] ? args[i + 1] : null;
+}
+
+// The population each area's run is tied to: the query, the revision papers.json must record, and the
+// window start. Ramsey's are the survey revision and its date; the constants' are the mirror's upstream
+// sha and the UTC date of its fetchedAt (manifest.json).
+function population(areaName) {
+  if (areaName === "constants") {
+    const m = JSON.parse(readFileSync(CONSTANTS_MANIFEST, "utf8"));
+    return { query: CONSTANTS_QUERY, revision: m.sha, from: m.fetchedAt.slice(0, 10), blindTo: CONSTANTS_BLIND_TO, shown: () => constantsShown(),
+      describe: (from, to) => `window: submitted ${from} to ${to}, UTC dates (from the mirror's fetch date in ledger/teorth-optimizationproblems/manifest.json)`,
+      out: () => join(defaultOut(), "constants") };
+  }
+  const doc = JSON.parse(readFileSync(LEDGER, "utf8"));
+  return { query: QUERY, revision: doc.source.revision, from: doc.source.revisionDate, blindTo: BLIND_TO, shown: () => shownValues(doc),
+    describe: (from, to) => `window: submitted ${from} to ${to}, UTC dates (from revision ${doc.source.revision} of the survey, its revisionDate in the ledger)`,
+    out: defaultOut };
 }
 
 async function main(args) {
   if (args[0] === "--selftest") return selftest();
-  const doc = JSON.parse(readFileSync(LEDGER, "utf8"));
-  const out = argOut(args);
+  const areaName = argValue(args, "--area") ?? "ramsey";
+  if (!AREAS[areaName]) { console.error(`usage: --area takes ${Object.keys(AREAS).join(" or ")}`); return 2; }
+  const pop = population(areaName);
+  const out = argValue(args, "--out") ?? pop.out();
 
   if (args[0] === "--fetch") {
-    const from = doc.source.revisionDate;
+    const from = pop.from;
     // ONE timestamp for both the window end and fetchedAt: a fetch that crosses UTC midnight would
     // otherwise record two dates, and --check would refuse its own file (Codex r3).
     const startedAt = new Date();
     const to = windowEnd(startedAt);
-    console.log(`window: submitted ${from} to ${to}, UTC dates (from revision ${doc.source.revision} of the survey, its revisionDate in the ledger)`);
-    console.log(`query: ${QUERY}`);
-    console.log(`blindTo: ${BLIND_TO.join("; ")}`);
+    console.log(pop.describe(from, to));
+    console.log(`query: ${pop.query}`);
+    console.log(`blindTo: ${pop.blindTo.join("; ")}`);
     let got;
     try {
-      got = await fetchWindow(from, to);
+      got = await fetchWindow(from, to, { query: pop.query });
     } catch (err) {
       console.log(`RESULT: ${err.unreachable ? "UNREACHABLE" : "REFUSED"} — ${err.message} (exit ${err.unreachable ? 2 : 3})`);
       return err.unreachable ? 2 : 3;
     }
     mkdirSync(out, { recursive: true });
     const file = join(out, "papers.json");
-    writeFileSync(file, JSON.stringify({ fetchedAt: startedAt.toISOString(), window: { from, to, dates: "UTC" }, query: QUERY, revision: doc.source.revision, total: got.total, papers: got.papers }, null, 2) + "\n");
+    writeFileSync(file, JSON.stringify({ fetchedAt: startedAt.toISOString(), window: { from, to, dates: "UTC" }, query: pop.query, revision: pop.revision, total: got.total, papers: got.papers }, null, 2) + "\n");
+    // The constants a reader may name, by id and title (upstream's own titles; no values, so a reader
+    // is never told what we show).
+    if (areaName === "constants") writeFileSync(join(out, "constants.json"), JSON.stringify([...pop.shown()].map(([id, c]) => ({ id, title: c.title })), null, 2) + "\n");
     console.log(`RESULT: FETCHED — ${got.total} paper(s), every one listed in ${file} (exit 0)`);
     return 0;
   }
@@ -374,15 +535,16 @@ async function main(args) {
     for (const f of [pf, vf]) {
       try { parsed.push(JSON.parse(readFileSync(f, "utf8"))); } catch { console.log(`RESULT: UNREADABLE — ${f} is not valid JSON (exit 2)`); return 2; }
     }
-    const expect = args.includes("--control") ? null : { query: QUERY, revision: doc.source.revision, from: doc.source.revisionDate };
-    const r = judge(parsed[0], parsed[1], shownValues(doc), expect);
+    const expect = args.includes("--control") ? null : { query: pop.query, revision: pop.revision, from: pop.from };
+    const r = judge(parsed[0], parsed[1], pop.shown(), expect, areaName);
     for (const line of r.lines) console.log(line);
     if (r.code === 3) { console.log("RESULT: REFUSED (exit 3)"); return 3; }
-    console.log(r.code === 1 ? "RESULT: COMPLETE — candidates to verify by reading the paper (exit 1)" : "RESULT: COMPLETE — no candidate (exit 0)");
+    if (areaName === "constants" && r.code === 1) console.log("RESULT: COMPLETE — candidates, or bounds the script cannot rank, to verify by reading the paper (exit 1)");
+    else console.log(r.code === 1 ? "RESULT: COMPLETE — candidates to verify by reading the paper (exit 1)" : "RESULT: COMPLETE — no candidate (exit 0)");
     return r.code;
   }
 
-  console.error("usage: node scripts/arxiv-watch.mjs --fetch | --check [--control] [--out <dir>] | --selftest");
+  console.error("usage: node scripts/arxiv-watch.mjs --fetch | --check [--control] [--out <dir>] | --selftest, each with [--area ramsey | constants]");
   return 2;
 }
 
@@ -506,6 +668,130 @@ function selftest() {
   ];
   check("a known window fixture prints exactly the expected lines, values included", JSON.stringify(exact) === JSON.stringify(expected));
   check("judge stays SILENT on a bears paper with no claims but a stated why", judge({ total: 1, papers: [papersDoc.papers[0]] }, { papers: [{ ...good.papers[0], claims: [], why: "a survey of asymptotic bounds, no small value" }] }, shown).code === 0);
+
+  // ---- the constants area ----
+  // Cell parser: a decimal only when the cell IS one; everything else is unjudged, never guessed.
+  const cell = (raw, want) => { const p = parseBoundCell(raw); return JSON.stringify(p) === JSON.stringify(want); };
+  check("cell: a plain decimal is a rounding, one unit in its last place", cell("$1.502862$", { value: 1.502862, half: 1e-6 }));
+  check("cell: a bare integer is exact", cell("12", { value: 12, half: 0 }));
+  check("cell: \"= decimal\" with no \\dots is exact", cell("$1/2=0.5$", { value: 0.5, half: 0 }));
+  check("cell: \"= decimal\\dots\" is a rounding, one unit in its last place", cell("$\\pi/2 = 1.5707963\\dots$", { value: 1.5707963, half: 1e-7 }));
+  check("cell: \"\\approx decimal\" is a rounding, one unit in its last place", cell("$\\sinh(\\pi/2) \\approx 2.30130$", { value: 2.3013, half: 1e-5 }));
+  check("cell: an asterisk (unverified) is UNJUDGED", cell("$1.292*$", { unjudged: "unverified" }));
+  check("cell: a symbolic cell is UNJUDGED", cell("$K_{DR} + 10^{-26}$", { unjudged: "symbolic" }));
+  check("cell: a strict bound ending in \\approx is UNJUDGED, not the decimal it ends on", cell("$< \\dfrac{\\pi}{2} \\approx 1.57080$", { unjudged: "symbolic" }));
+  check("cell: a perturbed bound ending in \\approx is UNJUDGED", cell("$\\pi/2-\\delta$ with $\\delta\\approx 0.00013$", { unjudged: "symbolic" }));
+  check("cell: text after the closing $ is UNJUDGED", cell("$3.65$ (unpublished)", { unjudged: "symbolic" }));
+
+  // A 1a-shaped table: upper rows out of order (the best is not the last), lower side with an unverified row.
+  const constFixture = (lowerTail) => `# Fixture constant
+
+## Known upper bounds
+
+| Bound | Reference | Comments |
+| ----- | --------- | -------- |
+| $\\pi/2 = 1.5707963\\dots$ | [A] | |
+| $1.503133$ | [B] | |
+| $1.503871$ | [C] | |
+| $1.502862$ | [D] | |
+
+## Known lower bounds
+
+| Bound | Reference | Comments |
+| ----- | --------- | -------- |
+| $1$ | Trivial | |
+| $1.2802$ | [E] | |
+${lowerTail}
+## References
+`;
+  const fx = parseConstant(constFixture("| $1.292*$ | [F] | Unverified |\n"));
+  check("the shown upper value is the BEST row (1.502862), not the last-listed or first one", fx.upper.value === 1.502862 && fx.upper.half === 1e-6);
+  check("a side with an unverified row is UNJUDGED (the 1a lower-bound case)", fx.lower.unjudged === "unverified");
+  const fxOk = parseConstant(constFixture(""));
+  check("without the unverified row the lower side ranks, best = largest (1.2802)", fxOk.lower.value === 1.2802);
+  const cshown = new Map([["fx", fxOk], ["fu", fx], ["fr", { title: "r", upper: { value: 2.3013, half: 1e-5 }, lower: null }]]);
+  const cmp = (constant, side, value) => compareConstant(cshown, { constant, side, value }).comparison;
+  check("constants: an upper claim equal to the best row EQUALS", cmp("fx", "upper", "1.502862") === "equals");
+  check("constants: an upper claim equal to a non-best row (1.503133) is WEAKER", cmp("fx", "upper", "1.503133") === "weaker");
+  check("constants: an upper claim below the best row BEATS", cmp("fx", "upper", "1.5028") === "beats");
+  check("constants: a lower claim above the best row BEATS", cmp("fx", "lower", "1.29") === "beats");
+  check("constants: a lower claim below the best row is WEAKER", cmp("fx", "lower", "1.28") === "weaker");
+  check("constants: a claim on an unverified side is UNJUDGED", cmp("fu", "lower", "1.3") === "unjudged");
+  check("constants: a claim on a side with no table is UNJUDGED, never dropped", cmp("fr", "lower", "1") === "unjudged");
+  check("constants: a stronger claim inside a rounded value's last unit is WITHIN-PRECISION", cmp("fr", "upper", "2.301295") === "within-precision");
+  check("constants: a stronger claim outside that unit BEATS", cmp("fr", "upper", "2.3012") === "beats");
+  check("constants: more digits of the same rounded value are WITHIN-PRECISION, not a candidate (1b: 0.380867675827 vs 0.380868)", cmp("fx", "upper", "1.5028615") === "within-precision");
+  check("constants: a bare integer stays exact, so a stronger integer BEATS", (() => { const m = new Map([["i", { title: "i", upper: parseBoundCell("12"), lower: null }]]); return compareConstant(m, { constant: "i", side: "upper", value: "11" }).comparison === "beats"; })());
+
+  // The live mirror, read as committed: the two points the 10-16 review asked about, on 1a itself.
+  const live = constantsShown();
+  // In 1a the best upper row happens also to be the last-listed one, so this live check cannot tell the
+  // two rules apart; the out-of-order fixture above is the check that does.
+  check("mirror: 1a's upper side shows 1.502862", live.get("1a")?.upper?.value === 1.502862);
+  check("the constants query reaches the arXiv URL, the Ramsey query does not", decodeURIComponent(queryUrl("2026-09-26", "2026-10-16", 0, CONSTANTS_QUERY)).includes(CONSTANTS_QUERY) && !decodeURIComponent(queryUrl("2026-09-26", "2026-10-16", 0)).includes("AlphaEvolve"));
+  check("mirror: 1a's lower side is UNJUDGED (its 1.292* row is marked unverified)", live.get("1a")?.lower?.unjudged === "unverified");
+  check("mirror: every constant file parsed, and some sides rank and some do not", live.size >= 100 && [...live.values()].some((c) => c.upper?.value !== undefined) && [...live.values()].some((c) => c.upper?.unjudged));
+
+  // judge(), constants area: the legal case, the constants-only refusals, and exact lines.
+  const cPapers = { total: 3, papers: [{ id: "2601.16175", version: 2 }, { id: "2610.00001", version: 1 }, { id: "2610.00002", version: 1 }] };
+  const cGood = { papers: [
+    { id: "2601.16175", version: 2, class: "bears", claims: [{ constant: "fx", side: "upper", value: "1.502862", quote: "we obtain C ≤ 1.502862" }] },
+    { id: "2610.00001", version: 1, class: "bears", claims: [{ constant: "fx", side: "upper", value: "1.5028", quote: "a new upper bound of 1.5028" }, { constant: "fu", side: "lower", value: "1.3", quote: "C ≥ 1.3" }] },
+    { id: "2610.00002", version: 1, class: "unrelated", claims: [] },
+  ] };
+  const cj = judge(cPapers, cGood, cshown, null, "constants");
+  check("constants judge: 1 better / 1 mentions-only / 1 unrelated, exit 1", cj.code === 1 && cj.tally["claims-a-better-bound"] === 1 && cj.tally["mentions-only"] === 1 && cj.tally.unrelated === 1 && cj.unjudged === 1);
+  check("constants judge: the positive control (credited paper, best value) is mentions-only, one EQUAL claim, exit 0", (() => { const r = judge({ total: 1, papers: [cPapers.papers[0]] }, { papers: [cGood.papers[0]] }, cshown, null, "constants"); return r.code === 0 && r.tally["mentions-only"] === 1 && r.equals === 1 && r.candidates === 0; })());
+  check("constants judge: a claim only on an unrankable side exits 1 (to read by hand), never 0", (() => { const r = judge({ total: 1, papers: [cPapers.papers[1]] }, { papers: [{ ...cGood.papers[1], claims: [cGood.papers[1].claims[1]] }] }, cshown, null, "constants"); return r.code === 1 && r.candidates === 0 && r.unjudged === 1; })());
+  check("constants judge: the no-bound fixture is classed unrelated", (() => { const r = judge({ total: 1, papers: [cPapers.papers[2]] }, { papers: [cGood.papers[2]] }, cshown, null, "constants"); return r.code === 0 && r.tally.unrelated === 1; })());
+  const cEdit = (i, patch) => ({ papers: cGood.papers.map((p, j) => (j === i ? { ...p, ...patch } : p)) });
+  const cRefusals = [
+    ["a constant id the mirror does not carry", cEdit(0, { claims: [{ constant: "99z", side: "upper", value: "1.5", quote: "1.5" }] }), "a constant id this mirror carries"],
+    ["a value written as a number, not a string", cEdit(0, { claims: [{ constant: "fx", side: "upper", value: 1.5, quote: "1.5" }] }), "a constant id this mirror carries"],
+    ["a value that is not a decimal", cEdit(0, { claims: [{ constant: "fx", side: "upper", value: "3/2", quote: "3/2" }] }), "a constant id this mirror carries"],
+    ["a quote holding the value only as a prefix of a longer number", cEdit(0, { claims: [{ constant: "fx", side: "upper", value: "1.5028", quote: "we get 1.50286" }] }), "does not contain the claimed value"],
+    ["a quote holding the value only as a suffix of a longer number", cEdit(0, { claims: [{ constant: "fx", side: "upper", value: "1.5028", quote: "we get 11.5028" }] }), "does not contain the claimed value"],
+    ["a quote holding the value only after a decimal point", cEdit(0, { claims: [{ constant: "fx", side: "upper", value: "5028", quote: "we get 1.5028" }] }), "does not contain the claimed value"],
+  ];
+  for (const [label, vd, reason] of cRefusals) {
+    const r = judge(cPapers, vd, cshown, null, "constants");
+    check(`constants judge REFUSES ${label}`, r.code === 3 && r.lines[0].includes(reason));
+  }
+  const cExpect = { query: CONSTANTS_QUERY, revision: "a".repeat(40), from: "2026-09-26" };
+  const cWindow = { ...cPapers, fetchedAt: "2026-10-16T15:40:00.000Z", query: CONSTANTS_QUERY, revision: cExpect.revision, window: { from: "2026-09-26", to: "2026-10-16" } };
+  check("constants judge accepts a window run with this watcher's query, mirror and window", judge(cWindow, cGood, cshown, cExpect, "constants").code === 1);
+  const cWindowRefusals = [
+    ["a Ramsey query", { query: QUERY }, "different query"],
+    ["a different mirror sha", { revision: "b".repeat(40) }, "a different mirror than the ledger holds"],
+    ["a window that starts before the mirror's fetch date", { window: { from: "2026-04-24", to: "2026-10-16" } }, "the mirror's fetch date"],
+  ];
+  for (const [label, patch, reason] of cWindowRefusals) {
+    const r = judge({ ...cWindow, ...patch }, cGood, cshown, cExpect, "constants");
+    check(`constants judge REFUSES a window run with ${label}`, r.code === 3 && r.lines[0].includes(reason));
+  }
+  check("a Ramsey window run is REFUSED by the constants judge, and a constants one by the Ramsey judge", judge(windowDoc, good, cshown, cExpect, "constants").code === 3 && judge(cWindow, cGood, shown, expect, "ramsey").code === 3);
+  const cEmitted = [
+    ...cRefusals.map(([, vd]) => judge(cPapers, vd, cshown, null, "constants")),
+    ...cWindowRefusals.map(([, patch]) => judge({ ...cWindow, ...patch }, cGood, cshown, cExpect, "constants")),
+    judge(cWindow, cGood, cshown, cExpect, "constants"), judge(cPapers, cGood, cshown, null, "constants"),
+    judge(cPapers, cEdit(0, { claims: [{ constant: HOSTILE, side: "upper", value: "1.5", quote: "1.5" }] }), cshown, null, "constants"),
+  ].flatMap((r) => r.lines);
+  const cUnshaped = cEmitted.filter((line) => !isShapedLine(line));
+  check(`constants: every one of ${cEmitted.length} emitted line(s) matches an exact OUTPUT_SHAPES entry (${cUnshaped.length} do not)`, cEmitted.length > 10 && cUnshaped.length === 0);
+  const cExact = judge(cWindow, cGood, cshown, cExpect, "constants").lines;
+  const cExpected = [
+    "coverage: this watcher's constants query · submitted 2026-09-26 to 2026-10-16 (UTC dates), from the mirror's fetch date",
+    "papers fetched: 3 · verdicts: 3 · every fetched id has exactly one verdict",
+    "  claims-a-better-bound: 1",
+    "  mentions-only: 1",
+    "  unrelated: 1",
+    "parts reconcile: 1 + 1 + 1 = 3",
+    "candidate bound(s) beating or contradicting a value we show: 1 (details stay in verdicts.json, never printed)",
+    "stated bounds EQUAL to a value we show: 1 · WEAKER than it: 0",
+    "stated bounds on sides this script cannot rank (an unverified or symbolic row): 1 (to read by hand)",
+    "stated bounds within the printed precision of a value we show: 0 (to read by hand)",
+  ];
+  check("constants: a known window fixture prints exactly the expected lines, values included", JSON.stringify(cExact) === JSON.stringify(cExpected));
 
   // fetchWindow: reconciles, pages, refuses.
   return (async () => {
