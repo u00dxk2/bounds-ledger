@@ -111,6 +111,63 @@ That is the baseline: 53 cases PASS before any change. Then I extend the script 
 
 **Pending reads:** A-82 on 2026-10-17 (the three candidates, read against each paper's construction). A-47 slice 19 on 2026-10-18. A-81's next Ramsey read on 2026-10-29. W-14 (the watch on upstream issue 218) on 2026-10-21.
 
+### Afternoon round (round 2) — P1 selection packet
+
+**Outcome:** `A-82` (the human read of the 3 candidate bounds the constants watch flagged this morning). **The user's problem in their words:** "I cited a bound and a referee told me it had been improved. I had no way to know." (`docs/evangelism-bar.md`.) An unread candidate is not coverage: until each is read, the ledger cannot say whether any constant it shows has been beaten.
+
+**Evidence** (OBSERVED / HYPOTHESIS / MISSING):
+- OBSERVED, the RED baseline: `node scripts/arxiv-watch.mjs --check --area constants`, run at about 18:35Z, printed 3 candidate bounds and 1 within printed precision, exit 1. All four are in 2 papers, and none has a reading of its construction (`tmp/arxiv-watch/2026-10-16/constants/verdicts.json` holds only what each paper states).
+- OBSERVED, every candidate's number appears verbatim in its paper's own arXiv HTML at the version read (lead check, P3 this morning).
+- HYPOTHESIS, some candidates are checkable by computation: a construction posted as data can be evaluated directly against the constant's definition. Whether each paper's construction is downloadable is MISSING until it is read.
+- HYPOTHESIS, some candidates may restate other systems' scores (a table of results) rather than claim a new bound. That decides the verdict, and only the paper can settle it.
+- OBSERVED, product-love metric: NOT MEASURABLE (`docs/evangelism-bar.md`). CI GREEN on `5a243b7` for reverify.yml and page-check.yml (`check-ci-status.mjs`, exit 0 each).
+
+**Permission:** `A-82` is open and due 2026-10-17. Reading is local and read-only, inside the lane's authority. **Outward gate, because the repo is PUBLIC:** nothing about a candidate goes into a commit, a page, the bus, or upstream. Only per-verdict counts reach `A-82`. If one SUPPORTS, the corrected row and a "newer results checked through <date>" line are drafted in tmp/ only and carded to David. Both are behind a claims pass, adversarial review and his gate.
+
+**Next action** (kind: obtain a read, the one the ledger's coverage turns on):
+```bash
+node C:/dev/skylark/bounds-ledger/scripts/arxiv-watch.mjs --check --area constants
+```
+That is the baseline above. Then each paper is read at the version recorded: its construction, witness or proof, with page and equation numbers. Where a construction is posted as data, it is evaluated against the constant's mirrored definition by a script kept in tmp/. Each candidate gets SUPPORTS (a value stronger than the page shows), DOES NOT (with the reason: normalisation, a weaker variant, an asymptotic claim, a restated score, a misread) or CANNOT TELL HERE (what is missing), with its evidence path in tmp/. The within-precision claim gets a verdict too.
+
+**Acceptance condition (pass bar, written before building):** RED now: 3 candidates, 0 verdicts. GREEN after: 3 of 3 (and the within-precision one) carry a verdict with an evidence path in tmp/, and `A-82` records the counts only. **Positive controls:** (1) a paper the mirror already credits with a constant's best value, chosen before any reading and read the same way, comes out DOES NOT at its credited value; (2) `git status` shows no tmp/ path staged, and `git grep` of the tracked tree finds neither candidate paper's id; (3) `arxiv-watch.mjs --selftest`, `render-ramsey.mjs --check` and `check-claims.mjs` stay PASS.
+
+**Delivery and encounter:** none by design. Nothing renders. The receipt will be `USER-VISIBLE: none — …` unless a SUPPORTS verdict opens a page change, which waits for David's gate.
+
+`USER-FACING: no` — paths: `tmp/` (gitignored), `continuity/items.json` (`A-82` counts), `docs/daily/2026-10-16-prelaunch.md`.
+
+**Carries (not the choice):** `A-47` slice 19 on 2026-10-18. The verify receipt at `c30b484` covers HEAD; only doc and ledger paths changed since.
+
+**Prior-day retro finding that bears on the choice:** "a verdict follows the reading" (memory). A SUPPORTS needs the construction itself read or evaluated, not the paper's sentence about it. A candidate resting on someone else's posted witness is read against that witness.
+
+**Section 0:** Listener 🟢 SSE alive (restart 18:23:45Z, hello 18:23:47Z), and the loop is armed by tool call. Codex GREEN by the prompt's own probe line (18:20:02Z). CI GREEN on `5a243b7` (both workflows). Deploy drift: not run (a Pages lane with no Render service). Harness: unchanged since this morning's read (2.1.301, UNIFORM). Recs: this morning's close recommended exactly this read. Due-gates: the morning snapshot (2026-10-16) stands CURRENT; the kickoff read "dated gates due today: 0". No re-snapshot.
+
+**HYGIENE INPUTS:**
+- (a) due rows not bearing on the choice: none. Read: kickoff `dated gates due today: 0`.
+- (b) owed child rows: none. Read: kickoff `rows owed to you … 0 of 754`.
+- (c) CROSSED state reads: none crossed. One was not judgeable: `missingLinkedCommits` NOTHING SWEPT (0 of 0 considered).
+
+### Afternoon round (round 2) — P3 product work
+
+**Action (obtain a read):** `A-82`, the 3 constants-watch candidates read against the construction each relies on (manager review APPROVE, bus 56292c15). Details are in tmp/ only (public repo); this section carries counts.
+
+**Result:** 1 SUPPORTS a value stronger than the page shows, 0 DOES NOT, 2 CANNOT TELL HERE. The within-precision claim is DOES NOT: it is no new improvement over the credited construction.
+- **The SUPPORTS** rests on an admissible construction that someone posted publicly before the mirror's fetch date, which a newer paper led us to. A lead-written evaluator checked it against the mirrored definition in exact rational arithmetic: it confirms 0 ≤ f ≤ 1 and ∫f = 1 exactly, and takes the maximum over every grid shift. The value is below the page's best upper bound by more than the page's printed precision. The paper's own further refinement is not verified.
+- **The 2 CANNOT TELL HERE** restate another system's reported scores, and the source the citing paper points to prints no construction. The next read is that system's entries on the public leaderboard it names, evaluated the same way (`A-82` re-dated to 2026-10-20).
+- **Side check (the review's hypothesis):** every claim was on the side the page tracks.
+- **Positive control:** the construction behind the page's own credited value, evaluated the same way, reproduces that value exactly (DOES NOT, as required). `git grep` of the tracked tree finds neither candidate paper's id, while the same search finds the control paper's id. `arxiv-watch.mjs --selftest` PASS. `render-ramsey.mjs --check` PASS. `check-claims.mjs`: "244 claim(s): 242 hold, 0 broken/unreachable, 2 unverified (manual)".
+- **Review:** Codex read-only r5 found the evaluator correct by inspection and returned "SUPPORTS NEEDS FIXES": one verdict was amended from DOES NOT to CANNOT TELL HERE, one attribution was narrowed, and the evaluator's labels were tightened.
+
+**David's board:** card 73149a3b (bus 2856a464) asks whether to note the checked construction on our own minimum-overlap page, also tell the list we mirror, or hold. With no answer, nothing changes: the finding stays private. The card names his 2026-08-02 decision on a different correction to a different site.
+
+<!-- findings:begin -->
+- **The ledger's most important page is behind.** The best upper bound shown for the Erdős minimum overlap constant (the problem this repo opened on) is beaten by a construction posted about three months ago, and the list we mirror has not added it. The drift alarm could never catch this, because it watches the mirror and the mirror is faithful. Only the newer-result watch plus a human read could. This matches the shape `A-81` was built for, but it is not the standing prediction's citation-quality shape.
+<!-- findings:end -->
+
+**Delivery:** none yet, by design. Nothing renders until David answers the card.
+
+**Encounter:** blind (bug row `A-59`).
+
 ## Inputs (controllable)
 
 - One build: the constants area of the arXiv watch, one live run (8 papers, two reading agents, one hidden control paper), five Codex read-only reviews, and one CI fix.
