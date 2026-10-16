@@ -73,6 +73,7 @@
 //             write papers.json, exits 2.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isEntryModule } from "./lib/entry-module.mjs";
@@ -213,7 +214,7 @@ export function parseConstant(body) {
       if (p.unjudged) { best = { unjudged: p.unjudged }; break; }
       const c = best ? cmpDec(toDec(p.digits), toDec(best.digits)) : 0;
       // On a tie the tighter print wins (exact, then more digits), so row order cannot widen the interval (Codex r2).
-      const tighter = best && c === 0 && (p.exact && !best.exact || p.exact === best.exact && p.half < best.half);
+      const tighter = best && c === 0 && (p.exact && !best.exact || p.exact === best.exact && fracLen(p.digits) > fracLen(best.digits));
       if (!best || (side === "upper" ? c < 0 : c > 0) || tighter) best = p;
     }
     out[side] = best;
@@ -246,7 +247,9 @@ export function compareConstant(shown, claim) {
   // A plain printed decimal IS upstream's stated bound, so equal digits are the same bound. A print after
   // "\approx" or "\dots" stands for an expression: equal digits there are read by hand (Codex r2, 5b's
   // 4/7 ~ 0.5714: a paper stating C <= 0.5714 is below 4/7).
-  if (c === 0) return { comparison: s.approx ? "within-precision" : "equals" };
+  // A STRICT claim ("<" or ">") at the shown value is stronger than it (27b: "< 12" means at most 11 for an
+  // integer constant); it is read by hand rather than ranked (Codex r3, I1).
+  if (c === 0) return { comparison: s.approx || claim.relation === "<" || claim.relation === ">" ? "within-precision" : "equals" };
   const unit = s.exact ? { n: 0n, scale: 0 } : { n: 1n, scale: fracLen(s.digits) };
   if (withinDec(v, p, unit)) return { comparison: "within-precision" };
   const stronger = claim.side === "lower" ? c > 0 : c < 0;
@@ -379,7 +382,11 @@ export const OUTPUT_SHAPES = [
   // the constants area (--area constants)
   "REFUSED — papers.json was fetched against a different mirror than the ledger holds",
   "REFUSED — papers.json's window does not start at the mirror's fetch date",
-  "REFUSED — verdict #{N}: a claim is malformed (a constant id this mirror carries, side lower or upper, a decimal value written as a string)",
+  "REFUSED — verdict #{N}: a claim is malformed (a constant id this mirror carries, side lower or upper, a decimal value written as a string, a relation matching the side)",
+  "RESULT: UNREADABLE — papers.json does not exist in the --out directory (exit 2)",
+  "RESULT: UNREADABLE — verdicts.json does not exist in the --out directory (exit 2)",
+  "RESULT: UNREADABLE — papers.json is not valid JSON (exit 2)",
+  "RESULT: UNREADABLE — verdicts.json is not valid JSON (exit 2)",
   "coverage: this watcher's constants query · submitted {D} to {D} (UTC dates), from the mirror's fetch date",
   "stated bounds on sides this script cannot rank (an unverified or symbolic row): {N} (to read by hand)",
   "stated bounds within the printed precision of a value we show: {N} (to read by hand)",
@@ -407,8 +414,10 @@ export const AREAS = {
   constants: {
     revisionRefusal: "papers.json was fetched against a different mirror than the ledger holds",
     startRefusal: "papers.json's window does not start at the mirror's fetch date",
-    malformed: "a claim is malformed (a constant id this mirror carries, side lower or upper, a decimal value written as a string)",
-    validClaim: (c, shown) => typeof c.constant === "string" && shown.has(c.constant) && ["lower", "upper"].includes(c.side) && typeof c.value === "string" && DECIMAL_STRING.test(c.value),
+    malformed: "a claim is malformed (a constant id this mirror carries, side lower or upper, a decimal value written as a string, a relation matching the side)",
+    // relation is REQUIRED (Codex r3, I1): <= or < for an upper bound, >= or > for a lower one.
+    validClaim: (c, shown) => !!c && typeof c.constant === "string" && shown.has(c.constant) && ["lower", "upper"].includes(c.side) && typeof c.value === "string" && DECIMAL_STRING.test(c.value)
+      && (c.side === "upper" ? ["<=", "<"] : [">=", ">"]).includes(c.relation),
     // A STATED RULE, not a matcher (changed shape after Codex r1 and r2 both beat the token regex): the
     // quote is split into whole number tokens, a sign then digits joined by ".", ",", "{,}", "\,", "\ " or
     // a thin space, so "1.50\,286" and "1{,}5" are ONE token each. The value must equal a token exactly
@@ -469,7 +478,7 @@ export function judge(papersDoc, verdictsDoc, shown, expect = null, areaName = "
     }
     let beats = false;
     for (const c of claims) {
-      if (!c || !area.validClaim(c, shown)) return refuse(`${at}: ${area.malformed}`);
+      if (!area.validClaim(c, shown)) return refuse(`${at}: ${area.malformed}`);
       if (typeof c.quote !== "string" || !c.quote.trim()) return refuse(`${at}: a claim carries no quoted line`);
       if (!area.quoteHas(c.quote, c.value)) return refuse(`${at}: a claim's quoted line does not contain the claimed value`);
       const r = area.compare(shown, c);
@@ -565,11 +574,15 @@ async function main(args) {
   if (args[0] === "--check") {
     const pf = join(out, "papers.json");
     const vf = join(out, "verdicts.json");
-    for (const f of [pf, vf]) if (!existsSync(f)) { console.log(`RESULT: UNREADABLE — ${f} does not exist (exit 2)`); return 2; }
+    // The constants area prints a fixed file LABEL, never the path: --out is caller text and could carry
+    // a paper id or a value (Codex r3, I4). The Ramsey lines keep the paths they printed at the merge-base.
+    const label = (f) => (areaName === "constants" ? `${f === pf ? "papers.json" : "verdicts.json"}` : f);
+    const where = areaName === "constants" ? " in the --out directory" : "";
+    for (const f of [pf, vf]) if (!existsSync(f)) { console.log(`RESULT: UNREADABLE — ${label(f)} does not exist${where} (exit 2)`); return 2; }
     // A JSON.parse error message can quote the file's text, so an unparsable file gets a fixed line.
     const parsed = [];
     for (const f of [pf, vf]) {
-      try { parsed.push(JSON.parse(readFileSync(f, "utf8"))); } catch { console.log(`RESULT: UNREADABLE — ${f} is not valid JSON (exit 2)`); return 2; }
+      try { parsed.push(JSON.parse(readFileSync(f, "utf8"))); } catch { console.log(`RESULT: UNREADABLE — ${label(f)} is not valid JSON (exit 2)`); return 2; }
     }
     const expect = args.includes("--control") ? null : { query: pop.query, revision: pop.revision, from: pop.from };
     const r = judge(parsed[0], parsed[1], pop.shown(), expect, areaName);
@@ -785,8 +798,8 @@ ${lowerTail}
   // judge(), constants area: the legal case, the constants-only refusals, and exact lines.
   const cPapers = { total: 3, papers: [{ id: "2601.16175", version: 2 }, { id: "2610.00001", version: 1 }, { id: "2610.00002", version: 1 }] };
   const cGood = { papers: [
-    { id: "2601.16175", version: 2, class: "bears", claims: [{ constant: "fx", side: "upper", value: "1.502862", quote: "we obtain C ≤ 1.502862" }] },
-    { id: "2610.00001", version: 1, class: "bears", claims: [{ constant: "fx", side: "upper", value: "1.5028", quote: "a new upper bound of 1.5028" }, { constant: "fu", side: "lower", value: "1.3", quote: "C ≥ 1.3" }] },
+    { id: "2601.16175", version: 2, class: "bears", claims: [{ constant: "fx", side: "upper", relation: "<=", value: "1.502862", quote: "we obtain C ≤ 1.502862" }] },
+    { id: "2610.00001", version: 1, class: "bears", claims: [{ constant: "fx", side: "upper", relation: "<=", value: "1.5028", quote: "a new upper bound of 1.5028" }, { constant: "fu", side: "lower", relation: ">=", value: "1.3", quote: "C ≥ 1.3" }] },
     { id: "2610.00002", version: 1, class: "unrelated", claims: [] },
   ] };
   const cj = judge(cPapers, cGood, cshown, null, "constants");
@@ -796,17 +809,26 @@ ${lowerTail}
   check("constants judge: the no-bound fixture is classed unrelated", (() => { const r = judge({ total: 1, papers: [cPapers.papers[2]] }, { papers: [cGood.papers[2]] }, cshown, null, "constants"); return r.code === 0 && r.tally.unrelated === 1; })());
   const cEdit = (i, patch) => ({ papers: cGood.papers.map((p, j) => (j === i ? { ...p, ...patch } : p)) });
   const cRefusals = [
-    ["a constant id the mirror does not carry", cEdit(0, { claims: [{ constant: "99z", side: "upper", value: "1.5", quote: "1.5" }] }), "a constant id this mirror carries"],
-    ["a value written as a number, not a string", cEdit(0, { claims: [{ constant: "fx", side: "upper", value: 1.5, quote: "1.5" }] }), "a constant id this mirror carries"],
-    ["a value that is not a decimal", cEdit(0, { claims: [{ constant: "fx", side: "upper", value: "3/2", quote: "3/2" }] }), "a constant id this mirror carries"],
-    ["a quote holding the value only as a prefix of a longer number", cEdit(0, { claims: [{ constant: "fx", side: "upper", value: "1.5028", quote: "we get 1.50286" }] }), "does not contain the claimed value"],
-    ["a quote holding the value only as a suffix of a longer number", cEdit(0, { claims: [{ constant: "fx", side: "upper", value: "1.5028", quote: "we get 11.5028" }] }), "does not contain the claimed value"],
-    ["a quote holding the value only after a decimal point", cEdit(0, { claims: [{ constant: "fx", side: "upper", value: "5028", quote: "we get 1.5028" }] }), "does not contain the claimed value"],
+    ["a constant id the mirror does not carry", cEdit(0, { claims: [{ constant: "99z", side: "upper", relation: "<=", value: "1.5", quote: "1.5" }] }), "a constant id this mirror carries"],
+    ["a value written as a number, not a string", cEdit(0, { claims: [{ constant: "fx", side: "upper", relation: "<=", value: 1.5, quote: "1.5" }] }), "a constant id this mirror carries"],
+    ["a value that is not a decimal", cEdit(0, { claims: [{ constant: "fx", side: "upper", relation: "<=", value: "3/2", quote: "3/2" }] }), "a constant id this mirror carries"],
+    ["a quote holding the value only as a prefix of a longer number", cEdit(0, { claims: [{ constant: "fx", side: "upper", relation: "<=", value: "1.5028", quote: "we get 1.50286" }] }), "does not contain the claimed value"],
+    ["a quote holding the value only as a suffix of a longer number", cEdit(0, { claims: [{ constant: "fx", side: "upper", relation: "<=", value: "1.5028", quote: "we get 11.5028" }] }), "does not contain the claimed value"],
+    ["a quote holding the value only after a decimal point", cEdit(0, { claims: [{ constant: "fx", side: "upper", relation: "<=", value: "5028", quote: "we get 1.5028" }] }), "does not contain the claimed value"],
   ];
   for (const [label, vd, reason] of cRefusals) {
     const r = judge(cPapers, vd, cshown, null, "constants");
     check(`constants judge REFUSES ${label}`, r.code === 3 && r.lines[0].includes(reason));
   }
+  // Codex r3 on 67e2b40, one case per finding.
+  check("r3 I1: a claim with no relation is REFUSED", (() => { const r = judge(cPapers, cEdit(0, { claims: [{ constant: "fx", side: "upper", value: "1.502862", quote: "C ≤ 1.502862" }] }), cshown, null, "constants"); return r.code === 3 && r.lines[0].includes("a relation matching the side"); })());
+  check("r3 I1: a relation on the wrong side (\">=\" on an upper claim) is REFUSED", (() => { const r = judge(cPapers, cEdit(0, { claims: [{ constant: "fx", side: "upper", relation: ">=", value: "1.502862", quote: "C ≤ 1.502862" }] }), cshown, null, "constants"); return r.code === 3 && r.lines[0].includes("a relation matching the side"); })());
+  check("r3 I1: a STRICT claim at the shown value (27b: \"< 12\") is WITHIN-PRECISION and exits 1, never EQUAL", (() => {
+    const m = new Map([["i", { title: "i", upper: parseBoundCell("12"), lower: null }]]);
+    const r = judge({ total: 1, papers: [{ id: "2610.00009", version: 1 }] }, { papers: [{ id: "2610.00009", version: 1, class: "bears", claims: [{ constant: "i", side: "upper", relation: "<", value: "12", quote: "strictly less than 12" }] }] }, m, null, "constants");
+    return compareConstant(m, { constant: "i", side: "upper", relation: "<", value: "12" }).comparison === "within-precision" && r.code === 1 && r.equals === 0 && r.withinPrecision === 1;
+  })());
+  check("r3 I7: the tie rule compares digit counts, so the longer of two \\ldots prints wins in either order", tie(["$1.17628\\ldots$", "$1.176280\\ldots$"]).digits === "1.176280" && tie(["$1.176280\\ldots$", "$1.17628\\ldots$"]).digits === "1.176280");
   const cExpect = { query: CONSTANTS_QUERY, revision: "a".repeat(40), from: "2026-09-26" };
   const cWindow = { ...cPapers, fetchedAt: "2026-10-16T15:40:00.000Z", query: CONSTANTS_QUERY, revision: cExpect.revision, window: { from: "2026-09-26", to: "2026-10-16" } };
   check("constants judge accepts a window run with this watcher's query, mirror and window", judge(cWindow, cGood, cshown, cExpect, "constants").code === 1);
@@ -824,7 +846,7 @@ ${lowerTail}
     ...cRefusals.map(([, vd]) => judge(cPapers, vd, cshown, null, "constants")),
     ...cWindowRefusals.map(([, patch]) => judge({ ...cWindow, ...patch }, cGood, cshown, cExpect, "constants")),
     judge(cWindow, cGood, cshown, cExpect, "constants"), judge(cPapers, cGood, cshown, null, "constants"),
-    judge(cPapers, cEdit(0, { claims: [{ constant: HOSTILE, side: "upper", value: "1.5", quote: "1.5" }] }), cshown, null, "constants"),
+    judge(cPapers, cEdit(0, { claims: [{ constant: HOSTILE, side: "upper", relation: "<=", value: "1.5", quote: "1.5" }] }), cshown, null, "constants"),
   ].flatMap((r) => r.lines);
   const cUnshaped = cEmitted.filter((line) => !isShapedLine(line));
   check(`constants: every one of ${cEmitted.length} emitted line(s) matches an exact OUTPUT_SHAPES entry (${cUnshaped.length} do not)`, cEmitted.length > 10 && cUnshaped.length === 0);
@@ -865,6 +887,11 @@ ${lowerTail}
       try { await fetchWindow("2026-04-24", "2026-10-15", { fetchImpl: stub(bodies), pause: noPause }); } catch { refused = true; }
       check(`fetchWindow REFUSES ${label}`, refused);
     }
+    // r3 I4, through main() itself: a hostile --out path never reaches stdout in the constants area.
+    // The directory does not exist and nothing is written; the child process runs --check only.
+    const hostileOut = join(ROOT, "tmp", "no-such-dir-2610.00001-1a-upper-1.5");
+    const child = spawnSync(process.execPath, [fileURLToPath(import.meta.url), "--check", "--area", "constants", "--out", hostileOut], { encoding: "utf8" });
+    check("r3 I4: --check --area constants with a missing --out prints the fixed label, exit 2, and no part of the path", child.status === 2 && child.stdout.trim() === "RESULT: UNREADABLE — papers.json does not exist in the --out directory (exit 2)" && !child.stdout.includes("2610"));
     console.log(failed ? `RESULT: FAIL — ${failed} case(s) (exit 3)` : "RESULT: PASS — comparison, parser, judge refusals and fetch reconciliation (exit 0)");
     return failed ? 3 : 0;
   })();

@@ -22,7 +22,9 @@ Papers on automated discovery systems (AlphaEvolve and its relatives) usually re
 
 ## Each claim
 
-`{ "constant": "<id from constants.json>", "side": "lower" | "upper", "value": "<the decimal, as a STRING>", "quote": "<the exact line from the paper>" }`
+`{ "constant": "<id from constants.json>", "side": "lower" | "upper", "relation": "<=" | "<" | ">=" | ">", "value": "<the decimal, as a STRING>", "quote": "<the exact line from the paper>" }`
+
+- `relation` is REQUIRED and must match the side: `<=` or `<` for an upper bound, `>=` or `>` for a lower one. Use the strict form only when the paper states the bound strictly ("strictly less than 12", "C < 1.5"); a construction's value or "at most" is non-strict.
 
 - `value` is a string holding a plain decimal exactly as the paper prints it (`"1.5029"`, `"0.380868"`, `"12"`), so no digits are lost. If the paper prints a fraction or an expression, put the decimal the paper itself also prints; if it prints none, do not compute one: record the claim under `why` instead and leave it out of `claims`.
 - Which side: an upper bound on the constant (C ≤ x) is `upper`; a lower bound (C ≥ x) is `lower`. Read the constant's definition: some constants are minimised, some maximised, and a "score" in a results table may be either. If you cannot tell which side a number bounds, do not record it as a claim; say so in `why`.
@@ -35,7 +37,7 @@ Return as your FINAL MESSAGE a single JSON array, and nothing else after it:
 
 ```json
 [
-  { "id": "2610.00001", "version": 1, "class": "bears", "claims": [ { "constant": "1a", "side": "upper", "value": "1.5029", "quote": "..." } ] },
+  { "id": "2610.00001", "version": 1, "class": "bears", "claims": [ { "constant": "1a", "side": "upper", "relation": "<=", "value": "1.5029", "quote": "..." } ] },
   { "id": "2610.00002", "version": 2, "class": "unrelated", "claims": [] },
   { "id": "2610.00003", "version": 1, "class": "bears", "claims": [], "why": "reports a relative improvement on the minimum overlap problem, no explicit bound" }
 ]
