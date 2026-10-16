@@ -223,6 +223,31 @@ That is a read of the existing parser and population before building, so the wat
 - (b) owed child rows: none. Read: kickoff `rows owed to you … 0 of 754`.
 - (c) CROSSED state reads: none crossed. One was not judgeable: `missingLinkedCommits` NOTHING SWEPT (0 of 0 considered).
 
+**Correction to the packet's first command:** `depth-audit.mjs --corpus` reads the first watched area, not the Ramsey table. The read the watcher needed was `node scripts/ds1-depth.mjs --frame` (122 credited bounds in Table Ia), which is the one I ran.
+
+### Night round (round 3) — P3 product work
+
+**Action (improve): the arXiv newer-result watcher, `A-81`.** `scripts/arxiv-watch.mjs` asks arXiv for the math.CO papers whose abstract says "Ramsey", submitted since the revision of Small Ramsey Numbers the page mirrors. Reading agents record what each paper states. The script then works out whether any stated bound is stronger than the value `ramsey.html` shows, taking the smaller of Table Ia's and Table Ib's upper bound, since the page prints both. Candidates stay in `tmp/`, which is not committed, and only their count leaves it.
+
+**Implementation:** `4429dd0`, then three review rounds: `3815d1c`, `d732e8d`, `1de85b0`. Selftest: 53 cases. Every guard was red-armed, each mutation failing its own case.
+
+**First run, against the pass bar:**
+- Window 2026-04-24 to 2026-10-16 (UTC dates), query `cat:math.CO AND abs:Ramsey`: 149 papers, 149 verdicts. `--check` printed `COMPLETE — no candidate (exit 0)`, with claims-a-better-bound 0, mentions-only 10, unrelated 139 (0 + 10 + 139 = 149). Stated bounds equal to a value shown: 66. Weaker: 0. On rows the table does not carry: 8; the newest of these is R(12,12) ≥ 1641 in 2608.06531.
+- Positive control: 2409.15709v2 was put unmarked into a reader's batch. Its R(5,5) ≤ 46 matched the row credited to [AnM4], at the value the survey gives.
+- Negative control: 2606.09761 was classed unrelated.
+- `render-ramsey.mjs --check`: PASS. `ramsey.html` is unchanged.
+
+<!-- findings:begin -->
+**What the review rounds overturned:**
+- **Table Ib.** The watcher first compared against Table Ia only. On the first run's verdicts, that reports 19 false candidates, all of them Table Ib values restated by one paper (measured by disabling the merge).
+- **The window end.** Codex r1 found the window ending on the Mountain Time date, which cut off papers submitted after UTC midnight. The re-fetch on the UTC date returned the same 149 id-version pairs, so the first run's verdicts still apply. `--check` now refuses the first run's short window.
+- **Output and claims.** Two rounds found input text reaching the output. The fix changed the output to fixed lines, checked exactly by the selftest, instead of extending a search for forbidden text. The claims passes refuted 19 sentences (r1) and more (r2, r3) that said more than the code does. Each was narrowed to what the code enforces.
+<!-- findings:end -->
+
+**Delivery:** none to users, by design. Nothing renders and nothing goes upstream. A reader-facing note ("a newer paper claims to beat this bound, not yet checked") is a later step, behind the adversarial review and David's approval.
+
+**Encounter:** blind. The public pages carry no analytics (bug row `A-59`), and this change is not on them.
+
 ## Inputs (controllable)
 
 - One census session: a tripwire, a plan pushed before any source opened, seven papers, six reading agents run twice (the first six readings voided), and three Codex read-only review rounds.
