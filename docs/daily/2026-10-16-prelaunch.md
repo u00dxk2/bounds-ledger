@@ -21,8 +21,8 @@ sentry_open_p2: null
 
 ## BLUF
 
-The new-paper watch now covers all 115 optimization constants, and its first run flagged three numbers that look better than our pages show.
-None is checked yet; they stay private until someone reads each paper's construction.
+The Erdős minimum overlap page now notes a better upper bound we checked ourselves: 0.3808590566149, below the 0.380868 its source table lists.
+The new-paper watch found it on its first run over the 115 constants; nothing was sent upstream.
 Four more constant pages now say whether their cited source was read and what it showed.
 
 ## What changed
@@ -171,6 +171,21 @@ That is the baseline above. Then each paper is read at the version recorded: its
 - Red-armed: 12 mutations, each failing its own case. Selftest: 26 PASS.
 - Delivery: `npm run verify` exit 0 at a66f3ce. CI GREEN on a66f3ce for reverify.yml and page-check.yml (`check-ci-status.mjs`). `npm run served`: "SERVED c/1b.html" and "RESULT: PASS — every file the last page-changing commit touched is being served as committed".
 - Only `c/1b.html` changed among the pages; the mirrored rows are untouched.
+
+### Afternoon round (round 2) — Close
+
+`ACTION: COMPLETED` · item `A-82` · P3 b9bed516. The packet's pass bar was met: 3 of 3 candidates carry a verdict with an evidence path, the counts are on `A-82`, and the positive controls held. Then, on David's answer, the note was published after the claims pass and the reviews. The manager's review (bus d5b44105) confirmed the order: the first public Pages build carrying the note is a66f3ce, after every review.
+
+**Since the P3 post:** nothing in the shipped work changed. The receipt on the P3 post (bus msgId b9bed516) stands.
+
+**Nothing was sent upstream:** no issue, pull request, comment or email to the mirrored list or anyone else. The only outward act today is the note on our own page that David chose.
+
+**Ledger delta (hygiene draft: 0 lines — 0 accepted · 0 amended · 0 rejected; the helper had no input rows):**
+- `A-82`: `reviews2026_10_16` gives one dated line per review (r5, r6 code, r6 claims, r7), timed by each verdict file's write time, as the manager suggested. It also records that nothing was sent. The upstream-contact proposal is owed by 2026-10-19 (`nextCheckDate`): a drafted note to the mirrored list, an adversarial review, and a new card with the exact text, never sent without his answer. The 2 CANNOT TELL HERE candidates are owed by 2026-10-20.
+- Helper checks: check-wait-justification "RESULT: PASS — 1 of 99 row(s) carry `waitJustification`; 0 warn / 0 info"; check-engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable"; READ-MUTATED none.
+- `check-due-gates-dispositioned.mjs`: "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT.
+
+**Pending reads:** `A-47` slice 19 on 2026-10-18. `A-82` upstream proposal on 2026-10-19, and its 2 CANNOT TELL HERE on 2026-10-20. W-14 (the watch on upstream issue 218) on 2026-10-21. `A-81`'s next Ramsey read on 2026-10-29.
 
 **Encounter:** blind (bug row `A-59`).
 
