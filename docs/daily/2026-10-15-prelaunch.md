@@ -142,6 +142,30 @@ Then, in order:
 
 **Already done tonight, outside the choice:** the `A-47` slice 18 draw was pushed before any source opened, as `0a8dd77` (origin/main; `git rev-list --count origin/main..HEAD` read 0).
 
+### Evening session — P3: the Ramsey page shows its census verdicts
+
+**Landed on main as `b167f64` (PR #43),** four days ahead of the 10-19 slot, on the manager's ruling that the review, not the date, is the trigger (bus `894612a7`).
+
+**What a reader now sees** on `ramsey.html`: every Table Ia value marked "independently sourced" or "credited to the survey and not independently checked". Each one marked the second way says why. The live count line reads sound 53, defective 0, unresolved 49, unreachable 20, not yet read 0, nothing to read it against 6. Before tonight it read "not yet read 117". `copying.html` now says 56 copied survey entries; it said 5.
+
+**Table Ib, decided:** every value is credited to the survey, because the census read Table Ia only. R(4, 5) is the exception. The survey credits it to [MR4] alone, and the same bound was read SOUND in Table Ia, so it is marked independently sourced.
+
+**The copied-entry count is 56, not the 45 handed on.** The pattern behind 45 missed six rows that quote an entry "for identification only", two of them from census session 5. The page now counts a field that a stated rule sets and checks, not free text.
+
+**Review:** four Codex read-only rounds:
+- code: 3 findings;
+- a claims pass over 37 sentences: 11 overstated, all narrowed;
+- the fixes: 1 MAJOR, a DEFECTIVE twin in Table Ib;
+- final: SHIP.
+
+Every fix that added a check was red-armed.
+
+<!-- findings:begin -->
+- The handed-on figure of 45 copied survey entries was a floor; re-measured at HEAD it is 51 quoted plus 5 stored, so 56. The review note's "none from sessions 1 to 5" was also false.
+- The claims pass refuted 11 of 37 sentences I wrote, eight of them notes or method sentences claiming more than their rows recorded. The method sentence is still where my defects land.
+- I reported a commit `9e3c4b1` that does not exist; the real one was `b31bf36`. That is the fabricated-sha shape again, in a chat status line rather than a post, where no `verify-sha` gate reads it.
+<!-- findings:end -->
+
 ## Inputs (controllable)
 
 - One census session: a tripwire, a plan pushed before any source opened, seven papers, six reading agents run twice (the first six readings voided), and three Codex read-only review rounds.
