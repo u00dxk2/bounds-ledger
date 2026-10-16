@@ -17,7 +17,7 @@ If a paper is about the classical R(k, l) but states no explicit number, use `be
 
 ## When to read beyond the abstract
 
-When the abstract or title suggests explicit small classical values ("small Ramsey numbers", "new lower bounds for R(...)", "circulant/Paley constructions", "SAT", "flag algebras" with a two-colour classical number, "R(k,l) for small k"), open the paper's full text on arxiv.org (`https://arxiv.org/abs/<id>v<version>`, then its PDF or HTML at `https://arxiv.org/pdf/<id>v<version>`) and find the explicit statements. Read the version given in the input. If you cannot open the full text, say so in `why` and record only what the abstract states.
+When the abstract or title suggests explicit small classical values ("small Ramsey numbers", "new lower bounds for R(...)", "circulant/Paley constructions", "SAT", "flag algebras" with a two-colour classical number, "R(k,l) for small k"), open the paper's full text on arxiv.org (`https://arxiv.org/abs/<id>v<version>`, then its PDF or HTML at `https://arxiv.org/pdf/<id>v<version>`) and find the explicit statements. Read the version given in the input. If this section says to read the full text and you cannot open it, record what the abstract states AND set `"incomplete": "<what you could not open, and why>"` on that verdict. The check refuses to call a run complete while any reading is marked incomplete, so a blocked source is visible instead of passing as "nothing found".
 
 ## Each claim
 
