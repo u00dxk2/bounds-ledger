@@ -59,8 +59,9 @@
 // a row marked unverified ("*", README asterisk convention) or a row that is not a decimal (symbolic cells
 // such as $K_{DR}+10^{-26}$, which defeat numeric ranking). A shown decimal is a rounding to its last
 // printed place, with or without "\dots" or "\approx" (only a bare integer or an "= decimal" identity is
-// exact), so a claim within one unit of that place is also counted to read by hand rather than called a
-// candidate. Readers name a constant by its file id (1a, 46a…); the script
+// exact), so a claim that differs from it by at most one unit of that place, on EITHER side, is also
+// counted to read by hand rather than called a candidate or weaker. All comparisons are exact decimal
+// arithmetic on the printed strings (Codex r1). Readers name a constant by its file id (1a, 46a…); the script
 // refuses an id the mirror does not carry.
 //
 // Exit codes for --check: 0 complete · 1 complete AND at least one candidate, or (constants) at least one
@@ -156,11 +157,23 @@ export const CONSTANTS_BLIND_TO = [
 const DEC = "-?\\d+(?:\\.\\d+)?";
 const PLAIN_CELL = new RegExp(`^(${DEC})\\s*(\\\\dots|\\\\ldots)?$`);
 const TAIL_CELL = new RegExp(`(=|\\\\approx)\\s*(${DEC})\\s*(\\\\dots|\\\\ldots)?$`);
-const unitOf = (digits) => { const d = digits.split(".")[1]; return d ? 10 ** -d.length : 1; };
+const fracLen = (digits) => (digits.split(".")[1] ?? "").length;
+const unitOf = (digits) => 10 ** -fracLen(digits);
 
-// One bound cell -> { value, half } (half = how far the true value may sit from the printed one: 0 for a
-// bare integer or an "= decimal" identity, one unit in the last printed place for any other decimal), or
-// { unjudged } when the script cannot rank it. Never a guess: anything else is unjudged.
+// EXACT DECIMALS (Codex r1 on 48b17e2): every comparison is made on the decimal strings, scaled to
+// BigInt, never on Number. "1.74999999999999999999" and "1.75" are one double; they are not one bound.
+const toDec = (s) => { const neg = s.startsWith("-"); const [i, f = ""] = s.replace(/^-/, "").split("."); return { n: BigInt(`${neg ? "-" : ""}${i}${f}`), scale: f.length }; };
+const scaled = (d, scale) => d.n * 10n ** BigInt(scale - d.scale);
+const cmpDec = (a, b) => { const s = Math.max(a.scale, b.scale); const x = scaled(a, s), y = scaled(b, s); return x < y ? -1 : x > y ? 1 : 0; };
+// |a - b| <= u, exactly
+const withinDec = (a, b, u) => { const s = Math.max(a.scale, b.scale, u.scale); const d = scaled(a, s) - scaled(b, s); return (d < 0n ? -d : d) <= scaled(u, s); };
+
+// One bound cell -> { value, half, digits, exact } (digits: the printed decimal; exact: false when the
+// printed decimal is a rounding, true only for a bare integer or an "= decimal" identity; half: one unit
+// in the last printed place when not exact, else 0), or { unjudged } when the script cannot rank it.
+// Never a guess: anything else is unjudged. value and half are Numbers for reading only; comparisons
+// use digits.
+const cellOf = (digits, exact) => ({ value: Number(digits), half: exact ? 0 : unitOf(digits), digits, exact });
 export function parseBoundCell(raw) {
   const cell = String(raw).trim();
   if (cell.includes("*")) return { unjudged: "unverified" };
@@ -169,11 +182,11 @@ export function parseBoundCell(raw) {
   // A decimal with fractional digits is itself a rounding to its last printed place (1b's 0.380868 is
   // 0.380867675827 at more digits; found by the first live run, 2026-10-16), so it carries one unit too.
   // A bare integer is exact.
-  if (plain) return { value: Number(plain[1]), half: plain[2] || plain[1].includes(".") ? unitOf(plain[1]) : 0 };
+  if (plain) return cellOf(plain[1], !plain[2] && !plain[1].includes("."));
   // A strict or perturbed expression ("< X", "X - \delta", "o(1)") is not the decimal it ends on.
   if (/[<>]|\\[lg]eq?\b|\\[lg]t\b|\\delta|\\epsilon|\\varepsilon|o\(/.test(inner)) return { unjudged: "symbolic" };
   const tail = inner.match(TAIL_CELL);
-  if (tail) return { value: Number(tail[2]), half: tail[1] === "=" && !tail[3] ? 0 : unitOf(tail[2]) };
+  if (tail) return cellOf(tail[2], tail[1] === "=" && !tail[3]);
   return { unjudged: "symbolic" };
 }
 
@@ -196,7 +209,8 @@ export function parseConstant(body) {
     for (const r of rows) {
       const p = parseBoundCell(firstCell(r));
       if (p.unjudged) { best = { unjudged: p.unjudged }; break; }
-      if (!best || (side === "upper" ? p.value < best.value : p.value > best.value)) best = p;
+      const c = best ? cmpDec(toDec(p.digits), toDec(best.digits)) : 0;
+      if (!best || (side === "upper" ? c < 0 : c > 0)) best = p;
     }
     out[side] = best;
   }
@@ -209,19 +223,27 @@ export function constantsShown(dir = CONSTANTS_DIR) {
   return shown;
 }
 
-// equals | weaker | beats | within-precision | unjudged | not-carried
+// equals | weaker | beats | within-precision | unjudged
+// THE RULE (changed shape after Codex r1, the second rounding defect in one day): a shown value that is
+// not exact is the interval [printed - one unit, printed + one unit]. A claim is EQUAL only when its
+// decimal equals the printed one exactly; anywhere else inside the interval, on EITHER side, it is
+// WITHIN-PRECISION (to read by hand), because the true value may sit on either side of a rounding (5b's
+// 4/7 ~ 0.5714 is below 4/7, so 0.57142 is stronger though it exceeds the print). Only a claim outside
+// the interval is called BEATS or WEAKER.
 export function compareConstant(shown, claim) {
   const row = shown.get(claim.constant);
   const s = row ? row[claim.side] : null;
   // No table on that side (none in the mirror today) is read by hand like an unrankable one, so a
   // claim never drops out of the printed counts.
   if (!s || s.unjudged) return { comparison: "unjudged" };
-  const v = Number(claim.value);
-  if (v === s.value) return { comparison: "equals" };
-  const stronger = claim.side === "lower" ? v > s.value : v < s.value;
-  if (!stronger) return { comparison: "weaker" };
-  if (Math.abs(v - s.value) <= s.half * (1 + 1e-9)) return { comparison: "within-precision" };
-  return { comparison: "beats" };
+  const v = toDec(claim.value);
+  const p = toDec(s.digits);
+  const c = cmpDec(v, p);
+  if (c === 0) return { comparison: "equals" };
+  const unit = s.exact ? { n: 0n, scale: 0 } : { n: 1n, scale: fracLen(s.digits) };
+  if (withinDec(v, p, unit)) return { comparison: "within-precision" };
+  const stronger = claim.side === "lower" ? c > 0 : c < 0;
+  return { comparison: stronger ? "beats" : "weaker" };
 }
 
 // The window's end is the UTC date at fetch time: arXiv's submittedDate is UTC, so an end built from
@@ -370,6 +392,7 @@ export const AREAS = {
     startRefusal: "papers.json's window does not start at the mirrored revision's date",
     malformed: "a claim is malformed (positive integers k, l, value; side lower or upper)",
     validClaim: (c) => [c.k, c.l, c.value].every(positiveInt) && ["lower", "upper"].includes(c.side),
+    quoteHas: (quote, value) => new RegExp(`(^|[^0-9])${value}([^0-9]|$)`).test(quote),
     compare: (shown, c) => compare(shown, c),
     coverage: (expect, to) => `coverage: this watcher's query · submitted ${expect.from} to ${to} (UTC dates) · survey revision ${expect.revision}`,
   },
@@ -378,6 +401,9 @@ export const AREAS = {
     startRefusal: "papers.json's window does not start at the mirror's fetch date",
     malformed: "a claim is malformed (a constant id this mirror carries, side lower or upper, a decimal value written as a string)",
     validClaim: (c, shown) => typeof c.constant === "string" && shown.has(c.constant) && ["lower", "upper"].includes(c.side) && typeof c.value === "string" && DECIMAL_STRING.test(c.value),
+    // The value must be a WHOLE number token in the quote: not preceded by a digit, a point or a minus
+    // sign, and not followed by a digit or by a point and a digit ("1" is not in "1.7"; Codex r1).
+    quoteHas: (quote, value) => new RegExp(`(^|[^0-9.\\u2212-])${escapeRe(value)}(?![0-9]|\\.[0-9])`).test(quote),
     compare: (shown, c) => compareConstant(shown, c),
     coverage: (expect, to) => `coverage: this watcher's constants query · submitted ${expect.from} to ${to} (UTC dates), from the mirror's fetch date`,
   },
@@ -435,7 +461,7 @@ export function judge(papersDoc, verdictsDoc, shown, expect = null, areaName = "
     for (const c of claims) {
       if (!c || !area.validClaim(c, shown)) return refuse(`${at}: ${area.malformed}`);
       if (typeof c.quote !== "string" || !c.quote.trim()) return refuse(`${at}: a claim carries no quoted line`);
-      if (!new RegExp(`(^|[^0-9.])${escapeRe(String(c.value))}([^0-9]|$)`).test(c.quote)) return refuse(`${at}: a claim's quoted line does not contain the claimed value`);
+      if (!area.quoteHas(c.quote, c.value)) return refuse(`${at}: a claim's quoted line does not contain the claimed value`);
       const r = area.compare(shown, c);
       if (r.comparison === "not-carried") notCarried++;
       if (r.comparison === "unjudged") unjudged++;
@@ -671,7 +697,7 @@ function selftest() {
 
   // ---- the constants area ----
   // Cell parser: a decimal only when the cell IS one; everything else is unjudged, never guessed.
-  const cell = (raw, want) => { const p = parseBoundCell(raw); return JSON.stringify(p) === JSON.stringify(want); };
+  const cell = (raw, want) => { const p = parseBoundCell(raw); return JSON.stringify({ value: p.value, half: p.half, unjudged: p.unjudged }) === JSON.stringify(want); };
   check("cell: a plain decimal is a rounding, one unit in its last place", cell("$1.502862$", { value: 1.502862, half: 1e-6 }));
   check("cell: a bare integer is exact", cell("12", { value: 12, half: 0 }));
   check("cell: \"= decimal\" with no \\dots is exact", cell("$1/2=0.5$", { value: 0.5, half: 0 }));
@@ -709,7 +735,7 @@ ${lowerTail}
   check("a side with an unverified row is UNJUDGED (the 1a lower-bound case)", fx.lower.unjudged === "unverified");
   const fxOk = parseConstant(constFixture(""));
   check("without the unverified row the lower side ranks, best = largest (1.2802)", fxOk.lower.value === 1.2802);
-  const cshown = new Map([["fx", fxOk], ["fu", fx], ["fr", { title: "r", upper: { value: 2.3013, half: 1e-5 }, lower: null }]]);
+  const cshown = new Map([["fx", fxOk], ["fu", fx], ["fr", { title: "r", upper: parseBoundCell("$\\sinh(\\pi/2) \\approx 2.30130$"), lower: null }]]);
   const cmp = (constant, side, value) => compareConstant(cshown, { constant, side, value }).comparison;
   check("constants: an upper claim equal to the best row EQUALS", cmp("fx", "upper", "1.502862") === "equals");
   check("constants: an upper claim equal to a non-best row (1.503133) is WEAKER", cmp("fx", "upper", "1.503133") === "weaker");
@@ -721,6 +747,13 @@ ${lowerTail}
   check("constants: a stronger claim inside a rounded value's last unit is WITHIN-PRECISION", cmp("fr", "upper", "2.301295") === "within-precision");
   check("constants: a stronger claim outside that unit BEATS", cmp("fr", "upper", "2.3012") === "beats");
   check("constants: more digits of the same rounded value are WITHIN-PRECISION, not a candidate (1b: 0.380867675827 vs 0.380868)", cmp("fx", "upper", "1.5028615") === "within-precision");
+  // Codex r1 on 48b17e2, one case per finding.
+  const one = (cellText, side, value) => compareConstant(new Map([["k", { title: "k", [side]: parseBoundCell(cellText) }]]), { constant: "k", side, value }).comparison;
+  check("r1 #1: a claim past a rounded print but inside its unit is WITHIN-PRECISION, never WEAKER (5b: 4/7 ~ 0.5714, claim 0.57142)", one("$4/7 \\approx 0.5714$", "upper", "0.57142") === "within-precision");
+  check("r1 #2: exact decimals — 1.74999999999999999999 BEATS an exact 7/4 = 1.75 (one double, two bounds)", one("$7/4 = 1.75$", "upper", "1.74999999999999999999") === "beats");
+  check("r1 #2: exact decimals — 1.750 EQUALS 1.75", one("$7/4 = 1.75$", "upper", "1.750") === "equals");
+  check("r1 #3: the quote must hold the value as a whole token — \"1\" is NOT in \"C >= 1.7\"", !AREAS.constants.quoteHas("C >= 1.7", "1") && AREAS.constants.quoteHas("C >= 1.7", "1.7") && AREAS.constants.quoteHas("bound 1.", "1"));
+  check("r1 #3: a minus sign is part of the token — \"1\" is NOT in \"x = -1\"", !AREAS.constants.quoteHas("x = -1", "1") && AREAS.constants.quoteHas("x = -1", "-1"));
   check("constants: a bare integer stays exact, so a stronger integer BEATS", (() => { const m = new Map([["i", { title: "i", upper: parseBoundCell("12"), lower: null }]]); return compareConstant(m, { constant: "i", side: "upper", value: "11" }).comparison === "beats"; })());
 
   // The live mirror, read as committed: the two points the 10-16 review asked about, on 1a itself.
