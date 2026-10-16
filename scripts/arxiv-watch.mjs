@@ -567,7 +567,8 @@ async function main(args) {
     // The constants a reader may name, by id and title (upstream's own titles; no values, so a reader
     // is never told what we show).
     if (areaName === "constants") writeFileSync(join(out, "constants.json"), JSON.stringify([...pop.shown()].map(([id, c]) => ({ id, title: c.title })), null, 2) + "\n");
-    console.log(`RESULT: FETCHED — ${got.total} paper(s), every one listed in ${file} (exit 0)`);
+    // The constants area names a fixed label, never the --out path (Codex r4, I4); Ramsey as at the merge-base.
+    console.log(`RESULT: FETCHED — ${got.total} paper(s), every one listed in ${areaName === "constants" ? "papers.json in the --out directory" : file} (exit 0)`);
     return 0;
   }
 
@@ -829,6 +830,9 @@ ${lowerTail}
     return compareConstant(m, { constant: "i", side: "upper", relation: "<", value: "12" }).comparison === "within-precision" && r.code === 1 && r.equals === 0 && r.withinPrecision === 1;
   })());
   check("r3 I7: the tie rule compares digit counts, so the longer of two \\ldots prints wins in either order", tie(["$1.17628\\ldots$", "$1.176280\\ldots$"]).digits === "1.176280" && tie(["$1.176280\\ldots$", "$1.17628\\ldots$"]).digits === "1.176280");
+  // r4: units of 10^-400 and 10^-401 are both 0 as floating point, so only a digit-count tie rule picks the longer print.
+  const long = (n) => `1.5${"0".repeat(n)}`;
+  check("r4 I7: on prints whose float units underflow to 0, the longer still wins in either order", tie([`$${long(400)}\\ldots$`, `$${long(401)}\\ldots$`]).digits === long(401) && tie([`$${long(401)}\\ldots$`, `$${long(400)}\\ldots$`]).digits === long(401));
   const cExpect = { query: CONSTANTS_QUERY, revision: "a".repeat(40), from: "2026-09-26" };
   const cWindow = { ...cPapers, fetchedAt: "2026-10-16T15:40:00.000Z", query: CONSTANTS_QUERY, revision: cExpect.revision, window: { from: "2026-09-26", to: "2026-10-16" } };
   check("constants judge accepts a window run with this watcher's query, mirror and window", judge(cWindow, cGood, cshown, cExpect, "constants").code === 1);
