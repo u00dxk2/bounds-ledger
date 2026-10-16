@@ -185,6 +185,44 @@ Every fix that added a check was red-armed.
 
 **Correction, as the manager asked:** the evening P1 report section was committed as `b31bf36`; the id I first reported for it resolves to no commit.
 
+### Night round (round 3) — P1 selection packet
+
+**Outcome:** a watcher for newer Ramsey results on arXiv (a new ledger item, filed at P3 with the next free id, read from the ledger rather than assumed; plain label: "newer-result watcher, Small Ramsey Numbers"). **The user's problem in their words:** "is the number I already have still true?" Tonight a newer arXiv paper that beats a bound on `ramsey.html` goes unseen until the survey publishes a new revision.
+
+**Evidence** (OBSERVED / HYPOTHESIS / MISSING):
+- OBSERVED, no watcher exists: Grep for `arxiv` (case-insensitive) over `scripts/` hits only `render-site.mjs`, `history-sweep.mjs` and `check-claims.mjs`, and none of them queries the arXiv API. The same Grep over `.github/` hits nothing. The positive control is that the search found `check-claims.mjs`'s known arXiv-abstract claims (C-4/C-5), so the search could see arXiv references.
+- OBSERVED, the window start: `ledger/ejc-ds1/section-2-1.json` gives `"revision": 18` and `"revisionDate": "2026-04-24"`, the revision the page mirrors.
+- OBSERVED, the API is reachable from THIS machine tonight (between the 04:56Z kickoff and this post; the probe printed no timestamp of its own): `export.arxiv.org/api/query?search_query=cat:math.CO AND abs:Ramsey AND submittedDate:[202604240000 TO 202610160000]&max_results=200` returned HTTP 200 with 149 entries (under the 200 cap, so the whole result set). The first five are canonical-Ramsey/geometry papers (e.g. 2608.19183 "The regular pentagon is canonically Ramsey"), so most of the 149 will be unrelated to small Ramsey numbers. This shows the window is not empty and the reader's main job is sorting.
+- UNREAD, the API from the scheduled CI runner. CI does fetch `arxiv.org/abs/...` pages for C-4/C-5 through `check-claims.mjs`, but that is a different host from `export.arxiv.org`. Tonight's watcher runs locally, so this does not block it. A scheduled run is a later round, for the reason under Permission.
+- HYPOTHESIS, the query's reach: `abs:Ramsey` within `cat:math.CO` (cross-lists included) should catch a small-Ramsey-number paper. A paper listed only in cs.DM or math.PR, or one that never says "Ramsey" in its abstract, would be missed. P3 states this limit in the script's own `blindTo` line and does not fix it by widening the query until something is found.
+- OBSERVED, product-love metric: NOT MEASURABLE (`docs/evangelism-bar.md` § metric). G-4's indicator `npm run reports`, read tonight: 33 raw issues, 33 ours, 0 outside arrivals, and the parts reconcile. Encounter is blind on the public pages (`A-59`).
+- `check-cycle-rotation.mjs --lane bounds-ledger`: exit 2 REVIEW, "UNDETERMINED — no real-user-evidence artifact on record … the registry does not declare which lanes owe one". So no product-love pass is shown as due. This is a registry gap, not "nothing due".
+
+**Permission:** a new local, read-only script under the lane's own authority (ship obvious first-order improvements). It makes no upstream contact and does not render. **Two outward-gate constraints, both because the repo is PUBLIC:** (1) candidate records go to `tmp/arxiv-watch/` (gitignored), never `ledger/`. A committed "paper X claims to beat row Y" is an unverified mathematical statement about someone else's work, published. (2) The watcher does NOT run in CI tonight. A CI step's stdout is a public surface (AGENTS.md: the drift alarm's output is published verbatim), so a scheduled run needs its own adversarial review of what it prints. No David decision is needed for either.
+
+**Next action** (kind: improve):
+```bash
+node C:/dev/skylark/bounds-ledger/scripts/depth-audit.mjs --corpus
+```
+That is a read of the existing parser and population before building, so the watcher reuses the repo's own row keys rather than inventing a second parser. Then build `scripts/arxiv-watch.mjs`: (a) fetch the window, one page of 200 at most, and REFUSE rather than truncate if the total exceeds the page; (b) a model reader (a subagent brief returning text, saved by me) classifies each paper as `claims-a-better-bound`, `mentions-only` or `unrelated` from the abstract, and reads full text for any abstract naming a small Ramsey value; (c) each candidate record holds the row key, our shown value, the claimed value, the arXiv id and version, and the quoted line; (d) `--selftest` is network-free on fixtures.
+
+**Acceptance condition (pass bar, written before building):** RED today, because no record of any post-revision paper exists (`tmp/arxiv-watch/` does not exist). GREEN after: one run lists EVERY paper in the window (the count printed equals the API's count, and the verdicts sum to it), each with a verdict, and every candidate quoted from the paper. **Positive control:** an arXiv paper the survey already credits, fed in as if it were new, is found and matched to its row with the value the survey gives it (P3 picks it from the frame's credited keys before any reading, because `ledger/ejc-ds1` holds no arXiv links). **Negative control:** a fixture with no bound is classed `unrelated`. The selftest red-arms both (KP-78), and `render-ramsey.mjs --check` and `check-claims.mjs` stay PASS.
+
+**Delivery and encounter:** none, by design. Nothing a reader sees changes tonight. The read that matters is the first real run's candidate count and how many of those candidates survive a human reading of the paper. The P5 receipt will be `USER-VISIBLE: none — …`.
+
+`USER-FACING: no` — paths: `scripts/arxiv-watch.mjs` (new), its fixtures under `scripts/fixtures/`, `package.json` (selftest in `npm test`), `.github/workflows/reverify.yml` (the selftest step only, which `reverify.test.mjs` requires; network-free), `tmp/arxiv-watch/` (gitignored), `continuity/items.json`, `docs/`.
+
+**Carries (not the choice):** `A-47` slice 18 is due 2026-10-16 (draw `0a8dd77`: 27b, 33a, 3c, 45a). It is a dated obligation for the next day, not tonight's work. `npm run verify` is running now, and its receipt will be quoted at P3. The 20c author name and 1a line 18's 1.503164 stay unfiled upstream. David's essay is untouched.
+
+**Prior-day retro finding that bears on the choice:** none recurred. The one carried finding (the KL2022 author-name note, on `A-47`) does not touch the watcher.
+
+**Section 0:** Listener 🟢 SSE alive (restart 04:35:31Z, hello 04:35:32Z) and the thin loop is armed by tool call. Codex GREEN by the prompt's own probe line (04:50:42Z). CI GREEN on HEAD `19296da69c` for reverify.yml and page-check.yml (`check-ci-status.mjs`, exit 0 each). Deploy drift: not run. This is a Pages lane with no Render service declared (primer: "service: NOT DECLARED"), the class that reads NOTHING SWEPT. Harness: running 2.1.301 · fleet UNIFORM (27 of 27) · installed 2.1.301 (SAME). Recs from the 10-15 close: slice 18 is carried to 10-16. The 10-17 render was executed early (`b167f64`, A-54 closed). The reading-brief rule is carrying. The two upstream candidates are held. Due-gates: the morning snapshot for 2026-10-15 stands, and a re-snapshot was refused (exit 2, would drop A-54 and W-11, both dispositioned since the morning).
+
+**HYGIENE INPUTS:**
+- (a) due rows not bearing on the choice: none. Read: kickoff `dated gates due today: 0`.
+- (b) owed child rows: none. Read: kickoff `rows owed to you … 0 of 754`.
+- (c) CROSSED state reads: none crossed. One was not judgeable: `missingLinkedCommits` NOTHING SWEPT (0 of 0 considered).
+
 ## Inputs (controllable)
 
 - One census session: a tripwire, a plan pushed before any source opened, seven papers, six reading agents run twice (the first six readings voided), and three Codex read-only review rounds.
