@@ -16,10 +16,11 @@
 // <dir> defaults to tmp/arxiv-watch/<MT date>/, and tmp/ is gitignored ON PURPOSE: a candidate is an
 // UNVERIFIED claim about someone else's paper, and this repo is public. Keeping candidates out of
 // ledger/, commits, CI output and bus posts is a RULE for whoever runs this (AGENTS.md), not something
-// the script can enforce: --out accepts any directory. What the script does enforce: every line judge()
-// returns is fixed text plus integers the script computed and dates it validated (OUTPUT_SHAPES, pinned
-// by the selftest), and an unparsable input file gets a fixed line, so --check never prints text taken
-// from papers.json or verdicts.json. (It does print the paths it was given.)
+// the script can enforce: --out accepts any directory. What the script does enforce: judge() prints no
+// paper id, pair, quote or claimed value. Its lines are fixed text, counts it computed, the ledger's own
+// revision and revision date, and one validated date from papers.json (the window end); an unparsable
+// input file gets a fixed line; --check also prints the paths it was given. See THE OUTPUT RULE above
+// judge() for how the selftest checks this, and what it cannot.
 //
 // THE WINDOW starts at the revision date the ledger records for the survey (revisionDate in
 // ledger/ejc-ds1/section-2-1.json) and ends at the end of the current UTC day, because arXiv's
@@ -37,9 +38,9 @@
 // supplies that judgement. --check refuses to call a run complete unless papers.json RECORDS this
 // watcher's query, revision and window start, and a window end equal to the UTC date of its own
 // fetchedAt (recorded fields, not proof of where the file came from), every fetched id (each distinct)
-// has exactly one verdict, and no reading is marked incomplete. That is the manager's 2026-10-15
-// condition: this selftest cannot check the external reading, so the script refuses a run whose
-// reading is missing or flagged incomplete.
+// has exactly one verdict, and no reading is marked incomplete. The verdict-for-every-paper rule is the
+// manager's 2026-10-15 condition; refusing a reading flagged incomplete was added after Codex r1, because
+// a blocked source would otherwise pass as "nothing found". Neither rule checks the reading's accuracy.
 //
 // FINAL VERDICT per paper, derived:
 //   claims-a-better-bound  at least one stated bound is STRONGER than a value we show: it beats a range,
@@ -198,14 +199,17 @@ export async function fetchWindow(from, to, { fetchImpl = fetch, pause = () => n
 // ---------- the check ----------
 
 // Judges a verdicts document against the fetched papers. Returns { code, lines, tally }.
-// `expect` ({ query, revision, from }) ties a WINDOW run to this watcher's population: a papers.json
-// from another query, revision or window start is refused (Codex r1). null marks a CONTROL set, which
-// makes no coverage claim and says so.
+// `expect` ({ query, revision, from }) is compared with the query, revision and window that papers.json
+// RECORDS; a mismatch is refused (Codex r1). That checks recorded fields, not which query really produced
+// the file. null marks a CONTROL set, which makes no coverage claim and says so.
 // THE OUTPUT RULE (changed shape after Codex r1 and r2 both found input text reaching stdout): every
-// line judge() returns is FIXED TEXT plus integers the script computed and dates it has validated. No
-// string from papers.json or verdicts.json is ever interpolated, so no paper id, pair, value or quote
-// can reach the terminal by any path. The selftest pins every line to an exact shape (OUTPUT_SHAPES)
-// rather than searching for forbidden content, which r2 showed a pattern search can miss.
+// line judge() returns is fixed text plus integers the script computed, the ledger's own revision and
+// revision date, and ONE value taken from papers.json, its window end, printed only after it validated as
+// a date equal to the UTC date of the file's fetchedAt. No other string from papers.json or verdicts.json
+// is interpolated, so no paper id, pair, quote or claimed value is printed. The selftest checks every
+// line it emits against an exact shape (OUTPUT_SHAPES) and, for known fixtures, the exact expected lines,
+// so a value substituted into a number slot is caught too (Codex r3). Shapes replaced the r2-era search
+// for forbidden content, which a pattern list can miss; they check syntax, the exact lines check values.
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 // Every line judge() may return, exactly: {N} is a script-computed integer, {D} a validated date.
@@ -340,7 +344,10 @@ async function main(args) {
 
   if (args[0] === "--fetch") {
     const from = doc.source.revisionDate;
-    const to = windowEnd();
+    // ONE timestamp for both the window end and fetchedAt: a fetch that crosses UTC midnight would
+    // otherwise record two dates, and --check would refuse its own file (Codex r3).
+    const startedAt = new Date();
+    const to = windowEnd(startedAt);
     console.log(`window: submitted ${from} to ${to}, UTC dates (from revision ${doc.source.revision} of the survey, its revisionDate in the ledger)`);
     console.log(`query: ${QUERY}`);
     console.log(`blindTo: ${BLIND_TO.join("; ")}`);
@@ -353,7 +360,7 @@ async function main(args) {
     }
     mkdirSync(out, { recursive: true });
     const file = join(out, "papers.json");
-    writeFileSync(file, JSON.stringify({ fetchedAt: new Date().toISOString(), window: { from, to, dates: "UTC" }, query: QUERY, revision: doc.source.revision, total: got.total, papers: got.papers }, null, 2) + "\n");
+    writeFileSync(file, JSON.stringify({ fetchedAt: startedAt.toISOString(), window: { from, to, dates: "UTC" }, query: QUERY, revision: doc.source.revision, total: got.total, papers: got.papers }, null, 2) + "\n");
     console.log(`RESULT: FETCHED — ${got.total} paper(s), every one listed in ${file} (exit 0)`);
     return 0;
   }
@@ -480,7 +487,24 @@ function selftest() {
   ].flatMap((r) => r.lines);
   const unshaped = emitted.filter((line) => !isShapedLine(line));
   check(`every one of ${emitted.length} emitted line(s) matches an exact OUTPUT_SHAPES entry (${unshaped.length} do not)`, emitted.length > 20 && unshaped.length === 0);
-  check("the shape rule fires on a line that carries input text", !isShapedLine(`REFUSED — papers.json holds 3 paper(s) but records a total of ${HOSTILE}`) && isShapedLine("REFUSED — papers.json holds 3 paper(s), which is not the integer total it records"));
+  check("the shape rule fires on a line that carries input text", !isShapedLine(`REFUSED — papers.json holds 3 paper(s), which is not the integer total ${HOSTILE}`) && isShapedLine("REFUSED — papers.json holds 3 paper(s), which is not the integer total it records"));
+
+  // Exact lines for a known fixture: shapes check syntax only, so a claimed value printed into a number
+  // slot would pass them (Codex r3). Every value here is derived from the fixture by hand: 3 papers, one
+  // candidate (R(4,6) <= 39 beats Table Ib's 40), one equal claim (R(5,5) <= 46), nothing weaker or uncarried.
+  const exact = judge(windowDoc, good, shown, expect).lines;
+  const expected = [
+    `coverage: this watcher's query · submitted ${doc.source.revisionDate} to 2026-10-16 (UTC dates) · survey revision ${doc.source.revision}`,
+    "papers fetched: 3 · verdicts: 3 · every fetched id has exactly one verdict",
+    "  claims-a-better-bound: 1",
+    "  mentions-only: 1",
+    "  unrelated: 1",
+    "parts reconcile: 1 + 1 + 1 = 3",
+    "candidate bound(s) beating or contradicting a value we show: 1 (details stay in verdicts.json, never printed)",
+    "stated bounds EQUAL to a value we show: 1 · WEAKER than it: 0",
+    "stated bounds on rows this table does not carry: 0",
+  ];
+  check("a known window fixture prints exactly the expected lines, values included", JSON.stringify(exact) === JSON.stringify(expected));
   check("judge stays SILENT on a bears paper with no claims but a stated why", judge({ total: 1, papers: [papersDoc.papers[0]] }, { papers: [{ ...good.papers[0], claims: [], why: "a survey of asymptotic bounds, no small value" }] }, shown).code === 0);
 
   // fetchWindow: reconciles, pages, refuses.
