@@ -26,7 +26,7 @@ import { boundCell } from "./lookup.mjs";
 import crypto from "node:crypto";
 import { REPO, esc, copyCiteScript } from "./lib/html.mjs";
 import { noteBlock } from "./openai-math.mjs";
-import { newerBlock, newerFor, loadStore as loadNewerStore } from "./newer-results.mjs";
+import { newerBlock, newerFor, loadStore as loadNewerStore, validateStore as validateNewerStore } from "./newer-results.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUTDIR = join(ROOT, "c");
@@ -2100,7 +2100,18 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE } = {}) {
   const rows = buildRows(claims);
   // A-53 (b): refuse before anything is composed or written. Nothing above writes.
   if (refuseDroppedAudits("render-constant-pages", { storePath, pageIds: new Set(rows.map((r) => r.id)) })) { process.exitCode = 1; return; }
-  const pages = new Map(rows.map((r) => [`${r.id}.html`, renderPage(r, manifest.sha)]));
+  // A-82: refuse an INVALID newer-results store before anything is composed or written, in write AND
+  // check mode (Codex r6: rendering used to print whatever the store held; only npm test validated it).
+  // CC_NEWER_RESULTS_STORE is a test hook (newer-results.mjs's selftest points it at a bad store to
+  // prove this refusal runs through main), not a setting.
+  const newer = loadNewerStore(process.env.CC_NEWER_RESULTS_STORE || undefined);
+  const newerErrs = newer ? validateNewerStore(newer) : [];
+  if (newerErrs.length) {
+    console.log(`RESULT: FAIL — render-constant-pages: the newer-results store is invalid, so nothing was composed or written: ${newerErrs.join("; ")}`);
+    process.exitCode = 1;
+    return;
+  }
+  const pages = new Map(rows.map((r) => [`${r.id}.html`, renderPage(r, manifest.sha, undefined, newer)]));
 
   if (check) {
     const onDisk = existsSync(OUTDIR) ? readdirSync(OUTDIR).filter((f) => f.endsWith(".html")) : [];

@@ -20,7 +20,9 @@
 // WHAT IT NEVER SAYS. That upstream is wrong (its rows remain true bounds; it is behind), that anyone
 // refereed the construction, or that upstream SHOULD list it. Upstream contact is David's gate.
 
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { esc } from "./lib/html.mjs";
@@ -34,7 +36,21 @@ const CONSTANTS = join(ROOT, "ledger", "teorth-optimizationproblems", "constants
 const FORBIDDEN = /\brecords?\b/i;
 const DECIMAL = /^-?\d+\.\d+$/;
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
-const PINNED_GITHUB = /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/blob\/[0-9a-f]{40}\/[^\s"<>]+$/;
+const PINNED_PATH = /^\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/blob\/[0-9a-f]{40}\/[A-Za-z0-9_.\/-]+$/;
+// A GitHub blob link pinned to a full commit sha, judged on the URL AS A BROWSER RESOLVES IT (Codex r6:
+// a pattern on the raw string accepted ".../<sha>/../main/f.json", which resolves to the main branch).
+// Two separate rules, each with its own selftest case:
+//   - the NORMALISED path must be a blob path pinned to a 40-hex sha, which refuses any traversal off the
+//     commit, percent-encoded ("%2e%2e") included, since normalisation resolves both;
+//   - the link must already BE its normalised form, so the page prints exactly the address a reader lands
+//     on (".../<sha>/x/../f.json" resolves to the pinned file, but is refused for that reason).
+export function isPinnedGithub(u) {
+  let url;
+  try { url = new URL(String(u)); } catch { return false; }
+  if (url.protocol !== "https:" || url.hostname !== "github.com" || url.search || url.hash || url.username || url.port) return false;
+  if (url.href !== String(u)) return false;
+  return PINNED_PATH.test(url.pathname);
+}
 const ARXIV = /^https:\/\/arxiv\.org\/abs\/\d{4}\.\d{4,5}v\d+$/;
 
 /** Load the store. Absent file means no notes, never a crash. */
@@ -78,25 +94,27 @@ export function validateStore(store, { shown = constantsShown(), constantExists 
     // It must beat the table's best row on its side, by the arXiv watcher's own exact comparison.
     const r = compareConstant(shown, { constant: String(e.id), side: e.side, relation: e.side === "upper" ? "<=" : ">=", value: String(e.value) }).comparison;
     if (r !== "beats") errs.push(`${at_}: the value does not beat the table's best ${e.side} row (the watcher's comparison says ${r})`);
-    if (!PINNED_GITHUB.test(String(e.sourceUrl || ""))) errs.push(`${at_}: sourceUrl must be a GitHub blob link pinned to a full 40-character commit sha`);
+    if (!isPinnedGithub(e.sourceUrl)) errs.push(`${at_}: sourceUrl must be a GitHub blob link pinned to a full 40-character commit sha`);
     if (!ARXIV.test(String(e.foundVia || ""))) errs.push(`${at_}: foundVia must be a versioned arXiv abstract link`);
     for (const f of ["sourcePostedBy", "evaluatedOn"]) if (!ISO.test(String(e[f] || ""))) errs.push(`${at_}: ${f} must be a YYYY-MM-DD date`);
     for (const f of ["construction", "rounding", "method"]) if (typeof e[f] !== "string" || !e[f].trim()) errs.push(`${at_}: ${f} must be a non-empty sentence`);
   }
-  for (const s of renderedStrings(store)) if (FORBIDDEN.test(s)) errs.push(`a reader-facing string uses the word "record": ${s.slice(0, 80)}`);
+  // The word ban is judged on the RAW rendered block, links, values and attributes included, and only
+  // there (Codex r6: a list of fields missed the URL, so ".../record.json" passed validation and reached
+  // the page; the field list was then removed, since the whole block covers every field it named). It
+  // runs once the entries are otherwise valid, because only a valid entry can be rendered.
+  if (!errs.length) {
+    for (const id of [...new Set(entries.map((e) => String(e.id)))]) {
+      const block = newerBlock(newerFor(id, store), shown);
+      if (FORBIDDEN.test(block)) errs.push(`${id}: the rendered block uses the word "record" (in a link, a value or a fixed phrase)`);
+    }
+  }
   return errs;
 }
 
 /** The entries for one constant. */
 export function newerFor(id, store = loadStore()) {
   return store && Array.isArray(store.entries) ? store.entries.filter((e) => e.id === id).map((e) => ({ ...e, checkedThrough: store.checkedThrough, watchScope: store.watchScope })) : [];
-}
-
-/** Every reader-facing string an entry can render (the word ban is judged over exactly these). */
-export function renderedStrings(store) {
-  const out = [store?.watchScope];
-  for (const e of store?.entries || []) out.push(e.construction, e.rounding, e.method);
-  return out.filter((s) => typeof s === "string");
 }
 
 const arxivLabel = (url) => `arXiv:${url.replace(/^https:\/\/arxiv\.org\/abs\//, "")}`;
@@ -110,10 +128,13 @@ export function newerBlock(entries, shown) {
     const which = e.side === "upper" ? "an upper bound" : "a lower bound";
     const table = e.side === "upper" ? "the smallest upper bound" : "the largest lower bound";
     const cap = e.construction.charAt(0).toUpperCase() + e.construction.slice(1);
-    return `<li><p>${esc(cap)} (<a href="${esc(e.sourceUrl)}">the posted file</a>, at the commit current on ${esc(e.evaluatedOn)}) gives ${which} of <code>${esc(e.value)}</code> on this constant. That is below ${table} in this constant's source table, <code>${esc(best)}</code>.</p><p>${esc(e.method)} The exact value is ${esc(e.exactMaximum)}…, which we print as <code>${esc(e.value)}</code>: ${esc(e.rounding)}.</p></li>`;
+    return `<li><p>${esc(cap)} (<a href="${esc(e.sourceUrl)}">the posted file</a>, at the commit current on ${esc(e.evaluatedOn)}) gives ${which} of <code>${esc(e.value)}</code> on this constant. That is ${e.side === "upper" ? "below" : "above"} ${table} in this constant's source table, <code>${esc(best)}</code>.</p><p>${esc(e.method)} The exact value is ${esc(e.exactMaximum)}…, which we print as <code>${esc(e.value)}</code>: ${esc(e.rounding)}.</p></li>`;
   }).join("");
   const first = entries[0];
-  return `<dt>Outside the source table: a newer construction we checked</dt><dd><ul class="oai">${items}</ul><span class="when">We found it on ${esc(first.evaluatedOn)} through a newer paper, <a href="${esc(first.foundVia)}">${esc(arxivLabel(first.foundVia))}</a>, which reports downloading posted constructions from the same repository and refining them; we did not check that paper's refined value. The source table does not list this construction, and this ledger has not changed the rows above because of it. Newer results checked through ${esc(first.checkedThrough)}: we read ${esc(first.watchScope)}; results announced anywhere else may be missing.</span></dd>`;
+  // Heading and scope wording from the 2026-10-16 claims pass (Codex r6): "newer construction" had no
+  // comparator (the construction predates our mirror's fetch), and "checked through" over-read as
+  // complete coverage; the search is one dated pass with a stated scope.
+  return `<dt>Outside the source table: a construction we evaluated independently</dt><dd><ul class="oai">${items}</ul><span class="when">We found it on ${esc(first.evaluatedOn)} through a newer paper, <a href="${esc(first.foundVia)}">${esc(arxivLabel(first.foundVia))}</a>, which reports downloading posted constructions from the same repository and refining the best one; we did not check that paper's refined value. The source table does not list this construction, and this ledger has not changed the rows above because of it. Search for newer results, run on ${esc(first.checkedThrough)}: we read ${esc(first.watchScope)}; results announced anywhere else may be missing.</span></dd>`;
 }
 
 /**
@@ -167,7 +188,17 @@ export async function selftest() {
   check("REFUSES the word 'record' in a reader-facing string", v({ method: "This is a new record." }).some((e) => e.includes('"record"')));
   check("REFUSES a lower bound printed above its exact value", v({ side: "lower", value: "0.3790060", exactMaximum: "0.37900591" }).some((e) => e.includes("wrong side")));
   const block = newerBlock(newerFor("t1", good), shown);
-  check("the block names the value, the table's best row, the exact value, the pinned link and the scope", block.includes("<code>0.3808590566149</code>") && block.includes("<code>0.380868</code>") && block.includes("0.38085905661480689909") && block.includes("a".repeat(40)) && block.includes("checked through 2026-10-16") && block.includes("arXiv:2609.40340v1"));
+  check("the block names the value, the table's best row, the exact value, the pinned link and the scope", block.includes("<code>0.3808590566149</code>") && block.includes("<code>0.380868</code>") && block.includes("0.38085905661480689909") && block.includes("a".repeat(40)) && block.includes("run on 2026-10-16") && block.includes("arXiv:2609.40340v1"));
+  check("an upper entry renders 'below' the table's smallest upper bound", block.includes("That is below the smallest upper bound"));
+  // Codex r6 on e554de2, one case per finding.
+  const lowerStore = { ...good, entries: [{ ...good.entries[0], side: "lower", value: "0.379010", exactMaximum: "0.3790101" }] };
+  check("r6 #3: a valid LOWER entry passes and renders 'above' the table's largest lower bound, never 'below'", validateStore(lowerStore, { shown, constantExists: exists }).length === 0 && newerBlock(newerFor("t1", lowerStore), shown).includes("That is above the largest lower bound") && !newerBlock(newerFor("t1", lowerStore), shown).includes("is below"));
+  check("r6 #2: a link that resolves off the pinned commit ('../main') is refused", v({ sourceUrl: `https://github.com/o/r/blob/${"a".repeat(40)}/../main/f.json` }).some((e) => e.includes("pinned")));
+  check("r6 #2: percent-encoded traversal ('%2e%2e') is refused", v({ sourceUrl: `https://github.com/o/r/blob/${"a".repeat(40)}/%2e%2e/main/f.json` }).some((e) => e.includes("pinned")));
+  check("r6 #2: a link that still resolves to the pinned file but is not written in its resolved form is refused (the page must print the address a reader lands on)", v({ sourceUrl: `https://github.com/o/r/blob/${"a".repeat(40)}/x/../f.json` }).some((e) => e.includes("pinned")));
+  check("r6 #2: a query or fragment on the link is refused", v({ sourceUrl: `https://github.com/o/r/blob/${"a".repeat(40)}/f.json?raw=1` }).some((e) => e.includes("pinned")) && v({ sourceUrl: `https://github.com/o/r/blob/${"a".repeat(40)}/f.json#L1` }).some((e) => e.includes("pinned")));
+  check("r6 #4: the word 'record' in the LINK is refused (the ban is judged on the rendered block)", v({ sourceUrl: `https://github.com/o/r/blob/${"a".repeat(40)}/record.json` }).some((e) => e.includes('"record"')));
+  check("the coarser valid rounding yields ZERO errors, not only the absence of one (r6 note)", v({ value: "0.3808591" }).length === 0);
   check("no entries, no block", newerBlock([], shown) === "" && newerBlock(newerFor("zz", good), shown) === "");
   check("the block never says 'record'", !FORBIDDEN.test(block));
   // The committed store itself, and the guard over the real page.
@@ -176,6 +207,18 @@ export async function selftest() {
   check(`the committed store validates (${real.length} problem(s)${real.length ? ": " + real.join("; ") : ""})`, store !== null && real.length === 0);
   const guard = await boundCellGuard(store);
   check(`the bound-cell guard holds on every noted page (${guard.length} problem(s)${guard.length ? ": " + guard.join("; ") : ""})`, guard.length === 0);
+  // r6 #1, through main() itself: render-constant-pages --check must REFUSE an invalid store before it
+  // composes or writes anything. The bad store (an upper bound printed below its exact value) lives in a
+  // temp folder and is removed after; the hook env var is the only way it is reached.
+  const dir = mkdtempSync(join(tmpdir(), "newer-results-"));
+  try {
+    const bad = { ...store, entries: store.entries.map((e, i) => (i === 0 ? { ...e, value: e.exactMaximum.slice(0, e.value.length - 1) + "0" } : e)) };
+    writeFileSync(join(dir, "bad.json"), JSON.stringify(bad));
+    const child = spawnSync(process.execPath, [join(ROOT, "scripts", "render-constant-pages.mjs"), "--check"], { encoding: "utf8", env: { ...process.env, CC_NEWER_RESULTS_STORE: join(dir, "bad.json") } });
+    check("r6 #1: render-constant-pages --check REFUSES an invalid store through main(), exit 1, before composing", child.status === 1 && child.stdout.includes("the newer-results store is invalid, so nothing was composed or written"));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
   console.log(failed ? `RESULT: FAIL — ${failed} case(s) (exit 3)` : "RESULT: PASS — store rules, rendering and the bound-cell guard (exit 0)");
   return failed ? 3 : 0;
 }
