@@ -164,7 +164,13 @@ That is the baseline above. Then each paper is read at the version recorded: its
 - **The ledger's most important page is behind.** The best upper bound shown for the Erdős minimum overlap constant (the problem this repo opened on) is beaten by a construction posted about three months ago, and the list we mirror has not added it. The drift alarm could never catch this, because it watches the mirror and the mirror is faithful. Only the newer-result watch plus a human read could. This matches the shape `A-81` was built for, but it is not the standing prediction's citation-quality shape.
 <!-- findings:end -->
 
-**Delivery:** none yet, by design. Nothing renders until David answers the card.
+**David answered card 73149a3b at 19:21:32Z** (paraphrased, as this repo records his words): a short note on our own page, but only after a claims pass and an adversarial review; no upstream contact yet; and once the note is confirmed, we propose that contact.
+
+**The note, built and published:** `scripts/newer-results.mjs` and `ledger/newer-results.json` render the note beside the 1b table on `c/1b.html`, outside every bound cell. A bound-cell guard proves the page minus exactly the note equals the page without it, and the store is validated on every path that writes or checks a page. Commits: e554de2 (the note), 09fb4f1 (review r6 fixes), a66f3ce (review r7 fix).
+- Code review r6: DO NOT SHIP, 4 findings, all fixed. Claims pass r6: 27 holds / 0 refuted / 1 unverifiable, and the heading was rewritten. Review r7: SHIP WITH FIXES, 1 finding, fixed.
+- Red-armed: 12 mutations, each failing its own case. Selftest: 26 PASS.
+- Delivery: `npm run verify` exit 0 at a66f3ce. CI GREEN on a66f3ce for reverify.yml and page-check.yml (`check-ci-status.mjs`). `npm run served`: "SERVED c/1b.html" and "RESULT: PASS — every file the last page-changing commit touched is being served as committed".
+- Only `c/1b.html` changed among the pages; the mirrored rows are untouched.
 
 **Encounter:** blind (bug row `A-59`).
 
