@@ -3,8 +3,10 @@
 // Table Ia). It asks one question a reader of ramsey.html cannot easily ask alone: has a paper
 // posted to arXiv since the survey revision we mirror claimed a bound that beats a value we show?
 //
-// usage: arxiv-watch.mjs --fetch [--out <dir>]   list every math.CO paper whose abstract says "Ramsey",
-//                                                 submitted in the window, into <dir>/papers.json
+// usage: arxiv-watch.mjs --fetch [--out <dir>]   ask arXiv for the math.CO papers whose abstract says
+//                                                 "Ramsey", submitted in the window, and write them to
+//                                                 <dir>/papers.json only if the distinct ids returned
+//                                                 reconcile with the total arXiv states (at most 1,000)
 //        arxiv-watch.mjs --check [--control] [--out <dir>]
 //                                                 judge <dir>/verdicts.json against papers.json and the table;
 //                                                 --control judges a hand-made set and makes no coverage claim
@@ -14,8 +16,10 @@
 // <dir> defaults to tmp/arxiv-watch/<MT date>/, and tmp/ is gitignored ON PURPOSE: a candidate is an
 // UNVERIFIED claim about someone else's paper, and this repo is public. Keeping candidates out of
 // ledger/, commits, CI output and bus posts is a RULE for whoever runs this (AGENTS.md), not something
-// the script can enforce: --out accepts any directory. What the script does enforce: --check's output,
-// including its refusals, carries counts and fault classes, never a paper id, a pair or a value.
+// the script can enforce: --out accepts any directory. What the script does enforce: every line judge()
+// returns is fixed text plus integers the script computed and dates it validated (OUTPUT_SHAPES, pinned
+// by the selftest), and an unparsable input file gets a fixed line, so --check never prints text taken
+// from papers.json or verdicts.json. (It does print the paths it was given.)
 //
 // THE WINDOW starts at the revision date the ledger records for the survey (revisionDate in
 // ledger/ejc-ds1/section-2-1.json) and ends at the end of the current UTC day, because arXiv's
@@ -30,10 +34,12 @@
 // The reader is asked to report only what the paper STATES; the script cannot check that a quote is
 // really from the paper, only that it contains the claimed value. Whether a stated bound BEATS the value
 // we show is computed here, from ledger/ejc-ds1/section-2-1.json as it is on disk, so a reader never
-// supplies that judgement. --check refuses to call a run complete unless papers.json came from this
-// watcher's query, revision and window start, every fetched id (each distinct) has exactly one verdict,
-// and no reading is marked incomplete (the manager's 2026-10-15 condition: the model step cannot be
-// self-tested, so the script refuses an incomplete one).
+// supplies that judgement. --check refuses to call a run complete unless papers.json RECORDS this
+// watcher's query, revision and window start, and a window end equal to the UTC date of its own
+// fetchedAt (recorded fields, not proof of where the file came from), every fetched id (each distinct)
+// has exactly one verdict, and no reading is marked incomplete. That is the manager's 2026-10-15
+// condition: this selftest cannot check the external reading, so the script refuses a run whose
+// reading is missing or flagged incomplete.
 //
 // FINAL VERDICT per paper, derived:
 //   claims-a-better-bound  at least one stated bound is STRONGER than a value we show: it beats a range,
@@ -43,8 +49,10 @@
 //
 // Exit codes for --check: 0 complete · 1 complete AND at least one candidate (something to read)
 //             · 2 could not read (a missing or unparsable file) · 3 refused (incomplete, malformed, off
-//             the watcher's population, or not reconciling). --fetch: 0 fetched · 2 arXiv unreachable
-//             (a network failure or a non-2xx answer) · 3 refused (a feed it cannot judge complete).
+//             the watcher's recorded population, or not reconciling). --fetch: 0 fetched · 2 arXiv
+//             unreachable (a network failure, a non-2xx answer, or a body that dies mid-read) · 3
+//             refused (a feed it cannot judge complete). Any other uncaught error, such as a failure to
+//             write papers.json, exits 2.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -169,7 +177,13 @@ export async function fetchWindow(from, to, { fetchImpl = fetch, pause = () => n
       throw Object.assign(new Error("arXiv API could not be reached (network failure)"), { unreachable: true });
     }
     if (!res.ok) throw Object.assign(new Error(`arXiv API HTTP ${res.status}`), { unreachable: true });
-    const page = parseFeed(await res.text());
+    let body;
+    try {
+      body = await res.text();
+    } catch {
+      throw Object.assign(new Error("arXiv API response could not be read (network failure)"), { unreachable: true });
+    }
+    const page = parseFeed(body);
     if (page.total === null) throw new Error("the feed states no totalResults, so completeness cannot be judged");
     if (total === null) total = page.total;
     else if (page.total !== total) throw new Error(`totalResults moved between pages (${total} then ${page.total})`);
@@ -187,17 +201,67 @@ export async function fetchWindow(from, to, { fetchImpl = fetch, pause = () => n
 // `expect` ({ query, revision, from }) ties a WINDOW run to this watcher's population: a papers.json
 // from another query, revision or window start is refused (Codex r1). null marks a CONTROL set, which
 // makes no coverage claim and says so.
-// Refusal lines name a verdict by its POSITION in verdicts.json and the class of fault, never a paper
-// id, a pair or a value: the counts-only contract covers error paths too (Codex r1).
+// THE OUTPUT RULE (changed shape after Codex r1 and r2 both found input text reaching stdout): every
+// line judge() returns is FIXED TEXT plus integers the script computed and dates it has validated. No
+// string from papers.json or verdicts.json is ever interpolated, so no paper id, pair, value or quote
+// can reach the terminal by any path. The selftest pins every line to an exact shape (OUTPUT_SHAPES)
+// rather than searching for forbidden content, which r2 showed a pattern search can miss.
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+// Every line judge() may return, exactly: {N} is a script-computed integer, {D} a validated date.
+export const OUTPUT_SHAPES = [
+  "REFUSED — papers.json holds no papers array",
+  "REFUSED — papers.json holds {N} paper(s), which is not the integer total it records",
+  "REFUSED — papers.json was fetched with a different query than this watcher's",
+  "REFUSED — papers.json was fetched against a different survey revision than the ledger mirrors",
+  "REFUSED — papers.json's window does not start at the mirrored revision's date",
+  "REFUSED — papers.json's window end is not a date on or after its start",
+  "REFUSED — papers.json's window end is not the UTC date of its own fetchedAt",
+  "REFUSED — a fetched paper lacks a string id or a positive integer version",
+  "REFUSED — papers.json lists {N} paper(s) but only {N} distinct id(s)",
+  "REFUSED — verdicts.json holds no papers array",
+  "REFUSED — verdict #{N} names a paper this run did not fetch",
+  "REFUSED — verdict #{N} is a second verdict for one paper (more than one verdict)",
+  "REFUSED — verdict #{N} read a different version than the fetch listed",
+  "REFUSED — verdict #{N}: its class is not one of bears / unrelated",
+  "REFUSED — verdict #{N}: no claims array (write [] for none)",
+  "REFUSED — verdict #{N}: class unrelated but claim(s) recorded",
+  'REFUSED — verdict #{N}: class bears with no claims needs a one-line "why"',
+  'REFUSED — verdict #{N}: "incomplete" must say why the reading could not be finished',
+  "REFUSED — verdict #{N}: a claim is malformed (positive integers k, l, value; side lower or upper)",
+  "REFUSED — verdict #{N}: a claim carries no quoted line",
+  "REFUSED — verdict #{N}: a claim's quoted line does not contain the claimed value",
+  "REFUSED — {N} of {N} fetched paper(s) have no verdict, so this run is NOT complete",
+  "REFUSED — {N} reading(s) are marked incomplete (a source that could not be read), so this run is NOT complete",
+  "coverage: this watcher's query · submitted {D} to {D} (UTC dates) · survey revision {N}",
+  "CONTROL set: not a window run, so this makes no coverage claim",
+  "papers fetched: {N} · verdicts: {N} · every fetched id has exactly one verdict",
+  "  claims-a-better-bound: {N}",
+  "  mentions-only: {N}",
+  "  unrelated: {N}",
+  "parts reconcile: {N} + {N} + {N} = {N}",
+  "candidate bound(s) beating or contradicting a value we show: {N} (details stay in verdicts.json, never printed)",
+  "stated bounds EQUAL to a value we show: {N} · WEAKER than it: {N}",
+  "stated bounds on rows this table does not carry: {N}",
+];
+const SHAPE_RES = OUTPUT_SHAPES.map((s) => new RegExp("^" + s.split(/(\{N\}|\{D\})/).map((p) => (p === "{N}" ? "\\d+" : p === "{D}" ? "\\d{4}-\\d{2}-\\d{2}" : p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))).join("") + "$"));
+export const isShapedLine = (line) => SHAPE_RES.some((re) => re.test(line));
+
 export function judge(papersDoc, verdictsDoc, shown, expect = null) {
   const refuse = (why) => ({ code: 3, lines: [`REFUSED — ${why}`], tally: null });
   const papers = Array.isArray(papersDoc?.papers) ? papersDoc.papers : null;
   if (!papers) return refuse("papers.json holds no papers array");
-  if (papers.length !== papersDoc.total) return refuse(`papers.json holds ${papers.length} paper(s) but records a total of ${papersDoc.total}`);
+  if (!Number.isSafeInteger(papersDoc.total) || papers.length !== papersDoc.total) return refuse(`papers.json holds ${papers.length} paper(s), which is not the integer total it records`);
+  let windowTo = null;
   if (expect) {
     if (papersDoc.query !== expect.query) return refuse("papers.json was fetched with a different query than this watcher's");
     if (papersDoc.revision !== expect.revision) return refuse("papers.json was fetched against a different survey revision than the ledger mirrors");
     if (papersDoc.window?.from !== expect.from) return refuse("papers.json's window does not start at the mirrored revision's date");
+    const fetchedAt = new Date(papersDoc.fetchedAt);
+    const to = papersDoc.window?.to;
+    if (typeof to !== "string" || !ISO_DATE.test(to) || to < expect.from) return refuse("papers.json's window end is not a date on or after its start");
+    if (Number.isNaN(fetchedAt.getTime()) || windowEnd(fetchedAt) !== to) return refuse("papers.json's window end is not the UTC date of its own fetchedAt");
+    windowTo = to;
   }
   if (!papers.every((p) => typeof p?.id === "string" && p.id && Number.isSafeInteger(p.version) && p.version >= 1)) return refuse("a fetched paper lacks a string id or a positive integer version");
   const fetched = new Map(papers.map((p) => [p.id, p]));
@@ -250,7 +314,7 @@ export function judge(papersDoc, verdictsDoc, shown, expect = null) {
   const sum = VERDICTS.reduce((s, k) => s + tally[k], 0);
   const lines = [
     expect
-      ? `coverage: query "${papersDoc.query}" · submitted ${papersDoc.window.from} to ${papersDoc.window.to} (UTC dates) · survey revision ${papersDoc.revision}`
+      ? `coverage: this watcher's query · submitted ${expect.from} to ${windowTo} (UTC dates) · survey revision ${expect.revision}`
       : "CONTROL set: not a window run, so this makes no coverage claim",
     `papers fetched: ${papers.length} · verdicts: ${verdicts.length} · every fetched id has exactly one verdict`,
     ...VERDICTS.map((k) => `  ${k}: ${tally[k]}`),
@@ -298,8 +362,13 @@ async function main(args) {
     const pf = join(out, "papers.json");
     const vf = join(out, "verdicts.json");
     for (const f of [pf, vf]) if (!existsSync(f)) { console.log(`RESULT: UNREADABLE — ${f} does not exist (exit 2)`); return 2; }
+    // A JSON.parse error message can quote the file's text, so an unparsable file gets a fixed line.
+    const parsed = [];
+    for (const f of [pf, vf]) {
+      try { parsed.push(JSON.parse(readFileSync(f, "utf8"))); } catch { console.log(`RESULT: UNREADABLE — ${f} is not valid JSON (exit 2)`); return 2; }
+    }
     const expect = args.includes("--control") ? null : { query: QUERY, revision: doc.source.revision, from: doc.source.revisionDate };
-    const r = judge(JSON.parse(readFileSync(pf, "utf8")), JSON.parse(readFileSync(vf, "utf8")), shownValues(doc), expect);
+    const r = judge(parsed[0], parsed[1], shownValues(doc), expect);
     for (const line of r.lines) console.log(line);
     if (r.code === 3) { console.log("RESULT: REFUSED (exit 3)"); return 3; }
     console.log(r.code === 1 ? "RESULT: COMPLETE — candidates to verify by reading the paper (exit 1)" : "RESULT: COMPLETE — no candidate (exit 0)");
@@ -373,29 +442,45 @@ function selftest() {
     ["a bears paper with no claims and no why", papersDoc, edit(0, { claims: [] }), "needs a one-line"],
     ["a claim with no quoted line", papersDoc, edit(1, { claims: [{ k: 4, l: 6, side: "upper", value: 40, quote: " " }] }), "no quoted line"],
     ["a quote that does not contain the claimed value", papersDoc, edit(1, { claims: [{ k: 4, l: 6, side: "upper", value: 40, quote: "we show R(4,6) <= 401" }] }), "does not contain the claimed value"],
-    ["papers.json whose count does not match its own total", { total: 4, papers: papersDoc.papers }, good, "records a total of"],
+    ["papers.json whose count does not match its own total", { total: 4, papers: papersDoc.papers }, good, "not the integer total it records"],
   ];
   for (const [label, pd, vd, reason] of refusals) {
     const r = judge(pd, vd, shown);
     check(`judge REFUSES ${label}`, r.code === 3 && r.lines[0].includes(reason));
   }
-  // The counts-only contract on the error path: no refusal line names a paper, a pair or a value.
-  const leaky = refusals.map(([, pd, vd]) => judge(pd, vd, shown).lines.join(" ")).filter((s) => /\d{4}\.\d{4,5}|R\(\s*\d|\b(39|40|401|46)\b/.test(s));
-  check(`no refusal line carries a paper id, a pair or a claimed value (${leaky.length} leak(s))`, leaky.length === 0);
-
-  // Coverage: a WINDOW run is tied to this watcher's query, revision and window start.
+  // Coverage: a WINDOW run is tied to this watcher's query, revision, window start and a window end that
+  // is the UTC date of its own fetchedAt.
   const expect = { query: QUERY, revision: doc.source.revision, from: doc.source.revisionDate };
-  const windowDoc = { ...papersDoc, query: QUERY, revision: doc.source.revision, window: { from: doc.source.revisionDate, to: "2026-10-16" } };
-  check("judge accepts a window run fetched with this watcher's query, revision and window start", judge(windowDoc, good, shown, expect).code === 1);
-  for (const [label, patch, reason] of [
+  const windowDoc = { ...papersDoc, fetchedAt: "2026-10-16T05:22:16.835Z", query: QUERY, revision: doc.source.revision, window: { from: doc.source.revisionDate, to: "2026-10-16" } };
+  check("judge accepts a window run fetched with this watcher's query, revision and window", judge(windowDoc, good, shown, expect).code === 1);
+  const HOSTILE = "math/0301234v1 R(5,5)<=45";
+  const windowRefusals = [
     ["a different query", { query: "cat:math.CO AND abs:Schur" }, "different query"],
     ["a different survey revision", { revision: 17 }, "different survey revision"],
     ["a window that starts elsewhere", { window: { from: "2026-06-01", to: "2026-10-16" } }, "does not start"],
-  ]) {
+    ["a window end that is not a date", { window: { from: doc.source.revisionDate, to: HOSTILE } }, "not a date on or after"],
+    ["a window end that is not its fetch's UTC date", { window: { from: doc.source.revisionDate, to: "2026-10-15" } }, "UTC date of its own fetchedAt"],
+    ["a total that is not an integer", { total: HOSTILE }, "not the integer total"],
+  ];
+  for (const [label, patch, reason] of windowRefusals) {
     const r = judge({ ...windowDoc, ...patch }, good, shown, expect);
     check(`judge REFUSES a window run with ${label}`, r.code === 3 && r.lines[0].includes(reason));
   }
   check("a CONTROL check says it makes no coverage claim", judge(papersDoc, good, shown, null).lines[0].startsWith("CONTROL set"));
+
+  // THE OUTPUT RULE, pinned: every line judge() returns on every fixture above, hostile ones included,
+  // matches one exact shape in OUTPUT_SHAPES. A line carrying any input text cannot match.
+  const emitted = [
+    ...refusals.map(([, pd, vd]) => judge(pd, vd, shown)),
+    ...windowRefusals.map(([, patch]) => judge({ ...windowDoc, ...patch }, good, shown, expect)),
+    judge(windowDoc, good, shown, expect), judge(papersDoc, good, shown, null),
+    judge({ total: 1, papers: [papersDoc.papers[0]] }, { papers: [good.papers[0]] }, shown),
+    judge(papersDoc, { papers: [{ id: HOSTILE, version: 1, class: "unrelated", claims: [] }] }, shown),
+    judge(papersDoc, edit(2, { class: HOSTILE }), shown),
+  ].flatMap((r) => r.lines);
+  const unshaped = emitted.filter((line) => !isShapedLine(line));
+  check(`every one of ${emitted.length} emitted line(s) matches an exact OUTPUT_SHAPES entry (${unshaped.length} do not)`, emitted.length > 20 && unshaped.length === 0);
+  check("the shape rule fires on a line that carries input text", !isShapedLine(`REFUSED — papers.json holds 3 paper(s) but records a total of ${HOSTILE}`) && isShapedLine("REFUSED — papers.json holds 3 paper(s), which is not the integer total it records"));
   check("judge stays SILENT on a bears paper with no claims but a stated why", judge({ total: 1, papers: [papersDoc.papers[0]] }, { papers: [{ ...good.papers[0], claims: [], why: "a survey of asymptotic bounds, no small value" }] }, shown).code === 0);
 
   // fetchWindow: reconciles, pages, refuses.
@@ -407,6 +492,9 @@ function selftest() {
     let unreachable = false;
     try { await fetchWindow("2026-04-24", "2026-10-15", { fetchImpl: async () => { throw new TypeError("fetch failed"); }, pause: noPause }); } catch (err) { unreachable = err.unreachable === true; }
     check("fetchWindow reports a network exception as UNREACHABLE (exit 2), not as a refusal", unreachable);
+    let bodyUnreachable = false;
+    try { await fetchWindow("2026-04-24", "2026-10-15", { fetchImpl: async () => ({ ok: true, status: 200, text: async () => { throw new TypeError("terminated"); } }), pause: noPause }); } catch (err) { bodyUnreachable = err.unreachable === true; }
+    check("fetchWindow reports a body that dies mid-read as UNREACHABLE (exit 2), not as a refusal", bodyUnreachable);
     const fails = [
       ["a 429", [429]],
       ["a feed with no totalResults", [feed(null, [])]],
