@@ -205,7 +205,7 @@ export function direct(h, gd, j) {
 
 /**
  * EVERY S_j a second time, by a method that shares no code with the transform: Kronecker substitution.
- * Pack h and the reversed complement into one integer each, one slot of B bits per step (B exceeds the
+ * Pack h and the reversed complement into one integer each, one slot of B bits per step (2^B exceeds the
  * largest possible S_j, so no slot carries into the next), multiply once with native BigInt, and read
  * each slot back. Exact at every lag. (2026-10-17: on a large witness the direct sum re-runs only near
  * the maximum; three whole-range moment identities tried first have a blind spot — four errors in the
