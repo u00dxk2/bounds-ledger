@@ -204,26 +204,36 @@ export function direct(h, gd, j) {
 }
 
 /**
- * A WHOLE-RANGE check on S, in O(n) and exact (2026-10-17, from the manager's review: on a large witness
- * the direct sum re-runs only near the maximum, so nothing else independently covered every lag).
- * Each pair (i, k) of steps contributes h_i * gd_k to exactly one lag, j = k - i, so over ALL lags
- *   sum_j S_j       = H0*G0
- *   sum_j j * S_j   = H0*G1 - H1*G0
- *   sum_j j^2 * S_j = H0*G2 - 2*H1*G1 + H2*G0,      Hm = sum_i i^m h_i, Gm = sum_k k^m gd_k.
- * A wrong S at any one, two or three lags breaks at least one identity (the three equations in the
- * errors have a Vandermonde matrix, which is invertible for distinct lags). Returns how many fail.
+ * EVERY S_j a second time, by a method that shares no code with the transform: Kronecker substitution.
+ * Pack h and the reversed complement into one integer each, one slot of B bits per step (B exceeds the
+ * largest possible S_j, so no slot carries into the next), multiply once with native BigInt, and read
+ * each slot back. Exact at every lag. (2026-10-17: on a large witness the direct sum re-runs only near
+ * the maximum; three whole-range moment identities tried first have a blind spot — four errors in the
+ * pattern -1, +3, -3, +1 pass all three, Codex r3 — so they were replaced by this full recomputation.)
+ * Returns the BigInt array indexed j + N - 1, as correlate() does. Non-negative inputs only.
  */
-export function momentMismatches(h, gd, S) {
+export function correlateKronecker(h, gd) {
   const N = h.length;
-  let H0 = 0n, H1 = 0n, H2 = 0n, G0 = 0n, G1 = 0n, G2 = 0n;
-  for (let i = 0; i < N; i++) { const I = BigInt(i); H0 += h[i]; H1 += I * h[i]; H2 += I * I * h[i]; G0 += gd[i]; G1 += I * gd[i]; G2 += I * I * gd[i]; }
-  let s0 = 0n, s1 = 0n, s2 = 0n;
-  for (let j = -(N - 1); j <= N - 1; j++) { const J = BigInt(j), x = S[j + N - 1]; s0 += x; s1 += J * x; s2 += J * J * x; }
-  return (s0 !== H0 * G0) + (s1 !== H0 * G1 - H1 * G0) + (s2 !== H0 * G2 - 2n * H1 * G1 + H2 * G0);
+  let hmax = 0n, gmax = 0n;
+  for (const x of h) { if (x < 0n) throw new Refusal("a negative height reached the substitution"); if (x > hmax) hmax = x; }
+  for (const x of gd) { if (x < 0n) throw new Refusal("a negative complement reached the substitution"); if (x > gmax) gmax = x; }
+  const bound = BigInt(N) * (hmax || 1n) * (gmax || 1n);
+  const hex = Math.ceil((bound.toString(2).length + 1) / 4); // hex digits per slot
+  const pack = (arr) => BigInt("0x" + arr.map((x) => x.toString(16).padStart(hex, "0")).join(""));
+  // Most significant slot first: h[N-1] ... h[0], so slot k holds h[k]; the reversed complement's slot i
+  // holds gd[N-1-i]. The product's slot k is then sum_i h_i * gd[N-1-(k-i)] = S_{N-1-k}.
+  const P = pack(h.slice().reverse()) * pack(gd.slice());
+  const digits = P.toString(16).padStart((2 * N - 1) * hex, "0");
+  if (digits.length !== (2 * N - 1) * hex) throw new Refusal("the substitution's product overflowed its slots");
+  const S = new Array(2 * N - 1), L = digits.length;
+  for (let k = 0; k < 2 * N - 1; k++) S[(N - 1 - k) + N - 1] = BigInt("0x" + digits.slice(L - (k + 1) * hex, L - k * hex));
+  return S;
 }
 
 /** Evaluate a parsed witness. `oracle` checks every lag directly (O(n^2)); otherwise a band of `band` lags each side of the maximum. */
-export function evaluate({ h, D }, { oracle = false, band = 64, maxPrimes } = {}) {
+// `tamper` is a TEST SEAM only: it edits the transform's output before any check reads it, so the selftest
+// can prove that a wrong value OUTSIDE the direct band is refused through the full recomputation alone.
+export function evaluate({ h, D }, { oracle = false, band = 64, maxPrimes, tamper } = {}) {
   const N = h.length;
   const n = BigInt(N);
   let bounded = N > 0;
@@ -233,6 +243,7 @@ export function evaluate({ h, D }, { oracle = false, band = 64, maxPrimes } = {}
   if (!bounded) return out; // a negative complement would break the transform's non-negativity bound
   const gd = h.map((x) => D - x);
   const S = correlate(h, gd, { maxPrimes });
+  if (tamper) tamper(S);
   const s = (j) => (j >= -(N - 1) && j <= N - 1 ? S[j + N - 1] : 0n);
   let best = -1n, bestJ = 0;
   for (let j = -(N - 1); j <= N - 1; j++) if (s(j) > best) { best = s(j); bestJ = j; }
@@ -245,9 +256,11 @@ export function evaluate({ h, D }, { oracle = false, band = 64, maxPrimes } = {}
     for (let k = 0; k < 2 * N; k++) { const m = k + 2 * j + 1; if (m >= 0 && m < 2 * N) H += h[k >> 1] * gd[m >> 1]; }
     if (H !== s(j) + s(j + 1)) linMismatch++;
   }
-  const momentMismatch = momentMismatches(h, gd, S);
+  const K = correlateKronecker(h, gd);
+  let fullMismatch = 0;
+  for (let k = 0; k < S.length; k++) if (K[k] !== S[k]) fullMismatch++;
   const num = 2n * best, den = n * D * D;
-  return { ...out, bestJ, num, den, checked, directMismatch, linMismatch, momentMismatch, admissible: massOk && directMismatch === 0 && linMismatch === 0 && momentMismatch === 0 };
+  return { ...out, bestJ, num, den, checked, directMismatch, linMismatch, fullMismatch, admissible: massOk && directMismatch === 0 && linMismatch === 0 && fullMismatch === 0 };
 }
 
 /** The first k decimal places of num/den (0 <= num/den < 1), truncated or rounded up. */
@@ -292,10 +305,10 @@ export function judgeEntry(entry, raw) {
   const sha = createHash("sha256").update(raw).digest("hex");
   if (sha !== entry.fileSha256) return { verdict: "SOURCE CHANGED", lines: [`sha256 ${sha} is not the pinned ${entry.fileSha256}`] };
   const r = evaluate(parseWitness(raw));
-  if (!r.admissible) return { verdict: "NOT ADMISSIBLE", lines: [`0<=f<=1: ${r.bounded}, int f = 1: ${r.massOk}, transform mismatches: ${r.directMismatch ?? "-"}, linearity mismatches: ${r.linMismatch ?? "-"}, whole-range identities failing: ${r.momentMismatch ?? "-"} of 3`] };
+  if (!r.admissible) return { verdict: "NOT ADMISSIBLE", lines: [`0<=f<=1: ${r.bounded}, int f = 1: ${r.massOk}, transform mismatches: ${r.directMismatch ?? "-"}, linearity mismatches: ${r.linMismatch ?? "-"}, every-lag recomputation mismatches: ${r.fullMismatch ?? "-"}`] };
   const k = entry.exactMaximum.split(".")[1].length;
   const exact = places(r.num, r.den, k, "down");
-  const lines = [`exact maximum ${places(r.num, r.den, 40, "down")}… (${reduced(r.num, r.den)})`, `all ${2 * r.n - 1} lags: whole-range identities failing 0 of 3; ${r.checked} lags re-summed directly, 0 mismatches`];
+  const lines = [`exact maximum ${places(r.num, r.den, 40, "down")}… (${reduced(r.num, r.den)})`, `all ${2 * r.n - 1} lags recomputed independently (Kronecker substitution), 0 mismatches; ${r.checked} lags re-summed directly, 0 mismatches`];
   if (exact !== entry.exactMaximum) return { verdict: "DIFFERS", lines: [...lines, `the store's exactMaximum ${entry.exactMaximum} is not its first ${k} places, ${exact}`] };
   if (!atOrAbove(entry.value, r.num, r.den)) return { verdict: "DIFFERS", lines: [...lines, `the printed value ${entry.value} is on the wrong side of the exact value`] };
   return { verdict: "MATCHES", lines };
@@ -332,7 +345,7 @@ function fileMode(path, oracle) {
   console.log(`n=${r.n}  0<=f<=1: ${r.bounded}  int f = 1 exactly: ${r.massOk}`);
   if (!r.bounded) { console.log("ADMISSIBLE: false (exit 3)"); return 3; }
   console.log(`lags checked directly: ${r.checked}; transform vs direct mismatches: ${r.directMismatch}; half-shift linearity mismatches: ${r.linMismatch}`);
-  console.log(`whole range, all ${2 * r.n - 1} lags: sum, first-moment and second-moment identities failing: ${r.momentMismatch} of 3`);
+  console.log(`every lag, all ${2 * r.n - 1}: transform vs an independent recomputation (Kronecker substitution) mismatches: ${r.fullMismatch}`);
   console.log(`argmax lag j = ${r.bestJ}`);
   console.log(`M (40 places, truncated): ${places(r.num, r.den, 40, "down")}`);
   console.log(`M rounded UP at 13 places: ${places(r.num, r.den, 13, "up")}`);
@@ -383,19 +396,25 @@ export function selftest() {
     check("the whole-range oracle agrees on it too", evaluate({ h, D: D60 }, { oracle: true }).directMismatch === 0);
   }
 
-  // The whole-range moment identities: silent on a correct S, and they fire on a wrong value at ANY lag,
-  // including the far ends that the direct band check never visits.
+  // The independent every-lag recomputation (Kronecker substitution), Codex r3.
   {
-    const N = 40;
-    const h = Array.from({ length: N }, () => ((rnd() << 32n) | rnd()) % (D60 + 1n));
-    const gd = h.map((x) => D60 - x);
-    const S = correlate(h, gd);
-    const bump = (pairs) => { const T = S.slice(); for (const [j, e] of pairs) T[j + N - 1] += e; return momentMismatches(h, gd, T); };
-    check("moment identities: 0 of 3 fail on the correct S (the silent half)", momentMismatches(h, gd, S) === 0);
-    check("moment identities FIRE on one wrong value at the far end of the range (lag -(N-1)) and at lag 0", bump([[-(N - 1), 1n]]) > 0 && bump([[0, 1n]]) > 0);
-    check("moment identities FIRE on two errors that cancel in the plain sum (+1 at lag 3, -1 at lag 7)", bump([[3, 1n], [7, -1n]]) > 0);
-    check("moment identities FIRE on three errors that cancel in sum AND first moment (+1 at -1, -2 at 0, +1 at 1)", bump([[-1, 1n], [0, -2n], [1, 1n]]) > 0);
-    check("evaluate() refuses admissibility when the identities fail (too few primes, a WRONG S everywhere)", evaluate({ h: Array.from({ length: 16 }, (_, i) => (i % 2 ? D60 : 0n)), D: D60 }, { maxPrimes: 1 }).momentMismatch > 0);
+    let km = 0, kc = 0;
+    for (let N = 1; N <= 48; N++) {
+      const h = Array.from({ length: N }, () => ((rnd() << 32n) | rnd()) % (D60 + 1n));
+      const gd = h.map((x) => D60 - x);
+      const K = correlateKronecker(h, gd);
+      for (let j = -(N - 1); j <= N - 1; j++) { kc++; if (K[j + N - 1] !== direct(h, gd, j)) km++; }
+    }
+    check(`the Kronecker recomputation equals the direct sum at every lag of 48 random witnesses, heights to 2^60 (${km} mismatches of ${kc})`, km === 0 && kc === 48 * 48);
+    // A wrong value OUTSIDE the direct band, one that does not change the maximum, so ONLY the full
+    // recomputation can see it: the witness is admissible untampered, and refused tampered.
+    const N = 400;
+    const h = Array.from({ length: N }, (_, i) => (i < N / 2 ? D60 : 0n)); // f = 1 on [-1,0]: int f = 1, max at lag N/2
+    const clean = evaluate({ h, D: D60 }, { band: 8 });
+    const far = -(N - 1); // the far end, never inside an 8-lag band around a maximum at a positive lag
+    const tampered = evaluate({ h, D: D60 }, { band: 8, tamper: (S) => { S[far + N - 1] = S[far + N - 1] > 0n ? S[far + N - 1] - 1n : 0n; S[1 + N - 1] -= 1n; } });
+    check("untampered: admissible, 0 every-lag mismatches (the silent half)", clean.admissible && clean.fullMismatch === 0 && clean.directMismatch === 0);
+    check("r3 #2: a wrong value outside the direct band, maximum unchanged, is REFUSED through the every-lag recomputation alone", !tampered.admissible && tampered.fullMismatch > 0 && tampered.directMismatch === 0 && tampered.linMismatch === 0 && tampered.massOk && tampered.num === clean.num);
   }
 
   // Admissibility.
