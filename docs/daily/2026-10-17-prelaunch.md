@@ -67,24 +67,31 @@ node C:/dev/skylark/bounds-ledger/scripts/render-constant-pages.mjs
 
 ## What changed
 
-Nothing committed yet (P1 holds at the manager boundary).
+The live 1b page now leads its note with the stronger construction from upstream pull request 225 (0.3808585503165, below the mirrored table's 0.380868), read as open and not merged on 2026-10-17, with the file's SHA-256 and what this ledger checked. Three commits, pushed together: `af684fe` (the note, and the evaluator moved into `scripts/step-overlap.mjs`), `4d1f4f8` (every lag recomputed by an independent exact method; it also corrects `af684fe`'s message, which called the coverage gap closed by checks a review then defeated), `a2a1f53` (a comment fix). Only `c/1b.html` changed under `c/`.
+
+The evaluator now refuses a witness it cannot read structurally (a regex reader could have evaluated a nested witness instead of the file's own) and a raw link not already in resolved form. It recomputes every lag sum a second time by Kronecker substitution: 0 mismatches over all 229,375 lags of the pull request's file.
 
 ## Inputs (controllable)
 
-The note revision above; two Codex read-only reviews.
+Six Codex read-only reviews, each banner checked against this repo: code r1 (DO NOT SHIP, 3 findings), claims r1 (PUBLISH WITH FIXES, 3), code r2 (SHIP WITH FIXES, 1), claims r2 (PUBLISH WITH FIXES, 2), r3 on `af684fe` (SHIP WITH FIXES, 2), r4 on `4d1f4f8` (SHIP, 1 comment nit). All eleven findings were confirmed against the source and fixed; none was rejected. The manager's P3 hypothesis (only 129 lags of the large witness were checked independently) was confirmed and is answered on `A-82.fullRangeCoverage2026_10_17`.
 
 ## Outputs (lagging)
 
-`npm run reports`: 0 outside arrivals (of 34 raw issues, all ours).
+`npm run reports`, after the ship: 34 raw issues, all ours, 0 outside arrivals; the parts reconcile (34 + 0 + 0 = 34). Whether any reader met the changed page cannot be seen: the page is static with no analytics (`A-59`, the row recording that encounter on the public pages is blind).
 
 ## Recommendation
 
-Approve the selection; the second review round runs while the review is pending.
+None new. The two CANNOT TELL HERE candidates and the reader-facing "newer results checked through" line stay on `A-82` for 2026-10-20; `W-15` (the watch on pull request 225) is what notices upstream merging it, which would make both 1b entries fail validation and turn `npm run check` red as the reconcile signal.
 
 ## On hold pending data
 
-None beyond the encounter read above.
+`W-15` (the watch on upstream pull request 225): upstream's decision on it, next read 2026-10-23.
 
 ## State Appendix
 
-Written last, at close, from live commands.
+As of 2026-10-17T17:02Z (UTC), from live commands:
+- HEAD and origin/main: `a2a1f53` (`git rev-list --count origin/main..HEAD` → 0).
+- CI at `a2a1f53`: GREEN for `reverify.yml` and for `page-check.yml` (`node scripts/sky.mjs check-ci-status.mjs --workflow <file> --wait`).
+- Verify receipt: exit 0 at `a2a1f53` (`tmp/.verify-receipt.json`).
+- Delivery: `npm run served` → SERVED `c/1b.html` (1 checked, 0 stale); a fetch of the live page returned 200 with the pull-request sentence once and "record" zero times.
+- Release for anything above: re-run the command named beside it.
