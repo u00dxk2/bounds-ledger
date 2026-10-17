@@ -89,9 +89,25 @@ None new. The two CANNOT TELL HERE candidates and the reader-facing "newer resul
 
 ## State Appendix
 
-As of 2026-10-17T17:02Z (UTC), from live commands:
+As of 2026-10-17T17:01:53Z (UTC, the `npm run served` read), from live commands:
 - HEAD and origin/main: `a2a1f53` (`git rev-list --count origin/main..HEAD` → 0).
 - CI at `a2a1f53`: GREEN for `reverify.yml` and for `page-check.yml` (`node scripts/sky.mjs check-ci-status.mjs --workflow <file> --wait`).
 - Verify receipt: exit 0 at `a2a1f53` (`tmp/.verify-receipt.json`).
 - Delivery: `npm run served` → SERVED `c/1b.html` (1 checked, 0 stale); a fetch of the live page returned 200 with the pull-request sentence once and "record" zero times.
 - Release for anything above: re-run the command named beside it.
+
+## Close
+
+ACTION: COMPLETED · item A-82 (the item carrying the 1b note) · P3 6e9e7681 (the P3 task-complete's bus msgId)
+
+The acceptance condition approved at P1 was met (manager review COMPLETED, bus bdc8fbb1): the live c/1b.html carries the pull-request sentence, `npm run served` reported SERVED, only c/1b.html changed under c/, both workflows are green, and `npm run reports` ran after the ship.
+
+**State changed since the P3 post:** CI is now read GREEN on the 55c4274 tip for `reverify.yml` and `page-check.yml` (`check-ci-status --wait`, one completed non-scheduled success each, 0 failures).
+
+**Ledger delta** (`continuity-edit`): `A-82` gained `linkedCommits` (af684fe, 4d1f4f8, a2a1f53) and a dated note recording the shipped revision and what stays owed on 2026-10-20; `W-15` (the watch on pull request 225) gained the reconcile signal for a merge. No row closed, none re-dated: both were already on their dates (`A-82.nextCheckDate` 2026-10-20, `W-15.expectedSignalBy` 2026-10-23).
+
+**Hygiene draft:** 0 lines (0 accepted · 0 amended · 0 rejected); its READ-MUTATED section reads "none"; check-wait-justification PASS (1 of 101 rows carry a wait justification), check-engineering-zero PASS (0 findings for this lane). Due-gate verify: CLEAR, snapshot CURRENT (today's Phase-0 due set of 0 rows). Ledger battery (`continuity-check`) exit 0 with two warnings: UNTRACKED_COMMITS (today's A-82 commits, now linked) and STANDING_PATTERN_CONTRADICTION on `A-81` (the Ramsey-area newer-result watcher), which predates today and was not touched.
+
+Positive control: the same due-gate resolver listed 1 due row on 2026-10-16 (yesterday's primer, "Owed gates — 1 due on/before 2026-10-16"), and the engineering-zero run that read 0 findings for this lane returned 1 finding fleet-wide in the same read (another lane's Sentry issue), so both checks can return non-empty.
+
+**Pending reads:** 2026-10-18 `A-47` (the depth audit) slice 19; 2026-10-20 `A-82`: the two CANNOT TELL HERE candidates and the reader-facing "newer results checked through" line (outward text, owing a cross-family claims pass and a review before it renders); 2026-10-23 `W-15` (the watch on pull request 225).
