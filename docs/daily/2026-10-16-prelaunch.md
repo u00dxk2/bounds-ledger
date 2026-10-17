@@ -237,11 +237,34 @@ The script takes a label and a source (a URL or a file) per run. For each witnes
 - Adversarial r2 returned NEEDS FIXES. It reproduced the three evaluations, the oracle comparisons and the guard refusal. Fixed: a self-promoting sentence was cut; the page update became an explicit question; the guard was described exactly; a claim that fixes were applied was withdrawn. Kept: the comment's statement of where the file came from, because the lane made that download itself.
 If David picks the comment option, it gets another review before anything is posted. Dismissing his earlier card is left to the orchestrator, as the board marks it theirs.
 
-**(4) Rows.** `W-15` watches #225. `A-83` schedules adding the mirrored list's open pull requests to the watch; it changes no code tonight. `A-82` records the round. The open-PR count came from the saved listing `gh pr list -R teorth/optimizationproblems --state open --limit 200 --json number,title,createdAt,files`, counted by a node filter on file paths starting `constants/`: `{"open":34,"touchingConstants":34,"oldest":"2026-08-19T18:00:11Z"}`. A first listing without `--limit` returned 30, which is gh's default cap. #225's 1a value is noted beside the Hyra 1a candidate, in `tmp/` only. It changes no verdict.
+**(4) Rows.** `W-15` (the watch on upstream pull request 225) watches #225. `A-83` schedules adding the mirrored list's open pull requests to the watch; it changes no code tonight. `A-82` records the round. The open-PR count came from the saved listing `gh pr list -R teorth/optimizationproblems --state open --limit 200 --json number,title,createdAt,files`, counted by a node filter on file paths starting `constants/`: `{"open":34,"touchingConstants":34,"oldest":"2026-08-19T18:00:11Z"}`. A first listing without `--limit` returned 30, which is gh's default cap. #225's 1a value is noted beside the Hyra 1a candidate, in `tmp/` only. It changes no verdict.
 
 <!-- findings:begin -->
 - **The packet's premise was wrong, and the evidence was public.** P1 planned to propose upstream contact. Someone else had already proposed a stronger bound there, three days earlier. Neither the drift checker (which reads upstream's merged HEAD) nor the arXiv watcher enumerates upstream's open pull requests. 34 are open, each touching a constant file. The mirrored bound cells follow upstream's merged table; the note beside a table can describe a construction outside it, and none yet names #225. This recurs "the record held the refutation" (memory, 2026-09-15): a plan about what upstream lacked was made without reading upstream's own open queue. `A-83` is the scheduled repair.
 <!-- findings:end -->
+
+### Evening round (round 3) — Close
+
+`ACTION: COMPLETED` · item `A-82` · P3 850d585b. The manager's close review (bus event bc5e78ba) judged items 1 and 3 of the REDIRECT's acceptance condition met with evidence, item 4 done, and item 2 (the page note revision) DEFERRED inside the redirect's own cut line, with two triggers: David's answer to card 99b614ec, and a reviewed guard-or-link change.
+
+**Since the P3 post:** nothing shipped changed. The receipt on P3 850d585b stands: `USER-VISIBLE: none`, since no page changed.
+
+**Ledger delta (hygiene draft: 0 lines — 0 accepted · 0 amended · 0 rejected; the helper had no input rows):**
+- `A-82`: field `pendingNoteRevision2026_10_16` records the deferral, its two triggers, and that the evaluator moves from `tmp/` into `scripts/` with a selftest before any note says we checked the construction exactly. Field `hyra1aCrossRef2026_10_16` moves #225's 1a value (1.5027435, below the Hyra score's 1.502850, not evaluated by us) out of `tmp/`. `nextCheckDate` moved from 2026-10-19 to 2026-10-20, because the 10-19 obligation (the upstream proposal) went to David early as card 99b614ec.
+- Helper checks: check-wait-justification "RESULT: PASS — 1 of 99 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)"; check-engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable"; READ-MUTATED none.
+- `check-due-gates-dispositioned.mjs`: "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT (taken 2026-10-16).
+
+**Nothing was sent upstream.** No issue, pull request, comment or email went to teorth/optimizationproblems or anyone else, and none will before David answers card 99b614ec.
+
+**Pending reads:**
+- 2026-10-18: `A-47` (the depth audit), slice 19.
+- 2026-10-20: `A-82` (the constants-watch candidates), the 2 CANNOT TELL HERE and card 99b614ec's answer.
+- 2026-10-21: `W-14` (the watch on upstream issue 218).
+- 2026-10-22: `A-83` (adding upstream open pull requests to the watch).
+- 2026-10-23: `W-15` (the watch on upstream pull request 225).
+- 2026-10-29: `A-81` (the newer-result watch), its next Ramsey read.
+
+**Encounter:** blind (bug row `A-59`).
 
 ## Inputs (controllable)
 
