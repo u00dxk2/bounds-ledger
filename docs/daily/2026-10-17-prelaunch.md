@@ -73,7 +73,7 @@ The evaluator now refuses a witness it cannot read structurally (a regex reader 
 
 ## Inputs (controllable)
 
-Six Codex read-only reviews, each banner checked against this repo: code r1 (DO NOT SHIP, 3 findings), claims r1 (PUBLISH WITH FIXES, 3), code r2 (SHIP WITH FIXES, 1), claims r2 (PUBLISH WITH FIXES, 2), r3 on `af684fe` (SHIP WITH FIXES, 2), r4 on `4d1f4f8` (SHIP, 1 comment nit). All eleven findings were confirmed against the source and fixed; none was rejected. The manager's P3 hypothesis (only 129 lags of the large witness were checked independently) was confirmed and is answered on `A-82.fullRangeCoverage2026_10_17`.
+Six Codex read-only reviews, each banner checked against this repo: code r1 (DO NOT SHIP, 3 findings), claims r1 (PUBLISH WITH FIXES, 3), code r2 (SHIP WITH FIXES, 1), claims r2 (PUBLISH WITH FIXES, 2), r3 on `af684fe` (SHIP WITH FIXES, 2), r4 on `4d1f4f8` (SHIP, 1 comment nit). All twelve findings were confirmed against the source and fixed; none was rejected. The manager's P3 hypothesis (only 129 lags of the large witness were checked independently) was confirmed and is answered on `A-82.fullRangeCoverage2026_10_17`.
 
 ## Outputs (lagging)
 
