@@ -10,12 +10,16 @@
 //     for byte the page without it (the guard below), so the mirrored rows cannot change because of it;
 //   - it never uses the word "record" (the same rule as the OpenAI-release notes);
 //   - it says what we checked and how, gives the exact value we computed and the rounded value, links
-//     the construction at a pinned commit, and says what the watch searched and what it did not.
+//     the construction at a pinned commit (a "posted" entry) or the open pull request on the mirrored
+//     repository that proposes it (an "openPullRequest" entry, with the sha256 of the file we evaluated),
+//     and says what the watch searched and what it did not.
+// Every entry's value is re-derived from its pinned file by scripts/step-overlap.mjs --store.
 //
 // WHAT IT REFUSES. An entry whose value is not a valid printed bound for its exact maximum (an upper
 // bound must round UP, a lower one DOWN), an entry that does not beat the table's best row on its side
-// under the arXiv watcher's own exact comparison, a source link not pinned to a full commit sha, and a
-// constant the mirror does not carry.
+// under the arXiv watcher's own exact comparison, a source link not pinned to a full commit sha (or, for
+// a pull request, not on the mirrored repository), a missing or malformed file fingerprint or raw link,
+// and a constant the mirror does not carry.
 //
 // WHAT IT NEVER SAYS. That upstream is wrong (its rows remain true bounds; it is behind), that anyone
 // refereed the construction, or that upstream SHOULD list it. Upstream contact is David's gate.
@@ -28,6 +32,7 @@ import { dirname, join } from "node:path";
 import { esc } from "./lib/html.mjs";
 import { isEntryModule } from "./lib/entry-module.mjs";
 import { constantsShown, compareConstant, parseBoundCell } from "./arxiv-watch.mjs";
+import { parsePinnedRaw } from "./step-overlap.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 export const STORE = join(ROOT, "ledger", "newer-results.json");
@@ -46,12 +51,27 @@ const PINNED_PATH = /^\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/blob\/[0-9a-f]{40}\/[A
 //     on (".../<sha>/x/../f.json" resolves to the pinned file, but is refused for that reason).
 export function isPinnedGithub(u) {
   let url;
+  // A bare "?" or "#" leaves .search/.hash empty but stays in .href (Codex r2 on the raw-link twin; this is
+  // its sibling, found by the same-turn sweep 2026-10-17), so refuse the characters themselves.
+  if (/[?#]/.test(String(u))) return false;
   try { url = new URL(String(u)); } catch { return false; }
   if (url.protocol !== "https:" || url.hostname !== "github.com" || url.search || url.hash || url.username || url.port) return false;
   if (url.href !== String(u)) return false;
   return PINNED_PATH.test(url.pathname);
 }
 const ARXIV = /^https:\/\/arxiv\.org\/abs\/\d{4}\.\d{4,5}v\d+$/;
+// The two kinds of entry (2026-10-17, card 99b614ec). "posted": a file someone posted, linked at a pinned
+// commit. "openPullRequest": a construction proposed to the MIRRORED repository in a pull request it has
+// not merged; the page links the pull request, never the construction's own repository, so the word ban
+// below is judged on what a reader sees and is not narrowed. Either kind carries the sha256 of the bytes
+// we evaluated and a pinned raw link to them (never rendered), which step-overlap.mjs --store re-derives.
+const UPSTREAM_PR = /^https:\/\/github\.com\/teorth\/optimizationproblems\/pull\/[1-9]\d*$/;
+const SHA256 = /^[0-9a-f]{64}$/;
+/** For a "posted" entry, the raw link must name the very file the page links: same owner, repo, commit and path. */
+function rawMatchesBlob(raw, blob) {
+  const p = parsePinnedRaw(raw);
+  return !!p && blob === `https://github.com/${p.owner}/${p.repo}/blob/${p.sha}/${p.path}`;
+}
 
 /** Load the store. Absent file means no notes, never a crash. */
 export function loadStore(path = STORE) {
@@ -94,8 +114,17 @@ export function validateStore(store, { shown = constantsShown(), constantExists 
     // It must beat the table's best row on its side, by the arXiv watcher's own exact comparison.
     const r = compareConstant(shown, { constant: String(e.id), side: e.side, relation: e.side === "upper" ? "<=" : ">=", value: String(e.value) }).comparison;
     if (r !== "beats") errs.push(`${at_}: the value does not beat the table's best ${e.side} row (the watcher's comparison says ${r})`);
-    if (!isPinnedGithub(e.sourceUrl)) errs.push(`${at_}: sourceUrl must be a GitHub blob link pinned to a full 40-character commit sha`);
-    if (!ARXIV.test(String(e.foundVia || ""))) errs.push(`${at_}: foundVia must be a versioned arXiv abstract link`);
+    if (!SHA256.test(String(e.fileSha256 || ""))) errs.push(`${at_}: fileSha256 must be the 64-hex sha256 of the bytes we evaluated`);
+    if (!parsePinnedRaw(e.fetchUrl)) errs.push(`${at_}: fetchUrl must be a raw.githubusercontent.com link pinned to a full 40-character commit sha`);
+    if (e.kind === "posted") {
+      if (!isPinnedGithub(e.sourceUrl)) errs.push(`${at_}: sourceUrl must be a GitHub blob link pinned to a full 40-character commit sha`);
+      else if (!rawMatchesBlob(e.fetchUrl, e.sourceUrl)) errs.push(`${at_}: fetchUrl must name the same owner, repository, commit and path as sourceUrl`);
+      if (!ARXIV.test(String(e.foundVia || ""))) errs.push(`${at_}: foundVia must be a versioned arXiv abstract link`);
+    } else if (e.kind === "openPullRequest") {
+      if (!UPSTREAM_PR.test(String(e.sourceUrl || ""))) errs.push(`${at_}: an openPullRequest entry's sourceUrl must be a pull request on the mirrored repository, teorth/optimizationproblems`);
+      if (!ISO.test(String(e.pullRequestStateOn || ""))) errs.push(`${at_}: pullRequestStateOn must be the YYYY-MM-DD date we read the pull request as open`);
+      if ("foundVia" in e) errs.push(`${at_}: an openPullRequest entry was found by reading the pull request, so it carries no foundVia`);
+    } else errs.push(`${at_}: kind must be "posted" or "openPullRequest"`);
     for (const f of ["sourcePostedBy", "evaluatedOn"]) if (!ISO.test(String(e[f] || ""))) errs.push(`${at_}: ${f} must be a YYYY-MM-DD date`);
     for (const f of ["construction", "rounding", "method"]) if (typeof e[f] !== "string" || !e[f].trim()) errs.push(`${at_}: ${f} must be a non-empty sentence`);
   }
@@ -118,6 +147,7 @@ export function newerFor(id, store = loadStore()) {
 }
 
 const arxivLabel = (url) => `arXiv:${url.replace(/^https:\/\/arxiv\.org\/abs\//, "")}`;
+const prLabel = (url) => `pull request ${url.replace(/^.*\/pull\//, "")}`;
 
 /** The constant-page block: a <dt>/<dd> pair for the page's <dl>. Empty string when no entries. */
 export function newerBlock(entries, shown) {
@@ -128,13 +158,24 @@ export function newerBlock(entries, shown) {
     const which = e.side === "upper" ? "an upper bound" : "a lower bound";
     const table = e.side === "upper" ? "the smallest upper bound" : "the largest lower bound";
     const cap = e.construction.charAt(0).toUpperCase() + e.construction.slice(1);
-    return `<li><p>${esc(cap)} (<a href="${esc(e.sourceUrl)}">the posted file</a>, at the commit current on ${esc(e.evaluatedOn)}) gives ${which} of <code>${esc(e.value)}</code> on this constant. That is ${e.side === "upper" ? "below" : "above"} ${table} in this constant's source table, <code>${esc(best)}</code>.</p><p>${esc(e.method)} The exact value is ${esc(e.exactMaximum)}…, which we print as <code>${esc(e.value)}</code>: ${esc(e.rounding)}.</p></li>`;
+    const where = e.kind === "openPullRequest"
+      ? `proposed in <a href="${esc(e.sourceUrl)}">${esc(prLabel(e.sourceUrl))} to the source table's repository</a>, which was open and not merged when we read it on ${esc(e.pullRequestStateOn)}`
+      : `<a href="${esc(e.sourceUrl)}">the posted file</a>, at the commit current on ${esc(e.evaluatedOn)}`;
+    const found = e.kind === "openPullRequest"
+      ? `We evaluated the construction file in the repository that pull request links, at the commit it names (SHA-256 <code>${esc(e.fileSha256)}</code>, the hash the file's authors list). This pull request lies outside the search below, which reads arXiv only.`
+      : `We found it on ${esc(e.evaluatedOn)} through a newer paper, <a href="${esc(e.foundVia)}">${esc(arxivLabel(e.foundVia))}</a>, which reports downloading posted constructions from the same repository and refining the best one; we did not check that paper's refined value.`;
+    return `<li><p>${esc(cap)} (${where}) gives ${which} of <code>${esc(e.value)}</code> on this constant. That is ${e.side === "upper" ? "below" : "above"} ${table} in the mirrored source table, <code>${esc(best)}</code>.</p><p>${esc(e.method)} The exact maximum overlap begins ${esc(e.exactMaximum)}…, which we print as <code>${esc(e.value)}</code>: ${esc(e.rounding)}.</p><p>${found}</p></li>`;
   }).join("");
   const first = entries[0];
+  const many = entries.length > 1;
   // Heading and scope wording from the 2026-10-16 claims pass (Codex r6): "newer construction" had no
   // comparator (the construction predates our mirror's fetch), and "checked through" over-read as
   // complete coverage; the search is one dated pass with a stated scope.
-  return `<dt>Outside the source table: a construction we evaluated independently</dt><dd><ul class="oai">${items}</ul><span class="when">We found it on ${esc(first.evaluatedOn)} through a newer paper, <a href="${esc(first.foundVia)}">${esc(arxivLabel(first.foundVia))}</a>, which reports downloading posted constructions from the same repository and refining the best one; we did not check that paper's refined value. The source table does not list this construction, and this ledger has not changed the rows above because of it. Search for newer results, run on ${esc(first.checkedThrough)}: we read ${esc(first.watchScope)}; results announced anywhere else may be missing.</span></dd>`;
+  // Claims passes r1/r2 (2026-10-17): "the source table" read as live upstream, and its first fix ("the
+  // source table above") claimed a location the page does not render (only the last-listed rows are shown).
+  // Second appearance of one class, so the wording now claims less: the MIRRORED table, with no location.
+  // "The exact value is X…" read as a truncation presented as exact; it now says the maximum BEGINS X.
+  return `<dt>Outside the mirrored source table: ${many ? "constructions" : "a construction"} we evaluated independently</dt><dd><ul class="oai">${items}</ul><span class="when">The mirrored source table does not list ${many ? "these constructions" : "this construction"}, and this ledger has not changed the rows above because of ${many ? "them" : "it"}. Search for newer results, run on ${esc(first.checkedThrough)}: we read ${esc(first.watchScope)}; results announced anywhere else may be missing.</span></dd>`;
 }
 
 /**
@@ -173,8 +214,9 @@ export async function selftest() {
   const exists = (id) => id === "t1";
   const good = {
     checkedThrough: "2026-10-16", watchScope: "arXiv papers naming four systems",
-    entries: [{ id: "t1", side: "upper", value: "0.3808590566149", exactMaximum: "0.38085905661480689909", rounding: "rounded up", construction: "a step function", sourceUrl: `https://github.com/o/r/blob/${"a".repeat(40)}/f.json`, sourcePostedBy: "2026-07-26", foundVia: "https://arxiv.org/abs/2609.40340v1", evaluatedOn: "2026-10-16", method: "We evaluated it." }],
+    entries: [{ id: "t1", side: "upper", kind: "posted", value: "0.3808590566149", exactMaximum: "0.38085905661480689909", rounding: "rounded up", construction: "a step function", sourceUrl: `https://github.com/o/r/blob/${"a".repeat(40)}/f.json`, fileSha256: "b".repeat(64), fetchUrl: `https://raw.githubusercontent.com/o/r/${"a".repeat(40)}/f.json`, sourcePostedBy: "2026-07-26", foundVia: "https://arxiv.org/abs/2609.40340v1", evaluatedOn: "2026-10-16", method: "We evaluated it." }],
   };
+  const pr = { id: "t1", side: "upper", kind: "openPullRequest", value: "0.3808585503165", exactMaximum: "0.38085855031642856010", rounding: "rounded up", construction: "a finer step function", sourceUrl: "https://github.com/teorth/optimizationproblems/pull/225", pullRequestStateOn: "2026-10-17", fileSha256: "c".repeat(64), fetchUrl: `https://raw.githubusercontent.com/x/records/${"d".repeat(40)}/g.json`, sourcePostedBy: "2026-10-13", evaluatedOn: "2026-10-17", method: "We evaluated it too." };
   const v = (patch, extra = {}) => validateStore({ ...good, ...extra, entries: [{ ...good.entries[0], ...patch }] }, { shown, constantExists: exists });
   check("a valid entry passes (the silent half)", validateStore(good, { shown, constantExists: exists }).length === 0);
   check("REFUSES an upper bound printed BELOW its exact value (rounded the wrong way)", v({ value: "0.3808590566148" }).some((e) => e.includes("wrong side")));
@@ -197,7 +239,31 @@ export async function selftest() {
   check("r6 #2: percent-encoded traversal ('%2e%2e') is refused", v({ sourceUrl: `https://github.com/o/r/blob/${"a".repeat(40)}/%2e%2e/main/f.json` }).some((e) => e.includes("pinned")));
   check("r6 #2: a link that still resolves to the pinned file but is not written in its resolved form is refused (the page must print the address a reader lands on)", v({ sourceUrl: `https://github.com/o/r/blob/${"a".repeat(40)}/x/../f.json` }).some((e) => e.includes("pinned")));
   check("r6 #2: a query or fragment on the link is refused", v({ sourceUrl: `https://github.com/o/r/blob/${"a".repeat(40)}/f.json?raw=1` }).some((e) => e.includes("pinned")) && v({ sourceUrl: `https://github.com/o/r/blob/${"a".repeat(40)}/f.json#L1` }).some((e) => e.includes("pinned")));
-  check("r6 #4: the word 'record' in the LINK is refused (the ban is judged on the rendered block)", v({ sourceUrl: `https://github.com/o/r/blob/${"a".repeat(40)}/record.json` }).some((e) => e.includes('"record"')));
+  check("r6 #4: the word 'record' in the LINK is refused (the ban is judged on the rendered block)", v({ sourceUrl: `https://github.com/o/r/blob/${"a".repeat(40)}/record.json`, fetchUrl: `https://raw.githubusercontent.com/o/r/${"a".repeat(40)}/record.json` }).some((e) => e.includes('"record"')));
+  // 2026-10-17 (card 99b614ec): the openPullRequest kind, the file fingerprint and the raw link.
+  const both = { ...good, entries: [pr, good.entries[0]] };
+  const vp = (patch) => validateStore({ ...good, entries: [{ ...pr, ...patch }] }, { shown, constantExists: exists });
+  check("a valid openPullRequest entry beside a posted one passes (the silent half)", validateStore(both, { shown, constantExists: exists }).length === 0);
+  const twoBlock = newerBlock(newerFor("t1", both), shown);
+  check("the pull-request entry links the pull request, says it was open and not merged on its date, and prints the fingerprint", twoBlock.includes('href="https://github.com/teorth/optimizationproblems/pull/225"') && twoBlock.includes("which was open and not merged when we read it on 2026-10-17") && twoBlock.includes(`<code>${"c".repeat(64)}</code>`));
+  check("the raw link is NEVER rendered, so a construction repository named 'records' cannot reach the page through it", !twoBlock.includes("raw.githubusercontent.com") && !FORBIDDEN.test(twoBlock));
+  check("two entries render the plural heading and footer; one renders the singular", twoBlock.includes("constructions we evaluated independently") && twoBlock.includes("does not list these constructions") && block.includes("a construction we evaluated independently") && block.includes("does not list this construction"));
+  check("sweep 2026-10-17: a page link ending in a bare '?' or '#' is refused (the raw-link gap's sibling)", !isPinnedGithub(`https://github.com/o/r/blob/${"a".repeat(40)}/f.json?`) && !isPinnedGithub(`https://github.com/o/r/blob/${"a".repeat(40)}/f.json#`) && isPinnedGithub(`https://github.com/o/r/blob/${"a".repeat(40)}/f.json`));
+  // Claims passes r1/r2 (2026-10-17): the wordings each refuted, pinned out of every rendered variant.
+  check("claims r1/r2: no variant claims a table 'above' the note, calls the table bare, predicts upstream, or calls a truncation 'the exact value'", [block, twoBlock, newerBlock(newerFor("t1", lowerStore), shown)].every((b) => !/source table above|this constant's source table|may still accept|The exact value is/.test(b) && b.includes("in the mirrored source table, <code>") && b.includes("The exact maximum overlap begins ")));
+  check("the arXiv sentence stays with the posted entry it describes, never with the pull-request entry", twoBlock.split("<li>")[2].includes("arXiv:2609.40340v1") && !twoBlock.split("<li>")[1].includes("arXiv:"));
+  check("REFUSES a pull request on any repository but the mirrored one", vp({ sourceUrl: "https://github.com/someone/optimizationproblems/pull/225" }).some((e) => e.includes("mirrored repository")));
+  check("REFUSES a pull-request link with a trailing path (/files, /commits)", vp({ sourceUrl: "https://github.com/teorth/optimizationproblems/pull/225/files" }).some((e) => e.includes("mirrored repository")));
+  check("REFUSES a pull-request entry with no date for the open state", vp({ pullRequestStateOn: undefined }).some((e) => e.includes("pullRequestStateOn")));
+  check("REFUSES a pull-request entry that also claims an arXiv foundVia", vp({ foundVia: "https://arxiv.org/abs/2609.40340v1" }).some((e) => e.includes("carries no foundVia")));
+  check("REFUSES an entry with no kind, or an unknown one", v({ kind: undefined }).some((e) => e.includes("kind must be")) && v({ kind: "leaderboard" }).some((e) => e.includes("kind must be")));
+  check("REFUSES a malformed fileSha256", v({ fileSha256: "b".repeat(63) }).some((e) => e.includes("fileSha256")) && vp({ fileSha256: "C".repeat(64) }).some((e) => e.includes("fileSha256")));
+  check("REFUSES a raw link not pinned to a full commit sha", v({ fetchUrl: "https://raw.githubusercontent.com/o/r/main/f.json" }).some((e) => e.includes("fetchUrl must be")) && vp({ fetchUrl: "https://example.com/g.json" }).some((e) => e.includes("fetchUrl must be")));
+  check("REFUSES a posted entry whose raw link names a different file, commit or repository than the page link", v({ fetchUrl: `https://raw.githubusercontent.com/o/r/${"a".repeat(40)}/other.json` }).some((e) => e.includes("same owner")) && v({ fetchUrl: `https://raw.githubusercontent.com/o/r/${"e".repeat(40)}/f.json` }).some((e) => e.includes("same owner")) && v({ fetchUrl: `https://raw.githubusercontent.com/o/q/${"a".repeat(40)}/f.json` }).some((e) => e.includes("same owner")));
+  // Codex r1 #2/#3 (2026-10-17): judged by the shared validator (its own cases are in step-overlap.mjs's
+  // selftest); here, through the store, for BOTH kinds, on a link otherwise valid in every other respect.
+  check("r1 #2: a pull-request entry whose raw link resolves off its commit ('<sha>/../main/') is REFUSED", vp({ fetchUrl: `https://raw.githubusercontent.com/x/records/${"d".repeat(40)}/../main/g.json` }).some((e) => e.includes("fetchUrl must be")));
+  check("r1 #2: a posted entry whose raw link resolves to the same file but is not written in resolved form is REFUSED", v({ fetchUrl: `https://raw.githubusercontent.com/o/r/${"a".repeat(40)}/x/../f.json` }).some((e) => e.includes("fetchUrl must be")));
   check("the coarser valid rounding yields ZERO errors, not only the absence of one (r6 note)", v({ value: "0.3808591" }).length === 0);
   check("no entries, no block", newerBlock([], shown) === "" && newerBlock(newerFor("zz", good), shown) === "");
   check("the block never says 'record'", !FORBIDDEN.test(block));

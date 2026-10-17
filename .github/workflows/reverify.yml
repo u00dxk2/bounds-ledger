@@ -309,6 +309,11 @@ jobs:
       # never says "record") and the bound-cell guard over the committed 1b page.
       - name: Self-test newer-results notes (no network; the bound-cell guard)
         run: node scripts/newer-results.mjs --selftest
+      # A-82: the exact 1b evaluator behind those notes. ONLY its selftest runs here (hand-checked
+      # maxima, the transform against the direct sum at every lag, its own red-arm); --store fetches
+      # the pinned witnesses and stays local, an indicator.
+      - name: Self-test exact 1b evaluator (no network)
+        run: node scripts/step-overlap.mjs --selftest
       # Not piped and deliberately network-free: this asserts README's published figures still
       # match COMMITTED repo state. A stale block is a falsifiable public error on the front
       # page of a repo whose pitch is that it notices stale numbers.
