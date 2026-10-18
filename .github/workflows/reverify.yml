@@ -423,7 +423,15 @@ jobs:
           max_body=60000
           if [ "$(printf '%s\n' "$body" | LC_ALL=C wc -c)" -gt "$max_body" ]; then
             run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-            status=$(printf '%s\n' "$body" | grep -E '^(CHANGED|ADDED|REMOVED|BROKEN|UNREACHABLE|SOURCE CHANGED|DIFFERS|error:) ' | LC_ALL=C awk -v max=20000 '{ n += length($0) + 1; if (n > max) exit; print }' || true)
+            # Status lines get most of the budget. If even they do not fit, say how many were
+            # shown out of how many, so a cut list never reads as the whole list (Codex r1).
+            all_status=$(printf '%s\n' "$body" | grep -E '^(CHANGED|ADDED|REMOVED|BROKEN|UNREACHABLE|SOURCE CHANGED|DIFFERS|error:) ' || true)
+            status=$(printf '%s\n' "$all_status" | LC_ALL=C awk -v max=50000 '{ n += length($0) + 1; if (n > max) exit; print }' || true)
+            total=$(printf '%s' "$all_status" | grep -c '' || true)
+            shown=$(printf '%s' "$status" | grep -c '' || true)
+            if [ "${shown:-0}" -lt "${total:-0}" ]; then
+              status=$(printf '%s\n(only %s of %s status lines fit here; every one is in the run log)' "$status" "$shown" "$total")
+            fi
             note="(output truncated: the full text is over GitHub's issue limit; read it in the run log at ${run_url})"
             used=$(printf '%s\n%s\n\n' "$note" "$status" | LC_ALL=C wc -c)
             rest=$(printf '%s\n' "$body" | LC_ALL=C awk -v max=$(( max_body - used - 200 )) '{ n += length($0) + 1; if (n > max) exit; print }' || true)

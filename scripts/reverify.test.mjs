@@ -524,6 +524,17 @@ let alarmCouldNotRun = false;
     assert.ok(issueBody.includes("https://github.com/u00dxk2/bounds-ledger/actions/runs/12345"), "the cut body does not name the run that holds the full output");
     assert.ok(issueBody.endsWith("```\n"), "the cut body does not close its fence");
     assert.ok(issueBody.length <= 65536, `issue body is ${issueBody.length} chars; GitHub refuses over 65,536`);
+    // Codex r1 (2026-10-18): when the STATUS lines alone overflow their share, the cut list must say
+    // it is a cut list. 3,000 BROKEN lines of ~70 bytes is about 210,000 bytes of status alone.
+    const many = [];
+    for (let i = 0; i < 3000; i++) many.push(`BROKEN      pin:${i}q:L  Last-listed lower-bound table row for constant ${i}q`);
+    const tm = await titleFor(many.join("\n") + "\n");
+    assert.match(tm, /^Drift: claims pin:0q:L/, `status-overflow finding mis-titled: ${tm.slice(0, 80)}`);
+    const manyBody = await readFile(join(ALARM_TMP, "issue-body.md"), "utf8");
+    assert.match(manyBody, /only \d+ of 3000 status lines fit here; every one is in the run log/, "a cut STATUS list does not say it was cut");
+    assert.ok(manyBody.includes("BROKEN      pin:0q:L"), "the first status line was dropped");
+    assert.ok(manyBody.endsWith("```\n"), "the status-overflow body does not close its fence");
+    assert.ok(manyBody.length <= 65536, `status-overflow issue body is ${manyBody.length} chars; GitHub refuses over 65,536`);
     // Silent control: a small finding is filed whole, with no truncation note.
     await titleFor("CHANGED constants/2a.md\n  + | 1 | [A] | x |\n");
     const small = await readFile(join(ALARM_TMP, "issue-body.md"), "utf8");
