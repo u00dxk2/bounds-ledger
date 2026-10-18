@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-Overnight the source table merged about twenty changes, so our public page is now behind it on 23 constants, and the alarm that should have told us could not file its report. P1 picks the catch-up and the alarm fix over the kickoff's audit slice, which moves behind them; nothing is committed until the manager's P1 review.
+The public page now matches this morning's source table on all 23 constants that changed overnight. The alarm that failed to report that change now files a shortened report instead of nothing, and five more of the page's citations were checked against their sources. Three small slips in the source table's new text are recorded and nothing was sent upstream.
 
 ### Selection packet
 
@@ -75,3 +75,77 @@ node C:/dev/skylark/bounds-ledger/scripts/depth-audit.mjs --draw 419 469 519 569
 - (a) dated gates due today and not the choice: `A-45` (stale-value resolvability, `node scripts/check-resolvability.mjs`, run locally). `A-47` is drawn today (step 1) and its five reads are owed today.
 - (b) owed child rows: none — read "rows owed to you in skylark-site's ledger" (0 of 754).
 - (c) state reads marked CROSSED: HEAD CI RED, 1 of 1 completed runs on `840f3cb` (today's selection, leaves this list); board cards carrying David's word, 1 of 1 (0dfcf407, binding, no action owed beyond A-82's reconcile); prior-day retro, 10 still-on-discipline of 10 tagged findings; missingLinkedCommits, NOTHING SWEPT (0 of 0 considered).
+
+## What changed
+
+Pushed in two pushes, `840f3cb..b926d9c` and `b926d9c..43b4811`:
+- **The drift alarm** (`995cce6`, `40cb248`) now cuts an issue body over 60,000 bytes instead of filing nothing: every status line first, a count when even those do not fit, and the run's link. It had died on GitHub's 65,536-character limit on run 39115261031.
+- **The mirror** (`ee2c4a0`, second render `7216beb`) is at upstream `46dbf03` (an upstream sha; it does not exist in this repo), pinned after reading changed rows against their sources: 23 files, 1c and 1d added, six generated pins moved (21a, 3b, 3c, 71a, 7a, 84a). The index has 117 rows (`grep -c '<tr id=' index.html`). pragma: allowlist sha
+- **The 1b notes** were retired: pull request 225 merged at 2026-10-18T05:54:24Z and its construction is now an asterisked row of the table.
+- **A-47 slice 19** (`edb29f8` draw, `43b4811` read): 57a, 65a, 78a and 84a SOUND, 50a UNRESOLVED.
+- Selftests follow the new mirror and an empty store (`6bb8fe8`, which also carries this report and does not say so); the README's drift row and counts (`5a2aec1`, `b926d9c`).
+
+## Inputs (controllable)
+
+Five Codex read-only rounds, each banner workdir checked against this repo:
+- r1 on `995cce6`: DO NOT SHIP (status lines dropped silently), fixed in `40cb248`.
+- r2 on `80f1362`: three aims. The alarm passed. The store selftest needed a populated store, fixed in `6bb8fe8`. The commit message's 1c sentence was refuted (the fraction is 0.41032871754…, so the cell is right), and the commit was re-created as `ee2c4a0` before any push.
+- r3 on `5a2aec1`: one README sentence overclaimed coverage, fixed in `b926d9c`.
+- r4 on the slice commit: 78a corrected from UNRESOLVED to SOUND (I had read the previous entry's verdict for its precedent, A-47-0051), plus the 50a wording and the 84a date. All applied before push.
+- r5 on the amendment: one message line, fixed in `43b4811`.
+
+Every finding was confirmed against the source before it was fixed; none was rejected. Reading helpers: two for the drift (21 constants), five for slice 19, and the hygiene helper.
+
+## Outputs (lagging)
+
+`npm run reports` after both pushes: "parts reconcile: 34 + 0 + 0 = 34", so 0 outside arrivals of 34 raw issues. Whether any reader met the changed pages cannot be seen: the page is static with no analytics (`A-59`, the row for that encounter).
+
+**Classification (by hand, not a counter):** today's findings are mixed, so the run of instrument-facing days is 0 as of today.
+- **Record-facing:** three citation-quality points in text upstream merged today: 1c's written decimal disagrees with its own fraction; 21a's [Kor2026] title differs from the paper's (a helper's fetch); 3a's "not registered" sits beside a registry record reading registered (a helper's fetch).
+- **Instrument-facing:** the drift alarm's oversized-body failure, and two of my own reading errors that review caught before publication.
+- **Counted catches:** of the six moved pins, four moved because a new row was listed (21a, 3c, 7a, 84a) and two were byte-only (3b lost an asterisk, 71a gained a replay note).
+- **The standing prediction:** the next record-facing catch will be a citation-quality defect found by a human reading the cited source in the depth audit. Today's points are citation-quality in shape, but they were found by reading agents during the drift cycle, not in the depth audit. No number disagrees with its source, so neither falsifying condition fired.
+
+## Recommendation
+
+None new for David. The three upstream points are held, not carded: each is small, none moves a bound, and outward contact is his call.
+
+## On hold pending data
+
+`A-84` (the render-constant-pages store-validation fix, a declared deferral) expires 2026-10-25.
+
+## State Appendix
+
+As of 2026-10-18T16:59:20Z (UTC), from live commands:
+- HEAD and origin/main: `43b4811` (`git rev-parse HEAD origin/main`; `git rev-list --count origin/main..HEAD` → 0).
+- CI at `43b4811`: GREEN for `reverify.yml` and `page-check.yml` (`node C:/dev/skylark/skylark-site/scripts/check-ci-status.mjs --repo . --workflow <file>`).
+- Verify receipt: exit 0 at `43b4811`, all ten legs 0 (`tmp/.verify-receipt.json`, at 16:35:36Z).
+- Delivery: `npm run served` → "52 checked — 52 served, 0 in flight, 0 stale, 0 unreachable".
+- Release for anything above: re-run the command named beside it. The close commit that lands this report moves HEAD past `43b4811`, with doc and ledger paths only.
+
+## Close
+
+ACTION: COMPLETED · item A-82 (the item carrying the 1b note) · P3 5d3d92d5 (the P3 task-complete's bus msgId)
+
+The acceptance condition approved at P1 was met (manager review COMPLETED, bus ff76354a): `reverify.mjs --check` and `check-claims.mjs` exit 0 at `46dbf03`, the 23 constants serve their new rows, c/1b.html no longer calls pull request 225 open, both workflows are green on `43b4811`, and the oversized-body test files a truncated issue.
+
+**State changed since the P3 post:** none on the page. `A-45`'s read moved with the resnap, from 209 of 209 to 230 of 230 resolvable.
+
+**Ledger delta** (`continuity-edit`):
+- `A-45` re-dated to 2026-10-25 (`redated2026_10_18`).
+- `A-47` gained `slice19Read2026_10_18` and `nextCheckDate` 2026-10-20; slice 20 must re-derive its offset on the new 726-row frame.
+- `A-82` gained `storeRetired2026_10_18`.
+- `W-15` (the watch on pull request 225) CLOSED: merged at 2026-10-18T05:54:24Z, the drift cycle and the note reconcile done.
+- `A-84` minted as a declared deferral (expires 2026-10-25), at the manager's request, for the render-constant-pages fix not started today.
+
+**Hygiene draft:** 1 line, 0 accepted · 1 amended · 0 rejected. A-45: amended to `--set expectedSignalBy`, the 2026-10-11 precedent, because `--extend` also rewrites other chain fields. Its READ-MUTATED section reads "none — 1 read guarded"; check-wait-justification PASS (exit 0) and check-engineering-zero PASS (0 findings for this lane). Due-gate verify: "snapshot CURRENT (taken 2026-10-18)", RESULT: PASS (exit 0). Deferral gate: "1 declared deferral(s) among 102 row(s)", RESULT: PASS.
+
+Positive control: each zero above came from a read that returned something non-empty in the same run. The engineering-zero read found 2 findings fleet-wide (other lanes' Sentry issues), check-wait-justification found 1 of 101 rows carrying a wait, `npm run reports` saw 34 raw issues, `npm run served` counted 52 files served, and the due-gate snapshot listed 2 due rows this morning.
+
+**Held, not sent upstream:** the 1c decimal, the 21a [Kor2026] title, the 3a registration wording.
+
+**Pending reads:**
+- 2026-10-20: `A-47` slice 20, which needs a new offset rule on the 726-row frame.
+- 2026-10-20: `A-82`, the two CANNOT TELL HERE candidates and the reader-facing "newer results checked through" line.
+- 2026-10-22: `A-83`.
+- 2026-10-25: `A-45` and `A-84`.
