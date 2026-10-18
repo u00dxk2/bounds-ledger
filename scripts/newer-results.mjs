@@ -206,6 +206,19 @@ export async function boundCellGuard(store = loadStore()) {
 
 // ---------- selftest (network-free; KP-78: each refusal fires, and stays silent on the legal case) ----------
 
+// The 512-step 1b entry as it stood in the committed store until 2026-10-18, kept only as a selftest
+// fixture so the guards over real pages still compare something when the committed store is empty.
+const RETIRED_1B_FIXTURE = {
+  id: "1b", side: "upper", kind: "posted", value: "0.3808590566149", exactMaximum: "0.38085905661480689909",
+  rounding: "the exact maximum overlap, rounded UP at the 13th decimal, so the printed number is itself a valid upper bound",
+  construction: "a step function with 512 equal steps on [-1, 1], posted publicly on GitHub",
+  sourceUrl: "https://github.com/bzanghi/erdos-minimum-overlap-bochner/blob/1ff3e99d12c75755dfee5620d097e8f781420d3f/lp_research_state/data/ub_certified_search512.json",
+  fileSha256: "2d5de841a090c927d06eb603b64405da0e8bef7a4d648f20d9a29c5f77bfbbbf",
+  fetchUrl: "https://raw.githubusercontent.com/bzanghi/erdos-minimum-overlap-bochner/1ff3e99d12c75755dfee5620d097e8f781420d3f/lp_research_state/data/ub_certified_search512.json",
+  sourcePostedBy: "2026-07-26", foundVia: "https://arxiv.org/abs/2609.40340v1", evaluatedOn: "2026-10-16",
+  method: "We evaluated the posted function ourselves, in exact rational arithmetic, against this page's definition.",
+};
+
 export async function selftest() {
   let failed = 0;
   const check = (label, ok) => { if (!ok) failed++; console.log(`${ok ? "PASS" : "FAIL"}  ${label}`); };
@@ -271,14 +284,20 @@ export async function selftest() {
   const store = loadStore();
   const real = validateStore(store);
   check(`the committed store validates (${real.length} problem(s)${real.length ? ": " + real.join("; ") : ""})`, store !== null && real.length === 0);
-  const guard = await boundCellGuard(store);
-  check(`the bound-cell guard holds on every noted page (${guard.length} problem(s)${guard.length ? ": " + guard.join("; ") : ""})`, guard.length === 0);
+  // 2026-10-18 (Codex r2): the store can legitimately be EMPTY (both 1b entries were retired when upstream
+  // merged pull request 225). The guard and the invalid-store refusal below must still compare something,
+  // so with an empty committed store they run on a fixture holding the retired 512-step 1b entry, rendered
+  // against the real 1b row and never written anywhere. An empty store must itself render no block.
+  const guardStore = store && store.entries.length ? store : { ...store, entries: [RETIRED_1B_FIXTURE] };
+  if (store && !store.entries.length) check("an empty committed store renders no block on any constant", (await import("./render-site.mjs")).buildRows(JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8")), { withDates: false, root: ROOT }).every((r) => newerBlock(newerFor(r.id, store)) === ""));
+  const guard = await boundCellGuard(guardStore);
+  check(`the bound-cell guard holds on every noted page${guardStore === store ? "" : " (on the retired-entry fixture, the committed store being empty)"} (${guard.length} problem(s)${guard.length ? ": " + guard.join("; ") : ""})`, guard.length === 0);
   // r6 #1, through main() itself: render-constant-pages --check must REFUSE an invalid store before it
   // composes or writes anything. The bad store (an upper bound printed below its exact value) lives in a
   // temp folder and is removed after; the hook env var is the only way it is reached.
   const dir = mkdtempSync(join(tmpdir(), "newer-results-"));
   try {
-    const bad = { ...store, entries: store.entries.map((e, i) => (i === 0 ? { ...e, value: e.exactMaximum.slice(0, e.value.length - 1) + "0" } : e)) };
+    const bad = { ...guardStore, entries: guardStore.entries.map((e, i) => (i === 0 ? { ...e, value: e.exactMaximum.slice(0, e.value.length - 1) + "0" } : e)) };
     writeFileSync(join(dir, "bad.json"), JSON.stringify(bad));
     const child = spawnSync(process.execPath, [join(ROOT, "scripts", "render-constant-pages.mjs"), "--check"], { encoding: "utf8", env: { ...process.env, CC_NEWER_RESULTS_STORE: join(dir, "bad.json") } });
     check("r6 #1: render-constant-pages --check REFUSES an invalid store through main(), exit 1, before composing", child.status === 1 && child.stdout.includes("the newer-results store is invalid, so nothing was composed or written"));
