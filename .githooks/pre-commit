@@ -2,13 +2,29 @@
 # A-7 R5 — refuse a commit whose staged diff carries secret-shaped content.
 # Enable in a fresh clone with:  git config core.hooksPath .githooks
 # (hooksPath is per-clone config, so this file is the recipe, not the guarantee.)
+# The secrets scan runs first and stops the run; no leg that can print staged or working-tree
+# content runs before it (one-pass, 2026-10-18). The invocation line is unchanged.
 node scripts/history-sweep.mjs --staged || exit 1
+
+# ── ONE PASS (skylark substrate 2026-10-18; recipe skylark-site
+# docs/specs/lane-hook-one-pass-adoption-2026-10-17.md) ────────────────────────────────────
+# Every leg BELOW this line records its refusal and lets the remaining legs run; the hook
+# refuses ONCE, at the bottom, naming every leg that refused. A leg whose fleet script is absent
+# still refuses and skips only its own calls. No leg is skipped or softened; only where the exit
+# happens moved. Exit is still 1 on any refusal, 0 on none.
+refused_legs=""
+refused_n=0
+refuse_leg() {
+  refused_legs="${refused_legs:+$refused_legs, }$1"
+  refused_n=$((refused_n + 1))
+}
+
 # The index must not cite a commit a history rewrite removed (GitHub still serves those by sha).
-node scripts/check-orphan-shas.mjs || exit 1
+node scripts/check-orphan-shas.mjs || refuse_leg "check-orphan-shas"
 # Nothing in the index may quote David: this repo is public and his words are paraphrased here.
-node scripts/check-quoted-replies.mjs --staged || exit 1
+node scripts/check-quoted-replies.mjs --staged || refuse_leg "check-quoted-replies"
 # No Render resource id: this repo runs nothing on Render, so one would name another project's service.
-node scripts/check-render-ids.mjs || exit 1
+node scripts/check-render-ids.mjs || refuse_leg "check-render-ids"
 
 # ── WHERE THE SHARED skylark-site SCRIPTS LIVE (S-20260906-75, 2026-09-06) ──
 # `../skylark-site/scripts` is correct from the lane ROOT and WRONG from every linked worktree,
@@ -38,12 +54,11 @@ SKY_SCRIPTS="$(git rev-parse --path-format=absolute --git-common-dir)/../../skyl
 if [ ! -f "$SKY_SCRIPTS/check-staged-shas-resolve.mjs" ]; then
   echo ""
   echo "✗ pre-commit: $SKY_SCRIPTS not found — the staged-sha check cannot run, so the commit is refused (not skipped)."
-  exit 1
-fi
-if ! node "$SKY_SCRIPTS/check-staged-shas-resolve.mjs"; then
+  refuse_leg "check-staged-shas-resolve (absent)"
+elif ! node "$SKY_SCRIPTS/check-staged-shas-resolve.mjs"; then
   echo ""
   echo "✗ pre-commit: a staged report/primer/ledger line cites a sha that resolves nowhere (check-staged-shas-resolve). Re-copy it from git log, or append \` pragma: allowlist sha\` to a deliberate non-git token."
-  exit 1
+  refuse_leg "check-staged-shas-resolve"
 fi
 
 # --- Primer checks at COMMIT time (2026-08-26, skylark-site check-primer-hook-coverage) ----
@@ -62,27 +77,28 @@ if [ -n "$primer_files" ]; then
   if [ ! -f "$SKY_SCRIPTS/check-cold-readability.mjs" ]; then
     echo ""
     echo "✗ pre-commit: $SKY_SCRIPTS not found — the primer checks cannot run, so the commit is refused (not skipped)."
-    exit 1
-  fi
+    refuse_leg "primer checks (absent)"
+  else
   # shellcheck disable=SC2086
   if ! node "$SKY_SCRIPTS/check-primer-first-command.mjs" $primer_files; then
     echo ""
     echo "✗ pre-commit: a staged primer hands the next agent a broken first command (check-primer-first-command)."
-    exit 1
+    refuse_leg "check-primer-first-command"
   fi
   # shellcheck disable=SC2086
   if ! node "$SKY_SCRIPTS/check-primer-warn-counts.mjs" $primer_files; then
     echo ""
     echo "✗ pre-commit: a staged primer carries a warn/finding COUNT without the command that produced it (check-primer-warn-counts)."
-    exit 1
+    refuse_leg "check-primer-warn-counts"
   fi
   for primer_file in $primer_files; do
     if ! node "$SKY_SCRIPTS/check-cold-readability.mjs" "$primer_file"; then
       echo ""
       echo "✗ pre-commit: $primer_file fails cold-readability (bare hex / count-deixis / rule-deixis) — label the reference or drop it."
-      exit 1
+      refuse_leg "check-cold-readability $primer_file"
     fi
   done
+  fi
 fi
 
 # --- Self-attributed cause carries its control (2026-08-27, orchestrator refine of (a)3) ---
@@ -96,7 +112,7 @@ if [ -n "$blame_files" ]; then
     echo ""
     echo "x pre-commit: a self-attributed cause has no control beside it (check-self-attribution)."
     echo "  Name the command or observation that would show the cause is NOT ours, on the same line."
-    exit 1
+    refuse_leg "check-self-attribution"
   fi
 fi
 
@@ -130,22 +146,31 @@ if git diff --cached --name-only --no-renames | grep -qx 'index.html'; then
     echo ""
     echo "x pre-commit: this commit removes index.html from the index (a delete or a rename)."
     echo "  It is the public page; Pages would publish the site without it. Restore it: git reset -- index.html"
-    exit 1
-  fi
+    refuse_leg "index.html removed"
   # render-site --check reads the WORKING file, but the commit carries the STAGED one (BL-R1,
   # 2026-10-05): stage a stale page, regenerate, forget to re-stage, and the check passed on the
   # correct copy while the stale one shipped. So the two must be identical before the check runs.
-  if ! git diff --quiet -- index.html; then
+  # (one-pass: these three steps are ONE leg and stay ordered, so the chain is an elif — the page
+  # check still runs only when the staged and working copies agree, exactly as before.)
+  elif ! git diff --quiet -- index.html; then
     echo ""
     echo "x pre-commit: staged index.html differs from the working copy, and the page check reads the working copy."
     echo "  Re-stage it (git add index.html) so the check judges what is committed."
-    exit 1
-  fi
-  if ! node scripts/render-site.mjs --check; then
+    refuse_leg "index.html staged != working"
+  elif ! node scripts/render-site.mjs --check; then
     echo ""
     echo "x pre-commit: staged index.html is not what render-site.mjs would produce."
     echo "  Pages publishes on push with no gate, so a malformed page here reaches visitors."
     echo "  Run: node scripts/render-site.mjs   then re-stage index.html."
-    exit 1
+    refuse_leg "render-site --check"
   fi
 fi
+
+# The ONE refusal (see "ONE PASS" above). Every leg has run; name each that refused.
+if [ "$refused_n" -gt 0 ]; then
+  echo ""
+  echo "✗ pre-commit: $refused_n check(s) refused this commit: $refused_legs"
+  echo "  Every finding is printed above — fix them in ONE pass, then re-commit."
+  exit 1
+fi
+exit 0
