@@ -454,7 +454,7 @@ let alarmCouldNotRun = false;
     let out;
     try {
       out = execFileSync(BASH, ["--noprofile", "--norc", "-eo", "pipefail", "open-finding.sh"],
-        { cwd: ALARM_TMP, encoding: "utf8", env: { ...process.env, GITHUB_REPOSITORY: "u00dxk2/bounds-ledger" } });
+        { cwd: ALARM_TMP, encoding: "utf8", env: { ...process.env, GITHUB_REPOSITORY: "u00dxk2/bounds-ledger", GITHUB_SERVER_URL: "https://github.com", GITHUB_RUN_ID: "12345" } });
     } catch (err) { out = (err.stdout ?? "") + (err.stderr ?? ""); }
     const m = out.match(/^TITLE => (.*)$/m);
     // No title at all means the harness never ran — that must fail loudly, not read as "no
@@ -497,6 +497,38 @@ let alarmCouldNotRun = false;
   // The two paths that already worked must not regress.
   assert.match(await titleFor("error: fetch failed\n"), /^Check error: bounds-ledger re-verification could not complete/);
   assert.match(await titleFor(null), /^Instrument failure: bounds-ledger self-test/);
+
+  // 2026-10-18: GitHub refuses an issue body over 65,536 characters, and the step sent the whole
+  // of finding.txt. On the largest drift this ledger had seen (23 files, run 39115261031) the
+  // alarm fired, `gh issue create` died on "Body is too long", and NO issue existed: the alarm was
+  // silent exactly when it mattered most. The oversized fixture below is built from that run's
+  // shape (many CHANGED headers, long diff lines, BROKEN pins after them). What must survive the
+  // cut, in order of meaning: the body fits; every status line is still listed; the reader is
+  // told the text was cut and where the full output is; the fence still closes.
+  {
+    const big = [];
+    for (let i = 0; i < 40; i++) {
+      big.push(`CHANGED constants/${i}z.md`);
+      for (let j = 0; j < 12; j++) big.push(`  + | $0.${i}${j}$ | [X2026] | ${"long row text ".repeat(20)}|`);
+    }
+    big.push("40 file(s) drifted. Re-verify against primary sources, then run --snapshot and commit.");
+    for (let i = 0; i < 6; i++) big.push(`BROKEN      pin:${i}z:L  Last-listed lower-bound table row`);
+    const fixture = big.join("\n") + "\n";
+    assert.ok(fixture.length > 70000, `the oversized fixture is only ${fixture.length} chars; it must exceed GitHub's 65,536`);
+    const t = await titleFor(fixture);
+    assert.match(t, /^Drift: constants\/0z\.md/, `oversized finding mis-titled: ${t.slice(0, 80)}`);
+    const issueBody = await readFile(join(ALARM_TMP, "issue-body.md"), "utf8");
+    for (let i = 0; i < 40; i++) assert.ok(issueBody.includes(`CHANGED constants/${i}z.md\n`), `the cut dropped status line CHANGED constants/${i}z.md`);
+    for (let i = 0; i < 6; i++) assert.ok(issueBody.includes(`BROKEN      pin:${i}z:L`), `the cut dropped status line BROKEN pin:${i}z:L`);
+    assert.match(issueBody, /truncated/i, "an oversized body was cut without telling the reader");
+    assert.ok(issueBody.includes("https://github.com/u00dxk2/bounds-ledger/actions/runs/12345"), "the cut body does not name the run that holds the full output");
+    assert.ok(issueBody.endsWith("```\n"), "the cut body does not close its fence");
+    assert.ok(issueBody.length <= 65536, `issue body is ${issueBody.length} chars; GitHub refuses over 65,536`);
+    // Silent control: a small finding is filed whole, with no truncation note.
+    await titleFor("CHANGED constants/2a.md\n  + | 1 | [A] | x |\n");
+    const small = await readFile(join(ALARM_TMP, "issue-body.md"), "utf8");
+    assert.equal(small, "```\nCHANGED constants/2a.md\n  + | 1 | [A] | x |\n```\n", "a small finding was not filed verbatim");
+  }
   await rm(ALARM_TMP, { recursive: true, force: true });
   alarmVerdict = "alarm titles a record movement Drift: and a transport failure Check error:, with the real move outranking a concurrent flake";
   }
