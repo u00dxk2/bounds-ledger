@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Erdős–Szemerédi $3$-sunflower-free capacity (49a) — Bounds Ledger</title>
-<meta name="description" content="What this ledger has pinned for Erdős–Szemerédi $3$-sunflower-free capacity, mirrored from teorth/optimizationproblems at 2c1968c.">
+<meta name="description" content="What this ledger has pinned for Erdős–Szemerédi $3$-sunflower-free capacity, mirrored from teorth/optimizationproblems at 46dbf03.">
 <link rel="canonical" href="https://u00dxk2.github.io/bounds-ledger/c/49a.html">
 <style>:root{--ink:#111;--muted:#666;--line:#ddd;--code:#f6f6f6;--accent:#0b5fff}
 *{box-sizing:border-box}body{margin:0;padding:1.5rem 1.25rem 3rem;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);max-width:52rem;margin-inline:auto}
@@ -33,21 +33,21 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 
 <dl>
 <dt>Upper bound, last-listed row</dt><dd><code>| $\frac{3}{2^{2/3}} \approx 1.8898815748$ | [NS2017] | They prove $\lvert\mathcal{F}\rvert \le 3(n+1) \sum\_{k=0}^{\lfloor n/3\rfloor} \binom{n}{k} \le \left(\frac{3}{2^{2/3}}\right)^{n(1+o(1))}$ for sunflower-free $\mathcal{F}\subseteq 2^{[n]}$. |</code><span class="when">tracked since 2026-07-24 — no movement seen yet</span></dd>
-<dt>Lower bound, last-listed row</dt><dd><code>| $\ge 1.554$ (unpublished) | [NS2017] | The arXiv preprint version of [NS2017] records $\mu^{\mathrm S}\_3\ge 1.554$, citing an unpublished manuscript of the first author. |</code><span class="when">tracked since 2026-07-24 — no movement seen yet</span></dd>
+<dt>Lower bound, last-listed row</dt><dd><code>| $\ge 1.5666969$* | [Cla2026] | Alternate the previous family with a second base family: 121 sets on $\mathbb{Z}\_{11}$, the images of $\\{0,1,2,3,4,5,6\\}$, $\\{0,1,2,3,4,6,7\\}$ and $\\{0,1,2,6,9\\}$ under $x\mapsto ax+b$ with $a$ a nonzero square mod 11 (transfer matrix rows $(31,44)$ and $(15,31)$; the link of every point is a copy of the previous family). The product of the two transfer matrices has rows $(980,1624)$ and $(641,1104)$, Perron root $1042+2\sqrt{261207}$, and one period adds 17 points: $\mu^{\mathrm S}\_3\ge(1042+2\sqrt{261207})^{1/17} = 1.5666969\ldots$. Verification script (standard-library Python, about 15 seconds) and proofs at [Cla2026]. |</code><span class="when">date unknown</span></dd>
 
 </dl>
 <div class="actions">
 <a href="https://github.com/u00dxk2/bounds-ledger/blob/main/ledger/teorth-optimizationproblems/constants/49a.md">the mirrored file</a> &middot;
 <a href="https://github.com/teorth/optimizationproblems/blob/main/constants/49a.md">upstream source</a> &middot;
-<a href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Erd%C5%91s%E2%80%93Szemer%C3%A9di%20%243%24-sunflower-free%20capacity%20(49a)&amp;body=Constant%3A%20Erd%C5%91s%E2%80%93Szemer%C3%A9di%20%243%24-sunflower-free%20capacity%20(49a)%0ALedger%20mirror%3A%20upstream%202c1968c%0A%0AWhat%20the%20source%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
+<a href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Erd%C5%91s%E2%80%93Szemer%C3%A9di%20%243%24-sunflower-free%20capacity%20(49a)&amp;body=Constant%3A%20Erd%C5%91s%E2%80%93Szemer%C3%A9di%20%243%24-sunflower-free%20capacity%20(49a)%0ALedger%20mirror%3A%20upstream%2046dbf03%0A%0AWhat%20the%20source%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
 </div>
 <div class="cite"><strong>Cite this row</strong><code>Bounds Ledger — Erdős–Szemerédi $3$-sunflower-free capacity (49a)
 upper bound: $\frac{3}{2^{2/3}} \approx 1.8898815748$ (tracked since 2026-07-24 — no movement seen yet)
-lower bound: $\ge 1.554$ (unpublished) (tracked since 2026-07-24 — no movement seen yet)
-Mirrored from teorth/optimizationproblems@2c1968c. These are the last-listed rows of that constant&#39;s bounds table — a listing position, not a statement that this bound is the strongest or most recent. A snapshot at that sha, not a live read.
+lower bound: $\ge 1.5666969$*
+Mirrored from teorth/optimizationproblems@46dbf03. These are the last-listed rows of that constant&#39;s bounds table — a listing position, not a statement that this bound is the strongest or most recent. A snapshot at that sha, not a live read.
 https://u00dxk2.github.io/bounds-ledger/c/49a.html</code></div>
 <footer><p>These are the LAST-LISTED rows of this constant&#39;s bounds table upstream — a listing position, not a statement that either bound is the strongest or most recent known. Upstream keeps superseded and inferior rows because the tables are histories. Read the source file before citing.</p>
-<p>Mirrored from <code style="display:inline;padding:.1rem .3rem">teorth/optimizationproblems@2c1968c</code> — a snapshot at that commit, not a live read.</p>
+<p>Mirrored from <code style="display:inline;padding:.1rem .3rem">teorth/optimizationproblems@46dbf03</code> — a snapshot at that commit, not a live read.</p>
 <p>This row is re-checked against upstream every day by a scheduled job, so an old date above does not mean nobody has looked. The dates and values above change only after an upstream change has been verified and published here, so an old date does not prove nothing has moved upstream either. The latest check and its verdict: <a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>.</p></footer>
 <script>
 (function(){

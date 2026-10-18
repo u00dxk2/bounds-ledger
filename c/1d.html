@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The signed third autocorrelation constant (1d) — Bounds Ledger</title>
+<meta name="description" content="What this ledger has pinned for The signed third autocorrelation constant, mirrored from teorth/optimizationproblems at 46dbf03.">
+<link rel="canonical" href="https://u00dxk2.github.io/bounds-ledger/c/1d.html">
+<style>:root{--ink:#111;--muted:#666;--line:#ddd;--code:#f6f6f6;--accent:#0b5fff}
+*{box-sizing:border-box}body{margin:0;padding:1.5rem 1.25rem 3rem;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);max-width:52rem;margin-inline:auto}
+a{color:var(--accent)}h1{font-size:1.4rem;line-height:1.3;margin:.2rem 0 .1rem}
+.id{font:13px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+.back{font-size:.85rem;display:inline-block;margin-bottom:1.2rem}
+dl{margin:1.4rem 0;padding:0}dt{font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:1.1rem}
+dd{margin:.35rem 0 0}code{display:block;background:var(--code);padding:.6rem .7rem;font-size:.85rem;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
+.when{display:block;font-size:.8rem;color:var(--muted);margin-top:.3rem}
+.pin{font-size:.8rem;color:var(--muted);margin-top:.3rem}
+.sel{color:var(--muted);font-size:.85rem}
+.none{color:var(--muted)}
+ul.audit{margin:.35rem 0 0;padding-left:1.1rem}ul.audit li{margin:.2rem 0}
+ul.oai{margin:.35rem 0 0;padding-left:1.1rem}ul.oai li{margin:.2rem 0 .8rem}ul.oai p{margin:.3rem 0}ul.oai .tag{color:var(--muted);font-size:.9rem}
+.ours{display:inline-block;margin-top:.6rem;font-size:.85rem}
+.actions{margin:1.6rem 0;padding-top:1rem;border-top:1px solid var(--line);font-size:.9rem}
+.cite code{user-select:all;margin-top:.5rem}
+.copy{margin-left:.5rem}.copied{margin-left:.5rem;color:var(--muted);font-size:.85rem}
+footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}
+@media(max-width:60rem){
+.actions a{display:inline-block;min-height:44px;padding:.7rem .3rem}
+.copy{min-height:44px}
+}</style>
+<a class="back" href="https://u00dxk2.github.io/bounds-ledger/#c-1d">&larr; all constants</a>
+<h1>The signed third autocorrelation constant</h1>
+<div class="id">1d</div>
+
+<dl>
+<dt>Upper bound, last-listed row</dt><dd><code>| $1.463071582607559*$ | [CERT2026] | Step function with $300$ equal cells on $[-1/4,1/4]$ and signed cell values $v_0,\dots,v_{299}$. Exact value of $\max_t \lvert f\*f\rvert / (\int f)^2$ is the rational number $2039224160683882663565441886346340189798400 / 1393796574908163689489385839036226787118881$, which is $1.4630715826075593\dots$. Self-archived artifact; see the note on the asterisk below. |</code><span class="when">date unknown</span></dd>
+<dt>Lower bound, last-listed row</dt><dd><code>| $1$ | (trivial) | $(\int f)^2 = \int (f\*f) \le \int \lvert f\*f\rvert \le \max \lvert f\*f\rvert$, since $f\*f$ is supported on an interval of length $1$. |</code><span class="when">date unknown</span></dd>
+
+</dl>
+<div class="actions">
+<a href="https://github.com/u00dxk2/bounds-ledger/blob/main/ledger/teorth-optimizationproblems/constants/1d.md">the mirrored file</a> &middot;
+<a href="https://github.com/teorth/optimizationproblems/blob/main/constants/1d.md">upstream source</a> &middot;
+<a href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20The%20signed%20third%20autocorrelation%20constant%20(1d)&amp;body=Constant%3A%20The%20signed%20third%20autocorrelation%20constant%20(1d)%0ALedger%20mirror%3A%20upstream%2046dbf03%0A%0AWhat%20the%20source%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
+</div>
+<div class="cite"><strong>Cite this row</strong><code>Bounds Ledger — The signed third autocorrelation constant (1d)
+upper bound: $1.463071582607559*$
+lower bound: $1$
+Mirrored from teorth/optimizationproblems@46dbf03. These are the last-listed rows of that constant&#39;s bounds table — a listing position, not a statement that this bound is the strongest or most recent. A snapshot at that sha, not a live read.
+https://u00dxk2.github.io/bounds-ledger/c/1d.html</code></div>
+<footer><p>These are the LAST-LISTED rows of this constant&#39;s bounds table upstream — a listing position, not a statement that either bound is the strongest or most recent known. Upstream keeps superseded and inferior rows because the tables are histories. Read the source file before citing.</p>
+<p>Mirrored from <code style="display:inline;padding:.1rem .3rem">teorth/optimizationproblems@46dbf03</code> — a snapshot at that commit, not a live read.</p>
+<p>This row is re-checked against upstream every day by a scheduled job, so an old date above does not mean nobody has looked. The dates and values above change only after an upstream change has been verified and published here, so an old date does not prove nothing has moved upstream either. The latest check and its verdict: <a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>.</p></footer>
+<script>
+(function(){
+  var cites=document.querySelectorAll('div.cite');
+  for(var i=0;i<cites.length;i++)add(cites[i]);
+  function add(d){
+    var code=d.querySelector('code');
+    if(!code)return;
+    var b=document.createElement('button'),st=document.createElement('span');
+    b.type='button';b.className='copy';b.textContent='Copy citation';
+    st.className='copied';st.setAttribute('role','status');
+    d.insertBefore(b,code);d.insertBefore(st,code);
+    var last=0;
+    b.addEventListener('click',function(){
+      var text=code.textContent,me=++last;
+      st.textContent='';
+      function pick(){
+        if(me!==last)return;
+        var r=document.createRange();r.selectNodeContents(code);
+        var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);
+        st.textContent='Selected. Use your Copy command.';
+      }
+      try{navigator.clipboard.writeText(text).then(function(){if(me===last)st.textContent='Copied';},pick);}
+      catch(e){pick();}
+    });
+  }
+})();
+</script>
+</html>

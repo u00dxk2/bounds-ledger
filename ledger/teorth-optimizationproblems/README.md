@@ -14,42 +14,44 @@ Bounds for which the level of available verification is currently at minimal lev
 
 | Number | Description | Best lower bound | Best upper bound |
 | ------ | ----------- | ---------------- | ---------------- |
-| [1a](https://teorth.github.io/optimizationproblems/constants/1a.html) | Sidon set autocorrelation constant | 1.2802 (1.292*) | 1.502862 |
-| [1b](https://teorth.github.io/optimizationproblems/constants/1b.html) | Erdős minimum overlap constant | 0.379005 | 0.380868 |
+| [1a](https://teorth.github.io/optimizationproblems/constants/1a.html) | Sidon set autocorrelation constant | 1.2802 (1.292*) | 1.502862 (1.5027435*) |
+| [1b](https://teorth.github.io/optimizationproblems/constants/1b.html) | Erdős minimum overlap constant | 0.379005 | 0.380868 (0.38085856*) |
+| [1c](https://teorth.github.io/optimizationproblems/constants/1c.html) | Barnard–Steinerberger autocorrelation constant | 0.4103287* | 0.4107675 |
+| [1d](https://teorth.github.io/optimizationproblems/constants/1d.html) | Signed third autocorrelation constant | 1 | 1.463071582607559* |
 | [2](https://teorth.github.io/optimizationproblems/constants/2a.html) | Crouzeix constant | 2 | 2 |
-| [3a](https://teorth.github.io/optimizationproblems/constants/3a.html) | Gyarmati-Hennecart-Ruzsa sum-difference constant | 1.19102809 (1.19519192*) | 1.33333 |
-| [3b](https://teorth.github.io/optimizationproblems/constants/3b.html) | Kakeya sums-differences constant | 1.77898 (1.77898884*) | 1.83333 |
-| [3c](https://teorth.github.io/optimizationproblems/constants/3c.html) | 4-slope Kakeya-type sum-difference constant | 1.67473389 (1.6747338950414058*) | 1.75 |
+| [3a](https://teorth.github.io/optimizationproblems/constants/3a.html) | Gyarmati-Hennecart-Ruzsa sum-difference constant | 1.19102809 (1.19519192*) | 1.33333 (1.31237330*) |
+| [3b](https://teorth.github.io/optimizationproblems/constants/3b.html) | Kakeya sums-differences constant | 1.77898884 | 1.83333 |
+| [3c](https://teorth.github.io/optimizationproblems/constants/3c.html) | 4-slope Kakeya-type sum-difference constant | 1.674894211307116 | 1.75 |
 | [3d](https://teorth.github.io/optimizationproblems/constants/3d.html) | Single-set sum-difference exponent | 2 | 2 |
 | [3e](https://teorth.github.io/optimizationproblems/constants/3e.html) | Unnormalized single-set sum-difference exponent | 1.27155 | 1.33333 |
 | [4a](https://teorth.github.io/optimizationproblems/constants/4a.html) | Cap set constant | 2.2203 | 2.756 |
-| [4b](https://teorth.github.io/optimizationproblems/constants/4b.html) | Furstenberg–Sárközy square-difference constant | 0.758068 | 1 |
+| [4b](https://teorth.github.io/optimizationproblems/constants/4b.html) | Furstenberg–Sárközy square-difference constant | 0.7580758 | $<1$ |
 | [5a](https://teorth.github.io/optimizationproblems/constants/5a.html) | Sidon set size constant | 0 | 0.97633 |
 | [5b](https://teorth.github.io/optimizationproblems/constants/5b.html) | Sidon set density inside (4,5) sets | 0.5294 | 0.5714 |
 | [6](https://teorth.github.io/optimizationproblems/constants/6a.html) | Union-closed sets conjecture constant | 0.38271 | 0.5 |
-| [7a](https://teorth.github.io/optimizationproblems/constants/7a.html) | Irrationality measure of $\pi$ | 2 | 7.103205334137 |
+| [7a](https://teorth.github.io/optimizationproblems/constants/7a.html) | Irrationality measure of $\pi$ | 2 | $<7.101862832357$ |
 | [7b](https://teorth.github.io/optimizationproblems/constants/7b.html) | Irrationality measure of $\Gamma(1/4)$ | 2 | $10^{143}$ |
 | [8](https://teorth.github.io/optimizationproblems/constants/8a.html) | Classical zero-free region constant | 0.755106 | 4.896 |
 | [9](https://teorth.github.io/optimizationproblems/constants/9a.html) | Shannon capacity of the 7-cycle | 3.25883262 | 3.3177 |
-| [10a](https://teorth.github.io/optimizationproblems/constants/10a.html) | The real Grothendieck constant | $\frac{6\pi}{11}\approx 1.71360$ | $\frac{\pi}{2\log(1+\sqrt{2})} - 10^{-4} \approx 1.78211$ |
+| [10a](https://teorth.github.io/optimizationproblems/constants/10a.html) | The real Grothendieck constant | $\frac{6\pi}{11}\approx 1.71360$ | $\frac{\pi}{2\log(1+\sqrt{2})} - 10^{-4} \approx 1.78211$ (1.7813*) |
 | [10b](https://teorth.github.io/optimizationproblems/constants/10b.html) | The complex Grothendieck constant | 1.338 | 1.40491 |
 | [10c](https://teorth.github.io/optimizationproblems/constants/10c.html) | Spencer discrepancy constant (“six standard deviations suffice”) | 1.767767 | 4.1 (3.65*) |
 | [11a](https://teorth.github.io/optimizationproblems/constants/11a.html) | $L^1$ Poincaré constant on the Hamming cube | $\sqrt{\pi/2} \approx 1.2533$ | $\pi/2 - 0.00013 \approx 1.5707$ |
 | [11b](https://teorth.github.io/optimizationproblems/constants/11b.html) | Critical exponent for isoperimetric inequality on the Hamming cube | 0.5 | 0.5 |
-| [12](https://teorth.github.io/optimizationproblems/constants/12a.html) | The Beardwood–Halton–Hammersley constant | 0.6277 | 0.90304 |
-| [13a](https://teorth.github.io/optimizationproblems/constants/13a.html) | Moser's convex worm cover constant | 0.232239 | 0.2617993878 |
+| [12](https://teorth.github.io/optimizationproblems/constants/12a.html) | The Beardwood–Halton–Hammersley constant | 0.6277 | 0.8810 (0.8618*) |
+| [13a](https://teorth.github.io/optimizationproblems/constants/13a.html) | Moser's convex worm cover constant | 0.232239 (0.239*) | 0.2617993878 |
 | [13b](https://teorth.github.io/optimizationproblems/constants/13b.html) | Lebesgue's convex universal cover constant | 0.832 | 0.8440935944 |
 | [14](https://teorth.github.io/optimizationproblems/constants/14a.html) | Smallest $n$ for which the value of $BB(n)$ is undecidable | 6 | 432 |
 | [15a](https://teorth.github.io/optimizationproblems/constants/15a.html) | Matrix multiplication exponent | 2 | 2.371177 |
 | [15b](https://teorth.github.io/optimizationproblems/constants/15b.html) | Dual matrix multiplication exponent | >0.321334 | 1 |
 | [16](https://teorth.github.io/optimizationproblems/constants/16a.html) | Brezis–Gallouet–Wainger remainder constant on the 2D torus | $\frac{\beta + \pi}{\pi} \approx 1.82283$ | $\approx 2.15627$ |
 | [17](https://teorth.github.io/optimizationproblems/constants/17a.html) | Exponential growth constant of diagonal Ramsey numbers | $\sqrt{2} \approx 1.4142$ | 3.7919936995 |
-| [18](https://teorth.github.io/optimizationproblems/constants/18a.html) | Marton's conjecture constant (PFR) | 1 | 9 |
+| [18](https://teorth.github.io/optimizationproblems/constants/18a.html) | Marton's conjecture constant (PFR) | 1.46601 | 9 |
 | [19](https://teorth.github.io/optimizationproblems/constants/19a.html) | Berry–Esseen constant | 0.4097321837 | 0.4690 (0.423*) |
 | [20a](https://teorth.github.io/optimizationproblems/constants/20a.html) | Thin shell conjecture constant | 2 | $< \infty$ |
 | [20b](https://teorth.github.io/optimizationproblems/constants/20b.html) | Isotropic constant of a log-concave probability measure | $1/e$ | $< \infty$ |
 | [20c](https://teorth.github.io/optimizationproblems/constants/20c.html) | KLS constant for log-concave probability measures | $\sqrt{\pi/2} \approx 1.25331$ | $\infty$ |
-| [21](https://teorth.github.io/optimizationproblems/constants/21a.html) | de Bruijn–Newman constant | 0 | 0.2 (0.1875*) |
+| [21](https://teorth.github.io/optimizationproblems/constants/21a.html) | de Bruijn–Newman constant | 0 | 0.2 (0.1595*) |
 | [22a](https://teorth.github.io/optimizationproblems/constants/22a.html) | Tight knot constant | 1.105 | 10.76 (10.02*) |
 | [22b](https://teorth.github.io/optimizationproblems/constants/22b.html) | Tight alternating knot constant | 0.017 | 7.31 |
 | [23a](https://teorth.github.io/optimizationproblems/constants/23a.html) | Smallest unsolved instance of the Hadamard conjecture | 668 | $\infty$ |
@@ -64,7 +66,7 @@ Bounds for which the level of available verification is currently at minimal lev
 | [28](https://teorth.github.io/optimizationproblems/constants/28a.html) | Smallest dimension in which Borsuk’s conjecture fails | 4 | 63 |
 | [29](https://teorth.github.io/optimizationproblems/constants/29a.html) | Kissing number in dimension $5$ | 40 | 44 |
 | [30](https://teorth.github.io/optimizationproblems/constants/30a.html) | Stanley–Wilf limit for the permutation pattern $1324$ | 10.27 | 13.5 |
-| [31](https://teorth.github.io/optimizationproblems/constants/31a.html) | Chvátal–Sankoff constant for a binary alphabet | 0.792665992 (0.79970*) | 0.826280 |
+| [31](https://teorth.github.io/optimizationproblems/constants/31a.html) | Chvátal–Sankoff constant for a binary alphabet | 0.792665992 (0.79970*) | 0.826280 (0.824120*) |
 | [32](https://teorth.github.io/optimizationproblems/constants/32a.html) | Constant term of one-shot channel simulation | $-\log_2 \log_2 e \approx -0.53$ | $\sum_{k=1}^{\infty}2^{-k-1}k\log_{2}k-\log_{2}\log_{2}e \approx 0.76$ |
 | [33](https://teorth.github.io/optimizationproblems/constants/33a.html) | Ihara constant over $\mathbb{F}_2$ | 0.316999... | $\sqrt{2}-1 \approx 0.41421$ |
 | [34](https://teorth.github.io/optimizationproblems/constants/34a.html) | Falconer distance problem in $\mathbb{R}^2$ | 1 | $\frac{5}{4}$ |
@@ -84,7 +86,7 @@ Bounds for which the level of available verification is currently at minimal lev
 | [46](https://teorth.github.io/optimizationproblems/constants/46a.html) | Fourier restriction constant for the 2-sphere | 3 |  $\frac{22}{7}\approx 3.142857$  |
 | [47](https://teorth.github.io/optimizationproblems/constants/47a.html) | Centered Hardy-Littlewood maximal constant in dimension $2$ | 1.68550999 | 3.879 |
 | [48](https://teorth.github.io/optimizationproblems/constants/48a.html) | One-dimensional convex sub-Gaussian comparison constant | $\approx 5.33386$ | $\approx 5.33386$ |
-| [49](https://teorth.github.io/optimizationproblems/constants/49a.html) | Erdős–Szemerédi $3$-sunflower-free capacity | >1.551 ($\geq 1.554*$) | $\frac{3}{2^{2/3}} \approx 1.88988$ |
+| [49](https://teorth.github.io/optimizationproblems/constants/49a.html) | Erdős–Szemerédi $3$-sunflower-free capacity | >1.551 ($\geq 1.5666969*$) | $\frac{3}{2^{2/3}} \approx 1.88988$ |
 | [50](https://teorth.github.io/optimizationproblems/constants/50a.html) | Approximation ratio for quantum Max Cut | 0.614 | $<1$ (0.5 for product states) |
 | [51](https://teorth.github.io/optimizationproblems/constants/51a.html) | Erdős maximum term problem | 0.5850788 | $\frac{2}{\pi}\approx 0.63662$ |
 | [52](https://teorth.github.io/optimizationproblems/constants/52a.html) | Satisfiability threshold for random 3-SAT | 3.52 | 4.490 |
@@ -102,14 +104,14 @@ Bounds for which the level of available verification is currently at minimal lev
 | [62a](https://teorth.github.io/optimizationproblems/constants/62a.html) | Lindelof (pointwise growth) exponent for the Riemann zeta function | 0 | $\frac{13}{84}$ |
 | [62b](https://teorth.github.io/optimizationproblems/constants/62b.html) | Burgess-quality subconvexity exponent for Dirichlet $L$-functions | 0 | $\frac{3}{16}$ |
 | [63](https://teorth.github.io/optimizationproblems/constants/63a.html) | Dirichlet divisor problem exponent | $\frac{1}{4}$ | $\frac{131}{416}$ |
-| [64](https://teorth.github.io/optimizationproblems/constants/64a.html) | Gauss circle problem exponent | 0 | $\frac{131}{208}$ |
+| [64](https://teorth.github.io/optimizationproblems/constants/64a.html) | Gauss circle problem exponent | $\frac{1}{2}$ | $\frac{131}{208}$ |
 | [65](https://teorth.github.io/optimizationproblems/constants/65a.html) | Linnik's constant | 1 | 5 |
 | [66](https://teorth.github.io/optimizationproblems/constants/66a.html) | Elliott-Halberstam level-of-distribution exponent | $\frac{1}{2}$ | 1 |
 | [67](https://teorth.github.io/optimizationproblems/constants/67a.html) | Brennan's conjecture exponent | 3.422 | 4 |
 | [68](https://teorth.github.io/optimizationproblems/constants/68a.html) | Korenblum's constant | 0.3554 | 0.6778994 |
 | [69](https://teorth.github.io/optimizationproblems/constants/69a.html) | Sendov radius constant | 1 | 2 |
 | [70](https://teorth.github.io/optimizationproblems/constants/70a.html) | Reverse Brunn-Minkowski constant | 1 | $<\infty$ |
-| [71](https://teorth.github.io/optimizationproblems/constants/71a.html) | Fourier Entropy-Influence constant | 6.278 (6.521845710923046575*) | $\infty$ |
+| [71](https://teorth.github.io/optimizationproblems/constants/71a.html) | Fourier Entropy-Influence constant | 6.521845710923046575 | $\infty$ |
 | [72](https://teorth.github.io/optimizationproblems/constants/72a.html) | Polya-Vinogradov best constant (squarefree asymptotic) | 0 | $\frac{1}{4\pi}\approx 0.07958$ |
 | [73](https://teorth.github.io/optimizationproblems/constants/73a.html) | Flatness constant in dimension 3 | $2+\sqrt{2}$ | $<3.972$ |
 | [74](https://teorth.github.io/optimizationproblems/constants/74a.html) | 10-point multi-point Seshadri constant on $\mathbb{P}^2$ | $\frac{117}{370}$ | $\frac{1}{\sqrt{10}}$ |
@@ -120,12 +122,12 @@ Bounds for which the level of available verification is currently at minimal lev
 | [79](https://teorth.github.io/optimizationproblems/constants/79a.html) | Asymptotic essential-dimension ratio of the symmetric groups | $\frac{1}{2}$ | 1 |
 | [80](https://teorth.github.io/optimizationproblems/constants/80a.html) | Ising perceptron capacity threshold | >0 (0.833*) | 0.847 (0.833*) |
 | [81](https://teorth.github.io/optimizationproblems/constants/81a.html) | Brun's constant | 1.840503 | 2.288513 |
-| [82](https://teorth.github.io/optimizationproblems/constants/82a.html) | Essential minimum of the Zhang-Zagier height | 0.24874 | 0.2536331090204145 |
+| [82](https://teorth.github.io/optimizationproblems/constants/82a.html) | Essential minimum of the Zhang-Zagier height | 0.24874 | 0.2536331090204145 (0.2534449*) |
 | [83](https://teorth.github.io/optimizationproblems/constants/83a.html) | Wirsing Constant | 0.30366300 | 0.30366300 |
-| [84a](https://teorth.github.io/optimizationproblems/constants/84a.html) | Erdős unit distance exponent | 1.014 (1.03583*) | $\frac{4}{3}\approx 1.3333$ |
+| [84a](https://teorth.github.io/optimizationproblems/constants/84a.html) | Erdős unit distance exponent | 1.014 (1.04317*) | $\frac{4}{3}-\varepsilon$ |
 | [84b](https://teorth.github.io/optimizationproblems/constants/84b.html) | Sum-product exponent for the reals | $\frac{4}{3}+\frac{10}{4407}\approx 1.3356$ | $<2$ (1.999281*) |
 | [85](https://teorth.github.io/optimizationproblems/constants/85a.html) | Exponent for commutators close to the identity | 1 | 4 |
-| [86](https://teorth.github.io/optimizationproblems/constants/86a.html) | Schur–Siegel–Smyth trace constant | 1.80203 | 1.8216 |
+| [86](https://teorth.github.io/optimizationproblems/constants/86a.html) | Schur–Siegel–Smyth trace constant | 1.80203 | 1.8216 (1.8117251*) |
 | [87](https://teorth.github.io/optimizationproblems/constants/87a.html) | Martinet's constant for totally real number fields | 60.8395 | 857.567 |
 | [88a](https://teorth.github.io/optimizationproblems/constants/88a.html) | Bounded prime gap constant | 2 | 186 |
 | [88b](https://teorth.github.io/optimizationproblems/constants/88b.html) | Exponent for bounded gaps between many primes | 0 | 3.8075 |
@@ -133,6 +135,13 @@ Bounds for which the level of available verification is currently at minimal lev
 
 ## Recent progress
 
+
+- [84a](https://teorth.github.io/optimizationproblems/constants/84a.html) **improved lower bound (unverified):** $C\_{84a} \geq 1.04317$* by [E. Naslund](https://hexagonmath.org/2610.00016v2), 10 Oct 2026. Version 2 of the [Palomar-registered Lean formalization](https://palomar-registry.org/entry?id=PALOMAR-2026-10-01-000018&version=2) proves the exponent $1.04315$ conditional on one explicit zeta inequality, established separately by [interval certificates](https://github.com/enaslund/unit-distance-bound-0.0427/tree/b43f0c5bfd7a3276597c6a47ad99b9e5b8d3d21f/papers/0.043171/certificates).
+- [84a](https://teorth.github.io/optimizationproblems/constants/84a.html) **improved lower bound (unverified):** $C\_{84a} \geq 1.0427$* by [E. Naslund](https://hexagonmath.org/2610.00016v1), 2 Oct 2026. The [Palomar-registered Lean theorem](https://palomar-registry.org/entry?id=PALOMAR-2026-10-01-000018&version=1) is conditional on one explicit zeta inequality, established separately by [interval certificates](https://github.com/enaslund/unit-distance-bound-0.0427/tree/14289d9d528881efef7db051f0078f519d470c68/papers/0.04273/certificates).
+- [84a](https://teorth.github.io/optimizationproblems/constants/84a.html) **improved upper bound:** $C\_{84a} \leq 4/3 - \varepsilon$ for an absolute $\varepsilon > 0$ by [OpenAI](https://github.com/openai/math/tree/main/preprints/A-power-saving-for-planar-unit-distances-September-23-2026), 23 Sep 2026.
+- [49](https://teorth.github.io/optimizationproblems/constants/49a.html) **improved lower bound:** $C_{49} \geq 1.5647730$ by IRSI ([certificate and checkers](https://github.com/Aspect5/sunflower-free-capacity/tree/v1.2)), submitted to this repository, 30 Sep 2026 (1.5617847), 2 Oct 2026 (1.5621220) and 17 Oct 2026 (1.5647730).
+- [49](https://teorth.github.io/optimizationproblems/constants/49a.html) **improved lower bound:** $C_{49} \geq 1.5621220$ by IRSI ([certificate and checkers](https://github.com/Aspect5/sunflower-free-capacity/tree/v1.1)), submitted to this repository, 30 Sep 2026 (1.5617847) and 2 Oct 2026 (1.5621220).
+- [49](https://teorth.github.io/optimizationproblems/constants/49a.html) **improved lower bound (unverified):** $C\_{49} \geq 1.5666969$* by Claude (Anthropic), using a 75-set base family on the edges of $K\_5$ and a 121-set base family on $\mathbb{Z}\_{11}$ in the chain construction of IRSI (previous entry) ([verification and proofs](https://github.com/joshua17-create/sunflower-lower-bound)), submitted to this repository, 10 Oct 2026.
 - [10c](https://teorth.github.io/optimizationproblems/constants/10c.html) **improved lower bound:** $C_{10c} \geq 5/\sqrt{8} \approx 1.767767$ by Y. H., submitted to this repository, 5 Sep 2026.
 - [51](https://teorth.github.io/optimizationproblems/constants/51a.html) **improved lower bound:** $C_{51} \geq 0.5850724$ by [Y. He and Q. Tang](https://arxiv.org/abs/2602.12217), 12 Feb 2026.
 - [11b](https://teorth.github.io/optimizationproblems/constants/11b.html) **solved:** $C_{11b} = 0.5$ by  [P. Durcik, P. Ivanisvili, J. Roos, X. Xie](https://arxiv.org/abs/2602.20462), 24 Feb 2026.
@@ -152,7 +161,7 @@ Bounds for which the level of available verification is currently at minimal lev
 - [3a](https://teorth.github.io/optimizationproblems/constants/3a.html) **improved lower bound (limit value):** $C_{3a} \geq 1.187326127925948*$ by [Numaro](https://numaro.tech), 23 Jul 2026.
 - [3a](https://teorth.github.io/optimizationproblems/constants/3a.html) **improved lower bound (limit value):** $C_{3a} \geq 1.19102809*$ by [L. Kleinwaks](https://github.com/kleinwaks/masked-digit-sum-difference-bound), 24 Jul 2026.
 - [3d](https://teorth.github.io/optimizationproblems/constants/3d.html) **solved:** $C_{3d} = 2$ by [H. Lin and S. Li](https://arxiv.org/abs/2607.27199), 29 Jul 2026.
-- [3b](https://teorth.github.io/optimizationproblems/constants/3b.html) **improved lower bound (unverified):** $C_{3b} \geq 1.77898884*$ by Mosaic Intelligence, [entropy certificate](https://doi.org/10.5281/zenodo.20794135) on a 13-point support.
+- [3b](https://teorth.github.io/optimizationproblems/constants/3b.html) **improved lower bound:** $C_{3b} \geq 1.77898884$ by Mosaic Intelligence, [entropy certificate](https://doi.org/10.5281/zenodo.20794135) on a 13-point support.
 - [10a](https://teorth.github.io/optimizationproblems/constants/10a.html) **improved upper and lower bounds:** $\frac{6\pi}{11} \leq C_{10a} \leq \frac{\pi}{2\log(1+\sqrt{2})} - 10^{-4}$ by [R. Saha, A. Li, A. Xue, S. Chaudhuri, A. Klivans, P. K. Kothari, R. Meka](https://arxiv.org/abs/2608.11158), 11 Aug 2026 — determines the tenths digit of $C_{10a}$ to be $7$.
 - [2](https://teorth.github.io/optimizationproblems/constants/2a.html) **solved:** $C_2 = 2$ — Crouzeix's conjecture, by [S. Jin](https://www.preprints.org/manuscript/202607.1919), 27 Jul 2026; an independent proof by a different route followed in [E. Lorist and F. L. Schwenninger](https://arxiv.org/abs/2608.03841), 4 Aug 2026.
 - [3a](https://teorth.github.io/optimizationproblems/constants/3a.html) **improved lower bound (limit value):** $C_{3a} \geq 1.19519192*$ by [L. Kleinwaks](https://github.com/kleinwaks/masked-digit-sum-difference-bound), 14 Aug 2026.
@@ -169,13 +178,35 @@ Bounds for which the level of available verification is currently at minimal lev
 - [4b](https://teorth.github.io/optimizationproblems/constants/4b.html) **improved lower bound:** $C_{4b} \geq 0.753742$ by [JD Jones](https://github.com/JD-Jones-ASES/fs-lower-bound), 23 Aug 2026, with a Lean 4 formalization registered as Palomar entry [PALOMAR-2026-08-26-000004](https://palomar-registry.org/entry.html?id=PALOMAR-2026-08-26-000004&version=1) (standard axioms only).
 - [4b](https://teorth.github.io/optimizationproblems/constants/4b.html) **improved lower bound:** $C_{4b} \geq 0.758067$ (exact $37903373/50000000$) by [E. Naslund](https://github.com/enaslund/sarkozy-lower-bound-0.758), 19 Sep 2026, with a Lean 4 formalization registered as Palomar entry [PALOMAR-2026-09-19-000006](https://palomar-registry.org/entry.html?id=PALOMAR-2026-09-19-000006&version=1) (standard axioms only).
 - [4b](https://teorth.github.io/optimizationproblems/constants/4b.html) **improved lower bound:** $C_{4b} \geq 0.75806770413$ (exact $75806770413/10^{11}$) by [JD Jones](https://github.com/JD-Jones-ASES/nk-lean), 21 Sep 2026: Naslund's construction under his criterion with one composite code's words, the widths and all nine moment powers reallocated; Lean 4 formalization registered as Palomar entry [PALOMAR-2026-09-21-000004](https://palomar-registry.org/entry.html?id=PALOMAR-2026-09-21-000004&version=1) (standard axioms only).
-- [3c](https://teorth.github.io/optimizationproblems/constants/3c.html) **improved lower bound (unverified):** $C_{3c} \geq 1.6747338950414058*$ by Y. Lin, [entropy certificate](https://gist.github.com/CoolRmal/5368357cd781d7e5c676c9d68ad24d22) on a 147-point support, 9 Sep 2026.
+- [10c](https://teorth.github.io/optimizationproblems/constants/10c.html) **improved lower bound:** $C_{10c} \geq 5/\sqrt{8} \approx 1.767767$ by Y. H., submitted to this repository, 5 Sep 2026.
+- [21](https://teorth.github.io/optimizationproblems/constants/21a.html) **improved upper bound (unverified):** $C_{21} < 0.172422*$ by [D. M. Kornaus](https://zenodo.org/records/22658444), 5 Sep 2026.
+- [3c](https://teorth.github.io/optimizationproblems/constants/3c.html) **improved lower bound:** $C_{3c} \geq 1.6747338950414058$ by Y. Lin, [entropy certificate](https://gist.github.com/CoolRmal/5368357cd781d7e5c676c9d68ad24d22) on a 147-point support, 9 Sep 2026.
 - [19](https://teorth.github.io/optimizationproblems/constants/19a.html) **improved upper bound (unverified):** $C_{19} \leq 0.4395*$ by [H. Xiao and C. Li](https://github.com/haonan-xiao/iid-berry-esseen), 10 Sep 2026.
 - [19](https://teorth.github.io/optimizationproblems/constants/19a.html) **improved upper bound (unverified):** $C_{19} \leq 0.423*$ by [Y. Lin](https://github.com/CoolRmal/BerryEsseen), 13 Sep 2026.
 - [47](https://teorth.github.io/optimizationproblems/constants/47a.html) **improved lower bound:** $C_{47} \geq 1.68550999$ by [Y. Lin](https://github.com/CoolRmal/centered-maximal-constant), 19 Sep 2026, with a Lean 4 formalization registered on Palomar.
 - [47](https://teorth.github.io/optimizationproblems/constants/47a.html) **improved upper bound:** $C_{47} \leq 3.879$ by [Y. Lin](https://github.com/CoolRmal/centered-maximal-constant), 20 Sep 2026, formalized in Lean 4.
 - [45](https://teorth.github.io/optimizationproblems/constants/45a.html) **presentation:** the printed certificate is Griego's $0.490249407811155$, not Yoo's record $0.490180063290061$.
 - [10c](https://teorth.github.io/optimizationproblems/constants/10c.html) **upper bound correction:** $C_{10c}\le 4.1$ by [Pesenti–Vladu](https://arxiv.org/abs/2211.05509) v2 (14 Apr 2026), replacing the withdrawn $3\sqrt{3/2}$ constant in Theorem 4.5.
+- [3b](https://teorth.github.io/optimizationproblems/constants/3b.html), [3c](https://teorth.github.io/optimizationproblems/constants/3c.html), [71](https://teorth.github.io/optimizationproblems/constants/71a.html) **independently replayed:** the certificates behind $C\_{3b} \geq 1.77898884$, $C\_{3c} \geq 1.6747338950414058$ and $C\_{71} > 6.521845710923046575$ re-derived in exact rational and interval arithmetic, with no code shared with the claimants, by [C. Toledo](https://carlostoledo.co/reports/optimization-constants.html) ([doi:10.5281/zenodo.23171167](https://doi.org/10.5281/zenodo.23171167)), 29 Sep 2026; asterisks removed.
+
+- [7a](https://teorth.github.io/optimizationproblems/constants/7a.html) **improved upper bound:** $C\_{7a}<7.101862832357$ by [Y. Bai](https://arxiv.org/abs/2609.11276v2), 10 Sep 2026 (v2: 11 Sep); Theorem 1.1 with $A\_1=A\_2=1857/2785$.
+- [10a](https://teorth.github.io/optimizationproblems/constants/10a.html) **improved upper bound (unverified):** $C\_{10a}\le 1.7813^\*$ by [B. Peng](https://arxiv.org/abs/2609.20074v1), 17 Sep 2026; computer-assisted interval certificate, not independently replayed here.
+- [13a](https://teorth.github.io/optimizationproblems/constants/13a.html) **improved lower bound (unverified):** $C\_{13a}\ge 0.239^\*$ by [E. Keller](https://arxiv.org/abs/2609.21968v1), 18 Sep 2026. The reflection-permitting theorem also gives a lower bound under this page's restricted rigid motions; its upper bound is not transferred here.
+- [3c](https://teorth.github.io/optimizationproblems/constants/3c.html) **improved lower bound:** $C\_{3c} \geq 1.674894211307116$ by M. Jaswal, [entropy certificate](https://doi.org/10.5281/zenodo.23289305) from two digit laws, 10 Oct 2026.
+- [3c](https://teorth.github.io/optimizationproblems/constants/3c.html) **independently replayed:** the two-law certificate behind $C\_{3c} \geq 1.674894211307116$ re-derived in exact rational and interval arithmetic, with no code shared with the claimant, by [C. Toledo](https://carlostoledo.co/reports/optconst-queue.html), 17 Oct 2026; asterisk removed.
+- [21](https://teorth.github.io/optimizationproblems/constants/21a.html) **improved upper bound (unverified):** $C_{21} < 0.16*$ by Mosaic Intelligence, [certificate bundle](https://github.com/463464q435q43/optimizationproblems/tree/6baae4c15dccec1e94ac011de399ec382fcea7b6/certificates/certified0160), 2 Oct 2026.
+- [21](https://teorth.github.io/optimizationproblems/constants/21a.html) **improved upper bound (unverified):** $C_{21} < 0.1595*$ by Mosaic Intelligence, [certificate bundle](https://github.com/463464q435q43/optimizationproblems/tree/cc8107854fedd5a96d7eb695178f405568712f35/certificates/certified01595), 3 Oct 2026.
+- [3a](https://teorth.github.io/optimizationproblems/constants/3a.html) **improved upper bound (unverified):** $C\_{3a} \leq (13524e-7359)/(9451e-3286) = 1.312373302115\dots$* by [L. J. Kleinwaks](https://github.com/kleinwaks/sum-difference), 28 Sep 2026; proof paper and Lean 4 formalization of a universal two-set inequality and its multiscale transfer. First recorded improvement since 2007.
+- [4b](https://teorth.github.io/optimizationproblems/constants/4b.html) **improved upper bound:** $C\_{4b} \leq 1 - c$ for an absolute constant $c > 0$ by [OpenAI](https://github.com/openai/math/tree/main/preprints/A-power-saving-for-square-difference-free-sets-September-24-2026), 6 Oct 2026 — the first improvement on the trivial bound $C\_{4b} \leq 1$.
+- [4b](https://teorth.github.io/optimizationproblems/constants/4b.html) **improved lower bound:** $C\_{4b} \geq 0.7580758$ (exact $473797394875551/625000000000000$) by [E. Naslund](https://hexagonmath.org/2610.00151v1), 7 Oct 2026, with a Lean 4 formalization registered as version 2 of Palomar entry [PALOMAR-2026-09-19-000006](https://palomar-registry.org/entry.html?id=PALOMAR-2026-09-19-000006&version=2) (standard axioms only).
+- [1c](https://teorth.github.io/optimizationproblems/constants/1c.html) **new constant; improved lower bound (unverified):** $C\_{1c} \geq 0.4103287*$ by [rozetyp](https://github.com/rozetyp/barnard-steinerberger-lower-bound), 2 Oct 2026 (previously $0.37$ by Barnard–Steinerberger).
+- [1d](https://teorth.github.io/optimizationproblems/constants/1d.html) **new constant, improved upper bound (unverified):** $C_{1d} \leq 1.463071582607559*$ (previously $1.4688$), certificate and verifier in the pull request description, 12 Oct 2026.
+- [12](https://teorth.github.io/optimizationproblems/constants/12a.html) **improved upper bound:** $C_{12} \leq 0.8810$ by [Z. Dong and J. Cao](https://arxiv.org/abs/2610.02809), 2 Oct 2026.
+- [12](https://teorth.github.io/optimizationproblems/constants/12a.html) **improved upper bound (unverified):** $C_{12} \leq 0.8618*$ by [D. O'Keefe](https://github.com/devinokeefe/travelling-sales-person-constant-bounds), 11 Oct 2026.
+- [86](https://teorth.github.io/optimizationproblems/constants/86a.html) **improved upper bound (unverified):** $C_{86} \leq 1.8117251*$ by [R. Pinho](https://github.com/rpinho/c86-trace-certificate), 15 Oct 2026: the measure construction of Talebizadeh Sardari–Orloski with eleven auxiliary polynomials instead of four, certified in exact rational and arb ball arithmetic.
+- [82](https://teorth.github.io/optimizationproblems/constants/82a.html) **improved upper bound (unverified):** $C_{82} < 0.2534449*$ by [R. Pinho](https://github.com/rpinho/c82-height-certificate), 16 Oct 2026, building on the September 2026 Épi construction (0.2535744749): Doche's limit-point method with $P\_7$ and 25 lattice-found numerator factors, certified by two independently written Arb checkers.
+- [31](https://teorth.github.io/optimizationproblems/constants/31a.html) **improved upper bound (unverified):** $C_{31} \leq 0.824120*$ by [L. Jack](https://github.com/leandrejack-afk/chvatal-sankoff-bound), 17 Oct 2026: Lueker's 2009 automaton method run at $h = 10$ (and $h = 9$, giving $0.825101$).
+- [1a](https://teorth.github.io/optimizationproblems/constants/1a.html), [1b](https://teorth.github.io/optimizationproblems/constants/1b.html) **improved upper bounds (unverified):** $C\_{1a} \leq 1.5027435$* and $C\_{1b} \leq 0.38085856$* by [Atris](https://github.com/atrislabs/records), 13 Oct 2026.
 
 ## Maintainers
 

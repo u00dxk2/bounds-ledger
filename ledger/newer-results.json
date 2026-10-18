@@ -2,38 +2,5 @@
   "purpose": "Newer constructions this ledger has checked itself that the mirrored source table does not list (A-82). Rendered as a note BESIDE a constant's table on its c/ page, never inside a bound cell; the mirrored rows stay byte-identical. Each entry is one construction we evaluated against the constant's own mirrored definition, with scripts/step-overlap.mjs (node scripts/step-overlap.mjs --store re-derives every 1b entry from its pinned file). Added only after a cross-family claims pass and an adversarial review, on David's 2026-10-16 decision (card 73149a3b) and, for the pull-request entry, his answer to card 99b614ec the same evening (2026-10-16 MT); his words are paraphrased in this repo, on A-82.",
   "checkedThrough": "2026-10-16",
   "watchScope": "arXiv papers submitted since the mirror's fetch date (2026-09-26) whose abstracts name AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve",
-  "entries": [
-    {
-      "id": "1b",
-      "side": "upper",
-      "kind": "openPullRequest",
-      "value": "0.3808585503165",
-      "exactMaximum": "0.38085855031642856010",
-      "rounding": "the exact maximum overlap, rounded UP at the 13th decimal, so the printed number is itself a valid upper bound",
-      "construction": "a step function with 114,688 equal steps on [0, 2]",
-      "sourceUrl": "https://github.com/teorth/optimizationproblems/pull/225",
-      "pullRequestStateOn": "2026-10-17",
-      "fileSha256": "62a976fa1366a7320cbe293ee3047a109d080220b06b450d290cef411e79af02",
-      "fetchUrl": "https://raw.githubusercontent.com/atrislabs/records/1fa857a021ddbb4064708daf336758b866f75cb4/1b-erdos-minimum-overlap/construction.json",
-      "sourcePostedBy": "2026-10-13",
-      "evaluatedOn": "2026-10-17",
-      "method": "We evaluated the function ourselves, in exact rational arithmetic, against this page's definition: its values lie between 0 and 1, its integral is exactly 1, and we took the largest overlap over every shift of its grid, which is where the largest overlap of two step functions on one grid occurs. A function on [0, 2] is the same function moved onto this page's interval [-1, 1], which changes no overlap."
-    },
-    {
-      "id": "1b",
-      "side": "upper",
-      "kind": "posted",
-      "value": "0.3808590566149",
-      "exactMaximum": "0.38085905661480689909",
-      "rounding": "the exact maximum overlap, rounded UP at the 13th decimal, so the printed number is itself a valid upper bound",
-      "construction": "a step function with 512 equal steps on [-1, 1], posted publicly on GitHub",
-      "sourceUrl": "https://github.com/bzanghi/erdos-minimum-overlap-bochner/blob/1ff3e99d12c75755dfee5620d097e8f781420d3f/lp_research_state/data/ub_certified_search512.json",
-      "fileSha256": "2d5de841a090c927d06eb603b64405da0e8bef7a4d648f20d9a29c5f77bfbbbf",
-      "fetchUrl": "https://raw.githubusercontent.com/bzanghi/erdos-minimum-overlap-bochner/1ff3e99d12c75755dfee5620d097e8f781420d3f/lp_research_state/data/ub_certified_search512.json",
-      "sourcePostedBy": "2026-07-26",
-      "foundVia": "https://arxiv.org/abs/2609.40340v1",
-      "evaluatedOn": "2026-10-16",
-      "method": "We evaluated the posted function ourselves, in exact rational arithmetic, against this page's definition: its values lie between 0 and 1, its integral is exactly 1, and we took the largest overlap over every shift of its grid, which is where the largest overlap of two step functions on one grid occurs."
-    }
-  ]
+  "entries": []
 }

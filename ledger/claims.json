@@ -127,7 +127,7 @@
     "id": "pin:10a:U",
     "statement": "Last-listed upper-bound table row for The real Grothendieck constant (10a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10a.md",
-    "expect": "| $< \\dfrac{\\pi}{2\\ln(1+\\sqrt{2})} - 10^{-4}$ | [SLXCKKM26] | Same team; via the first *asymptotic* Krivine-type rounding scheme (previous works only considered low-dimensional schemes). |",
+    "expect": "| $1.7813^\\*$ | [P2026] | Computer-assisted bound; Theorem 1.1. Explicit degree-11 Hermite threshold and degree-51 signed correlation polynomial. The author supplies Arb interval certificates; no independent replay is recorded here. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/10a.md",
     "generated": true
   },
@@ -207,7 +207,7 @@
     "id": "pin:12a:U",
     "statement": "Last-listed upper-bound table row for The Beardwood–Halton–Hammersley constant (12a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/12a.md",
-    "expect": "| $<0.90304$ | [YC2023] | Latest computer-aided proof that significantly lowers the upper bound. Uses numerical integration and search over tour patterns. |",
+    "expect": "| $0.8618$* | [O2026] | The construction of [DC2026] with blocks of ten consecutive points in strips of height $2.2/\\sqrt{n}$; the expected length of each segment is bounded by the Edmundson–Madansky inequality on a mesh finer than the grid. Gap cells bounded by $3/8$, $7/8$, $13/8$, six height cells, mesh $1/128$ in each gap and $64$ intervals in each height cell, last gap cell truncated $16$ units beyond its left end. An integer computation gives $\\beta \\le 5A/(6^{10}\\cdot 2^{32}\\cdot 9\\cdot 11)$ with $A = 4430997795015293889$, that is $0.861715646305$; three programs (Python, C, Rust) agree, and the total is also evaluated in Lean 4 with `native_decide`. Programs and data at commit `f5d1842` of the repository. Asterisked: computer-assisted, and the source is a self-archived preprint. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/12a.md",
     "generated": true
   },
@@ -231,7 +231,7 @@
     "id": "pin:13a:L",
     "statement": "Last-listed lower-bound table row for Moser's convex worm cover constant (13a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/13a.md",
-    "expect": "| $0.232239$ | [KPS2013] | Min–max estimate for convex hull area of certain forced configurations |",
+    "expect": "| $0.239^\\*$ | [K2026] | Theorem 1.1. Four polygonal unit arcs and a finite subdivision certificate. The paper permits reflections; its lower bound therefore also holds for this page's rotation-and-translation convention. Formalization is reported by the author, without an independent replay recorded here. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/13a.md",
     "generated": true
   },
@@ -343,7 +343,7 @@
     "id": "pin:18a:L",
     "statement": "Last-listed lower-bound table row for Marton's conjecture (Polynomial Freiman-Ruzsa) constant (18a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/18a.md",
-    "expect": "| $1$ | Trivial | Consider $K$ basis vectors |",
+    "expect": "| $1.46601$ | [GT2009] | Consider $A$ a Hamming ball |",
     "asserts": "ledger/teorth-optimizationproblems/constants/18a.md",
     "generated": true
   },
@@ -367,7 +367,7 @@
     "id": "pin:1a:U",
     "statement": "Last-listed upper-bound table row for An autocorrelation constant related to Sidon sets (1a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1a.md",
-    "expect": "| $1.502862$ | [T2026] | TogetherAI",
+    "expect": "| $1.5027434868$* | [A2026] | Atris. Step function with 65,536 equal steps on $[-1/4,1/4]$ and exact rational heights, refined from the AgentDiscover construction. Exact value $1.50274348670958337974\\dots$ (exact fraction recorded in the linked repository, commit `1fa857a021dd`; construction SHA-256 `7387452d1da7`). Pure-Python exact scorer runs in seconds. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/1a.md",
     "generated": true
   },
@@ -383,7 +383,7 @@
     "id": "pin:1b:U",
     "statement": "Last-listed upper-bound table row for Erdős minimum overlap constant (1b.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1b.md",
-    "expect": "| $0.380868$ | [YLTLYSTYLLGDHZSWZSHMELCZX2026] | SimpleTES |",
+    "expect": "| $0.3808585504$* | [A2026] | Atris. Step function $h$ with 114,688 equal steps on $[0,2]$, $0\\le h\\le 1$, total mass exactly $1$, refined from the CodexProLong construction. Exact value $0.38085855031642856010\\dots$ (exact fraction recorded in the linked repository, commit `1fa857a021dd`; construction SHA-256 `62a976fa1366`). Pure-Python exact scorer runs in seconds. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/1b.md",
     "generated": true
   },
@@ -393,6 +393,38 @@
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1b.md",
     "expect": "| $0.379005$ | [W2022] |",
     "asserts": "ledger/teorth-optimizationproblems/constants/1b.md",
+    "generated": true
+  },
+  {
+    "id": "pin:1c:U",
+    "statement": "Last-listed upper-bound table row for Barnard–Steinerberger autocorrelation constant (1c.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1c.md",
+    "expect": "| $\\frac{1}{2(1+\\theta\\_0)} = 0.4107675\\dots$ | [BS2020] | Here $\\theta\\_0 = -\\min\\_x \\frac{\\sin x}{x} = 0.2172336\\dots$. Stated as $0.411$ in [BS2020]; the exact form is [MR2020, (1.2)]. [MR2020] show it is not sharp within a restricted class of functions (non-quantitatively), and that dual test-function arguments of this type cannot go below it [MR2020, Thm 4.1]. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/1c.md",
+    "generated": true
+  },
+  {
+    "id": "pin:1c:L",
+    "statement": "Last-listed lower-bound table row for Barnard–Steinerberger autocorrelation constant (1c.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1c.md",
+    "expect": "| $0.4103287*$ | [R2026] | **Construction:** a step function $f = \\sum\\_i w\\_i 1\\_{[i/K,(i+1)/K)}$ with $K = 6144$ and $6148$ non-negative integer weights (support $[0, 1.0005)$). **Exact value:** $21072342208353792/51354782902387969 = 0.41030287175\\dots$, computed as $K \\min\\_{0 \\le k \\le K} \\sum\\_i w\\_i w\\_{i+k} / (\\sum\\_i w\\_i)^2$. This is exact because the autocorrelation of an equal-step function is linear between consecutive multiples of $1/K$ (as in the proof of [K2021, Thm 3.1]). **Certificate:** in [R2026], commit `19f3971`, SHA-256 of `certificate.json`: `62ac49ddbbfc9aa1053406363d9df9c912022ab85b72a447cf73c94bb9c1fd0e`. An earlier certificate with $K = 3072$ giving $0.4103021$ is kept in the same repository. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/1c.md",
+    "generated": true
+  },
+  {
+    "id": "pin:1d:U",
+    "statement": "Last-listed upper-bound table row for The signed third autocorrelation constant (1d.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1d.md",
+    "expect": "| $1.463071582607559*$ | [CERT2026] | Step function with $300$ equal cells on $[-1/4,1/4]$ and signed cell values $v_0,\\dots,v_{299}$. Exact value of $\\max_t \\lvert f\\*f\\rvert / (\\int f)^2$ is the rational number $2039224160683882663565441886346340189798400 / 1393796574908163689489385839036226787118881$, which is $1.4630715826075593\\dots$. Self-archived artifact; see the note on the asterisk below. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/1d.md",
+    "generated": true
+  },
+  {
+    "id": "pin:1d:L",
+    "statement": "Last-listed lower-bound table row for The signed third autocorrelation constant (1d.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1d.md",
+    "expect": "| $1$ | (trivial) | $(\\int f)^2 = \\int (f\\*f) \\le \\int \\lvert f\\*f\\rvert \\le \\max \\lvert f\\*f\\rvert$, since $f\\*f$ is supported on an interval of length $1$. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/1d.md",
     "generated": true
   },
   {
@@ -447,7 +479,7 @@
     "id": "pin:21a:U",
     "statement": "Last-listed upper-bound table row for de Bruijn–Newman constant (21a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/21a.md",
-    "expect": "| 0.1875 | [MI2026b] | certified record package (window-tiling assembly route); same barrier site; see PR |",
+    "expect": "| 0.1595* | [MI2026d] | certified record package (collision-exclusion route): no multiple real zero for t in [319/2000, 3/16], anchored at the 0.1875 row; same barrier site, sole RH input [PT2021]; bundle pinned at commit cc81078 |",
     "asserts": "ledger/teorth-optimizationproblems/constants/21a.md",
     "generated": true
   },
@@ -703,7 +735,7 @@
     "id": "pin:31a:U",
     "statement": "Last-listed upper-bound table row for Chvátal–Sankoff constant for a binary alphabet (31a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/31a.md",
-    "expect": "| $0.826280$ | [L2009] | Computer assisted |",
+    "expect": "| $0.824120$* | [J2026] | Same method with $h=10$: 400,253,317 accepting states, $z=0.3376$, certified $\\lambda(z)\\le 0.385532705434511$. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/31a.md",
     "generated": true
   },
@@ -847,7 +879,7 @@
     "id": "pin:3a:U",
     "statement": "Last-listed upper-bound table row for The Gyarmati-Hennecart-Ruzsa sum-difference constant (3a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3a.md",
-    "expect": "| $4/3 = 1.333\\dots$ | [GHR2007] | |",
+    "expect": "| $\\frac{13524e-7359}{9451e-3286} = 1.312373302115\\dots$* | [K2026c] | First improvement on [GHR2007]'s $4/3$. Proved via an improved two-set sum-difference exponent, $\\lvert X-Y\rvert \\le \\lvert X+Y\rvert^{\\lambda}$ for all finite $X,Y$ in an abelian group, together with a multiscale transfer. Lean 4 formalization and proof paper supplied. Asterisked: the formalization is self-hosted and has not been registered or independently replayed. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/3a.md",
     "generated": true
   },
@@ -871,7 +903,7 @@
     "id": "pin:3b:L",
     "statement": "Last-listed lower-bound table row for Kakeya-type sum-difference constant (3b.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3b.md",
-    "expect": "| $1.77898884$* | [MI2026] | Entropy construction on a 13-point support.  Asterisked: the certificate is a self-archived Zenodo deposit and the bound has not been independently replayed. |",
+    "expect": "| $1.77898884$ | [MI2026] | Entropy construction on a 13-point support.  Independently replayed [T2026]: the ratio of the certificate's law (sha256 `2efe99360a1f…`) is enclosed as $1.77898884142069354980\\ldots$ in exact rational and interval arithmetic. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/3b.md",
     "generated": true
   },
@@ -887,7 +919,7 @@
     "id": "pin:3c:L",
     "statement": "Last-listed lower-bound table row for 4-slope Kakeya-type sum-difference constant (3c.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3c.md",
-    "expect": "| $1.6747338950414058$ | [L2026] | Entropy construction on a 147-point support, exact rational weights at denominator $10^{320}$. Certified $C_{3c} \\geq 1.674733895041405870063135756722213999136383713818148696811828$, with $H(X-Y) = 1.90118266043426947934\\ldots$ and $H(X) = H(Y) = H(X+Y) = H(X+2Y) = 1.13521477415805507651\\ldots$ (natural logarithm), so no constraint is slack. Improves [MI2026] by $2.06 \\times 10^{-11}$. |",
+    "expect": "| $1.674894211307116$ | [J2026] | Entropy construction from $n = 10^{20}$ independent base-55 digits: 39041372760532870645 drawn from a law on 51 points of $\\mathbb{Z}^2$ and 60958627239467129355 from a law on 47 points (exact rational weights, multiples of $10^{-50}$), with $x-y$ injective on each support and all five forms at most 27 in absolute value. Per digit (natural logarithm), $H(X-Y) = 1.90144092556070111045748\\ldots$ and $\\max(H(X),H(Y),H(X+Y),H(X+2Y)) = H(X+2Y) = 1.13526031239715368784461\\ldots$; the four agree to about 21 digits. Certified $C\\_{3c} \\geq 1.674894211307116$. Improves [L2026] by $1.603 \\times 10^{-4}$. Independently replayed [T2026b]: the certificate (sha256 `8b6612ef9134…`) gives a ratio enclosed as $1.67489421130711622876434373706\\ldots$ in exact rational and interval arithmetic. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/3c.md",
     "generated": true
   },
@@ -1111,7 +1143,7 @@
     "id": "pin:49a:L",
     "statement": "Last-listed lower-bound table row for Erdős–Szemerédi $3$-sunflower-free capacity (49a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/49a.md",
-    "expect": "| $\\ge 1.554$ (unpublished) | [NS2017] | The arXiv preprint version of [NS2017] records $\\mu^{\\mathrm S}\\_3\\ge 1.554$, citing an unpublished manuscript of the first author. |",
+    "expect": "| $\\ge 1.5666969$* | [Cla2026] | Alternate the previous family with a second base family: 121 sets on $\\mathbb{Z}\\_{11}$, the images of $\\\\{0,1,2,3,4,5,6\\\\}$, $\\\\{0,1,2,3,4,6,7\\\\}$ and $\\\\{0,1,2,6,9\\\\}$ under $x\\mapsto ax+b$ with $a$ a nonzero square mod 11 (transfer matrix rows $(31,44)$ and $(15,31)$; the link of every point is a copy of the previous family). The product of the two transfer matrices has rows $(980,1624)$ and $(641,1104)$, Perron root $1042+2\\sqrt{261207}$, and one period adds 17 points: $\\mu^{\\mathrm S}\\_3\\ge(1042+2\\sqrt{261207})^{1/17} = 1.5666969\\ldots$. Verification script (standard-library Python, about 15 seconds) and proofs at [Cla2026]. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/49a.md",
     "generated": true
   },
@@ -1135,7 +1167,7 @@
     "id": "pin:4b:U",
     "statement": "Last-listed upper-bound table row for Furstenberg–Sárközy exponent for square-difference-free sets (4b.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/4b.md",
-    "expect": "| $1$ | Trivial |",
+    "expect": "| $1 - c$ for an absolute constant $c > 0$ | [OAI2026] | Power saving: every square-difference-free $A \\subseteq \\\\{1, \\dots, N\\\\}$ satisfies $\\lvert A \\rvert \\le C N^{1-c}$ with absolute constants $c > 0$ and $C < \\infty$ (Theorem 1.1), answering the fixed-power question of [GS2025]. The argument does not give a useful numerical value of $c$. According to Naslund, Claude Opus 5.5 extracted an explicit value from this argument $c \\approx 10^{-10^{10^{5782.8}}}$, that is, $\\log\\_{10}\\log\\_{10}(1/c) \\approx 5.8 \\times 10^{5782}$. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/4b.md",
     "generated": true
   },
@@ -1143,7 +1175,7 @@
     "id": "pin:4b:L",
     "statement": "Last-listed lower-bound table row for Furstenberg–Sárközy exponent for square-difference-free sets (4b.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/4b.md",
-    "expect": "| $0.75806770413$ (exact $75806770413/10^{11}$) | [Jon2026b] | Naslund's criterion and components, reallocated: the same nine pairwise coprime components — Paley chains at $p = 3, 7, 11, 31, 59, 103$ (lengths $2, 3, 4, 7, 9, 11$, equal widths $1/t$ on one digit, the other digit free), the two composite three-low-digit codes at $215^6$ and $437^6$ ($4913$ and $19683$ retained words, free multiplicities $215^3$ and $437^3$), and the 25-state binary recursion with its transition rules unchanged (depth $10^{15}$, new rational row weights, certified growth factor $a = 1430119207986461/(5 \\cdot 10^{14})$ with $\\log\\_2 a > 2\\alpha$) — with several retained words of the $19 \\cdot 23$ code replaced, intervals repositioned, rational widths changed, and all nine moment powers reallocated: $f = 0.15494199\\ldots$ (binary), $0.18194473\\ldots, 0.08579838\\ldots, 0.10723242\\ldots, 0.08916535\\ldots, 0.04217280\\ldots, 0.00239690\\ldots$ (chains), $0.02653617\\ldots, 0.06787893\\ldots$ (codes); $\\sum\\_i f\\_i - \\alpha = 38652/10^{15}$. The bound is unconditional with an explicit constant, $r(N) \\ge c\\,N^{\\alpha}$ for every $N \\ge 1$, from a criterion proved for every $k \\ge 1$ (the same repository gives $D\\_4(N) \\ge c\\,N^{0.9142}$ and $D\\_6(N) \\ge c\\,N^{0.95295}$ for fourth- and sixth-power differences). Not an asserted optimum of the method. Lean 4 formalization of the criterion and of the full value, registered as Palomar entry PALOMAR-2026-09-21-000004 (standard axioms only; the certificate data are checked by proved Lean verifiers with kernel replay); no paper, the mathematical account is the repository's `PROOF.md`. |",
+    "expect": "| $0.7580758$ (exact $473797394875551/625000000000000$) | [Nas2026b] | The interval-moment criterion of [Nas2026a] with new finite witnesses. Lean 4 formalization of the criterion and of the full value on Lean v4.35.0-rc2, registered as version 2 of Palomar entry PALOMAR-2026-09-19-000006 (standard axioms only; exact rational checks by `decide +kernel`); paper on Hexagon. According to Naslund, this is close to the limit of the current approach. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/4b.md",
     "generated": true
   },
@@ -1463,7 +1495,7 @@
     "id": "pin:64a:L",
     "statement": "Last-listed lower-bound table row for Gauss circle problem exponent (64a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/64a.md",
-    "expect": "| $0$ |  | Trivial from the definition $C_{64}\\ge 0$. |",
+    "expect": "| $1/2$ | Hardy (1916) | |",
     "asserts": "ledger/teorth-optimizationproblems/constants/64a.md",
     "generated": true
   },
@@ -1591,7 +1623,7 @@
     "id": "pin:71a:L",
     "statement": "Last-listed lower-bound table row for Fourier Entropy-Influence constant (71a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/71a.md",
-    "expect": "| $>6.521845710923046575$ | [[Num2026](#Num2026)] | Explicit balanced **logic-monotone** function on 18 variables via the [[OT2013](#OT2013)] amplification rule $C \\ge H/(I-1)$; exact influence $261/128$; obtained from the [[MI2026b](#MI2026b)] function by equalising the auxiliary-variable action (the single 4-cell auxiliary is split 2+2 with the new 18th variable), raising $H$ by exactly twice the moved spectral weight at identical influence — certified gain exactly $1/133$; exact-rational spectrum + interval arithmetic; replayable single-file certificate. The function is monotone, so the same bound holds even restricted to monotone functions. <a href=\"#Num2026-bound\">[Num2026-bound]</a> |",
+    "expect": "| $>6.521845710923046575$ | [[Num2026](#Num2026)] | Explicit balanced **logic-monotone** function on 18 variables via the [[OT2013](#OT2013)] amplification rule $C \\ge H/(I-1)$; exact influence $261/128$; obtained from the [[MI2026b](#MI2026b)] function by equalising the auxiliary-variable action (the single 4-cell auxiliary is split 2+2 with the new 18th variable), raising $H$ by exactly twice the moved spectral weight at identical influence — certified gain exactly $1/133$; exact-rational spectrum + interval arithmetic; replayable single-file certificate. The function is monotone, so the same bound holds even restricted to monotone functions. <a href=\"#Num2026-bound\">[Num2026-bound]</a> Independently replayed [[T2026](#T2026)]: from the published truth table, $I = 261/128$ exactly and $H/(I-1) = 6.52184571092304657565\\ldots$ in outward-rounded interval arithmetic; the amplification rule is cited, not re-proved. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/71a.md",
     "generated": true
   },
@@ -1727,7 +1759,7 @@
     "id": "pin:7a:U",
     "statement": "Last-listed upper-bound table row for The irrationality measure of $\\pi$ (7a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/7a.md",
-    "expect": "| $7.103205334137$ | [ZZ2020] | Current record bound. |",
+    "expect": "| $<7.101862832357$ | [B2026] | Theorem 1.1, with $A\\_1=A\\_2=1857/2785$. Strict fixed-parameter bound; the auxiliary value is $7.1018628323563507957\\dots$. The local-minimizer statement does not assert global optimality. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/7a.md",
     "generated": true
   },
@@ -1791,7 +1823,7 @@
     "id": "pin:82a:U",
     "statement": "Last-listed upper-bound table row for Essential minimum of the Zhang-Zagier height (82a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/82a.md",
-    "expect": "| 0.2536331090204145 | [Gri26] | Computation based on Doche's polynomials |",
+    "expect": "| 0.2534449\\* | [Pin26] | Doche's limit-point construction [Doc01b] on the factor library of [Gri26] and [Epi26], adding $P\\_7$ to the denominator and 25 new numerator factors found by LP-dual-weighted lattice reduction (LLL), with all multiplicities and exponents re-optimised by a linear program ($\\deg Q = 999999992$). Certified upper bound $0.2534446873\\ldots$ by two independently written Arb checkers; the repository includes a self-contained proof that the construction yields infinitely many distinct algebraic numbers with $h\\_Z \\le B$. Certificate SHA-256 `b33626f367b6f52922746c0fee7bb008449cd0bb18efcb983ab20ff073350fce`, repository commit `69d8964`. Asterisked: a self-archived computer-assisted certificate, not yet independently replayed. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/82a.md",
     "generated": true
   },
@@ -1823,7 +1855,7 @@
     "id": "pin:84a:U",
     "statement": "Last-listed upper-bound table row for Erdős unit distance exponent (84a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/84a.md",
-    "expect": "| $4/3 = 1.333\\dots$ | [SST1984] | Spencer, Szemerédi and Trotter; via the Szemerédi–Trotter incidence theorem. |",
+    "expect": "| $4/3 - \\varepsilon$ | [OAI2026] | OpenAI (23 September 2026). Proves $u(n) = O(n^{4/3-\\varepsilon})$ for an absolute constant $\\varepsilon > 0$, which is not made explicit. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/84a.md",
     "generated": true
   },
@@ -1831,7 +1863,7 @@
     "id": "pin:84a:L",
     "statement": "Last-listed lower-bound table row for Erdős unit distance exponent (84a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/84a.md",
-    "expect": "| $1.03583\\dots$ | [MO511514] | Naslund, revised (≈25 May 2026); replaces the sphere-packing estimate by a covolume bound on the ideal lattice (asserted to be essentially optimal for this part of the argument), re-optimizing to $\\lvert T\\rvert = 39$.  Hybrid ChatGPT 5.5 Pro / human work.  Current best.  Unverified. |",
+    "expect": "| $1.04317$* | [Nas2026b], [NasCode2026], [Pal2026b] | Naslund (October 2026). Gives $u(n) \\geq n^{1.043171}$ for arbitrarily large $n$, refining the construction of the $1.0427$ entry: an infinite pro-$2$ tower over $\\mathbb{Q}(\\sqrt{241})$ ramified only above $2$, $3$ and $5$, with Frobenius conditions at the two primes above $29$ and at one prime above $41$. The relative zeta value is bounded through the $27$ dihedral quotients of order $8$ of the tower group, a census of split primes up to norm $4\\cdot 10^{13}$, and the $576$ $L$-functions of degrees $4$ and $8$ of a field of degree $8192$, evaluated rigorously at $21$ real points near $1$ and combined through a kernel inequality with coefficients of both signs. Computer-assisted. Version 2 of the Palomar registration proves in Lean the slightly smaller exponent $20863/20000 = 1.04315$ conditional on one explicit zeta inequality $H\\_W$, and a separate interval computation bounds its left side by $0.0509171473 < 0.050969$. See the verification details below. Current best recorded bound. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/84a.md",
     "generated": true
   },
@@ -1871,7 +1903,7 @@
     "id": "pin:86a:U",
     "statement": "Last-listed upper-bound table row for Schur–Siegel–Smyth trace constant (86a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/86a.md",
-    "expect": "| $1.8216$ | [SO24] | Explicit measures satisfying the conditions of [Smi24], optimized by gradient descent. Corollary 1.10 of [SO24] gives $\\lvert \\Lambda\\_A - 1.8215998 \\rvert \\le 10^{-7}$ for $A = \\\\{x,\\ 1-x,\\ x^2-3x+1,\\ x^3-5x^2+6x-1\\\\}$, and $C\\_{86} \\le \\Lambda\\_A$. Intermediate values in the same family: $\\Lambda\\_{\\\\{x\\\\}} \\approx 1.898302$ (Serre's constant), then $1.84701204$ and $1.8224798$. Preprint; not listed as journal-published as of this writing. |",
+    "expect": "| $1.8117251$\\* | [Pin26] | The construction of [SO24] with $A$ enlarged from their four polynomials to eleven. The polynomials $Q \\in A$, the first four being the [SO24] set, with their weights $b\\_Q$ (these decimals are the exact rational weights): $x$ ($b\\_Q = 0.038759530583$), $1-x$ ($b\\_Q = 0.079868388122$), $x^2-3x+1$ ($b\\_Q = 0.04631766723$), $x^3-5x^2+6x-1$ ($b\\_Q = 0.053369420893$), $x^4-7x^3+14x^2-8x+1$ ($b\\_Q = 0.019753937664$), $x^4-7x^3+13x^2-7x+1$ ($b\\_Q = 0.036545507753$), $x^5-9x^4+28x^3-35x^2+15x-1$ ($b\\_Q = 0.016049367094$), $x^5-9x^4+26x^3-29x^2+11x-1$ ($b\\_Q = 0.009731525491$), $x^5-9x^4+27x^3-32x^2+13x-1$ ($b\\_Q = 0.007106935573$), $x^3-6x^2+9x-1$ ($b\\_Q = 0.018100957401$), $x^5-9x^4+27x^3-31x^2+12x-1$ ($b\\_Q = 0.002893658474$). The measure $\\mu$ is a step density on the cells of width $1/200$ in $[0, 6]$, with $629$ nonzero cells, support in $[1/20,\\ 1037/200]$ and mass $m = 39999999999997/40000000000000$; the bound is $\\int x\\, d\\mu / m = 144938007612277893/79999999999994000 = 1.81172509515\\ldots$. Checked in exact rational and arb ball arithmetic (certificate and checker at commit `116a58f`): each $Q \\in A$ is irreducible with only real roots; $\\sum\\_Q b\\_Q \\deg Q \\approx 0.82978\\, m < m$; $\\int \\log\\lvert Q \\rvert\\, d\\mu \\approx 10^{-4} > 0$ for each $Q \\in A$; and $U\\_\\mu(x) - \\sum\\_Q b\\_Q \\log\\lvert Q(x) \\rvert \\ge 0$ for every $x$ in the support (rigorous bisection), hence on all of $\\mathbb{C}$ by the minimum principle. These are the hypotheses of Smith's sufficiency criterion [Smi24], whose theorem then gives $C\\_{86} \\le \\int x\\, d\\mu / m$. Asterisked: a self-archived computer-assisted certificate, not yet independently replayed. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/86a.md",
     "generated": true
   },
