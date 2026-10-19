@@ -22,6 +22,7 @@
 // or that upstream SHOULD list it. Upstream contact is David's gate.
 
 import { readFileSync, existsSync, realpathSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
 import assert from "node:assert/strict";
@@ -49,6 +50,7 @@ export const OTHER_RECORDS = new Set(["erdos-36", "ramsey-classical"]);
 const FORBIDDEN = /\brecords?\b/i;
 const STATEMENT_PATH = /^lean\/ComparatorChallenges\/[A-Za-z0-9_]+\.lean$/;
 const SHA40 = /^[0-9a-f]{40}$/;
+const SHA256 = /^[0-9a-f]{64}$/;
 
 /** Load the map. Absent file means no notes, never a crash. */
 export function loadMap(root = ROOT) {
@@ -77,11 +79,26 @@ export function citesRelease(id, root = ROOT) {
 }
 
 /**
- * Every problem with the map, as sentences. Empty means valid. `constantExists(id)` answers
- * whether a mirrored constant file exists, and `sourceCitesRelease(id)` whether its mirrored page
- * already cites the release; both are injected so the self-test can run on fixtures.
+ * The SHA-256 of a constant's mirrored page, line endings normalised to LF (a Windows checkout
+ * holds CRLF, a CI runner LF). A rendered note's `match` compares the claim with that page's rows
+ * ("against X in its last-listed upper-bound row"), so the note is pinned to the page it was read
+ * against. Any upstream change to the page refuses the note until a human re-reads it and moves the
+ * pin (Codex r1 2026-10-19, the second instance after 84a: 7a's note named a row that was no longer
+ * last-listed). Null when the page is absent.
  */
-export function validateMap(map, constantExists = () => true, sourceCitesRelease = () => false) {
+export function sourceHash(id, root = ROOT) {
+  const p = join(root, "ledger", "teorth-optimizationproblems", "constants", `${id}.md`);
+  if (!existsSync(p)) return null;
+  return createHash("sha256").update(readFileSync(p, "utf8").replace(/\r\n/g, "\n")).digest("hex");
+}
+
+/**
+ * Every problem with the map, as sentences. Empty means valid. `constantExists(id)` answers
+ * whether a mirrored constant file exists, `sourceCitesRelease(id)` whether its mirrored page
+ * already cites the release, and `sourceHashOf(id)` the page's current hash (null skips only the
+ * comparison, never the field's presence); all are injected so the self-test can run on fixtures.
+ */
+export function validateMap(map, constantExists = () => true, sourceCitesRelease = () => false, sourceHashOf = null) {
   const errs = [];
   if (!map || typeof map !== "object") return ["the map is not an object"];
   const src = map.source || {};
@@ -103,19 +120,24 @@ export function validateMap(map, constantExists = () => true, sourceCitesRelease
     } else if (f.verdict === "bears") {
       bears++;
       if (!recs.length) errs.push(`family ${n} is "bears" but names no record`);
-      for (const r of recs) errs.push(...validateRecord(n, r, constantExists, sourceCitesRelease));
+      for (const r of recs) errs.push(...validateRecord(n, r, constantExists, sourceCitesRelease, sourceHashOf));
     } else errs.push(`family ${n} has verdict ${JSON.stringify(f.verdict)}; only "bears" and "none" are allowed`);
   }
   if (fams.length && bears + none !== fams.length) errs.push(`bears ${bears} + none ${none} does not equal ${fams.length}`);
   return errs;
 }
 
-function validateRecord(n, r, constantExists, sourceCitesRelease) {
+function validateRecord(n, r, constantExists, sourceCitesRelease, sourceHashOf) {
   const errs = [];
   const where = `family ${n} → ${r && r.id}`;
   if (!r || typeof r.id !== "string") return [`family ${n} names a record with no id`];
   if (!OTHER_RECORDS.has(r.id) && !constantExists(r.id)) errs.push(`${where}: no mirrored constant has that id`);
   if (!(r.tag in TAGS)) errs.push(`${where}: tag ${JSON.stringify(r.tag)} is not one of ${Object.keys(TAGS).join(", ")}`);
+  // A rendered note is pinned to the mirrored page it was compared with.
+  if (r.statementChecked === true && !OTHER_RECORDS.has(r.id)) {
+    if (!SHA256.test(String(r.sourceSha256 || ""))) errs.push(`${where}: a rendered note needs sourceSha256, the hash of the mirrored page it was read against (node scripts/openai-math.mjs --source-hash ${r.id})`);
+    else if (sourceHashOf && sourceHashOf(r.id) !== r.sourceSha256) errs.push(`${where}: the mirrored page for ${r.id} changed since this note was read against it; re-read the note's claim and match against the page, then set sourceSha256 to the page's new hash (node scripts/openai-math.mjs --source-hash ${r.id})`);
+  }
   // The note would say "It is not in the source table" on a page whose table now cites the release.
   if (r.statementChecked === true && sourceCitesRelease(r.id)) errs.push(`${where}: the mirrored source page for ${r.id} now cites the release (github.com/openai/math), so a note saying the claim is not in the source table would be false; record the pair as "${READ_NO_NOTE}" with that reason`);
   if (r.tag === READ_NO_NOTE) {
@@ -229,7 +251,7 @@ export async function selftest() {
     source: { repo: "openai/math", sha, familyCount: 3, readAt: "2026-10-12" },
     families: [
       { family: "001", verdict: "none" },
-      { family: "002", verdict: "bears", title: "Fast products", records: [{ id: "15a", tag: "formal-proof", statementChecked: true, claim: "a bound below 2.3 on omega", match: "Same quantity.", statement: { path: "lean/ComparatorChallenges/X.lean", theorem: "main", text: "theorem main : omega < 2.3" } }] },
+      { family: "002", verdict: "bears", title: "Fast products", records: [{ id: "15a", tag: "formal-proof", statementChecked: true, sourceSha256: "b".repeat(64), claim: "a bound below 2.3 on omega", match: "Same quantity.", statement: { path: "lean/ComparatorChallenges/X.lean", theorem: "main", text: "theorem main : omega < 2.3" } }] },
       { family: "003", verdict: "bears", records: [{ id: "84a", tag: "unchecked" }] },
     ],
   };
@@ -264,6 +286,11 @@ export async function selftest() {
     assert.ok(!errs.some((e) => /84a/.test(e)), "an unrendered pair on such a constant is not refused");
   }
 
+  // 5b. A rendered note is pinned to the mirrored page it was compared with (7a, 2026-10-19).
+  assert.ok(m((c) => { delete c.families[1].records[0].sourceSha256; }).some((e) => /15a: a rendered note needs sourceSha256/.test(e)), "a rendered note with no page hash must be refused");
+  assert.ok(validateMap(good, () => true, () => false, () => "c".repeat(64)).some((e) => /mirrored page for 15a changed since this note was read/.test(e)), "a rendered note whose page changed must be refused");
+  assert.deepEqual(validateMap(good, () => true, () => false, () => "b".repeat(64)), [], "a rendered note whose page is unchanged validates");
+
   // 6. "read-no-note": a read that is kept without rendering. Valid both ways, and each part required.
   const readNo = (bears) => ({ id: "84a", tag: "read-no-note", statementChecked: false, statementRead: true, bears, reason: "The source table lists this claim.", statement: { path: "lean/ComparatorChallenges/Y.lean", theorem: "main", text: "theorem main : True" } });
   const withRead = (rec) => { const c = structuredClone(good); c.families[2].records = [rec]; return c; };
@@ -293,7 +320,7 @@ export async function selftest() {
   const real = loadMap();
   assert.ok(real, "the committed map ledger/openai-math-map.json is absent; this self-test checks it and refuses to pass without it");
   {
-    const errs = validateMap(real, (id) => existsSync(join(ROOT, "ledger", "teorth-optimizationproblems", "constants", `${id}.md`)), (id) => citesRelease(id));
+    const errs = validateMap(real, (id) => existsSync(join(ROOT, "ledger", "teorth-optimizationproblems", "constants", `${id}.md`)), (id) => citesRelease(id), (id) => sourceHash(id));
     assert.deepEqual(errs, [], `the committed map is invalid:\n${errs.join("\n")}`);
     const guard = await boundCellGuard();
     assert.deepEqual(guard, [], `the bound-cell guard failed:\n${guard.join("\n")}`);
@@ -306,10 +333,16 @@ if (entry === import.meta.url) {
   // No top-level await: the guard imports the renderers, which import this module, and a pending
   // top-level await here would leave that cycle unsettled.
   if (process.argv.includes("--selftest")) selftest().catch((e) => { console.error(e && e.stack || e); process.exitCode = 1; });
-  else {
+  else if (process.argv.includes("--source-hash")) {
+    // Prints the hash to paste into a re-read note's sourceSha256. Exit 2 when the page is absent.
+    const id = process.argv[process.argv.indexOf("--source-hash") + 1];
+    const h = id ? sourceHash(id) : null;
+    if (!h) { console.log(`openai-math: no mirrored page for ${JSON.stringify(id)}`); process.exit(2); }
+    console.log(`${id} ${h}`);
+  } else {
     const map = loadMap();
     if (!map) { console.log("openai-math: no map at ledger/openai-math-map.json"); process.exit(2); }
-    const errs = validateMap(map, (id) => existsSync(join(ROOT, "ledger", "teorth-optimizationproblems", "constants", `${id}.md`)), (id) => citesRelease(id));
+    const errs = validateMap(map, (id) => existsSync(join(ROOT, "ledger", "teorth-optimizationproblems", "constants", `${id}.md`)), (id) => citesRelease(id), (id) => sourceHash(id));
     const bears = map.families.filter((f) => f.verdict === "bears");
     const pairs = bears.flatMap((f) => f.records);
     const byTag = Object.fromEntries(Object.keys(TAGS).map((t) => [t, pairs.filter((r) => r.tag === t).length]));

@@ -159,11 +159,12 @@
             "theorem": "main",
             "text": "theorem main :\n  (∀ ν : ℝ, 2 < ν → ∃ Q : ℤ, 2 ≤ Q ∧\n    ∀ p q : ℤ, Q ≤ q →\n      (q : ℝ) ^ (-ν) ≤ |Real.pi - (p : ℝ) / (q : ℝ)|) ∧\n  sSup {ν : ℝ | 0 < ν ∧\n    Set.Infinite {r : ℚ | 2 ≤ r.den ∧\n      0 < |Real.pi - (r : ℝ)| ∧\n      |Real.pi - (r : ℝ)| < (r.den : ℝ) ^ (-ν)}} = 2"
           },
-          "match": "Same quantity: the first half says that for every ν > 2, |π − p/q| ≥ q^(−ν) once q is large enough, and the second that the supremum of exponents with infinitely many such approximations is 2. That makes this constant 2, against 7.103205334137 in its last-listed upper-bound row.",
+          "match": "Same quantity: the first half says that for every ν > 2, |π − p/q| ≥ q^(−ν) once q is large enough, and the second that the supremum of exponents with infinitely many such approximations is 2. That makes this constant 2, against <7.101862832357 in its last-listed upper-bound row.",
           "screenedBy": [
             "claude",
             "codex"
-          ]
+          ],
+          "sourceSha256": "8788524eac00d2b6c154c1f9798fe8b16918b0560ee1ea82e776a11caf262e3a"
         }
       ]
     },
@@ -276,7 +277,8 @@
             "theorem": "nagata_conjecture",
             "text": "theorem nagata_conjecture :\n    ∀ count : ℕ, 10 ≤ count →\n      ∃ exceptional : ℕ → Set (OrderedDistinctPoints count),\n        (∀ index, IsConfigurationZariskiClosed (exceptional index) ∧\n          exceptional index ≠ Set.univ) ∧\n        (∃ points : OrderedDistinctPoints count, ∀ index, points ∉ exceptional index) ∧\n        ∀ points : OrderedDistinctPoints count, (∀ index, points ∉ exceptional index) →\n          ∀ curve : Workers.W10.EffectivePlaneCurve, ∀ multiplicities : Fin count → ℕ,\n            (∀ index, multiplicities index ≤ W15.curveOrdinaryMultiplicity curve (points.val index)) →\n            (∑ index, (multiplicities index : ℝ)) <\n              (Workers.W10.curveDegree curve : ℝ) * Real.sqrt (count : ℝ)"
           },
-          "match": "For 10 points the statement says every plane curve has degree divided by its total multiplicity at the points above 1/√10, for points outside a countable union of proper closed sets (very general points). This constant is the infimum of that ratio, so it is at least 1/√10, and with its upper-bound row 1/√10 it is exactly 1/√10, against 117/370 in its last-listed lower-bound row. Taking the infimum is our step; the file states the inequality curve by curve."
+          "match": "For 10 points the statement says every plane curve through at least one of the points has degree divided by its total multiplicity at the points above 1/√10, for points outside a countable union of proper closed sets (very general points). This constant is the infimum of that ratio, so it is at least 1/√10, and with its upper-bound row 1/√10 it is exactly 1/√10, against 117/370 in its last-listed lower-bound row. Taking the infimum is our step; the file states the inequality curve by curve.",
+          "sourceSha256": "4464e63b280f31b354015431cacaa82789baf8879b45bca06cb5caf0c55557ca"
         }
       ]
     },
@@ -421,7 +423,8 @@
             "theorem": "main_theorem (the third of the four parts of MainStatement)",
             "text": "  (∀ W : Set ℂ, IsOpen W → IsConnected W → SimplyConnectedSpace W →\n    SphericalBoundaryNontrivial W → ∀ φ : ℂ → ℂ,\n      DifferentiableOn ℂ φ W → Set.BijOn φ W disk →\n      ∀ s : ℝ, 4 / 3 < s → s < 4 →\n        IntegrableOn (fun z => ‖deriv φ z‖ ^ s) W volume) ∧"
           },
-          "match": "Same quantity: the domains are open, connected and simply connected with more than one boundary point on the sphere, and φ is a holomorphic bijection onto the unit disk, as in this constant's definition. Integrability for every s below 4 makes this constant at least 4, the value in its upper-bound row, against 3.422 in its last-listed lower-bound row."
+          "match": "Same quantity: the domains are open, connected and simply connected with more than one boundary point on the sphere, and φ is a holomorphic bijection onto the unit disk, as in this constant's definition. Integrability for every s with 4/3 < s < 4 makes this constant at least 4, the value in its upper-bound row, against 3.422 in its last-listed lower-bound row.",
+          "sourceSha256": "2a60866a0a5575c8814dccf77236b5a860cb327f96bdc0b8cde187cd9e9ee925"
         }
       ]
     },
@@ -450,7 +453,8 @@
             "theorem": "mainTarget_proved",
             "text": "def MainTarget : Prop :=\n  ∀ E : Set Plane, IsCompact E → 1 < dimH E → 0 < volume (distanceSet E)"
           },
-          "match": "Same quantity: the file's distance set is the set of distances between points of a compact planar set, as in this constant's definition, so the statement says this constant is at most 1. With the lower-bound row 1, that makes it exactly 1, against 5/4 in its last-listed upper-bound row."
+          "match": "Same quantity: the file's distance set is the set of distances between points of a compact planar set, as in this constant's definition, so the statement says this constant is at most 1. With the lower-bound row 1, that makes it exactly 1, against 5/4 in its last-listed upper-bound row.",
+          "sourceSha256": "4b844f9d771f5a41de56f66218c1dfed5e4228dd9301afa018f0b9da9a4234b7"
         }
       ]
     },
@@ -617,7 +621,8 @@
             "theorem": "symmetric_mahler",
             "text": "theorem symmetric_mahler {n : ℕ} (hn : 1 ≤ n)\n    {K : Set (Fin n → ℝ)} (hK : IsCompact K) (hconv : Convex ℝ K)\n    (hsym : ∀ x ∈ K, -x ∈ K) (hint : (interior K).Nonempty) :\n    (4:ℝ)^n/(Nat.factorial n:ℝ) ≤\n      (volume K).toReal*(volume (coordinatePolar K)).toReal"
           },
-          "match": "Same quantity: the file's K is compact, convex, symmetric and has nonempty interior, and its polar is defined by the standard inner product, as in this constant's definition. So c = 4 works in every dimension and this constant is at least 4; with the upper-bound row 4, it is exactly 4, against π in its last-listed lower-bound row."
+          "match": "Same quantity: the file's K is compact, convex, symmetric and has nonempty interior, and its polar is defined by the standard inner product, as in this constant's definition. So c = 4 works in every dimension and this constant is at least 4; with the upper-bound row 4, it is exactly 4, against π in its last-listed lower-bound row.",
+          "sourceSha256": "fe1c69ac10aeda5c32bff0e882e197358f44e3fea3452159b63c2f671f5d8370"
         }
       ]
     },
@@ -752,7 +757,8 @@
           "screenedBy": [
             "claude",
             "codex"
-          ]
+          ],
+          "sourceSha256": "ab3c8a37f4527876f5eb335a2a2d183a36dc38e8d518599e0523075342ed33d6"
         },
         {
           "id": "15a",
@@ -769,7 +775,8 @@
           "screenedBy": [
             "claude",
             "codex"
-          ]
+          ],
+          "sourceSha256": "ab3c8a37f4527876f5eb335a2a2d183a36dc38e8d518599e0523075342ed33d6"
         },
         {
           "id": "15b",
@@ -786,7 +793,8 @@
           "screenedBy": [
             "claude",
             "codex"
-          ]
+          ],
+          "sourceSha256": "336a5bf5ded2b0d3f1b68ed8c8535e57aa349e27b035f01308c397e290a094c8"
         }
       ]
     },
@@ -999,7 +1007,8 @@
           "screenedBy": [
             "claude",
             "codex"
-          ]
+          ],
+          "sourceSha256": "b96c9f45704a3811f66571910086dfb8997d7b0fdbc030dd142b12a1adee62f9"
         }
       ]
     },
@@ -1028,7 +1037,8 @@
           "screenedBy": [
             "claude",
             "codex"
-          ]
+          ],
+          "sourceSha256": "059ae499d9c5e5420887d0c280be29896b3544cffd16c70418a33534f93a77cd"
         }
       ]
     },
@@ -1843,7 +1853,8 @@
           "screenedBy": [
             "claude",
             "codex"
-          ]
+          ],
+          "sourceSha256": "6b9fe5f684d817b645416a912ac0ddf4f685ef903515327c64385887333d2690"
         }
       ]
     },
