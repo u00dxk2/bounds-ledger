@@ -1,0 +1,11 @@
+# read-output sidecar for A-77 — written by check-due-gates-dispositioned --run
+# readCommand: node C:/dev/skylark/bounds-ledger/scripts/check-upstream-reports.mjs
+# ran: 2026-10-19T15:17:31.104Z · exit: 0
+# lines: 5 · sha256: d7087b37db5b2214 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+# upstream report states — 2026-10-19T15:17:30.351Z
+2 recorded report(s) in teorth/optimizationproblems; 2 live row(s) read.
+
+No state transitions. Every recorded report still reads as it did when the baseline was taken.
+RESULT: PASS — 0 transition(s) across 2 recorded report(s) (exit 0)
