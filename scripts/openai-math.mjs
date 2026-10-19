@@ -36,7 +36,12 @@ export const TAGS = {
   partial: "a Lean statement covers only part of the claim (see the statement below); we have not compiled the proof",
   none: "the release publishes no Lean statement of this claim",
   unchecked: "claimed; statement not yet checked",
+  // A pair we READ and chose not to show: the statement does not bear on the constant after all,
+  // or the source table already lists the claim. The read is kept, with its reason, instead of the
+  // pair being deleted (manager review 2026-10-19). It never renders.
+  "read-no-note": "statement read; no note is shown, for the reason recorded in the map",
 };
+const READ_NO_NOTE = "read-no-note";
 
 // Records outside the mirrored constants that the map may name.
 export const OTHER_RECORDS = new Set(["erdos-36", "ramsey-classical"]);
@@ -60,10 +65,23 @@ export function renderedStrings(rec) {
 }
 
 /**
- * Every problem with the map, as sentences. Empty means valid. `constantExists(id)` answers
- * whether a mirrored constant file exists; it is injected so the self-test can run on fixtures.
+ * Does the mirrored source page for this constant cite the release? A rendered note ends "It is not
+ * in the source table", so once upstream lists a release claim the note would be false on the very
+ * page that shows the row (84a, 2026-10-18 resnap → found 2026-10-19). The rule is deliberately
+ * coarse: ANY link to the release repo refuses EVERY note on that constant, and a human records each
+ * pair as "read-no-note". Its failure mode is a refusal, never a false sentence.
  */
-export function validateMap(map, constantExists = () => true) {
+export function citesRelease(id, root = ROOT) {
+  const p = join(root, "ledger", "teorth-optimizationproblems", "constants", `${id}.md`);
+  return existsSync(p) && /github\.com\/openai\/math\b/i.test(readFileSync(p, "utf8"));
+}
+
+/**
+ * Every problem with the map, as sentences. Empty means valid. `constantExists(id)` answers
+ * whether a mirrored constant file exists, and `sourceCitesRelease(id)` whether its mirrored page
+ * already cites the release; both are injected so the self-test can run on fixtures.
+ */
+export function validateMap(map, constantExists = () => true, sourceCitesRelease = () => false) {
   const errs = [];
   if (!map || typeof map !== "object") return ["the map is not an object"];
   const src = map.source || {};
@@ -85,20 +103,29 @@ export function validateMap(map, constantExists = () => true) {
     } else if (f.verdict === "bears") {
       bears++;
       if (!recs.length) errs.push(`family ${n} is "bears" but names no record`);
-      for (const r of recs) errs.push(...validateRecord(n, r, constantExists));
+      for (const r of recs) errs.push(...validateRecord(n, r, constantExists, sourceCitesRelease));
     } else errs.push(`family ${n} has verdict ${JSON.stringify(f.verdict)}; only "bears" and "none" are allowed`);
   }
   if (fams.length && bears + none !== fams.length) errs.push(`bears ${bears} + none ${none} does not equal ${fams.length}`);
   return errs;
 }
 
-function validateRecord(n, r, constantExists) {
+function validateRecord(n, r, constantExists, sourceCitesRelease) {
   const errs = [];
   const where = `family ${n} → ${r && r.id}`;
   if (!r || typeof r.id !== "string") return [`family ${n} names a record with no id`];
   if (!OTHER_RECORDS.has(r.id) && !constantExists(r.id)) errs.push(`${where}: no mirrored constant has that id`);
   if (!(r.tag in TAGS)) errs.push(`${where}: tag ${JSON.stringify(r.tag)} is not one of ${Object.keys(TAGS).join(", ")}`);
-  if (r.statementChecked !== true && r.tag !== "unchecked") errs.push(`${where}: only a statement we read and matched may carry "${r.tag}"; an unread pair is "unchecked"`);
+  // The note would say "It is not in the source table" on a page whose table now cites the release.
+  if (r.statementChecked === true && sourceCitesRelease(r.id)) errs.push(`${where}: the mirrored source page for ${r.id} now cites the release (github.com/openai/math), so a note saying the claim is not in the source table would be false; record the pair as "${READ_NO_NOTE}" with that reason`);
+  if (r.tag === READ_NO_NOTE) {
+    if (r.statementChecked === true) errs.push(`${where}: a "${READ_NO_NOTE}" pair never renders, so it cannot be statementChecked`);
+    if (r.statementRead !== true) errs.push(`${where}: a "${READ_NO_NOTE}" pair records a read, so it needs statementRead: true`);
+    if (typeof r.bears !== "boolean") errs.push(`${where}: a "${READ_NO_NOTE}" pair needs bears: true or false, what the read found`);
+    if (!r.reason || !String(r.reason).trim()) errs.push(`${where}: a "${READ_NO_NOTE}" pair needs the reason no note is shown`);
+    if (!STATEMENT_PATH.test(String((r.statement || {}).path || ""))) errs.push(`${where}: a "${READ_NO_NOTE}" pair needs the Lean statement file that was read (lean/ComparatorChallenges/<name>.lean)`);
+  } else if (r.statementRead === true && r.statementChecked !== true) errs.push(`${where}: a pair whose statement was read and is not shown must be tagged "${READ_NO_NOTE}", not "${r.tag}"`);
+  if (r.statementChecked !== true && r.tag !== "unchecked" && r.tag !== READ_NO_NOTE) errs.push(`${where}: only a statement we read and matched may carry "${r.tag}"; an unread pair is "unchecked"`);
   // A RENDERED pair is one whose statement we read, so it must carry a proof tag and the statement
   // itself (Codex r1, 2026-10-12: checked + "unchecked" + an empty statement used to render bare).
   if (r.statementChecked === true && r.tag !== "formal-proof" && r.tag !== "partial") errs.push(`${where}: a statement-checked pair renders, so it must be tagged "formal-proof" or "partial", not "${r.tag}"`);
@@ -229,6 +256,28 @@ export async function selftest() {
   assert.ok(m((c) => { c.source.sha = "abc1234"; }).some((e) => /40-character/.test(e)), "an abbreviated sha must be refused");
   assert.ok(m((c) => { c.families[0].records = [{ id: "15a", tag: "unchecked" }]; }).some((e) => /"none" but names records/.test(e)), "a none verdict cannot name records");
   assert.ok(validateMap(good, (id) => id !== "84a").some((e) => /no mirrored constant has that id/.test(e)), "a record id must exist in the mirror");
+  // 5. A note on a constant whose mirrored source page already cites the release would say "It is
+  // not in the source table" falsely (84a, 2026-10-19). Refused for the rendered pair, and only it.
+  {
+    const errs = validateMap(good, () => true, (id) => id === "15a");
+    assert.ok(errs.some((e) => /15a: the mirrored source page for 15a now cites the release/.test(e)), "a rendered note on a constant whose source page cites the release must be refused");
+    assert.ok(!errs.some((e) => /84a/.test(e)), "an unrendered pair on such a constant is not refused");
+  }
+
+  // 6. "read-no-note": a read that is kept without rendering. Valid both ways, and each part required.
+  const readNo = (bears) => ({ id: "84a", tag: "read-no-note", statementChecked: false, statementRead: true, bears, reason: "The source table lists this claim.", statement: { path: "lean/ComparatorChallenges/Y.lean", theorem: "main", text: "theorem main : True" } });
+  const withRead = (rec) => { const c = structuredClone(good); c.families[2].records = [rec]; return c; };
+  assert.deepEqual(validateMap(withRead(readNo(true))), [], "a read that bears but is not shown validates");
+  assert.deepEqual(validateMap(withRead(readNo(false))), [], "a read that does not bear validates");
+  assert.deepEqual(validateMap(withRead(readNo(true)), () => true, (id) => id === "84a"), [], "a read-no-note pair on a page that cites the release is the remedy, not refused");
+  const rn = (f) => { const r = readNo(false); f(r); return validateMap(withRead(r)); };
+  assert.ok(rn((r) => { r.reason = " "; }).some((e) => /needs the reason no note is shown/.test(e)), "read-no-note with no reason must be refused");
+  assert.ok(rn((r) => { delete r.bears; }).some((e) => /needs bears: true or false/.test(e)), "read-no-note with no bears verdict must be refused");
+  assert.ok(rn((r) => { r.statementRead = false; }).some((e) => /needs statementRead: true/.test(e)), "read-no-note without statementRead must be refused");
+  assert.ok(rn((r) => { r.statement.path = "lean/docs/167.md"; }).some((e) => /needs the Lean statement file that was read/.test(e)), "read-no-note must name a statement file, not a scope page");
+  assert.ok(rn((r) => { r.statementChecked = true; }).some((e) => /never renders, so it cannot be statementChecked/.test(e)), "read-no-note cannot render");
+  assert.ok(rn((r) => { r.tag = "unchecked"; }).some((e) => /must be tagged "read-no-note", not "unchecked"/.test(e)), "a read pair cannot hide as unchecked");
+  assert.equal(notesFor("84a", withRead(readNo(true))).length, 0, "a read-no-note pair must not render");
 
   // Rendering: only statement-checked pairs render; unchecked ones stay data.
   assert.equal(notesFor("15a", good).length, 1);
@@ -244,7 +293,7 @@ export async function selftest() {
   const real = loadMap();
   assert.ok(real, "the committed map ledger/openai-math-map.json is absent; this self-test checks it and refuses to pass without it");
   {
-    const errs = validateMap(real, (id) => existsSync(join(ROOT, "ledger", "teorth-optimizationproblems", "constants", `${id}.md`)));
+    const errs = validateMap(real, (id) => existsSync(join(ROOT, "ledger", "teorth-optimizationproblems", "constants", `${id}.md`)), (id) => citesRelease(id));
     assert.deepEqual(errs, [], `the committed map is invalid:\n${errs.join("\n")}`);
     const guard = await boundCellGuard();
     assert.deepEqual(guard, [], `the bound-cell guard failed:\n${guard.join("\n")}`);
@@ -260,7 +309,7 @@ if (entry === import.meta.url) {
   else {
     const map = loadMap();
     if (!map) { console.log("openai-math: no map at ledger/openai-math-map.json"); process.exit(2); }
-    const errs = validateMap(map, (id) => existsSync(join(ROOT, "ledger", "teorth-optimizationproblems", "constants", `${id}.md`)));
+    const errs = validateMap(map, (id) => existsSync(join(ROOT, "ledger", "teorth-optimizationproblems", "constants", `${id}.md`)), (id) => citesRelease(id));
     const bears = map.families.filter((f) => f.verdict === "bears");
     const pairs = bears.flatMap((f) => f.records);
     const byTag = Object.fromEntries(Object.keys(TAGS).map((t) => [t, pairs.filter((r) => r.tag === t).length]));

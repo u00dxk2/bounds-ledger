@@ -3,10 +3,15 @@
   "item": "A-78",
   "source": {
     "repo": "openai/math",
-    "sha": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
-    "readAt": "2026-10-12",
+    "sha": "1581d4cbdd69a0faf34b2089614fe2a814316a6a",
+    "readAt": "2026-10-19",
     "familyCount": 372,
-    "manuscriptCount": 719
+    "manuscriptCount": 719,
+    "pinMovedFrom": {
+      "sha": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+      "on": "2026-10-19",
+      "why": "The two later release commits add only .github/workflows/lock-prs.yml (gh api repos/openai/math/compare, 2026-10-19), so no statement file, CONTENTS.md or history.md changed."
+    }
   },
   "method": "Every family in CONTENTS.md at source.sha has a verdict. Two independent screening passes (a Claude agent and Codex, each reading every family headline against every watched constant definition, plus Erdos problem 36 and the classical Ramsey numbers) were unioned; any family either named is \"bears\". Only pairs whose Lean statement file was read by hand against the constant definition carry statementChecked true and render on the site; every other pair is \"unchecked\" and is data only. No proof was compiled.",
   "families": [
@@ -254,8 +259,8 @@
       "records": [
         {
           "id": "74a",
-          "tag": "unchecked",
-          "statementChecked": false,
+          "tag": "formal-proof",
+          "statementChecked": true,
           "screenedBy": [
             "claude",
             "codex"
@@ -263,7 +268,15 @@
           "confidence": {
             "claude": "high",
             "codex": "high"
-          }
+          },
+          "familyTitle": "Nagata’s conjecture and maximal Seshadri constants",
+          "claim": "that for 10 or more very general points in the plane, every curve of degree d with multiplicity at least m_i at the i-th point has m_1 + … + m_r < d·√r.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/Nagata.lean",
+            "theorem": "nagata_conjecture",
+            "text": "theorem nagata_conjecture :\n    ∀ count : ℕ, 10 ≤ count →\n      ∃ exceptional : ℕ → Set (OrderedDistinctPoints count),\n        (∀ index, IsConfigurationZariskiClosed (exceptional index) ∧\n          exceptional index ≠ Set.univ) ∧\n        (∃ points : OrderedDistinctPoints count, ∀ index, points ∉ exceptional index) ∧\n        ∀ points : OrderedDistinctPoints count, (∀ index, points ∉ exceptional index) →\n          ∀ curve : Workers.W10.EffectivePlaneCurve, ∀ multiplicities : Fin count → ℕ,\n            (∀ index, multiplicities index ≤ W15.curveOrdinaryMultiplicity curve (points.val index)) →\n            (∑ index, (multiplicities index : ℝ)) <\n              (Workers.W10.curveDegree curve : ℝ) * Real.sqrt (count : ℝ)"
+          },
+          "match": "For 10 points the statement says every plane curve has degree divided by its total multiplicity at the points above 1/√10, for points outside a countable union of proper closed sets (very general points). This constant is the infimum of that ratio, so it is at least 1/√10, and with its upper-bound row 1/√10 it is exactly 1/√10, against 117/370 in its last-listed lower-bound row. Taking the infimum is our step; the file states the inequality curve by curve."
         }
       ]
     },
@@ -391,8 +404,8 @@
       "records": [
         {
           "id": "67a",
-          "tag": "unchecked",
-          "statementChecked": false,
+          "tag": "formal-proof",
+          "statementChecked": true,
           "screenedBy": [
             "claude",
             "codex"
@@ -400,7 +413,15 @@
           "confidence": {
             "claude": "high",
             "codex": "high"
-          }
+          },
+          "familyTitle": "Brennan's conjecture and the integral-means spectrum",
+          "claim": "that for a conformal map φ of a simply connected domain onto the disk, |φ′|^s is area-integrable for every s with 4/3 < s < 4.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/Brennan.lean",
+            "theorem": "main_theorem (the third of the four parts of MainStatement)",
+            "text": "  (∀ W : Set ℂ, IsOpen W → IsConnected W → SimplyConnectedSpace W →\n    SphericalBoundaryNontrivial W → ∀ φ : ℂ → ℂ,\n      DifferentiableOn ℂ φ W → Set.BijOn φ W disk →\n      ∀ s : ℝ, 4 / 3 < s → s < 4 →\n        IntegrableOn (fun z => ‖deriv φ z‖ ^ s) W volume) ∧"
+          },
+          "match": "Same quantity: the domains are open, connected and simply connected with more than one boundary point on the sphere, and φ is a holomorphic bijection onto the unit disk, as in this constant's definition. Integrability for every s below 4 makes this constant at least 4, the value in its upper-bound row, against 3.422 in its last-listed lower-bound row."
         }
       ]
     },
@@ -412,8 +433,8 @@
       "records": [
         {
           "id": "34a",
-          "tag": "unchecked",
-          "statementChecked": false,
+          "tag": "formal-proof",
+          "statementChecked": true,
           "screenedBy": [
             "claude",
             "codex"
@@ -421,7 +442,15 @@
           "confidence": {
             "claude": "high",
             "codex": "high"
-          }
+          },
+          "familyTitle": "The Falconer distance conjecture",
+          "claim": "that every compact set in the plane of Hausdorff dimension greater than 1 has a distance set of positive Lebesgue measure.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/PlanarFalconer.lean",
+            "theorem": "mainTarget_proved",
+            "text": "def MainTarget : Prop :=\n  ∀ E : Set Plane, IsCompact E → 1 < dimH E → 0 < volume (distanceSet E)"
+          },
+          "match": "Same quantity: the file's distance set is the set of distances between points of a compact planar set, as in this constant's definition, so the statement says this constant is at most 1. With the lower-bound row 1, that makes it exactly 1, against 5/4 in its last-listed upper-bound row."
         }
       ]
     },
@@ -571,8 +600,8 @@
       "records": [
         {
           "id": "25a",
-          "tag": "unchecked",
-          "statementChecked": false,
+          "tag": "formal-proof",
+          "statementChecked": true,
           "screenedBy": [
             "claude",
             "codex"
@@ -580,7 +609,15 @@
           "confidence": {
             "claude": "high",
             "codex": "high"
-          }
+          },
+          "familyTitle": "The Mahler conjectures, functional inequalities and polar-product symplectic width",
+          "claim": "that every origin-symmetric convex body K in n dimensions has |K|·|K°| ≥ 4^n/n!.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/MahlerConjecture.lean",
+            "theorem": "symmetric_mahler",
+            "text": "theorem symmetric_mahler {n : ℕ} (hn : 1 ≤ n)\n    {K : Set (Fin n → ℝ)} (hK : IsCompact K) (hconv : Convex ℝ K)\n    (hsym : ∀ x ∈ K, -x ∈ K) (hint : (interior K).Nonempty) :\n    (4:ℝ)^n/(Nat.factorial n:ℝ) ≤\n      (volume K).toReal*(volume (coordinatePolar K)).toReal"
+          },
+          "match": "Same quantity: the file's K is compact, convex, symmetric and has nonempty interior, and its polar is defined by the standard inner product, as in this constant's definition. So c = 4 works in every dimension and this constant is at least 4; with the upper-bound row 4, it is exactly 4, against π in its last-listed lower-bound row."
         }
       ]
     },
@@ -1031,8 +1068,8 @@
       "records": [
         {
           "id": "84a",
-          "tag": "formal-proof",
-          "statementChecked": true,
+          "tag": "read-no-note",
+          "statementChecked": false,
           "familyTitle": "Planar distinct distances and unit-distance bounds",
           "claim": "that n points in the plane determine at most C·n^β pairs at distance one, for fixed constants C and β with β < 4/3.",
           "statement": {
@@ -1040,11 +1077,13 @@
             "theorem": "main",
             "text": "theorem main : ∃ C β : ℝ, 0 < C ∧ 1 ≤ β ∧ β < (4 : ℝ) / 3 ∧\n    ∀ n : ℕ, (u n : ℝ) ≤ C * (n : ℝ) ^ β"
           },
-          "match": "Same quantity: the file's u(n) is the largest number of unit-distance pairs among n points in the plane, as in this constant's definition, so the statement bounds the exponent by β, below the 4/3 in this constant's last-listed upper-bound row. No value of β is given.",
           "screenedBy": [
             "claude",
             "codex"
-          ]
+          ],
+          "statementRead": true,
+          "bears": true,
+          "reason": "Statement read and matched 2026-10-12, and shown as a note until 2026-10-19. Since the 2026-10-18 resnap the source table lists this claim as its last upper-bound row, [OAI2026] 4/3 − ε, so the note's 'not in the source table' became false and it is withdrawn."
         }
       ]
     },
@@ -1144,7 +1183,7 @@
       "records": [
         {
           "id": "4b",
-          "tag": "unchecked",
+          "tag": "read-no-note",
           "statementChecked": false,
           "screenedBy": [
             "claude",
@@ -1153,7 +1192,16 @@
           "confidence": {
             "claude": "high",
             "codex": "high"
-          }
+          },
+          "statementRead": true,
+          "bears": true,
+          "claim": "that a set of integers in 1..N with no nonzero square difference has at most C·N^(1−c) elements, for absolute constants c > 0 and C.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/SquareDifference.lean",
+            "theorem": "power_saving",
+            "text": "theorem power_saving :\n    ∃ c C : ℝ, 0 < c ∧ ∀ N : ℕ, 1 ≤ N → ∀ A : Finset ℤ,\n      A ⊆ Finset.Icc 1 (N : ℤ) → SquareDifference.IsSquareDifferenceFree A →\n        (A.card : ℝ) ≤ C * (N : ℝ) ^ (1 - c)"
+          },
+          "reason": "Read 2026-10-19: the statement bounds this constant by 1 − c for an unspecified c > 0. The source table already lists this claim as its [OAI2026] upper-bound row, so a note saying it is not in the source table would be false."
         }
       ]
     },
