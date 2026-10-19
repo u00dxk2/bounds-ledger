@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-(Written at the close.)
+Four more constant pages now tell a reader whether OpenAI's math release settles that bound, with the formal statement quoted and checked. Two older notes had turned false after yesterday's upstream update, and both are fixed. A future upstream change to any page with a note now fails our checks until a person re-reads it.
 
 ### Selection packet
 
@@ -65,6 +65,11 @@ gh api "repos/openai/math/contents/lean/docs/039.md?ref=1581d4cbdd69a0faf34b2089
 - Prior-day retro finding that bears on today: read a JSON entry's field through a parser by id. Today's pair list above was read that way.
 - Due-gates baseline: `check-due-gates-dispositioned --snapshot` → "3 gate(s) due on/before 2026-10-19" (A-2, A-77, A-78).
 
+**HYGIENE INPUTS:**
+- (a) due rows not bearing on the choice — 2: `A-2` (the standing drift-resolution log; its read is the drift leg of `npm run verify`), `A-77` (the filed-report check runs only when someone remembers; due to decide its caller, readCommand never run).
+- (b) owed child rows — none: read the kickoff's "rows owed to you in skylark-site's ledger" (0 of 754).
+- (c) state reads with a printed threshold — 2: dated gates due today 3 (of 102 swept); prior-day retro 8 still-on-discipline of 9 tagged findings. `missingLinkedCommits` was NOTHING SWEPT (0 of 0) and so could not be judged.
+
 ### P3 — Product-work loop
 
 **Action (improve, plus one live correction found while doing it):** `A-78`, OpenAI's math release mapped onto the watched constants, under the manager's REDIRECT (a home for "read, does not bear").
@@ -85,13 +90,63 @@ gh api "repos/openai/math/contents/lean/docs/039.md?ref=1581d4cbdd69a0faf34b2089
 
 **What remains on A-78** (re-dated to 2026-10-26): 18 unchecked pairs; families 077, 078 and 101 carry no `leanDoc`; 8a needs a second reader; onTrigger step (3), drafting upstream notes, was not done today.
 
-<!-- findings:begin -->
-**Finding, P3 start (2026-10-19 MT), record-facing on our own page:** since the 2026-10-18 resnap, the served `c/84a.html` shows upstream's new last upper-bound row `[OAI2026]` (4/3 − ε, OpenAI's release), and the release note we render beneath it still said the claim was "below the 4/3 in this constant's last-listed upper-bound row" and "It is not in the source table". Both were false on the live page for about a day. No bound cell was wrong. The resnap cycle did not catch it because nothing compared a note's "not in the source table" with the mirrored page. 4b's upstream page also lists the release (its `[OAI2026]` row), so the packet's plan to statement-check 4b and render it would have published the same false sentence. Bus status 78e14d0e. Fix: below.
+## What changed
 
-**Premise corrections to the packet:** (1) families 101, 077 and 078 (pairs 20b, 46a, 77a, and Codex-only 23b) have no `leanDoc` in the map, so they cannot be statement-checked from a Lean file; the slice reads at most six. (2) 8a: the release's zero-free half-plane Re s > 7/8 would, together with the zeros known to lie on the critical line up to a large height, put this constant at its lower bound 2/log γ₁. That is our derivation plus an outside fact, not the statement's own content, so it is left unchecked for a second reader rather than rendered today.
+- Four constant pages gained a statement-checked note on OpenAI's math release: 74a (10-point Seshadri constant), 67a (Brennan's exponent), 34a (planar Falconer threshold), 25a (Mahler volume product). 84a's note was withdrawn and 7a's comparison row corrected, because both had turned false on the live site after the 2026-10-18 resnap.
+- `scripts/openai-math.mjs` now refuses a note whose mirrored page cites the release or has changed since the note was read.
+
+<!-- findings:begin -->
+**Finding, P3 start (2026-10-19 MT), record-facing on our own page:** since the 2026-10-18 resnap, the served `c/84a.html` shows upstream's new last upper-bound row `[OAI2026]` (4/3 − ε, OpenAI's release), and the release note we render beneath it still said the claim was "below the 4/3 in this constant's last-listed upper-bound row" and "It is not in the source table". Both were false on the live page for about a day. No bound cell was wrong. The resnap cycle did not catch it because nothing compared a note's "not in the source table" with the mirrored page. 4b's upstream page also lists the release (its `[OAI2026]` row), so the packet's plan to statement-check 4b and render it would have published the same false sentence. Bus status 78e14d0e. Codex r1 then found the same class on 7a (a named "last-listed" row that no longer was), which is why the fix pins each note to its page rather than patching sentences.
+
+**Premise corrections to the packet:** (1) families 101, 077 and 078 (pairs 20b, 46a and 77a) have no `leanDoc` in the map, so they cannot be statement-checked from a Lean file; the slice reads at most six. (2) 8a: the release's zero-free half-plane Re s > 7/8 would, together with the zeros known to lie on the critical line up to a large height, put this constant at its lower bound 2/log γ₁. That is our derivation plus an outside fact, not the statement's own content, so it is left unchecked for a second reader rather than rendered today.
 <!-- findings:end -->
 
-**HYGIENE INPUTS:**
-- (a) due rows not bearing on the choice — 2: `A-2` (the standing drift-resolution log; its read is the drift leg of `npm run verify`), `A-77` (the filed-report check runs only when someone remembers; due to decide its caller, readCommand never run).
-- (b) owed child rows — none: read the kickoff's "rows owed to you in skylark-site's ledger" (0 of 754).
-- (c) state reads with a printed threshold — 2: dated gates due today 3 (of 102 swept); prior-day retro 8 still-on-discipline of 9 tagged findings. `missingLinkedCommits` was NOTHING SWEPT (0 of 0) and so could not be judged.
+Classification: the day's findings are record-facing on our own page (two release notes contradicting their tables) and instrument-facing in the fix; no number in a mirrored upstream row was found to disagree with its source. The standing prediction (the next record-facing catch is a citation-quality defect in a mirrored upstream entry, found by a human in the depth audit) was neither confirmed nor falsified: today's catch was in our own notes, not a mirrored entry.
+
+## Inputs (controllable)
+
+The A-78 slice (one item); two Codex review rounds; one targeted page check before push; `npm run check` once at close.
+
+## Outputs (lagging)
+
+Outside report arrivals: 0 (`npm run reports`, 34 raw issues, 34 ours, parts reconcile). Encounter on the new notes: blind (`A-59`).
+
+positive control: `npm run reports` read 34 raw issues and classified every one, and today's refusal checks returned non-empty on real data (84a refused on the HEAD-of-day map; 7a refused when pinned to its pre-resnap page), so the zeros above are measured, not dead probes.
+
+## Recommendation
+
+None new for David. Upstream notes for the rendered pairs stay draft-only and are not drafted yet.
+
+## On hold pending data
+
+`A-84` (render-constant-pages store-validation fix, a declared deferral) expires 2026-10-25. `A-77`'s caller decision is carried to 2026-10-26.
+
+## State Appendix
+
+As of the close, from live commands (this report cannot name the commit that lands it):
+- HEAD before the close commit: `7f35237` (`git -C C:/dev/skylark/bounds-ledger log -1`), "Report 2026-10-19: P1 packet and P3 state for A-78; ledger reads".
+- CI on that HEAD: `check-ci-status --workflow reverify.yml` GREEN.
+- Map: `node scripts/openai-math.mjs` → "31 pair(s): formal-proof 11, partial 0, none 0, unchecked 18, read-no-note 2; rendered 11", RESULT: VALID (exit 0).
+- Due gates: `check-due-gates-dispositioned` → "verdict: CLEAR".
+
+## Close
+
+ACTION: COMPLETED · item A-78 · P3 bus bebe147c
+
+Against the manager's REDIRECT acceptance (bus d9b6f6ba reviewed it COMPLETED, a slice under nine): `openai-math.mjs` unchecked 18 (was 23), rendered 11, read-no-note 2, RESULT: VALID; `--selftest` exit 0 with the new shape. **Why a resnap now turns the selftest red:** two public notes (84a, 7a) said something false about their own tables for about a day after the 2026-10-18 resnap, so rather than fixing the sentences alone, every rendered note is now pinned to its mirrored page (`sourceSha256`) and refused when that page cites the release or changes (`0549b09`).
+
+**The two acceptance receipts the review asked for:**
+- `npm run check`: RUN at `7f35237` (docs only since `0549b09`), exit 0, 2026-10-19 close; free memory 25313760 KB before it. "No drift. 118 files match upstream" at the upstream commit the mirror pins; "catch table: 18 cycles, and README.md says 18."; index, 117 constant pages, ramsey.html and deferrals PASS; brief UNVERIFIABLE (as every run). pragma: allowlist sha
+- Claims pass: RUN, as the two Codex rounds' Part B. Round 1 checked every factual sentence of the four new notes' `claim` and `match`, and the two `read-no-note` reasons, against the Lean files and the mirrored pages, each marked HOLDS / REFUTED-AS-WRITTEN / UNVERIFIABLE-HERE; it refuted two (67a's range, 74a's restriction), fixed in `0549b09`. Round 2 checked the three changed sentences and the six unchanged notes' comparisons the same way: 74a and 67a HOLD, 7a's table comparison HOLDS and its Lean-to-definition sentence was UNVERIFIABLE-HERE (its Lean file was not fetched today; that sentence was checked on 2026-10-12 and did not change), all six unchanged notes HOLD. `57fc7ae` was never served on its own (no Pages build for it), so the two refuted sentences never reached readers.
+
+**State since the P3 post:** unchanged; no new commits to pages.
+
+**Ledger delta** (`node scripts/sky.mjs continuity-edit.mjs`):
+- `A-78` (OpenAI's math release on the watched constants): note for today; nextCheckDate 2026-10-26. 18 unchecked pairs; families 077, 078 and 101 carry no leanDoc; 8a needs a second reader; onTrigger step (3), upstream note drafts, not done (draft-only, any send David's).
+- `A-2` (standing drift log): hygiene line ACCEPTED in substance, AMENDED to `--set nextCheckDate 2026-10-26` (the draft's `--extend` writes a different clock field); note14 records the read.
+- `A-77` (who calls the filed-report check): hygiene line UNDECIDED, AMENDED to a re-date to 2026-10-26 with the reason (the caller decision was not made today); note appended.
+- `check-due-gates-dispositioned` (no flag): "verdict: CLEAR — every gate due at Phase 0 was dispositioned." with "snapshot CURRENT: taken today (2026-10-19)".
+
+**Hygiene draft:** 2 lines, 0 accepted · 2 amended · 0 rejected. READ-MUTATED: none. check-wait-justification PASS (1 of 102 rows carry one); check-engineering-zero PASS, 0 findings for this lane.
+
+**Pending reads:** 2026-10-20 `A-47` slice 20 and `A-82`; 2026-10-22 `A-83`; 2026-10-25 `A-45`, `A-84`; 2026-10-26 `A-78`, `A-77`, `A-2`. Encounter on the new notes stays blind (`A-59`).
