@@ -1,8 +1,24 @@
-# A-87 — correction to the 13a entry's [GP1974] reference (DRAFT, HELD for the paper)
+# A-87 — correction to the 13a entry's [GP1974] reference (DRAFT, verified from independent records)
 
 Drafted 2026-10-20 (MT). **Nothing has been sent.** David said yes to drafting this on board card 5d5d4962 (bus c853b6d9-1e76-4a8a-87eb-f1bbfa6971e2, typed 14:10:03Z): draft it, run a full adversarial review, be fully certain of it, and show him the text before anything is sent; and if a paper cannot be opened, hold so that he can get it (paraphrased; his words are not quoted in this public repository).
 
-**HELD:** the 1974 paper itself has not been opened. On 2026-10-20 at about 15:20Z, doi.org and Taylor & Francis answered 403, JSTOR served a bot-challenge page, and Semantic Scholar and the Wayback Machine answered 429. OpenAlex lists no open copy. The proposed title rests on Crossref and on a catalogue snippet of the cited volume, not on the paper's own first page. Under David's condition that is not enough, so the review waits until the paper is in hand. The orchestrator's kickoff for 2026-10-20 asks for BOTH papers to be opened, the wrongly-linked 1976 Redheffer article too. It was not reachable either (doi.org and Taylor & Francis 403, JSTOR challenge page, about 15:21Z). David's board card de2d2d07 now asks for both, saved to `tmp/papers/gerriets-poole-1974.pdf` and `tmp/papers/redheffer-1976.pdf` (never committed).
+**The papers could not be opened:** the 1974 paper itself has not been opened. On 2026-10-20 at about 15:20Z, doi.org and Taylor & Francis answered 403, JSTOR served a bot-challenge page, and Semantic Scholar and the Wayback Machine answered 429. OpenAlex lists no open copy. The proposed title rests on Crossref and on a catalogue snippet of the cited volume, not on the paper's own first page. Under David's first condition that was not enough, so the draft was held for the paper. The orchestrator's kickoff for 2026-10-20 asks for BOTH papers to be opened, the wrongly-linked 1976 Redheffer article too. It was not reachable either (doi.org and Taylor & Francis 403, JSTOR challenge page, about 15:21Z). David's board card de2d2d07 asked him for both.
+
+**ROUTE CHANGED 2026-10-20 at 16:10Z:** David replied on card de2d2d07 that he cannot download them either (no account) and asked for verification from other online sources (paraphrased). The orchestrator relayed the bar: every field in the correction needs TWO independent sources that agree, each cited by URL; a field that cannot reach two stays out and is named as unverified. Neither paper's own text has been read, and the correction below claims nothing that only the paper could show.
+
+## Field-by-field verification (read 2026-10-20, about 16:15Z to 16:25Z)
+
+| Field the correction asserts | Sources that agree | Count |
+|---|---|---|
+| Title of the 1974 paper: "Convex regions which cover arcs of constant length" | Crossref record for 10.2307/2318909; MathSciNet MR0333991 (free `mrlookup`, BibTeX `TITLE = {Convex regions which cover arcs of constant length}`); the cited volume's catalogue snippet (title line and byline, `A-47-0089`) | 3 |
+| 10.2307/2318909 is Gerriets and Poole, Monthly 81 (1974) | Crossref; MathSciNet MR0333991 (`DOI = {10.2307/2318909}`); zbMATH 0279.52007 (API: DOI link, author codes gerriets.john and poole.george-d, Monthly vol 81, 1974); the DOI handle record (HS_ALIAS 10.1080/00029890.1974.11993494) | 4 |
+| Also registered as 10.1080/00029890.1974.11993494 | Crossref (primary DOI); the DOI handle record for 10.2307/2318909 (HS_ALIAS) | 2 |
+| 10.2307/2318213 is R. Redheffer, "Induced transformations of the derivative-vector", Monthly 83 (1976), no. 4, 255–259 | Crossref; MathSciNet MR0409741 (all those fields); zbMATH 0338.05007 (DOI link, author code redheffer.raymond-m, Monthly vol 83, 1976; title and pages withheld by zbMATH's licence) | 3 |
+| Authors, journal, volume 81, year 1974, pages 36–41 (unchanged on the line) | Crossref; MathSciNet MR0333991 | 2 |
+| Issue no. 1 (unchanged on the line) | Crossref only (MathSciNet's record carries no issue) | 1: NOT asserted by the PR text, which names authors, journal, volume, year and pages only |
+| What the paper proves (the 0.28610 row) | not claimed | out |
+
+Every URL the PR text cites was fetched at about 16:25Z and holds its record (HTTP 200 and the expected title or Zbl number in the body). zbMATH's web pages (`zbmath.org/?q=an:…`) answered 403 to a script, so the PR cites the zbMATH API query instead.
 
 ## What the entry says now
 
@@ -15,12 +31,12 @@ Upstream file `constants/13a.md` (the upstream path; our mirror of it is `ledger
 
 ## The two defects
 
-1. **Title.** Line 46 gives the [G1972] entry's title word for word. The 1974 Monthly paper by Gerriets and Poole is titled "Convex Regions which Cover Arcs of Constant Length" in Crossref's record for 10.2307/2318909, and the cited volume's catalogue snippet prints the title line "CONVEX REGIONS WHICH COVER ARCS OF CONSTANT LENGTH" with the byline "JOHN GERRIETS AND GEORGE POOLE" (`continuity/depth-audit.json` entry `A-47-0089`). **To be confirmed from the paper's first page.**
+1. **Title.** Line 46 gives the [G1972] entry's title word for word. The 1974 Monthly paper by Gerriets and Poole is titled "Convex Regions which Cover Arcs of Constant Length" in Crossref's record for 10.2307/2318909, and the cited volume's catalogue snippet prints the title line "CONVEX REGIONS WHICH COVER ARCS OF CONSTANT LENGTH" with the byline "JOHN GERRIETS AND GEORGE POOLE" (`continuity/depth-audit.json` entry `A-47-0089`). MathSciNet MR0333991 gives the same title independently (table above).
 2. **DOI.** `10.2307/2318213` belongs to a different article. Crossref's record for it, read 2026-10-20: R. Redheffer, "Induced Transformations of the Derivative-Vector", The American Mathematical Monthly 83(4), 255–259, 1976. The DOI system's own handle record (`https://doi.org/api/handles/10.2307/2318213`, read 2026-10-20) carries HS_ALIAS `10.1080/00029890.1976.11994090` and the URL `https://www.jstor.org/stable/2318213?origin=crossref`. The 1974 paper's DOIs: `10.2307/2318909` (handle record: HS_ALIAS `10.1080/00029890.1974.11993494`), and Crossref's primary `10.1080/00029890.1974.11993494`. Crossref gives authors Gerriets and Poole, volume 81, issue 1, pages 36–41, year 1974 for both, matching the entry's other fields.
 
-## Recommended form: a PULL REQUEST, once the paper is read
+## Recommended form: a PULL REQUEST
 
-Upstream's `CONTRIBUTING.md` asks for Markdown-only pull requests. The 46a precedent (`docs/decisions/2026-10-07-A57-46a-attribution-correction-draft.md`) went as an issue because its replacement reference had not been read. Here the replacement is the same paper's own title and DOI, so once its first page is read, a PR asserts nothing unread. **If the paper cannot be read, the fallback is an issue that reports the DOI defect (settled by the DOI system's own records) and asks the maintainers to confirm the title.**
+Upstream's `CONTRIBUTING.md` asks for Markdown-only pull requests. The 46a precedent (`docs/decisions/2026-10-07-A57-46a-attribution-correction-draft.md`) went as an issue because its replacement reference had not been read and rested on one bibliographic record. Here the replacement title and DOI each rest on two or more independent bibliographic records (table above), and the PR says it relies on records, naming them. The paper's text is not needed for a title and a DOI, and nothing in the PR depends on it. The alternative, an issue asking the maintainers to confirm, remains available if David prefers it.
 
 ### The change, one line
 
@@ -37,16 +53,22 @@ Sentence case follows the file's other reference titles (lines 45, 51 and 52). T
 >
 > The [GP1974] entry in `constants/13a.md` has two errors.
 >
-> - Its title, "An improved solution to Moser’s worm problem", is the title of the [G1972] entry on the line above. The 1974 paper by Gerriets and Poole in the American Mathematical Monthly 81(1), 36–41, is titled "Convex regions which cover arcs of constant length".
-> - Its DOI, 10.2307/2318213, resolves to a different article: R. Redheffer, "Induced transformations of the derivative-vector", American Mathematical Monthly 83(4) (1976), 255–259. The 1974 paper's DOI is 10.2307/2318909, also registered as 10.1080/00029890.1974.11993494.
+> - Its title, "An improved solution to Moser’s worm problem", is the title of the [G1972] entry on the line above. The 1974 paper by Gerriets and Poole in the American Mathematical Monthly 81, 36–41, is titled "Convex regions which cover arcs of constant length" (MathSciNet MR0333991; Crossref).
+> - Its DOI, 10.2307/2318213, belongs to a different article: R. Redheffer, "Induced transformations of the derivative-vector", American Mathematical Monthly 83 (1976), no. 4, 255–259 (MathSciNet MR0409741; zbMATH 0338.05007; Crossref). The 1974 paper's DOI is 10.2307/2318909 (MathSciNet MR0333991; zbMATH 0279.52007; Crossref), also registered as 10.1080/00029890.1974.11993494.
 >
-> Authors, journal, volume, issue and pages are unchanged, since they already match the paper. The bound row citing [GP1974] is not changed.
+> Authors, journal, volume, year and pages are unchanged; they match the MathSciNet and Crossref records. The bound row citing [GP1974] is not changed.
 >
-> Sources: the paper's first page; Crossref's records for both DOIs; the DOI handle records at https://doi.org/api/handles/10.2307/2318213 and https://doi.org/api/handles/10.2307/2318909.
+> Records:
+> - https://api.crossref.org/works/10.2307/2318909
+> - https://api.crossref.org/works/10.2307/2318213
+> - https://mathscinet.ams.org/mrlookup?au=Gerriets&year=1974
+> - https://mathscinet.ams.org/mrlookup?au=Redheffer&year=1976
+> - https://api.zbmath.org/v1/document/_search?search_string=doi%3A10.2307%2F2318909
+> - https://api.zbmath.org/v1/document/_search?search_string=doi%3A10.2307%2F2318213
 >
-> AI use: prepared with the help of an AI assistant (Claude). The references were checked against the paper by [TO BE CONFIRMED BY DAVID BEFORE SENDING].
+> AI use: prepared with the help of an AI assistant (Claude). I checked the corrected title and both DOIs against the MathSciNet and Crossref records above.
 
-The AI-use paragraph is required by upstream's `CONTRIBUTING.md` ("AI use policy"), which also asks that the human contributor review and verify every reference. **That sentence must be true when sent: David reads the first page and the DOI records, or the sentence changes.**
+The AI-use paragraph is required by upstream's `CONTRIBUTING.md` ("AI use policy"), which also asks that the human contributor review and verify every reference. **Its second sentence is in David's voice and must be true when sent: he opens the MathSciNet and Crossref links above before saying yes, or the sentence changes.**
 
 ## What stays out of it
 
@@ -56,12 +78,12 @@ The AI-use paragraph is required by upstream's `CONTRIBUTING.md` ("AI use policy
 
 ## Upstream search
 
-- 2026-10-20: `gh search issues --repo teorth/optimizationproblems --include-prs` for "Gerriets" returned `[]`. A-47-0089 recorded the same search for "2318213" and "Gerriets" as empty on 2026-10-20 UTC. Positive control owed before sending: the same probe, run on a term that should match, returns rows.
+- 2026-10-20: `gh search issues --repo teorth/optimizationproblems --include-prs` for "Gerriets" returned `[]`. A-47-0089 recorded the same search for "2318213" and "Gerriets" as empty on 2026-10-20 UTC. Re-run about 16:30Z: "2318213" returned `[]`; positive control, the same probe for "13a" returned #223 and #136 ("fix: correct cross-links on C_1b and C_13a pages"), so the probe sees this repository's issues and pull requests. Re-run at send time.
 - Open PRs mentioning 13a (`--limit 200`): #223 only.
 
 ## Before sending (owed)
 
-1. The paper's first page read: title, byline, journal, volume, pages. If the bound 0.28610 is read too, record it on `A-47-0089` as a separate result. The Redheffer article's first page read: title, author, volume, issue, pages, matching what the DOI records say 10.2307/2318213 opens.
+1. ~~The papers' first pages read.~~ Replaced on David's 16:10Z reply by the two-source verification above.
 2. Codex refute-it review (read-only, workdir banner checked) of this file and the one-line diff, quoting David's condition verbatim from the board, with each sentence of the PR text tagged HOLDS / REFUTED-AS-WRITTEN / UNVERIFIABLE-HERE and the 0.28610 row confirmed untouched. Each finding gets a disposition.
 3. A claims pass on the PR text, sentence by sentence.
 4. Re-fetch upstream `constants/13a.md` at send time; confirm line 46 is unchanged and that no issue or PR has fixed it.
@@ -69,4 +91,4 @@ The AI-use paragraph is required by upstream's `CONTRIBUTING.md` ("AI use policy
 
 ## Review record
 
-None yet. HELD for the paper.
+None yet.
