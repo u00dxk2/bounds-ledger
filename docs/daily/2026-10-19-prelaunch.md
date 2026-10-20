@@ -140,6 +140,29 @@ node C:/dev/skylark/bounds-ledger/scripts/depth-audit.mjs --draw 50 100 150 200 
 - (c) state reads marked CROSSED — none: read every kickoff state line; none printed a crossed threshold (`missingLinkedCommits` was NOTHING SWEPT, 0 of 0, and could not be judged).
 - Also for the helper: A-82's readCommand is refused after the resnap (exit 3, above), and depth-audit's population and blindTo lines print the store's stale figures.
 
+### Round 3 (overnight) — P3, product-work loop
+
+**Action (improve, plus one live correction found while doing it):** `A-47`, the depth audit, under the manager's APPROVE (bus fe479165-e46f-47b1-9f46-2ced3de9164e); then `A-82`.
+
+**Implementation.** Commits on `main`: `11f7861`, `87924f2`, `f313857`, `a24ca04`, `e576851`, `e2c246a`.
+- `11f7861` — the denominator: all 51 audited pages said "against 691 rows that name a source"; the store's `meta.corpus` now records 726 / 826 / 100 / 117 (measured 2026-10-19), and `node scripts/depth-audit.mjs` reads "the stored 726 cited rows match the live corpus at this read".
+- `11f7861` — the manager's HYPOTHESIS (pages said "69 drawn by position", the audit read "79"): the gap was a defect, not a dedup. The 2026-10-18 resnap moved ten audited rows down one to three lines with their text unchanged; the renderer proves identity at the exact recorded line, so their verdicts (8 SOUND, 1 UNRESOLVED, 1 UNREACHABLE) rendered as "checked on an earlier version of the table". Each text matches exactly one line; `rowLine` re-pointed, the old value kept in `rowLineBefore2026_10_19`. Sibling sweep: line-number pins in `continuity/*.json` and `ledger/*.json`: one store, ten hits, all fixed.
+- `87924f2` — slice 20's draw (positions 50, 100, 150, 200, 250 on the offset-0 grid of the 726-row frame), claims named, pushed before any source was opened.
+- `f313857` — Codex round 2's prose findings (packet wording, the store's `denominatorProvenance`).
+- `a24ca04` — slice 20's five readings: 13a [GP1974] UNRESOLVED, 15b [WXXZ2024] SOUND, 1b [S1958] UNRESOLVED, 21a [O2000] SOUND, 29a [Cox1963] UNREACHABLE. `node scripts/depth-audit.mjs`: "93 audited, 58 sound, 1 defective, 24 unresolved, 10 unreachable" (was 88). 13a's reading found that the mirrored entry carries the title of the [G1972] entry above it and a DOI (10.2307/2318213) that Crossref resolves to a different 1976 article; verified by me on Crossref, rendered as a reference note on c/13a.html, nothing sent upstream. A-82: counts only on the row (1 SUPPORTS, 2 DOES NOT, 0 CANNOT TELL HERE); its readCommand now says why the 2026-10-16 check is refused since the resnap.
+- Tests: `npm test` exit 0 before `11f7861` and before `a24ca04`; `render-constant-pages --check` exit 0 after each commit; the pre-commit `render-site --check` passed each time.
+- Review: Codex read-only, foreground, banner workdir `C:\dev\skylark\bounds-ledger` each time. Round 1 VOID (I committed the draw while it ran; it stopped on the HEAD change with no findings). Round 2 on `c04bba3..87924f2`: no wrong re-point, bound text or denominator; 2 REPRODUCED + 1 STATIC prose findings and 1 gap, all CONFIRMED, fixed in `f313857`. Round 3 on `87924f2..a24ca04`: the five stored verdicts follow the brief; six text findings (one P1: A-82's note carried candidate-specific findings where only counts are allowed; three P2 on 13a and 21a wording; two P3), all CONFIRMED and fixed in `e576851`. Round 4 on `e576851`: all six FIXED, one new P3 (the A-82 recipe needed one pinned `--out`), CONFIRMED and fixed in `e2c246a`, a one-field change pushed without a fifth round.
+
+**Delivery.** `check-ci-status` GREEN for `reverify.yml` and `page-check.yml` on `f313857` and again on `e2c246a` (exit 0 each). `npm run served` on `f313857`: "56 checked — 56 served, 0 in flight, 0 stale, 0 unreachable"; on `e2c246a`: "2 checked — 2 served". Live read of c/15b, c/29a, c/1b and c/10a after the second push: each byte-equal to HEAD (line endings normalised) and carrying "84 row(s) have been drawn by position".
+
+**Encounter.** Blind: the pages have no analytics (`A-59`). The event that would show a reader met a verdict is an issue through that page's "looks wrong?" link (`npm run reports`, 2026-10-19: 0 outside arrivals, 34 of 34 issues ours).
+
+**Outcome.** Open; no read exists.
+
+**What remains:** `A-47` slice 21 (nine positions left on the offset-0 grid, 300 through 700), re-dated to 2026-10-22. `A-82`: its closeWhen is met; the close and a separate row for the reader-facing "newer results checked through" line are left to P5. The 13a citation defect is recorded, not filed: any upstream report is David's call.
+
+**Findings classification (one sentence, human judgment):** record-facing: 13a's mirrored citation names the wrong title and a DOI belonging to a different paper, found by a reading agent in the depth audit and verified on Crossref (a catch of the standing prediction's shape, as the 2026-10-14 20c author-name catch was); instrument-facing: the resnap silently demoted ten audited verdicts to "historical" and left the audit's denominator 35 rows stale, and nothing alarmed on either.
+
 ## What changed
 
 - Four constant pages gained a statement-checked note on OpenAI's math release: 74a (10-point Seshadri constant), 67a (Brennan's exponent), 34a (planar Falconer threshold), 25a (Mahler volume product). 84a's note was withdrawn and 7a's comparison row corrected, because both had turned false on the live site after the 2026-10-18 resnap.
