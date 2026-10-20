@@ -1,13 +1,13 @@
 # read-output sidecar for W-13 — written by check-due-gates-dispositioned --run
 # readCommand: npm run served
-# ran: 2026-10-20T06:42:35.839Z · exit: 0
-# lines: 11 · sha256: 89c19832c90de5e6 (first 16 hex of the output below)
+# ran: 2026-10-20T15:34:52.558Z · exit: 0
+# lines: 11 · sha256: a7c49645189621a9 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
 > bounds-ledger@0.0.0 served
 > node scripts/check-served.mjs
 
-# Served vs HEAD — 2026-10-20T06:42:35.310Z
+# Served vs HEAD — 2026-10-20T15:34:51.975Z
 anchor e576851845 (2026-10-19T23:56:07-06:00), the last commit to touch a published page; 2 file(s) it changed, of 120 published
 SERVED      c/13a.html  10469 bytes
 SERVED      c/21a.html  9402 bytes

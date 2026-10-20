@@ -22,16 +22,18 @@
  *   CHANGED   — on no line of the file. The row changed; the verdict is historical by design and
  *               the renderer already says so. Reported, never fatal (it must not turn the check
  *               permanently red).
- *   AMBIGUOUS — not at rowLine, on two or more other lines. Cannot say which is the row; reported
- *               for a person, not fatal, for the same reason as CHANGED.
- * A person who reads a MOVED hit and finds it is NOT the audited row (the 2026-09-13 shape) records
- * that on the entry as `lineMoveDeclined: { line: <n>, reason: "<why>" }`; that one line is then not
- * counted as a hit. A declined line that no longer holds the text is reported as stale and fails, so
- * a declination cannot outlive what it declined.
+ *   AMBIGUOUS — not at rowLine, on two or more other lines. Cannot say which is the row, and the
+ *               page shows the verdict as historical meanwhile, so a person must decide. EXIT 1
+ *               (manager review of P1, 2026-10-20: a non-fatal AMBIGUOUS was a stale page passing).
+ * A person who reads a MOVED or AMBIGUOUS hit and finds it is NOT the audited row (the 2026-09-13
+ * shape) records that on the entry as `lineMoveDeclined: { lines: [<n>, …], reason: "<why>" }`
+ * (`line: <n>` is accepted for one); those lines are then not counted as hits. A declined line that
+ * no longer holds the text is reported as stale and fails, so a declination cannot outlive what it
+ * declined; a declination with no valid line number or no reason is MALFORMED and refused.
  *
- * Exit: 0 clean · 1 a re-point is owed (or a stale declination) · 2 refused: the store unreadable,
- * no value-vs-source entry checked, or a mirror file unreadable. A zero from a dead read must never
- * look like a measured zero.
+ * Exit: 0 clean · 1 a re-point or a decision is owed (MOVED, AMBIGUOUS, or a stale declination) ·
+ * 2 refused: the store unreadable, a malformed entry, no value-vs-source entry checked, or a mirror
+ * file unreadable. A zero from a dead read must never look like a measured zero.
  *
  * Flags: --root <dir> (default: the repo; used by the red-arm on a scratch copy) · --selftest.
  */
@@ -57,12 +59,21 @@ export function classify(audits, readLines) {
     const hits = [];
     lines.forEach((l, i) => { if (l.trim() === want) hits.push(i + 1); });
     const dec = a.lineMoveDeclined;
-    const declined = dec && Number.isInteger(dec.line) ? dec.line : null;
-    if (declined !== null && !hits.includes(declined)) {
-      rows.push({ id: a.id, kind: "STALE-DECLINATION", file: a.rowFile, line: declined });
+    let declined = [];
+    if (dec !== undefined) {
+      const raw = dec && Array.isArray(dec.lines) ? dec.lines : dec && dec.line !== undefined ? [dec.line] : [];
+      if (!raw.length || !raw.every((n) => Number.isInteger(n) && n >= 1) || typeof dec.reason !== "string" || !dec.reason.trim()) {
+        rows.push({ id: a.id, kind: "MALFORMED" });
+        continue;
+      }
+      declined = raw;
+    }
+    const stale = declined.filter((n) => !hits.includes(n));
+    if (stale.length) {
+      rows.push({ id: a.id, kind: "STALE-DECLINATION", file: a.rowFile, line: stale.join(", ") });
       continue;
     }
-    const counted = hits.filter((n) => n !== declined);
+    const counted = hits.filter((n) => !declined.includes(n));
     if (counted.includes(a.rowLine)) { rows.push({ id: a.id, kind: "AT" }); continue; }
     const others = counted.filter((n) => n !== a.rowLine);
     if (others.length === 1) rows.push({ id: a.id, kind: "MOVED", file: a.rowFile, from: a.rowLine, to: others[0] });
@@ -101,7 +112,7 @@ export function run(root) {
     else if (r.kind === "AMBIGUOUS") out.push(`AMBIGUOUS  ${r.id} ${r.file}: not at line ${r.from}; the text is on lines ${r.lines.join(", ")} — a person decides which, if any, is the audited row`);
     else if (r.kind === "CHANGED") out.push(`CHANGED    ${r.id} ${r.file}: the row text is on no line of the file (was line ${r.from}) — the verdict is historical by design`);
     else if (r.kind === "UNREADABLE") out.push(`UNREADABLE ${r.id} ${r.file}: the mirror file could not be read`);
-    else if (r.kind === "MALFORMED") out.push(`MALFORMED  ${r.id}: rowFile, rowLine or rowText missing`);
+    else if (r.kind === "MALFORMED") out.push(`MALFORMED  ${r.id}: rowFile, rowLine or rowText missing, or a lineMoveDeclined without valid line numbers and a reason`);
   }
   const counts = { AT: n("AT"), MOVED: n("MOVED"), CHANGED: n("CHANGED"), AMBIGUOUS: n("AMBIGUOUS"), STALE: n("STALE-DECLINATION"), UNREADABLE: n("UNREADABLE"), MALFORMED: n("MALFORMED") };
   const sum = Object.values(counts).reduce((x, y) => x + y, 0);
@@ -109,7 +120,7 @@ export function run(root) {
   if (sum !== checked) { out.push("check-audit-lines: REFUSED — the classified parts do not sum to the entries checked"); return { code: 2, out }; }
   if (checked === 0) { out.push("check-audit-lines: REFUSED — no value-vs-source entry was checked, so a clean result would mean nothing"); return { code: 2, out }; }
   if (counts.UNREADABLE || counts.MALFORMED) return { code: 2, out };
-  if (counts.MOVED || counts.STALE) return { code: 1, out };
+  if (counts.MOVED || counts.AMBIGUOUS || counts.STALE) return { code: 1, out };
   return { code: 0, out };
 }
 
@@ -126,9 +137,13 @@ function selftest() {
       ["all at their line", [e("T1", 2, "| $1.0$ | [A] | |"), e("T2", 6, "| $4.0$ | [D] | |"), { id: "T0", leg: "citation-well-formed" }], 0, /2 value-vs-source entries checked — 2 at their line, 0 moved.*1 entry on other legs/],
       ["moved one line down", [e("T1", 2, "| $2.0$ | [B] | |")], 1, /MOVED +T1 .*re-point rowLine 2 -> 3/],
       ["changed row is not fatal", [e("T1", 2, "| $9.0$ | [Z] | |")], 0, /CHANGED +T1 .*historical by design/],
-      ["ambiguous is not fatal", [e("T1", 2, "| $3.0$ | [C] | |")], 0, /AMBIGUOUS +T1 .*lines 4, 5/],
+      ["ambiguous fails", [e("T1", 2, "| $3.0$ | [C] | |")], 1, /AMBIGUOUS +T1 .*lines 4, 5/],
       ["declined line is not a hit", [e("T1", 2, "| $2.0$ | [B] | |", { lineMoveDeclined: { line: 3, reason: "fixture" } })], 0, /CHANGED +T1/],
+      ["declining every ambiguous line clears it", [e("T1", 2, "| $3.0$ | [C] | |", { lineMoveDeclined: { lines: [4, 5], reason: "fixture" } })], 0, /CHANGED +T1/],
+      ["declining one of two ambiguous lines leaves a move", [e("T1", 2, "| $3.0$ | [C] | |", { lineMoveDeclined: { lines: [4], reason: "fixture" } })], 1, /MOVED +T1 .*2 -> 5/],
       ["stale declination fails", [e("T1", 2, "| $2.0$ | [B] | |", { lineMoveDeclined: { line: 5, reason: "fixture" } })], 1, /STALE +T1 .*line 5/],
+      ["declination without a reason is refused", [e("T1", 2, "| $2.0$ | [B] | |", { lineMoveDeclined: { line: 3 } })], 2, /MALFORMED  T1/],
+      ["declination with no valid line is refused", [e("T1", 2, "| $2.0$ | [B] | |", { lineMoveDeclined: { lines: [], reason: "fixture" } })], 2, /MALFORMED  T1/],
       ["no entry checked is refused", [{ id: "T0", leg: "citation-well-formed" }], 2, /REFUSED — no value-vs-source entry/],
       ["unreadable mirror file is refused", [{ ...e("T1", 2, "| $1.0$ | [A] | |"), rowFile: "ledger/x/missing.md" }], 2, /UNREADABLE T1/],
     ];

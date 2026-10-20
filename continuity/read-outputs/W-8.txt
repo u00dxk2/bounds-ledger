@@ -1,6 +1,6 @@
 # read-output sidecar for W-8 — written by check-due-gates-dispositioned --run
 # readCommand: gh search issues --repo teorth/optimizationproblems --author u00dxk2 --include-prs --limit 5
-# ran: 2026-10-20T06:42:34.225Z · exit: 0
+# ran: 2026-10-20T15:35:48.420Z · exit: 0
 # lines: 4 · sha256: b20d5add44c1ae88 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
