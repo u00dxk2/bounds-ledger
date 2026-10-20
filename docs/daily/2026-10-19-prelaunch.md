@@ -90,6 +90,56 @@ gh api "repos/openai/math/contents/lean/docs/039.md?ref=1581d4cbdd69a0faf34b2089
 
 **What remains on A-78** (re-dated to 2026-10-26): 18 unchecked pairs; families 077, 078 and 101 carry no `leanDoc`; 8a needs a second reader; onTrigger step (3), drafting upstream notes, was not done today.
 
+### Round 3 (overnight, 2026-10-19 MT) — Selection packet
+
+[P1 — Evidence and choice]
+
+**Outcome:** five more cited bound rows read against their sources, with each verdict on its public constant page, and every audited page's "counted against N rows" figure corrected from 691 to 726. Item: `A-47` (the depth audit: read our own cited rows against their sources). Second, also due 2026-10-20: `A-82` (the human read of the newer-paper candidates), its two CANNOT TELL HERE candidates.
+
+**The user problem, in the user's words:** "This page cites a paper for this bound. Did anyone actually open the paper and check it says that?" Tonight 84 of the 726 cited rows answer that on their page (88 stored entries; three rows were read twice, and one entry audits a reference-list line); the other 642 do not. And every audited page states its sample against "691 rows that name a source", a figure that has been wrong since the 2026-10-18 resnap.
+
+**Evidence** (each read tonight, 2026-10-19 MT):
+- OBSERVED · `node scripts/depth-audit.mjs --corpus` (exit 0) · the mirror at HEAD `c04bba3` · "826 bound row(s) across 117 constant file(s) — 726 cited, 100 uncited"; the partition, inventory, section and table-syntax checks all pass. Limit: the four checks are narrow, as the command says.
+- OBSERVED · `node scripts/depth-audit.mjs` (exit 0) · `continuity/depth-audit.json` · "88 audited, 56 sound, 1 defective, 22 unresolved, 9 unreachable", with "denominator check: ⚠ STALE — the store records 691 cited rows (measured 2026-09-27) but the live corpus enumerates 726; every public page that prints the stored figure is off by 35." The same read's population and blindTo lines still print "the 691 cited rows" and "the 97 UNCITED rows": they read the store, so they are stale by the same 35 and by 3.
+- OBSERVED · the held set, MEASURED and not taken from earlier offsets (slice 17's method): `node scripts/depth-audit.mjs --draw 1 … 726` (exit 0) → "store: 84 of 726 drawn position(s) land on a row already held, read against 88 audit store entries". Of the 88 entries, 87 audit bound rows and match a row in the new frame, 84 distinct positions (three rows were read twice); the 88th, A-47-0003, audits 87a's reference-list line (87a.md:44), which is outside the bound-row frame by construction, so nothing went missing in the resnap.
+- OBSERVED · `node scripts/arxiv-watch.mjs --check --area constants --out tmp/arxiv-watch/2026-10-16/constants` → "REFUSED — papers.json was fetched against a different mirror than the ledger holds", exit 3. The refusal is correct (the 10-18 resnap moved the mirror). The finding is that A-82's readCommand can no longer re-print its own counts.
+- OBSERVED · `npm run reports` (exit 0) · 34 issues fetched, 34 ours, 0 outside arrivals; parts reconcile 34 + 0 + 0 = 34. The bar's metric stays NOT MEASURABLE (`docs/evangelism-bar.md`).
+- HYPOTHESIS · that slice 20 lands like slices 17 to 19 (about half SOUND, the rest mostly UNRESOLVED). Nothing in the draw is known yet.
+- MISSING · any read of whether a visitor opens an audited page (no analytics; `A-59`, encounter blind on the public pages).
+
+**The slice-20 grid, derived on the 726-row frame BEFORE any draw** (pre-registered by this post's timestamp; no `--draw` of the slice's own positions has been run):
+Rule (slice 17's, unchanged): on the 50-step grid in the current frame, take the offset whose circular distance (mod 50) to the nearest residue of a held row is largest, lowest on a tie. Held residues mod 50 (41 distinct of 50): 1 4 5 6 7 8 9 10 11 13 14 15 16 17 18 20 21 22 23 24 25 26 27 29 31 32 33 34 36 37 38 39 40 41 42 43 44 45 46 47 48. Uncovered residues: 0 2 3 12 19 28 30 35 49. Every uncovered residue sits at distance 1 from the nearest held one, so all nine tie and the rule takes the lowest: **offset 0**. Grid: 50 100 150 200 250 300 350 400 450 500 550 600 650 700 (14 positions, none held). **Slice 20 takes the first five: 50 100 150 200 250.** The other nine are later slices. (Computed by a scratch script over the full-frame draw's holder lines; the full draw is saved at `tmp/a47-s20-fullframe.txt`.)
+
+**Permission:** `A-47` is open and owned by this lane, David-ruled 2026-09-09; rendering stored verdicts on the constant pages is the row's decided shape. Refreshing `meta.corpus` is what the denominator check itself prescribes. `A-82`: the read and its three counts are the row's own onTrigger; nothing renders, nothing goes upstream. Outward gate: the pages are public, so every push gets a cross-family (Codex) claims pass first. The "newer results checked through" line stays off tonight (it needs an adversarial review and David's yes). `node scripts/sky.mjs answered-cards.mjs --project bounds-ledger`: no unread David-word.
+
+**Next action** — kind: improve. (1) Commit and push the grid and the draw, then name each drawn row's claim, all before any source is opened. (2) Dispatch one reader per row; store SOUND / DEFECTIVE / UNRESOLVED / UNREACHABLE, each with a positive control from the same fetch. (3) Refresh `meta.corpus` from `--corpus`, re-render the constant pages, claims pass, push. (4) A-82: read the two CANNOT TELL HERE candidates against `tmp/arxiv-watch/2026-10-16/constants/a82-verdicts.md`, put counts only on the row, and re-point its readCommand to a command that still runs. First command:
+
+```
+node C:/dev/skylark/bounds-ledger/scripts/depth-audit.mjs --draw 50 100 150 200 250
+```
+
+**Acceptance condition:** `node scripts/depth-audit.mjs` prints an audited count above 88, and its denominator line reads "the stored 726 cited rows match the live corpus"; `node scripts/render-constant-pages.mjs --check` exits 0; `npm run check` is green after the commit; CI is green on the pushed tip for `reverify.yml` and `page-check.yml`; `npm run served` reports SERVED for every changed `c/` page; a live read of one audited page shows 726. A-82: the row carries three counts for the two candidates, and its readCommand exits 0 or names why it cannot.
+
+**Delivery and encounter checks:** delivery is `npm run served` after the push (in-flight window 300 s). Encounter is blind (`A-59`): the event that would show a reader met a verdict is an issue through that page's "looks wrong?" link, counted by `npm run reports`; at today's rate (0 outside arrivals) no N makes it readable this week.
+
+**USER-FACING: yes** — `continuity/depth-audit.json` (rendered on the pages), `c/<id>.html` for the five drawn constants and every audited page (the denominator), `index.html` if a row's verdict marker changes it, `continuity/items.json`.
+
+**Section 0:**
+- Primer: `docs/cold-starts/2026-10-19.md` read whole, banner included.
+- Listener: 🟢 SSE alive (hello 2026-10-20T04:21:06.689Z, slug bounds-ledger, `read-listener-strand` PASS) + loop armed by `ScheduleWakeup`; waker ladder ranks 1-3 relaunched this session.
+- Codex: GREEN (the kickoff's `[codex-probe: GREEN …]` line, 2026-10-20T04:14:19.693Z).
+- CI: `check-ci-status --workflow reverify.yml` GREEN and `--workflow page-check.yml` GREEN on `c04bba3` (exit 0 each). Deploy drift: a GitHub Pages lane with no Render service declared; neither a stop nor a pass.
+- Free memory 26.01 GB at start, above the orchestrator's 10 GB bar, so the full local `npm run verify` runs (in flight at post time).
+- Recs yesterday: today's day-round report § Recommendation is the prior one in this file.
+- Prior-day retro finding that bears on tonight: read a JSON entry's field by name through a parser. My first unmatched-entries script guessed the fingerprint field and reported all 88 as unmatched; reading the real key, `rowTextSha256`, gave one, explained above.
+- Due-gates baseline: `check-due-gates-dispositioned --snapshot` REFUSED (exit 2): the morning snapshot for 2026-10-19 exists and holds A-2, A-77, A-78, which have since been dispositioned. Left unchanged, as the prompt says.
+
+**HYGIENE INPUTS:**
+- (a) due rows not bearing on the choice — none: read the kickoff's "dated gates due today" (0 due on or before 2026-10-19).
+- (b) owed child rows — none: read the kickoff's "rows owed to you in skylark-site's ledger" (0 of 754).
+- (c) state reads marked CROSSED — none: read every kickoff state line; none printed a crossed threshold (`missingLinkedCommits` was NOTHING SWEPT, 0 of 0, and could not be judged).
+- Also for the helper: A-82's readCommand is refused after the resnap (exit 3, above), and depth-audit's population and blindTo lines print the store's stale figures.
+
 ## What changed
 
 - Four constant pages gained a statement-checked note on OpenAI's math release: 74a (10-point Seshadri constant), 67a (Brennan's exponent), 34a (planar Falconer threshold), 25a (Mahler volume product). 84a's note was withdrawn and 7a's comparison row corrected, because both had turned false on the live site after the 2026-10-18 resnap.
