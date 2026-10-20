@@ -10,12 +10,12 @@ Drafted 2026-10-20 (MT). **Nothing has been sent.** David said yes to drafting t
 
 | Field the correction asserts | Sources that agree | Count |
 |---|---|---|
-| Title of the 1974 paper: "Convex regions which cover arcs of constant length" | Crossref record for 10.2307/2318909; MathSciNet MR0333991 (free `mrlookup`, BibTeX `TITLE = {Convex regions which cover arcs of constant length}`); the cited volume's catalogue snippet (title line and byline, `A-47-0089`) | 3 |
-| 10.2307/2318909 is Gerriets and Poole, Monthly 81 (1974) | Crossref; MathSciNet MR0333991 (`DOI = {10.2307/2318909}`); zbMATH 0279.52007 (API: DOI link, author codes gerriets.john and poole.george-d, Monthly vol 81, 1974); the DOI handle record (HS_ALIAS 10.1080/00029890.1974.11993494) | 4 |
-| Also registered as 10.1080/00029890.1974.11993494 | Crossref (primary DOI); the DOI handle record for 10.2307/2318909 (HS_ALIAS) | 2 |
-| 10.2307/2318213 is R. Redheffer, "Induced transformations of the derivative-vector", Monthly 83 (1976), no. 4, 255–259 | Crossref; MathSciNet MR0409741 (all those fields); zbMATH 0338.05007 (DOI link, author code redheffer.raymond-m, Monthly vol 83, 1976; title and pages withheld by zbMATH's licence) | 3 |
+| Title of the 1974 paper: "Convex regions which cover arcs of constant length" | Crossref record for 10.2307/2318909; MathSciNet MR0333991 (free `mrlookup`, BibTeX `TITLE = {Convex regions which cover arcs of constant length}`). Corroboration only, not counted: the cited volume's catalogue snippet (title line and byline, `A-47-0089`) | 2 |
+| 10.2307/2318909 is Gerriets and Poole, Monthly 81 (1974) | Crossref; MathSciNet MR0333991 (`DOI = {10.2307/2318909}`); zbMATH 0279.52007 (API: DOI link, author codes gerriets.john and poole.george-d, Monthly vol 81, 1974). The DOI handle record agrees but is the same registration as Crossref, so it is not counted | 3 |
+| Also registered as 10.1080/00029890.1974.11993494 | Crossref and the DOI handle record, one registration chain | 1: REMOVED from the PR text (Codex A-87 round 1) |
+| 10.2307/2318213 is R. Redheffer, "Induced transformations of the derivative-vector", Monthly 83 (1976), no. 4, 255–259 | Crossref; MathSciNet MR0409741 (all those fields). zbMATH 0338.05007 agrees on the DOI, author, volume and year only (its licence withholds title and pages), so it is listed among the records but not cited for this sentence | 2 (3 for DOI, author, volume, year) |
 | Authors, journal, volume 81, year 1974, pages 36–41 (unchanged on the line) | Crossref; MathSciNet MR0333991 | 2 |
-| Issue no. 1 (unchanged on the line) | Crossref only (MathSciNet's record carries no issue) | 1: NOT asserted by the PR text, which names authors, journal, volume, year and pages only |
+| Issue no. 1 (unchanged on the line) | Crossref only (MathSciNet's record carries no issue; zbMATH's API returns an empty issue) | 1: NOT asserted by the PR text, which names authors, journal, volume, year and pages only. It stays on the line because the PR does not touch it, and the card names it as single-source for David |
 | What the paper proves (the 0.28610 row) | not claimed | out |
 
 Every URL the PR text cites was fetched at about 16:25Z and holds its record (HTTP 200 and the expected title or Zbl number in the body). zbMATH's web pages (`zbmath.org/?q=an:…`) answered 403 to a script, so the PR cites the zbMATH API query instead.
@@ -45,7 +45,7 @@ Upstream's `CONTRIBUTING.md` asks for Markdown-only pull requests. The 46a prece
 +- [GP1974] Gerriets, J.; Poole, G. *Convex regions which cover arcs of constant length.* American Mathematical Monthly 81 (1974), no. 1, 36–41. DOI: 10.2307/2318909.
 ```
 
-Sentence case follows the file's other reference titles (lines 45, 51 and 52). The DOI keeps the entry's existing `10.2307/` form, so only the number changes; the PR body names the primary `10.1080/` DOI too.
+Sentence case follows the file's other reference titles (lines 45, 51 and 52). The DOI keeps the entry's existing `10.2307/` form, so only the number changes. The PR body does not name the `10.1080/` form, which only one registration chain supports.
 
 ### The pull request, as it would be written
 
@@ -54,7 +54,7 @@ Sentence case follows the file's other reference titles (lines 45, 51 and 52). T
 > The [GP1974] entry in `constants/13a.md` has two errors.
 >
 > - Its title, "An improved solution to Moser’s worm problem", is the title of the [G1972] entry on the line above. The 1974 paper by Gerriets and Poole in the American Mathematical Monthly 81, 36–41, is titled "Convex regions which cover arcs of constant length" (MathSciNet MR0333991; Crossref).
-> - Its DOI, 10.2307/2318213, belongs to a different article: R. Redheffer, "Induced transformations of the derivative-vector", American Mathematical Monthly 83 (1976), no. 4, 255–259 (MathSciNet MR0409741; zbMATH 0338.05007; Crossref). The 1974 paper's DOI is 10.2307/2318909 (MathSciNet MR0333991; zbMATH 0279.52007; Crossref), also registered as 10.1080/00029890.1974.11993494.
+> - Its DOI, 10.2307/2318213, belongs to a different article: R. Redheffer, "Induced transformations of the derivative-vector", American Mathematical Monthly 83 (1976), no. 4, 255–259 (MathSciNet MR0409741; Crossref). The 1974 paper's DOI is 10.2307/2318909 (MathSciNet MR0333991; zbMATH 0279.52007; Crossref).
 >
 > Authors, journal, volume, year and pages are unchanged; they match the MathSciNet and Crossref records. The bound row citing [GP1974] is not changed.
 >
@@ -66,7 +66,7 @@ Sentence case follows the file's other reference titles (lines 45, 51 and 52). T
 > - https://api.zbmath.org/v1/document/_search?search_string=doi%3A10.2307%2F2318909
 > - https://api.zbmath.org/v1/document/_search?search_string=doi%3A10.2307%2F2318213
 >
-> AI use: prepared with the help of an AI assistant (Claude). I checked the corrected title and both DOIs against the MathSciNet and Crossref records above.
+> AI use: prepared with the help of an AI assistant (Claude). I checked the corrected reference, and both DOIs, against the MathSciNet and Crossref records linked above.
 
 The AI-use paragraph is required by upstream's `CONTRIBUTING.md` ("AI use policy"), which also asks that the human contributor review and verify every reference. **Its second sentence is in David's voice and must be true when sent: he opens the MathSciNet and Crossref links above before saying yes, or the sentence changes.**
 
@@ -91,4 +91,11 @@ The AI-use paragraph is required by upstream's `CONTRIBUTING.md` ("AI use policy
 
 ## Review record
 
-None yet.
+**Codex A-87 round 1, 2026-10-20, read-only, banner workdir C:\dev\skylark\bounds-ledger, head af3434f confirmed. Verdict: NOT SEND-READY.** Its sandbox could not fetch any of the six records, so every finding is STATIC, and its UNVERIFIABLE-HERE tags on the title, the two DOI mappings and the unchanged fields are a fact about its environment: the lead fetched all six on 2026-10-20 (REPRODUCED; each returned HTTP 200 with the expected title or Zbl number in the body). The cross-family reviewer did not independently re-fetch them, and that is disclosed on the card. Dispositions:
+
+1. The `10.1080/` alias rests on one registration chain: CONFIRMED, removed from the PR text.
+2. Issue `no. 1` on the + line has one source: CONFIRMED. Not changed by the PR, not asserted by its prose, named on the card as single-source.
+3. The table's counts were inflated (DOI handle not independent of Crossref; catalogue snippet uncited; zbMATH cannot support Redheffer's title or pages): CONFIRMED, counts corrected and zbMATH dropped from the Redheffer sentence.
+4. The AI-use sentence must cover the whole reference and David must compare, not just open: CONFIRMED, reworded to "the corrected reference, and both DOIs" (not David's words); the card lists the fields he compares.
+5. The MathSciNet URLs lack `format=bibtex`: DELIBERATE, the plain lookup page is human-readable and was checked to hold the title.
+6. Character-by-character: the + line differs from mirror line 46 only in the title and the DOI number (Codex, STATIC, confirmed). Line 16 (0.28610) untouched; nothing claims what either paper proves.
