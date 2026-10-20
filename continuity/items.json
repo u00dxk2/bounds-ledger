@@ -410,12 +410,12 @@
       "exercised2026_09_12": "FIRED TWICE TODAY on new detectors, which is what this standing watch is for. (1) The depth-audit draw fixes: six selftest cases covering a commented-out duplicate stealing a live row's line, an inline comment reporting line 0, and a frame the corpus check rejects - each with its silent half. (2) A-39's jitter: the suite asserts ten 429 draws are not identical AND carries the constant-rng control proving the assertion rejects a real condition, then red-armed through the production constant.",
       "updated": "2026-10-06",
       "readCommandTimeoutMs": 300000,
-      "readCommandLastRun": "2026-10-20T06:42:32.589Z",
+      "readCommandLastRun": "2026-10-20T15:35:42.878Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 32869,
+      "readCommandLastDurationMs": 43003,
       "readCommandLastOutputRef": {
         "lines": 77,
-        "sha256": "b8b55a1fd55dc744"
+        "sha256": "3ea5070587e740a8"
       },
       "disposition2026_09_22": "DISPOSITION 2026-09-22. STANDING WATCH, so it does not close; nextCheckDate is moved to 2026-10-06.\n\nTHE READ, literal, through the gate (check-due-gates-dispositioned --run W-4, exit 0, 166288ms; sidecar continuity/read-outputs/W-4.txt, line 83, below the output marker): \"39 workflow steps, piped steps pipefail-guarded; 31 self-tests present in CI\". POSITIVE CONTROL that the count moves when a detector is added: this row recorded \"23 workflow steps … 17 self-tests present in CI\" on 2026-08-25, so it rose by 14 self-tests in four weeks, and the suite still fails when a --selftest lacks a workflow step.\n\nINSTRUMENT FIX, made today: this readCommand had never been stampable. The runner killed it at 60 s, and the script runs 164 to 182 s. readCommandTimeoutMs is now 300000 here and on W-10.\n\nWHERE KP-78 BINDS TODAY: A-55's served-bytes check is a new detector and ships at P3. It owes both answers (a stale fixture fires, a fresh fixture is silent), with the mutation proved landed before either result is believed, and a CI workflow step for its selftest, or this suite fails.",
       "lastEvaluated": "2026-10-06"
@@ -675,9 +675,9 @@
       "dateRationale": "DATED 2026-08-22 by the lane, NOT by David, and flagged in the P4 post so it can be overruled. WHY IT NEEDED ONE: G-2 became the Tier-1 goal when G-1 closed this morning, and it carried no structured signal date — which is precisely the defect G-1's own signalPrestaged recorded on 2026-08-17 (a gate with no date is invisible to every date-based check, and a detector with no input can never fire). G-1 got a date that day and G-2 did not. The continuity endpoint independently flagged this row stale-actionable at 12 days on the same morning. 2026-09-22 matches G-3's cadence so the two goals read together.",
       "interimTarget2026_09_12": "A CONCRETE TARGET for this row's interim milestone surfaced today from the depth audit, recorded because the row has had none: 17a's current record cites a public repository holding code and a certificate for the diagonal Ramsey bound 3.791993699438612 (A-47-0009). Reproducing the CURRENT record with that verifier is exactly the milestone closeWhen names - prove the harness can score the known answer before trusting it on a new one. Not started, and not a commitment; the 2026-09-22 date is unchanged.",
       "updated": "2026-09-22",
-      "readCommandLastRun": "2026-10-20T06:42:36.820Z",
+      "readCommandLastRun": "2026-10-20T15:34:42.463Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 279,
+      "readCommandLastDurationMs": 481,
       "readCommandLastOutputRef": {
         "lines": 4,
         "sha256": "a60ee0a46b3d9c69"
@@ -1043,9 +1043,9 @@
       "linkedCommits": [
         "2bd8292"
       ],
-      "readCommandLastRun": "2026-10-20T06:42:34.225Z",
+      "readCommandLastRun": "2026-10-20T15:35:48.420Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 1152,
+      "readCommandLastDurationMs": 1251,
       "readCommandLastOutputRef": {
         "lines": 4,
         "sha256": "b20d5add44c1ae88"
@@ -2333,12 +2333,12 @@
       "linkedCommits": [
         "ea25512"
       ],
-      "readCommandLastRun": "2026-10-20T06:42:35.839Z",
+      "readCommandLastRun": "2026-10-20T15:34:52.558Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 1206,
+      "readCommandLastDurationMs": 1371,
       "readCommandLastOutputRef": {
         "lines": 11,
-        "sha256": "89c19832c90de5e6"
+        "sha256": "a7c49645189621a9"
       },
       "expectedSignalBy": "2026-10-20",
       "disposition2026_09_29": "DISPOSITION 2026-09-29. RE-DATED to 2026-10-06 by the hygiene helper's draft, as this row's onTrigger asks on exit 0. Two reads today, both literal. (1) The helper's --run, inside the helper's pass (its draft is stamped as finished at 13:44Z), anchored on 9ee0a9a: \"1 checked — 1 served, 0 in flight, 0 stale, 0 unreachable\", exit 0. That read was thin, since that commit touched one published file. (2) After slice 9's push, anchored on b2dbe8f (the last page-changing commit, 30 of 118 published files): \"30 checked — 30 served, 0 in flight, 0 stale, 0 unreachable\", \"RESULT: PASS — every file the last page-changing commit touched is being served as committed (exit 0)\". closeWhen (A) is still unmet: no served.yml workflow exists, so the row stays open.",
@@ -3115,7 +3115,9 @@
       "owner": "bounds-ledger",
       "links": "A-47",
       "nextCheckDate": "2026-10-22",
-      "readCommand": "node scripts/render-constant-pages.mjs --check (green today, and that is the defect: it compares pages with the store, so a page that is consistently stale passes)",
+      "readCommand": "node scripts/check-audit-lines.mjs (wired as check:lines in npm run check and verify:steps; exit 1 = a re-point is owed, 2 = refused)",
+      "readCommandBefore2026_10_20": "node scripts/render-constant-pages.mjs --check (green today, and that is the defect: it compares pages with the store, so a page that is consistently stale passes)",
+      "redArm2026_10_20": "BUILT 2026-10-20 MT (P3). Population before building: 91 value-vs-source entries, all at their line, plus 2 citation-well-formed entries (91 + 2 = 93, the depth audit's audited count). RED: a scratch copy of continuity/depth-audit.json and the mirror's constants/ with one blank line inserted above 13a.md line 16; `git diff --no-index --numstat` on 13a.md printed `1\t0` (the mutation landed). `node scripts/check-audit-lines.mjs --root <scratch>` exited 1 and printed `MOVED      A-47-0004 ledger/teorth-optimizationproblems/constants/13a.md: its row text is no longer at line 26 and is at line 27 only — re-point rowLine 26 -> 27 …` and `MOVED      A-47-0089 … no longer at line 16 and is at line 17 only — re-point rowLine 16 -> 17 …`, then `91 value-vs-source entries checked — 89 at their line, 2 moved, 0 changed, 0 ambiguous, 0 stale declination(s), 0 unreadable, 0 malformed (sum 91); 2 entries on other legs not checked`. RESTORE: scratch deleted; `node scripts/check-audit-lines.mjs` on the repo exited 0 with `91 value-vs-source entries checked — 91 at their line, 0 moved …`; `git status --porcelain` showed only the new script. Selftest: 9 cases PASS (move fails; changed and ambiguous do not; a declined line is not a hit; a stale declination fails; no entry checked, an unreadable mirror file and an unparseable store are refused). Its first run FAILED 1 of 9 on the selftest's own expected text, which was fixed in the fixture, not the check.",
       "onTrigger": "Build it red first. Put the check where a resnap cycle already looks: `npm run check` (the resnap ratchet's own gate). For every value-vs-source entry in continuity/depth-audit.json whose trimmed rowText is NOT at rowLine of rowFile, report the entry; when the exact text sits on exactly one OTHER line of the same file, name that line as the re-point (rowLine X -> Y, keep the old value in a dated field, as 11f7861 did by hand); when it sits nowhere, say the row changed and the verdict is historical by design. Exit nonzero on the first kind only (a re-point is owed and silent); the second kind is the renderer's intended behaviour and must not turn the check permanently red. Red-arm: move one audited row's text down a line in a scratch copy of the mirror, show the check fail naming that entry, restore, show it pass with the tree clean.",
       "closeWhen": "A committed check, run by `npm run check` (or `npm test` with a fixture), fails when an audited entry's exact row text sits on a different single line of its file than its rowLine, passes when every entry is at its line or its row genuinely changed, and both outputs are recorded on this row with the mutation proved landed (`git diff --numstat`).",
       "notes": "Minted 2026-10-19 MT at the round-3 close, on the manager's review (bus 77323a62-9dea-48b5-af81-7aa161b1e73b, defect 1: 'Mint it as a row with a closeWhen ... Leaving it in prose is not enough'). WHY: the 2026-10-18 resnap moved ten audited rows down one to three lines with their text unchanged; the renderer proves identity at the exact recorded line, so their verdicts (8 SOUND, 1 UNRESOLVED, 1 UNREACHABLE) rendered as 'checked on an earlier version of the table' on the public pages from the resnap until repository commit 11f7861 (2026-10-19 MT), while `render-constant-pages --check` stayed green and the ledger-wide figure under-stated the positional draw (69 shown, 79 true). Found by the manager's hypothesis question, not by any alarm.",
