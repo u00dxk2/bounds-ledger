@@ -56,7 +56,7 @@ Sentence case follows the file's other reference titles (lines 45, 51 and 52). T
 > - Its title, "An improved solution to Moser’s worm problem", is the title of the [G1972] entry on the line above. The 1974 paper by Gerriets and Poole in the American Mathematical Monthly 81, 36–41, is titled "Convex regions which cover arcs of constant length" (MathSciNet MR0333991; Crossref).
 > - Its DOI, 10.2307/2318213, belongs to a different article: R. Redheffer, "Induced transformations of the derivative-vector", American Mathematical Monthly 83 (1976), no. 4, 255–259 (MathSciNet MR0409741; Crossref). The 1974 paper's DOI is 10.2307/2318909 (MathSciNet MR0333991; zbMATH 0279.52007; Crossref).
 >
-> Authors, journal, volume, year and pages are unchanged; they match the MathSciNet and Crossref records. The bound row citing [GP1974] is not changed.
+> Authors, journal, volume, year and pages are unchanged; they match the MathSciNet and Crossref records. The issue number, also unchanged, matches Crossref and Referativnyi Zhurnal: Matematika (1974), which lists it as Amer. Math. Mon., 1974, vol. 81, No 1, pp. 36-41. The bound row citing [GP1974] is not changed.
 >
 > Records:
 > - https://api.crossref.org/works/10.2307/2318909
@@ -65,14 +65,13 @@ Sentence case follows the file's other reference titles (lines 45, 51 and 52). T
 > - https://mathscinet.ams.org/mrlookup?au=Redheffer&year=1976
 > - https://api.zbmath.org/v1/document/_search?search_string=doi%3A10.2307%2F2318909
 > - https://api.zbmath.org/v1/document/_search?search_string=doi%3A10.2307%2F2318213
+> - https://www.google.com/books/feeds/volumes?q=%22Convex+regions+which+cover+arcs+of+constant+length%22&max-results=20 (Google Books search; the Referativnyi Zhurnal: Matematika 1974 entry)
 >
-> AI use: prepared with the help of an AI assistant (Claude). I checked the corrected reference, and both DOIs, against the MathSciNet and Crossref records linked above.
+> AI use: prepared with the help of an AI assistant (Claude), which compared the corrected reference and both DOIs against the MathSciNet and Crossref records linked above. I reviewed the two MathSciNet records myself.
 
 The AI-use paragraph is required by upstream's `CONTRIBUTING.md` ("AI use policy"), which also asks that the human contributor review and verify every reference. **Its second sentence is in David's voice and must be true when sent: before sending, David compares the corrected reference and both DOI mappings against the linked MathSciNet and Crossref records; the first-person sentence stays only after he has done so.**
 
-**PENDING DAVID'S YES (card 65fc7648, 17:05Z): the AI-use paragraph changes to the line below, the only change to the text.** David opened the two MathSciNet records and supplied screenshots; the lane compared them field by field (both match) and checked Crossref, so the first-person sentence above would be untrue as written:
-
-> AI use: prepared with the help of an AI assistant (Claude), which compared the corrected reference and both DOIs against the MathSciNet and Crossref records linked above. I reviewed the two MathSciNet records myself.
+**PENDING DAVID'S YES on the full final text above (it changed after his 17:02Z yes):** the AI-use paragraph now says what happened. David opened the two MathSciNet records and supplied screenshots; the lane compared them field by field (both match) and checked Crossref, so the earlier first-person sentence would have been untrue. The issue number's two sources, Crossref and Referativnyi Zhurnal: Matematika (1974), are now named in the text and its records list, on the orchestrator's instruction.
 
 ## What stays out of it
 
@@ -90,7 +89,7 @@ The AI-use paragraph is required by upstream's `CONTRIBUTING.md` ("AI use policy
 1. ~~The papers' first pages read.~~ Replaced on David's 16:10Z reply by the two-source verification above.
 2. Codex refute-it review (read-only, workdir banner checked) of this file and the one-line diff, quoting David's condition verbatim from the board, with each sentence of the PR text tagged HOLDS / REFUTED-AS-WRITTEN / UNVERIFIABLE-HERE and the 0.28610 row confirmed untouched. Each finding gets a disposition.
 3. A claims pass on the PR text, sentence by sentence.
-4. Re-fetch upstream `constants/13a.md` at send time; confirm line 46 is unchanged and that no issue or PR has fixed it.
+4. Re-fetch every URL in the Records list at send time and confirm each still holds its record (the Google Books search ranks results, and on 2026-10-20 the Referativnyi Zhurnal entry fell outside the default 10, which is why the link asks for 20). Re-fetch upstream `constants/13a.md` at send time; confirm line 46 is unchanged and that no issue or PR has fixed it.
 5. Show David the final text and get his yes.
 
 ## Review record
