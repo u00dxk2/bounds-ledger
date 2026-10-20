@@ -410,12 +410,12 @@
       "exercised2026_09_12": "FIRED TWICE TODAY on new detectors, which is what this standing watch is for. (1) The depth-audit draw fixes: six selftest cases covering a commented-out duplicate stealing a live row's line, an inline comment reporting line 0, and a frame the corpus check rejects - each with its silent half. (2) A-39's jitter: the suite asserts ten 429 draws are not identical AND carries the constant-rng control proving the assertion rejects a real condition, then red-armed through the production constant.",
       "updated": "2026-10-06",
       "readCommandTimeoutMs": 300000,
-      "readCommandLastRun": "2026-10-06T16:22:38.301Z",
+      "readCommandLastRun": "2026-10-20T06:42:32.589Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 236107,
+      "readCommandLastDurationMs": 32869,
       "readCommandLastOutputRef": {
         "lines": 77,
-        "sha256": "a4fb3e7dcb932430"
+        "sha256": "b8b55a1fd55dc744"
       },
       "disposition2026_09_22": "DISPOSITION 2026-09-22. STANDING WATCH, so it does not close; nextCheckDate is moved to 2026-10-06.\n\nTHE READ, literal, through the gate (check-due-gates-dispositioned --run W-4, exit 0, 166288ms; sidecar continuity/read-outputs/W-4.txt, line 83, below the output marker): \"39 workflow steps, piped steps pipefail-guarded; 31 self-tests present in CI\". POSITIVE CONTROL that the count moves when a detector is added: this row recorded \"23 workflow steps … 17 self-tests present in CI\" on 2026-08-25, so it rose by 14 self-tests in four weeks, and the suite still fails when a --selftest lacks a workflow step.\n\nINSTRUMENT FIX, made today: this readCommand had never been stampable. The runner killed it at 60 s, and the script runs 164 to 182 s. readCommandTimeoutMs is now 300000 here and on W-10.\n\nWHERE KP-78 BINDS TODAY: A-55's served-bytes check is a new detector and ships at P3. It owes both answers (a stale fixture fires, a fresh fixture is silent), with the mutation proved landed before either result is believed, and a CI workflow step for its selftest, or this suite fails.",
       "lastEvaluated": "2026-10-06"
@@ -675,9 +675,9 @@
       "dateRationale": "DATED 2026-08-22 by the lane, NOT by David, and flagged in the P4 post so it can be overruled. WHY IT NEEDED ONE: G-2 became the Tier-1 goal when G-1 closed this morning, and it carried no structured signal date — which is precisely the defect G-1's own signalPrestaged recorded on 2026-08-17 (a gate with no date is invisible to every date-based check, and a detector with no input can never fire). G-1 got a date that day and G-2 did not. The continuity endpoint independently flagged this row stale-actionable at 12 days on the same morning. 2026-09-22 matches G-3's cadence so the two goals read together.",
       "interimTarget2026_09_12": "A CONCRETE TARGET for this row's interim milestone surfaced today from the depth audit, recorded because the row has had none: 17a's current record cites a public repository holding code and a certificate for the diagonal Ramsey bound 3.791993699438612 (A-47-0009). Reproducing the CURRENT record with that verifier is exactly the milestone closeWhen names - prove the harness can score the known answer before trusting it on a new one. Not started, and not a commitment; the 2026-09-22 date is unchanged.",
       "updated": "2026-09-22",
-      "readCommandLastRun": "2026-09-22T13:14:37.269Z",
+      "readCommandLastRun": "2026-10-20T06:42:36.820Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 1106,
+      "readCommandLastDurationMs": 279,
       "readCommandLastOutputRef": {
         "lines": 4,
         "sha256": "a60ee0a46b3d9c69"
@@ -1043,12 +1043,12 @@
       "linkedCommits": [
         "2bd8292"
       ],
-      "readCommandLastRun": "2026-10-06T16:14:58.544Z",
+      "readCommandLastRun": "2026-10-20T06:42:34.225Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 17250,
+      "readCommandLastDurationMs": 1152,
       "readCommandLastOutputRef": {
-        "lines": 3,
-        "sha256": "124cff4897321f29"
+        "lines": 4,
+        "sha256": "b20d5add44c1ae88"
       },
       "disposition2026_09_22": "DISPOSITION 2026-09-22. CONTRADICTION FIRST: the row was written expecting Branch 0 (an empty send window), and the window was NOT empty. Pull request #194 went to teorth/optimizationproblems on 2026-09-21. So Branch 0 does not apply.\n\nBUT THE CASE THIS ROW EXISTS FOR DID NOT ARISE EITHER. W-8 is about an artifact materially amended AFTER David has seen it. For #194 the order was reversed: both adversarial rounds ran BEFORE the card reached his board (A-51.cardFiled2026_09_21: round 1 rewrote two pre-send checks, round 2 cleared them, then the card was filed), and he approved the reviewed draft verbatim at 16:30:11Z. After his \"Yes\", the only change was the commit's author identity (a personal email replaced with the noreply one, A-51 notes). Under note2's definition, that is neither the claim, the method sentence nor the channel. So no material amendment happened after his approval, and the one-line question could not be asked live.\n\nTHE STRUCTURAL OBSERVATION WORTH KEEPING: putting the adversarial review before the card, rather than after it, removes the question by construction, because David then approves the final artifact. The question only returns if something must change after his approval.\n\nINSTRUMENT FIX, made today. The old readCommand (gh issue list) was BLIND to pull requests. Run through the gate this morning, it printed only #150 while #194 was open upstream, and its positive control (#150 present) still held while it missed the very send the row watches. Replaced with gh search issues --include-prs. Re-run through the gate: exit 0, \"pr … 194 open\", \"issue … 150 closed\", \"pr … 141 merged\". That run took 58784 ms against the gate's 60000 ms default, so readCommandTimeoutMs is set to 120000 on this row. Otherwise the next run would time out and read as a miss.\n\nRE-DATED to 2026-10-06, the next send window. The lane sends about twice a month, and the next candidate sends (A-47 slice 6's three found-not-filed citation discrepancies) wait on upstream's answer to #194, which W-12 reads on 2026-09-28. The conservative default in note2 governs every send in the meantime.",
       "readCommandTimeoutMs": 120000
@@ -2333,12 +2333,12 @@
       "linkedCommits": [
         "ea25512"
       ],
-      "readCommandLastRun": "2026-10-13T17:39:23.815Z",
+      "readCommandLastRun": "2026-10-20T06:42:35.839Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 26341,
+      "readCommandLastDurationMs": 1206,
       "readCommandLastOutputRef": {
-        "lines": 17,
-        "sha256": "68fc1e071c609ad6"
+        "lines": 11,
+        "sha256": "89c19832c90de5e6"
       },
       "expectedSignalBy": "2026-10-20",
       "disposition2026_09_29": "DISPOSITION 2026-09-29. RE-DATED to 2026-10-06 by the hygiene helper's draft, as this row's onTrigger asks on exit 0. Two reads today, both literal. (1) The helper's --run, inside the helper's pass (its draft is stamped as finished at 13:44Z), anchored on 9ee0a9a: \"1 checked — 1 served, 0 in flight, 0 stale, 0 unreachable\", exit 0. That read was thin, since that commit touched one published file. (2) After slice 9's push, anchored on b2dbe8f (the last page-changing commit, 30 of 118 published files): \"30 checked — 30 served, 0 in flight, 0 stale, 0 unreachable\", \"RESULT: PASS — every file the last page-changing commit touched is being served as committed (exit 0)\". closeWhen (A) is still unmet: no served.yml workflow exists, so the row stays open.",
