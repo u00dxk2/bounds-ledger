@@ -2,7 +2,7 @@
 
 Drafted 2026-10-20 (MT). **Nothing has been sent.** David said yes to drafting this on board card 5d5d4962 (bus c853b6d9-1e76-4a8a-87eb-f1bbfa6971e2, typed 14:10:03Z): draft it, run a full adversarial review, be fully certain of it, and show him the text before anything is sent; and if a paper cannot be opened, hold so that he can get it (paraphrased; his words are not quoted in this public repository).
 
-**HELD:** the 1974 paper itself has not been opened. On 2026-10-20 at about 15:20Z, doi.org and Taylor & Francis answered 403, JSTOR served a bot-challenge page, and Semantic Scholar and the Wayback Machine answered 429. OpenAlex lists no open copy. The proposed title rests on Crossref and on a catalogue snippet of the cited volume, not on the paper's own first page. Under David's condition that is not enough, so the review waits until the paper is in hand.
+**HELD:** the 1974 paper itself has not been opened. On 2026-10-20 at about 15:20Z, doi.org and Taylor & Francis answered 403, JSTOR served a bot-challenge page, and Semantic Scholar and the Wayback Machine answered 429. OpenAlex lists no open copy. The proposed title rests on Crossref and on a catalogue snippet of the cited volume, not on the paper's own first page. Under David's condition that is not enough, so the review waits until the paper is in hand. The orchestrator's kickoff for 2026-10-20 asks for BOTH papers to be opened, the wrongly-linked 1976 Redheffer article too. It was not reachable either (doi.org and Taylor & Francis 403, JSTOR challenge page, about 15:21Z). David's board card de2d2d07 now asks for both, saved to `tmp/papers/gerriets-poole-1974.pdf` and `tmp/papers/redheffer-1976.pdf` (never committed).
 
 ## What the entry says now
 
@@ -61,8 +61,8 @@ The AI-use paragraph is required by upstream's `CONTRIBUTING.md` ("AI use policy
 
 ## Before sending (owed)
 
-1. The paper's first page read: title, byline, journal, volume, pages. If the bound 0.28610 is read too, record it on `A-47-0089` as a separate result.
-2. Codex refute-it review (read-only, workdir banner checked) of this file and the one-line diff, quoting David's condition. Each finding gets a disposition.
+1. The paper's first page read: title, byline, journal, volume, pages. If the bound 0.28610 is read too, record it on `A-47-0089` as a separate result. The Redheffer article's first page read: title, author, volume, issue, pages, matching what the DOI records say 10.2307/2318213 opens.
+2. Codex refute-it review (read-only, workdir banner checked) of this file and the one-line diff, quoting David's condition verbatim from the board, with each sentence of the PR text tagged HOLDS / REFUTED-AS-WRITTEN / UNVERIFIABLE-HERE and the 0.28610 row confirmed untouched. Each finding gets a disposition.
 3. A claims pass on the PR text, sentence by sentence.
 4. Re-fetch upstream `constants/13a.md` at send time; confirm line 46 is unchanged and that no issue or PR has fixed it.
 5. Show David the final text and get his yes.
