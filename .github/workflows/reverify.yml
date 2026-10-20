@@ -292,7 +292,7 @@ jobs:
       # A-85: an audited row whose text moved to another line (a resnap inserting rows above it)
       # renders as historical while every other check stays green, as ten did on 2026-10-18. The
       # live check runs in `npm run check`, where a resnap is checked; here only its selftest runs,
-      # network-free: a move fails, a changed or ambiguous row does not, and an empty store refuses.
+      # network-free: a move or an ambiguous row fails, a changed row does not, an empty store refuses.
       - name: Self-test audited-row line check (no network)
         run: node scripts/check-audit-lines.mjs --selftest
       # A-48's citation-footprint reader. The distinction it exists to keep is BLOCKED vs a
