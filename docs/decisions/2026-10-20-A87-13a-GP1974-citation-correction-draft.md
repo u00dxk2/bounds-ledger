@@ -70,6 +70,10 @@ Sentence case follows the file's other reference titles (lines 45, 51 and 52). T
 
 The AI-use paragraph is required by upstream's `CONTRIBUTING.md` ("AI use policy"), which also asks that the human contributor review and verify every reference. **Its second sentence is in David's voice and must be true when sent: before sending, David compares the corrected reference and both DOI mappings against the linked MathSciNet and Crossref records; the first-person sentence stays only after he has done so.**
 
+**PENDING DAVID'S YES (card 65fc7648, 17:05Z): the AI-use paragraph changes to the line below, the only change to the text.** David opened the two MathSciNet records and supplied screenshots; the lane compared them field by field (both match) and checked Crossref, so the first-person sentence above would be untrue as written:
+
+> AI use: prepared with the help of an AI assistant (Claude), which compared the corrected reference and both DOIs against the MathSciNet and Crossref records linked above. I reviewed the two MathSciNet records myself.
+
 ## What stays out of it
 
 - The bound 0.28610 itself. `A-47-0089` is UNRESOLVED on the value: the cited edition's snippets reached do not print 0.28610. A 1974 Mathematical Reviews entry by Chakerian includes "(.2861) L2", but its omitted text leaves open which shape that figure applies to. The PR corrects the reference only and claims nothing about the value. If the paper is read, the value check is a separate result for `A-47`.
