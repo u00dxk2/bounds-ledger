@@ -149,7 +149,7 @@ node C:/dev/skylark/bounds-ledger/scripts/depth-audit.mjs --draw 50 100 150 200 
 - `11f7861` — the manager's HYPOTHESIS (pages said "69 drawn by position", the audit read "79"): the gap was a defect, not a dedup. The 2026-10-18 resnap moved ten audited rows down one to three lines with their text unchanged; the renderer proves identity at the exact recorded line, so their verdicts (8 SOUND, 1 UNRESOLVED, 1 UNREACHABLE) rendered as "checked on an earlier version of the table". Each text matches exactly one line; `rowLine` re-pointed, the old value kept in `rowLineBefore2026_10_19`. Sibling sweep: line-number pins in `continuity/*.json` and `ledger/*.json`: one store, ten hits, all fixed.
 - `87924f2` — slice 20's draw (positions 50, 100, 150, 200, 250 on the offset-0 grid of the 726-row frame), claims named, pushed before any source was opened.
 - `f313857` — Codex round 2's prose findings (packet wording, the store's `denominatorProvenance`).
-- `a24ca04` — slice 20's five readings: 13a [GP1974] UNRESOLVED, 15b [WXXZ2024] SOUND, 1b [S1958] UNRESOLVED, 21a [O2000] SOUND, 29a [Cox1963] UNREACHABLE. `node scripts/depth-audit.mjs`: "93 audited, 58 sound, 1 defective, 24 unresolved, 10 unreachable" (was 88). 13a's reading found that the mirrored entry carries the title of the [G1972] entry above it and a DOI (10.2307/2318213) that Crossref resolves to a different 1976 article; verified by me on Crossref, rendered as a reference note on c/13a.html, nothing sent upstream. A-82: counts only on the row (1 SUPPORTS, 2 DOES NOT, 0 CANNOT TELL HERE); its readCommand now says why the 2026-10-16 check is refused since the resnap.
+- `a24ca04` — slice 20's five readings: 13a [GP1974] UNRESOLVED, 15b [WXXZ2024] SOUND, 1b [S1958] UNRESOLVED, 21a [O2000] SOUND, 29a [Cox1963] UNREACHABLE. `node scripts/depth-audit.mjs`: "93 audited, 58 sound, 1 defective, 24 unresolved, 10 unreachable" (was 88). 13a's reading found that the mirrored entry carries the title of the [G1972] entry above it and a DOI (10.2307/2318213) that Crossref resolves to a different 1976 article; verified by me on Crossref, rendered as a reference note on c/13a.html, nothing sent upstream. A-82: `a24ca04` recorded the tally (1 SUPPORTS, 2 DOES NOT, 0 CANNOT TELL HERE) and `e576851` cut that paragraph to the counts and an evidence pointer; its readCommand now says why the 2026-10-16 check is refused since the resnap.
 - Tests: `npm test` exit 0 before `11f7861` and before `a24ca04`; `render-constant-pages --check` exit 0 after each commit; the pre-commit `render-site --check` passed each time.
 - Review: Codex read-only, foreground, banner workdir `C:\dev\skylark\bounds-ledger` each time. Round 1 VOID (I committed the draw while it ran; it stopped on the HEAD change with no findings). Round 2 on `c04bba3..87924f2`: no wrong re-point, bound text or denominator; 2 REPRODUCED + 1 STATIC prose findings and 1 gap, all CONFIRMED, fixed in `f313857`. Round 3 on `87924f2..a24ca04`: the five stored verdicts follow the brief; six text findings (one P1: A-82's note carried candidate-specific findings where only counts are allowed; three P2 on 13a and 21a wording; two P3), all CONFIRMED and fixed in `e576851`. Round 4 on `e576851`: all six FIXED, one new P3 (the A-82 recipe needed one pinned `--out`), CONFIRMED and fixed in `e2c246a`, a one-field change pushed without a fifth round.
 
@@ -161,7 +161,7 @@ node C:/dev/skylark/bounds-ledger/scripts/depth-audit.mjs --draw 50 100 150 200 
 
 **What remains:** `A-47` slice 21 (nine positions left on the offset-0 grid, 300 through 700), re-dated to 2026-10-22. `A-82`: its closeWhen is met; the close and a separate row for the reader-facing "newer results checked through" line are left to P5. The 13a citation defect is recorded, not filed: any upstream report is David's call.
 
-**Findings classification (one sentence, human judgment):** record-facing: 13a's mirrored citation names the wrong title and a DOI belonging to a different paper, found by a reading agent in the depth audit and verified on Crossref (a catch of the standing prediction's shape, as the 2026-10-14 20c author-name catch was); instrument-facing: the resnap silently demoted ten audited verdicts to "historical" and left the audit's denominator 35 rows stale, and nothing alarmed on either.
+**Findings classification (one sentence, human judgment):** record-facing: 13a's mirrored citation names the wrong title and a DOI belonging to a different paper, found by a reading agent in the depth audit and verified on Crossref (a catch of the standing prediction's shape, as the 2026-10-14 20c author-name catch was); instrument-facing: the resnap silently demoted ten audited verdicts to "historical" (nothing warned on that), and left the audit's denominator 35 rows stale, which the audit read did warn about while still printing PASS.
 
 ## What changed
 
@@ -223,3 +223,27 @@ Against the manager's REDIRECT acceptance (bus d9b6f6ba reviewed it COMPLETED, a
 **Hygiene draft:** 2 lines, 0 accepted · 2 amended · 0 rejected. READ-MUTATED: none. check-wait-justification PASS (1 of 102 rows carry one); check-engineering-zero PASS, 0 findings for this lane.
 
 **Pending reads:** 2026-10-20 `A-47` slice 20 and `A-82`; 2026-10-22 `A-83`; 2026-10-25 `A-45`, `A-84`; 2026-10-26 `A-78`, `A-77`, `A-2`. Encounter on the new notes stays blind (`A-59`).
+
+## Close — round 3 (overnight, closed 2026-10-20 early MT)
+
+ACTION: COMPLETED · item A-47 (the depth audit) · P3 bus 9aee655d-badc-441b-8546-f8c7563ef603
+
+Met against the P1 acceptance condition (bus c0116d01-dacd-48cd-aa2f-57ede124c43f), per the manager's review (bus 77323a62-9dea-48b5-af81-7aa161b1e73b, COMPLETED): `node scripts/depth-audit.mjs` prints 93 audited (above 88) and "the stored 726 cited rows match the live corpus at this read"; the live pages read "84 row(s) have been drawn by position, against 726 rows that name a source".
+
+**Corrected public number, recorded as one:** the ledger-wide "drawn by position" figure on every audited page UNDER-STATED the positional draw from the 2026-10-18 resnap until repository commit 11f7861: it printed 69 while 79 rows had been drawn, because ten verdicts rendered as historical. It now reads 84 (79 restored plus slice 20's five).
+
+**Changed since the P3 post:** Codex round 5 (read-only, banner workdir C:\dev\skylark\bounds-ledger) gave the two commits that shipped without an other-family reader, repository commits e2c246a and 4ad7c29, their claims pass: two wording findings, both CONFIRMED and fixed in this close commit (the A-82 sentence now names the commit that cut it to counts; the classification sentence now says the audit read did warn about the stale denominator, while still printing PASS). Everything else HOLDS or is UNVERIFIABLE-HERE as an execution record.
+
+**Ledger delta** (`node scripts/sky.mjs continuity-edit.mjs`):
+- A-82 CLOSED: its closeWhen met; close-sweep hits listed in its close note (origin attributions in code, the open A-84's link, dated reports).
+- A-85 MINTED: a check that fails when a resnap moves an audited row off its recorded line (the manager's defect 1). Dated 2026-10-22.
+- A-86 MINTED: owner of the newer-results store and its evaluator after A-82, and the outward "newer results checked through" line. Dated 2026-10-26.
+- A-47: slice20Draw and slice20Result fields; nextCheckDate 2026-10-22 (slice 21: positions 300, 350, 400, 450, 500 on the offset-0 grid of the 726-row frame).
+- Hygiene draft: 0 lines (wait-justification PASS, 1 of 102 rows carry it; engineering-zero PASS, 0 findings).
+- Due gates: `check-due-gates-dispositioned --today=2026-10-19` "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT (taken 2026-10-19).
+
+**For David:** board card 5d5d4962 (bus c853b6d9-1e76-4a8a-87eb-f1bbfa6971e2) asks whether to draft an upstream correction of 13a's [GP1974] citation; recommended reply: draft it, review it, show him the text before anything is sent. Nothing was sent.
+
+**Pending reads:** 2026-10-20 the standing reads G-2 (the goal of contributing a verified bound improvement), W-13 (someone calls the served-bytes check), W-4 (every new detector shows both answers) and W-8 (does an amended outward text go back to David before it sends); 2026-10-22 A-47 slice 21, A-85 (the line-drift check) and A-83 (upstream's own open pull requests in the watch); 2026-10-25 A-45 (the leading indicator) and A-84 (the store refusal moved ahead of the row build); 2026-10-26 A-78 (OpenAI's math release mapped onto the watched constants), A-77 (who calls the filed-report check), A-2 (the drift-resolution log) and A-86 (the newer-results store and its "checked through" line). Encounter on the audited pages stays blind (A-59, no analytics on the pages).
+
+USER-VISIBLE: unchanged since P3 (bus 9aee655d-badc-441b-8546-f8c7563ef603); no bracket moved.
