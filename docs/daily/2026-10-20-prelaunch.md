@@ -111,3 +111,4 @@ As of the close, from live commands (this report cannot name the commit that lan
 - `npm run verify`: exit 0 at `eaf5162` (tmp/.verify-receipt.json, 16:55:23Z), the last commit to touch code; every commit since touches only docs/ and continuity/.
 - CI at `eaf5162`: `check-ci-status --workflow reverify.yml` GREEN and `--workflow page-check.yml` GREEN. Release: re-run both for the close commit's sha.
 - `A-85` (the audited-row line check): closed. `A-87`: open, waiting on David.
+- Later, after the close: A-87 (the 13a citation fix) was SENT as https://github.com/teorth/optimizationproblems/pull/244 (created 2026-10-20T18:25:00Z, `gh pr view 244 --repo teorth/optimizationproblems --json createdAt`) once David attested the reference checks on card 6360dbc2, and closed.
