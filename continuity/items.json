@@ -676,9 +676,9 @@
       "dateRationale": "DATED 2026-08-22 by the lane, NOT by David, and flagged in the P4 post so it can be overruled. WHY IT NEEDED ONE: G-2 became the Tier-1 goal when G-1 closed this morning, and it carried no structured signal date — which is precisely the defect G-1's own signalPrestaged recorded on 2026-08-17 (a gate with no date is invisible to every date-based check, and a detector with no input can never fire). G-1 got a date that day and G-2 did not. The continuity endpoint independently flagged this row stale-actionable at 12 days on the same morning. 2026-09-22 matches G-3's cadence so the two goals read together.",
       "interimTarget2026_09_12": "A CONCRETE TARGET for this row's interim milestone surfaced today from the depth audit, recorded because the row has had none: 17a's current record cites a public repository holding code and a certificate for the diagonal Ramsey bound 3.791993699438612 (A-47-0009). Reproducing the CURRENT record with that verifier is exactly the milestone closeWhen names - prove the harness can score the known answer before trusting it on a new one. Not started, and not a commitment; the 2026-09-22 date is unchanged.",
       "updated": "2026-10-20",
-      "readCommandLastRun": "2026-10-20T15:34:42.463Z",
+      "readCommandLastRun": "2026-10-21T19:49:11.407Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 481,
+      "readCommandLastDurationMs": 338,
       "readCommandLastOutputRef": {
         "lines": 4,
         "sha256": "a60ee0a46b3d9c69"
@@ -2820,9 +2820,9 @@
       "closeWhen": "A maintainer comment or a close of issue 218 is recorded on this row, with its date and the drift cycle's resolving sha if the record moved; or David decides the watch ends.",
       "created": "2026-10-08",
       "updated": "2026-10-12",
-      "readCommandLastRun": "2026-10-14T18:13:38.796Z",
+      "readCommandLastRun": "2026-10-21T19:49:22.306Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 17651,
+      "readCommandLastDurationMs": 1608,
       "readCommandLastOutputRef": {
         "lines": 1,
         "sha256": "3440f024463a5fa0"
@@ -2873,7 +2873,7 @@
     {
       "id": "A-76",
       "type": "active",
-      "status": "open",
+      "status": "closed",
       "title": "Are other upper-bound rows printed as a decimal that sits BELOW the exact bound their source proves?",
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-10-21",
@@ -2884,9 +2884,9 @@
       "note": "Opened 2026-10-11 MT at the cycle-6 close, on the manager's review (inbox 309ff964). Origin: 87a (A-47-0075, UNRESOLVED). The row lists 1058.565; the paper proves 4√70035 = 1058.565066…, printed 1058,565…. Rounded to three decimals the row agrees. Read as an exact upper bound it is about 0.0000665 BELOW the paper's, which would be a claim the paper does not make. The paper cannot say which reading the row means. The same shape can sit on any upper-bound row whose listed decimal stands for an irrational or long exact value, and nothing has looked. A lower-bound row cut downward is harmless; only an upper bound cut downward, or a lower bound cut upward, overstates.",
       "onTrigger": "On 2026-10-14 or the next depth-audit round, whichever comes first: decide whether to count the population. That means bound rows whose cell gives a decimal next to an exact expression, or whose credited source states an exact value. If yes, list them with a committed script, and for each compare the decimal against the exact value in the direction the bound runs. Report the count found and the count checked, never 'none' without the search space. If no, re-date with the reason. Any finding is a question for upstream about display convention, so it goes through the outward gate. It is never a correction we send.",
       "closeWhen": "The population is counted by a committed script with its search space stated, and each member is classified as agreeing with its source in the bound's direction, cut against it, or unknown; or this row is closed with a written decision not to look.",
-      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/depth-audit.mjs --corpus — prints the bound-row population this question would be drawn from; the sibling count itself has no script yet, so this row is open until one exists",
+      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/decimal-vs-exact.mjs — the census; exit 1 = at least one CUT (a question for upstream, never a correction we send), 2 = refused",
       "created": "2026-10-11",
-      "updated": "2026-10-14",
+      "updated": "2026-10-21",
       "readCommandLastRun": "2026-10-14T18:12:22.880Z",
       "readCommandLastExit": 0,
       "readCommandLastDurationMs": 3873,
@@ -2894,7 +2894,9 @@
         "lines": 9,
         "sha256": "47f904e2f1fc2d1b"
       },
-      "lastEvaluated": "2026-10-14"
+      "lastEvaluated": "2026-10-21",
+      "closedAt": "2026-10-21",
+      "notes": " | CLOSED 2026-10-21 MT (P3): closeWhen met. scripts/decimal-vs-exact.mjs counts the population with its search space stated and classifies each member AGREES / CUT / UNKNOWN (plus EXACT SHOWN for an irrational form beside a decimal marked approximate, not judged). Pushed ebed670..247d60b (ce28589, 6c2f4e1, d149a36, 0a8ef71, 247d60b); CI reverify.yml and page-check.yml GREEN at 247d60b (run 39677445847 includes the selftest step). Live run at 247d60b, pasted: \"search space: 826 bound row(s) across 117 file(s)\"; IN-CELL \"187 found, 56 decided — 56 agree, 0 cut against the exact value, 71 exact form shown beside a decimal marked approximate (not judged), 60 unknown\"; COMMENT \"13 found, 13 decided — 12 agree, 1 cut, 0 unknown\"; SOURCE \"10 listed, 4 decided — 2 agree, 2 cut against the source, 6 unknown\" (91 value-vs-source entries; 81 carry no exact value on record, 11 of them considered and not entered with reasons in ledger/source-exact-values.json); \"not looked at: 620 of 826\". Exit 1, three CUTs: 87a (A-47-0075, printed 1058.565 against the paper's 4√70035 = 1058.565066…), 1b (A-47-0019, 0.380926 against the paper's 0.3809268534330870), 1d.md:18 (1.463071582607559 against its own comment's exact rational 1.4630715826075593…, a row upstream marks unverified). Review: four Codex rounds, all read-only with the banner workdir checked (r1 10 findings, r2 7, r3 6, r4 6). After r3 repeated classes the lane consulted (bus 1174368e); the orchestrator ruled option A, claim less, one more round, and stop on any repeat (bus 80a26a72). r4 repeated classes (an invisible row, a detached relation, an excluded member) and found no floating-point path to a verdict, so per that ruling the census SHIPS AS-IS, unpatched. Each r4 shape was checked against today's mirror and table (read-only scratch census): tabs in 1,832 bounds-section lines 0, a brace after a comment relation 0, a * inside a value 0, a leading-dot decimal 0, bare brace groups 3 (21a:36, 21a:37, 9a:28, all exponent or symbol forms already UNKNOWN), a SOURCE closed form beside a … decimal 1 (87a, whose true value 1058.565066493… lies inside the truncation interval, so its CUT stands). So no current verdict depends on an r4 defect; the six stay open as named gaps for any FUTURE row of those shapes, which the census does not catch. Any CUT is a question for upstream about display convention through the outward gate; the David card asks whether to raise the three, recommending waiting for a reply on teorth/optimizationproblems#244 first. Nothing was sent."
     },
     {
       "id": "A-77",
