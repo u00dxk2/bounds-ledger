@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-Today I check whether other rows on our pages print a rounded number that sits just past the limit their paper actually proves, as the 87a row does. A committed script will count them and report each one; anything it finds becomes a question for David, and nothing goes upstream.
+A new check over every row on our pages found three where the printed ceiling sits a hair below what was proved. As David asked, we wait for the upstream maintainers to answer our 13a fix before raising them. Nothing on the public pages changed today.
 
 ### Selection packet
 
@@ -75,6 +75,37 @@ Plan for P3: `scripts/decimal-vs-exact.mjs` (name provisional) reusing `boundRow
 
 ## What changed
 
+### Close
+
+ACTION: COMPLETED · item A-76 · P3 msg 737b2d82
+
+The acceptance in force (the P1 packet, the manager's two additions, and the orchestrator's option-A ruling on consult msg 1174368e) was met: the census is committed and pushed, red-proven on the 87a case both ways, and the P3 post quotes the count found and the count checked for each population, with the search space named. The manager's P3 review (bus 38b6bafb) read it as COMPLETED.
+
+**Changed since the P3 post (21:41Z).**
+- David answered card abab2375 at 21:49Z. He chose to wait for a reply on teorth/optimizationproblems#244 (an upstream PR; it does not exist in this repo) before raising the three rows, then see the drafted text (paraphrased). He picked the card's recommended reply.
+- That answer is now `A-88` (commit `40e3da8`). Its read is `gh pr view 244 --repo teorth/optimizationproblems`, next 10-24. The acknowledgement (bus e54fc40f) superseded the needs-decision 2bb8da6e.
+
+**Ledger delta.**
+- Hygiene draft: 2 lines, 2 accepted, 0 amended, 0 rejected. ACCEPTED: `G-2` (the bound-improvement search goal), with no command, since it is already held to 11-19. ACCEPTED: `W-14` (the watch on upstream issue 218, the 46a credit correction), re-dated to 10-28 per its own on-no-change trigger.
+- READ-MUTATED: none, 2 reads guarded. Helper checks: wait-justification "RESULT: PASS — 1 of 105 row(s) carry `waitJustification`; 0 warn / 0 info"; engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable".
+  - positive control: the same engineering-zero run listed 15 findings for other lanes, so the probe returns findings when they exist.
+  - positive control: `gh pr view 244 --repo teorth/optimizationproblems` returned state OPEN (read 21:20Z), so #244 exists upstream although it does not exist in this repo.
+- `A-76` (the decimal-vs-exact census) CLOSED in `c78e4bb`. `A-88` (wait on #244, then the question text) minted. `A-89` (the census's six round-4 blind spots, the manager's P3 review) minted with next check 10-28.
+- `A-50` (importing a CLI script can run it) gained a note recording a fourth instance of its class today (`depth-audit.mjs` ran on import; guarded in `ce28589`). Its own trigger makes building the class-wide selftest the answer at its 10-28 read.
+- `check-due-gates-dispositioned` (no flag): "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT (taken 2026-10-21).
+
+**Receipt.** The P3 receipt still holds: `USER-VISIBLE: none`, since no served page changed.
+
+**Pending reads.**
+- `A-88`: upstream #244, next 10-24.
+- `A-89`: the six shapes over the mirror, next 10-28.
+- `W-14` (the watch on upstream issue 218, the 46a credit correction): next 10-28.
+- `A-50`: the class-wide import selftest, next 10-28.
+
+**Findings classification.** Today's findings are record-facing: three mirrored upstream rows print a ceiling below what their source or their own comment states. The running count of consecutive instrument-facing days resets to 0. All three are numeric-strictness defects; none was a byte-only catch, and none came from the drift alarm.
+
+The standing prediction: the next record-facing catch will be a citation-quality defect in a mirrored upstream entry, found by a human reading the cited source in the depth audit. It is wrong if the drift alarm produces the next catch, or if a human finds a number that disagrees with its source. Neither happened. 87a and 1b had already been found by human reading (`A-47-0075`, `A-47-0019`, both UNRESOLVED). 1d.md:18 was found by a committed script reading the row's own comment, which is neither the predicted path nor a stated falsifier. That edge is recorded here rather than silently absorbed.
+
 ### P3 — A-76 shipped and closed
 
 `A-76` (are other ceilings printed as a decimal that sits below what their source proves?) is closed. `scripts/decimal-vs-exact.mjs` counts the population and classifies each member; pushed `ebed670..247d60b`, CI `reverify.yml` and `page-check.yml` GREEN at `247d60b` (run 39677445847 ran the new selftest step).
@@ -95,8 +126,16 @@ Three cuts, each a ceiling printed a hair below its exact value: 87a (`A-47-0075
 
 ## Recommendation
 
-For David: answer board card abab2375. Recommended reply: "Wait for a reply on #244 first, then bring me the text." (not David's words) That is the lane's draft. Nothing goes upstream without his yes.
+For David: none new. He answered card abab2375 at 21:49Z; the lane brings him the question text once #244 has a reply.
 
 ## On hold pending data
 
+`A-88` (raise upstream the ceilings listed in § What changed, P3) waits on a maintainer reply to teorth/optimizationproblems#244, re-read 2026-10-24. `G-2` (the bound-improvement search goal) is held to 2026-11-19 with its reason on the row.
+
 ## State Appendix
+
+As of the close, from live commands (this report cannot name the commit that lands it):
+- HEAD before the close commit: `40e3da8` (`git -C C:/dev/skylark/bounds-ledger log -1`), "A-88: track David's answer on card abab2375 (wait for #244, then the question text)"; 0 commits ahead of origin/main (`git rev-list --count origin/main..HEAD`). The close commit adds this report, tomorrow's primer and `continuity/items.json`, all doc-shaped.
+- `npm run verify`: exit 0 at `c78e4bb` (tmp/.verify-receipt.json, 21:41:10Z). `247d60b` was the last commit to touch code; every commit since touches only docs/ and continuity/.
+- CI at `40e3da8`: `check-ci-status --workflow reverify.yml` GREEN, `--workflow page-check.yml` GREEN. Release: re-run both for the close commit's sha.
+- `A-76`: closed. `A-88`: open, re-read 10-24. `A-89`: open, re-read 10-28. Release: `node scripts/sky.mjs show-item.mjs <ID> --repo .`.

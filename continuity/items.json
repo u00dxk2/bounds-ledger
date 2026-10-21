@@ -1971,7 +1971,7 @@
       "type": "active",
       "status": "open",
       "title": "Importing one of our CLI scripts can run it — one selftest that imports every CLI module and asserts the import did nothing",
-      "note": "FILED 2026-09-16 at P2. Proposed in the 2026-09-14 daily report and carried with no row through 2026-09-15.\n\nOWNER: THIS LANE. Ruled by the orchestrator on 2026-09-16 (bus 22179070): the code it covers is all this lane's own, so the fix and its proof live here, and it is built when it is the highest-value item, not today by default.\n\nTHE CLASS AND THE PROPOSAL, quoted from docs/daily/2026-09-14-prelaunch.md: \"The class has now bitten three times here — `lookup.mjs`, then `render-site.mjs` (whose own guard comment records it repeating the shape its own commit had just fixed), then `render-constant-pages.mjs` today. A fourth comment will not stop a fourth instance. The proposal is one selftest that imports every CLI module in a single spawned process and asserts the import was inert: stdout empty, file mtimes unchanged. It tests the property rather than the shape, which matters because a guard-presence lint passes on a guard that is present and wrong.\"\n\nWIRING NOTE: reverify.test.mjs fails when a selftest exists without a matching workflow step, so the build includes that step.",
+      "note": "FILED 2026-09-16 at P2. Proposed in the 2026-09-14 daily report and carried with no row through 2026-09-15.\n\nOWNER: THIS LANE. Ruled by the orchestrator on 2026-09-16 (bus 22179070): the code it covers is all this lane's own, so the fix and its proof live here, and it is built when it is the highest-value item, not today by default.\n\nTHE CLASS AND THE PROPOSAL, quoted from docs/daily/2026-09-14-prelaunch.md: \"The class has now bitten three times here — `lookup.mjs`, then `render-site.mjs` (whose own guard comment records it repeating the shape its own commit had just fixed), then `render-constant-pages.mjs` today. A fourth comment will not stop a fourth instance. The proposal is one selftest that imports every CLI module in a single spawned process and asserts the import was inert: stdout empty, file mtimes unchanged. It tests the property rather than the shape, which matters because a guard-presence lint passes on a guard that is present and wrong.\"\n\nWIRING NOTE: reverify.test.mjs fails when a selftest exists without a matching workflow step, so the build includes that step.\n\n | 2026-10-21 MT: FOURTH INSTANCE of the class. A scratch script for A-76 imported scripts/depth-audit.mjs to reuse boundRowsOf; its CLI ran on import (printed the depth-audit summary) and called process.exit, so the importer's own output never appeared. Fixed for that one module with a main-module guard in ce28589 (the check-audit-lines.mjs shape; scripts/decimal-vs-exact.mjs now imports it). Per this row's onTrigger, a fourth instance makes building the class-wide selftest the answer at its next read (2026-10-28); it is still unbuilt.",
       "expectedSignalBy": "2026-10-28",
       "onTrigger": "On 2026-09-30 run the readCommand. If the selftest is still unbuilt, either build it (a fourth instance of the class before then makes that the answer), or record why something else still outranks it and re-date with that reason. Never re-date it silently.",
       "closeWhen": "A selftest in `npm test` and in CI that exits non-zero when a CLI module is mutated to act on import and 0 on the current tree, both literal outputs pasted on this row.",
@@ -1980,7 +1980,7 @@
         "docs/daily/2026-09-14-prelaunch.md"
       ],
       "created": "2026-09-16",
-      "updated": "2026-10-14",
+      "updated": "2026-10-21",
       "linkedCommits": [
         "c5a964b"
       ],
@@ -2810,7 +2810,7 @@
       "type": "watch",
       "status": "open",
       "owner": "bounds-ledger",
-      "expectedSignalBy": "2026-10-21",
+      "expectedSignalBy": "2026-10-28",
       "links": [
         "A-57"
       ],
@@ -2827,7 +2827,7 @@
         "lines": 1,
         "sha256": "3440f024463a5fa0"
       },
-      "lastEvaluated": "2026-10-14"
+      "lastEvaluated": "2026-10-21"
     },
     {
       "id": "A-74",
@@ -3185,6 +3185,24 @@
       "onTrigger": "On #244 receiving any maintainer response (a comment, a review, a merge or a close), or on the check date, whichever comes first: run the readCommand. No response yet: re-date one week. A response: re-run node scripts/decimal-vs-exact.mjs (the three rows must still be CUT, or the question shrinks), draft the question as an upstream issue text in docs/decisions/, run the adversarial refute-it review and a claims pass, then put the final text to David on a card. Nothing is sent without his yes on that text.",
       "closeWhen": "David has answered a card carrying the final question text (send, or do not send), and the row records which; or the three rows are no longer CUT at a fresh census.",
       "readCommand": "gh pr view 244 --repo teorth/optimizationproblems --json state,comments,reviews,updatedAt",
+      "created": "2026-10-21",
+      "updated": "2026-10-21"
+    },
+    {
+      "id": "A-89",
+      "type": "active",
+      "status": "open",
+      "title": "The decimal-vs-exact census is blind to six input shapes Codex round 4 found; watch the mirror for any of them",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-10-28",
+      "links": [
+        "A-76",
+        "A-88"
+      ],
+      "note": "Minted 2026-10-21 MT at the close, on the manager's P3 review (bus 38b6bafb): A-76 closed and no open row tracked the census's round-4 gaps. Codex round 4 (read-only, on 247d60b) found six input shapes the census mishandles; under the orchestrator's ruling 80a26a72 (stop on any repeat class) they were NOT patched. The six: (1) a bare TeX brace group read as parentheses (`1/{2+3}`); (2) a SOURCE closed form beside a … decimal judged on the truncation while the cross-check accepts the rounding window; (3) a table whose separator uses tabs, which the shared parser skips while the closed table rule accepts it; (4) a brace between a comment relation and its number (`> {1.23456}`); (5) a `*` inside a value cell, stripped as if it were the unverified marker; (6) a leading-dot decimal (`.4`) excluded from membership. Each could print AGREES or drop a row where the truth is CUT or UNKNOWN. A read-only check on 2026-10-21 found no current verdict resting on any of them (tabs 0 of 1,832 bounds-section lines; brace after a relation 0; `*` inside a value 0; leading-dot decimals 0; three bare brace groups, 21a:36, 21a:37, 9a:28, all already UNKNOWN; one closed form beside a … decimal, 87a, whose true value lies inside the truncation interval). The census prints no blind-to line for these, so this row is the only place they are named.",
+      "onTrigger": "On the check date or the next resnap, whichever comes first: re-run the shape check over the mirror and ledger/source-exact-values.json (the six patterns in this row's note). Zero hits: re-date two weeks. Any hit: that row's census verdict is not trusted; report it as UNKNOWN in that day's post and decide whether to fix the census for that shape (a fix gets its own Codex round) or carry it.",
+      "closeWhen": "Each of the six shapes is handled by the census (a selftest fixture per shape, red-first, and a Codex round), or the census prints a blind-to line naming the unhandled ones so its own output carries the gap.",
+      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/decimal-vs-exact.mjs — the census (exit 1 = a CUT); the six-shape check is not yet a committed script, so this row reads the census and the shapes by hand until one exists",
       "created": "2026-10-21",
       "updated": "2026-10-21"
     }
