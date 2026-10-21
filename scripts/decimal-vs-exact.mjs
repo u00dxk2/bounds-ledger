@@ -21,19 +21,22 @@
  *            quotation that must still be a verbatim substring of the entry's record; recorded prose is
  *            never parsed (manager review of P1, 2026-10-21).
  *
- * HOW IT DECIDES (the shape after two review rounds, 2026-10-21: both found tolerance and precision
- * defects, so the code was changed to claim less rather than patched a third time). The exact value is
- * held as an INTERVAL of exact rationals (BigInt fractions):
- *   - a decimal (printed, in a comment, or stated by a source) is an exact rational, with no tolerance;
- *   - a rational expression (integers, decimals, + − × ÷, integer powers, \frac) is evaluated exactly;
- *   - an irrational one (√, π, e, γ, logs, trig) is evaluated in floating point and widened by an error
- *     bound that grows with the largest intermediate value and the number of operations, so cancellation
- *     widens it instead of producing a confident wrong number.
- * A member is AGREES only when every value in that interval is on the safe side, or when the cell marks
- * its decimal approximate (≈ or a trailing …) and the whole interval lies inside the decimal's rounding
- * (or truncation) window; CUT only when every value in the interval is past the decimal in the
- * overstating direction and the cell does not mark it approximate (or the interval lies wholly outside
- * that window); UNKNOWN otherwise.
+ * HOW IT DECIDES. Every verdict comes from EXACT rationals (BigInt fractions), never from floating
+ * point. Three Codex rounds on 2026-10-21 kept finding precision and parsing defects in machinery that
+ * decided irrational values in floating point; the orchestrator's answer to consult 1174368e was to
+ * delete that machinery, not harden it (option A). So:
+ *   - a decimal (printed, in a comment, or stated by a source) is an exact rational, no tolerance;
+ *   - a rational form (integers, decimals, + − × ÷, integer powers, \frac) is evaluated exactly;
+ *   - an irrational IN-CELL form beside a decimal the cell marks approximate is EXACT SHOWN (the reader
+ *     sees both; not judged), and beside a bare = it is UNKNOWN;
+ *   - a SOURCE entry is judged against the source's own decimal (or a rational closed form); an
+ *     irrational closed form is evaluated in floating point ONLY to cross-check that decimal, and a
+ *     disagreement REFUSES the run.
+ * The exact value is an interval (a … decimal stands for its truncation). A member is AGREES only when
+ * every value in it is on the safe side, or the cell marks its decimal approximate and the whole
+ * interval lies inside the decimal's rounding (or truncation) window; CUT only when every value is past
+ * the decimal in the overstating direction (and, for a marked decimal, outside that window); UNKNOWN
+ * otherwise.
  *
  * NOT SEEN: every bound row outside the three populations, which is most of them. A bare decimal whose
  * exact value lives only in its paper (the 87a shape itself) is visible ONLY for a row someone has read
@@ -299,43 +302,36 @@ export function cellsOf(rowText) {
 }
 
 // ---------- IN-CELL ----------
-// Relation signs, \approx and \ldots are not exact forms; scientific notation and the unverified
-// marker are stripped before looking.
-const plainOf = (s) => s.replace(/\$/g, "").replace(/\^\\?\*|\\\*/g, "").replace(/\\(cdot|times)\s*10\s*\^\s*\{?\s*-?\d+\s*\}?/g, "");
-const EXACT_CMD = /\\(frac|tfrac|dfrac|sqrt|pi|log|ln|exp|sin|cos|tan|sinh|cosh|Gamma|zeta|binom|sum|prod|gamma)(?![A-Za-z])/;
-const looksExact = (s) => {
-  const p = plainOf(s);
-  return EXACT_CMD.test(p) || /[\^√π]/.test(p) || /[\d)}]\s*[-+*/]\s*[\d(\\{e]/.test(p) || /(^|[^A-Za-z\\])e([^A-Za-z]|$)/.test(p);
-};
+// IN-CELL claims less (orchestrator answer to consult 1174368e, option A): NO floating-point verdicts.
+// Membership is broad: any value cell holding a decimal that is not itself a plain decimal. Only the
+// FIRST form is read, and intermediate decimals never narrow it (Codex r3 #2). A rational first form is
+// decided exactly; an irrational one is EXACT SHOWN when the cell marks the decimal approximate (the
+// reader sees the exact form beside it; not judged) and UNKNOWN beside a bare =. Everything else a
+// member does is UNKNOWN.
 export function inCell(dir, value) {
-  // `$0.75806746$ (exact $37903373/50000000$)` (4b) names its exact form explicitly: always a member.
+  // `$0.75806746$ (exact $37903373/50000000$)` (4b) names its exact form explicitly.
   const ex = /^\$([^$]+)\$\s*\(exact\s*\$([^$]+)\$\)\s*$/.exec(value.trim());
   const body = ex ? `${ex[2]}=${ex[1]}` : value.replace(/\$/g, "");
+  if (!/\d\.\d/.test(body) || parseDecimal(value)) return null;
   const base = { pop: "IN-CELL", dir, cell: value };
-  const member = Boolean(ex) || (/\d\.\d/.test(body) && looksExact(body));
   const seps = [...body.matchAll(/\\approx|≈|=/g)];
   const last = seps[seps.length - 1];
   const dec = last ? parseDecimal(body.slice(last.index + last[0].length)) : null;
-  const exprs = [];
-  let from = 0;
-  for (const m of seps) { exprs.push(body.slice(from, m.index)); from = m.index + m[0].length; }
-  if (!dec || !(ex || exprs.some(looksExact))) {
-    return member ? { ...base, printed: value, cls: "UNKNOWN", why: "a decimal beside an exact form, in a shape this reader does not split (no ≈ or = before a final decimal)" } : null;
-  }
+  if (!dec) return { ...base, printed: value, cls: "UNKNOWN", why: "no ≈ or = before a final decimal, so there is no printed value to judge" };
   const printed = dec.text + (dec.dots ? "…" : "");
-  let X = null;
-  for (const e of exprs) {
-    // A leading label ("C_{20b}\ge 1/e") is read from its last relation onward; \le must not match the
-    // start of \left.
-    const rhs = e.split(/\\(?:geq?|leq?)(?![A-Za-z])|:|<|>|≤|≥/).pop();
-    let iv;
-    try { iv = exactInterval(rhs); } catch { continue; }
-    X = X ? { lo: fmax(X.lo, iv.lo), hi: fmin(X.hi, iv.hi) } : { lo: iv.lo, hi: iv.hi };
-    if (fcmp(X.lo, X.hi) > 0) return { ...base, printed, cls: "UNKNOWN", why: "the cell's own expressions disagree with each other" };
-  }
-  if (!X) return { ...base, printed, cls: "UNKNOWN", why: "no expression in the cell is one this evaluator reads" };
+  // A leading label ("C_{20b}\ge 1/e") is read from its last relation onward; \le must not match the
+  // start of \left.
+  const first = body.slice(0, seps[0].index).split(/\\(?:geq?|leq?)(?![A-Za-z])|:|<|>|≤|≥/).pop();
   const marked = !ex && (last[0] !== "=" || dec.dots);
-  return { ...base, printed, X, ...decide(dir, dec, X, marked) };
+  let f = null;
+  try { f = evaluateRational(first); } catch { /* not rational, or unreadable */ }
+  if (f) { const X = { lo: f, hi: f }; return { ...base, printed, X, ...decide(dir, dec, X, marked) }; }
+  // Readable means the parser accepts the whole form (a symbol like c_0 or \delta is not); the float
+  // value is never used as a verdict here.
+  let readable = false;
+  try { exactInterval(first); readable = true; } catch { /* a symbol, an unsupported command, a base-dependent log */ }
+  if (readable && marked) return { ...base, printed, cls: "SHOWN", why: "an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged" };
+  return { ...base, printed, cls: "UNKNOWN", why: readable ? "an irrational form beside a bare =, which this census does not decide in floating point" : "the first form is not one this reader evaluates" };
 }
 
 // ---------- COMMENT ----------
@@ -347,7 +343,9 @@ export function fromComment(dir, value, comments) {
   // An integer cell is not a rounded decimal (85a's "1" beside a comment's 0.1 matched to the unit).
   if (!d || d.places < 1) return null;
   const hits = [];
-  for (const m of comments.replace(/\$/g, "").matchAll(COMMENT_NUM)) {
+  // LaTeX spacing between a relation and its number is stripped too (Codex r3 #4: `> \,1.23456`).
+  const plain = comments.replace(/\$/g, "").replace(/\\(?:quad|qquad|[,;:! ])|~/g, " ");
+  for (const m of plain.matchAll(COMMENT_NUM)) {
     const c = parseDecimal(m[2] + (m[3] ?? ""));
     if (!c || c.places <= d.places) continue;
     const gap = fsub(c.f, d.f);
@@ -382,22 +380,31 @@ export function fromSource(entry, audit, lines, dirAt) {
   if (entry.evaluable !== undefined && typeof entry.evaluable !== "boolean") return { ...base, refuse: "evaluable must be true or false" };
   const unevaluable = entry.evaluable === false;
   if (unevaluable && !has("exact")) return { ...base, refuse: "an unevaluable entry must still state its exact form" };
+  // Verdicts come from exact rationals only (option A): a rational closed form, or the source's own
+  // decimal. An irrational closed form is evaluated in floating point ONLY to cross-check the decimal,
+  // and a disagreement REFUSES; with no decimal beside it, the entry is UNKNOWN.
   let X = null;
+  let irrational = false;
+  let rationalForm = null;
   if (has("exact") && !unevaluable) {
-    try { const iv = exactInterval(entry.exact); X = { lo: iv.lo, hi: iv.hi }; } catch (e) { return { ...base, refuse: `exact form not evaluable (${e.message})` }; }
+    try { rationalForm = evaluateRational(entry.exact); X = { lo: rationalForm, hi: rationalForm }; } catch { irrational = true; }
   }
   if (has("sourceDecimal")) {
     const sd = parseDecimal(entry.sourceDecimal);
     if (!sd) return { ...base, refuse: "sourceDecimal is not a decimal" };
-    const S = sd.dots ? truncOf(sd) : { lo: sd.f, hi: sd.f };
-    if (X) {
-      const W = windowOf(sd);
-      if (fcmp(X.hi, W.lo) < 0 || fcmp(X.lo, W.hi) > 0) return { ...base, refuse: `the closed form (about ${fmt(X.lo)}) and sourceDecimal ${entry.sourceDecimal} disagree` };
-    } else if (!unevaluable) X = S;
+    const W = windowOf(sd);
+    let C = X;
+    if (irrational) {
+      try { const iv = exactInterval(entry.exact); C = { lo: iv.lo, hi: iv.hi }; } catch (e) { return { ...base, refuse: `exact form not evaluable (${e.message})` }; }
+    }
+    if (C && (fcmp(C.hi, W.lo) < 0 || fcmp(C.lo, W.hi) > 0)) return { ...base, refuse: `the closed form (about ${fmt(C.lo)}) and sourceDecimal ${entry.sourceDecimal} disagree` };
+    if (!rationalForm && !unevaluable) X = sd.dots ? truncOf(sd) : { lo: sd.f, hi: sd.f };
+  } else if (irrational) {
+    try { exactInterval(entry.exact); } catch (e) { return { ...base, refuse: `exact form not evaluable (${e.message})` }; }
   }
   const at = lines?.[audit.rowLine - 1];
   const file = audit.rowFile.split("/").pop();
-  const where = { file, line: audit.rowLine };
+  const where = { file, line: audit.rowLine, printed: String(audit.rowText ?? ""), exactText: has("exact") ? entry.exact : entry.sourceDecimal };
   if (!at || at.trim() !== String(audit.rowText).trim()) return { ...base, ...where, cls: "UNKNOWN", why: "the audited row is no longer at its recorded line (see check-audit-lines)" };
   const dir = dirAt(audit.rowLine);
   if (!dir) return { ...base, ...where, cls: "UNKNOWN", why: "the recorded line is not a bound row" };
@@ -406,22 +413,34 @@ export function fromSource(entry, audit, lines, dirAt) {
   const r = { ...base, ...where, dir, cell: value, printed: d ? d.text + (d.dots ? "…" : "") : value, X, exactText: has("exact") ? entry.exact : entry.sourceDecimal };
   if (unevaluable) return { ...r, cls: "UNKNOWN", why: "the source's closed form is one this evaluator does not read" };
   if (!d) return { ...r, cls: "UNKNOWN", why: "the value cell is not a plain decimal" };
+  if (!X) return { ...r, cls: "UNKNOWN", why: "an irrational closed form with no source decimal beside it, which this census does not decide in floating point" };
   return { ...r, ...decide(dir, d, X, d.dots) };
 }
 
-// A table in a bounds section written without leading pipes is one the shared parser never sees, so
-// neither it nor the corpus count would notice (Codex r2 #6). Stated rule: every GFM table has a
-// delimiter row (`--- | ---`); a delimiter row there that does not start with "|" refuses the run.
-// (A first version flagged any line with two pipes and refused 20a.md:45, display math using |X|.)
-const DELIMITER_ROW = /^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?$/;
-export function pipelessRows(text) {
-  const lines = text.replace(/<!--[\s\S]*?-->/g, (m) => m.replace(/[^\n]/g, " ")).split(/\r?\n/);
+// ONE closed rule for tables the shared parser cannot see (Codex r2 #6 and r3 #3 were two shapes of the
+// same gap, so this replaces shape patterns): in a bounds section, outside HTML comments and `$$…$$`
+// display math, every line holding an unescaped pipe must be a data row boundRowsOf returned, or the
+// header or separator of a table it read (a "|"-led line directly above a "|"-led separator, and that
+// separator). Any other piped line refuses the run. Its failure mode is a refusal, never a silent drop.
+const SEPARATOR = /^\|[\s:|-]*-[\s:|-]*\|?$/;
+export function unconsumedPipeLines(text, rowLines) {
+  const lines = text.replace(/<!--[\s\S]*?-->/g, (m) => m.replace(/[^\n]/g, " ")).split(/\r?\n/).map((l) => l.trim());
+  const rows = new Set(rowLines);
   const out = [];
   let inBounds = false;
-  lines.forEach((l, i) => {
-    if (/^## /.test(l)) { inBounds = /^## Known (upper|lower) bounds\s*$/.test(l); return; }
-    const t = l.trim();
-    if (inBounds && !t.startsWith("|") && DELIMITER_ROW.test(t)) out.push(i + 1);
+  let inMath = false;
+  lines.forEach((t, i) => {
+    if (/^## /.test(t)) { inBounds = /^## Known (upper|lower) bounds\s*$/.test(t); inMath = false; return; }
+    if (!inBounds) return;
+    // A line opening or closing display math toggles it; one that holds both delimiters does not.
+    const fences = (t.match(/\$\$/g) || []).length;
+    if (fences % 2 === 1) { inMath = !inMath; return; }
+    // A one-line `$$ … $$` is math, not a row.
+    if (inMath || !/(^|[^\\])\|/.test(t.replace(/\$\$[\s\S]*?\$\$/g, ""))) return;
+    if (rows.has(i + 1)) return;
+    const isSep = SEPARATOR.test(t) && i > 0 && lines[i - 1].startsWith("|");
+    const isHeader = t.startsWith("|") && i + 1 < lines.length && SEPARATOR.test(lines[i + 1]);
+    if (!isSep && !isHeader) out.push(i + 1);
   });
   return out;
 }
@@ -460,12 +479,14 @@ export function run(root) {
     out.push("decimal-vs-exact: REFUSED — a mirror file, the mirror manifest or ledger/claims.json could not be read, so the corpus could not be established");
     return { code: 2, out };
   }
-  const pipeless = [...texts].flatMap(([f, t]) => pipelessRows(t).map((n) => `${f}:${n}`));
+  const rowLinesOf = new Map();
+  for (const r of rows) { if (!rowLinesOf.has(r.file)) rowLinesOf.set(r.file, []); rowLinesOf.get(r.file).push(r.line); }
+  const pipeless = [...texts].flatMap(([f, t]) => unconsumedPipeLines(t, rowLinesOf.get(f) ?? []).map((n) => `${f}:${n}`));
   const why = corpus.expectedFiles == null ? "the mirror manifest gives no file count"
     : corpus.files !== corpus.expectedFiles ? `${corpus.files} constant file(s) read, the manifest says ${corpus.expectedFiles}`
     : corpus.expectedSections == null ? "ledger/claims.json gives no section baseline"
     : corpus.unparseableRows.length ? `${corpus.unparseableRows.length} line(s) inside a bounds table that this parser drops`
-    : pipeless.length ? `${pipeless.length} table(s) in a bounds section have a delimiter row with no leading pipe (${pipeless.slice(0, 3).join(", ")})`
+    : pipeless.length ? `${pipeless.length} line(s) holding a pipe in a bounds section are not a row, header or separator the parser read (${pipeless.slice(0, 3).join(", ")})`
     : corpus.missingSections.length ? `${corpus.missingSections.length} expected section(s) produced no rows (${corpus.missingSections.slice(0, 3).join(", ")})`
     : corpus.zeroRowFiles.length ? `${corpus.zeroRowFiles.length} file(s) contributed no bound rows`
     : corpus.boundRows !== rows.length ? `the corpus counts ${corpus.boundRows} bound rows and this census read ${rows.length}`
@@ -520,12 +541,15 @@ export function run(root) {
   const tally = (pop) => {
     const ms = members.filter((m) => m.pop === pop);
     const c = (k) => ms.filter((m) => m.cls === k).length;
-    return { n: ms.length, AGREES: c("AGREES"), CUT: c("CUT"), UNKNOWN: c("UNKNOWN") };
+    return { n: ms.length, AGREES: c("AGREES"), CUT: c("CUT"), UNKNOWN: c("UNKNOWN"), SHOWN: c("SHOWN") };
   };
   const A = tally("IN-CELL"), B = tally("COMMENT"), C = tally("SOURCE");
-  const keyed = new Set(members.map((m) => `${m.file}:${m.line}`));
+  // Coverage counts only members sitting on a CURRENT bound row; a stale SOURCE location is reported
+  // above but covers nothing (Codex r3 #6: it once drove "not looked at" negative).
+  const current = new Set(rows.map((r) => `${r.file}:${r.line}`));
+  const keyed = new Set(members.map((m) => `${m.file}:${m.line}`).filter((k) => current.has(k)));
   out.push(`search space: ${rows.length} bound row(s) across ${texts.size} file(s) of ${MIRROR.join("/")} (depth-audit.mjs boundRowsOf, the --corpus definition)`);
-  out.push(`IN-CELL  (a decimal beside an exact form in the value cell; checked when it follows the form's last ≈ or =): ${A.n} found, ${A.AGREES + A.CUT} decided — ${A.AGREES} agree, ${A.CUT} cut against the exact value, ${A.UNKNOWN} unknown`);
+  out.push(`IN-CELL  (a value cell holding a decimal that is not a plain decimal; only a rational first form is decided): ${A.n} found, ${A.AGREES + A.CUT} decided — ${A.AGREES} agree, ${A.CUT} cut against the exact value, ${A.SHOWN} exact form shown beside a decimal marked approximate (not judged), ${A.UNKNOWN} unknown`);
   out.push(`COMMENT  (a bare decimal whose Comments cell prints a longer decimal agreeing to its last place): ${B.n} found, ${B.AGREES + B.CUT} decided — ${B.AGREES} agree, ${B.CUT} cut, ${B.UNKNOWN} unknown`);
   out.push(`SOURCE   (ledger/source-exact-values.json, keyed to depth-audit entries): ${C.n} listed, ${C.AGREES + C.CUT} decided — ${C.AGREES} agree, ${C.CUT} cut against the source, ${C.UNKNOWN} unknown; drawn from ${vvs.length} value-vs-source entr${vvs.length === 1 ? "y" : "ies"}, the other ${vvs.length - C.n} carry no exact value on record (${Array.isArray(table.notEntered) ? table.notEntered.length : 0} of them considered and not entered, each with its reason in the table)`);
   out.push(`not looked at: ${rows.length - keyed.size} of ${rows.length} bound row(s) are in none of the three populations — UNKNOWN by construction, never counted as agreeing`);
@@ -572,37 +596,43 @@ function selftest() {
 
   const cls = (name, got, want) => { if ((got?.cls ?? null) !== want) { fail++; console.log(`FAIL ${name}: ${got?.cls ?? "not a member"} (want ${want ?? "not a member"}) ${got?.why ?? ""}`); } };
   // IN-CELL
-  cls("upper ≈ below exact, within rounding", inCell("U", "$\\pi/2 \\approx 1.57080$"), "AGREES");
-  cls("upper = with … truncation", inCell("U", "$\\frac{\\pi}{4}=0.7853981633\\dots$"), "AGREES");
-  cls("lower ≈ above exact, within rounding", inCell("L", "$\\sqrt{2}\\approx 1.414214$"), "AGREES");
-  cls("upper printed = below exact, no mark", inCell("U", "$\\frac{\\pi}{4}=0.785$"), "CUT");
-  cls("upper ≈ but far below exact", inCell("U", "$\\pi/2 \\approx 1.5$"), "CUT");
-  cls("lower printed = above exact, no mark", inCell("L", "$\\sqrt{2} = 1.4143$"), "CUT");
+  cls("upper ≈ beside an irrational form is SHOWN", inCell("U", "$\\pi/2 \\approx 1.57080$"), "SHOWN");
+  cls("= with … beside an irrational form is SHOWN", inCell("U", "$\\frac{\\pi}{4}=0.7853981633\\dots$"), "SHOWN");
+  cls("lower ≈ beside √2 is SHOWN", inCell("L", "$\\sqrt{2}\\approx 1.414214$"), "SHOWN");
+  cls("an irrational form beside a bare = is not decided", inCell("U", "$\\frac{\\pi}{4}=0.785$"), "UNKNOWN");
+ cls("a rational form printed = past it is CUT", inCell("L", "$\\frac{7}{5} = 1.4001$"), "CUT");
   cls("exact rational equality", inCell("U", "$\\frac{13}{4}=3.25$"), "AGREES");
   cls("exact rational equality, lower", inCell("L", "$4 - 2^{-7} = 4 - \\frac{1}{128} = 3.9921875$"), "AGREES");
   cls("unreadable expression", inCell("U", "$\\pi/2-\\delta$ with $\\delta\\approx 0.00013$"), "UNKNOWN");
   cls("an expression with no separator is an UNKNOWN member", inCell("U", "$0.92117 - \\frac{9}{16} 10^{-6}$"), "UNKNOWN");
   cls("bare decimal is not a member", inCell("U", "$1058.565$"), null);
-  cls("scientific notation is not a member", inCell("L", "$-5.895 \\cdot 10 ^ {-9}$"), null);
+  cls("scientific notation is a member, UNKNOWN", inCell("L", "$-5.895 \\cdot 10 ^ {-9}$"), "UNKNOWN");
   cls("an unverified marker is not an exact form", inCell("U", "$1.7813^\\*$"), null);
-  cls("\\le alone is not an exact form", inCell("U", "$$\\le 0.844137708436$$"), null);
-  cls("\\approx alone is not an exact form", inCell("U", "$\\approx 2.15627$"), null);
-  cls("a labelled expression is read after its relation", inCell("L", "$C_{20b}\\ge 1/e \\approx 0.367879$"), "AGREES");
-  cls("\\left is not read as \\le", inCell("L", "$\\left(\\frac{4\\pi}{11}\\right)^{3/4}\\approx 1.105$"), "AGREES");
-  cls("a named symbol is UNKNOWN", inCell("U", "$c_0^2 \\approx 5.33386$"), "UNKNOWN");
-  cls("the cell's two expressions agree", inCell("L", "$5/\\sqrt{8}=\\tfrac{5\\sqrt2}{4}\\approx 1.767767$"), "AGREES");
-  cls("a rounding written with … agrees beside its exact form", inCell("L", "$\\frac{\\pi}{4}=0.7853981634\\dots$"), "AGREES");
+  cls("\\le before a decimal is a member, UNKNOWN", inCell("U", "$$\\le 0.844137708436$$"), "UNKNOWN");
+ cls("a labelled expression is read after its relation", inCell("L", "$C_{20b}\\ge 1/e \\approx 0.367879$"), "SHOWN");
+  cls("\\left is not read as \\le", inCell("L", "$\\left(\\frac{4\\pi}{11}\\right)^{3/4}\\approx 1.105$"), "SHOWN");
+ cls("only the first of two forms is read", inCell("L", "$5/\\sqrt{8}=\\tfrac{5\\sqrt2}{4}\\approx 1.767767$"), "SHOWN");
+  cls("a rational rounding written with … agrees", inCell("L", "$\\frac{1}{3}=0.3333\\dots$"), "AGREES");
   cls("(exact …) after a decimal is read", inCell("L", "$0.75806746$ (exact $37903373/50000000$)"), "AGREES");
   cls("an irrational form printed = to full float precision is UNKNOWN, not AGREES", inCell("U", `$\\sqrt{2}=${Math.SQRT2}$`), "UNKNOWN");
   // Codex round 1 (2026-10-21), one fixture per finding, each the reviewer's own scenario.
   cls("r1#2 a 1e-13 cut is not swallowed", inCell("U", "$10000000000001/10000000000000 = 1.0$"), "CUT");
-  cls("r1#4 unicode √ takes the whole number", inCell("U", "$4√70035 = 500.0$"), "CUT");
+  cls("r1#4 an irrational form beside a bare = is not decided", inCell("U", "$4√70035 = 500.0$"), "UNKNOWN");
   cls("r1#5 a long literal is read exactly", inCell("U", "$\\frac{10000000000000001-10000000000000000}{10}=0.0$"), "CUT");
-  cls("r1#9 1/e is an exact form", inCell("L", "$1/e = 0.4$"), "CUT");
+  cls("r1#9 1/e beside a bare = is a member, UNKNOWN", inCell("L", "$1/e = 0.4$"), "UNKNOWN");
   // Codex round 2.
   cls("r2#1 a cut near zero is not swallowed", inCell("U", "$1/10^{14}=0.000000000000009$"), "CUT");
   cls("r2#2 cancellation is exact on the rational path", inCell("U", "$10000000000000+1/10000-10000000000000=0.0$"), "CUT");
   cls("r2#5 an explicit (exact …) is always a member", inCell("U", "$3.9$ (exact $2+2$)"), "CUT");
+  // Codex round 3, red first (the A shape, orchestrator answer to consult 1174368e).
+  cls("r3#1 an irrational form beside a bare = is UNKNOWN", inCell("U", "$\\frac{\\ln(1+10^{-16})}{10^{-16}}=0.1$"), "UNKNOWN");
+  cls("r3#2 an intermediate decimal never narrows the first form", inCell("U", "$\\sqrt{2}=1.414213562373095=1.414213562373095$"), "UNKNOWN");
+  cls("r3#2 an unreadable first form is not skipped", inCell("U", "$\\binom{4}{2}=5.0=5.0$"), "UNKNOWN");
+  cls("r3#5 implicit multiplication is a member and decided exactly", inCell("U", "$2(3)=5.9$"), "CUT");
+  cls("an irrational form beside ≈ is EXACT SHOWN, not judged", inCell("U", "$\\pi/2 \\approx 1.5$"), "SHOWN");
+  cls("a symbol beside ≈ is UNKNOWN, not SHOWN", inCell("U", "$c_0^2 \\approx 5.33386$"), "UNKNOWN");
+  cls("any non-plain cell with a decimal is a member", inCell("U", "$\\approx 2.15627$"), "UNKNOWN");
+  cls("r3#4 LaTeX spacing does not detach a relation", fromComment("U", "$1.235$", "$> \\,1.23456$"), "UNKNOWN");
   // COMMENT — the manager's two 87a examples are the positive controls.
   cls("87a:19 < 913.4927", fromComment("U", "$913.493$", "root discriminant $< 913.4927$."), "AGREES");
   cls("87a:20 < 857.5662…", fromComment("U", "$857.567$", "rd $< 770.6432$, giving $< 857.5662\\dots$ — a saving"), "AGREES");
@@ -649,9 +679,11 @@ function selftest() {
   cls("inside a truncated source decimal is UNKNOWN", fromSource({ ...e19, sourceDecimal: "0.38092…", quote: "0.38092" }, { ...a19, rowText: "| $0.380925$ | [H2016] | |" }, ["# 9z", "", "| $0.380925$ | [H2016] | |"], up), "UNKNOWN");
   const aNeg = { ...audit, rowText: "| $-1.3\\dots$ | [N] | |", claimResult: "states -1.24…" };
   cls("r2#3 a … cell is judged against the whole source interval", fromSource({ auditId: "T1", sourceDecimal: "-1.24…", quote: "-1.24…", quoteField: "claimResult" }, aNeg, ["# 9z", "", aNeg.rowText], up), "UNKNOWN");
-  // r2#6: a table with no leading pipes inside a bounds section.
-  const pl = pipelessRows(["# 9z", "## Known upper bounds", "| A | B | C |", "| - | - | - |", "| 1 | x | |", "", "$$ \\sigma := \\sup |X| - |Y| $$", "Bound | Reference | Comments", "--- | --- | ---", "$\\sqrt{2}=1.4$ | [R] | x", "## Additional comments", "a | b", "--- | ---"].join("\n"));
-  if (pl.join(",") !== "9") { fail++; console.log(`FAIL r2#6 pipeless delimiter rows (want 9 only; display math and other sections ignored): ${pl.join(",")}`); }
+  // r2#6 / r3#3: one closed rule. A parsed table (header 3, separator 4, row 5) passes; one-line and
+  // multi-line display math with |X| passes; the mixed-pipe table (header without a pipe over a separator
+  // with one) is refused line by line; piped lines outside the bounds sections are not read.
+  const pl = unconsumedPipeLines(["# 9z", "## Known upper bounds", "| A | B | C |", "| - | - | - |", "| 1 | x | |", "", "$$", "\\sigma := \\sup |X| - |Y|", "$$", "$$ |X| = |Y| $$", "Bound | Reference | Comments", "| --- | --- | --- |", "$\\sqrt{2}=1.4$ | [R] | x", "## Additional comments", "a | b", "--- | ---"].join("\n"), [5]);
+  if (pl.join(",") !== "11,12,13") { fail++; console.log(`FAIL r3#3 unconsumed piped lines (want 11,12,13): ${pl.join(",")}`); }
 
   // The whole run on a scratch tree.
   const dir = mkdtempSync(join(tmpdir(), "decimal-vs-exact-"));
@@ -659,7 +691,7 @@ function selftest() {
     const cd = join(dir, ...MIRROR);
     mkdirSync(cd, { recursive: true });
     mkdirSync(join(dir, "continuity"), { recursive: true });
-    const page = (cell) => ["# 9z", "", "## Known upper bounds", "", "| Bound | Reference | Comments |", "| --- | --- | --- |", `| $${cell}$ | [Mar1978] | x |`, "", "## Known lower bounds", "", "| Bound | Reference | Comments |", "| --- | --- | --- |", "| $\\sqrt{2}\\approx 1.414214$ | [A] | |", ""].join("\r\n");
+    const page = (cell) => ["# 9z", "", "## Known upper bounds", "", "| Bound | Reference | Comments |", "| --- | --- | --- |", `| $${cell}$ | [Mar1978] | x |`, "", "## Known lower bounds", "", "| Bound | Reference | Comments |", "| --- | --- | --- |", "| $\\frac{3}{2}\\approx 1.5$ | [A] | |", ""].join("\r\n");
     const write = (cell, ent = entry, body = page(cell)) => {
       writeFileSync(join(cd, "9z.md"), body);
       writeFileSync(join(cd, "..", "manifest.json"), JSON.stringify({ fileCount: 1, rootFiles: [] }));
@@ -675,10 +707,17 @@ function selftest() {
     want("printed 1058.566", 0, /AGREES +SOURCE +T1[\s\S]*IN-CELL .*1 found, 1 decided — 1 agree[\s\S]*RESULT: PASS/);
     write("1058.565", { ...entry, quote: "not there" });
     want("stale quotation refuses", 2, /REFUSED +SOURCE T1: the quotation is no longer/);
-    write("1058.565", entry, page("1058.565").replace("| $\\sqrt{2}", "$\\sqrt{2}"));
+    write("1058.565", entry, page("1058.565").replace("| $\\frac{3}{2}", "$\\frac{3}{2}"));
     want("r1#3 a dropped table line refuses", 2, /REFUSED — 1 line\(s\) inside a bounds table/);
     write("1058.565", entry, page("1058.565").replace("## Known lower bounds", "Bound | Reference | Comments\r\n--- | --- | ---\r\n$\\sqrt{2}=1.4$ | [R] | x\r\n\r\n## Known lower bounds"));
-    want("r2#6 a pipeless table refuses", 2, /REFUSED — 1 table\(s\) in a bounds section have a delimiter row with no leading pipe \(9z\.md:10\)/);
+    want("r2#6 a pipeless table refuses", 2, /REFUSED — 3 line\(s\) holding a pipe in a bounds section are not a row, header or separator the parser read \(9z\.md:9, 9z\.md:10, 9z\.md:11\)/);
+    // r3#3: a header without a leading pipe over a delimiter WITH one is still a table nobody parsed.
+    write("1058.565", entry, page("1058.565").replace("## Known lower bounds", "Bound | Reference | Comments\r\n| --- | --- | --- |\r\n$\\sqrt{2}=1.4$ | [R] | x\r\n\r\n## Known lower bounds"));
+    want("r3#3 a mixed-pipe table refuses", 2, /REFUSED — 3 line\(s\) holding a pipe in a bounds section are not a row, header or separator the parser read \(9z\.md:9, 9z\.md:10, 9z\.md:11\)/);
+    // r3#6: a SOURCE location that is no longer a current row never counts as coverage.
+    write("1058.565", { ...entry });
+    writeFileSync(join(dir, "continuity", "depth-audit.json"), JSON.stringify({ audits: [{ ...audit, rowLine: 999, rowText: "| $1058.565$ | [Mar1978] | x |" }] }));
+    want("r3#6 a stale SOURCE location is not coverage", 0, /not looked at: 1 of 2/);
     write("1058.565");
     writeFileSync(join(cd, "..", "manifest.json"), JSON.stringify({ fileCount: 2, rootFiles: [] }));
     want("r1#3 a short inventory refuses", 2, /REFUSED — 1 constant file\(s\) read, the manifest says 2/);
