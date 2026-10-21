@@ -295,6 +295,12 @@ jobs:
       # network-free: a move or an ambiguous row fails, a changed row does not, an empty store refuses.
       - name: Self-test audited-row line check (no network)
         run: node scripts/check-audit-lines.mjs --selftest
+      # A-76: rows whose printed decimal sits past the exact value it stands for, in the overstating
+      # direction (87a prints 1058.565; its paper proves 4√70035 = 1058.565066…). An indicator, not a
+      # gate: a known CUT is a question for upstream, so the live run is local only and only the
+      # selftest runs here, network-free.
+      - name: Self-test decimal-vs-exact census (no network)
+        run: node scripts/decimal-vs-exact.mjs --selftest
       # A-48's citation-footprint reader. The distinction it exists to keep is BLOCKED vs a
       # measured zero: a non-200, or a 200 carrying no count field, is a fact about the INDEX
       # and must never render as a low or zero footprint for the surface. The selftest drives

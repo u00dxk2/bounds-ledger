@@ -24,6 +24,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const HERE = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
 const REPO = path.resolve(HERE, '..');
@@ -642,8 +643,17 @@ function liveBaselines(cdir) {
   return { expectedFiles, expectedSections };
 }
 
+// MAIN-MODULE GUARD, the shape check-audit-lines.mjs uses, added 2026-10-21 so decimal-vs-exact.mjs
+// can import boundRowsOf without this CLI running and exiting. The else-branch makes a guard that
+// cannot run say so and exit 2 rather than exit 0 with no output, which would read as a pass.
+const entry = process.argv[1] ? pathToFileURL(fs.realpathSync(process.argv[1])).href : null;
 const argv = process.argv.slice(2);
-if (argv.includes('--draw')) {
+if (entry !== import.meta.url) {
+  if (process.argv[1]?.endsWith('depth-audit.mjs')) {
+    console.error('depth-audit: COULD NOT RUN — invoked as main but module identity did not match');
+    process.exit(2);
+  }
+} else if (argv.includes('--draw')) {
   const raw = argv.slice(argv.indexOf('--draw') + 1);
   const positions = raw.map((a) => Number(a));
   if (positions.length === 0 || positions.some((p) => !Number.isInteger(p) || p < 1)) {
