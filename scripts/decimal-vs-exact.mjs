@@ -11,8 +11,8 @@
  * Three populations, counted and reported SEPARATELY and never summed into one verdict:
  *   IN-CELL  a value cell that prints a decimal beside an exact form. When the decimal follows the
  *            form's last ≈ or = (`\frac{\pi}{4}=0.7853981633\dots`, or `$D$ (exact $E$)`), the form
- *            is evaluated here and the decimal compared with it in the bound's direction; any other
- *            shape is a member classified UNKNOWN, never dropped (Codex round 1, finding 9).
+ *            is evaluated and the decimal compared with it in the bound's direction; any other shape
+ *            is a member classified UNKNOWN, never dropped.
  *   COMMENT  a value cell that is a bare decimal, whose Comments cell prints a longer decimal agreeing
  *            with it to the cell's last place (87a: `$913.493$` beside "root discriminant < 913.4927").
  *            That is the table's own sharper statement, not the source's.
@@ -20,26 +20,37 @@
  *            value. Those values live in ledger/source-exact-values.json, keyed by entry id, each with a
  *            quotation that must still be a verbatim substring of the entry's record; recorded prose is
  *            never parsed (manager review of P1, 2026-10-21).
- * Each member is AGREES, CUT (the printed decimal sits past the exact value in the overstating
- * direction and the cell does not mark it approximate), or UNKNOWN (an expression this evaluator
- * refuses, a precision past double range, or an interval that cannot decide). An approximation the
- * cell itself marks (≈ or a trailing …) with the exact form printed beside it, and within one unit of
- * its last place, AGREES: the reader is shown both.
+ *
+ * HOW IT DECIDES (the shape after two review rounds, 2026-10-21: both found tolerance and precision
+ * defects, so the code was changed to claim less rather than patched a third time). The exact value is
+ * held as an INTERVAL of exact rationals (BigInt fractions):
+ *   - a decimal (printed, in a comment, or stated by a source) is an exact rational, with no tolerance;
+ *   - a rational expression (integers, decimals, + − × ÷, integer powers, \frac) is evaluated exactly;
+ *   - an irrational one (√, π, e, γ, logs, trig) is evaluated in floating point and widened by an error
+ *     bound that grows with the largest intermediate value and the number of operations, so cancellation
+ *     widens it instead of producing a confident wrong number.
+ * A member is AGREES only when every value in that interval is on the safe side, or when the cell marks
+ * its decimal approximate (≈ or a trailing …) and the whole interval lies inside the decimal's rounding
+ * (or truncation) window; CUT only when every value in the interval is past the decimal in the
+ * overstating direction and the cell does not mark it approximate (or the interval lies wholly outside
+ * that window); UNKNOWN otherwise.
  *
  * NOT SEEN: every bound row outside the three populations, which is most of them. A bare decimal whose
  * exact value lives only in its paper (the 87a shape itself) is visible ONLY for a row someone has read
  * and recorded in the SOURCE table; the output prints how many rows that leaves unlooked-at rather than
  * calling them agreeing. Also unseen: whether a COMMENT decimal is about the same quantity as the cell
- * (it is matched by agreement to the cell's precision, nothing more), and bare \log of unstated base
- * unless the value does not depend on the base.
+ * (it is matched by agreement to the cell's precision, nothing more), bare \log of unstated base unless
+ * the value does not depend on the base, and the error of the platform's Math functions beyond the
+ * margin allowed for them.
  *
  * An INDICATOR, never a gate: it is not in `npm run check` (a known CUT would turn the check
  * permanently red) and only `--selftest` runs in CI. Any CUT is a question for upstream about display
  * convention and goes through the outward gate; nothing here contacts anyone.
  *
- * Exit: 0 no CUT · 1 at least one CUT · 2 refused (no bound rows read, a SOURCE entry that is
- * malformed, missing from the store, no longer quoted by it, or whose exact form and decimal disagree).
- * Flags: --root <dir> (default: the repo; the red-arm runs on a scratch copy) · --selftest.
+ * Exit: 0 no CUT · 1 at least one CUT · 2 refused (a mirror file, the manifest or the pins unreadable,
+ * the corpus short or dropping lines, a SOURCE entry malformed, missing, no longer quoted, or whose
+ * closed form and decimal disagree). Flags: --root <dir> (default: the repo; the red-arm runs on a
+ * scratch copy) · --selftest.
  */
 import { readFileSync, readdirSync, realpathSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -50,11 +61,40 @@ import { boundRowsOf, countCorpus, expectedSectionsFromClaims } from "./depth-au
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MIRROR = ["ledger", "teorth-optimizationproblems", "constants"];
 const EULER_GAMMA = 0.5772156649015329;
-// Doubles carry 15-17 significant digits; a decimal or literal with more than 14 cannot be compared
-// against a value computed to a few ulps, so it is UNKNOWN or refused (Codex r1 #2, #5, #7).
-const MAX_SIG = 14;
+// A float literal longer than this is refused on the floating-point path (Codex r1 #5); the exact
+// rational path reads any length.
+const MAX_FLOAT_SIG = 15;
 
-// ---------- a small evaluator for the LaTeX the value cells use. Anything else THROWS. ----------
+// ---------- exact rationals ----------
+const babs = (x) => (x < 0n ? -x : x);
+const gcd = (a, b) => { a = babs(a); b = babs(b); while (b) [a, b] = [b, a % b]; return a || 1n; };
+export function frac(n, d = 1n) {
+  if (d === 0n) throw new Error("division by zero");
+  if (d < 0n) { n = -n; d = -d; }
+  const g = gcd(n, d);
+  return { n: n / g, d: d / g };
+}
+const fadd = (a, b) => frac(a.n * b.d + b.n * a.d, a.d * b.d);
+const fsub = (a, b) => frac(a.n * b.d - b.n * a.d, a.d * b.d);
+const fmul = (a, b) => frac(a.n * b.n, a.d * b.d);
+const fdiv = (a, b) => frac(a.n * b.d, a.d * b.n);
+export const fcmp = (a, b) => { const x = a.n * b.d - b.n * a.d; return x > 0n ? 1 : x < 0n ? -1 : 0; };
+const fmin = (a, b) => (fcmp(a, b) <= 0 ? a : b);
+const fmax = (a, b) => (fcmp(a, b) >= 0 ? a : b);
+const pow10 = (k) => 10n ** BigInt(k);
+// "-12.345" or "1e-14" (a JS number's shortest form) → an exact fraction.
+export function fracOfText(t) {
+  const m = /^(-?)(\d*)(?:\.(\d*))?(?:e([+-]?\d+))?$/i.exec(t);
+  if (!m || (m[2] === "" && !m[3])) throw new Error(`not a decimal: ${t}`);
+  const digits = (m[2] || "0") + (m[3] || "");
+  const exp = Number(m[4] || 0) - (m[3] || "").length;
+  const n = BigInt(digits) * (exp > 0 ? pow10(exp) : 1n);
+  return frac(m[1] ? -n : n, exp < 0 ? pow10(-exp) : 1n);
+}
+const fracOfNum = (x) => fracOfText(String(x));
+const fmt = (f) => (f ? (Number(f.n) / Number(f.d)).toPrecision(13).replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "") : "∞");
+
+// ---------- one parser, two arithmetics ----------
 function normalise(s) {
   return s
     .replace(/\$/g, "")
@@ -62,73 +102,58 @@ function normalise(s) {
     .replace(/\\[!,;: ]/g, "")
     .replace(/\\(tfrac|dfrac)/g, "\\frac")
     .replace(/\\(cdot|times)/g, "*")
-    // Unicode √ binds the whole number after it (4√70035 is 4·√70035, Codex r1 #4); LaTeX \sqrt2
-    // keeps its own one-token argument.
+    // Unicode √ binds the whole number after it (4√70035 is 4·√70035, Codex r1 #4).
     .replace(/√(\d+(?:\.\d+)?)/g, "\\sqrt{$1}")
     .replace(/√/g, "\\sqrt")
     .replace(/π/g, "\\pi")
     .replace(/\s+/g, "");
 }
 
-export function evaluate(src, bareLog = Math.log) {
+function parseWith(src, A) {
   const s = normalise(src);
   let i = 0;
   const peek = () => s[i];
   const fail = (why) => { throw new Error(`${why} at ${i} in ${s}`); };
   const cmd = () => { const m = /^\\[A-Za-z]+/.exec(s.slice(i)); return m ? m[0] : null; };
   const eat = (t) => { if (s.startsWith(t, i)) { i += t.length; return true; } return false; };
-  const startsPrimary = () => {
-    const c = peek();
-    if (c === undefined) return false;
-    if (/[0-9.({]/.test(c)) return true;
-    if (c === "e") return true;
-    if (c === "\\") { const k = cmd(); return k !== null && k !== "\\frac" ? true : k === "\\frac"; }
-    return false;
-  };
+  const startsPrimary = () => { const c = peek(); return c !== undefined && (/[0-9.({\\]/.test(c) || c === "e"); };
   function number() {
     const m = /^(\d+(\.\d+)?|\.\d+)/.exec(s.slice(i));
     if (!m) fail("number expected");
     i += m[0].length;
-    // A literal past double precision would silently become a different number (Codex r1 #5).
-    if (m[0].replace(/^0*\.?0*/, "").replace(".", "").length > MAX_SIG) fail("literal carries more digits than double precision holds");
-    return Number(m[0]);
+    return A.lit(m[0]);
   }
   // A LaTeX argument: {…}, or a single digit, or one command primary (\sqrt2, \frac12, ^2, ^\pi).
   function arg() {
     if (eat("{")) { const v = expr(); if (!eat("}")) fail("} expected"); return v; }
     const c = peek();
-    if (/[0-9]/.test(c)) { i += 1; return Number(c); }
+    if (/[0-9]/.test(c)) { i += 1; return A.lit(c); }
     if (c === "\\" || c === "e" || c === "(") return primary();
     return fail("argument expected");
   }
-  function funcArg() {
-    if (peek() === "(" || peek() === "{") return primary();
-    return power();
-  }
+  const funcArg = () => (peek() === "(" || peek() === "{" ? primary() : power());
   function primary() {
     const c = peek();
     if (c === "(") { i += 1; const v = expr(); if (!eat(")")) fail(") expected"); return v; }
     if (c === "{") { i += 1; const v = expr(); if (!eat("}")) fail("} expected"); return v; }
-    if (c === "e") { i += 1; return Math.E; }
+    if (c === "e") { i += 1; return A.cnst("e"); }
     if (c === "\\") {
       const k = cmd();
-      if (k === "\\frac") { i += k.length; const a = arg(); const b = arg(); return a / b; }
+      if (k === "\\frac") { i += k.length; const a = arg(); const b = arg(); return A.div(a, b); }
       if (k === "\\sqrt") {
         i += k.length;
-        let n = 2;
+        let n = null;
         if (eat("[")) { n = expr(); if (!eat("]")) fail("] expected"); }
-        const v = arg();
-        return n === 2 ? Math.sqrt(v) : Math.pow(v, 1 / n);
+        return A.root(arg(), n);
       }
-      if (k === "\\pi") { i += k.length; return Math.PI; }
-      if (k === "\\gamma") { i += k.length; if (peek() === "_") fail("subscripted gamma is not Euler's constant"); return EULER_GAMMA; }
+      if (k === "\\pi") { i += k.length; return A.cnst("pi"); }
+      if (k === "\\gamma") { i += k.length; if (peek() === "_") fail("subscripted gamma is not Euler's constant"); return A.cnst("gamma"); }
       if (k === "\\log") {
         i += k.length;
-        if (eat("_")) { const b = arg(); const v = funcArg(); return Math.log(v) / Math.log(b); }
-        return bareLog(funcArg());
+        if (eat("_")) { const b = arg(); return A.log(funcArg(), b); }
+        return A.log(funcArg(), null);
       }
-      const fns = { "\\ln": Math.log, "\\exp": Math.exp, "\\sin": Math.sin, "\\cos": Math.cos, "\\tan": Math.tan, "\\sinh": Math.sinh, "\\cosh": Math.cosh };
-      if (fns[k]) { i += k.length; return fns[k](funcArg()); }
+      if (["\\ln", "\\exp", "\\sin", "\\cos", "\\tan", "\\sinh", "\\cosh"].includes(k)) { i += k.length; return A.fn(k.slice(1), funcArg()); }
       return fail(`unsupported command ${k}`);
     }
     if (/[0-9.]/.test(c)) return number();
@@ -136,93 +161,134 @@ export function evaluate(src, bareLog = Math.log) {
   }
   function power() {
     const base = primary();
-    if (eat("^")) return Math.pow(base, arg());
+    if (eat("^")) return A.pow(base, arg());
     return base;
   }
   function unary() {
-    if (eat("-")) return -unary();
+    if (eat("-")) return A.neg(unary());
     if (eat("+")) return unary();
     return power();
   }
   function term() {
     let v = unary();
     for (;;) {
-      if (eat("*")) v *= unary();
-      else if (eat("/")) v /= unary();
-      else if (startsPrimary()) v *= power();
+      if (eat("*")) v = A.mul(v, unary());
+      else if (eat("/")) v = A.div(v, unary());
+      else if (startsPrimary()) v = A.mul(v, power());
       else return v;
     }
   }
   function expr() {
     let v = term();
     for (;;) {
-      if (eat("+")) v += term();
-      else if (eat("-")) v -= term();
+      if (eat("+")) v = A.add(v, term());
+      else if (eat("-")) v = A.sub(v, term());
       else return v;
     }
   }
   const v = expr();
   if (i !== s.length) fail("trailing input");
-  if (!Number.isFinite(v)) fail("not finite");
   return v;
 }
 
-// Bare \log of unstated base: accepted only when the value does not depend on the base (a ratio).
-export function evaluateExact(src) {
-  const a = evaluate(src, Math.log);
-  if (!/\\log(?!_)/.test(normalise(src))) return a;
-  const b = evaluate(src, Math.log10);
-  if (Math.abs(a - b) > 1e-12 * Math.max(1, Math.abs(a))) throw new Error("bare \\log whose value depends on the base");
-  return a;
+// Exact arithmetic: anything irrational throws, so a rational form is never approximated.
+const RATIONAL = {
+  lit: (t) => fracOfText(t),
+  add: fadd, sub: fsub, mul: fmul, div: fdiv,
+  neg: (a) => frac(-a.n, a.d),
+  pow: (a, b) => {
+    if (b.d !== 1n || babs(b.n) > 64n) throw new Error("non-integer or large exponent");
+    let r = frac(1n);
+    for (let k = 0n; k < babs(b.n); k++) r = fmul(r, a);
+    return b.n < 0n ? fdiv(frac(1n), r) : r;
+  },
+  root: () => { throw new Error("irrational"); },
+  cnst: () => { throw new Error("irrational"); },
+  log: () => { throw new Error("irrational"); },
+  fn: () => { throw new Error("irrational"); },
+};
+export function evaluateRational(src) { return parseWith(src, RATIONAL); }
+
+// Floating point, recording the largest magnitude any intermediate reached and the number of steps,
+// which together bound the accumulated rounding error.
+function floatArith(bareLog, st) {
+  const rec = (...vs) => { for (const v of vs) { if (!Number.isFinite(v)) throw new Error("not finite"); st.max = Math.max(st.max, Math.abs(v)); } st.ops += 1; return vs[vs.length - 1]; };
+  const fns = { ln: Math.log, exp: Math.exp, sin: Math.sin, cos: Math.cos, tan: Math.tan, sinh: Math.sinh, cosh: Math.cosh };
+  return {
+    lit: (t) => {
+      if (t.replace(/^0*\.?0*/, "").replace(".", "").length > MAX_FLOAT_SIG) throw new Error("literal carries more digits than double precision holds");
+      return rec(Number(t));
+    },
+    add: (a, b) => rec(a, b, a + b), sub: (a, b) => rec(a, b, a - b), mul: (a, b) => rec(a, b, a * b), div: (a, b) => rec(a, b, a / b),
+    neg: (a) => -a,
+    pow: (a, b) => rec(a, b, Math.pow(a, b)),
+    root: (v, n) => rec(v, n === null ? Math.sqrt(v) : Math.pow(v, 1 / n)),
+    cnst: (k) => rec(k === "e" ? Math.E : k === "pi" ? Math.PI : EULER_GAMMA),
+    log: (v, b) => rec(v, b === null ? bareLog(v) : Math.log(v) / Math.log(b)),
+    fn: (k, v) => rec(v, fns[k](v)),
+  };
+}
+export function evaluateFloat(src, bareLog = Math.log) {
+  const st = { max: 0, ops: 0 };
+  const x = parseWith(src, floatArith(bareLog, st));
+  // Each step contributes at most a few ulps of the largest magnitude involved (Math functions are
+  // allowed several); 64 per step is a deliberately generous margin.
+  return { x, err: 64 * Number.EPSILON * Math.max(st.max, Math.abs(x)) * (st.ops + 1) };
 }
 
-// ---------- decimals ----------
+// The exact value of a form as an interval [lo, hi] of exact fractions; throws if unreadable.
+export function exactInterval(src) {
+  try { const f = evaluateRational(src); return { lo: f, hi: f, rational: true }; } catch { /* irrational or unreadable */ }
+  const a = evaluateFloat(src, Math.log);
+  let err = a.err;
+  if (/\\log(?!_)/.test(normalise(src))) {
+    const b = evaluateFloat(src, Math.log10);
+    if (Math.abs(a.x - b.x) > a.err + b.err) throw new Error("bare \\log whose value depends on the base");
+    err = Math.max(a.err, b.err);
+  }
+  err += 4 * Number.EPSILON * Math.abs(a.x); // the conversion of the bounds themselves
+  return { lo: fracOfNum(a.x - err), hi: fracOfNum(a.x + err), rational: false, x: a.x };
+}
+
+// ---------- printed decimals ----------
 const DOTS = /(\\dots|\\ldots|…|\.\.\.)$/;
-// "1058.565", "0.7853981633\dots", "-0.53". Returns null for anything else.
+// "1058.565", "0.7853981633\dots", "-0.53" → { text, f (exact), ulp (exact), places, dots }.
 export function parseDecimal(raw) {
   let t = raw.replace(/\$/g, "").replace(/\\\*|\^\\?\*|\*/g, "").replace(/\\[!,;: ]/g, "").replace(/\s+/g, "");
   const dots = DOTS.test(t);
   t = t.replace(DOTS, "");
   if (!/^-?\d+(\.\d+)?$/.test(t)) return null;
   const places = t.includes(".") ? t.split(".")[1].length : 0;
-  const sig = t.replace(/^-?0*\.?0*/, "").replace(".", "").length;
-  return { text: t, value: Number(t), places, ulp: Math.pow(10, -places), dots, sig };
+  return { text: t, f: fracOfText(t), ulp: frac(1n, pow10(places)), places, dots };
+}
+// The values a decimal followed by … may stand for: its truncation, digits continuing away from zero.
+const truncOf = (dec) => (dec.text.startsWith("-") ? { lo: fsub(dec.f, dec.ulp), hi: dec.f } : { lo: dec.f, hi: fadd(dec.f, dec.ulp) });
+// The values a printed approximation stands for: its rounding, and with … also its truncation (13b:23
+// prints π/4 as 0.7853981634…, a rounding written with dots).
+function windowOf(dec) {
+  const half = frac(dec.ulp.n, dec.ulp.d * 2n);
+  const r = { lo: fsub(dec.f, half), hi: fadd(dec.f, half) };
+  if (!dec.dots) return r;
+  const t = truncOf(dec);
+  return { lo: fmin(r.lo, t.lo), hi: fmax(r.hi, t.hi) };
 }
 
-// How far a printed decimal may sit from the value it stands for: half a unit in its last place when
-// it is a rounding, a whole unit when a trailing … marks it as a truncation.
-// A truncation (trailing …) of a NEGATIVE number continues toward smaller values (Codex r1 #6).
-// A trailing … is written after roundings as well as truncations (13b:23 prints π/4 as
-// 0.7853981634…), so with dots either reading is accepted.
-const within = (dec, x) => {
-  if (Math.abs(dec.value - x) <= (dec.ulp / 2) * (1 + 1e-9)) return true;
-  if (!dec.dots) return false;
-  const [lo, hi] = truncInterval(dec);
-  return x >= lo - dec.ulp * 1e-9 && x <= hi + dec.ulp * 1e-9;
-};
-// A decimal stated to more digits than a double holds is cut to MAX_SIG significant digits and
-// read as a truncation of itself (…), which is still a true statement about it. Used for the
-// TABLE's and SOURCE's longer decimals only; a printed value that long stays UNKNOWN.
-export function fitDecimal(dec) {
-  if (dec.sig <= MAX_SIG) return dec;
-  const neg = dec.text.startsWith("-");
-  const digits = dec.text.replace("-", "");
-  const [ip, fp = ""] = digits.split(".");
-  const lead = ip.replace(/^0+/, "");
-  const leadZerosInFrac = lead ? 0 : fp.length - fp.replace(/^0+/, "").length;
-  const keepFrac = lead ? Math.max(0, MAX_SIG - lead.length) : leadZerosInFrac + MAX_SIG;
-  if (lead && lead.length > MAX_SIG) return null;
-  const text = (neg ? "-" : "") + ip + (keepFrac ? "." + fp.slice(0, keepFrac) : "");
-  const out = parseDecimal(text);
-  return out && { ...out, dots: true };
+// The one decision every population uses. X = { lo, hi } (null = unbounded on that side).
+export function decide(dir, dec, X, marked) {
+  const safe = dir === "U" ? X.hi !== null && fcmp(dec.f, X.hi) >= 0 : X.lo !== null && fcmp(dec.f, X.lo) <= 0;
+  if (safe) return { cls: "AGREES", why: "on the safe side of every value the exact form allows" };
+  const surelyOver = dir === "U" ? X.lo !== null && fcmp(dec.f, X.lo) < 0 : X.hi !== null && fcmp(dec.f, X.hi) > 0;
+  if (marked) {
+    const W = windowOf(dec);
+    const inside = X.lo !== null && X.hi !== null && fcmp(X.lo, W.lo) >= 0 && fcmp(X.hi, W.hi) <= 0;
+    if (inside) return { cls: "AGREES", why: "past the exact value, but marked approximate and the exact value lies within its rounding" };
+    const apart = (X.hi !== null && fcmp(X.hi, W.lo) < 0) || (X.lo !== null && fcmp(X.lo, W.hi) > 0);
+    if (apart && surelyOver) return { cls: "CUT", why: "marked approximate but outside the rounding (or truncation) of its last printed place" };
+    return { cls: "UNKNOWN", why: "the exact value straddles the edge of the printed decimal's rounding" };
+  }
+  if (surelyOver) return { cls: "CUT", why: dir === "U" ? "printed below the exact value, with no mark that it is rounded" : "printed above the exact value, with no mark that it is rounded" };
+  return { cls: "UNKNOWN", why: "too close to the exact value to decide either way" };
 }
-// The interval a decimal printed with a trailing … stands for: digits continue away from zero.
-const truncInterval = (dec) => (dec.value < 0 || dec.text.startsWith("-") ? [dec.value - dec.ulp, dec.value] : [dec.value, dec.value + dec.ulp]);
-// Equal within a few ulps of floating-point evaluation, and never for an infinite endpoint (Codex
-// r1 #1: close(x, Infinity) was true). The old 1e-12 swallowed real cuts (#2).
-const close = (a, b) => Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) <= 16 * Number.EPSILON * Math.max(1, Math.abs(a), Math.abs(b));
-// Does the printed decimal OVERSTATE the bound? upper printed below exact, lower printed above.
-const overstates = (dir, d, x) => !close(d, x) && (dir === "U" ? d < x : d > x);
 
 export function cellsOf(rowText) {
   const t = rowText.trim();
@@ -233,93 +299,68 @@ export function cellsOf(rowText) {
 }
 
 // ---------- IN-CELL ----------
-// Something other than a plain decimal: a command, a power, a root, π, a quotient or Euler's e.
-// Scientific notation (`\cdot 10^{-9}`) and the unverified marker (`^\*`) are not exact forms.
-// Relation signs, \approx and \ldots are NOT exact forms (the first widening counted `\le 0.84…`).
+// Relation signs, \approx and \ldots are not exact forms; scientific notation and the unverified
+// marker are stripped before looking.
 const plainOf = (s) => s.replace(/\$/g, "").replace(/\^\\?\*|\\\*/g, "").replace(/\\(cdot|times)\s*10\s*\^\s*\{?\s*-?\d+\s*\}?/g, "");
 const EXACT_CMD = /\\(frac|tfrac|dfrac|sqrt|pi|log|ln|exp|sin|cos|tan|sinh|cosh|Gamma|zeta|binom|sum|prod|gamma)(?![A-Za-z])/;
 const looksExact = (s) => {
   const p = plainOf(s);
-  return EXACT_CMD.test(p) || /[\^√π]/.test(p) || /[\d)}]\s*\/\s*[\d(\\e{]/.test(p) || /(^|[^A-Za-z\\])e([^A-Za-z]|$)/.test(p);
+  return EXACT_CMD.test(p) || /[\^√π]/.test(p) || /[\d)}]\s*[-+*/]\s*[\d(\\{e]/.test(p) || /(^|[^A-Za-z\\])e([^A-Za-z]|$)/.test(p);
 };
 export function inCell(dir, value) {
-  // `$0.75806746$ (exact $37903373/50000000$)` (4b) states the exact form after the decimal.
+  // `$0.75806746$ (exact $37903373/50000000$)` (4b) names its exact form explicitly: always a member.
   const ex = /^\$([^$]+)\$\s*\(exact\s*\$([^$]+)\$\)\s*$/.exec(value.trim());
   const body = ex ? `${ex[2]}=${ex[1]}` : value.replace(/\$/g, "");
-  const base0 = { pop: "IN-CELL", dir, cell: value };
-  // A cell printing a decimal beside an exact-looking form is a member whatever its shape; a shape
-  // this reader cannot split is UNKNOWN, never excluded (Codex r1 #9: `1/e = 0.4` was dropped).
-  const member = /\d\.\d/.test(body) && looksExact(body);
+  const base = { pop: "IN-CELL", dir, cell: value };
+  const member = Boolean(ex) || (/\d\.\d/.test(body) && looksExact(body));
   const seps = [...body.matchAll(/\\approx|≈|=/g)];
   const last = seps[seps.length - 1];
   const dec = last ? parseDecimal(body.slice(last.index + last[0].length)) : null;
   const exprs = [];
   let from = 0;
   for (const m of seps) { exprs.push(body.slice(from, m.index)); from = m.index + m[0].length; }
-  if (!dec || !exprs.some(looksExact)) {
-    return member ? { ...base0, printed: value, cls: "UNKNOWN", why: "a decimal beside an exact form, in a shape this reader does not split (no ≈ or = before a final decimal)" } : null;
+  if (!dec || !(ex || exprs.some(looksExact))) {
+    return member ? { ...base, printed: value, cls: "UNKNOWN", why: "a decimal beside an exact form, in a shape this reader does not split (no ≈ or = before a final decimal)" } : null;
   }
-  const approx = last[0] !== "=" || dec.dots;
-  const vals = [];
+  const printed = dec.text + (dec.dots ? "…" : "");
+  let X = null;
   for (const e of exprs) {
-    // A leading label ("C_{20b}\ge 1/e") is read from its last relation onward.
-    // \le must not match the start of \left (22a, 4b:19 and 4b:20 went UNKNOWN when it did).
+    // A leading label ("C_{20b}\ge 1/e") is read from its last relation onward; \le must not match the
+    // start of \left.
     const rhs = e.split(/\\(?:geq?|leq?)(?![A-Za-z])|:|<|>|≤|≥/).pop();
-    try { vals.push(evaluateExact(rhs)); } catch { /* not evaluable: ignored unless none is */ }
+    let iv;
+    try { iv = exactInterval(rhs); } catch { continue; }
+    X = X ? { lo: fmax(X.lo, iv.lo), hi: fmin(X.hi, iv.hi) } : { lo: iv.lo, hi: iv.hi };
+    if (fcmp(X.lo, X.hi) > 0) return { ...base, printed, cls: "UNKNOWN", why: "the cell's own expressions disagree with each other" };
   }
-  const base = { pop: "IN-CELL", dir, cell: value, printed: dec.text + (dec.dots ? "…" : ""), approx };
-  if (!vals.length) return { ...base, cls: "UNKNOWN", why: "no expression in the cell is one this evaluator reads" };
-  if (vals.some((v) => !close(v, vals[0]))) return { ...base, cls: "UNKNOWN", why: "the cell's own expressions disagree with each other" };
-  if (dec.sig > MAX_SIG) return { ...base, cls: "UNKNOWN", why: "the decimal carries more digits than double precision checks" };
-  const x = vals[0];
-  const ok = within(dec, x);
-  const over = overstates(dir, dec.value, x);
-  const r = { ...base, exact: x, within: ok };
-  if (!over) return { ...r, cls: "AGREES", why: ok ? "on the safe side of the exact value" : "on the safe side, but its digits do not match the expression to their printed place" };
-  if (approx && ok) return { ...r, cls: "AGREES", why: "past the exact value, but marked approximate with the exact form printed beside it" };
-  return { ...r, cls: "CUT", why: approx ? "marked approximate but further from the exact value than rounding (or, after …, truncation) to its last printed place allows" : "printed as equal to the exact value but sits past it" };
+  if (!X) return { ...base, printed, cls: "UNKNOWN", why: "no expression in the cell is one this evaluator reads" };
+  const marked = !ex && (last[0] !== "=" || dec.dots);
+  return { ...base, printed, X, ...decide(dir, dec, X, marked) };
 }
 
 // ---------- COMMENT ----------
+// `$` is stripped first so a relation written outside the math (`> $1.23456$`) stays attached to its
+// number (Codex r2 #7).
 const COMMENT_NUM = /(<|>|\\(?:leq?|geq?)(?![A-Za-z])|≤|≥|=|\\approx|≈)?\s*(-?\d+\.\d+)\s*(\\dots|\\ldots|…|\.\.\.)?/g;
 export function fromComment(dir, value, comments) {
   const d = parseDecimal(value);
   // An integer cell is not a rounded decimal (85a's "1" beside a comment's 0.1 matched to the unit).
   if (!d || d.places < 1) return null;
   const hits = [];
-  for (const m of comments.matchAll(COMMENT_NUM)) {
-    const raw = parseDecimal(m[2] + (m[3] ?? ""));
-    if (!raw || raw.places <= d.places) continue;
-    // Membership is judged on the comment's RAW digits: judged on its truncation, a cell longer than
-    // a double holds dropped out of the population instead of reading UNKNOWN (1d:18, 3c:34, 3c:35).
-    if (Math.abs(raw.value - d.value) > d.ulp * (1 + 1e-9)) continue;
-    const c = fitDecimal(raw);
-    if (!c) continue;
+  for (const m of comments.replace(/\$/g, "").matchAll(COMMENT_NUM)) {
+    const c = parseDecimal(m[2] + (m[3] ?? ""));
+    if (!c || c.places <= d.places) continue;
+    const gap = fsub(c.f, d.f);
+    if (fcmp(frac(babs(gap.n), gap.d), d.ulp) > 0) continue;
     hits.push({ rel: (m[1] ?? "").replace(/\\leq?|≤/, "<").replace(/\\geq?|≥/, ">").replace(/\\approx|≈/, "≈"), c });
   }
   if (!hits.length) return null;
-  const base = { pop: "COMMENT", dir, cell: value, printed: d.text };
+  const base = { pop: "COMMENT", dir, cell: value, printed: d.text + (d.dots ? "…" : "") };
   const verdicts = hits.map(({ rel, c }) => {
     const said = `${rel ? rel + " " : ""}${c.text}${c.dots ? "…" : ""}`;
-    // Past double precision the comparison cannot be trusted either way (Codex r1 #7).
-    if (d.sig > MAX_SIG) return { cls: "UNKNOWN", said, why: "a decimal here carries more digits than double precision checks" };
-    // The interval the exact value lies in, from what the comment says; a truncation of a negative
-    // number continues downward (Codex r1 #6).
-    let lo = -Infinity, hi = Infinity;
-    const [tlo, thi] = c.dots ? truncInterval(c) : [c.value, c.value];
-    if (rel === "<") hi = thi;
-    else if (rel === ">") lo = tlo;
-    else if (c.dots) { lo = tlo; hi = thi; }
-    else if (rel === "≈") { lo = c.value - c.ulp / 2; hi = c.value + c.ulp / 2; }
-    else { lo = c.value; hi = c.value; }
-    if (dir === "U") {
-      if (d.value >= hi || close(d.value, hi)) return { cls: "AGREES", said, why: "at or above every value the comment allows" };
-      if (d.value < lo && !close(d.value, lo)) return { cls: "CUT", said, why: "below the value the comment states" };
-    } else {
-      if (d.value <= lo || close(d.value, lo)) return { cls: "AGREES", said, why: "at or below every value the comment allows" };
-      if (d.value > hi && !close(d.value, hi)) return { cls: "CUT", said, why: "above the value the comment states" };
-    }
-    return { cls: "UNKNOWN", said, why: "the comment's statement does not decide which side the printed decimal is on" };
+    const t = c.dots ? truncOf(c) : { lo: c.f, hi: c.f };
+    const X = rel === "<" ? { lo: null, hi: t.hi } : rel === ">" ? { lo: t.lo, hi: null } : rel === "≈" ? windowOf(c) : t;
+    return { said, X, ...decide(dir, d, X, d.dots) };
   });
   const pick = verdicts.find((v) => v.cls === "CUT") ?? verdicts.find((v) => v.cls === "UNKNOWN") ?? verdicts[0];
   return { ...base, ...pick };
@@ -338,24 +379,22 @@ export function fromSource(entry, audit, lines, dirAt) {
   if (typeof audit[entry.quoteField] !== "string" || !audit[entry.quoteField].includes(entry.quote)) return { ...base, refuse: `the quotation is no longer in the entry's ${entry.quoteField}` };
   // A source closed form the evaluator cannot read (an infinite sum) is still a FOUND member, classified
   // UNKNOWN, never counted among entries with no exact value on record (Codex r1 #10).
-  const unevaluable = entry.evaluable === false;
   if (entry.evaluable !== undefined && typeof entry.evaluable !== "boolean") return { ...base, refuse: "evaluable must be true or false" };
+  const unevaluable = entry.evaluable === false;
   if (unevaluable && !has("exact")) return { ...base, refuse: "an unevaluable entry must still state its exact form" };
-  // The exact value's interval: a closed form is a point; a source decimal is a point, or with a
-  // trailing … the unit beyond its last printed digit, away from zero.
-  let lo, hi;
+  let X = null;
   if (has("exact") && !unevaluable) {
-    try { lo = hi = evaluateExact(entry.exact); } catch (e) { return { ...base, refuse: `exact form not evaluable (${e.message})` }; }
+    try { const iv = exactInterval(entry.exact); X = { lo: iv.lo, hi: iv.hi }; } catch (e) { return { ...base, refuse: `exact form not evaluable (${e.message})` }; }
   }
   if (has("sourceDecimal")) {
-    const sd0 = parseDecimal(entry.sourceDecimal);
-    const sd = sd0 && fitDecimal(sd0);
+    const sd = parseDecimal(entry.sourceDecimal);
     if (!sd) return { ...base, refuse: "sourceDecimal is not a decimal" };
-    if (lo !== undefined) {
-      if (!within(sd, lo)) return { ...base, refuse: `exact form evaluates to ${lo}, which sourceDecimal ${entry.sourceDecimal} does not match` };
-    } else if (!unevaluable) [lo, hi] = sd.dots ? truncInterval(sd) : [sd.value, sd.value];
+    const S = sd.dots ? truncOf(sd) : { lo: sd.f, hi: sd.f };
+    if (X) {
+      const W = windowOf(sd);
+      if (fcmp(X.hi, W.lo) < 0 || fcmp(X.lo, W.hi) > 0) return { ...base, refuse: `the closed form (about ${fmt(X.lo)}) and sourceDecimal ${entry.sourceDecimal} disagree` };
+    } else if (!unevaluable) X = S;
   }
-  const x = lo;
   const at = lines?.[audit.rowLine - 1];
   const file = audit.rowFile.split("/").pop();
   const where = { file, line: audit.rowLine };
@@ -364,21 +403,30 @@ export function fromSource(entry, audit, lines, dirAt) {
   if (!dir) return { ...base, ...where, cls: "UNKNOWN", why: "the recorded line is not a bound row" };
   const value = cellsOf(at).value;
   const d = parseDecimal(value);
-  const r = { ...base, ...where, dir, cell: value, exact: x, exactText: has("exact") ? entry.exact : entry.sourceDecimal, exactIsForm: has("exact") && !unevaluable };
+  const r = { ...base, ...where, dir, cell: value, printed: d ? d.text + (d.dots ? "…" : "") : value, X, exactText: has("exact") ? entry.exact : entry.sourceDecimal };
   if (unevaluable) return { ...r, cls: "UNKNOWN", why: "the source's closed form is one this evaluator does not read" };
   if (!d) return { ...r, cls: "UNKNOWN", why: "the value cell is not a plain decimal" };
-  if (d.sig > MAX_SIG) return { ...r, cls: "UNKNOWN", why: "the decimal carries more digits than double precision checks" };
-  const safe = dir === "U" ? !overstates("U", d.value, hi) : !overstates("L", d.value, lo);
-  if (safe) return { ...r, printed: d.text, cls: "AGREES", why: "on the safe side of the source's exact value" };
-  const surely = dir === "U" ? overstates("U", d.value, lo) : overstates("L", d.value, hi);
-  if (!surely) return { ...r, printed: d.text, cls: "UNKNOWN", why: "inside the interval the source's truncated decimal allows" };
-  if (d.dots && within(d, x)) return { ...r, printed: d.text + "…", cls: "AGREES", why: "past the exact value, but marked with … as a truncation" };
-  return { ...r, printed: d.text, cls: "CUT", why: `printed ${dir === "U" ? "below" : "above"} the exact value its source states, with no mark that it is rounded` };
+  return { ...r, ...decide(dir, d, X, d.dots) };
+}
+
+// A table in a bounds section written without leading pipes is one the shared parser never sees, so
+// neither it nor the corpus count would notice (Codex r2 #6). Stated rule: every GFM table has a
+// delimiter row (`--- | ---`); a delimiter row there that does not start with "|" refuses the run.
+// (A first version flagged any line with two pipes and refused 20a.md:45, display math using |X|.)
+const DELIMITER_ROW = /^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?$/;
+export function pipelessRows(text) {
+  const lines = text.replace(/<!--[\s\S]*?-->/g, (m) => m.replace(/[^\n]/g, " ")).split(/\r?\n/);
+  const out = [];
+  let inBounds = false;
+  lines.forEach((l, i) => {
+    if (/^## /.test(l)) { inBounds = /^## Known (upper|lower) bounds\s*$/.test(l); return; }
+    const t = l.trim();
+    if (inBounds && !t.startsWith("|") && DELIMITER_ROW.test(t)) out.push(i + 1);
+  });
+  return out;
 }
 
 // ---------- run ----------
-const fmt = (x) => (typeof x === "number" ? x.toPrecision(13).replace(/0+$/, "").replace(/\.$/, "") : "");
-
 export function run(root) {
   const out = [];
   const cdir = join(root, ...MIRROR);
@@ -400,10 +448,8 @@ export function run(root) {
     return { code: 2, out };
   }
   // The corpus guards `depth-audit.mjs --corpus` applies, so a row this parser cannot see refuses the
-  // run instead of vanishing from both the members and the "not looked at" count (Codex r1 #3): an
-  // unreadable file, an inventory short of the mirror manifest, a line dropped inside a table block,
-  // a section the committed pins expect that produced no rows, a file with no rows. (Its 87a row-count
-  // control is not applied: a scratch tree for a red-arm need not carry 87a.)
+  // run instead of vanishing from both the members and the "not looked at" count (Codex r1 #3). (Its
+  // 87a row-count control is not applied: a scratch tree for a red-arm need not carry 87a.)
   let corpus;
   try {
     const man = JSON.parse(readFileSync(join(cdir, "..", "manifest.json"), "utf8"));
@@ -414,10 +460,12 @@ export function run(root) {
     out.push("decimal-vs-exact: REFUSED — a mirror file, the mirror manifest or ledger/claims.json could not be read, so the corpus could not be established");
     return { code: 2, out };
   }
+  const pipeless = [...texts].flatMap(([f, t]) => pipelessRows(t).map((n) => `${f}:${n}`));
   const why = corpus.expectedFiles == null ? "the mirror manifest gives no file count"
     : corpus.files !== corpus.expectedFiles ? `${corpus.files} constant file(s) read, the manifest says ${corpus.expectedFiles}`
     : corpus.expectedSections == null ? "ledger/claims.json gives no section baseline"
     : corpus.unparseableRows.length ? `${corpus.unparseableRows.length} line(s) inside a bounds table that this parser drops`
+    : pipeless.length ? `${pipeless.length} table(s) in a bounds section have a delimiter row with no leading pipe (${pipeless.slice(0, 3).join(", ")})`
     : corpus.missingSections.length ? `${corpus.missingSections.length} expected section(s) produced no rows (${corpus.missingSections.slice(0, 3).join(", ")})`
     : corpus.zeroRowFiles.length ? `${corpus.zeroRowFiles.length} file(s) contributed no bound rows`
     : corpus.boundRows !== rows.length ? `the corpus counts ${corpus.boundRows} bound rows and this census read ${rows.length}`
@@ -431,7 +479,7 @@ export function run(root) {
     const b = fromComment(r.dir, value, comments);
     if (b) members.push({ ...b, file: r.file, line: r.line });
   }
-  let audits = [];
+  let audits;
   let table;
   try { audits = JSON.parse(readFileSync(join(root, "continuity", "depth-audit.json"), "utf8")).audits; } catch { audits = null; }
   try { table = JSON.parse(readFileSync(join(root, "ledger", "source-exact-values.json"), "utf8")); } catch { table = null; }
@@ -459,13 +507,14 @@ export function run(root) {
     return { code: 2, out };
   }
   const dirWord = (d) => (d === "U" ? "upper" : "lower");
+  const range = (X) => (!X ? "" : X.lo && X.hi && fcmp(X.lo, X.hi) === 0 ? `= ${fmt(X.lo)}` : `in [${fmt(X.lo)}, ${fmt(X.hi)}]`);
   for (const m of members) {
     const loc = `${m.file}:${m.line} ${dirWord(m.dir)}`;
     const detail = m.pop === "COMMENT"
       ? `prints ${m.printed}; comment says ${m.said}`
       : m.pop === "SOURCE"
-        ? `prints ${m.printed ?? m.cell}; source states ${m.exactText}${m.exactIsForm ? ` = ${fmt(m.exact)}` : ""}`
-        : `prints ${m.printed ?? m.cell}${m.exact !== undefined ? `; exact ${fmt(m.exact)}` : ""}`;
+        ? `prints ${m.printed}; source states ${m.exactText}${m.X ? ` (${range(m.X)})` : ""}`
+        : `prints ${m.printed}${m.X ? `; exact ${range(m.X)}` : ""}`;
     out.push(`${m.cls.padEnd(8)} ${m.pop.padEnd(8)} ${m.id ? m.id + " " : ""}${loc} — ${detail} — ${m.why}`);
   }
   const tally = (pop) => {
@@ -476,9 +525,9 @@ export function run(root) {
   const A = tally("IN-CELL"), B = tally("COMMENT"), C = tally("SOURCE");
   const keyed = new Set(members.map((m) => `${m.file}:${m.line}`));
   out.push(`search space: ${rows.length} bound row(s) across ${texts.size} file(s) of ${MIRROR.join("/")} (depth-audit.mjs boundRowsOf, the --corpus definition)`);
-  out.push(`IN-CELL  (a decimal beside an exact form in the value cell; checked when it follows the form's last ≈ or =): ${A.n} found, ${A.AGREES + A.CUT} checked — ${A.AGREES} agree, ${A.CUT} cut against the exact value, ${A.UNKNOWN} unknown`);
+  out.push(`IN-CELL  (a decimal beside an exact form in the value cell; checked when it follows the form's last ≈ or =): ${A.n} found, ${A.AGREES + A.CUT} decided — ${A.AGREES} agree, ${A.CUT} cut against the exact value, ${A.UNKNOWN} unknown`);
   out.push(`COMMENT  (a bare decimal whose Comments cell prints a longer decimal agreeing to its last place): ${B.n} found, ${B.AGREES + B.CUT} decided — ${B.AGREES} agree, ${B.CUT} cut, ${B.UNKNOWN} unknown`);
-  out.push(`SOURCE   (ledger/source-exact-values.json, keyed to depth-audit entries): ${C.n} listed, ${C.AGREES + C.CUT} checked — ${C.AGREES} agree, ${C.CUT} cut against the source, ${C.UNKNOWN} unknown; drawn from ${vvs.length} value-vs-source entr${vvs.length === 1 ? "y" : "ies"}, the other ${vvs.length - C.n} carry no exact value on record (${Array.isArray(table.notEntered) ? table.notEntered.length : 0} of them considered and not entered, each with its reason in the table)`);
+  out.push(`SOURCE   (ledger/source-exact-values.json, keyed to depth-audit entries): ${C.n} listed, ${C.AGREES + C.CUT} decided — ${C.AGREES} agree, ${C.CUT} cut against the source, ${C.UNKNOWN} unknown; drawn from ${vvs.length} value-vs-source entr${vvs.length === 1 ? "y" : "ies"}, the other ${vvs.length - C.n} carry no exact value on record (${Array.isArray(table.notEntered) ? table.notEntered.length : 0} of them considered and not entered, each with its reason in the table)`);
   out.push(`not looked at: ${rows.length - keyed.size} of ${rows.length} bound row(s) are in none of the three populations — UNKNOWN by construction, never counted as agreeing`);
   const cuts = A.CUT + B.CUT + C.CUT;
   out.push(cuts
@@ -492,25 +541,34 @@ function selftest() {
   let fail = 0;
   const eq = (name, got, want) => { if (!(Math.abs(got - want) <= 1e-12 * Math.max(1, Math.abs(want)))) { fail++; console.log(`FAIL ${name}: ${got} != ${want}`); } };
   const throws = (name, fn) => { try { fn(); fail++; console.log(`FAIL ${name}: did not throw`); } catch { /* expected */ } };
-  eq("4√70035", evaluateExact("4\\sqrt{70035}"), 4 * Math.sqrt(70035));
-  eq("\\dfrac{\\pi}{2\\ln(1+\\sqrt{2})}", evaluateExact("\\dfrac{\\pi}{2\\ln(1+\\sqrt{2})}"), Math.PI / (2 * Math.log(1 + Math.SQRT2)));
-  eq("\\frac12", evaluateExact("\\frac12"), 0.5);
-  eq("\\tfrac{5\\sqrt2}{4}", evaluateExact("\\tfrac{5\\sqrt2}{4}"), 5 * Math.SQRT2 / 4);
-  eq("\\log_{70} 143640", evaluateExact("\\log_{70} 143640"), Math.log(143640) / Math.log(70));
-  eq("3 \\log_{12} 10", evaluateExact("3 \\log_{12} 10"), 3 * Math.log(10) / Math.log(12));
-  eq("\\frac{\\log 3}{\\log 2}", evaluateExact("\\frac{\\log 3}{\\log 2}"), Math.log(3) / Math.log(2));
-  eq("e^{1-\\gamma}", evaluateExact("e^{1-\\gamma}"), Math.exp(1 - EULER_GAMMA));
-  eq("4 e^{-0.14/e}", evaluateExact("4 e^{-0.14/e}"), 4 * Math.exp(-0.14 / Math.E));
-  eq("134753^{1/10}", evaluateExact("134753^{1/10}"), Math.pow(134753, 0.1));
-  eq("\\frac{13524e-7359}{9451e-3286}", evaluateExact("\\frac{13524e-7359}{9451e-3286}"), (13524 * Math.E - 7359) / (9451 * Math.E - 3286));
-  eq("\\left(\\frac{4\\pi}{11}\\right)^{3/4}", evaluateExact("\\left(\\frac{4\\pi}{11}\\right)^{3/4}"), Math.pow(4 * Math.PI / 11, 0.75));
-  eq("\\sqrt{4-\\sqrt{15}}", evaluateExact("\\sqrt{4-\\sqrt{15}}"), Math.sqrt(4 - Math.sqrt(15)));
-  eq("2\\pi+2", evaluateExact("2\\pi+2"), 2 * Math.PI + 2);
-  throws("bare \\log depending on base", () => evaluateExact("\\frac12\\log(2)"));
-  throws("\\Gamma refused", () => evaluateExact("\\Gamma(1/3)"));
-  throws("subscripted gamma refused", () => evaluateExact("2/\\log \\gamma_{1}"));
-  throws("a letter refused", () => evaluateExact("\\pi/2-\\delta"));
-  throws("\\sum refused", () => evaluateExact("\\sum_{k=1}^{\\infty}2^{-k}"));
+  const fl = (s) => evaluateFloat(s).x;
+  eq("4√70035", fl("4\\sqrt{70035}"), 4 * Math.sqrt(70035));
+  eq("unicode 4√70035", fl("4√70035"), 4 * Math.sqrt(70035));
+  eq("\\dfrac{\\pi}{2\\ln(1+\\sqrt{2})}", fl("\\dfrac{\\pi}{2\\ln(1+\\sqrt{2})}"), Math.PI / (2 * Math.log(1 + Math.SQRT2)));
+  eq("\\tfrac{5\\sqrt2}{4}", fl("\\tfrac{5\\sqrt2}{4}"), 5 * Math.SQRT2 / 4);
+  eq("\\log_{70} 143640", fl("\\log_{70} 143640"), Math.log(143640) / Math.log(70));
+  eq("3 \\log_{12} 10", fl("3 \\log_{12} 10"), 3 * Math.log(10) / Math.log(12));
+  eq("e^{1-\\gamma}", fl("e^{1-\\gamma}"), Math.exp(1 - EULER_GAMMA));
+  eq("4 e^{-0.14/e}", fl("4 e^{-0.14/e}"), 4 * Math.exp(-0.14 / Math.E));
+  eq("134753^{1/10}", fl("134753^{1/10}"), Math.pow(134753, 0.1));
+  eq("\\frac{13524e-7359}{9451e-3286}", fl("\\frac{13524e-7359}{9451e-3286}"), (13524 * Math.E - 7359) / (9451 * Math.E - 3286));
+  eq("\\left(\\frac{4\\pi}{11}\\right)^{3/4}", fl("\\left(\\frac{4\\pi}{11}\\right)^{3/4}"), Math.pow(4 * Math.PI / 11, 0.75));
+  eq("\\sqrt{4-\\sqrt{15}}", fl("\\sqrt{4-\\sqrt{15}}"), Math.sqrt(4 - Math.sqrt(15)));
+  eq("2\\pi+2", fl("2\\pi+2"), 2 * Math.PI + 2);
+  const r = (s) => evaluateRational(s);
+  if (fcmp(r("\\frac12"), frac(1n, 2n)) !== 0) { fail++; console.log("FAIL rational \\frac12"); }
+  if (fcmp(r("4-2^{-7}"), frac(511n, 128n)) !== 0) { fail++; console.log("FAIL rational 4-2^{-7}"); }
+  if (fcmp(r("10000000000000+1/10000-10000000000000"), frac(1n, 10000n)) !== 0) { fail++; console.log("FAIL rational cancellation"); }
+  throws("rational refuses √", () => r("\\sqrt2"));
+  throws("bare \\log depending on base", () => exactInterval("\\frac12\\log(2)"));
+  throws("\\Gamma refused", () => exactInterval("\\Gamma(1/3)"));
+  throws("subscripted gamma refused", () => exactInterval("2/\\log \\gamma_{1}"));
+  throws("a letter refused", () => exactInterval("\\pi/2-\\delta"));
+  throws("\\sum refused", () => exactInterval("\\sum_{k=1}^{\\infty}2^{-k}"));
+  throws("a long float literal refused", () => evaluateFloat("\\sqrt{10000000000000001}"));
+  // Cancellation widens the float interval instead of producing a confident wrong number (Codex r2 #2).
+  const canc = exactInterval("\\sqrt{10000000000000}+1/10000-\\sqrt{10000000000000}");
+  if (!(fcmp(canc.lo, frac(1n, 10000n)) <= 0 && fcmp(canc.hi, frac(1n, 10000n)) >= 0)) { fail++; console.log(`FAIL a cancelling float form's interval must contain the true value: [${fmt(canc.lo)}, ${fmt(canc.hi)}]`); }
 
   const cls = (name, got, want) => { if ((got?.cls ?? null) !== want) { fail++; console.log(`FAIL ${name}: ${got?.cls ?? "not a member"} (want ${want ?? "not a member"}) ${got?.why ?? ""}`); } };
   // IN-CELL
@@ -520,21 +578,31 @@ function selftest() {
   cls("upper printed = below exact, no mark", inCell("U", "$\\frac{\\pi}{4}=0.785$"), "CUT");
   cls("upper ≈ but far below exact", inCell("U", "$\\pi/2 \\approx 1.5$"), "CUT");
   cls("lower printed = above exact, no mark", inCell("L", "$\\sqrt{2} = 1.4143$"), "CUT");
-  cls("exact equality", inCell("U", "$\\frac{13}{4}=3.25$"), "AGREES");
+  cls("exact rational equality", inCell("U", "$\\frac{13}{4}=3.25$"), "AGREES");
+  cls("exact rational equality, lower", inCell("L", "$4 - 2^{-7} = 4 - \\frac{1}{128} = 3.9921875$"), "AGREES");
   cls("unreadable expression", inCell("U", "$\\pi/2-\\delta$ with $\\delta\\approx 0.00013$"), "UNKNOWN");
   cls("an expression with no separator is an UNKNOWN member", inCell("U", "$0.92117 - \\frac{9}{16} 10^{-6}$"), "UNKNOWN");
   cls("bare decimal is not a member", inCell("U", "$1058.565$"), null);
   cls("scientific notation is not a member", inCell("L", "$-5.895 \\cdot 10 ^ {-9}$"), null);
   cls("an unverified marker is not an exact form", inCell("U", "$1.7813^\\*$"), null);
-  // Codex round 1 (2026-10-21), one fixture per finding, each the reviewer's own scenario.
-  cls("r1#2 a 1e-13 cut is not swallowed", inCell("U", "$10000000000001/10000000000000 = 1.0$"), "CUT");
-  cls("r1#4 unicode √ takes the whole number", inCell("U", "$4√70035 = 500.0$"), "CUT");
-  cls("r1#5 a literal past double precision is refused", inCell("U", "$\\frac{10000000000000001-10000000000000000}{10}=0.0$"), "UNKNOWN");
-  cls("r1#9 1/e is an exact form", inCell("L", "$1/e = 0.4$"), "CUT");
+  cls("\\le alone is not an exact form", inCell("U", "$$\\le 0.844137708436$$"), null);
+  cls("\\approx alone is not an exact form", inCell("U", "$\\approx 2.15627$"), null);
   cls("a labelled expression is read after its relation", inCell("L", "$C_{20b}\\ge 1/e \\approx 0.367879$"), "AGREES");
   cls("\\left is not read as \\le", inCell("L", "$\\left(\\frac{4\\pi}{11}\\right)^{3/4}\\approx 1.105$"), "AGREES");
   cls("a named symbol is UNKNOWN", inCell("U", "$c_0^2 \\approx 5.33386$"), "UNKNOWN");
   cls("the cell's two expressions agree", inCell("L", "$5/\\sqrt{8}=\\tfrac{5\\sqrt2}{4}\\approx 1.767767$"), "AGREES");
+  cls("a rounding written with … agrees beside its exact form", inCell("L", "$\\frac{\\pi}{4}=0.7853981634\\dots$"), "AGREES");
+  cls("(exact …) after a decimal is read", inCell("L", "$0.75806746$ (exact $37903373/50000000$)"), "AGREES");
+  cls("an irrational form printed = to full float precision is UNKNOWN, not AGREES", inCell("U", `$\\sqrt{2}=${Math.SQRT2}$`), "UNKNOWN");
+  // Codex round 1 (2026-10-21), one fixture per finding, each the reviewer's own scenario.
+  cls("r1#2 a 1e-13 cut is not swallowed", inCell("U", "$10000000000001/10000000000000 = 1.0$"), "CUT");
+  cls("r1#4 unicode √ takes the whole number", inCell("U", "$4√70035 = 500.0$"), "CUT");
+  cls("r1#5 a long literal is read exactly", inCell("U", "$\\frac{10000000000000001-10000000000000000}{10}=0.0$"), "CUT");
+  cls("r1#9 1/e is an exact form", inCell("L", "$1/e = 0.4$"), "CUT");
+  // Codex round 2.
+  cls("r2#1 a cut near zero is not swallowed", inCell("U", "$1/10^{14}=0.000000000000009$"), "CUT");
+  cls("r2#2 cancellation is exact on the rational path", inCell("U", "$10000000000000+1/10000-10000000000000=0.0$"), "CUT");
+  cls("r2#5 an explicit (exact …) is always a member", inCell("U", "$3.9$ (exact $2+2$)"), "CUT");
   // COMMENT — the manager's two 87a examples are the positive controls.
   cls("87a:19 < 913.4927", fromComment("U", "$913.493$", "root discriminant $< 913.4927$."), "AGREES");
   cls("87a:20 < 857.5662…", fromComment("U", "$857.567$", "rd $< 770.6432$, giving $< 857.5662\\dots$ — a saving"), "AGREES");
@@ -546,16 +614,11 @@ function selftest() {
   cls("r1#1 an infinite endpoint is never close", fromComment("U", "$1.234$", "$> 1.23456$"), "CUT");
   cls("r1#1 lower mirror", fromComment("L", "$1.235$", "$< 1.23456$"), "CUT");
   cls("r1#6 a negative truncation runs downward", fromComment("L", "$-1.234$", "$-1.2340\\dots$"), "UNKNOWN");
-  cls("r1#7 past double precision is UNKNOWN", fromComment("L", "$1.0000000000000001$", "$1.00000000000000001$"), "UNKNOWN");
-  cls("a long comment decimal is read as its truncation", fromComment("U", "$1.5027434868$", "$1.50274348670958337974\\dots$"), "AGREES");
+  cls("r1#7 digits past double precision are compared exactly", fromComment("L", "$1.0000000000000001$", "$1.00000000000000001$"), "CUT");
+  cls("a long comment decimal agrees exactly", fromComment("U", "$1.5027434868$", "$1.50274348670958337974\\dots$"), "AGREES");
   cls("a long comment decimal still catches a cut", fromComment("U", "$1.5027434867$", "$1.50274348670958337974\\dots$"), "CUT");
-  cls("a cell past double precision stays a member, UNKNOWN", fromComment("U", "$1.463071582607559$", "$1.4630715826075593\\dots$"), "UNKNOWN");
-  const fd = fitDecimal(parseDecimal("0.000123456789012345678"));
-  if (!fd || fd.text !== "0.00012345678901234" || !fd.dots) { fail++; console.log(`FAIL fitDecimal keeps 14 significant digits: ${fd?.text}`); }
-  cls("a rounding written with … agrees beside its exact form", inCell("L", "$\\frac{\\pi}{4}=0.7853981634\\dots$"), "AGREES");
-  cls("\\le alone is not an exact form", inCell("U", "$$\\le 0.844137708436$$"), null);
-  cls("\\approx alone is not an exact form", inCell("U", "$\\approx 2.15627$"), null);
-  cls("(exact …) after a decimal is read", inCell("L", "$0.75806746$ (exact $37903373/50000000$)"), "AGREES");
+  cls("r2#4 a long integer part stays a member", fromComment("U", "$100000000000000.0$", "$100000000000000.01$"), "CUT");
+  cls("r2#7 a relation outside the math stays attached", fromComment("U", "$1.235$", "> $1.23456$"), "UNKNOWN");
   const c8a = cellsOf("| $1.234$ | [R] | $1.23456$");
   const c8b = cellsOf("| $1.234$ | [R] | $1.23456$ |");
   if (c8a.comments !== "$1.23456$" || c8b.comments !== "$1.23456$") { fail++; console.log(`FAIL r1#8 trailing pipe: "${c8a.comments}" / "${c8b.comments}"`); }
@@ -572,7 +635,7 @@ function selftest() {
   cls("a moved row is UNKNOWN", fromSource(entry, audit, ["# 9z", row, ""], up), "UNKNOWN");
   const refuses = (name, m) => { if (!m.refuse) { fail++; console.log(`FAIL ${name}: not refused`); } };
   refuses("a quotation no longer in the record", fromSource({ ...entry, quote: "4√70036" }, audit, lines, up));
-  refuses("exact and decimal disagree", fromSource({ ...entry, sourceDecimal: "1058.5652" }, audit, lines, up));
+  refuses("closed form and decimal disagree", fromSource({ ...entry, sourceDecimal: "1058.5652" }, audit, lines, up));
   refuses("a missing entry", fromSource(entry, undefined, lines, up));
   cls("r1#10 an unevaluable source form is an UNKNOWN member", fromSource({ ...entry, exact: "Σ_{i≥0} 2^i", evaluable: false, sourceDecimal: undefined }, audit, lines, up), "UNKNOWN");
   refuses("an unevaluable entry with no form", fromSource({ ...entry, exact: "", evaluable: false }, audit, lines, up));
@@ -584,9 +647,13 @@ function selftest() {
   cls("upper printed below a source decimal is CUT", fromSource(e19, a19, ["# 9z", "", a19.rowText], up), "CUT");
   cls("upper at a source decimal's rounding-up agrees", fromSource(e19, { ...a19, rowText: "| $0.380927$ | [H2016] | |" }, ["# 9z", "", "| $0.380927$ | [H2016] | |"], up), "AGREES");
   cls("inside a truncated source decimal is UNKNOWN", fromSource({ ...e19, sourceDecimal: "0.38092…", quote: "0.38092" }, { ...a19, rowText: "| $0.380925$ | [H2016] | |" }, ["# 9z", "", "| $0.380925$ | [H2016] | |"], up), "UNKNOWN");
+  const aNeg = { ...audit, rowText: "| $-1.3\\dots$ | [N] | |", claimResult: "states -1.24…" };
+  cls("r2#3 a … cell is judged against the whole source interval", fromSource({ auditId: "T1", sourceDecimal: "-1.24…", quote: "-1.24…", quoteField: "claimResult" }, aNeg, ["# 9z", "", aNeg.rowText], up), "UNKNOWN");
+  // r2#6: a table with no leading pipes inside a bounds section.
+  const pl = pipelessRows(["# 9z", "## Known upper bounds", "| A | B | C |", "| - | - | - |", "| 1 | x | |", "", "$$ \\sigma := \\sup |X| - |Y| $$", "Bound | Reference | Comments", "--- | --- | ---", "$\\sqrt{2}=1.4$ | [R] | x", "## Additional comments", "a | b", "--- | ---"].join("\n"));
+  if (pl.join(",") !== "9") { fail++; console.log(`FAIL r2#6 pipeless delimiter rows (want 9 only; display math and other sections ignored): ${pl.join(",")}`); }
 
-  // The whole run on a scratch tree: a CUT exits 1, the same tree with the row printed 1058.566 exits 0,
-  // an empty mirror and a bad table entry exit 2.
+  // The whole run on a scratch tree.
   const dir = mkdtempSync(join(tmpdir(), "decimal-vs-exact-"));
   try {
     const cd = join(dir, ...MIRROR);
@@ -603,14 +670,15 @@ function selftest() {
     };
     const want = (name, wantCode, re) => { const { code, out } = run(dir); const t = out.join("\n"); if (code !== wantCode || !re.test(t)) { fail++; console.log(`FAIL run: ${name}: exit ${code} (want ${wantCode})\n${t}`); } };
     write("1058.565");
-    want("87a shape", 1, /CUT +SOURCE +T1 9z\.md:7 upper[\s\S]*SOURCE .*1 listed, 1 checked — 0 agree, 1 cut[\s\S]*not looked at: 0 of 2/);
+    want("87a shape", 1, /CUT +SOURCE +T1 9z\.md:7 upper[\s\S]*SOURCE .*1 listed, 1 decided — 0 agree, 1 cut[\s\S]*not looked at: 0 of 2/);
     write("1058.566");
-    want("printed 1058.566", 0, /AGREES +SOURCE +T1[\s\S]*IN-CELL .*1 found, 1 checked — 1 agree[\s\S]*RESULT: PASS/);
+    want("printed 1058.566", 0, /AGREES +SOURCE +T1[\s\S]*IN-CELL .*1 found, 1 decided — 1 agree[\s\S]*RESULT: PASS/);
     write("1058.565", { ...entry, quote: "not there" });
     want("stale quotation refuses", 2, /REFUSED +SOURCE T1: the quotation is no longer/);
-    // r1#3: a row this parser drops (no leading pipe, legal GFM) refuses instead of vanishing.
     write("1058.565", entry, page("1058.565").replace("| $\\sqrt{2}", "$\\sqrt{2}"));
     want("r1#3 a dropped table line refuses", 2, /REFUSED — 1 line\(s\) inside a bounds table/);
+    write("1058.565", entry, page("1058.565").replace("## Known lower bounds", "Bound | Reference | Comments\r\n--- | --- | ---\r\n$\\sqrt{2}=1.4$ | [R] | x\r\n\r\n## Known lower bounds"));
+    want("r2#6 a pipeless table refuses", 2, /REFUSED — 1 table\(s\) in a bounds section have a delimiter row with no leading pipe \(9z\.md:10\)/);
     write("1058.565");
     writeFileSync(join(cd, "..", "manifest.json"), JSON.stringify({ fileCount: 2, rootFiles: [] }));
     want("r1#3 a short inventory refuses", 2, /REFUSED — 1 constant file\(s\) read, the manifest says 2/);
