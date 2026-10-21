@@ -3168,6 +3168,25 @@
       "updated": "2026-10-20",
       "closedAt": "2026-10-20",
       "lastEvaluated": "2026-10-20"
+    },
+    {
+      "id": "A-88",
+      "type": "active",
+      "status": "open",
+      "title": "When upstream answers PR #244, draft the display-convention question about the three ceilings A-76 found printed below their exact value",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-10-24",
+      "links": [
+        "A-76",
+        "A-87",
+        "A-47"
+      ],
+      "note": "Minted 2026-10-21 MT. David answered board card abab2375 (bus 2bb8da6e) at 21:49:01Z: wait for a reply on teorth/optimizationproblems#244 (the 13a citation fix, A-87; an upstream PR, it does not exist in this repo) before raising the three rows, then bring him the text (paraphrased; his reply is on the card). The three rows, from scripts/decimal-vs-exact.mjs at 247d60b: 87a (A-47-0075, printed 1058.565 against the paper's 4√70035 = 1058.565066…), 1b (A-47-0019, 0.380926 against the paper's 0.3809268534330870), 1d.md:18 (1.463071582607559 against its own comment's exact 1.4630715826075593…, a row upstream marks unverified). It is a display-convention question, never a correction we send.",
+      "onTrigger": "On #244 receiving any maintainer response (a comment, a review, a merge or a close), or on the check date, whichever comes first: run the readCommand. No response yet: re-date one week. A response: re-run node scripts/decimal-vs-exact.mjs (the three rows must still be CUT, or the question shrinks), draft the question as an upstream issue text in docs/decisions/, run the adversarial refute-it review and a claims pass, then put the final text to David on a card. Nothing is sent without his yes on that text.",
+      "closeWhen": "David has answered a card carrying the final question text (send, or do not send), and the row records which; or the three rows are no longer CUT at a fresh census.",
+      "readCommand": "gh pr view 244 --repo teorth/optimizationproblems --json state,comments,reviews,updatedAt",
+      "created": "2026-10-21",
+      "updated": "2026-10-21"
     }
   ],
   "meta": {
