@@ -321,6 +321,11 @@ jobs:
       # never says "record") and the bound-cell guard over the committed 1b page.
       - name: Self-test newer-results notes (no network; the bound-cell guard)
         run: node scripts/newer-results.mjs --selftest
+      # A-83: open upstream pull requests listed on each constant page. Network-free: the listing rules
+      # (open only, no title or author stored, refuses an empty or possibly-truncated read) and the
+      # bound-cell guard over every committed page a listed pull request touches. --fetch needs gh.
+      - name: Self-test open pull requests on constant pages (no network; the bound-cell guard)
+        run: node scripts/open-pulls.mjs --selftest
       # A-82: the exact 1b evaluator behind those notes. ONLY its selftest runs here (hand-checked
       # maxima, the transform against the direct sum at every lag, its own red-arm); --store fetches
       # the pinned witnesses and stays local, an indicator.

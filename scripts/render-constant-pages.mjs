@@ -27,6 +27,7 @@ import crypto from "node:crypto";
 import { REPO, esc, copyCiteScript } from "./lib/html.mjs";
 import { noteBlock } from "./openai-math.mjs";
 import { newerBlock, newerFor, loadStore as loadNewerStore, validateStore as validateNewerStore, STORE as NEWER_STORE } from "./newer-results.mjs";
+import { pullsBlock, loadStore as loadPullsStore, validateStore as validatePullsStore, STORE as PULLS_STORE } from "./open-pulls.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUTDIR = join(ROOT, "c");
@@ -955,7 +956,8 @@ function side(label, row, changed, kind, hist = null) {
 
 // `newer` is A-82's store of constructions we checked ourselves (ledger/newer-results.json); null renders
 // none, which is how newer-results.mjs's guard proves the block is the ONLY difference it makes.
-export function renderPage(r, sha, audits = loadAudits(), newer = loadNewerStore()) {
+// `pulls` is A-83's listing of open upstream pull requests (ledger/open-pull-requests.json), the same way.
+export function renderPage(r, sha, audits = loadAudits(), newer = loadNewerStore(), pulls = loadPullsStore()) {
   const upstream = `${REPO}/blob/main/ledger/teorth-optimizationproblems/constants/${encodeURIComponent(r.id)}.md`;
   return `<!doctype html>
 <html lang="en">
@@ -972,7 +974,7 @@ ${r.report ? `<a class="ours" href="${esc(r.report.url)}">${esc(reportLabel(r.re
 <dl>
 ${side("Upper", r.upper, r.upperChanged, r.upperKind, historyUrl(r.url, sha))}
 ${side("Lower", r.lower, r.lowerChanged, r.lowerKind, historyUrl(r.url, sha))}
-${auditBlock(r.id, audits, [r.upper, r.lower])}${noteBlock(r.oai)}${newerBlock(newerFor(r.id, newer))}
+${auditBlock(r.id, audits, [r.upper, r.lower])}${noteBlock(r.oai)}${newerBlock(newerFor(r.id, newer))}${pullsBlock(r.id, pulls)}
 </dl>
 <div class="actions">
 <a href="${esc(upstream)}">the mirrored file</a> &middot;
@@ -2118,7 +2120,21 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE } = {}) {
     process.exitCode = 1;
     return;
   }
-  const pages = new Map(rows.map((r) => [`${r.id}.html`, renderPage(r, manifest.sha, undefined, newer)]));
+  // A-83: the open-pull-requests listing, refused the same way and for the same reason. Its test hook is
+  // CC_OPEN_PULLS_STORE (open-pulls.mjs's selftest points it at a bad store), not a setting.
+  const pullsPath = process.env.CC_OPEN_PULLS_STORE || PULLS_STORE;
+  let pulls = null;
+  let pullsErrs = [];
+  if (existsSync(pullsPath)) {
+    try { pulls = JSON.parse(readFileSync(pullsPath, "utf8")); } catch { pullsErrs = ["the store file is not valid JSON"]; }
+    if (!pullsErrs.length) pullsErrs = validatePullsStore(pulls);
+  }
+  if (pullsErrs.length) {
+    console.log(`RESULT: FAIL — render-constant-pages: the open-pull-requests store is invalid, so nothing was composed or written: ${pullsErrs.join("; ")}`);
+    process.exitCode = 1;
+    return;
+  }
+  const pages = new Map(rows.map((r) => [`${r.id}.html`, renderPage(r, manifest.sha, undefined, newer, pulls)]));
 
   if (check) {
     const onDisk = existsSync(OUTDIR) ? readdirSync(OUTDIR).filter((f) => f.endsWith(".html")) : [];
