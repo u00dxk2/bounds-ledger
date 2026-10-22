@@ -22,9 +22,11 @@
 // WHAT IT REFUSES. A listing of 200 or more (gh's --limit 200 may have truncated it), an empty listing
 // (a zero from a dead read is indistinguishable from a measured one; this repository has never had
 // none open since we mirrored it), a count that does not reconcile, and any row not entirely in the
-// shape the read asked for (the stated rule in buildStore: OPEN, a complete file list, and every file
-// entry ADDED, MODIFIED or DELETED with a path), and a malformed or impossible number, date or
-// constant id. Each refusal refuses the whole fetch; nothing partial is ever written.
+// shape the read asked for (the stated rule in buildStore: OPEN · files exactly as long as changedFiles
+// · every path DISTINCT · every entry ADDED, MODIFIED or DELETED with a path), and a malformed or
+// impossible number, date or constant id. Each refusal refuses the whole fetch and writes nothing, so
+// each page keeps its last good list under that list's own read date; no page ever says "no pending
+// changes". RESIDUAL: the rule trusts the paths gh reports; it cannot see a file gh does not name.
 //
 // REFRESH. `node scripts/open-pulls.mjs --fetch`, then render-constant-pages. `npm run resnap` runs it,
 // because a pull request that merges into a constant's file is exactly what turns the drift alarm red.
@@ -72,7 +74,8 @@ export function buildStore(rows, readAt) {
   // stored only when it is entirely in the shape the read asked for, and ANY departure refuses the whole
   // fetch, so the failure is loud and nothing partial is written:
   //   - state is exactly "OPEN" (the read is --state open, so anything else is the read misbehaving);
-  //   - files is a list exactly as long as changedFiles (gh returns at most 100 files each, Codex r1 #1);
+  //   - files is a list of exactly changedFiles DISTINCT paths (gh returns at most 100 files each, Codex
+  //     r1 #1; a repeated path could stand in for a missing one, Codex r3);
   //   - every file entry has a non-empty string path and a changeType of ADDED, MODIFIED or DELETED, the
   //     kinds where the path IS the file changed. A RENAMED or COPIED entry names only its destination,
   //     so its source constant could not be placed; it is refused, not guessed.
@@ -86,6 +89,9 @@ export function buildStore(rows, readAt) {
     for (const f of r.files) {
       if (!f || typeof f.path !== "string" || !f.path || !FILE_CHANGES.has(f?.changeType)) throw new Error(`pull request ${r.number} has a file entry outside the stated rule (path ${JSON.stringify(f?.path)}, changeType ${JSON.stringify(f?.changeType)}); only ADDED, MODIFIED or DELETED entries with a path are placed, so nothing was written`);
     }
+    // Codex r3: a repeated path can make the list exactly as long as changedFiles while another file
+    // (a constant's) is missing, so "complete" means changedFiles DISTINCT paths, not only that many entries.
+    if (new Set(r.files.map((f) => f.path)).size !== r.files.length) throw new Error(`pull request ${r.number} lists the same path twice, so its ${r.changedFiles} changed file(s) are not all named; nothing was written`);
     const constants = [...new Set(r.files.map((f) => CONSTANT_FILE.exec(f.path)?.[1]).filter(Boolean))].sort();
     pulls.push({ number: r.number, createdOn: r.createdAt.slice(0, 10), constants, byThisLedger: r.author?.login === OURS });
   }
@@ -156,7 +162,7 @@ export async function selftest() {
     { number: 249, state: "OPEN", createdAt: "2026-10-22T13:30:33Z", author: { login: "someone" }, files: [{ path: "README.md" }, { path: "constants/31a.md" }] },
     { number: 250, state: "OPEN", createdAt: "2026-10-22T15:00:00Z", author: { login: "someone" }, files: [{ path: "README.md" }] },
     { number: 244, state: "OPEN", createdAt: "2026-10-20T18:25:00Z", author: { login: OURS }, files: [{ path: "constants/13a.md" }] },
-    { number: 223, state: "OPEN", createdAt: "2026-10-12T17:19:54Z", author: { login: "someone" }, files: [{ path: "constants/13a.md" }, { path: "constants/1a.md" }, { path: "constants/1a.md" }] },
+    { number: 223, state: "OPEN", createdAt: "2026-10-12T17:19:54Z", author: { login: "someone" }, files: [{ path: "constants/13a.md" }, { path: "constants/1a.md" }, { path: "README.md" }] },
     // Codex r1 #5: a row WITH a title, hostile markup and the banned word in it, so the no-title rule is tested on real input.
     { number: 251, state: "OPEN", createdAt: "2026-10-22T16:00:00Z", title: '<script>alert(1)</script> new record for 2a', author: { login: "someone" }, files: [{ path: "constants/2a.md" }] },
   ].map((r) => ({ ...r, changedFiles: r.files.length, files: r.files.map((f) => ({ ...f, changeType: "MODIFIED" })) }));
@@ -175,7 +181,7 @@ export async function selftest() {
   check("Codex r1 #3: neither unsupported negative claim survives in any variant", ["13a", "31a", "1a"].every((id) => !/have not checked|include none of/.test(pullsBlock(id, s))));
   check("the date shown is the MT day of the read", pullsBlock("31a", s).includes("when we read the source repository's list on 2026-10-22") && mtDay("2026-10-23T03:00:00Z") === "2026-10-22");
   check("one pull request renders the singular, two the plural", pullsBlock("31a", s).includes("Open pull request that changes this constant's file upstream") && pullsBlock("31a", s).includes("It was open") && pullsBlock("13a", s).includes("Open pull requests that change") && pullsBlock("13a", s).includes("Each was open"));
-  check("a constant file listed twice in one pull request is stored once", s.pulls.find((p) => p.number === 223).constants.join(",") === "13a,1a");
+  check("a pull request changing two constant files is stored on both, sorted", s.pulls.find((p) => p.number === 223).constants.join(",") === "13a,1a");
   check("newest first", pullsFor("13a", s).map((p) => p.number).join(",") === "244,223");
   check("positive control: the titled row is stored, on 2a", pullsFor("2a", s).some((p) => p.number === 251));
   check("no title and no author name is stored, though the input carried both", !JSON.stringify(s).includes("someone") && !JSON.stringify(s).includes(OURS) && !JSON.stringify(s).includes("alert(1)") && !s.pulls.some((p) => "title" in p || "author" in p));
@@ -189,6 +195,9 @@ export async function selftest() {
   check("r2 #3: REFUSES a row with no state, and a row whose state is unknown", refuses([{ ...fixture[0], state: undefined }], "state undefined") && refuses([{ ...fixture[0], state: "DRAFT" }], 'state "DRAFT"'));
   check("r2 #1: REFUSES a RENAMED or COPIED entry, whose source constant cannot be placed", refuses([{ ...fixture[0], changedFiles: 1, files: [{ path: "archive/1d.md", changeType: "RENAMED" }] }], "outside the stated rule") && refuses([{ ...fixture[0], changedFiles: 1, files: [{ path: "constants/1e.md", changeType: "COPIED" }] }], "outside the stated rule"));
   check("r2 #2: REFUSES a file entry with no path, an empty path, or no entry at all", [[{}], [null], [{ path: "", changeType: "MODIFIED" }], [{ path: "constants/1d.md" }]].every((files) => refuses([{ ...fixture[0], changedFiles: 1, files }], "outside the stated rule")));
+  // Codex r3 #2: the cases above lacked changeType too, so they could pass on the wrong condition. These carry a legal changeType, so only the PATH rule can refuse them.
+  check("r3 #2: REFUSES a missing or non-string path even when changeType is legal", [{ changeType: "MODIFIED" }, { path: 42, changeType: "MODIFIED" }].every((f) => refuses([{ ...fixture[0], changedFiles: 1, files: [f] }], "outside the stated rule")));
+  check("r3 #1: REFUSES a repeated path that makes the list as long as changedFiles while a file is unnamed", refuses([{ ...fixture[0], changedFiles: 2, files: [{ path: "README.md", changeType: "MODIFIED" }, { path: "README.md", changeType: "MODIFIED" }] }], "same path twice"));
   const legal = buildStore([{ ...fixture[0], changedFiles: 2, files: [{ path: "constants/1d.md", changeType: "DELETED" }, { path: "constants/99z.md", changeType: "ADDED" }] }], at);
   check("the silent half: DELETED and ADDED entries with a path are placed on their constants", pullsFor("1d", legal).length === 1 && pullsFor("99z", legal).length === 1);
   check("REFUSES a row with no valid number", refuses([{ ...fixture[0], number: "249" }], "no valid pull request number"));
