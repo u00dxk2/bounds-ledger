@@ -21,9 +21,10 @@
 //
 // WHAT IT REFUSES. A listing of 200 or more (gh's --limit 200 may have truncated it), an empty listing
 // (a zero from a dead read is indistinguishable from a measured one; this repository has never had
-// none open since we mirrored it), a count that does not reconcile, a row that is not OPEN, a pull
-// request whose file list is missing or shorter than its changed-file count (gh returns at most 100
-// files each), and a malformed or impossible number, date or constant id.
+// none open since we mirrored it), a count that does not reconcile, and any row not entirely in the
+// shape the read asked for (the stated rule in buildStore: OPEN, a complete file list, and every file
+// entry ADDED, MODIFIED or DELETED with a path), and a malformed or impossible number, date or
+// constant id. Each refusal refuses the whole fetch; nothing partial is ever written.
 //
 // REFRESH. `node scripts/open-pulls.mjs --fetch`, then render-constant-pages. `npm run resnap` runs it,
 // because a pull request that merges into a constant's file is exactly what turns the drift alarm red.
@@ -48,6 +49,7 @@ const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 const ISO_INSTANT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
 const CONSTANT_FILE = /^constants\/([A-Za-z0-9]+)\.md$/;
 const CONSTANT_ID = /^[A-Za-z0-9]+$/;
+const FILE_CHANGES = new Set(["ADDED", "MODIFIED", "DELETED"]);
 // A format match is not a date: "2026-99-99" and "2026-02-30" both match (Codex r1 #4). A value counts only
 // when Date parses it AND prints it back unchanged, so a rollover (Feb 30 → Mar 2) is refused too.
 const realInstant = (s) => ISO_INSTANT.test(String(s)) && !Number.isNaN(Date.parse(s)) && new Date(s).toISOString().slice(0, 19) === String(s).slice(0, 19);
@@ -65,23 +67,30 @@ export function buildStore(rows, readAt) {
   if (!realInstant(readAt)) throw new Error("readAt must be an ISO instant");
   if (rows.length === 0) throw new Error("the listing is empty: a zero from a dead read looks the same as a measured one, so nothing was written");
   if (rows.length >= LIMIT) throw new Error(`the listing has ${rows.length} rows, at gh's --limit ${LIMIT}, so it may be truncated; nothing was written`);
+  // ONE STATED RULE, NOT A LIST OF GAPS (Codex r2, the second round to find a way a constant can go
+  // silently missing from its page: a rename, an entry with no path, a row with no state). A row is
+  // stored only when it is entirely in the shape the read asked for, and ANY departure refuses the whole
+  // fetch, so the failure is loud and nothing partial is written:
+  //   - state is exactly "OPEN" (the read is --state open, so anything else is the read misbehaving);
+  //   - files is a list exactly as long as changedFiles (gh returns at most 100 files each, Codex r1 #1);
+  //   - every file entry has a non-empty string path and a changeType of ADDED, MODIFIED or DELETED, the
+  //     kinds where the path IS the file changed. A RENAMED or COPIED entry names only its destination,
+  //     so its source constant could not be placed; it is refused, not guessed.
   const pulls = [];
-  let notOpen = 0;
   for (const r of rows) {
     if (!r || !Number.isInteger(r.number) || r.number < 1) throw new Error(`a row has no valid pull request number: ${JSON.stringify(r?.number)}`);
-    if (r.state !== "OPEN") { notOpen++; continue; }
+    if (r.state !== "OPEN") throw new Error(`pull request ${r.number} has state ${JSON.stringify(r.state)} in a listing of open pull requests; nothing was written`);
     if (!realInstant(r.createdAt)) throw new Error(`pull request ${r.number} has no valid createdAt`);
-    // gh fetches at most 100 files per pull request (Codex r1 #1), so a constant past the 100th would be
-    // silently absent from its page. The listing must carry its own changed-file count and match it; a
-    // missing file list is refused rather than read as "changes no constant".
     if (!Array.isArray(r.files)) throw new Error(`pull request ${r.number} has no file list`);
     if (!Number.isInteger(r.changedFiles) || r.files.length !== r.changedFiles) throw new Error(`pull request ${r.number} lists ${r.files.length} file(s) but reports ${r.changedFiles} changed, so its file list may be incomplete; nothing was written`);
-    const constants = [...new Set((r.files || []).map((f) => CONSTANT_FILE.exec(String(f?.path))?.[1]).filter(Boolean))].sort();
+    for (const f of r.files) {
+      if (!f || typeof f.path !== "string" || !f.path || !FILE_CHANGES.has(f?.changeType)) throw new Error(`pull request ${r.number} has a file entry outside the stated rule (path ${JSON.stringify(f?.path)}, changeType ${JSON.stringify(f?.changeType)}); only ADDED, MODIFIED or DELETED entries with a path are placed, so nothing was written`);
+    }
+    const constants = [...new Set(r.files.map((f) => CONSTANT_FILE.exec(f.path)?.[1]).filter(Boolean))].sort();
     pulls.push({ number: r.number, createdOn: r.createdAt.slice(0, 10), constants, byThisLedger: r.author?.login === OURS });
   }
-  if (!pulls.length) throw new Error(`none of the ${rows.length} rows is OPEN, so nothing was written`);
   pulls.sort((a, b) => b.number - a.number);
-  return { purpose: "Open pull requests on teorth/optimizationproblems and the constant files each changes (A-83), read by scripts/open-pulls.mjs --fetch and shown on each constant's c/ page. Numbers, dates and file names only: no titles and no author names.", repository: UPSTREAM, readAt, count: pulls.length, excludedNotOpen: notOpen, pulls };
+  return { purpose: "Open pull requests on teorth/optimizationproblems and the constant files each changes (A-83), read by scripts/open-pulls.mjs --fetch and shown on each constant's c/ page. Numbers, dates and file names only: no titles and no author names.", repository: UPSTREAM, readAt, count: pulls.length, pulls };
 }
 
 /** Every problem with the store, as sentences. Empty means valid. */
@@ -146,18 +155,21 @@ export async function selftest() {
   const fixture = [
     { number: 249, state: "OPEN", createdAt: "2026-10-22T13:30:33Z", author: { login: "someone" }, files: [{ path: "README.md" }, { path: "constants/31a.md" }] },
     { number: 250, state: "OPEN", createdAt: "2026-10-22T15:00:00Z", author: { login: "someone" }, files: [{ path: "README.md" }] },
-    { number: 225, state: "MERGED", createdAt: "2026-10-13T10:00:00Z", author: { login: "someone" }, files: [{ path: "constants/1b.md" }] },
-    { number: 230, state: "CLOSED", createdAt: "2026-10-14T10:00:00Z", author: { login: "someone" }, files: [{ path: "constants/1b.md" }] },
     { number: 244, state: "OPEN", createdAt: "2026-10-20T18:25:00Z", author: { login: OURS }, files: [{ path: "constants/13a.md" }] },
     { number: 223, state: "OPEN", createdAt: "2026-10-12T17:19:54Z", author: { login: "someone" }, files: [{ path: "constants/13a.md" }, { path: "constants/1a.md" }, { path: "constants/1a.md" }] },
     // Codex r1 #5: a row WITH a title, hostile markup and the banned word in it, so the no-title rule is tested on real input.
     { number: 251, state: "OPEN", createdAt: "2026-10-22T16:00:00Z", title: '<script>alert(1)</script> new record for 2a', author: { login: "someone" }, files: [{ path: "constants/2a.md" }] },
-  ].map((r) => ({ ...r, changedFiles: r.files.length }));
+  ].map((r) => ({ ...r, changedFiles: r.files.length, files: r.files.map((f) => ({ ...f, changeType: "MODIFIED" })) }));
+  const merged = { number: 225, state: "MERGED", createdAt: "2026-10-13T10:00:00Z", changedFiles: 1, files: [{ path: "constants/1b.md", changeType: "MODIFIED" }] };
+  const closed = { ...merged, number: 230, state: "CLOSED" };
   const s = buildStore(fixture, at);
   // Meaning first: what a reader would be told, then the bookkeeping that supports it.
   check("an open pull request that changes constants/31a.md appears on 31a's page", pullsBlock("31a", s).includes('href="https://github.com/teorth/optimizationproblems/pull/249"'));
   check("an open pull request that changes only README.md appears on no constant's page", !["31a", "13a", "1a", "1b"].some((id) => pullsBlock(id, s).includes("/pull/250")) && s.pulls.some((p) => p.number === 250 && p.constants.length === 0));
-  check("a MERGED or CLOSED pull request appears on no page and is not stored", pullsBlock("1b", s) === "" && !s.pulls.some((p) => p.number === 225 || p.number === 230) && s.excludedNotOpen === 2);
+  // A closed or merged pull request never reaches a page: one in the listing REFUSES the whole fetch
+  // (Codex r2 #3; the read asks gh for open ones only, so a non-OPEN row means the read misbehaved).
+  const refusesAt = (rows, frag) => { try { buildStore(rows, at); return false; } catch (e) { return e.message.includes(frag); } };
+  check("a MERGED or CLOSED pull request appears on no page: the fetch that carries one is refused", pullsBlock("1b", s) === "" && refusesAt([...fixture, merged], 'state "MERGED"') && refusesAt([...fixture, closed], 'state "CLOSED"'));
   check("this ledger's own pull request is labelled as ours, and another's is not", /pull\/244"[^<]*>pull request 244<\/a>, opened 2026-10-20, by this ledger</.test(pullsBlock("13a", s)) && !/pull request 223<\/a>, opened 2026-10-12, by this ledger/.test(pullsBlock("13a", s)));
   check("the page says the list does not say what they propose, and where the rows above come from", pullsBlock("13a", s).includes("This list does not say what any of them proposes. The rows above come from the source table's merged version.") && pullsBlock("31a", s).includes("This list does not say what it proposes."));
   check("Codex r1 #3: neither unsupported negative claim survives in any variant", ["13a", "31a", "1a"].every((id) => !/have not checked|include none of/.test(pullsBlock(id, s))));
@@ -172,8 +184,13 @@ export async function selftest() {
   check("the built store validates (the silent half)", validateStore(s).length === 0);
   const refuses = (rows, frag) => { try { buildStore(rows, at); return false; } catch (e) { return e.message.includes(frag); } };
   check("REFUSES an empty listing", refuses([], "empty"));
-  check(`REFUSES a listing of ${LIMIT} rows (possibly truncated)`, refuses(Array.from({ length: LIMIT }, (_, i) => ({ number: i + 1, state: "OPEN", createdAt: at, files: [] })), "truncated"));
-  check("REFUSES a listing where nothing is OPEN", refuses([fixture[2]], "none of the 1 rows is OPEN"));
+  check(`REFUSES a listing of ${LIMIT} rows (possibly truncated)`, refuses(Array.from({ length: LIMIT }, (_, i) => ({ number: i + 1, state: "OPEN", createdAt: at, changedFiles: 0, files: [] })), "truncated"));
+  // Codex r2, the stated rule: each departure it reproduced refuses the fetch, and a legal DELETED or ADDED entry is placed.
+  check("r2 #3: REFUSES a row with no state, and a row whose state is unknown", refuses([{ ...fixture[0], state: undefined }], "state undefined") && refuses([{ ...fixture[0], state: "DRAFT" }], 'state "DRAFT"'));
+  check("r2 #1: REFUSES a RENAMED or COPIED entry, whose source constant cannot be placed", refuses([{ ...fixture[0], changedFiles: 1, files: [{ path: "archive/1d.md", changeType: "RENAMED" }] }], "outside the stated rule") && refuses([{ ...fixture[0], changedFiles: 1, files: [{ path: "constants/1e.md", changeType: "COPIED" }] }], "outside the stated rule"));
+  check("r2 #2: REFUSES a file entry with no path, an empty path, or no entry at all", [[{}], [null], [{ path: "", changeType: "MODIFIED" }], [{ path: "constants/1d.md" }]].every((files) => refuses([{ ...fixture[0], changedFiles: 1, files }], "outside the stated rule")));
+  const legal = buildStore([{ ...fixture[0], changedFiles: 2, files: [{ path: "constants/1d.md", changeType: "DELETED" }, { path: "constants/99z.md", changeType: "ADDED" }] }], at);
+  check("the silent half: DELETED and ADDED entries with a path are placed on their constants", pullsFor("1d", legal).length === 1 && pullsFor("99z", legal).length === 1);
   check("REFUSES a row with no valid number", refuses([{ ...fixture[0], number: "249" }], "no valid pull request number"));
   // Codex r1 #1 and #4, each from its reproduction.
   check("r1 #1: REFUSES a pull request whose file list is shorter than its changed-file count (gh's 100-file cap)", refuses([{ ...fixture[0], files: Array.from({ length: 100 }, (_, i) => ({ path: `assets/${i}.txt` })), changedFiles: 101 }], "may be incomplete"));
@@ -232,7 +249,7 @@ if (isEntryModule(import.meta.url)) {
       if (errs.length) throw new Error(errs.join("; "));
       writeFileSync(STORE, JSON.stringify(s, null, 2) + "\n");
       const touched = new Set(s.pulls.flatMap((p) => p.constants));
-      console.log(`open-pulls: ${s.count} open pull request(s) on ${UPSTREAM} (${s.excludedNotOpen} not OPEN, excluded), ${s.pulls.filter((p) => p.constants.length).length} changing a constant file, ${touched.size} distinct constant(s); wrote ledger/open-pull-requests.json`);
+      console.log(`open-pulls: ${s.count} open pull request(s) on ${UPSTREAM} (every row OPEN with a complete file list, or this run would have refused), ${s.pulls.filter((p) => p.constants.length).length} changing a constant file, ${touched.size} distinct constant(s); wrote ledger/open-pull-requests.json`);
       console.log("RESULT: PASS (exit 0)");
     } catch (e) {
       console.log(`RESULT: REFUSED — open-pulls: ${e.message} (exit 2)`);
