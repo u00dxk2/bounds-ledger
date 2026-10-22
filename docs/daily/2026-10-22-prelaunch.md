@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-Proposed for today: each constant's page lists the upstream pull requests that would change it and have not merged yet. 28 such requests are open now and touch 38 of our 117 pages. Today's reader of the 1d page cannot tell that three of them propose changing its bound.
+Each constant's page now lists the upstream pull requests that would change it and have not merged yet, with the date we read them. 39 of our 117 pages carry a list, from 29 open requests. The 1d page shows four. One of them already proposes the rounding fix we found yesterday, so our question for the maintainers gets smaller.
 
 ### Selection packet
 
@@ -120,16 +120,31 @@ One prior-day retro finding that bears on today: Q2, "the four Codex prompt asse
 
 ## Outputs (lagging)
 
-(Written at close.)
+`npm run reports` (G-4, the goal that an outside party acts on a watched record without us filing the report) read 34 raw issues: 34 ours, 0 outside arrivals, and the parts reconcile, 34 + 0 + 0 = 34. Expected zero. The pages carry no analytics (`A-59`, the blind encounter on the public pages), so whether anyone has read the new lists is not measurable.
+
+Today's findings were all instrument-facing (the P1 correction, and a read output that could publish third-party titles) except one record-facing observation. Upstream pull request 243 proposes rounding the 1d bound up, the same cut our census found. That was found by reading upstream's own queue, not by any alarm. The standing prediction in `CLAUDE.md` is untouched by it: 243 is not a citation-quality defect found in the depth audit.
 
 ## Recommendation
 
-(Written at close.)
-
+For David: none new. The question about the rounded-down ceilings (`A-88`) still waits on a reply to pull request 244, re-read 2026-10-24. When it comes, the question will be narrower: pull request 243 already proposes the 1d fix.
 ## On hold pending data
 
 `A-88` (the question for David once #244 has a reply) waits on a maintainer reply to teorth/optimizationproblems#244, re-read 2026-10-24. `G-2` (the bound-improvement search goal) is held to 2026-11-19.
 
 ## State Appendix
 
-(Written last, at close, from live commands.)
+As of 2026-10-22T16:52Z, written before the close commit, which this report cannot name.
+- HEAD and origin/main: `f40b2a2`. Release command: `git rev-parse HEAD origin/main`.
+- CI reverify.yml: GREEN at `f40b2a2`. Release command: `node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml`.
+- Pages: `npm run served` read 39 of 39 SERVED after `3180fd1`. Release command: `npm run served`.
+- Open pull request listing: 29 open, 39 distinct constants, read 2026-10-22. Release command: `node scripts/open-pulls.mjs` (validates the stored listing).
+
+### Close
+
+ACTION: COMPLETED · item A-83 (open upstream pull requests on each constant page) · P3 msgId a9b2c2d7
+
+- Since the P3 post: the orchestrator accepted the refused-fetch behaviour (bus, 16:48Z), and `A-90` (a "last checked" line when the list is over 7 days old) was minted (commit `f40b2a2`). The manager review at 16:47Z asked for an open-question row dated 10-23. The 16:48Z ruling superseded it, so no second row was minted.
+- Ledger delta: `A-83` closed. `A-90` minted, dated 2026-10-28. `A-47` (the depth audit) next check 2026-10-24: slice 21 was not run today. `W-3` (the erdosproblems.com/36 acknowledgement watch) re-dated to 2026-11-05: no acknowledgement, both advisory pages unchanged, and David's standing word is to wait. `G-2` (the bound-improvement search goal) re-dated to 2026-11-19, lining its clock up with its hold. `A-88` (the question for David once #244 has a reply) gained the pull request 243 note. Nothing went upstream on #244.
+- Hygiene draft: 3 lines. 2 accepted (`W-3`, `G-2`). 1 amended (`A-47`, set `nextCheckDate` directly, because `--extend` writes `expectedSignalBy`, a field that row does not use). 0 rejected. READ-MUTATED: none. check-wait-justification PASS; check-engineering-zero PASS, 0 findings for this lane.
+- Due gates: `check-due-gates-dispositioned` verdict CLEAR, snapshot CURRENT (taken 2026-10-22), 4 of 4 dispositioned.
+- Pending reads: 10-24 `A-47` slice 21 and `A-88`; 10-28 `A-90`, `A-89` (the census's six known blind spots) and `W-14` (the watch on upstream issue 218, the 46a credit correction). The rest are in tomorrow's primer.
