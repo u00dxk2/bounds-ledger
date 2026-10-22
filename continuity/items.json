@@ -3214,6 +3214,23 @@
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/decimal-vs-exact.mjs — the census (exit 1 = a CUT); the six-shape check is not yet a committed script, so this row reads the census and the shapes by hand until one exists",
       "created": "2026-10-21",
       "updated": "2026-10-21"
+    },
+    {
+      "id": "A-90",
+      "title": "A stale open-pull-requests list says so on the page: when the last good read is older than 7 days, add one plain line under the list",
+      "type": "action",
+      "status": "open",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-10-28",
+      "links": [
+        "A-83"
+      ],
+      "notes": "Minted 2026-10-22 MT on the orchestrator's ruling (bus 2026-10-22T16:48Z) on the A-83 P3→P5 review. A refused fetch (scripts/open-pulls.mjs --fetch) writes nothing, so each c/ page keeps its last good list under that list's own read date. The orchestrator accepted that as shipped, and asked that it not age silently. Verified the same day: all 39 pages carrying the block show the read date beside the list (39 blocks, 39 dated sentences). The rule's residual stays: it trusts the paths gh reports.",
+      "onTrigger": "On 2026-10-28: in pullsBlock, when the store's readAt is more than 7 days before the render date, add one plain line under the list, e.g. 'This list was last checked on <date>; newer pull requests may be missing.' Selftest it red-armed (a stale fixture shows the line, a fresh one does not), Codex read-only review, page sentence updated in the same commit. Decide first how the render date is read, since a render-time clock makes the c/ pages differ between runs and render-constant-pages --check must stay deterministic.",
+      "closeWhen": "The stale line renders on a fixture older than 7 days and not on a fresh one, red-armed, Codex-reviewed, and render-constant-pages --check stays deterministic.",
+      "readCommand": "node scripts/open-pulls.mjs --selftest",
+      "created": "2026-10-22",
+      "updated": "2026-10-22"
     }
   ],
   "meta": {

@@ -94,6 +94,8 @@ One prior-day retro finding that bears on today: Q2, "the four Codex prompt asse
 
 **One divergence from that ruling, said rather than worked around.** The ruling asked that a refused fetch make "the page then says the watch could not read". As built, a refused fetch writes nothing and `resnap` stops before rendering, so each page keeps its last good list under that list's own read date. I did not add a failure notice: it would publish a page change on every refused fetch. No page says "no pending changes", so an empty or failed read cannot read as one.
 
+**The orchestrator's ruling on that divergence (bus, 16:48Z): accepted as shipped**, on the ground that a dated last-good list is honest where an empty "could not read" would hide real pending changes, provided it does not age silently. Checked the same day: all 39 pages that carry the block show the read date beside the list (39 blocks, 39 dated sentences, by grep over `c/`). The follow-up is `A-90` (when the last good read is over 7 days old, the page adds one line saying so), dated 2026-10-28. The residual stands: the rule trusts the paths gh reports.
+
 **Red-arms**, every one a targeted mutation, restored byte-identical to exit 0:
 - before the pages were wired, the selftest exited 3;
 - the open-state filter set to `if (false)` failed 2 checks, exit 3;
