@@ -82,11 +82,39 @@ One prior-day retro finding that bears on today: Q2, "the four Codex prompt asse
 
 ## What changed
 
-(Written at P3.)
+**P3 (improve the product): each constant's page now lists the open upstream pull requests that change its file.** Shipped at `188ad5c`, `e31639d` and `3180fd1`, pushed 2026-10-22. `A-83` (the open pull requests on the mirrored repository, shown on each constant page) is closed.
+
+- Before: `c/1d.html` had no such block, while four open pull requests on teorth/optimizationproblems change 1d's file. After: the served 1d page lists 248, 247, 243 and 234, each opened date shown, under "Each was open and not merged when we read the source repository's list on 2026-10-22. This list does not say what any of them proposes. The rows above come from the source table's merged version." On 13a, 244 is marked "by this ledger". 39 pages carry the block, from 29 open pull requests across 39 distinct constants.
+- Live read, from the deploy: the Pages build row for `3180fd1` reads "built" (16:28:11Z to 16:30:22Z). `npm run served` reports 39 checked, 39 served, 0 stale. A fetch of `c/1d.html`, `c/13a.html` and `c/24a.html` returned 200 with Last-Modified 16:30:18 GMT and the text above.
+- What is stored, in `ledger/open-pull-requests.json`: number, opening date, constant ids and a by-this-ledger flag. No titles and no author names. `A-83`'s read command no longer asks gh for titles, so `continuity/read-outputs/A-83.txt` carries none either (Codex round 1).
+- The rule a read must meet, in `scripts/open-pulls.mjs`, `AGENTS.md` and the `watchScope` sentence: OPEN · files exactly as long as `changedFiles` · every path DISTINCT · every entry ADDED, MODIFIED or DELETED with a path. Any departure refuses the whole fetch and writes nothing. **Residual: the rule trusts the paths gh reports.**
+- `npm run resnap` now refreshes the list before rendering the pages. A merge into a constant file turns the drift alarm red, so the refresh rides the cycle that the change itself starts.
+
+**Review.** Three read-only Codex rounds, each with its banner `workdir` checked against `C:\dev\skylark\bounds-ledger`: round 1 on a first build that was never pushed (5 findings), round 2 on `188ad5c` (3), round 3 on `e31639d` (2). All 10 were fixed. Each round's prompt also asked whether every rendered sentence holds on every page it can appear on, which was the claims pass. Round 1 refuted two sentences, and both were replaced with less. Round 2 repeated the class "a constant can go silently missing from its page", so the shape changed to the single stated rule above. Round 3 found the same class once more (a repeated path). I consulted (bus `5f287d71`); the orchestrator ruled to add the clause and ship without a round 4.
+
+**One divergence from that ruling, said rather than worked around.** The ruling asked that a refused fetch make "the page then says the watch could not read". As built, a refused fetch writes nothing and `resnap` stops before rendering, so each page keeps its last good list under that list's own read date. I did not add a failure notice: it would publish a page change on every refused fetch. No page says "no pending changes", so an empty or failed read cannot read as one.
+
+**Red-arms**, every one a targeted mutation, restored byte-identical to exit 0:
+- before the pages were wired, the selftest exited 3;
+- the open-state filter set to `if (false)` failed 2 checks, exit 3;
+- the by-this-ledger label removed failed 1, exit 3;
+- the `changedFiles` refusal removed failed 2, exit 3;
+- a format-only date check failed 2, exit 3;
+- the file-entry rule loosened failed 2, exit 3;
+- the distinct-paths clause removed failed 1, exit 3;
+- Codex's own round-3 path mutant failed 1, exit 3.
+
+<!-- findings:begin -->
+- **The job as written could not reach a reader** (P1). The `watchScope` sentence renders only inside a note that needs a newer-results entry, and the store is empty. The deliverable became the per-page block. `watchScope` was still widened.
+- **One of the three ceilings the census found yesterday is already proposed upstream by someone else.** Pull request 243 (opened 2026-10-20) prints the 1d bound rounded up. This bears on `A-88` (the question for David once #244 has a reply), which stays dated 2026-10-24.
+- **A committed read output can publish what the product deliberately withholds.** The fleet's `--run` stamp wrote the full gh response, titles included, to a tracked file in this public repository. Sweep: 2 committed `"title":` keys in `continuity/read-outputs/` (A-33, our own issue title; A-83, third-party titles, now removed).
+<!-- findings:end -->
 
 ## Inputs (controllable)
 
-(Written at P3.)
+- `A-83` closed. `A-83`'s read command was re-pointed (no titles) and its read re-run and stamped.
+- Hygiene helper dispatched 2026-10-22 ~15:00Z; draft `tmp/hygiene-draft-bounds-ledger-2026-10-22.md` PRESENT. Engineering-zero 0 findings, wait-justification clean, no READ-MUTATED line.
+- This morning's queued `npm run verify` was stopped before it ran. Its two leftover processes (npm and the heavy-gate waiter, both naming this lane) were stopped by PID: CI green at HEAD made a local full verify unnecessary, and it would have run against an uncommitted tree under the old commit's sha.
 
 ## Outputs (lagging)
 
