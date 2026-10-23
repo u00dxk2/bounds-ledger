@@ -82,7 +82,7 @@ Then draft `docs/decisions/2026-10-23-A88-display-convention-question-draft.md` 
 The action: improve (the question text). Approved by the manager review (bus 1e4de4b5), which also asked me to check whether the papers themselves print their figures cut short with an ellipsis. They do: Martinet prints 1058,565… and Haugland's abstract prints 0.380926... That held, and it led to the finding below.
 
 <!-- findings:begin -->
-**The packet's premise was wrong for 1b, and our own record already said so.** Searching upstream for the figure `0.380926` (`gh search issues --repo teorth/optimizationproblems --include-prs --limit 50 --json number,state "0.380926"`, one hit; positive control, the same search for `87a` returned two) found upstream pull request 158, merged 2026-09-05, which changed the 1b [H2016] row from 0.380927 to 0.380926, the abstract's digits. So the row is printed as the owner merged it, and asking for it to be rounded up would ask him to undo that. `W-2` (closed 2026-07-23) and depth-audit entry `A-47-0015` already recorded this history; neither `A-76` (the census) nor `A-88` records searching for it, although `W-11` asks for exactly that search. This is the third time the 1b digit has been raised in this lane. 87a is not covered by 158 and stays a real question; 1d is left to upstream pull request 243.
+**The packet's premise was wrong for 1b, and our own record already said so.** Searching upstream for the figure `0.380926` (`gh search issues --repo teorth/optimizationproblems --include-prs --limit 50 --json number,state "0.380926"`, one hit; positive control, the same search for `87a` returned two) found upstream pull request 158, merged 2026-09-05, which changed the 1b [H2016] row from 0.380927 to 0.380926, the abstract's digits. So the row is printed as the owner merged it, and asking for it to be rounded up would ask him to undo that. `W-2` (closed 2026-07-23) and depth-audit entry `A-47-0015` already recorded this history; neither `A-76` (the census) nor `A-88` records searching for it, although `W-11` (search this lane's record before calling a claim decision-ready) asks for exactly that search. This is the third time the 1b digit has been raised in this lane. 87a is not covered by 158 and stays a real question; 1d is left to upstream pull request 243.
 <!-- findings:end -->
 
 Four states:
@@ -100,3 +100,41 @@ USER-VISIBLE: none — drafted and reviewed the one-row 87a question for upstrea
 W-7 — `scripts/decimal-vs-exact.mjs` accepted an argument it does not define (`--out-file-unused`, my slip on a re-run) and ran the full census, with the same exit 1 as the bare run. So a misspelt flag fails silently there. Not tested beyond that one run, and not a defect in what it reports.
 
 Refused by the permission classifier: `taskkill /PID 51640 /T /F; taskkill /PID 46984 /T /F` (reason: Interfere With Workloads). Those were this lane's own queued `npm run verify` and its heavy-gate waiter, which I queued at 14:53:42Z (npm process start time, read from the process table) on `7ac6c13` although CI was already green there, against David's 2026-10-21 rule as relayed in the P3 prompt. I stopped the background task, but its child processes kept their place in the queue. I have not retried the kill.
+### Close
+
+ACTION: COMPLETED · item A-88 (the display-convention question for upstream) · P3 msgId bb0b07a7
+
+- Since the P3 post: the manager review read it COMPLETED (bus d50b1f89). The low-memory reaper stopped all three waker rungs. At about 3.0 GB free I did not relaunch; at about 21 GB I relaunched them, rank 1 first (status 62db9008). The queued verify from this morning was admitted after 1h22m in the heavy-gate queue (`tmp/verify-out.txt`, last line), then ended without writing a receipt: `tmp/.verify-receipt.json` still names `c78e4bb` from 2026-10-21, and PIDs 51640 and 46984 were gone from the process table by 10:33 MT. Why it ended is UNREAD. CI is the gate of record for today's commits.
+- Ledger delta: `A-88` only, already written in P3 (`bc01631`): readCommand narrowed, today's note added, `nextCheckDate` unchanged at 2026-10-24. Every other row is unchanged. Positive control: the pre-commit `git diff -U0 -- continuity/items.json` showed 3 changed lines, all inside `A-88` (readCommand, updated, notes).
+- Hygiene draft: 0 lines. 0 accepted, 0 amended, 0 rejected. READ-MUTATED: none. check-wait-justification PASS; check-engineering-zero PASS, 0 findings for this lane. Positive control: the same run printed waiver lines for five other lanes (agentic-dir, buddha-ur, bank-see, quickbite, frolic), so it read the fleet's sources.
+- Due gates: `check-due-gates-dispositioned` verdict CLEAR, snapshot CURRENT (taken 2026-10-23), 0 due.
+- Receipt: unchanged from P3. USER-VISIBLE: none.
+- Pending reads: 10-24 `A-88` (pull request 244, by hand) and `A-47` slice 21 (the depth audit); 10-28 `A-90` (the "last checked" line on stale pull-request lists), `A-89` (the census's six known blind spots) and `W-14` (the watch on upstream issue 218, the 46a credit correction). The rest are in tomorrow's primer, `docs/cold-starts/2026-10-23.md`.
+
+## Inputs (controllable)
+
+- `A-88` advanced: the question narrowed to one row, reviewed twice, and put on David's board as card `ec0cfe11` (needs-decision 1a6769a4).
+- Hygiene helper dispatched after the P3 prompt; draft `tmp/hygiene-draft-bounds-ledger-2026-10-23.md` PRESENT, 0 lines.
+- A local full verify was queued on a CI-green commit. That should not have happened under David's 2026-10-21 rule, and the classifier refused my attempt to stop it.
+
+## Outputs (lagging)
+
+`npm run reports` (G-4, the goal that an outside party acts on a watched record without us filing the report) read 34 raw issues: 34 ours, 0 outside arrivals, and the parts reconcile, 34 + 0 + 0 = 34. Expected zero. No page changed today, and the pages carry no analytics (`A-59`, the blind encounter on the public pages).
+
+Today's findings were instrument-facing: the census's CUT on 1b presented as an open question a row upstream had already settled, and neither `A-76` nor `A-88` recorded the search of our own record that `W-11` (search this lane's record before calling a claim decision-ready) asks for. `W-7` (read one instrument against its own claim) found the census accepting an undefined flag. No drift ran red, so no counted catch was numeric or byte-only today. Running count of consecutive instrument-facing days: 1. That is my reading: 2026-10-21 reset it to 0, and 2026-10-22 carried one record-facing observation (pull request 243) without stating a count. The standing prediction in `CLAUDE.md` is untouched, since both of today's findings are instrument-facing.
+
+## Recommendation
+
+For David: card `ec0cfe11`. Keep waiting for an owner response on pull request 244. The one-row 87a question is ready if he would rather send it now, but only after his own four-item check of Martinet's paper, since the text says in his voice that he checked it.
+
+## On hold pending data
+
+`A-88` (the 87a question) waits on an owner response to teorth/optimizationproblems#244, re-read 2026-10-24, and on David's answer on `ec0cfe11`. `G-2` (the bound-improvement search goal) is held to 2026-11-19.
+
+## State Appendix
+
+As of 2026-10-23T16:36Z, written before the close commit, which this report cannot name.
+- HEAD and origin/main: `6fe9524`. Release command: `git rev-parse HEAD origin/main`.
+- CI reverify.yml: GREEN at `6fe9524`. Release command: `node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml`.
+- Census: 3 CUT (1d.md:18, 87a.md:17, 1b.md:22). Release command: `node scripts/decimal-vs-exact.mjs --root C:/dev/skylark/bounds-ledger`.
+- Card `ec0cfe11`: open. Release command: `node scripts/sky.mjs answered-cards.mjs --project bounds-ledger --id ec0cfe11`.
