@@ -103,6 +103,24 @@ Today's findings were instrument-facing: both of the day's real defects were in 
 
 For David: none new. `A-88` keeps waiting, as he ruled.
 
+## Close
+
+ACTION: COMPLETED · item `A-47` (the depth audit) · P3 3ebdaa67. The packet's acceptance condition held: 98 audited and 89 drawn by position, quoted before and after; the draw was pushed before the first reader's request; each of the five pages shows its verdict, served as committed (`npm run served`, 57 of 57). The orchestrator's review read it COMPLETED (bus c978ca1e).
+
+State changed since the P3 post: none on any page.
+
+Ledger delta, through `continuity-edit.mjs`:
+- `A-47` gains `slice21Result2026_10_24`, which records the five verdicts, the four positions left (550, 600, 650, 700), 46a's retry route (an Internet Archive capture, timestamp 20190502154334) and 57b's untried routes.
+- `A-47`'s `nextCheckDate` moved from 2026-10-24 to 2026-10-27, and its stale `nextCheckDateNote` (from slice 18) was replaced, with its full text read before replacing.
+- `A-47`'s `linkedCommits` gain `2ec1d7b`, `ab59444` and `bcfa882`.
+- `A-88` was re-dated to 2026-10-31 in `2ec1d7b`.
+
+Hygiene draft: 0 lines — 0 accepted · 0 amended · 0 rejected. Its two checks: wait-justification "RESULT: PASS — 1 of 108 row(s) carry `waitJustification`", engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable". READ-MUTATED: none.
+
+Due-gate verify (`check-due-gates-dispositioned.mjs`, no flag): "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT. The ledger battery (`continuity-check.mjs`) reads WARN. Its two `[!]` lines are UNTRACKED_COMMITS and A-81's standing-pattern contradiction. The first is answered for today's slice commits by the link above; the A-88 and report commits stay unlinked, as on earlier days. The second is not touched today.
+
+Pending reads: `A-45` and `A-84` on 2026-10-25; `A-47` slice 22 on 2026-10-27; `A-88` on 2026-10-31.
+
 ## On hold pending data
 
 `A-88` (the 87a question) waits on an owner response to teorth/optimizationproblems#244, re-read 2026-10-31. `G-2` (the bound-improvement search goal) is held to 2026-11-19.
