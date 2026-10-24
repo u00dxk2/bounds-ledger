@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-Today we check five more numbers on our pages against the papers they cite, and put each result on that number's page. David said to keep waiting on the 87a question, and the owner has still not answered pull request 244, so nothing goes upstream.
+Five more numbers on our pages now say what their cited papers show. One paper fully backs its number. Two back it only in part, and two could not be opened. A review caught two of my first verdicts going the wrong way before they went live. Nothing goes upstream: David said to keep waiting on the 87a question.
 
 ### Selection packet
 
@@ -71,11 +71,37 @@ node C:/dev/skylark/bounds-ledger/scripts/depth-audit.mjs --draw 300 350 400 450
 
 ## What changed
 
+`A-47` (the depth audit) slice 21 is read, stored and live, in `ab59444` and `bcfa882` on top of the draw in `2ec1d7b`. The draw's runs were created at 2026-10-24T15:21:41Z, and the readers' first requests were 15:22:55Z to 15:23:29Z.
+
+- `A-47-0094` 35a [AP24]: UNRESOLVED. The article's Theorem 1 gives the rate n^(−log2(1 + √2)) for its Silver Stepsize Schedule, but only at the horizons n = 2^k − 1. The constant asks for every k.
+- `A-47-0095` 3e [FrPi73]: UNREACHABLE. No copy of the 1973 Kalinin collection was found through the recorded routes. MR spells the second author "Pigarev"; not settled.
+- `A-47-0096` 46a [Tom1975]: UNRESOLVED. OpenAlex's extracted text of the note proves the theorem for 1 < p < 2(n + 1)/(n + 3), with the endpoint credited to Stein. The row's 4 for the 2-sphere is our substitution and duality. The note itself credits the case n = 3, p < 4/3 to Sjölin.
+- `A-47-0097` 50a [LP24]: SOUND. The ICALP 2024 paper's Theorem 11 says "a 0.595-approximation for any weighted input graph".
+- `A-47-0098` 57b [Yan1995]: UNREACHABLE (paywall). The row's own survey [BS2023] was read as corroboration only. It credits Yanagihara with a bound on the locally univalent Bloch constant, from which the bound on Landau's constant follows.
+
+`node scripts/depth-audit.mjs` before: "93 row(s) audited — 58 sound, 1 defective, 24 unresolved, 10 unreachable". After: "98 row(s) audited — 59 sound, 1 defective, 26 unresolved, 12 unreachable", with 89 drawn by position.
+
+Codex read-only round 1 on `ab59444` returned do-not-ship with four findings, all CONFIRMED and fixed in `bcfa882`. 35a went from SOUND to UNRESOLVED and 46a from UNREACHABLE to UNRESOLVED; the other two were wording fixes on 3e and 57b. Round 2 on `bcfa882` returned ship. Both banners read `workdir: C:\dev\skylark\bounds-ledger`. The review's second hypothesis held: the draw named 3e's and 57b's secondary sources before reading, and neither became SOUND on them.
+
+<!-- findings:begin -->
+The packet's acceptance condition named 98 audited and 89 by position, which held. Its draft verdicts did not: the first stored version had 35a SOUND and 46a UNREACHABLE, and both were wrong in opposite directions, caught by review before the push.
+<!-- findings:end -->
+
 ## Inputs (controllable)
+
+Five reading agents (one per row) and one hygiene helper, which drafted no dispositions because all three input lists were none; its two checks passed (wait-justification and engineering-zero). Positive control: the wait-justification check found 2 of 108 rows in scope, so it was reading the ledger. Two Codex read-only rounds. The permission classifier refused two batches of 57b's routes, and they were not retried: an Internet Archive capture of the Springer PDF and its availability check, Springer preview images, the zbMATH search API, BASE, and two Internet Archive searches.
+
+Low-memory reap: the reaper stopped all three waker rungs and the first Codex run. The rungs were relaunched at 16,090,452 KB free. The orchestrator's 10:37 MT heavy-job slot reached this pane after both Codex runs had finished (the round 1 rerun ended 10:23:20 MT, round 2 ran 10:29 to 10:35 MT), so both overlapped other lanes' slots. `npm run check` ran after 10:37.
 
 ## Outputs (lagging)
 
+`npm run reports` (G-4, an outside party acting on a watched record without us filing the report) read 34 raw issues, 34 ours, 0 outside arrivals; 34 + 0 + 0 = 34. Expected zero. Five pages changed today, and the pages carry no analytics (`A-59`, the blind encounter), so whether anyone read them is not observable.
+
+Today's findings were instrument-facing: both of the day's real defects were in our own verdicts (35a stored too strong, 46a too weak), caught by review, not in a mirrored record. Three record-side observations stay unsettled and are not catches: 3e's "Pigarev" against "Pigaev" (metadata only), 46a's credit of the n = 3 range to Sjölin (from an index's extracted text), and 57b's attribution through the locally univalent Bloch constant (from a secondary source). Each is of the predicted citation-quality shape, but none was read in the cited work. No drift ran red, so no counted catch was numeric or byte-only. Running count of consecutive instrument-facing days: 2. The standing prediction in `CLAUDE.md` is unchanged.
+
 ## Recommendation
+
+For David: none new. `A-88` keeps waiting, as he ruled.
 
 ## On hold pending data
 
