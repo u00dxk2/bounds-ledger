@@ -3126,7 +3126,17 @@
       "onTrigger": "Build it red first: a refusal case through main() timed before and after; the store refusal moved ahead of buildRows; a mutation that skips the refusal goes red. Codex read-only review before push.",
       "closeWhen": "The selftest's refusal cases finish in under a minute, the whole selftest still prints RESULT: PASS, and a mutation that skips the refusal goes red, each output recorded on this row.",
       "created": "2026-10-18",
-      "updated": "2026-10-18"
+      "updated": "2026-10-18",
+      "readCommandLastTimeout": {
+        "at": "2026-10-25T18:45:37.971Z",
+        "capMs": 180000,
+        "bytesBeforeKill": 3384,
+        "command": "node scripts/newer-results.mjs --selftest"
+      },
+      "readCommandUnstampable": {
+        "at": "2026-10-25T18:45:37.971Z",
+        "reason": "over-cap 180236ms vs 180000ms — the child was KILLED at the cap after 180236ms with 3384 byte(s) of partial output. A partial capture is an UNFINISHED read, not a short one. Raise readCommandTimeoutMs (cap 600000ms), split the command, or make it cheaper."
+      }
     },
     {
       "id": "A-85",

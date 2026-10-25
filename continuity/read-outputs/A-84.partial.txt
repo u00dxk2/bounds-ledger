@@ -1,0 +1,50 @@
+# PARTIAL read-output capture for A-84 — written by check-due-gates-dispositioned --run
+# ⚠ PARTIAL: the child was KILLED at its timeout cap. These bytes are NOT a reading and NOT an answer.
+#   The row was deliberately NOT stamped (no readCommandLastRun, no readCommandLastExit, no ref).
+#   This file exists so a human can see how far the command got; nothing resolves it.
+# readCommand: node scripts/newer-results.mjs --selftest
+# attempted: 2026-10-25T18:45:37.971Z · killed at cap: 180000ms · elapsed: 180236ms
+# bytesBeforeKill: 3384
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+PASS  a valid entry passes (the silent half)
+PASS  REFUSES an upper bound printed BELOW its exact value (rounded the wrong way)
+PASS  ACCEPTS a coarser rounding up (0.3808591), REFUSES one more than a unit away (0.3808592)
+PASS  REFUSES a value that does not beat the table's best row
+PASS  REFUSES a value inside the best row's printed precision (not a clear beat)
+PASS  REFUSES a source link not pinned to a full commit sha
+PASS  REFUSES an unversioned arXiv link
+PASS  REFUSES a constant the mirror does not carry
+PASS  REFUSES the word 'record' in a reader-facing string
+PASS  REFUSES a lower bound printed above its exact value
+PASS  the block names the value, the table's best row, the exact value, the pinned link and the scope
+PASS  an upper entry renders 'below' the table's smallest upper bound
+PASS  r6 #3: a valid LOWER entry passes and renders 'above' the table's largest lower bound, never 'below'
+PASS  r6 #2: a link that resolves off the pinned commit ('../main') is refused
+PASS  r6 #2: percent-encoded traversal ('%2e%2e') is refused
+PASS  r6 #2: a link that still resolves to the pinned file but is not written in its resolved form is refused (the page must print the address a reader lands on)
+PASS  r6 #2: a query or fragment on the link is refused
+PASS  r6 #4: the word 'record' in the LINK is refused (the ban is judged on the rendered block)
+PASS  a valid openPullRequest entry beside a posted one passes (the silent half)
+PASS  the pull-request entry links the pull request, says it was open and not merged on its date, and prints the fingerprint
+PASS  the raw link is NEVER rendered, so a construction repository named 'records' cannot reach the page through it
+PASS  two entries render the plural heading and footer; one renders the singular
+PASS  sweep 2026-10-17: a page link ending in a bare '?' or '#' is refused (the raw-link gap's sibling)
+PASS  claims r1/r2: no variant claims a table 'above' the note, calls the table bare, predicts upstream, or calls a truncation 'the exact value'
+PASS  the arXiv sentence stays with the posted entry it describes, never with the pull-request entry
+PASS  REFUSES a pull request on any repository but the mirrored one
+PASS  REFUSES a pull-request link with a trailing path (/files, /commits)
+PASS  REFUSES a pull-request entry with no date for the open state
+PASS  REFUSES a pull-request entry that also claims an arXiv foundVia
+PASS  REFUSES an entry with no kind, or an unknown one
+PASS  REFUSES a malformed fileSha256
+PASS  REFUSES a raw link not pinned to a full commit sha
+PASS  REFUSES a posted entry whose raw link names a different file, commit or repository than the page link
+PASS  r1 #2: a pull-request entry whose raw link resolves off its commit ('<sha>/../main/') is REFUSED
+PASS  r1 #2: a posted entry whose raw link resolves to the same file but is not written in resolved form is REFUSED
+PASS  the coarser valid rounding yields ZERO errors, not only the absence of one (r6 note)
+PASS  no entries, no block
+PASS  the block never says 'record'
+PASS  the committed store validates (0 problem(s))
+PASS  an empty committed store renders no block on any constant
+PASS  the bound-cell guard holds on every noted page (on the retired-entry fixture, the committed store being empty) (0 problem(s))
+PASS  r6 #1: render-constant-pages --check REFUSES an invalid store through main(), exit 1, before composing
