@@ -27,7 +27,7 @@ Four more numbers on our pages now say what their cited papers show. Three are b
 
 [P1 — Evidence and choice]
 
-**Outcome:** four more cited rows read against their sources, each verdict shown on its constant page, the audited count moving from 98 to 102. Item: `A-47` (the depth audit David ruled on 2026-09-09: read our own cited records against their sources on a schedule), slice 22, pulled forward from its 10-27 re-read date on the kickoff's proposal. Nothing in the row forbids it: its `closeWhen` says it "gets a re-read date rather than a signal date" (not David's words), and the four positions were fixed by slice 20's grid, not chosen today.
+**Outcome:** four more cited rows read against their sources, each verdict shown on its constant page, the audited count moving from 98 to 102 (baseline: `node scripts/depth-audit.mjs`, read 2026-10-25 before the draw). Item: `A-47` (the depth audit David ruled on 2026-09-09: read our own cited records against their sources on a schedule), slice 22, pulled forward from its 10-27 re-read date on the kickoff's proposal. Nothing in the row forbids it: its `closeWhen` says it "gets a re-read date rather than a signal date" (not David's words), and the four positions were fixed by slice 20's grid, not chosen today.
 
 **The user problem, in the user's words:** "I got this constant from a page that says it was last edited in January. I don't know if that means it's current or that nobody has looked at it since." (`docs/evangelism-bar.md`). A row checked against its paper tells the reader the cited source actually says what we print, or says plainly where it does not.
 
@@ -103,9 +103,11 @@ Four reading agents (one per row) and one hygiene helper. The helper drafted `A-
 
 `npm run reports` (G-4, an outside party acting on a watched record without us filing the report) read 34 raw issues, 34 ours, 0 outside arrivals; 34 + 0 + 0 = 34. Expected zero. Positive control: the probe saw and classified all 34 issues. Four pages changed today (`c/67a.html`, `c/79a.html`, `c/84a.html`, `c/88a.html`), and the pages carry no analytics (`A-59`, the blind encounter), so whether anyone read them is not observable. Delivery: the pages just listed and `index.html` are served byte-identical to HEAD (fetched and compared, Last-Modified 2026-10-25 19:29:41 GMT); `npm run served` read 2 of 2 SERVED for `9288df5`'s pages.
 
+Today's findings were mixed, and I classify the day as record-facing: upstream's 67a file cites a preprint its author withdrew, found by a human reading the cited work's own arXiv record during the depth audit and not by any alarm, which is the shape the standing prediction names (a citation-quality defect in a mirrored entry, found that way), so the prediction holds and stays as written. The other three were instrument-facing, all in our own prose and caught by review: a forum handle in an older entry's notes, 84a's "not checked" and 88a's erratum sentence. No drift ran red, so no counted catch was numeric or byte-only. Running count of consecutive instrument-facing days: 0 (it was 2 at the 10-24 close).
+
 ## Recommendation
 
-For David: none new. `A-88` keeps waiting, as he ruled.
+For David: none new. `A-88` keeps waiting, as he ruled. The withdrawn-preprint note is held on `A-91` at the outward gate; I am not asking to raise it upstream.
 
 ## On hold pending data
 
@@ -113,4 +115,22 @@ For David: none new. `A-88` keeps waiting, as he ruled.
 
 ## State Appendix
 
-Written at the close, from live commands.
+Written last, from live commands. A report cannot name the commit that lands it, so HEAD here is the commit before this close.
+- HEAD as of 2026-10-25T20:13Z: `262f767` (`git rev-parse HEAD`), equal to origin/main. Release: `git -C C:/dev/skylark/bounds-ledger log -1 --format=%h`.
+- CI as of 2026-10-25T19:45Z: `reverify.yml` green at `262f767`; `reverify.yml` and `page-check.yml` green at `9288df5` (`check-ci-status.mjs --wait`, exit 0 each). Release: `node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml`.
+- Depth audit: "RESULT: PASS — 102 audited, 62 sound, 1 defective, 27 unresolved, 12 unreachable (exit 0)". Release: `node scripts/depth-audit.mjs`.
+- Ledger: 109 rows, 25 not closed (the primer generator's state line). Release: `node scripts/sky.mjs gen-primer-first-action.mjs --repo . --target-date 2026-10-25 --json`.
+
+### Close
+
+ACTION: COMPLETED · item `A-47` (the depth audit) · P3 83de08bf. The packet's acceptance condition held: 102 audited and 93 drawn by position, quoted before and after; the draw was pushed before the first reader's request; each of the four pages shows its verdict, served as committed. The orchestrator's review read it COMPLETED (bus 0949c24d) after fetching the pages itself.
+
+Ledger delta at the close (`continuity-edit.mjs`, each dry-run first):
+- `A-45` (the stale-value resolvability indicator): `expectedSignalBy` 2026-10-25 → 2026-11-01. AMENDED from the hygiene draft's `--extend`, because `--extend` also rewrites the row's other date fields (the 10-11 and 10-18 precedent).
+- `A-84` (move the newer-results store refusal ahead of buildRows): `nextCheckDate` and `expiresOn` 2026-10-25 → 2026-10-27, with the reason on `A-84.redate2026_10_25`. Its self-test hit the 180 s `--run` cap and stamped nothing; the fix itself was not started.
+- `A-47` (the depth audit): `slice22Result2026_10_25` recorded; `nextCheckDate` 2026-10-27 → 2026-10-28 for the next grid, because the offset-0 grid is exhausted.
+- `A-91` minted: the 67a withdrawn-preprint note, held at the outward gate, re-checked 2026-11-01.
+
+`check-due-gates-dispositioned.mjs`: "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot "CURRENT (taken 2026-10-25)".
+
+Pending reads: the next grid's draw (2026-10-28, `A-47`); `A-84`'s fix (2026-10-27); `A-91`'s re-check (2026-11-01). The encounter on the four pages stays blind (`A-59`).
