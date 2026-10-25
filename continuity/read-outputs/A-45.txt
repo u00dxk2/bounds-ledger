@@ -1,10 +1,10 @@
 # read-output sidecar for A-45 — written by check-due-gates-dispositioned --run
 # readCommand: node scripts/check-resolvability.mjs
-# ran: 2026-10-18T16:56:50.001Z · exit: 0
-# lines: 44 · sha256: a789b9b4316021b3 (first 16 hex of the output below)
+# ran: 2026-10-25T18:42:19.565Z · exit: 0
+# lines: 44 · sha256: 8fea23730fd45117 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
-# Stale-value resolvability — A-45, 2026-10-18T16:56:49.879Z
+# Stale-value resolvability — A-45, 2026-10-25T18:42:19.432Z
 
 resolvability: 230 of 230 (100.0%) — CALIBRATED 2026-09-13, see the limits
 
