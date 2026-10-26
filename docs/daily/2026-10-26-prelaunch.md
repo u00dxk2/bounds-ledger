@@ -21,13 +21,13 @@ sentry_open_p2: null
 
 ## BLUF
 
-Overnight the source table we mirror took in about thirty-five accepted changes at once, and our alarm caught it: eight of the numbers our page shows are now out of date, and three new constants exist that we do not list yet. Today is a light day, so the only work is to check those changes against their sources and bring the page up to date in one pass. The change David asked us to wait on was accepted in the same batch, so the question he asked to see comes back to him on a later day, not today.
+Our alarm caught about thirty-five changes landing overnight in the table we mirror. Eight of the numbers our page showed went out of date, and three new constants appeared that we did not list. Today is a light day, so the only work is to check those changes against their sources and bring the page up to date in one pass. The change David asked us to wait on was accepted in the same batch, so the question he asked to see comes back to him on a later day, not today.
 
 ### Selection packet
 
 [P1 — Evidence and choice]
 
-**Outcome:** the public page and its constant pages show upstream's current table again, resolved ONCE to the settled upstream tip `e95af44` (an upstream sha; it does not exist in this repo), with drift issue 45 closed by hand naming the resolving commit. Item: `A-2` (the drift-resolution log for the adopted surfaces), due today; the cycle is this row's log entry. pragma: allowlist sha
+**Outcome:** the public page and its constant pages show upstream's current table again, resolved ONCE to the settled upstream tip `e95af44` (an upstream sha, which resolves only in teorth/optimizationproblems), with drift issue 45 closed by hand naming the resolving commit. Item: `A-2` (the drift-resolution log for the adopted surfaces), due today; the cycle is this row's log entry. pragma: allowlist sha
 
 **The user problem, in the user's words:** "I got this constant from a page that says it was last edited in January. I don't know if that means it's current or that nobody has looked at it since." (`docs/evangelism-bar.md`). Since 09:40Z our page has been showing a superseded last-listed row on eight constants and lacks three, which is the exact failure this ledger exists to prevent.
 
@@ -109,15 +109,17 @@ None new for David. The 87a display question (`A-88`) comes back to him on a nor
 
 `A-88`'s draft, review and card: the trigger fired, and the work is held for a normal day by David's 10-26 light-day instruction.
 
-## Close
+## State Appendix
 
-ACTION: COMPLETED · item A-2 · P3 ae701bfc. The acceptance condition held:
+### Close
+
+ACTION: COMPLETED · item A-2 · P3 bus msgId ae701bfc. The acceptance condition held:
 - `reverify.mjs --check` reads "No drift. 121 files match upstream e95af44…", re-read at the close through `--run A-2`, exit 0.
 - Claims: "254 claim(s): 252 hold, 0 broken/unreachable".
 - `npm run check` exits 0 after the commits.
 - The index has 120 rows, up from 117.
 - Issue 45 is closed with a comment.
-- CI is green at fe27268.
+- CI is green at commit fe27268.
 
 Since the P3 post: nothing about the product changed. Ledger delta:
 - Hygiene draft: 5 lines, 5 accepted. A-77, A-78, A-86 and G-4 are re-dated to 2026-11-02, and A-86 gets `readCommandTimeoutMs` 600000. A follow-up `--set nextCheckDate` on three of them was a no-op, because `--extend` had already moved that field.
@@ -134,6 +136,6 @@ Pending reads:
 - A-84's fix (10-27).
 - The depth audit's denominator for the new mirror (`A-47`, 10-28).
 
-## State Appendix
+### As of P1
 
 As of 2026-10-26 14:57Z: HEAD `509dcaca8e`, tree clean before this file. CI `reverify.yml` RED at that commit (run 40301378739, scheduled); release: `node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml`. Upstream tip `e95af44` (an upstream sha); release: `gh api repos/teorth/optimizationproblems/commits/main --jq .sha`. pragma: allowlist sha
