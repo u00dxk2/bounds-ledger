@@ -794,9 +794,12 @@ ${lowerTail}
   const live = constantsShown();
   // Until the 2026-10-18 resnap to 46dbf03 (an upstream sha) 1a's upper side ranked and showed 1.502862.
   // Upstream then added two asterisked upper rows (EinsteinArena, Atris), so by this watcher's own rule
-  // the side is now UNJUDGED; the live check follows the mirror. The out-of-order fixture above is what
-  // tests best-row-not-last-listed, and the "some sides rank" check below keeps a live ranking side.
-  check("mirror: 1a's upper side is UNJUDGED (its 2026 asterisked rows are marked unverified)", live.get("1a")?.upper?.unjudged === "unverified");
+  // the side was UNJUDGED. At the 2026-10-26 resnap to e95af44 (an upstream sha) upstream removed both
+  // asterisks after an independent replay, so the side ranks again and its best row is Atris's
+  // 1.5027434868, below the EinsteinArena row listed above it. The live check follows the mirror; the
+  // lower-side check below keeps a live UNJUDGED side, and the out-of-order fixture above still tests
+  // best-row-not-last-listed without depending on upstream.
+  check("mirror: 1a's upper side ranks, best row 1.5027434868 (its 2026 rows lost their asterisks at the 10-26 resnap)", live.get("1a")?.upper?.digits === "1.5027434868");
   check("the constants query reaches the arXiv URL, the Ramsey query does not", decodeURIComponent(queryUrl("2026-09-26", "2026-10-16", 0, CONSTANTS_QUERY)).includes(CONSTANTS_QUERY) && !decodeURIComponent(queryUrl("2026-09-26", "2026-10-16", 0)).includes("AlphaEvolve"));
   check("mirror: 1a's lower side is UNJUDGED (its 1.292* row is marked unverified)", live.get("1a")?.lower?.unjudged === "unverified");
   check("mirror: every constant file parsed, and some sides rank and some do not", live.size >= 100 && [...live.values()].some((c) => c.upper?.value !== undefined) && [...live.values()].some((c) => c.upper?.unjudged));
