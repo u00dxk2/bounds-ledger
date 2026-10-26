@@ -1,14 +1,35 @@
 {
   "purpose": "Open pull requests on teorth/optimizationproblems and the constant files each changes (A-83), read by scripts/open-pulls.mjs --fetch and shown on each constant's c/ page. Numbers, dates and file names only: no titles and no author names.",
   "repository": "teorth/optimizationproblems",
-  "readAt": "2026-10-22T16:25:09Z",
-  "count": 29,
+  "readAt": "2026-10-26T15:20:25Z",
+  "count": 13,
   "pulls": [
     {
-      "number": 250,
-      "createdOn": "2026-10-22",
+      "number": 271,
+      "createdOn": "2026-10-26",
       "constants": [
-        "24a"
+        "1c",
+        "1d"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 270,
+      "createdOn": "2026-10-26",
+      "constants": [
+        "16a",
+        "1a",
+        "1c",
+        "86a",
+        "89a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 269,
+      "createdOn": "2026-10-26",
+      "constants": [
+        "1d"
       ],
       "byThisLedger": false
     },
@@ -17,57 +38,6 @@
       "createdOn": "2026-10-22",
       "constants": [
         "31a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 248,
-      "createdOn": "2026-10-21",
-      "constants": [
-        "1d"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 247,
-      "createdOn": "2026-10-21",
-      "constants": [
-        "1d"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 246,
-      "createdOn": "2026-10-20",
-      "constants": [
-        "16a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 245,
-      "createdOn": "2026-10-20",
-      "constants": [
-        "57c"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 244,
-      "createdOn": "2026-10-20",
-      "constants": [
-        "13a"
-      ],
-      "byThisLedger": true
-    },
-    {
-      "number": 243,
-      "createdOn": "2026-10-20",
-      "constants": [
-        "1a",
-        "1b",
-        "1c",
-        "1d"
       ],
       "byThisLedger": false
     },
@@ -81,95 +51,10 @@
       "byThisLedger": false
     },
     {
-      "number": 241,
-      "createdOn": "2026-10-20",
-      "constants": [
-        "1a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 240,
-      "createdOn": "2026-10-19",
-      "constants": [
-        "1b"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 239,
-      "createdOn": "2026-10-19",
-      "constants": [
-        "68a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 238,
-      "createdOn": "2026-10-19",
-      "constants": [
-        "3a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 237,
-      "createdOn": "2026-10-19",
-      "constants": [
-        "49a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 236,
-      "createdOn": "2026-10-19",
-      "constants": [
-        "3a"
-      ],
-      "byThisLedger": false
-    },
-    {
       "number": 235,
       "createdOn": "2026-10-18",
       "constants": [
         "49a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 234,
-      "createdOn": "2026-10-18",
-      "constants": [
-        "1d"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 232,
-      "createdOn": "2026-10-18",
-      "constants": [
-        "1a",
-        "1b"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 228,
-      "createdOn": "2026-10-15",
-      "constants": [
-        "9a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 226,
-      "createdOn": "2026-10-15",
-      "constants": [
-        "16a",
-        "20a",
-        "20c",
-        "23b",
-        "70a"
       ],
       "byThisLedger": false
     },
@@ -198,26 +83,10 @@
       "byThisLedger": false
     },
     {
-      "number": 217,
-      "createdOn": "2026-10-06",
-      "constants": [
-        "28a"
-      ],
-      "byThisLedger": false
-    },
-    {
       "number": 209,
       "createdOn": "2026-10-02",
       "constants": [
         "36a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 205,
-      "createdOn": "2026-10-02",
-      "constants": [
-        "65a"
       ],
       "byThisLedger": false
     },

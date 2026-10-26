@@ -994,8 +994,8 @@
       "records": [
         {
           "id": "28a",
-          "tag": "formal-proof",
-          "statementChecked": true,
+          "tag": "read-no-note",
+          "statementChecked": false,
           "familyTitle": "Borsuk's conjecture fails in dimension nine",
           "claim": "that Borsuk's conjecture fails in dimension 9.",
           "statement": {
@@ -1003,12 +1003,13 @@
             "theorem": "main_theorem",
             "text": "theorem main_theorem :\n    IsCompact projectorSet ∧\n    projectorSet ⊆ traceOneSymmetric ∧\n    Metric.diam projectorSet = Real.sqrt 2 ∧\n    ¬ HasTenSmallCover"
           },
-          "match": "The file's set is the 4 × 4 matrices u·uᵀ for unit vectors u in four dimensions. The statement places it among the symmetric matrices of trace 1, a flat 9-dimensional slice with the usual distance, gives its diameter as √2, and says it cannot be split into 10 pieces of smaller diameter. Since 10 = 9 + 1, that is a counterexample in dimension 9, against 63 in this constant's last-listed upper-bound row. Reading the slice as 9-dimensional is our step; the statement file does not state it.",
           "screenedBy": [
             "claude",
             "codex"
           ],
-          "sourceSha256": "b96c9f45704a3811f66571910086dfb8997d7b0fdbc030dd142b12a1adee62f9"
+          "statementRead": true,
+          "bears": true,
+          "reason": "Statement read and matched, and shown as a note until 2026-10-26. Since the 2026-10-26 resnap (upstream e95af44, an upstream sha) the source table lists this claim itself, [OAI2026] 9* in its upper-bound table, and cites github.com/openai/math, so the note's 'not in the source table' became false and it is withdrawn."
         }
       ]
     },
