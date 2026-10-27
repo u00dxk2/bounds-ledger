@@ -99,7 +99,28 @@ node C:/dev/skylark/skylark-site/scripts/check-due-gates-dispositioned.mjs --pri
 
 ## State Appendix
 
-Written at P1; the close rewrites it from live commands.
+Written at the close from live commands; a report cannot name the commit that lands it.
 
-- HEAD `b2f90c2ff1`, CI GREEN (as of P1; release: `node C:/dev/skylark/skylark-site/scripts/check-ci-status.mjs --repo C:/dev/skylark/bounds-ledger`).
-- Due today: `A-84`, `A-88`, `W-13` (as of the morning snapshot; release: `check-due-gates-dispositioned.mjs --print`).
+- HEAD `4ba3bc9` before the close commit, CI GREEN at `b2f90c2ff1` (P1 read; release: `node C:/dev/skylark/skylark-site/scripts/check-ci-status.mjs --repo C:/dev/skylark/bounds-ledger`).
+- Due today, all three dispositioned: `check-due-gates-dispositioned.mjs` printed "snapshot CURRENT (taken 2026-10-27)", "verdict: CLEAR — every gate due at Phase 0 was dispositioned", RESULT: PASS (exit 0).
+- Due tomorrow, 8 rows: `A-47` (the depth audit), `A-50` (CLI import side effect), `A-59` (blind encounter), `A-70` (phone tap targets), `A-88` (the display question), `A-89` (census blind shapes), `A-90` (stale pull-request list), `W-14` (issue 218 watch). Read with `check-due-gates-dispositioned.mjs --print --today=2026-10-28`, exit 3.
+
+### Close
+
+`ACTION: NEVER-DISPATCHED · item A-88 · P1 9f7b34cd` — the orchestrator moved from P1 straight to P5 on the light day; meanwhile the A-88 (the display question) first read was taken and recorded.
+
+Ledger delta (all through `continuity-edit.mjs`):
+- `A-88` (the display question): nextCheckDate 2026-10-27 → 2026-10-28; a note records the 1d both-rows finding.
+- `A-84` (the store refusal fix): nextCheckDate and expiresOn 2026-10-27 → 2026-10-29; the reason it slipped is on `redate2026_10_27`.
+- `W-13` (the served-bytes read): nextCheckDate and expectedSignalBy → 2026-11-03 after today's PASS.
+- `A-77` (filed-report caller), `A-78` (OpenAI math map), `A-86` (newer-results owner): the `expectedSignalBy` the 10-26 `--extend` minted is deleted; nextCheckDate stays 2026-11-02. Their closeWhen was never changed (`git show 48b022f -- continuity/items.json` shows no closeWhen line).
+
+hygiene draft: ABSENT — no P3 ran, so no helper drafted one; dispositions done by hand. `check-wait-justification.mjs`: "RESULT: PASS — 1 of 109 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)". `check-engineering-zero.mjs --project bounds-ledger`: "lane bounds-ledger: 0 findings, 0 unreadable", exit 0.
+
+positive control: the same engineering-zero run listed nonzero open Dependabot alerts for other lanes (for example agentic-news #207 to #214 and billionaire-army #61 to #70, all waived by number), so the read can return non-empty; the same wait-justification run put 2 of 109 rows in scope, so it reads rows rather than nothing.
+
+Pending reads: the `A-88` draft, review and card on 2026-10-28 (or re-dated with a reason if the day is light); `A-84` on 2026-10-29.
+
+`USER-VISIBLE: none — light day; nothing on the public page changed and no ship was attempted.`
+
+Tomorrow's primer: `docs/cold-starts/2026-10-27.md` (generated, banner hand-written, 1348 characters before the dated-line fix).

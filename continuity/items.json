@@ -2332,15 +2332,15 @@
       "note2": "WHY A ROW RATHER THAN REOPENING A-55. A-55 asked whether the check EXISTS; it does, with both KP-78 answers taken on the live path. This asks who CALLS it, which is a different question with a different close condition, and merging them would let a built-but-uncalled check read as done. The read now has two callers, deliberately: the steward cadence in CLAUDE.md, which a session runs at start, and this row's own date, which is the backstop that surfaces in the due-gate sweep if the cadence lapses. A cadence line alone is discipline; a dated row alone is weekly. Together, a publish that goes stale is visible within a session or within a week, whichever comes first.",
       "note3": "WHAT THIS ROW CANNOT SEE, said because the gap is the point: it reads the tip's own files from this machine. It cannot see a page stale for a reader behind a cache we do not share, it cannot see a publish that fails AFTER the read, and its anchor is the last page-changing commit, so a day whose commits touch no published page gives it nothing to compare and it refuses (exit 2) rather than printing a pass.",
       "readCommand": "npm run served # A-55's check, carried here because a closed row's command is never swept. Exit 0 = every published file the last page-changing commit touched is SERVED (or IN-FLIGHT inside the measured 300s window); exit 1 = STALE, the publish did not reach readers, and each stale line names the served Last-Modified so the build being served is identifiable; exit 2 = REFUSED (empty path set, unreadable anchor, a commit touching no page, or a failed fetch), which is never a pass. Literal output 2026-09-22 after that day's ship: \"117 checked — 117 served, 0 in flight, 0 stale, 0 unreachable\", exit 0. POSITIVE CONTROL that it can say otherwise, taken on the live path the same day: the same command with CC_SERVED_WINDOW_MS=0 seconds after the push printed 117 STALE rows and exited 1.",
-      "nextCheckDate": "2026-10-27",
+      "nextCheckDate": "2026-11-03",
       "closeWhen": "Either (A) the read has a caller that does not depend on anyone remembering, and this row closes naming that job; or (B) the lane stops publishing by GitHub Pages, which ends the question, and this row closes recording that. Until one of those, it stays open and carries the read on its own date.\n\n(A) IS NOT MET BY A WORKFLOW FILE EXISTING (amended 2026-09-24 at P2, on the orchestrator's approval of the P1 retro's proposal 1, bus e10ed349): the approved shape is a new workflow file named served.yml (not yet written), a scheduled job kept OUT of the reverify suite, that runs `node scripts/check-served.mjs` and on exit 1 (STALE) files or updates ONE issue titled `Publish: stale page`, while exit 2 (a refusal) files nothing. It closes this row only when BOTH KP-78 legs have been run ON THAT WORKFLOW and their literal output is quoted on this row: (1) FIRES — a run with CC_SERVED_WINDOW_MS=0 dispatched seconds after a page-changing push exits 1 and the issue exists afterwards; (2) SILENT — a run on the settled tip exits 0 and files or updates nothing. A workflow never seen to fire is not an alarm yet.",
       "links": [
         "A-55",
         "G-4"
       ],
-      "updated": "2026-10-20",
+      "updated": "2026-10-27",
       "onTrigger": "On 2026-09-29, run `npm run served` and read which of three answers it gives. Exit 0: say so with the figure it printed, and re-date a week on — the read is cheap and its value is the cadence, not any single run. Exit 1 (STALE): that is a live finding, not a clock event — the published site is not serving the tip, so resolve it first (a Pages rebuild, then re-run) and record the served Last-Modified the check printed, because that names the build readers were getting. Exit 2 (REFUSED): read WHICH refusal. \"A commit touching no page\" is the ordinary state on a day whose commits were docs or ledger only, and it is not a miss; an unreadable anchor or a failed fetch is an instrument problem and is recorded as one.\n\nDo NOT let this row become the caller of record indefinitely. Its closeWhen asks for a caller that does not depend on anyone remembering, and a row read on a date is still a person remembering to read the row. The candidate worth pricing when there is a spare half-hour: a scheduled workflow that runs the check and files or updates ONE issue on a STALE verdict, kept out of the reverify suite so a transient GitHub failure cannot turn that suite red. That is the shape that would close this row.",
-      "lastEvaluated": "2026-10-20",
+      "lastEvaluated": "2026-10-27",
       "linkedCommits": [
         "ea25512"
       ],
@@ -2351,7 +2351,7 @@
         "lines": 68,
         "sha256": "d44ac7a16b464aa4"
       },
-      "expectedSignalBy": "2026-10-27",
+      "expectedSignalBy": "2026-11-03",
       "disposition2026_09_29": "DISPOSITION 2026-09-29. RE-DATED to 2026-10-06 by the hygiene helper's draft, as this row's onTrigger asks on exit 0. Two reads today, both literal. (1) The helper's --run, inside the helper's pass (its draft is stamped as finished at 13:44Z), anchored on 9ee0a9a: \"1 checked — 1 served, 0 in flight, 0 stale, 0 unreachable\", exit 0. That read was thin, since that commit touched one published file. (2) After slice 9's push, anchored on b2dbe8f (the last page-changing commit, 30 of 118 published files): \"30 checked — 30 served, 0 in flight, 0 stale, 0 unreachable\", \"RESULT: PASS — every file the last page-changing commit touched is being served as committed (exit 0)\". closeWhen (A) is still unmet: no served.yml workflow exists, so the row stays open.",
       "servedReadOct13": "npm run served after the A-69 push, anchor 7fb2e5c: 1 checked, 1 served, 0 in flight, 0 stale, 0 unreachable (exit 0). The helper's earlier --run that day was anchored on 89e12c3 and read 8 of 8 served. Re-dated a week on, per onTrigger; closeWhen (A), served.yml, is still unwritten.",
       "notes": " | 2026-10-20 P5: --run exit 0, '2 checked — 2 served, 0 in flight, 0 stale, 0 unreachable'; re-dated a week per onTrigger; served.yml still unwritten (hygiene draft ACCEPTED)."
@@ -2923,7 +2923,7 @@
       "closeWhen": "The check is run by something that does not depend on a person remembering it, with a recorded red-arm; and the pull-request question is either answered in code or closed with a written decision.",
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/check-upstream-reports.mjs — exit 0 '0 transition(s)' and no UNRECORDED line means every issue in its listing (`gh issue list --author u00dxk2 --state all --limit 100`, read once with no completeness check) has a baseline row whose state matches; exit 1 names the issue. Blind to pull requests, to issues past the first 100 returned, and to a closedAt, URL, title or path that changed while the state did not (Codex review r1, 2026-10-12).",
       "created": "2026-10-12",
-      "updated": "2026-10-19",
+      "updated": "2026-10-27",
       "readCommandLastRun": "2026-10-26T15:14:56.325Z",
       "readCommandLastExit": 0,
       "readCommandLastDurationMs": 2333,
@@ -2931,8 +2931,7 @@
         "lines": 5,
         "sha256": "2dddf61780ee8fe2"
       },
-      "lastEvaluated": "2026-10-26",
-      "expectedSignalBy": "2026-11-02"
+      "lastEvaluated": "2026-10-27"
     },
     {
       "id": "A-78",
@@ -2951,7 +2950,7 @@
       "closeWhen": "Every pair in the map is either statement-checked (rendered with its tag) or dispositioned as not bearing after a read, at the then-current release tip; or David retires the watch.",
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/openai-math.mjs — prints families covered of the release's count at the pinned sha, how many bear, pairs by tag and how many render; exit 0 'RESULT: VALID', exit 1 names each invalid field, exit 2 when the map file is absent. It reads the committed map only; it does not fetch the release, so it cannot see a newer release commit (the onTrigger read does).",
       "created": "2026-10-12",
-      "updated": "2026-10-19",
+      "updated": "2026-10-27",
       "readCommandLastRun": "2026-10-26T15:26:57.316Z",
       "readCommandLastExit": 0,
       "readCommandLastDurationMs": 253,
@@ -2959,8 +2958,7 @@
         "lines": 2,
         "sha256": "422721a9ad75831d"
       },
-      "lastEvaluated": "2026-10-26",
-      "expectedSignalBy": "2026-11-02"
+      "lastEvaluated": "2026-10-27"
     },
     {
       "id": "A-79",
@@ -3119,8 +3117,8 @@
       "status": "open",
       "owner": "bounds-ledger",
       "deferral": true,
-      "expiresOn": "2026-10-27",
-      "nextCheckDate": "2026-10-27",
+      "expiresOn": "2026-10-29",
+      "nextCheckDate": "2026-10-29",
       "links": [
         "A-82"
       ],
@@ -3130,7 +3128,7 @@
       "onTrigger": "Build it red first: a refusal case through main() timed before and after; the store refusal moved ahead of buildRows; a mutation that skips the refusal goes red. Codex read-only review before push.",
       "closeWhen": "The selftest's refusal cases finish in under a minute, the whole selftest still prints RESULT: PASS, and a mutation that skips the refusal goes red, each output recorded on this row.",
       "created": "2026-10-18",
-      "updated": "2026-10-25",
+      "updated": "2026-10-27",
       "readCommandLastTimeout": {
         "at": "2026-10-25T18:45:37.971Z",
         "capMs": 180000,
@@ -3142,7 +3140,8 @@
         "reason": "over-cap 180236ms vs 180000ms — the child was KILLED at the cap after 180236ms with 3384 byte(s) of partial output. A partial capture is an UNFINISHED read, not a short one. Raise readCommandTimeoutMs (cap 600000ms), split the command, or make it cheaper."
       },
       "redate2026_10_25": "RE-DATED 2026-10-25 MT at the close: nextCheckDate and expiresOn 2026-10-25 -> 2026-10-27, by the lane (not a hold, not a fix). WHY: today's one product change was A-47 slice 22 (the orchestrator's P1 proposal, approved), which took the day; the fix this row asks for (move the store refusal ahead of buildRows, built red first, Codex read-only review before push) is a code change with its own review and was not started. Its readCommand cannot be stamped until that fix lands: the hygiene helper's `--run A-84` on 2026-10-25 printed \"[TIMED-OUT] A-84 — KILLED at the 180000ms cap after 180236ms, with 3384 byte(s) of PARTIAL output … NOTHING was stamped\" and \"RESULT: NOTHING-SWEPT (exit 2)\"; the partial output (continuity/read-outputs/A-84.partial.txt) holds only PASS lines and no verdict. Raising the cap alone would not stamp it: the selftest took about 20 minutes on 2026-10-17 and the --run ceiling is 600000 ms. 2026-10-27 was chosen because it is the lightest dated day ahead (W-13 only, after A-47 moved to 2026-10-28). If it is not started on 2026-10-27, the next close must say why in this field's successor rather than re-date silently.",
-      "lastEvaluated": "2026-10-25"
+      "lastEvaluated": "2026-10-27",
+      "redate2026_10_27": "RE-DATED 2026-10-27 MT at the P5 close: nextCheckDate and expiresOn 2026-10-27 -> 2026-10-29, by the lane (not a hold, not a fix). WHY it was not started on 10-27, as the 10-25 field required this successor to say: David's 10-27 instruction made the day a light day (no new build, no Codex rounds, no heavy local jobs), and this fix is a code change whose onTrigger requires a red-first build and a Codex read-only review before push. 2026-10-29 rather than 10-28 because 10-28 already carries A-47 (the depth audit, including the new mirror's cited-row denominator) and A-88's owed draft and review. The readCommand is still unstampable until the fix lands (it was killed at the 180000 ms cap on 2026-10-25 and 2026-10-26)."
     },
     {
       "id": "A-85",
@@ -3178,7 +3177,7 @@
       "closeWhen": "Either the 'checked through' line is live after its review and David's yes, with this row's owner duties moved to a standing watch row, or David declines it and the store's ownership is written onto a standing row with its readCommand.",
       "notes": "Minted 2026-10-19 MT at the round-3 close, when A-82 closed (its closeWhen met: all 3 candidates carry a verdict with its evidence path in tmp/, counts on the row). A-82 carried two things its closeWhen did not cover: ownership of the newer-results store and its evaluator (scripts/newer-results.mjs, scripts/step-overlap.mjs, the reverify.yml selftest steps, all of which name A-82 as their origin), and the still-owed newer-results-checked-through line, which A-82's notes kept as outward work behind review and David's gate. Both move here so they are not lost with the close.",
       "created": "2026-10-20",
-      "updated": "2026-10-26",
+      "updated": "2026-10-27",
       "readCommandLastTimeout": {
         "at": "2026-10-26T15:18:10.150Z",
         "capMs": 180000,
@@ -3190,8 +3189,7 @@
         "reason": "over-cap 180081ms vs 180000ms — the child was KILLED at the cap after 180081ms with 3384 byte(s) of partial output. A partial capture is an UNFINISHED read, not a short one. Raise readCommandTimeoutMs (cap 600000ms), split the command, or make it cheaper."
       },
       "readCommandTimeoutMs": "600000",
-      "expectedSignalBy": "2026-11-02",
-      "lastEvaluated": "2026-10-26"
+      "lastEvaluated": "2026-10-27"
     },
     {
       "id": "A-87",
@@ -3219,7 +3217,7 @@
       "status": "open",
       "title": "When upstream answers PR #244, draft the display-convention question about the three ceilings A-76 found printed below their exact value",
       "owner": "bounds-ledger",
-      "nextCheckDate": "2026-10-27",
+      "nextCheckDate": "2026-10-28",
       "links": [
         "A-76",
         "A-87",
@@ -3231,8 +3229,8 @@
       "readCommand": "gh pr view 244 --repo teorth/optimizationproblems --json state,reviewDecision,mergedAt,closedAt,updatedAt — prints no login, title or comment text, so --run may stamp it. Whether a review came from a maintainer is read BY HAND, never through --run (a review body and its login are third-party text this public repo must not commit): gh api repos/teorth/optimizationproblems/pulls/244/reviews, reading only state, author_association and submitted_at.",
       "created": "2026-10-21",
       "updated": "2026-10-27",
-      "notes": " | 2026-10-22 MT: upstream pull request 243 (another author, opened 2026-10-20, open and not merged on the 2026-10-22 read) changes constants/1d.md line 18 to `$1.4630715826075594$` and says the bound \"is printed rounded up\". That is the 1d.md:18 cut A-76's census found, already proposed upstream by someone else (read with `gh pr diff 243 -R teorth/optimizationproblems`). It narrows the question for David to 87a and 1b, unless 243 is rejected. Nothing went upstream on #244 today (David's answer on card abab2375, paraphrased: wait for a reply on #244, then bring him the question text). The 1d page now lists 243 among its open pull requests (A-83).\n\n | 2026-10-23 MT: pull request 244 got its first response, an APPROVED review at 14:12:51Z from an account whose reported association is CONTRIBUTOR (the same account approved 243 the same way at 13:36:39Z); no owner response, so the trigger stays unmet. Prepared early on the orchestrator's approval (bus 1e4de4b5): the question is narrowed to ONE row, 87a, in docs/decisions/2026-10-23-A88-87a-display-question-draft.md, after two read-only Codex claims rounds (on b1f4907 and 580799e). 1b is left out because upstream pull request 158 (merged 2026-09-05) changed that exact row from 0.380927 to 0.380926; this lane's record already held that history (W-2, depth-audit A-47-0015), the third time the 1b digit was raised here. 1d is left out while 243 is open. Census at 10-23: still three CUT. The readCommand was narrowed the same day so a --run cannot commit a third party's login or review text. The check date stays 2026-10-24; no response then means re-date to 2026-10-31.\n\n | 2026-10-26 MT: THE TRIGGER FIRED. Pull request 244 merged at 2026-10-26T03:45:09Z (`gh pr view 244 --repo teorth/optimizationproblems --json state,mergedAt` → MERGED), in the maintainer's ~35-pull-request burst of 03:44Z to 04:08Z, which this lane resolved in f85e829 (mirror at e95af44, an upstream sha). Pull request 243 merged at 03:53:53Z too. `node scripts/decimal-vs-exact.mjs` on the new mirror, exit 1, still names three CUT rows: 1d.md:19 (moved from line 18; it still prints 1.463071582607559 against its comment's 1.4630715826075593…, so 243's merge did not leave that row rounded up in the merged text; why is not yet read), A-47-0075 87a.md:17, A-47-0019 1b.md:22. The onTrigger work (re-check the draft in docs/decisions/2026-10-23-A88-87a-display-question-draft.md against the census, the adversarial refute-it review, a claims pass, then the card to David) is NOT done today: David's 10-26 instruction made it a light day with no review rounds. Re-dated to 2026-10-27 so the next normal day does it first; first read then is `gh pr diff 243 -R teorth/optimizationproblems` against the merged 1d.md, to settle whether 1d rejoins the question.\n\n | 2026-10-27 MT (booked on the orchestrator's 10-26 dispatch, bus 645c25b3): the merge of pull request 244 was done by the repository's maintainer, teorth, and David received GitHub's merge notification for it (source: the notification email David pasted to the orchestrator on 10-26; paraphrased here, not quoted). No other change to this row. pragma: allowlist sha",
-      "lastEvaluated": "2026-10-26",
+      "notes": " | 2026-10-22 MT: upstream pull request 243 (another author, opened 2026-10-20, open and not merged on the 2026-10-22 read) changes constants/1d.md line 18 to `$1.4630715826075594$` and says the bound \"is printed rounded up\". That is the 1d.md:18 cut A-76's census found, already proposed upstream by someone else (read with `gh pr diff 243 -R teorth/optimizationproblems`). It narrows the question for David to 87a and 1b, unless 243 is rejected. Nothing went upstream on #244 today (David's answer on card abab2375, paraphrased: wait for a reply on #244, then bring him the question text). The 1d page now lists 243 among its open pull requests (A-83).\n\n | 2026-10-23 MT: pull request 244 got its first response, an APPROVED review at 14:12:51Z from an account whose reported association is CONTRIBUTOR (the same account approved 243 the same way at 13:36:39Z); no owner response, so the trigger stays unmet. Prepared early on the orchestrator's approval (bus 1e4de4b5): the question is narrowed to ONE row, 87a, in docs/decisions/2026-10-23-A88-87a-display-question-draft.md, after two read-only Codex claims rounds (on b1f4907 and 580799e). 1b is left out because upstream pull request 158 (merged 2026-09-05) changed that exact row from 0.380927 to 0.380926; this lane's record already held that history (W-2, depth-audit A-47-0015), the third time the 1b digit was raised here. 1d is left out while 243 is open. Census at 10-23: still three CUT. The readCommand was narrowed the same day so a --run cannot commit a third party's login or review text. The check date stays 2026-10-24; no response then means re-date to 2026-10-31.\n\n | 2026-10-26 MT: THE TRIGGER FIRED. Pull request 244 merged at 2026-10-26T03:45:09Z (`gh pr view 244 --repo teorth/optimizationproblems --json state,mergedAt` → MERGED), in the maintainer's ~35-pull-request burst of 03:44Z to 04:08Z, which this lane resolved in f85e829 (mirror at e95af44, an upstream sha). Pull request 243 merged at 03:53:53Z too. `node scripts/decimal-vs-exact.mjs` on the new mirror, exit 1, still names three CUT rows: 1d.md:19 (moved from line 18; it still prints 1.463071582607559 against its comment's 1.4630715826075593…, so 243's merge did not leave that row rounded up in the merged text; why is not yet read), A-47-0075 87a.md:17, A-47-0019 1b.md:22. The onTrigger work (re-check the draft in docs/decisions/2026-10-23-A88-87a-display-question-draft.md against the census, the adversarial refute-it review, a claims pass, then the card to David) is NOT done today: David's 10-26 instruction made it a light day with no review rounds. Re-dated to 2026-10-27 so the next normal day does it first; first read then is `gh pr diff 243 -R teorth/optimizationproblems` against the merged 1d.md, to settle whether 1d rejoins the question.\n\n | 2026-10-27 MT (booked on the orchestrator's 10-26 dispatch, bus 645c25b3): the merge of pull request 244 was done by the repository's maintainer, teorth, and David received GitHub's merge notification for it (source: the notification email David pasted to the orchestrator on 10-26; paraphrased here, not quoted). No other change to this row. pragma: allowlist sha\n\n\n\n | 2026-10-27 MT (P1/P5, light day): the first read the 10-26 note named is done. `gh pr view 243 -R teorth/optimizationproblems --json state,mergedAt,mergeCommit,headRefOid` → MERGED 2026-10-26T03:53:53Z, and the compare of its merge commit against main reads \"status\":\"ahead\", behind 0, so it is on main. Upstream main's constants/1d.md (read through `gh api …/contents/constants/1d.md?ref=main`) and our mirror carry BOTH rows: `$1.463071582607559*$` (the old row, unchanged) and `$1.4630715826075594$` (243's rounded-up row, now last-listed), with a `$1.460217284022874*$` row between them. So 243's merge ADDED its corrected row and did not remove the old one; why is not read. `node scripts/decimal-vs-exact.mjs` exit 1, still 3 CUT: 1d.md:19 (that old row), A-47-0075 87a.md:17, A-47-0019 1b.md:22. Consequence for the draft: 1d does not simply drop out; the open question is whether a superseded historical row printed below its exact value is worth raising at all, which the draft must answer before review. The readCommand was stamped through `--run A-88` (exit 0, MERGED). Draft, adversarial review, claims pass and the card NOT done: David's 10-27 light-day instruction (no Codex rounds). Re-dated to 2026-10-28.",
+      "lastEvaluated": "2026-10-27",
       "readCommandLastRun": "2026-10-27T15:45:51.879Z",
       "readCommandLastExit": 0,
       "readCommandLastDurationMs": 34271,
