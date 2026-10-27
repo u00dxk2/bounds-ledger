@@ -1,17 +1,74 @@
 # read-output sidecar for W-13 — written by check-due-gates-dispositioned --run
 # readCommand: npm run served
-# ran: 2026-10-20T15:34:52.558Z · exit: 0
-# lines: 11 · sha256: a7c49645189621a9 (first 16 hex of the output below)
+# ran: 2026-10-27T15:44:49.017Z · exit: 0
+# lines: 68 · sha256: d44ac7a16b464aa4 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
 > bounds-ledger@0.0.0 served
 > node scripts/check-served.mjs
 
-# Served vs HEAD — 2026-10-20T15:34:51.975Z
-anchor e576851845 (2026-10-19T23:56:07-06:00), the last commit to touch a published page; 2 file(s) it changed, of 120 published
-SERVED      c/13a.html  10469 bytes
-SERVED      c/21a.html  9402 bytes
+# Served vs HEAD — 2026-10-27T15:44:26.504Z
+anchor 0b4d5012e0 (2026-10-26T09:42:40-06:00), the last commit to touch a published page; 59 file(s) it changed, of 123 published
+SERVED      c/10a.html  12816 bytes
+SERVED      c/10c.html  10218 bytes
+SERVED      c/11b.html  8072 bytes
+SERVED      c/13a.html  10359 bytes
+SERVED      c/13b.html  9354 bytes
+SERVED      c/14a.html  8056 bytes
+SERVED      c/15a.html  11506 bytes
+SERVED      c/15b.html  10186 bytes
+SERVED      c/17a.html  8555 bytes
+SERVED      c/19a.html  9705 bytes
+SERVED      c/1a.html  10343 bytes
+SERVED      c/1b.html  16360 bytes
+SERVED      c/20a.html  9884 bytes
+SERVED      c/20b.html  8075 bytes
+SERVED      c/20c.html  8988 bytes
+SERVED      c/21a.html  9403 bytes
+SERVED      c/22a.html  7898 bytes
+SERVED      c/24a.html  9106 bytes
+SERVED      c/26a.html  8312 bytes
+SERVED      c/28a.html  9463 bytes
+SERVED      c/29a.html  10059 bytes
+SERVED      c/31a.html  10593 bytes
+SERVED      c/32a.html  7869 bytes
+SERVED      c/35a.html  10207 bytes
+SERVED      c/37a.html  7755 bytes
+SERVED      c/3a.html  11888 bytes
+SERVED      c/3b.html  8119 bytes
+SERVED      c/3c.html  8649 bytes
+SERVED      c/3e.html  9838 bytes
+SERVED      c/41a.html  8005 bytes
+SERVED      c/43a.html  9426 bytes
+SERVED      c/44a.html  8419 bytes
+SERVED      c/45a.html  7672 bytes
+SERVED      c/46a.html  11842 bytes
+SERVED      c/4a.html  8815 bytes
+SERVED      c/4b.html  9086 bytes
+SERVED      c/50a.html  9525 bytes
+SERVED      c/52a.html  8757 bytes
+SERVED      c/54a.html  9091 bytes
+SERVED      c/55a.html  8693 bytes
+SERVED      c/57a.html  9365 bytes
+SERVED      c/5b.html  7754 bytes
+SERVED      c/65a.html  10310 bytes
+SERVED      c/67a.html  10679 bytes
+SERVED      c/71a.html  10256 bytes
+SERVED      c/75a.html  8912 bytes
+SERVED      c/77a.html  9734 bytes
+SERVED      c/78a.html  8894 bytes
+SERVED      c/79a.html  9787 bytes
+SERVED      c/80a.html  9330 bytes
+SERVED      c/83a.html  7919 bytes
+SERVED      c/84a.html  13966 bytes
+SERVED      c/84b.html  8745 bytes
+SERVED      c/85a.html  8561 bytes
+SERVED      c/87a.html  10370 bytes
+SERVED      c/88a.html  11299 bytes
+SERVED      c/8a.html  8778 bytes
+SERVED      c/9a.html  8426 bytes
+SERVED      index.html  412074 bytes
 
-2 checked — 2 served, 0 in flight, 0 stale, 0 unreachable.
+59 checked — 59 served, 0 in flight, 0 stale, 0 unreachable.
 This is an INDICATOR: it never gates a build and never runs in CI. A page can also be stale for a reader behind a cache this read does not share.
 RESULT: PASS — every file the last page-changing commit touched is being served as committed (exit 0)

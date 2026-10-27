@@ -1,0 +1,7 @@
+# read-output sidecar for A-88 — written by check-due-gates-dispositioned --run
+# readCommand: gh pr view 244 --repo teorth/optimizationproblems --json state,reviewDecision,mergedAt,closedAt,updatedAt
+# ran: 2026-10-27T15:45:51.879Z · exit: 0
+# lines: 1 · sha256: 8df0aefb44921f52 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+{"closedAt":"2026-10-26T03:45:09Z","mergedAt":"2026-10-26T03:45:09Z","reviewDecision":"","state":"MERGED","updatedAt":"2026-10-26T03:45:09Z"}

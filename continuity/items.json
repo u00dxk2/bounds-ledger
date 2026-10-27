@@ -2344,12 +2344,12 @@
       "linkedCommits": [
         "ea25512"
       ],
-      "readCommandLastRun": "2026-10-20T15:34:52.558Z",
+      "readCommandLastRun": "2026-10-27T15:44:49.017Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 1371,
+      "readCommandLastDurationMs": 26578,
       "readCommandLastOutputRef": {
-        "lines": 11,
-        "sha256": "a7c49645189621a9"
+        "lines": 68,
+        "sha256": "d44ac7a16b464aa4"
       },
       "expectedSignalBy": "2026-10-27",
       "disposition2026_09_29": "DISPOSITION 2026-09-29. RE-DATED to 2026-10-06 by the hygiene helper's draft, as this row's onTrigger asks on exit 0. Two reads today, both literal. (1) The helper's --run, inside the helper's pass (its draft is stamped as finished at 13:44Z), anchored on 9ee0a9a: \"1 checked — 1 served, 0 in flight, 0 stale, 0 unreachable\", exit 0. That read was thin, since that commit touched one published file. (2) After slice 9's push, anchored on b2dbe8f (the last page-changing commit, 30 of 118 published files): \"30 checked — 30 served, 0 in flight, 0 stale, 0 unreachable\", \"RESULT: PASS — every file the last page-changing commit touched is being served as committed (exit 0)\". closeWhen (A) is still unmet: no served.yml workflow exists, so the row stays open.",
@@ -3232,7 +3232,14 @@
       "created": "2026-10-21",
       "updated": "2026-10-27",
       "notes": " | 2026-10-22 MT: upstream pull request 243 (another author, opened 2026-10-20, open and not merged on the 2026-10-22 read) changes constants/1d.md line 18 to `$1.4630715826075594$` and says the bound \"is printed rounded up\". That is the 1d.md:18 cut A-76's census found, already proposed upstream by someone else (read with `gh pr diff 243 -R teorth/optimizationproblems`). It narrows the question for David to 87a and 1b, unless 243 is rejected. Nothing went upstream on #244 today (David's answer on card abab2375, paraphrased: wait for a reply on #244, then bring him the question text). The 1d page now lists 243 among its open pull requests (A-83).\n\n | 2026-10-23 MT: pull request 244 got its first response, an APPROVED review at 14:12:51Z from an account whose reported association is CONTRIBUTOR (the same account approved 243 the same way at 13:36:39Z); no owner response, so the trigger stays unmet. Prepared early on the orchestrator's approval (bus 1e4de4b5): the question is narrowed to ONE row, 87a, in docs/decisions/2026-10-23-A88-87a-display-question-draft.md, after two read-only Codex claims rounds (on b1f4907 and 580799e). 1b is left out because upstream pull request 158 (merged 2026-09-05) changed that exact row from 0.380927 to 0.380926; this lane's record already held that history (W-2, depth-audit A-47-0015), the third time the 1b digit was raised here. 1d is left out while 243 is open. Census at 10-23: still three CUT. The readCommand was narrowed the same day so a --run cannot commit a third party's login or review text. The check date stays 2026-10-24; no response then means re-date to 2026-10-31.\n\n | 2026-10-26 MT: THE TRIGGER FIRED. Pull request 244 merged at 2026-10-26T03:45:09Z (`gh pr view 244 --repo teorth/optimizationproblems --json state,mergedAt` → MERGED), in the maintainer's ~35-pull-request burst of 03:44Z to 04:08Z, which this lane resolved in f85e829 (mirror at e95af44, an upstream sha). Pull request 243 merged at 03:53:53Z too. `node scripts/decimal-vs-exact.mjs` on the new mirror, exit 1, still names three CUT rows: 1d.md:19 (moved from line 18; it still prints 1.463071582607559 against its comment's 1.4630715826075593…, so 243's merge did not leave that row rounded up in the merged text; why is not yet read), A-47-0075 87a.md:17, A-47-0019 1b.md:22. The onTrigger work (re-check the draft in docs/decisions/2026-10-23-A88-87a-display-question-draft.md against the census, the adversarial refute-it review, a claims pass, then the card to David) is NOT done today: David's 10-26 instruction made it a light day with no review rounds. Re-dated to 2026-10-27 so the next normal day does it first; first read then is `gh pr diff 243 -R teorth/optimizationproblems` against the merged 1d.md, to settle whether 1d rejoins the question.\n\n | 2026-10-27 MT (booked on the orchestrator's 10-26 dispatch, bus 645c25b3): the merge of pull request 244 was done by the repository's maintainer, teorth, and David received GitHub's merge notification for it (source: the notification email David pasted to the orchestrator on 10-26; paraphrased here, not quoted). No other change to this row. pragma: allowlist sha",
-      "lastEvaluated": "2026-10-26"
+      "lastEvaluated": "2026-10-26",
+      "readCommandLastRun": "2026-10-27T15:45:51.879Z",
+      "readCommandLastExit": 0,
+      "readCommandLastDurationMs": 34271,
+      "readCommandLastOutputRef": {
+        "lines": 1,
+        "sha256": "8df0aefb44921f52"
+      }
     },
     {
       "id": "A-89",
