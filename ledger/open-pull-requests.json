@@ -1,14 +1,149 @@
 {
   "purpose": "Open pull requests on teorth/optimizationproblems and the constant files each changes (A-83), read by scripts/open-pulls.mjs --fetch and shown on each constant's c/ page. Numbers, dates and file names only: no titles and no author names.",
   "repository": "teorth/optimizationproblems",
-  "readAt": "2026-10-26T15:20:25Z",
-  "count": 13,
+  "readAt": "2026-10-28T19:54:15Z",
+  "count": 30,
   "pulls": [
+    {
+      "number": 288,
+      "createdOn": "2026-10-28",
+      "constants": [
+        "1a",
+        "1c"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 287,
+      "createdOn": "2026-10-27",
+      "constants": [
+        "19a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 286,
+      "createdOn": "2026-10-27",
+      "constants": [
+        "1d"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 285,
+      "createdOn": "2026-10-27",
+      "constants": [
+        "44a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 284,
+      "createdOn": "2026-10-27",
+      "constants": [
+        "26a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 283,
+      "createdOn": "2026-10-27",
+      "constants": [
+        "37a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 282,
+      "createdOn": "2026-10-27",
+      "constants": [
+        "3b"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 281,
+      "createdOn": "2026-10-27",
+      "constants": [
+        "45a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 280,
+      "createdOn": "2026-10-27",
+      "constants": [
+        "82a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 279,
+      "createdOn": "2026-10-27",
+      "constants": [
+        "89b",
+        "89c"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 278,
+      "createdOn": "2026-10-26",
+      "constants": [],
+      "byThisLedger": false
+    },
+    {
+      "number": 277,
+      "createdOn": "2026-10-26",
+      "constants": [
+        "89b"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 276,
+      "createdOn": "2026-10-26",
+      "constants": [
+        "89a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 275,
+      "createdOn": "2026-10-26",
+      "constants": [
+        "84b"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 274,
+      "createdOn": "2026-10-26",
+      "constants": [
+        "68a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 273,
+      "createdOn": "2026-10-26",
+      "constants": [
+        "91a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 272,
+      "createdOn": "2026-10-26",
+      "constants": [
+        "31b"
+      ],
+      "byThisLedger": false
+    },
     {
       "number": 271,
       "createdOn": "2026-10-26",
       "constants": [
-        "1c",
         "1d"
       ],
       "byThisLedger": false

@@ -1391,7 +1391,7 @@
     "id": "pin:5a:U",
     "statement": "Last-listed upper-bound table row for A Sidon set constant (5a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/5a.md",
-    "expect": "| $0.97633$ | Carter, Georgiev, Gomez--Serrano, Hunter, O'Bryant, Tao, Wagner ([unpublished](https://terrytao.wordpress.com/2025/11/05/mathematical-exploration-and-discovery-at-scale/#comment-689052), 2025) | AlphaEvolve |",
+    "expect": "| $0.94304$ | [COT26] | Corollary 1.2: a Sidon set $\\mathcal{A}\\subseteq[1,N]$ with $k\\ge 483$ elements satisfies $k \\le N^{1/2} + 0.94304\\,N^{1/4} + 0.44466$, equivalently $\\mathrm{diam}(\\mathcal{A}) \\ge k^2 - 1.88607\\,k^{3/2}$. The fully explicit bound valid for every $k \\ge 1$ is $\\lvert\\mathcal{A}\\rvert \\le N^{1/2} + 0.945\\,N^{1/4} + 0.447$; since $C\\_{5a}$ is asymptotic, the large-$k$ constant is the one recorded. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/5a.md",
     "generated": true
   },

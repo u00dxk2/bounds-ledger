@@ -26,7 +26,7 @@ Bounds for which the level of available verification is currently at minimal lev
 | [3e](https://teorth.github.io/optimizationproblems/constants/3e.html) | Unnormalized single-set sum-difference exponent | 1.27155 | 1.33333 |
 | [4a](https://teorth.github.io/optimizationproblems/constants/4a.html) | Cap set constant | 2.2203 | 2.756 |
 | [4b](https://teorth.github.io/optimizationproblems/constants/4b.html) | Furstenberg–Sárközy square-difference constant | 0.7580758 | $<1$ |
-| [5a](https://teorth.github.io/optimizationproblems/constants/5a.html) | Sidon set size constant | 0 | 0.97633 |
+| [5a](https://teorth.github.io/optimizationproblems/constants/5a.html) | Sidon set size constant | 0 | 0.94304 (0.9428095*) |
 | [5b](https://teorth.github.io/optimizationproblems/constants/5b.html) | Sidon set density inside (4,5) sets | 0.5294 | 0.5714 |
 | [6](https://teorth.github.io/optimizationproblems/constants/6a.html) | Union-closed sets conjecture constant | 0.38271 | 0.5 |
 | [7a](https://teorth.github.io/optimizationproblems/constants/7a.html) | Irrationality measure of $\pi$ | 2 | $<7.101862832357$ |
@@ -249,6 +249,9 @@ Bounds for which the level of available verification is currently at minimal lev
 - [28](https://teorth.github.io/optimizationproblems/constants/28a.html) **improved upper bound (unverified):** $C_{28} \leq 9$* by [OpenAI](https://github.com/openai/math/tree/main/preprints/A-nine-dimensional-counterexample-to-Borsuks-covering-assertion-September-23-2026), 23 Sep 2026, down from 63: the rank-one projectors on $\mathbb{R}^4$ in Frobenius metric need more than ten smaller-diameter parts.
 - [65](https://teorth.github.io/optimizationproblems/constants/65a.html) **improved upper bound (unverified):** $C\_{65} \leq 2.4$*, a corollary of [OpenAI's $7/8$ quasi-Riemann hypothesis](https://github.com/openai/math/tree/main/preprints/The-Quasi-Riemann-Hypothesis-September-30-2026) for Dirichlet $L$-functions, 30 Sep 2026.
 - [65](https://teorth.github.io/optimizationproblems/constants/65a.html) **improved upper bound (unverified):** $C\_{65} \leq 3.99$* by [E. Naslund](https://hexagonmath.org/2610.00018v1), 2 Oct 2026, with public computational certificates and a partial Lean formalization.
+- [5a](https://teorth.github.io/optimizationproblems/constants/5a.html) **improved upper bound:** $C_{5a} \leq 0.9435$ by [J. Hou and H. Zhao](https://arxiv.org/abs/2607.01169), 1 Jul 2026, via vector-valued smoothing.
+- [5a](https://teorth.github.io/optimizationproblems/constants/5a.html) **improved upper bound:** $C_{5a} \leq 0.94304$ by [D. Carter, K. O'Bryant and T. Tao](https://arxiv.org/abs/2610.36207), 26 Oct 2026, from an explicit lower bound on the diameter of a Sidon set.
+- [5a](https://teorth.github.io/optimizationproblems/constants/5a.html) **improved upper bound (unverified):** $C_{5a} \leq 0.9428095$* by [J. Akwei](https://github.com/johnakwei/Science), reported in the [Erdos Problems forum](https://www.erdosproblems.com/forum/thread/30), 5 Oct 2026; unrefereed, and within $5	imes 10^{-7}$ of a claimed barrier for the method.
 
 ## Maintainers
 
