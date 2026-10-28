@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-One of the constants we watch got a better bound overnight, and the public page now shows it. The best proved upper bound for the Sidon set constant fell from 0.97633 to 0.94304, in a paper by Carter, O'Bryant and Tao posted on 26 October. Our overnight check flagged the change, I checked it against the paper's own summary, and the page has carried the new figure since 20:30 UTC. It is otherwise a light day, so the rest of today's dated checks get a quick read or a new date.
+One of the constants we watch changed upstream overnight, and the public page now shows it. Upstream's listed upper bound for the Sidon set constant moved from 0.97633 to 0.94304, citing a 26 October preprint by Carter, O'Bryant and Tao; I checked the paper's abstract, not the corollary the figure comes from. Our overnight check flagged the change, and the page has carried the new figure since this afternoon's rebuild. It is otherwise a light day, so the rest of today's dated checks get a quick read or a new date.
 
 ### Selection packet
 
@@ -54,7 +54,7 @@ One of the constants we watch got a better bound overnight, and the public page 
 - OBSERVED · issue #46 (10-26 "Re-verification failed") was still open: run 40352447282 at `0b4d501` failed the arXiv watcher self-test ("1a's upper side is UNJUDGED"); `fe27268` fixed it and the next run passed. Closed by hand today with that account.
 - MISSING · whether any reader opened 5a's page. The pages carry no analytics (`A-59`, the blind encounter on the public pages).
 
-**Classification:** today's one catch is record-facing and numeric: the drift alarm caught a real upper bound moving (0.97633 → 0.94304), not a byte-only edit. The standing prediction says it is WRONG "if the drift alarm produces the next record-facing catch"; the 10-18 report read a drift cycle as firing neither condition, because the alarm caught upstream's update rather than a defect. Whether today falsifies it is a judgment for the close, and if it does, the correction lands in CLAUDE.md the same day.
+**Classification:** today's one catch is record-facing and numeric: the drift alarm caught a real upper bound moving (0.97633 → 0.94304), not a byte-only edit. The standing prediction says it is WRONG "if the drift alarm produces the next record-facing catch"; the 10-18 report read a drift cycle as firing neither condition, because the alarm caught upstream's update rather than a defect. Decided at the close: not falsified, on the 10-18 reading (that report counted four numeric pin moves and judged that "neither falsifying condition fired"); the alarm caught upstream's own correct update, not a defect. The reading is now written into the CLAUDE.md clause itself.
 
 **Permission:** a drift cycle is the steward cadence, inside the lane's authority (CLAUDE.md "Snapshot-on-drift discipline"). No upstream contact; nothing outward beyond our own page, which publishes on every push.
 
@@ -100,3 +100,29 @@ node C:/dev/skylark/skylark-site/scripts/check-ci-status.mjs --repo C:/dev/skyla
 ## State Appendix
 
 Written at the close from live commands; a report cannot name the commit that lands it.
+
+- HEAD `9820104` before the close commit; CI GREEN at `8be7f8a` (`check-ci-status.mjs --repo`: 3 completed non-scheduled successes, 0 failures); `9820104` is doc-only.
+- Local `npm run verify` at `9820104`: exit 1 on one gate, `check:state` ("catch table: STALE — README.md claims 19 upstream drifts, but mirror history has 20 resolution cycles"). Every other gate passed. Fixed in the close commit: the README gains the `e8f7e7f` row and says 20; `render-state-block.mjs --check` then printed "catch table: 20 cycles, and README.md says 20.", exit 0. The full gate is not re-run (the fix is README prose; the other ten gates passed at `9820104`).
+- Due today, all eight dispositioned: `check-due-gates-dispositioned.mjs` printed "snapshot … CURRENT (taken 2026-10-28)", "verdict: CLEAR — every gate due at Phase 0 was dispositioned", RESULT: PASS (exit 0).
+- Due 2026-10-29 (`--print --today=2026-10-29`): `A-47` (the depth audit), `A-81` (the arXiv newer-result watcher), `A-84` (the store refusal), `A-88` (the display question).
+
+### Close
+
+`ACTION: COMPLETED · item #47 (the 5a drift) · P1 4da5f6be` — the review (`498ff7d3`) approved the shipped refresh and skipped P3. Acceptance met: CI GREEN at `8be7f8a`, #47 closed by hand with the verification.
+
+Changed since the P1 post:
+- The BLUF now says only what was verified (the review's suggested wording): upstream's listed bound, the abstract read, the corollary not read.
+- The standing prediction is not falsified (the 10-18 reading); that reading is now written into CLAUDE.md's clause.
+- README: the catch table gains the `e8f7e7f` row and its counts move to 20; the stale "seventeen rows … eighteen cycles" (missed on 10-26) now reads nineteen and twenty. Claims self-checked against the two abstracts and the mirror diff; a cross-family claims pass is owed 10-29 (light day, no Codex).
+
+Ledger delta (all through `continuity-edit.mjs --set`, each with a `redate2026_10_28` note carrying its read):
+- `A-88` (the display question), `A-47` (the depth audit): nextCheckDate → 2026-10-29.
+- `A-89` (census blind shapes), `A-90` (stale pull-request list), `A-59` (blind encounter), `A-70` (phone tap targets): nextCheckDate → 2026-11-04.
+- `A-50` (CLI import side effect), `W-14` (issue 218 watch): expectedSignalBy → 2026-11-04.
+- Reads stamped today by `--run`: all eight; outputs in `continuity/read-outputs/`.
+
+hygiene draft: ABSENT — no P3 ran, so no helper drafted one; dispositions done by hand. `check-wait-justification.mjs`: "RESULT: PASS — 1 of 109 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)". `check-engineering-zero.mjs --project bounds-ledger`: "lane bounds-ledger: 0 findings, 0 unreadable", exit 0; positive control: the same run reported "8 waived across 26 lane(s)" fleet-wide, so it reads nonzero states.
+
+Pending reads: `A-47`, `A-81`, `A-84`, `A-88` on 2026-10-29; the README row's claims pass on 2026-10-29.
+
+`USER-VISIBLE: data: c/5a.html + index.html row c-5a ×1 constant — a reader of 5a sees upstream's new listed upper bound 0.94304 with "value changed 2026-10-28" linked to upstream's history, where it showed 0.97633 [proof: e8f7e7f + 8be7f8a; Pages build for 8be7f8a "built" 20:29:56Z; npm run served "2 checked — 2 served", exit 0] [coverage: npm run reports · last good read 2026-10-28 · founder+test excluded yes] [exposure: blind — the pages carry no analytics, only report arrivals are countable · bug row A-59]`

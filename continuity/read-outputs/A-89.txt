@@ -1,0 +1,257 @@
+# read-output sidecar for A-89 — written by check-due-gates-dispositioned --run
+# readCommand: node C:/dev/skylark/bounds-ledger/scripts/decimal-vs-exact.mjs
+# ran: 2026-10-28T20:57:43.675Z · exit: 1
+# lines: 250 · sha256: 1869765c8112ece9 (first 16 hex of the output below)
+# truncated: false
+# secretsRedacted: 2 (shapes: long-hex; each replaced by "[redacted:<shape>]" BEFORE the byte cap and the sha256, which describe the redacted bytes below)
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+SHOWN    IN-CELL  10a.md:27 upper — prints 2.30130 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  10a.md:29 upper — prints 1.782214 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  10a.md:32 upper — prints $< \dfrac{\pi}{2\ln(1+\sqrt{2})} - 6.039\times 10^{-5}$ — no ≈ or = before a final decimal, so there is no printed value to judge
+SHOWN    IN-CELL  10a.md:41 lower — prints 1.57080 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  10a.md:42 lower — prints 1.67696… — the first form is not one this reader evaluates
+SHOWN    IN-CELL  10a.md:45 lower — prints 1.71360 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  10b.md:24 upper — prints 1.52621 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  10c.md:38 upper — prints $3.65$ (unpublished) — no ≈ or = before a final decimal, so there is no printed value to judge
+SHOWN    IN-CELL  10c.md:39 upper — prints 3.674235 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  10c.md:47 lower — prints 1.414214 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  10c.md:48 lower — prints 1.632993 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+AGREES   IN-CELL  10c.md:49 lower — prints 1.666667; exact = 1.666666666667 — past the exact value, but marked approximate and the exact value lies within its rounding
+SHOWN    IN-CELL  10c.md:50 lower — prints 1.697749 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  10c.md:51 lower — prints 1.767767 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  11a.md:27 upper — prints 1.57080 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  11a.md:29 upper — prints 0.00013 — the first form is not one this reader evaluates
+SHOWN    IN-CELL  11a.md:36 lower — prints 1.25331 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  11b.md:27 upper — prints 0.58496 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  12a.md:13 upper — prints $0.92117 - \frac{9}{16} 10^{-6}$ — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  12a.md:14 upper — prints $<0.90304$ — no ≈ or = before a final decimal, so there is no printed value to judge
+AGREES   COMMENT  12a.md:16 upper — prints 0.8618; comment says 0.861715646305 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  12a.md:25 lower — prints 0.6268; exact = 0.6268325617284 — on the safe side of every value the exact form allows
+SHOWN    IN-CELL  13a.md:12 upper — prints 0.7853981633… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  13a.md:13 upper — prints 0.3926990816… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  13a.md:19 upper — prints 0.2617993878… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  13b.md:11 upper — prints 1.0471975512… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  13b.md:12 upper — prints 0.8660254038… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  13b.md:13 upper — prints 0.8452994616… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  13b.md:14 upper — prints $$\le 0.844137708436$$ — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  13b.md:15 upper — prints $$\le 0.844137708398$$ — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  13b.md:16 upper — prints $$\le 0.844115297128419059\dots$$ — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  13b.md:17 upper — prints $$\le 0.8440935944$$ — no ≈ or = before a final decimal, so there is no printed value to judge
+SHOWN    IN-CELL  13b.md:23 lower — prints 0.7853981634… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  15a.md:12 upper — prints 2.8074 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  15a.md:13 upper — prints 2.7952 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  15a.md:14 upper — prints 2.7799 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  15a.md:15 upper — prints 2.6054 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  15a.md:16 upper — prints 2.7802 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  15a.md:17 upper — prints 2.5218006 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  16a.md:29 upper — prints 2.15627 — the first form is not one this reader evaluates
+UNKNOWN  IN-CELL  16a.md:36 lower — prints 1.82283 — the first form is not one this reader evaluates
+AGREES   COMMENT  16a.md:37 lower — prints 2.156224; comment says = 2.1562247… — on the safe side of every value the exact form allows
+AGREES   IN-CELL  17a.md:12 upper — prints 3.9921875; exact = 3.9921875 — on the safe side of every value the exact form allows
+SHOWN    IN-CELL  17a.md:13 upper — prints 3.7992027396… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  17a.md:14 upper — prints $3.791993699438612 < 3.792$ — no ≈ or = before a final decimal, so there is no printed value to judge
+SHOWN    IN-CELL  17a.md:20 lower — prints 1.4142135623… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  18a.md:11 upper — prints 11.123… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  19a.md:52 lower — prints 0.4097321837 — the first form is not one this reader evaluates
+SHOWN    IN-CELL  1a.md:15 upper — prints 1.5707963… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+AGREES   COMMENT  1a.md:23 upper — prints 1.5027435320; comment says 1.50274353195395969900… — on the safe side of every value the exact form allows
+AGREES   COMMENT  1a.md:24 upper — prints 1.5027434868; comment says 1.50274348670958337974… — on the safe side of every value the exact form allows
+AGREES   IN-CELL  1b.md:16 upper — prints 0.5; exact = 0.5 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  1b.md:17 upper — prints 0.4444…; exact = 0.4444444444444 — past the exact value, but marked approximate and the exact value lies within its rounding
+AGREES   IN-CELL  1b.md:18 upper — prints 0.41666…; exact = 0.4166666666667 — past the exact value, but marked approximate and the exact value lies within its rounding
+AGREES   COMMENT  1b.md:27 upper — prints 0.3808585749; comment says 0.38085857485785830914… — on the safe side of every value the exact form allows
+AGREES   COMMENT  1b.md:28 upper — prints 0.3808585504; comment says 0.38085855031642856010… — on the safe side of every value the exact form allows
+AGREES   IN-CELL  1b.md:34 lower — prints 0.25; exact = 0.25 — on the safe side of every value the exact form allows
+SHOWN    IN-CELL  1b.md:35 lower — prints 0.292893 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  1b.md:36 lower — prints 0.310102 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  1b.md:37 lower — prints 0.356393 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  1c.md:20 upper — prints 0.4107675… — the first form is not one this reader evaluates
+AGREES   COMMENT  1c.md:27 lower — prints 0.4103287; comment says = 0.41032871754… — on the safe side of every value the exact form allows
+AGREES   COMMENT  1c.md:28 lower — prints 0.4103333; comment says = 0.41033335274… — on the safe side of every value the exact form allows
+CUT      COMMENT  1d.md:19 upper — prints 1.463071582607559; comment says 1.4630715826075593… — printed below the exact value, with no mark that it is rounded
+AGREES   COMMENT  1d.md:20 upper — prints 1.460217284022874; comment says 1.4602172840228739… — on the safe side of every value the exact form allows
+AGREES   COMMENT  1d.md:21 upper — prints 1.459989046905384; comment says 1.4599890469053831… — on the safe side of every value the exact form allows
+AGREES   COMMENT  1d.md:22 upper — prints 1.457854884921989; comment says 1.4578548849219886… — on the safe side of every value the exact form allows
+AGREES   COMMENT  1d.md:23 upper — prints 1.4630715826075594; comment says 1.46307158260755932746… — on the safe side of every value the exact form allows
+UNKNOWN  IN-CELL  20a.md:59 upper — prints $\sigma_n \le O(\log^{2.23\ldots} n)$ — no ≈ or = before a final decimal, so there is no printed value to judge
+AGREES   IN-CELL  20a.md:69 lower — prints 0.8; exact = 0.8 — on the safe side of every value the exact form allows
+UNKNOWN  IN-CELL  20b.md:78 upper — prints $L_{n}^{\mathrm{body}} \le C\,(\log n)^{2.223\ldots}$ — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  20b.md:79 upper — prints $L_{n}^{\mathrm{body}} \le C\,(\log n)^{2.082\ldots}$ — no ≈ or = before a final decimal, so there is no printed value to judge
+SHOWN    IN-CELL  20b.md:90 lower — prints 0.367879 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  20b.md:91 lower — prints 0.288675 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  20c.md:63 upper — prints $\psi_n \le C(\log n)^{3.2226\ldots}$ — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  20c.md:64 upper — prints $\psi_n \le C(\log n)^{3.082\ldots}$ — no ≈ or = before a final decimal, so there is no printed value to judge
+SHOWN    IN-CELL  20c.md:71 lower — prints 1.25331 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  20c.md:72 lower — prints 1.732051 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  21a.md:20 upper — prints < 0.5 — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  21a.md:36 lower — prints $-5.895 \cdot 10 ^ {-9}$ — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  21a.md:37 lower — prints $-2.7 \cdot 10 ^ {-9}$ — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  21a.md:38 lower — prints $-1.1 \cdot 10 ^{-11}$ — no ≈ or = before a final decimal, so there is no printed value to judge
+SHOWN    IN-CELL  22a.md:28 lower — prints 1.105 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  22b.md:16 upper — prints 8.28 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  22b.md:19 upper — prints 7.36 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+AGREES   IN-CELL  22b.md:27 lower — prints 0.017; exact = 0.01680672268908 — past the exact value, but marked approximate and the exact value lies within its rounding
+AGREES   IN-CELL  23b.md:45 lower — prints 0.18478; exact = 0.1847826086957 — on the safe side of every value the exact form allows
+SHOWN    IN-CELL  24a.md:39 upper — prints 7.5199 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+AGREES   COMMENT  24a.md:41 upper — prints 6.9013; comment says ≈ 6.9012574 — on the safe side of every value the exact form allows
+SHOWN    IN-CELL  25a.md:51 lower — prints 1.9379 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  25a.md:52 lower — prints 3.1416 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  2a.md:34 upper — prints 2.41421 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  32a.md:24 upper — prints 0.76 — the first form is not one this reader evaluates
+SHOWN    IN-CELL  32a.md:33 lower — prints -0.53 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  33a.md:31 upper — prints 2.82843 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  33a.md:32 upper — prints 0.41421 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+AGREES   IN-CELL  33a.md:39 lower — prints 0.22222; exact = 0.2222222222222 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  33a.md:40 lower — prints 0.25552; exact = 0.2555205047319 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  33a.md:41 lower — prints 0.25798; exact = 0.2579787234043 — past the exact value, but marked approximate and the exact value lies within its rounding
+AGREES   IN-CELL  33a.md:42 lower — prints 0.30233; exact = 0.3023255813953 — past the exact value, but marked approximate and the exact value lies within its rounding
+AGREES   IN-CELL  34a.md:24 upper — prints 1.5; exact = 1.5 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  34a.md:25 upper — prints 1.3333; exact = 1.333333333333 — past the exact value, but marked approximate and the exact value lies within its rounding
+AGREES   IN-CELL  34a.md:26 upper — prints 1.25; exact = 1.25 — on the safe side of every value the exact form allows
+SHOWN    IN-CELL  35a.md:21 lower — prints 1.271 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  36a.md:50 lower — prints 0.616850 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  37a.md:54 lower — prints 1.58496 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  37a.md:55 lower — prints 1.63093 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+AGREES   IN-CELL  3a.md:14 upper — prints 1.333…; exact = 1.333333333333 — past the exact value, but marked approximate and the exact value lies within its rounding
+SHOWN    IN-CELL  3a.md:15 upper — prints 1.312373302115… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  3a.md:22 lower — prints 1.0792… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  3a.md:35 lower — prints $1.19102809$ ($1.19519192$*) — no ≈ or = before a final decimal, so there is no printed value to judge
+AGREES   COMMENT  3a.md:36 lower — prints 1.19230254; comment says > 1.1923025406835 — on the safe side of every value the exact form allows
+AGREES   COMMENT  3a.md:37 lower — prints 1.19281555; comment says 1.19281555778… — on the safe side of every value the exact form allows
+AGREES   COMMENT  3a.md:38 lower — prints 1.19359680; comment says 1.19359680913… — on the safe side of every value the exact form allows
+AGREES   IN-CELL  3b.md:15 upper — prints 1.92857…; exact = 1.928571428571 — past the exact value, but marked approximate and the exact value lies within its rounding
+AGREES   IN-CELL  3b.md:16 upper — prints 1.92307…; exact = 1.923076923077 — past the exact value, but marked approximate and the exact value lies within its rounding
+AGREES   IN-CELL  3b.md:17 upper — prints 1.83333…; exact = 1.833333333333 — past the exact value, but marked approximate and the exact value lies within its rounding
+SHOWN    IN-CELL  3b.md:24 lower — prints 1.58496… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  3b.md:25 lower — prints 1.72598… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  3b.md:27 lower — prints $>1.77898$ — no ≈ or = before a final decimal, so there is no printed value to judge
+AGREES   COMMENT  3b.md:28 lower — prints 1.77898884; comment says 1.77898884142069354980… — on the safe side of every value the exact form allows
+AGREES   IN-CELL  3c.md:19 upper — prints 1.75; exact = 1.75 — on the safe side of every value the exact form allows
+AGREES   COMMENT  3c.md:34 lower — prints 1.6747338950414058; comment says > 1.[redacted:long-hex] — on the safe side of every value the exact form allows
+AGREES   COMMENT  3c.md:35 lower — prints 1.674894211307116; comment says 1.67489421130711622876434373706… — on the safe side of every value the exact form allows
+SHOWN    IN-CELL  3d.md:35 lower — prints 1.059793… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  3d.md:36 lower — prints 1.125944426… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  3d.md:37 lower — prints 1.1219 — the first form is not one this reader evaluates
+AGREES   IN-CELL  3e.md:20 upper — prints 1.3333…; exact = 1.333333333333 — past the exact value, but marked approximate and the exact value lies within its rounding
+SHOWN    IN-CELL  3e.md:27 lower — prints 1.2715… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  3e.md:28 lower — prints 1.21 — the first form is not one this reader evaluates
+SHOWN    IN-CELL  43a.md:15 upper — prints 0.866 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+AGREES   IN-CELL  45a.md:11 upper — prints 0.5; exact = 0.5 — on the safe side of every value the exact form allows
+UNKNOWN  IN-CELL  45a.md:12 upper — prints $<0.5$ — no ≈ or = before a final decimal, so there is no printed value to judge
+AGREES   IN-CELL  46a.md:18 upper — prints 3.86667; exact = 3.866666666667 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  46a.md:19 upper — prints 3.81818; exact = 3.818181818182 — past the exact value, but marked approximate and the exact value lies within its rounding
+AGREES   IN-CELL  46a.md:20 upper — prints 3.77778; exact = 3.777777777778 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  46a.md:21 upper — prints 3.71429; exact = 3.714285714286 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  46a.md:22 upper — prints 3.33333; exact = 3.333333333333 — past the exact value, but marked approximate and the exact value lies within its rounding
+AGREES   IN-CELL  46a.md:23 upper — prints 3.25; exact = 3.25 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  46a.md:24 upper — prints 3.23077; exact = 3.230769230769 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  46a.md:25 upper — prints 3.21429; exact = 3.214285714286 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  46a.md:26 upper — prints 3.142857; exact = 3.142857142857 — past the exact value, but marked approximate and the exact value lies within its rounding
+SHOWN    IN-CELL  47a.md:43 lower — prints 1.6211915 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  47a.md:44 lower — prints 1.5675208 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  47a.md:45 lower — prints 1.6855099933 — the first form is not one this reader evaluates
+UNKNOWN  IN-CELL  48a.md:37 upper — prints 5.33386 — the first form is not one this reader evaluates
+UNKNOWN  IN-CELL  48a.md:44 lower — prints 5.33386 — the first form is not one this reader evaluates
+SHOWN    IN-CELL  49a.md:65 upper — prints 1.8898815748 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  49a.md:72 lower — prints $>1.551$ — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  49a.md:73 lower — prints $\ge 1.554$ (unpublished) — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  49a.md:74 lower — prints $\ge 1.5617847$* — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  49a.md:75 lower — prints $\ge 1.5621220$* — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  49a.md:76 lower — prints $\ge 1.5647730$* — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  49a.md:77 lower — prints $\ge 1.5664286$* — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  49a.md:78 lower — prints $\ge 1.5666969$* — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  49a.md:79 lower — prints $\ge 1.5675517$* — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  49a.md:80 lower — prints $\ge 1.5678015$* — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  49a.md:81 lower — prints $\ge 1.5678599$* — no ≈ or = before a final decimal, so there is no printed value to judge
+SHOWN    IN-CELL  4b.md:19 lower — prints 0.733077 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  4b.md:20 lower — prints 0.733412 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  4b.md:21 lower — prints 0.752796 — the first form is not one this reader evaluates
+UNKNOWN  IN-CELL  4b.md:22 lower — prints 0.753742 — the first form is not one this reader evaluates
+AGREES   IN-CELL  4b.md:23 lower — prints 0.75806746; exact = 0.75806746 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  4b.md:24 lower — prints 0.75806770413; exact = 0.75806770413 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  4b.md:25 lower — prints 0.7580758; exact = 0.7580758318009 — on the safe side of every value the exact form allows
+SHOWN    IN-CELL  51a.md:24 upper — prints 0.6366197724 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+AGREES   IN-CELL  51a.md:30 lower — prints 0.5; exact = 0.5 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  51a.md:32 lower — prints 0.5714285714; exact = 0.5714285714286 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  56a.md:43 upper — prints 0.3; exact = 0.3 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  56a.md:44 upper — prints 0.11111; exact = 0.1111111111111 — past the exact value, but marked approximate and the exact value lies within its rounding
+AGREES   IN-CELL  56a.md:45 upper — prints 0.109375; exact = 0.109375 — on the safe side of every value the exact form allows
+UNKNOWN  IN-CELL  57a.md:32 upper — prints 0.4719 — the first form is not one this reader evaluates
+UNKNOWN  IN-CELL  57b.md:32 upper — prints 0.5433 — the first form is not one this reader evaluates
+AGREES   COMMENT  5a.md:17 upper — prints 0.9435; comment says = 0.94349… — on the safe side of every value the exact form allows
+AGREES   COMMENT  5a.md:18 upper — prints 0.94325; comment says = 0.943244449828… — on the safe side of every value the exact form allows
+AGREES   COMMENT  5a.md:19 upper — prints 0.9428095; comment says < 0.942809493 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  5b.md:12 upper — prints 0.6; exact = 0.6 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  5b.md:13 upper — prints 0.5714; exact = 0.5714285714286 — past the exact value, but marked approximate and the exact value lies within its rounding
+AGREES   IN-CELL  5b.md:20 lower — prints 0.500093; exact = 0.5000933184024 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  5b.md:21 lower — prints 0.5294; exact = 0.5294117647059 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  6a.md:11 upper — prints 0.5; exact = 0.5 — on the safe side of every value the exact form allows
+SHOWN    IN-CELL  6a.md:19 lower — prints 0.381966… — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+AGREES   COMMENT  70a.md:55 lower — prints 1.20194336; comment says 1.20194336844315056699 — on the safe side of every value the exact form allows
+UNKNOWN  IN-CELL  71a.md:71 lower — prints $>6.4547837$ — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  71a.md:72 lower — prints $>6.4901128435233943$ — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  71a.md:73 lower — prints $>6.514326913930565372$ — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  71a.md:74 lower — prints $>6.521845710923046575$ — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  75a.md:43 upper — prints $3/2 - 2.18 \cdot 10^{-34}$ — no ≈ or = before a final decimal, so there is no printed value to judge
+AGREES   IN-CELL  77a.md:36 upper — prints 3.25; exact = 3.25 — on the safe side of every value the exact form allows
+UNKNOWN  IN-CELL  7a.md:26 upper — prints $<7.101862832357$ — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  80a.md:25 upper — prints 0.833 — the first form is not one this reader evaluates
+UNKNOWN  IN-CELL  80a.md:33 lower — prints 0.833 — the first form is not one this reader evaluates
+UNKNOWN  IN-CELL  82a.md:35 lower — prints 0.2406059… — the first form is not one this reader evaluates
+SHOWN    IN-CELL  83a.md:27 upper — prints 0.38197 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  83a.md:29 upper — prints $0.30366300289873265859\!\ldots\!6424297 + 10^{-175}$ — no ≈ or = before a final decimal, so there is no printed value to judge
+UNKNOWN  IN-CELL  83a.md:36 lower — prints $0.30366300289873265859\!\ldots\!6424297 - 10^{-175}$ — no ≈ or = before a final decimal, so there is no printed value to judge
+AGREES   IN-CELL  84a.md:18 upper — prints 1.333…; exact = 1.333333333333 — past the exact value, but marked approximate and the exact value lies within its rounding
+AGREES   COMMENT  84a.md:38 lower — prints 1.04317; comment says 1.043171 — on the safe side of every value the exact form allows
+AGREES   COMMENT  84b.md:19 upper — prints 1.9993; comment says 1.999281 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  84b.md:26 lower — prints 1.25; exact = 1.25 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  84b.md:27 lower — prints 1.2727; exact = 1.272727272727 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  84b.md:28 lower — prints 1.33333; exact = 1.333333333333 — on the safe side of every value the exact form allows
+UNKNOWN  IN-CELL  84b.md:29 lower — prints 1.33338 — the first form is not one this reader evaluates
+UNKNOWN  IN-CELL  84b.md:30 lower — prints 1.33428 — the first form is not one this reader evaluates
+AGREES   IN-CELL  84b.md:31 lower — prints 1.33504; exact = 1.335047129392 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  84b.md:32 lower — prints 1.33543; exact = 1.335436382755 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  84b.md:33 lower — prints 1.335602; exact = 1.335602450647 — on the safe side of every value the exact form allows
+AGREES   COMMENT  86a.md:32 upper — prints 1.89831; comment says < 1.898304 — on the safe side of every value the exact form allows
+AGREES   COMMENT  86a.md:33 upper — prints 1.8216; comment says 1.8215998 — on the safe side of every value the exact form allows
+AGREES   COMMENT  86a.md:34 upper — prints 1.8117251; comment says = 1.81172509515… — on the safe side of every value the exact form allows
+AGREES   COMMENT  86a.md:35 upper — prints 1.8084990; comment says = 1.80849897300… — on the safe side of every value the exact form allows
+SHOWN    IN-CELL  86a.md:42 lower — prints 1.6487 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+UNKNOWN  IN-CELL  86a.md:43 lower — prints 1.73361 — the first form is not one this reader evaluates
+AGREES   COMMENT  87a.md:19 upper — prints 913.493; comment says < 913.4927 — on the safe side of every value the exact form allows
+AGREES   COMMENT  87a.md:20 upper — prints 857.567; comment says < 857.5662… — on the safe side of every value the exact form allows
+AGREES   IN-CELL  88b.md:26 upper — prints 3.821656…; exact = 3.821656050955 — past the exact value, but marked approximate and the exact value lies within its rounding
+AGREES   IN-CELL  89a.md:19 upper — prints 0.03125; exact = 0.03125 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  89a.md:20 upper — prints 0.030303; exact = 0.03030303030303 — past the exact value, but marked approximate and the exact value lies within its rounding
+UNKNOWN  IN-CELL  89a.md:23 upper — prints $4551721 \cdot 2^{-24} \cdot 3^{-2} < 0.030145$ — no ≈ or = before a final decimal, so there is no printed value to judge
+AGREES   COMMENT  89a.md:24 upper — prints 0.0301388876; comment says = 0.030138887566… — on the safe side of every value the exact form allows
+AGREES   COMMENT  89a.md:25 upper — prints 0.0301388794; comment says = 0.030138879313256… — on the safe side of every value the exact form allows
+AGREES   COMMENT  89a.md:26 upper — prints 0.0301388857; comment says = 0.0301388856953… — on the safe side of every value the exact form allows
+AGREES   IN-CELL  89a.md:32 lower — prints 0.0217; exact = 0.02173913043478 — on the safe side of every value the exact form allows
+AGREES   IN-CELL  89a.md:33 lower — prints 0.02857; exact = 0.02857142857143 — on the safe side of every value the exact form allows
+UNKNOWN  IN-CELL  89a.md:34 lower — prints $204603019/7112448000 > 0.0287$ — no ≈ or = before a final decimal, so there is no printed value to judge
+AGREES   IN-CELL  89a.md:35 lower — prints 0.0296; exact = 0.02961208172935 — on the safe side of every value the exact form allows
+UNKNOWN  IN-CELL  8a.md:25 lower — prints 0.755106 — the first form is not one this reader evaluates
+AGREES   IN-CELL  9a.md:27 upper — prints 3.5; exact = 3.5 — on the safe side of every value the exact form allows
+UNKNOWN  IN-CELL  9a.md:28 upper — prints 3.3177 — the first form is not one this reader evaluates
+SHOWN    IN-CELL  9a.md:37 lower — prints 3.2141 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  9a.md:38 lower — prints 3.2237 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  9a.md:39 lower — prints 3.2271 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  9a.md:40 lower — prints 3.2578 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+SHOWN    IN-CELL  9a.md:41 lower — prints 3.258020 — an irrational exact form printed beside a decimal marked approximate; the reader sees both, and it is not judged
+CUT      SOURCE   A-47-0075 87a.md:17 upper — prints 1058.565; source states 4\sqrt{70035} (in [1058.565066, 1058.565067]) — printed below the exact value, with no mark that it is rounded
+UNKNOWN  SOURCE   A-47-0009 17a.md:14 upper — prints $3.791993699438612 < 3.792$; source states 3.79199369943861119289059156483… (in [3.791993699439, 3.791993699439]) — the value cell is not a plain decimal
+AGREES   SOURCE   A-47-0017 1b.md:25 upper — prints 0.380871; source states 0.380870310586220 (= 0.3808703105862) — on the safe side of every value the exact form allows
+CUT      SOURCE   A-47-0019 1b.md:22 upper — prints 0.380926; source states 0.3809268534330870 (= 0.3809268534331) — printed below the exact value, with no mark that it is rounded
+UNKNOWN  SOURCE   A-47-0033 71a.md:72 lower — prints $>6.4901128435233943$; source states 6.[redacted:long-hex] (= 6.490112843523) — the value cell is not a plain decimal
+UNKNOWN  SOURCE   A-47-0045 4b.md:21 lower — prints $\approx 0.752796$; source states 0.752796455874514… (in [0.7527964558745, 0.7527964558745]) — the value cell is not a plain decimal
+UNKNOWN  SOURCE   A-47-0059 80a.md:25 upper — prints $\alpha_{\star} \approx 0.833$; source states 0.833078600 (= 0.8330786) — the value cell is not a plain decimal
+UNKNOWN  SOURCE   A-47-0069 43a.md:23 lower — prints 0.577; source states 1/\sqrt{3} — an irrational closed form with no source decimal beside it, which this census does not decide in floating point
+UNKNOWN  SOURCE   A-47-0038 13b.md:25 lower — prints 0.8271; source states ¼ · 3[tan(π/6) + Σ_{i≥0} 2^i tan(π/(18·3^i))] — the source's closed form is one this evaluator does not read
+AGREES   SOURCE   A-47-0070 4a.md:22 lower — prints 2.2180; source states 2.218021… (in [2.218021, 2.218022]) — on the safe side of every value the exact form allows
+search space: 901 bound row(s) across 120 file(s) of ledger/teorth-optimizationproblems/constants (depth-audit.mjs boundRowsOf, the --corpus definition)
+IN-CELL  (a value cell holding a decimal that is not a plain decimal; only a rational first form is decided): 199 found, 61 decided — 61 agree, 0 cut against the exact value, 73 exact form shown beside a decimal marked approximate (not judged), 65 unknown
+COMMENT  (a bare decimal whose Comments cell prints a longer decimal agreeing to its last place): 35 found, 35 decided — 34 agree, 1 cut, 0 unknown
+SOURCE   (ledger/source-exact-values.json, keyed to depth-audit entries): 10 listed, 4 decided — 2 agree, 2 cut against the source, 6 unknown; drawn from 100 value-vs-source entries, the other 90 carry no exact value on record (11 of them considered and not entered, each with its reason in the table)
+not looked at: 661 of 901 bound row(s) are in none of the three populations — UNKNOWN by construction, never counted as agreeing
+RESULT: CUT — 3 member(s) print a decimal past the exact value in the overstating direction; each is a question for upstream about display convention, through the outward gate (exit 1)

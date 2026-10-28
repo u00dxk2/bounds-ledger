@@ -1,0 +1,45 @@
+# read-output sidecar for A-90 — written by check-due-gates-dispositioned --run
+# readCommand: node scripts/open-pulls.mjs --selftest
+# ran: 2026-10-28T20:57:43.096Z · exit: 0
+# lines: 39 · sha256: ed0b7dfa3120ef6f (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+PASS  an open pull request that changes constants/31a.md appears on 31a's page
+PASS  an open pull request that changes only README.md appears on no constant's page
+PASS  a MERGED or CLOSED pull request appears on no page: the fetch that carries one is refused
+PASS  this ledger's own pull request is labelled as ours, and another's is not
+PASS  the page says the list does not say what they propose, and where the rows above come from
+PASS  Codex r1 #3: neither unsupported negative claim survives in any variant
+PASS  the date shown is the MT day of the read
+PASS  one pull request renders the singular, two the plural
+PASS  a pull request changing two constant files is stored on both, sorted
+PASS  newest first
+PASS  positive control: the titled row is stored, on 2a
+PASS  no title and no author name is stored, though the input carried both
+PASS  no block ever says 'record' or carries the title's markup, though one input title did
+PASS  a constant with no open pull request gets no block
+PASS  the built store validates (the silent half)
+PASS  REFUSES an empty listing
+PASS  REFUSES a listing of 200 rows (possibly truncated)
+PASS  r2 #3: REFUSES a row with no state, and a row whose state is unknown
+PASS  r2 #1: REFUSES a RENAMED or COPIED entry, whose source constant cannot be placed
+PASS  r2 #2: REFUSES a file entry with no path, an empty path, or no entry at all
+PASS  r3 #2: REFUSES a missing or non-string path even when changeType is legal
+PASS  r3 #1: REFUSES a repeated path that makes the list as long as changedFiles while a file is unnamed
+PASS  the silent half: DELETED and ADDED entries with a path are placed on their constants
+PASS  REFUSES a row with no valid number
+PASS  r1 #1: REFUSES a pull request whose file list is shorter than its changed-file count (gh's 100-file cap)
+PASS  r1 #1: REFUSES a pull request with no file list, never reading it as 'changes no constant'
+PASS  r1 #1: REFUSES a pull request with no changed-file count
+PASS  r1 #4: REFUSES an impossible read instant and an impossible opening instant
+PASS  r1 #4: validation REFUSES an impossible readAt or createdOn in a stored file
+PASS  validation REFUSES a count that does not reconcile
+PASS  validation REFUSES another repository
+PASS  validation REFUSES a duplicated pull request
+PASS  validation REFUSES a hostile constant id (it would reach a page)
+PASS  validation REFUSES an empty store
+PASS  the committed store validates (0 problem(s))
+PASS  positive control: the committed store touches at least one mirrored constant (36)
+PASS  the bound-cell guard holds on every page an open pull request touches (0 problem(s))
+PASS  render-constant-pages --check REFUSES an invalid store through main(), exit 1, before composing
+RESULT: PASS — listing rules, page block and the bound-cell guard (exit 0)
