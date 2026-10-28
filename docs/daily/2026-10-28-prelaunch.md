@@ -125,4 +125,6 @@ hygiene draft: ABSENT — no P3 ran, so no helper drafted one; dispositions done
 
 Pending reads: `A-47`, `A-81`, `A-84`, `A-88` on 2026-10-29; the README row's claims pass on 2026-10-29.
 
+Retro (one line): the README catch-table row is a hand step that `npm run resnap` does not prompt for and CI never checks (`check:state` runs only locally), so I pushed the drift fix without it and the queued local verify caught it about thirty minutes later; ending resnap with `render-state-block.mjs --check` would have caught it at resnap time. `sweep owed`.
+
 `USER-VISIBLE: data: c/5a.html + index.html row c-5a ×1 constant — a reader of 5a sees upstream's new listed upper bound 0.94304 with "value changed 2026-10-28" linked to upstream's history, where it showed 0.97633 [proof: e8f7e7f + 8be7f8a; Pages build for 8be7f8a "built" 20:29:56Z; npm run served "2 checked — 2 served", exit 0] [coverage: npm run reports · last good read 2026-10-28 · founder+test excluded yes] [exposure: blind — the pages carry no analytics, only report arrivals are countable · bug row A-59]`
