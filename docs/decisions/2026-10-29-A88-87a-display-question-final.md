@@ -1,6 +1,6 @@
 # A-88 — the 87a display question, final text for David (2026-10-29)
 
-Written 2026-10-29 (MT). This is the successor to `docs/decisions/2026-10-23-A88-87a-display-question-draft.md`, which holds the history and the two 10-23 review rounds. Nothing has been sent, and nothing will be without David's yes. Ledger row `A-88` (draft the display-convention question once upstream answers pull request 244). The census that raised the question is `A-76` (`scripts/decimal-vs-exact.mjs`).
+Written 2026-10-29 (MT). This is the successor to `docs/decisions/2026-10-23-A88-87a-display-question-draft.md`, which holds the history and the two 10-23 review rounds. **SENT 2026-10-29 at 15:59:10Z as teorth/optimizationproblems#289** (an upstream issue; its number does not exist in this repo), after David's yes on card d09e082b and a third, confirming review round (record at the foot). Its title and body were read back with `gh issue view 289` and are identical to the text below. The maintainer's reply is watched by ledger row `W-16`. Ledger row `A-88` (draft the display-convention question once upstream answers pull request 244). The census that raised the question is `A-76` (`scripts/decimal-vs-exact.mjs`).
 
 ## What changed since the 10-23 draft
 
@@ -102,3 +102,8 @@ Send it, if the six checks hold for you. It is one historical row, the question 
 4. SHOULD-FIX, round 1's disposition 3 was marked confirmed while uncovered clauses remained. CONFIRMED: it is closed by this round's fixes 1 and 2, not by round 1's.
 
 **No round 3.** Both rounds found the same class (an outbound sentence claiming more than the human's check covers). Following the lane's rule for a repeated class, the fix is to claim less. Every outbound factual clause now maps to a numbered check or to the AI-use parenthetical, and the two fixes above are the reviewer's own narrower wording.
+
+**David's answer, 2026-10-29 at 15:49:45Z (card d09e082b), paraphrased:** send it as written if it has been sufficiently adversarially reviewed and voice-checked; he did all six checks himself and they hold. Two steps then answered his condition:
+
+- **Voice check** on the exact outbound text (`check-david-voice.mjs`): the linter printed `voice: clean` and `RESULT: PASS — 0 blocking · 0 advisory`, exit 0. The text was first compared byte-for-byte with the block below and was identical.
+- **Codex confirmation pass, round 3, read-only, banner workdir `C:\dev\skylark\bounds-ledger`, on `3f31055c16d8320fbece99b2105db9dd13dbe206`. Verdict: SEND-READY.** All four round-2 fixes LANDED. "Unmapped clauses: none". The refutability check had no findings at any severity. Before sending, a search of upstream issues and pull requests for "87a" and "Mar1978" found only our own closed issue 150 and merged pull request 151, and 151 did not touch the 1058 row. The live row still read `$1058.565$`.
