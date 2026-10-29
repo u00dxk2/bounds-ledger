@@ -101,7 +101,7 @@ Send it, if the six checks hold for you. It is one historical row, the question 
 3. SHOULD-FIX, a later pull request needs the whole outward gate, not only a yes. CONFIRMED and reworded.
 4. SHOULD-FIX, round 1's disposition 3 was marked confirmed while uncovered clauses remained. CONFIRMED: it is closed by this round's fixes 1 and 2, not by round 1's.
 
-**No round 3.** Both rounds found the same class (an outbound sentence claiming more than the human's check covers). Following the lane's rule for a repeated class, the fix is to claim less. Every outbound factual clause now maps to a numbered check or to the AI-use parenthetical, and the two fixes above are the reviewer's own narrower wording.
+**No round 3 for the fixes; a confirmation round 3 ran on David's condition, recorded below.** Both rounds found the same class (an outbound sentence claiming more than the human's check covers). Following the lane's rule for a repeated class, the fix is to claim less. Every outbound factual clause now maps to a numbered check or to the AI-use parenthetical, and the two fixes above are the reviewer's own narrower wording.
 
 **David's answer, 2026-10-29 at 15:49:45Z (card d09e082b), paraphrased:** send it as written if it has been sufficiently adversarially reviewed and voice-checked; he did all six checks himself and they hold. Two steps then answered his condition:
 

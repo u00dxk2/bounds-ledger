@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-Today I finish a question we owe the people who maintain the bounds page we copy. One historical row there prints a number slightly below the bound its own source paper proves, and I will bring David the final wording of a question asking how they would like it shown. Nothing goes to them without his yes. A full day, so the review rounds a light day skipped run today.
+We sent the question we owed the maintainer of the bounds page we copy. One old row there prints a number slightly below the figure its own source paper proves, and the question asks how he would like it shown. David said yes after doing six checks himself, and the text went out only after a final review cleared it. Separately, 58 of our own pages now show today's count of the rows that name a source, where they showed a count from ten days ago.
 
 ### Selection packet
 
@@ -69,11 +69,13 @@ gh pr diff 243 --repo teorth/optimizationproblems
 **HYGIENE INPUTS**
 - (a) due rows not bearing on the choice (3): `A-47` (the depth audit; the 5a resnap added cited rows, so the denominator moves: `depth-audit.mjs --corpus`), `A-81` (the Ramsey arXiv watcher; its readCommand has never run), `A-84` (the store refusal, a declared deferral whose `expiresOn` is 2026-10-29; its readCommand timed out at the 180000 ms cap on its last attempt).
 - (b) owed child rows: none (read: "rows owed to you in skylark-site's ledger: NONE").
-- (c) CROSSED state reads: none (read: dated gates 4 of 4 listed, HEAD CI GREEN, queued rows 0, stale-actionable 1 of 25 not crossed, missingLinkedCommits nothing swept). Also owed today from the 10-28 close: a cross-family claims pass on the README catch-table row for `e8f7e7f`, plus the primer's two small path fixes (`W-14`'s onTrigger naming upstream's 46a path bare; `A-49`'s notes citing two skylark-site files bare).
+- (c) CROSSED state reads: none (read: dated gates 4 of 4 listed, HEAD CI GREEN, queued rows 0, stale-actionable 1 of 25 not crossed, missingLinkedCommits nothing swept). Also owed today from the 10-28 close: a cross-family claims pass on the README catch-table row for `e8f7e7f`, plus the primer's two small path fixes (`W-14` (the watch on upstream issue 218)'s onTrigger naming upstream's 46a path bare; `A-49`'s notes citing two skylark-site files bare).
 
 ## What changed
 
-- Nothing committed yet today. P1 is reads and the census only.
+- `ebc7b89`, `84c96bc`, `3f31055`, `7f01093`: the 87a question was drafted, reviewed in three Codex rounds, and sent as upstream issue 289 on David's yes. `A-88` is closed and `W-16` (the watch on issue 289) minted.
+- `edc3a29`: 58 constant pages show the depth-audit source count as 798, counted 2026-10-29 (it was 726, counted 2026-10-19).
+- `0e4f85d`: `A-88` recorded the filed card.
 
 ## Inputs (controllable)
 
@@ -94,3 +96,35 @@ gh pr diff 243 --repo teorth/optimizationproblems
 ## State Appendix
 
 Written at the close from live commands.
+
+- CI GREEN at `edc3a293` for reverify.yml and page-check.yml (`check-ci-status.mjs --sha edc3a293edeef38f681511e4a1c27f67539d2717`, each "GREEN — 1 completed non-scheduled success(es)"). Every later commit is ledger or docs only.
+- `npm run served` at `edc3a29`: "58 checked — 58 served, 0 in flight, 0 stale, 0 unreachable", exit 0.
+- Due today: `check-due-gates-dispositioned.mjs` printed "snapshot … CURRENT (taken 2026-10-29)" and "verdict: CLEAR — every gate due at Phase 0 was dispositioned", RESULT: PASS (exit 0).
+
+### Close
+
+`ACTION: COMPLETED · item A-88 · P3 a165c257`. The acceptance condition was "a board card carries the final issue text … A-88 closes only on David's answer". The card was filed (d09e082b). David answered at 15:49:45Z, paraphrased: send it as written if it has been sufficiently adversarially reviewed and voice-checked; he did all six checks himself. The send rested on that conditional yes. **The "if yes" was judged by this lane, not by David.** It was answered by the voice check on the exact text (0 blocking, 0 advisory) and by a third Codex round, a confirmation pass on `3f31055` that returned SEND-READY with no findings. The issue was created 15:59:10Z, and its title and body were read back identical to the reviewed text. A-88 is closed.
+
+The encounter read is `W-16` (the new watch on issue 289). It reads issue 289 at each close and by 2026-11-05 at the latest (expectedSignalBy). Its readCommand prints no third-party text. At the close, 289 is OPEN with 0 comments (manager review, OBSERVED).
+
+Changed since the P3 post:
+- The decision file's contradictory "No round 3" line now reads "No round 3 for the fixes; a confirmation round 3 ran on David's condition, recorded below" (the manager review's one defect).
+- README catch-table row for `e8f7e7f` and the "nineteen rows … twenty cycles" sentence: the cross-family claims pass (Codex, read-only, on `7f01093`) found every clause it could reach HOLDS. That covers five new rows, 0.97633 → 0.94304 as the last-listed upper row, three asterisked forum-thread rows, 19 table rows, and 22 manifest commits minus two equals 20 cycles. The two abstract-check clauses were UNVERIFIABLE to it with no network. Both were re-read here today: arXiv 2610.36207 (title "On the diameter and distribution of Sidon sets") has "1.88607" and "483" in its abstract, and 2607.01169 has "0.9435" and "0.98183"; each has "Sidon" as a positive control. The README stands as written.
+
+Ledger delta (all through `continuity-edit.mjs`):
+- `A-88` closed. `W-16` minted (watch on issue 289).
+- `A-47` nextCheckDate → 2026-10-31 (the count refresh shipped in `edc3a29`; a new sampling grid for the 798-row frame is owed).
+- `A-81` nextCheckDate → 2026-11-02 (needs a reading-agent batch).
+- `A-84` nextCheckDate and expiresOn → 2026-10-30. This is its third re-date. It is tomorrow's first action, and a hold rather than a fourth re-date if it is not started.
+- `W-14` (the watch on upstream issue 218): onTrigger names the mirrored 46a path. `A-49` notes prefix two skylark-site paths. Both were owed from the 10-28 close.
+
+hygiene draft: 3 lines — 0 accepted · 3 amended · 0 rejected. A-47 and A-81 were re-dated with `--set … nextCheckDate` instead of the drafted `--extend` (the lane's rule: `--extend` mints fields these rows do not use). A-84 went to 10-30 rather than 10-31, as tomorrow's first action. READ-MUTATED: none. The draft's two checks: `check-wait-justification` "RESULT: PASS — 1 of 109 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)" and `check-engineering-zero --project bounds-ledger` "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)".
+
+positive control: the same Codex reviewer returned 6 findings in round 1 (on `ebc7b89`) and 4 in round 2 (on `84c96bc`) against this text, so its round-3 empty finding list comes from a reader that does report findings.
+positive control: the same `check-engineering-zero` run reported 3 open Dependabot alerts for another lane (frolic), so its 0 for this lane is a read that can return nonzero.
+
+Pending reads: `A-84` 2026-10-30; `A-47` 2026-10-31; `A-81`, `A-2`, `A-77`, `A-78`, `A-86`, `G-4` 2026-11-02; `W-16` each close and 2026-11-05.
+
+Classification: today's catches were instrument-facing only. The day's one finding is about our own text, a stale denominator on our pages caught by our own read, so it is instrument-facing. The 87a question came from the 10-21 census, not from a new catch. The standing prediction is unchanged.
+
+USER-VISIBLE: data: c/*.html ×58 constant pages — a reader of any audited constant page sees the ledger-wide source count as 798 rows counted on 2026-10-29, where it said 726 counted on 2026-10-19 — `edc3a29` [proof: 58× 726→798 word diff; Pages serves all 58 as committed (npm run served PASS, 58 served, 0 stale) at edc3a29] [coverage: npm run reports · last good read 2026-10-29 · founder+test excluded yes] [exposure: blind — the static pages carry no analytics; only filed report arrivals are countable · bug row A-59]
