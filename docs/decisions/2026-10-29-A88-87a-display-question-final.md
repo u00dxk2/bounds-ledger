@@ -39,7 +39,7 @@ Upstream pull request 158 (merged 2026-09-05) deliberately changed that row from
 
 ## Why there is no pull-request form
 
-The manager review suggested also offering David a one-cell pull request. It is not offered. `A-88.onTrigger` asks for the question to be drafted as upstream issue text, the row's note calls it a display-convention question that is never sent as a correction, and AGENTS.md (the `decimal-vs-exact.mjs` entry) says the same of every census CUT. A pull request changes the cell, so it is a correction in substance, whatever its description says. The exact form the review suggested ($4\sqrt{70035} \approx 1058.565066$) is one of the options the issue offers. If the maintainer picks one, a pull request for that choice would be a separate outward step with its own yes from David.
+The manager review suggested also offering David a one-cell pull request. It is not offered. `A-88.onTrigger` asks for the question to be drafted as upstream issue text, the row's note calls it a display-convention question that is never sent as a correction, and AGENTS.md (the `decimal-vs-exact.mjs` entry) says the same of every census CUT. A pull request changes the cell, so it is a correction in substance, whatever its description says. The exact form the review suggested ($4\sqrt{70035} \approx 1058.565066$) is one of the options the issue offers. If the maintainer picks one, a pull request for that choice is a separate outward step: it needs its own adversarial refute-it review, its own claims pass, and David's yes on that final text.
 
 ## Our other open asks to this maintainer (read 2026-10-29)
 
@@ -57,11 +57,11 @@ So, if issue 218 is still open when this is sent, this issue would be our second
 >
 > Would you like it printed as $4\sqrt{70035} \approx 1058.565066$, as $1058.566$, or left as it is? It is a superseded row, so the README cell is unaffected. I can send a pull request for whichever you prefer.
 >
-> (The [H2016] row in `constants/1b.md` has the same shape, but #158 deliberately changed it to the abstract's digits, so I have not raised it.)
+> (The [H2016] row in `constants/1b.md` reads $0.380926$, the value set by merged pull request #158, so I am not raising it here.)
 >
 > Source: page images of the volume at the Göttingen Digitisation Centre, https://gdz.sub.uni-goettingen.de/id/PPN356556735_0044
 >
-> AI use: prepared with AI assistance (Claude drafted it and helped read the cited pages; OpenAI's Codex reviewed the text and the arithmetic). I checked the Martinet reference and its figures against the paper, and checked the other facts above against this repository.
+> AI use: prepared with AI assistance (Claude drafted it; OpenAI's Codex reviewed it and independently recomputed the arithmetic). I checked the Martinet citation, the field, the displayed formula and the < 1059 statement against the paper, and checked the 87a rows, the README's 87a value, the 1b row and pull request #158 against this repository.
 
 ## The self-check that makes "send" true
 
@@ -77,7 +77,7 @@ On upstream's live repository (github.com/teorth/optimizationproblems):
 5. the README's 87a best upper bound is 857.567, not the [Mar1978] figure;
 6. `constants/1b.md` shows the [H2016] row as `$0.380926$`, and pull request #158 is the merged change that set it.
 
-The arithmetic (4√70035 = 1058.565066…, a gap of about 6.6 × 10⁻⁵, and 1058.566 above the exact value) was recomputed independently by the Codex review; David can take it from there or recompute it. If he would rather not do the six checks, nothing is sent.
+Who drafted and who reviewed (the AI-use parenthetical) is stated on this card, so it rests on this record rather than on a check of his. The arithmetic (4√70035 = 1058.565066…, a gap of about 6.6 × 10⁻⁵, and 1058.566 above the exact value) was recomputed independently by the Codex review; David can take it from there or recompute it. If he would rather not do the six checks, nothing is sent.
 
 ## Recommendation for David
 
@@ -93,3 +93,12 @@ Send it, if the six checks hold for you. It is one historical row, the question 
 4. BLOCKER, the 1d history, the open-pull-request diffs and issue 218's state were unverified. PARTLY REFUTED: this session ran each of those reads on 2026-10-29 and they succeeded (outputs in the 1d section and the open-asks section). It stands as a limit of the review, not of the facts. None of the 1d reads is in the outbound text any more.
 5. SHOULD-FIX, `A-91` called "drafted". CONFIRMED and reworded: a held watch, nothing drafted or sent. The "third item" count is conditioned.
 6. NIT, "22 days". CONFIRMED: now "no activity since 7 October".
+
+**Codex claims pass, round 2, 2026-10-29, read-only, banner workdir `C:\dev\skylark\bounds-ledger`, on commit `84c96bc1940bb991d55f5bf80bcd6b4ca787c371` (no network calls this round, by the prompt). Verdict: NEEDS CHANGES.** It mapped all 28 factual clauses in the issue text to a checklist item or the arithmetic note: 17 covered and holding in the mirror, and the rest on the 1b parenthetical and the attestation. Dispositions:
+
+1. BLOCKER, the 1b parenthetical asserted "same shape", "the abstract's digits" and "have not raised", none of which item 6 covers. CONFIRMED: replaced with the reviewer's narrower sentence (the row reads 0.380926, the value merged #158 set, so not raised here).
+2. BLOCKER, the attestation ("its figures", "the other facts above") reached past the six checks. CONFIRMED: it now lists exactly what items 1 to 6 cover, and the computed decimals are attributed to Codex in the AI-use parenthetical. The parenthetical's who-drafted, who-reviewed facts are DELIBERATE: they are disclosures stated on the card, not facts David verifies.
+3. SHOULD-FIX, a later pull request needs the whole outward gate, not only a yes. CONFIRMED and reworded.
+4. SHOULD-FIX, round 1's disposition 3 was marked confirmed while uncovered clauses remained. CONFIRMED: it is closed by this round's fixes 1 and 2, not by round 1's.
+
+**No round 3.** Both rounds found the same class (an outbound sentence claiming more than the human's check covers). Following the lane's rule for a repeated class, the fix is to claim less. Every outbound factual clause now maps to a numbered check or to the AI-use parenthetical, and the two fixes above are the reviewer's own narrower wording.
