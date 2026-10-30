@@ -1,6 +1,14 @@
 {
   "purpose": "Newer constructions this ledger has checked itself that the mirrored source table does not list (A-82). Rendered as a note BESIDE a constant's table on its c/ page, never inside a bound cell; the mirrored rows stay byte-identical. Each entry is one construction we evaluated against the constant's own mirrored definition, with scripts/step-overlap.mjs (node scripts/step-overlap.mjs --store re-derives every 1b entry from its pinned file). Added only after a cross-family claims pass and an adversarial review, on David's 2026-10-16 decision (card 73149a3b) and, for the pull-request entry, his answer to card 99b614ec the same evening (2026-10-16 MT); his words are paraphrased in this repo, on A-82.",
-  "checkedThrough": "2026-10-16",
-  "watchScope": "arXiv papers submitted since the mirror's fetch date (2026-09-26) whose abstracts name AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve (open pull requests on the source table's repository are listed separately, with the date we read them, on each constant's page that one changes; a read of that list is used only when every pull request in it is open, names exactly as many files as it reports changed, names each file once, and names each as added, modified or deleted with a path, and any other read is refused whole)",
+  "checkedThrough": "2026-10-30",
+  "windowFrom": "2026-10-28",
+  "tools": [
+    "AlphaEvolve",
+    "ThetaEvolve",
+    "TTT-Discover",
+    "OpenEvolve"
+  ],
+  "papersFound": 0,
+  "watchScope": "arXiv papers submitted since the mirror's fetch date (2026-10-28) whose abstracts name AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve (open pull requests on the source table's repository are listed separately, with the date we read them, on each constant's page that one changes; a read of that list is used only when every pull request in it is open, names exactly as many files as it reports changed, names each file once, and names each as added, modified or deleted with a path, and any other read is refused whole)",
   "entries": []
 }
