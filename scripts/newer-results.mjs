@@ -305,6 +305,9 @@ export async function selftest() {
     // refusal back below it goes red here rather than only slowing this selftest. Judged by BEHAVIOUR (Codex
     // r1 refuted a source-order check): main() runs in process with a buildRows that records whether it was
     // called, against a bad newer-results store, then a bad open-pull-requests store beside the real one.
+    // What it does NOT see (Codex r2, kept as a stated limit rather than a third guard): a direct call to the
+    // imported buildRows added somewhere above the refusals. It proves main() refuses before calling its
+    // row builder, nothing wider.
     const { main: renderMain } = await import("./render-constant-pages.mjs");
     const refusedBeforeRows = (envKey, file, phrase) => {
       writeFileSync(join(dir, "seam.json"), file);
@@ -322,8 +325,8 @@ export async function selftest() {
       process.exitCode = saved.exitCode;
       return refused && !called;
     };
-    check("A-84: a bad newer-results store is refused through main() and buildRows is never called", refusedBeforeRows("CC_NEWER_RESULTS_STORE", "null", "the newer-results store is invalid"));
-    check("A-84: a bad open-pull-requests store is refused through main() and buildRows is never called", refusedBeforeRows("CC_OPEN_PULLS_STORE", "null", "the open-pull-requests store is invalid"));
+    check("A-84: a bad newer-results store is refused through main() before it calls its row builder (buildRowsFn)", refusedBeforeRows("CC_NEWER_RESULTS_STORE", "null", "the newer-results store is invalid"));
+    check("A-84: a bad open-pull-requests store is refused through main() before it calls its row builder (buildRowsFn)", refusedBeforeRows("CC_OPEN_PULLS_STORE", "null", "the open-pull-requests store is invalid"));
     // r7: a store file that EXISTS but parses to a falsy value, or does not parse, is refused too.
     const refusedFor = (content) => {
       writeFileSync(join(dir, "odd.json"), content);
