@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-Today we tell readers how recently we looked for newer papers. Each constant page can say that we searched for newer papers on that constant up to a stated date. The search itself is two weeks old, so we run it again first. The line goes live only after review and David's yes. We also fix a slow check that has been put off three times.
+Every constant page now tells readers when we last searched for newer papers, and how narrow that search was. We ran the search again today (it found none), had the wording checked three times, and turned it on after David said yes. We also fixed a slow check that had been put off three times.
 
 ### Selection packet
 
@@ -39,7 +39,7 @@ Today we tell readers how recently we looked for newer papers. Each constant pag
 - Deploy drift: `check-deployed-sha-drift.mjs` "RESULT: PASS — 0 finding(s) across 37 service(s)", none of them this lane's. This is a GitHub Pages lane with no Render service, so the read sweeps nothing here. That is neither a stop nor a pass.
 - Harness: running 2.1.314 · fleet UNIFORM (28 of 28 panes) · installed 2.1.314 (SAME).
 - Recs yesterday: none (the 10-29 report's Recommendation section reads "None for David yet").
-- Prior-day retro: 9 still-on-discipline findings and 1 carried (`W-16`, the watch on upstream issue 289, to 11-05). None bears on this choice. The one that recurs in shape is the 10-29 refusals: a sentence that pairs a check with "clean" gets refused by the verify-receipt gate. This packet names tools with their literal output instead.
+- Prior-day retro: 9 still-on-discipline findings and 1 carried, `W-16` (the watch on upstream issue 289) to 11-05. None bears on this choice. The one that recurs in shape is the 10-29 refusals: a sentence that pairs a check with "clean" gets refused by the verify-receipt gate. This packet names tools with their literal output instead.
 
 **Evidence** (each read today, 2026-10-30 MT):
 - OBSERVED · `check-cycle-rotation.mjs --lane bounds-ledger` · "evangelism-pass DUE — P3 IS the pass (run /evangelism-pass); fleet cycle 40d since 2026-09-20 (lastRun 2026-09-20; cadence 7d)", exit 3. It disagrees with `docs/evangelism-bar.md`, which records a pass on 2026-10-04 (`A-70`). That is a finding about the rotation instrument: it does not see the 10-04 pass. The pass is still due either way, 26 days after 10-04 at a 7-day cadence.
@@ -105,3 +105,29 @@ node C:/dev/skylark/bounds-ledger/scripts/arxiv-watch.mjs --area constants --fet
 ## State Appendix
 
 Written at the close from live commands.
+
+- CI on `92bcf345` (the switch-on): reverify, page-check and pages-build-deployment are each "completed success" (`gh run list --commit 92bcf345c34f1918708699ebbad1f9ecccd0f7c0`). The P3 post at 18:01Z called reverify pending, and that run has since finished green.
+- `npm run served` at `92bcf34`: "120 checked — 120 served, 0 in flight, 0 stale, 0 unreachable" (exit 0). A live fetch of `c/87a.html` returned HTTP 200, Last-Modified 17:55:26 GMT, with the "Newer papers" line once.
+- Due today: `check-due-gates-dispositioned.mjs` printed "snapshot … CURRENT (taken 2026-10-30)" and "verdict: CLEAR — every gate due at Phase 0 was dispositioned", RESULT: PASS (exit 0).
+
+### Close
+
+`ACTION: COMPLETED · item A-86 · P3 8276804f`. The acceptance in force was the P1 manager review's APPROVE, which asked for the search scope in the line and not only a date. It was met. The line on all 120 constant pages gives the window, the four tool names, the count and the exclusion. It renders from the store's fields, and Pages serves it, per the two reads above. The manager review found no defects.
+
+Ledger delta (all through `continuity-edit.mjs`):
+- `A-84` closed, with the closeWhen outputs on `evidence2026_10_30` (`a6f8075`).
+- `A-86` closed. The line went live on David's yes (card `903a38ba`), and the store's ownership moved to `W-17` (the newer-papers watch) in `d7bd11d`.
+- `W-17` minted: the standing watch on the newer-papers line and its store (re-run weekly and after any resnap; nextCheckDate 2026-11-06).
+- `W-17.gapScopeLimit2026_10_30`: the unsearched window, 2026-10-17 to 2026-10-27, is recorded as a DELIBERATE scope limit, as the manager review asked. A backfill needs a start-date flag on the reviewed watcher, which is an instrument change with its own review. The line states its exact window and never claims the gap. Revisit by 2026-11-06: build the backfill through review, or keep the limit and say why.
+
+hygiene draft: 0 lines — 0 accepted · 0 amended · 0 rejected. READ-MUTATED: none (0 reads guarded). The draft's two checks: `check-wait-justification` "RESULT: PASS — 1 of 110 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)" and `check-engineering-zero --project bounds-ledger` "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable" (exit 0). Positive control: the same engineering-zero run reported 8 findings across other lanes, so its 0 for this lane comes from a read that can return nonzero.
+
+Receipt: unchanged from P3 `8276804f`, which stays true. Exposure is blind, and the outcome is open.
+
+Pending reads:
+- `A-47` (the depth audit) 2026-10-31.
+- `A-2` (the drift-resolution log), `A-77` (the filed-report check), `A-78` (the OpenAI math release map), `A-81` (the Ramsey newer-result watcher) and `G-4` (an outside party acting on a record) 2026-11-02.
+- `W-16` (the watch on upstream issue 289) at each close and by 2026-11-05.
+- `W-17` (the newer-papers watch) 2026-11-06.
+
+Classification: today's findings were instrument-facing only. Both are about our own machinery: the watch window opening at the mirror's fetch date, and `A-84`'s stale timing premise. There was no drift and no record-facing catch. The standing prediction is unchanged.
