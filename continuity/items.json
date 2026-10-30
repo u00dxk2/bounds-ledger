@@ -3194,14 +3194,14 @@
       "id": "A-86",
       "title": "Newer results the ledger checks itself: owner of ledger/newer-results.json and its evaluator after A-82, and the reader-facing newer-results-checked-through line (outward, gated)",
       "type": "action",
-      "status": "open",
+      "status": "closed",
       "owner": "bounds-ledger",
       "links": "A-82, A-81",
       "nextCheckDate": "2026-11-02",
       "readCommand": "node scripts/newer-results.mjs --selftest (the store has held no entries since 2026-10-18, when upstream merged the 1b construction it noted; `node scripts/step-overlap.mjs --store` refuses with 'the store holds no 1b entry', exit 2, which is its honest answer)",
       "onTrigger": "On 2026-10-26: (1) decide whether the next constants-area watch runs (A-82's readCommand holds the recipe: one pinned --out folder for --fetch, the reading, and --check); (2) draft the reader-facing 'newer results checked through <date>' line. It renders on public pages, so before it renders: a cross-family claims pass, an adversarial review, and David's yes on a board card.",
       "closeWhen": "Either the 'checked through' line is live after its review and David's yes, with this row's owner duties moved to a standing watch row, or David declines it and the store's ownership is written onto a standing row with its readCommand.",
-      "notes": "Minted 2026-10-19 MT at the round-3 close, when A-82 closed (its closeWhen met: all 3 candidates carry a verdict with its evidence path in tmp/, counts on the row). A-82 carried two things its closeWhen did not cover: ownership of the newer-results store and its evaluator (scripts/newer-results.mjs, scripts/step-overlap.mjs, the reverify.yml selftest steps, all of which name A-82 as their origin), and the still-owed newer-results-checked-through line, which A-82's notes kept as outward work behind review and David's gate. Both move here so they are not lost with the close.",
+      "notes": "Minted 2026-10-19 MT at the round-3 close, when A-82 closed (its closeWhen met: all 3 candidates carry a verdict with its evidence path in tmp/, counts on the row). A-82 carried two things its closeWhen did not cover: ownership of the newer-results store and its evaluator (scripts/newer-results.mjs, scripts/step-overlap.mjs, the reverify.yml selftest steps, all of which name A-82 as their origin), and the still-owed newer-results-checked-through line, which A-82's notes kept as outward work behind review and David's gate. Both move here so they are not lost with the close. | CLOSED 2026-10-30 MT: the newer-papers line is live after review and David's yes (card 903a38ba, 17:16Z). Commit 92bcf34 wrote windowFrom/tools/papersFound and checkedThrough 2026-10-30 and re-rendered the c/ pages; the Pages build finished 17:55:27Z after ~14 min queued; npm run served '120 checked — 120 served, 0 in flight, 0 stale, 0 unreachable' (not David's words), exit 0. Owner duties for ledger/newer-results.json and its evaluator moved to W-17 per closeWhen.",
       "created": "2026-10-20",
       "updated": "2026-10-30",
       "readCommandLastTimeout": {
@@ -3215,8 +3215,9 @@
         "reason": "over-cap 180081ms vs 180000ms — the child was KILLED at the cap after 180081ms with 3384 byte(s) of partial output. A partial capture is an UNFINISHED read, not a short one. Raise readCommandTimeoutMs (cap 600000ms), split the command, or make it cheaper."
       },
       "readCommandTimeoutMs": "600000",
-      "lastEvaluated": "2026-10-27",
-      "progress2026_10_30": "2026-10-30 MT: leg (1) decided and run: the constants watch ran (window 2026-10-28 to 2026-10-30, \"RESULT: COMPLETE — no candidate (exit 0)\", 0 papers; output in tmp/, not committed). Leg (2): the line is built DARK (6600c0a, 3ef254b, fc1f071, a48d693, pushed): it renders only when ledger/newer-results.json carries windowFrom, tools and papersFound. Codex cross-family claims pass + adversarial review: r1 7 findings, r2 4, r3 \"SEND-READY\"; fates in docs/decisions/2026-10-30-A86-newer-papers-line.md. Card 903a38ba filed for David (needs-decision msg 0289b903), carrying the exact text. On his yes: write the three fields plus checkedThrough 2026-10-30, re-render the c/ pages, push, then npm run served. On a no: record it here, and the store's ownership moves to a standing row per closeWhen."
+      "lastEvaluated": "2026-10-30",
+      "progress2026_10_30": "2026-10-30 MT: leg (1) decided and run: the constants watch ran (window 2026-10-28 to 2026-10-30, \"RESULT: COMPLETE — no candidate (exit 0)\", 0 papers; output in tmp/, not committed). Leg (2): the line is built DARK (6600c0a, 3ef254b, fc1f071, a48d693, pushed): it renders only when ledger/newer-results.json carries windowFrom, tools and papersFound. Codex cross-family claims pass + adversarial review: r1 7 findings, r2 4, r3 \"SEND-READY\"; fates in docs/decisions/2026-10-30-A86-newer-papers-line.md. Card 903a38ba filed for David (needs-decision msg 0289b903), carrying the exact text. On his yes: write the three fields plus checkedThrough 2026-10-30, re-render the c/ pages, push, then npm run served. On a no: record it here, and the store's ownership moves to a standing row per closeWhen.",
+      "closedAt": "2026-10-30"
     },
     {
       "id": "A-87",
@@ -3357,6 +3358,25 @@
       "notes": "Minted 2026-10-29 MT at A-88's close. David answered card d09e082b (paraphrased: send it if it has been sufficiently reviewed and voice-checked; he did all six self-checks). Three Codex read-only rounds (NEEDS CHANGES, NEEDS CHANGES, SEND-READY) and a clean voice check came first. The issue was created 2026-10-29T15:59:10Z, and its title and body were verified identical to the reviewed text (docs/decisions/2026-10-29-A88-87a-display-question-final.md). Our other open item with this maintainer is issue 218 (W-14).",
       "created": "2026-10-29",
       "updated": "2026-10-29"
+    },
+    {
+      "id": "W-17",
+      "type": "watch",
+      "status": "open",
+      "owner": "bounds-ledger",
+      "title": "STANDING: the newer-papers line on every constant page states a dated search; keep it honest — re-run the constants watch and update ledger/newer-results.json, and own that store and its evaluator",
+      "nextCheckDate": "2026-11-06",
+      "links": [
+        "A-86",
+        "A-82",
+        "A-81"
+      ],
+      "readCommand": "node scripts/newer-results.mjs --selftest",
+      "onTrigger": "Weekly, and after any resnap that moves the mirror's fetch date: run node scripts/arxiv-watch.mjs --fetch --area constants, have each fetched paper read to docs/arxiv-watch-constants-reader-brief.md, then --check. Only on RESULT: COMPLETE, write checkedThrough (the window end), windowFrom (the window start) and papersFound (the fetched count) into ledger/newer-results.json, re-render with node scripts/render-constant-pages.mjs, commit, push, and read npm run served. A candidate is verified by reading the paper and enters the store only after a cross-family claims pass and an adversarial review (A-82's rule). Never commit the run's output. A change to the line's WORDING goes back through review and David's yes.",
+      "closeWhen": "David decides the line comes off the pages, or the watch is replaced by one that covers a wider search; either is recorded here with its date.",
+      "notes": "Minted 2026-10-30 MT at A-86's close. David answered card 903a38ba on 2026-10-30 (paraphrased: yes, turn it on as written), and the line went live in 92bcf34 on all 120 constant pages. Its first search covered papers submitted 2026-10-28 to 2026-10-30 and found none. The window opens at the mirror's fetch date, so a resnap starts a new window, and the line states the dates it covered rather than claiming continuous coverage (2026-10-17 to 2026-10-27 was never searched). Owner duties moved here from A-86: ledger/newer-results.json, scripts/newer-results.mjs, scripts/step-overlap.mjs and the reverify.yml selftest steps that name A-82. The line is refused, and render-constant-pages refuses the store, if the watcher's query stops being a plain OR of abs: terms or its terms change; that is the reconcile signal, not a bug.",
+      "created": "2026-10-30",
+      "updated": "2026-10-30"
     }
   ],
   "meta": {
