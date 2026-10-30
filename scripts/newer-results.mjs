@@ -95,6 +95,7 @@ export function validateStore(store, { shown = constantsShown(), constantExists 
   if (!store || typeof store !== "object") return ["the store is not an object"];
   if (!ISO.test(String(store.checkedThrough || ""))) errs.push("checkedThrough must be a YYYY-MM-DD date");
   if (typeof store.watchScope !== "string" || !store.watchScope.trim()) errs.push("watchScope must say what the watch searched");
+  errs.push(...searchFieldErrors(store));
   const entries = Array.isArray(store.entries) ? store.entries : null;
   if (!entries) return [...errs, "entries must be an array"];
   for (const [i, e] of entries.entries()) {
@@ -139,6 +140,34 @@ export function validateStore(store, { shown = constantsShown(), constantExists 
     }
   }
   return errs;
+}
+
+// A-86: the reader-facing newer-papers line. Three store fields carry the search it describes: windowFrom
+// (the first submission date searched), tools (the names an abstract had to carry) and papersFound (what
+// the search returned), beside checkedThrough (the last date searched, which is also the day it ran). All
+// three or none: a partial set is refused, and none renders nothing, so the code ships with the line dark
+// and only a reviewed data write turns it on (David's gate). Its wording states the window from and through,
+// never "checked through": the 2026-10-16 claims pass found that phrase over-reads as complete coverage.
+const SEARCH_FIELDS = ["windowFrom", "tools", "papersFound"];
+function searchFieldErrors(store) {
+  const present = SEARCH_FIELDS.filter((f) => f in store);
+  if (!present.length) return [];
+  if (present.length < SEARCH_FIELDS.length) return [`the newer-papers fields come together: ${SEARCH_FIELDS.filter((f) => !(f in store)).join(", ")} missing beside ${present.join(", ")}`];
+  const errs = [];
+  if (!ISO.test(String(store.windowFrom))) errs.push("windowFrom must be a YYYY-MM-DD date");
+  else if (ISO.test(String(store.checkedThrough || "")) && store.windowFrom > store.checkedThrough) errs.push("windowFrom must not be after checkedThrough");
+  if (!Array.isArray(store.tools) || !store.tools.length || !store.tools.every((t) => typeof t === "string" && t.trim() && !FORBIDDEN.test(t))) errs.push("tools must be a non-empty list of names");
+  if (!Number.isInteger(store.papersFound) || store.papersFound < 0) errs.push("papersFound must be a whole number, zero or more");
+  return errs;
+}
+const orList = (xs) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} or ${xs[xs.length - 1]}`);
+
+/** The newer-papers line: a <dt>/<dd> pair for a constant page's <dl>. Empty when the store does not carry the search. */
+export function searchLine(store) {
+  if (!store || typeof store !== "object" || !SEARCH_FIELDS.every((f) => f in store) || searchFieldErrors(store).length || !ISO.test(String(store.checkedThrough || ""))) return "";
+  const n = store.papersFound;
+  const found = n === 0 ? "The search found no papers." : `The search found ${n} paper${n === 1 ? "" : "s"}.`;
+  return `<dt>Newer papers</dt><dd>On ${esc(store.checkedThrough)} we searched arXiv for papers submitted from ${esc(store.windowFrom)} to ${esc(store.checkedThrough)} whose abstracts name ${esc(orList(store.tools))}. ${found} Papers that name none of these tools, and results posted anywhere but arXiv, were not searched.</dd>`;
 }
 
 /** The entries for one constant. */
@@ -198,7 +227,11 @@ export async function boundCellGuard(store = loadStore()) {
     const b = pages.renderPage(r, manifest.sha, undefined, null);
     const block = newerBlock(newerFor(id, store));
     if (!block || !a.includes(block)) { errs.push(`${id}: the page does not carry its newer-construction block`); continue; }
-    if (a.replace(block, "") !== b) errs.push(`${id}: the page differs from its no-note render by more than the block`);
+    // A-86: a store carrying the search also puts the newer-papers line on the page; it is removed the same
+    // exact way, and must be there when the store carries it.
+    const line = searchLine(store);
+    if (line && !a.includes(line)) { errs.push(`${id}: the store carries the search but the page does not carry the newer-papers line`); continue; }
+    if (a.replace(block, "").replace(line, "") !== b) errs.push(`${id}: the page differs from its no-note render by more than the block${line ? " and the newer-papers line" : ""}`);
     if (FORBIDDEN.test(block)) errs.push(`${id}: the rendered block uses the word "record"`);
   }
   return errs;
@@ -232,6 +265,22 @@ export async function selftest() {
   const pr = { id: "t1", side: "upper", kind: "openPullRequest", value: "0.3808585503165", exactMaximum: "0.38085855031642856010", rounding: "rounded up", construction: "a finer step function", sourceUrl: "https://github.com/teorth/optimizationproblems/pull/225", pullRequestStateOn: "2026-10-17", fileSha256: "c".repeat(64), fetchUrl: `https://raw.githubusercontent.com/x/records/${"d".repeat(40)}/g.json`, sourcePostedBy: "2026-10-13", evaluatedOn: "2026-10-17", method: "We evaluated it too." };
   const v = (patch, extra = {}) => validateStore({ ...good, ...extra, entries: [{ ...good.entries[0], ...patch }] }, { shown, constantExists: exists });
   check("a valid entry passes (the silent half)", validateStore(good, { shown, constantExists: exists }).length === 0);
+  // A-86: the newer-papers line. Meaning first (scope words, window, date), the exact-string pin last, so a
+  // mutation names the property it broke instead of only "the string differs".
+  const searched = { ...good, checkedThrough: "2026-10-30", windowFrom: "2026-10-28", tools: ["AlphaEvolve", "ThetaEvolve", "TTT-Discover", "OpenEvolve"], papersFound: 0 };
+  const sl = searchLine(searched);
+  check("A-86: the newer-papers line names every tool the search required, so the scope sits beside the date", searched.tools.every((t) => sl.includes(t)));
+  check("A-86: the line says what was NOT searched", sl.includes("Papers that name none of these tools, and results posted anywhere but arXiv, were not searched."));
+  check("A-86: the line states the window from AND through, and the day it ran", sl.includes("submitted from 2026-10-28 to 2026-10-30") && sl.startsWith("<dt>Newer papers</dt><dd>On 2026-10-30 "));
+  check("A-86: the line never says 'checked through' or 'record'", !/checked through/i.test(sl) && !FORBIDDEN.test(sl));
+  check("A-86: a found count reads as a count, singular and plural", searchLine({ ...searched, papersFound: 1 }).includes("The search found 1 paper.") && searchLine({ ...searched, papersFound: 3 }).includes("The search found 3 papers."));
+  check("A-86: a store WITHOUT the search fields validates and renders no line (the dark state)", validateStore(good, { shown, constantExists: exists }).length === 0 && searchLine(good) === "");
+  const searchRefused = (patch, drop) => { const s = { ...searched, ...patch }; if (drop) delete s[drop]; return validateStore(s, { shown, constantExists: exists }).length > 0 && searchLine(s) === ""; };
+  check("A-86: a partial set (tools missing) is refused and renders nothing", searchRefused({}, "tools"));
+  check("A-86: a partial set (windowFrom missing) is refused and renders nothing", searchRefused({}, "windowFrom"));
+  check("A-86: empty tools, a tool carrying the word 'record', a window after its own end, and a non-integer count are each refused", searchRefused({ tools: [] }) && searchRefused({ tools: ["Record finder"] }) && searchRefused({ windowFrom: "2026-10-31" }) && searchRefused({ papersFound: 1.5 }) && searchRefused({ papersFound: -1 }));
+  check("A-86: a hostile tool name is escaped", searchLine({ ...searched, tools: ["<b>x</b>"] }).includes("&lt;b&gt;x&lt;/b&gt;"));
+  check("A-86: the exact line (pinned last)", sl === "<dt>Newer papers</dt><dd>On 2026-10-30 we searched arXiv for papers submitted from 2026-10-28 to 2026-10-30 whose abstracts name AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve. The search found no papers. Papers that name none of these tools, and results posted anywhere but arXiv, were not searched.</dd>");
   check("REFUSES an upper bound printed BELOW its exact value (rounded the wrong way)", v({ value: "0.3808590566148" }).some((e) => e.includes("wrong side")));
   // 0.3808591 IS a valid rounding up at the 7th place (gap 4.3e-8 < 1e-7); 0.3808592 is not (gap 1.4e-7).
   check("ACCEPTS a coarser rounding up (0.3808591), REFUSES one more than a unit away (0.3808592)", !v({ value: "0.3808591" }).some((e) => e.includes("not a rounding")) && v({ value: "0.3808592" }).some((e) => e.includes("not a rounding")));
@@ -292,6 +341,11 @@ export async function selftest() {
   if (store && !store.entries.length) check("an empty committed store renders no block on any constant", (await import("./render-site.mjs")).buildRows(JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8")), { withDates: false, root: ROOT }).every((r) => newerBlock(newerFor(r.id, store)) === ""));
   const guard = await boundCellGuard(guardStore);
   check(`the bound-cell guard holds on every noted page${guardStore === store ? "" : " (on the retired-entry fixture, the committed store being empty)"} (${guard.length} problem(s)${guard.length ? ": " + guard.join("; ") : ""})`, guard.length === 0);
+  // A-86 WIRING: the same guard on a store that also carries the search fields. It requires renderPage to
+  // put the newer-papers line on the page, and nothing else to change because of it.
+  const searchFixture = { ...guardStore, checkedThrough: "2026-10-30", windowFrom: "2026-10-28", tools: ["AlphaEvolve", "OpenEvolve"], papersFound: 2 };
+  const wired = await boundCellGuard(searchFixture);
+  check(`A-86: renderPage carries the newer-papers line, and the page differs from its no-store render by exactly the block and the line (${wired.length} problem(s)${wired.length ? ": " + wired.join("; ") : ""})`, wired.length === 0);
   // r6 #1, through main() itself: render-constant-pages --check must REFUSE an invalid store before it
   // composes or writes anything. The bad store (an upper bound printed below its exact value) lives in a
   // temp folder and is removed after; the hook env var is the only way it is reached.

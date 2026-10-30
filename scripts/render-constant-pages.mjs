@@ -26,7 +26,7 @@ import { boundCell } from "./lookup.mjs";
 import crypto from "node:crypto";
 import { REPO, esc, copyCiteScript } from "./lib/html.mjs";
 import { noteBlock } from "./openai-math.mjs";
-import { newerBlock, newerFor, loadStore as loadNewerStore, validateStore as validateNewerStore, STORE as NEWER_STORE } from "./newer-results.mjs";
+import { newerBlock, newerFor, searchLine, loadStore as loadNewerStore, validateStore as validateNewerStore, STORE as NEWER_STORE } from "./newer-results.mjs";
 import { pullsBlock, loadStore as loadPullsStore, validateStore as validatePullsStore, STORE as PULLS_STORE } from "./open-pulls.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -974,7 +974,7 @@ ${r.report ? `<a class="ours" href="${esc(r.report.url)}">${esc(reportLabel(r.re
 <dl>
 ${side("Upper", r.upper, r.upperChanged, r.upperKind, historyUrl(r.url, sha))}
 ${side("Lower", r.lower, r.lowerChanged, r.lowerKind, historyUrl(r.url, sha))}
-${auditBlock(r.id, audits, [r.upper, r.lower])}${noteBlock(r.oai)}${newerBlock(newerFor(r.id, newer))}${pullsBlock(r.id, pulls)}
+${auditBlock(r.id, audits, [r.upper, r.lower])}${noteBlock(r.oai)}${newerBlock(newerFor(r.id, newer))}${searchLine(newer)}${pullsBlock(r.id, pulls)}
 </dl>
 <div class="actions">
 <a href="${esc(upstream)}">the mirrored file</a> &middot;
