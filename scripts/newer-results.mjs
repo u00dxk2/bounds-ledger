@@ -301,11 +301,29 @@ export async function selftest() {
     writeFileSync(join(dir, "bad.json"), JSON.stringify(bad));
     const child = spawnSync(process.execPath, [join(ROOT, "scripts", "render-constant-pages.mjs"), "--check"], { encoding: "utf8", env: { ...process.env, CC_NEWER_RESULTS_STORE: join(dir, "bad.json") } });
     check("r6 #1: render-constant-pages --check REFUSES an invalid store through main(), exit 1, before composing", child.status === 1 && child.stdout.includes("the newer-results store is invalid, so nothing was composed or written"));
-    // A-84: both store refusals must run BEFORE buildRows (about 115 `git log -S` calls), read from main()'s
-    // own text, so moving either refusal back below it goes red here rather than only slowing this selftest.
-    const mainText = (await import("./render-constant-pages.mjs")).main.toString();
-    const rowsAt = mainText.indexOf("buildRows(claims)");
-    check("A-84: main() validates the newer-results AND open-pull-requests stores before it calls buildRows", rowsAt > 0 && ["validateNewerStore(", "validatePullsStore("].every((s) => { const i = mainText.indexOf(s); return i > 0 && i < rowsAt; }));
+    // A-84: both store refusals must run BEFORE buildRows (about 115 `git log -S` calls), so moving either
+    // refusal back below it goes red here rather than only slowing this selftest. Judged by BEHAVIOUR (Codex
+    // r1 refuted a source-order check): main() runs in process with a buildRows that records whether it was
+    // called, against a bad newer-results store, then a bad open-pull-requests store beside the real one.
+    const { main: renderMain } = await import("./render-constant-pages.mjs");
+    const refusedBeforeRows = (envKey, file, phrase) => {
+      writeFileSync(join(dir, "seam.json"), file);
+      let called = false;
+      const out = [];
+      const saved = { log: console.log, exitCode: process.exitCode, env: process.env[envKey] };
+      console.log = (...a) => out.push(a.join(" "));
+      process.env[envKey] = join(dir, "seam.json");
+      try { renderMain({ check: true, buildRowsFn: () => { called = true; return []; } }); }
+      finally {
+        console.log = saved.log;
+        if (saved.env === undefined) delete process.env[envKey]; else process.env[envKey] = saved.env;
+      }
+      const refused = process.exitCode === 1 && out.some((l) => l.includes(phrase));
+      process.exitCode = saved.exitCode;
+      return refused && !called;
+    };
+    check("A-84: a bad newer-results store is refused through main() and buildRows is never called", refusedBeforeRows("CC_NEWER_RESULTS_STORE", "null", "the newer-results store is invalid"));
+    check("A-84: a bad open-pull-requests store is refused through main() and buildRows is never called", refusedBeforeRows("CC_OPEN_PULLS_STORE", "null", "the open-pull-requests store is invalid"));
     // r7: a store file that EXISTS but parses to a falsy value, or does not parse, is refused too.
     const refusedFor = (content) => {
       writeFileSync(join(dir, "odd.json"), content);

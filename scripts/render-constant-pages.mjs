@@ -2096,7 +2096,9 @@ async function selftest() {
   console.log(`render-constant-pages selftest: PASS (renders title, both pinned rows and the upstream sha after proving the page is non-empty; carries a canonical URL, and its cite block quotes the SHARED citation unchanged — so the table and the page hand out the same address for the same constant, and a re-added local substitution fails here; a missing side reads "not pinned"; a hostile title is escaped, with the raw fixture proven to contain the markup so the check tests the renderer; the filed-report disclosure appears only for a mapped constant; and the A-47 audit block carries the no-record prohibition on the AUDITED page rather than only the unaudited one, drops an unrecognised verdict instead of printing it, matches link text to verdict so UNREACHABLE never offers 'the source we read', links each source as an anchor whose href IS that source, refuses a javascript: scheme, escapes hostile citedRef and sourceRead, survives a null entry beside a good one, renders the denominator FROM THE STORE with a fixture of 999 proving it is not baked in, carries the date it was measured, counts bound rows separately from reference entries against a bound-row denominator, shows only THIS constant's rows with the other proven present in the fixture, is ABSENT for an unaudited constant, says 'not recorded' rather than implying a proportion when the corpus is missing, and — since 2026-09-13 — tells the reader how each row was CHOSEN, counts the ledger-wide coverage figure from rows drawn by position ONLY — and, since 2026-09-21, counts every drawn row whether or not its source could be read and says how many were read, files an unlabelled row with the suspicion set rather than as coverage, and carries the no-record prohibition on that selection-labelled surface too; and, since 2026-10-10 (A-70), puts a 44px floor on the action links and the copy button in the phone block only, carries exactly one inline script and nothing from another host, and runs that script — its selector read back out of the page and proven to match the page's own cite block — against a two-block stub DOM: it copies the citation alone, exactly, says Copied, and on a refused or absent clipboard selects the citation and never claims a copy)`);
 }
 
-export function main({ check = false, storePath = DEFAULT_AUDIT_STORE } = {}) {
+// buildRowsFn is a test seam (A-84, Codex r1): newer-results.mjs's selftest passes a function that records
+// whether it ran, to prove a bad store is refused before the rows are built.
+export function main({ check = false, storePath = DEFAULT_AUDIT_STORE, buildRowsFn = buildRows } = {}) {
   const claims = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
   const manifest = JSON.parse(readFileSync(join(ROOT, "ledger", "teorth-optimizationproblems", "manifest.json"), "utf8"));
   // A-84: both store refusals run BEFORE buildRows, which shells about 115 `git log -S` calls; neither
@@ -2133,7 +2135,7 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE } = {}) {
     process.exitCode = 1;
     return;
   }
-  const rows = buildRows(claims);
+  const rows = buildRowsFn(claims);
   // A-53 (b): refuse before anything is composed or written. Nothing above writes.
   if (refuseDroppedAudits("render-constant-pages", { storePath, pageIds: new Set(rows.map((r) => r.id)) })) { process.exitCode = 1; return; }
   const pages =new Map(rows.map((r) => [`${r.id}.html`, renderPage(r, manifest.sha, undefined, newer, pulls)]));
