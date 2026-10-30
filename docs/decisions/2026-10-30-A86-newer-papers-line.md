@@ -53,3 +53,9 @@ The line renders only when all three new fields are present and valid, so the co
 2. MED, code: reading the query's terms discarded its Boolean structure, so an AND query validated the old store and the line would have said "or". This is the second finding on the tools binding. New shape: a stated rule whose failure is a refusal. The query must be exactly `(abs:T OR abs:T …)`, and any other shape yields no terms, so a store carrying the search is refused. Red-armed: loosening the rule fails the shape case (AND, mixed, NOT, trailing text).
 3. MED, code: the guard checked one page with no entry, which is a sample. This is the second finding on the wiring guard, so it now checks the whole population, every page. Red-armed: rendering the line only on 1b and 1a fails on all 118 other pages.
 4. LOW, code: hiding the line in a `<template>` inside the `<dl>` would pass. DELIBERATE: that takes a hostile renderer edit. The guard claims position only, and its comment says so.
+
+**Codex round 3**, a confirmation pass (read-only, on `fc1f071`; the banner workdir matched). It checked that each round-2 fate is implemented, read the exact public text clause by clause, and looked for new defects. Verdict, verbatim: "SEND-READY". Positive control: the same reviewer returned 7 findings in round 1 and 4 in round 2, so an empty round 3 comes from a reader that does report findings.
+
+## What David's yes does
+
+Writes three fields into `ledger/newer-results.json` (`windowFrom` "2026-10-28", `tools` the four query terms, `papersFound` 0) and sets `checkedThrough` to "2026-10-30". Then it re-renders the 120 constant pages and pushes, with `npm run served` reading the served pages afterwards. No bound, row or other text on any page changes; the bound-cell guard checks exactly that on every page.
