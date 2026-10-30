@@ -3,14 +3,14 @@
   "item": "A-78",
   "source": {
     "repo": "openai/math",
-    "sha": "1581d4cbdd69a0faf34b2089614fe2a814316a6a",
-    "readAt": "2026-10-19",
-    "familyCount": 372,
-    "manuscriptCount": 719,
+    "sha": "4eaee87548250b2682affda7d05d947c05554bae",
+    "readAt": "2026-10-30",
+    "familyCount": 373,
+    "manuscriptCount": 721,
     "pinMovedFrom": {
-      "sha": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
-      "on": "2026-10-19",
-      "why": "The two later release commits add only .github/workflows/lock-prs.yml (gh api repos/openai/math/compare, 2026-10-19), so no statement file, CONTENTS.md or history.md changed."
+      "sha": "1581d4cbdd69a0faf34b2089614fe2a814316a6a",
+      "on": "2026-10-30",
+      "why": "The release's 2026-10-26 and 2026-10-29 commits add family 378 and revise family 079; no other family's CONTENTS.md block changed except 032 (a Lean link, verdict none) and 377 (a table boundary only). Every statement file the map named before this move (12 files, the 10 rendered notes' among them) is byte-identical at both shas (blob shas compared by gh api, 2026-10-30), so the notes already shown are unchanged in substance. Family 079's LocalSmoothing.lean is newly named."
     }
   },
   "method": "Every family in CONTENTS.md at source.sha has a verdict. Two independent screening passes (a Claude agent and Codex, each reading every family headline against every watched constant definition, plus Erdos problem 36 and the classical Ramsey numbers) were unioned; any family either named is \"bears\". Only pairs whose Lean statement file was read by hand against the constant definition carry statementChecked true and render on the site; every other pair is \"unchecked\" and is data only. No proof was compiled.",
@@ -541,29 +541,89 @@
     {
       "family": "079",
       "verdict": "bears",
-      "title": "Local smoothing in three dimensions",
-      "leanDoc": null,
+      "title": "Local smoothing for the Euclidean wave equation",
+      "leanDoc": "lean/docs/079.md",
       "records": [
         {
-          "id": "77a",
-          "tag": "unchecked",
+          "id": "46a",
+          "tag": "read-no-note",
           "statementChecked": false,
+          "statementRead": true,
+          "bears": true,
+          "reason": "Read 2026-10-30 and it bears; the note is held, not shown, until David answers the board card for it. On a yes this pair becomes formal-proof with statementChecked and the page's sourceSha256.",
           "screenedBy": [
-            "codex"
+            "claude"
           ],
           "confidence": {
-            "codex": "low"
+            "claude": "high"
+          },
+          "familyTitle": "Local smoothing for the Euclidean wave equation",
+          "claim": "that the extension operator of the sphere is bounded from L^a of the sphere to L^b of the whole space in every dimension n ≥ 2, whenever a > 1, b > 2n/(n−1) and b > (n+1)/(n−1)·a′.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/LocalSmoothing.lean",
+            "theorem": "spherical_restriction",
+            "text": "theorem spherical_restriction :\n    ∀ n : ℕ, 2 ≤ n → ∀ a : ℝ≥0∞, 1 < a → ∀ b : ℝ,\n      2 * (n : ℝ) / (n - 1) < b →\n      ((n : ℝ) + 1) / ((n : ℝ) - 1) * conjugateExponent a < b →\n      ∃ C : ℝ, 0 < C ∧ ∀ g : Space n → ℂ, MemLp g a (sphereMeasure n) →\n        MemLp (sphericalExtension g) (ENNReal.ofReal b) ∧\n        eLpNorm (sphericalExtension g) (ENNReal.ofReal b) volume ≤\n          ENNReal.ofReal C * eLpNorm g a (sphereMeasure n)"
+          },
+          "match": "Take n = 3 and a = ∞, so a′ = 1: the conditions become b > 3 and b > 2, and the statement gives the bound this constant defines, from L^∞ of the 2-sphere to L^b of 3-space, for every b > 3. That would make C₄₆ at most 3, equal to its listed lower bound. Lean's sphere measure and its exp(+i x·ω) convention differ from the definition's surface measure and Fourier transform only by constants and a reflection, which change no L^∞ or L^b bound. The release calls its manuscripts raw research data at different stages of verification (README) and says it published this one as the model's output (history.md, 26 October 2026); neither document reports a human check of this proof."
+        },
+        {
+          "id": "77a",
+          "tag": "read-no-note",
+          "statementChecked": false,
+          "statementRead": true,
+          "bears": true,
+          "reason": "Read 2026-10-30 and it bears; the note is held, not shown, until David answers the board card for it. On a yes this pair becomes formal-proof with statementChecked and the page's sourceSha256.",
+          "screenedBy": [
+            "claude"
+          ],
+          "confidence": {
+            "claude": "high"
+          },
+          "familyTitle": "Local smoothing for the Euclidean wave equation",
+          "claim": "that the Bochner–Riesz means of order δ are bounded on L^p in every dimension n ≥ 2, for every 1 ≤ p ≤ ∞ and δ > max(n·|1/p − 1/2| − 1/2, 0), uniformly in the radius.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/LocalSmoothing.lean",
+            "theorem": "bochner_riesz",
+            "text": "theorem bochner_riesz :\n    ∀ n : ℕ, 2 ≤ n → ∀ p : ℝ≥0∞, 1 ≤ p → ∀ δ : ℝ,\n      max ((n : ℝ) * |(p⁻¹).toReal - 1 / 2| - 1 / 2) 0 < δ →\n      ∃ C : ℝ, 0 < C ∧ ∀ R : ℝ, 0 < R → ∀ f : SchwartzMap (Space n) ℂ,\n        MemLp (bochnerRiesz δ R f) p ∧\n        eLpNorm (bochnerRiesz δ R f) p volume ≤\n          ENNReal.ofReal C * eLpNorm f p volume"
+          },
+          "match": "Take n = 3: the order condition is this constant's λ > λ₃,ₚ. The statement bounds the operator on Schwartz functions; for finite p that bound extends to all of Lᵖ by density. At p = 1 and p = ∞ the condition is λ > 1, where the Bochner–Riesz kernel is integrable (a classical fact, not part of the Lean statement), so those endpoints hold by convolution. The range in the definition is then established for every p, and Γ = 3 qualifies. That would make C₇₇ at most 3, equal to its listed lower bound. The statement is uniform in the radius R, so the 2π convention of the Fourier transform does not matter. The release calls its manuscripts raw research data at different stages of verification (README) and says it published this one as the model's output (history.md, 26 October 2026); neither document reports a human check of this proof."
+        },
+        {
+          "id": "3b",
+          "tag": "read-no-note",
+          "statementChecked": false,
+          "statementRead": true,
+          "bears": false,
+          "reason": "Read 2026-10-30. The family's Kakeya statements (kakeya: every Kakeya set in R^n has Hausdorff dimension n; kakeya_maximal) contain no inequality on SD({0,1,∞};−1). The direction recorded on 3b's page runs from an upper bound on C₃b to a Kakeya dimension bound (Bourgain 1999), not back.",
+          "screenedBy": [
+            "claude"
+          ],
+          "confidence": {
+            "claude": "high"
+          },
+          "statement": {
+            "path": "lean/ComparatorChallenges/LocalSmoothing.lean",
+            "theorem": "kakeya",
+            "text": "theorem kakeya :\n    ∀ n : ℕ, 2 ≤ n → ∀ F : Set (Space n), IsKakeyaSet F → dimH F = n"
           }
         },
         {
-          "id": "46a",
-          "tag": "unchecked",
+          "id": "3c",
+          "tag": "read-no-note",
           "statementChecked": false,
+          "statementRead": true,
+          "bears": false,
+          "reason": "Read 2026-10-30. The family's Kakeya statements (kakeya; kakeya_maximal) contain no inequality on SD({0,1,2,∞};−1). 3c's page records only that the constant is related to the arithmetic Kakeya conjecture.",
           "screenedBy": [
-            "codex"
+            "claude"
           ],
           "confidence": {
-            "codex": "low"
+            "claude": "high"
+          },
+          "statement": {
+            "path": "lean/ComparatorChallenges/LocalSmoothing.lean",
+            "theorem": "kakeya",
+            "text": "theorem kakeya :\n    ∀ n : ℕ, 2 ≤ n → ∀ F : Set (Space n), IsKakeyaSet F → dimH F = n"
           }
         }
       ]
@@ -2065,6 +2125,10 @@
     },
     {
       "family": "377",
+      "verdict": "none"
+    },
+    {
+      "family": "378",
       "verdict": "none"
     }
   ]

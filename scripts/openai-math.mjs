@@ -162,14 +162,63 @@ function validateRecord(n, r, constantExists, sourceCitesRelease, sourceHashOf) 
   return errs;
 }
 
-/** The notes that render for one constant: statement-checked pairs only, in family order. */
-export function notesFor(id, map) {
+/**
+ * May this pair render? A pair renders only when it is statement-checked, carries a proof tag, and
+ * names its Lean statement file (Codex r1 2026-10-30: a held "read-no-note" pair with only
+ * statementChecked flipped used to render). This is the cheap structural floor; the renderers add
+ * the map's full per-record rule through recordCheck.
+ */
+export function mayRender(r) {
+  return !!r && r.statementChecked === true && (r.tag === "formal-proof" || r.tag === "partial") && STATEMENT_PATH.test(String((r.statement || {}).path || ""));
+}
+
+/**
+ * The map's own per-record rule, bound to one tree: returns (family, record) => problems. The
+ * renderers never call validateMap, so they pass this to notesFor and a note renders only when its
+ * record has NO problems (Codex r2 2026-10-30, the second finding on this guard: rather than add
+ * clauses to mayRender, render iff the record passes the same validateRecord the map check runs).
+ * Failure mode: an invalid note is ABSENT from the page while `npm test` reports why, never published.
+ */
+export function recordCheck(root = ROOT) {
+  const exists = (id) => existsSync(join(root, "ledger", "teorth-optimizationproblems", "constants", `${id}.md`));
+  return (n, r) => validateRecord(n, r, exists, (id) => citesRelease(id, root), (id) => sourceHash(id, root));
+}
+
+/**
+ * A composed note may render: attached fields well-shaped, and its own block ban-clean.
+ * SCOPE, stated narrowly (Codex r4, 2026-10-30): this covers NOTE-DERIVED content only. The index
+ * badge also carries the row's own title and id, which come from the mirror and already appear in
+ * the row; the word ban is about what a note asserts, not upstream's constant names. And it scans
+ * each note inside the same wrapper the page emits. A page with several notes gets that wrapper
+ * around the same <li> items, and a word-boundary match cannot span two items, because each opens
+ * and closes with a tag.
+ */
+export function composedNoteOk(n) {
+  const src = n && n.source;
+  if (!/^\d{3}$/.test(String(n && n.family))) return false;
+  if (typeof n.familyTitle !== "string" || !n.familyTitle.trim()) return false;
+  if (!src || !SHA40.test(String(src.sha || "")) || !/^\d{4}-\d{2}-\d{2}$/.test(String(src.readAt || ""))) return false;
+  return !FORBIDDEN.test(noteBlock([n]));
+}
+
+/**
+ * The notes that render for one constant, in family order: pairs that pass mayRender and, when a
+ * check is given (the renderers always give one), have no problems under it.
+ */
+export function notesFor(id, map, check = null) {
   if (!map || !Array.isArray(map.families)) return [];
   const out = [];
   for (const f of map.families) {
     if (f.verdict !== "bears") continue;
     for (const r of f.records || []) {
-      if (r.id === id && r.statementChecked === true) out.push({ ...r, family: f.family, familyTitle: r.familyTitle || f.title, source: map.source });
+      if (r.id !== id || !mayRender(r)) continue;
+      if (check && check(String(f.family), r).length) continue;
+      const note = { ...r, family: f.family, familyTitle: r.familyTitle || f.title, source: map.source };
+      // The record passed, but the family and source fields are attached HERE and render too
+      // (Codex r3, 2026-10-30). So judge the COMPOSED note: the attached fields in the shapes the map
+      // check requires, and the exact markup this note would emit free of the banned word.
+      if (check && !composedNoteOk(note)) continue;
+      out.push(note);
     }
   }
   return out;
@@ -305,6 +354,17 @@ export async function selftest() {
   assert.ok(rn((r) => { r.statementChecked = true; }).some((e) => /never renders, so it cannot be statementChecked/.test(e)), "read-no-note cannot render");
   assert.ok(rn((r) => { r.tag = "unchecked"; }).some((e) => /must be tagged "read-no-note", not "unchecked"/.test(e)), "a read pair cannot hide as unchecked");
   assert.equal(notesFor("84a", withRead(readNo(true))).length, 0, "a read-no-note pair must not render");
+  // 6b. The renderers never call validateMap, so notesFor itself must refuse a held pair whose
+  // statementChecked alone was flipped (Codex r1, 2026-10-30), and a checked pair with no proof tag
+  // or no statement path. Each case is invalid to validateMap too; the point is that it renders nothing.
+  {
+    const flipped = readNo(true); flipped.statementChecked = true;
+    assert.equal(notesFor("84a", withRead(flipped)).length, 0, "a read-no-note pair with only statementChecked flipped must not render");
+    const noTag = structuredClone(good); noTag.families[1].records[0].tag = "unchecked";
+    assert.equal(notesFor("15a", noTag).length, 0, "a statement-checked pair tagged unchecked must not render");
+    const noPath = structuredClone(good); noPath.families[1].records[0].statement.path = "";
+    assert.equal(notesFor("15a", noPath).length, 0, "a statement-checked pair with no statement path must not render");
+  }
 
   // Rendering: only statement-checked pairs render; unchecked ones stay data.
   assert.equal(notesFor("15a", good).length, 1);
@@ -324,6 +384,31 @@ export async function selftest() {
     assert.deepEqual(errs, [], `the committed map is invalid:\n${errs.join("\n")}`);
     const guard = await boundCellGuard();
     assert.deepEqual(guard, [], `the bound-cell guard failed:\n${guard.join("\n")}`);
+
+    // 7. THE WIRING (Codex r2, 2026-10-30): the renderers' own buildRows must drop a rendered pair
+    // whose record the map's rule refuses. Exercised through render-site, not through notesFor.
+    const site = await import("./render-site.mjs");
+    const claims = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
+    const target = real.families.flatMap((f) => (f.records || []).filter((r) => r.statementChecked === true))[0];
+    assert.ok(target, "positive control failed: the committed map has no rendered pair to mutate");
+    const rowsWith = (m) => site.buildRows(claims, { withDates: false, root: ROOT, oaiMap: m });
+    const count = (m) => rowsWith(m).find((x) => x.id === target.id).oai.length;
+    const before = count(real);
+    assert.ok(before >= 1, `positive control failed: ${target.id} renders no note from the committed map`);
+    const mutate = (f) => { const c = structuredClone(real); const r = c.families.flatMap((x) => x.records || []).find((x) => x.id === target.id && x.statementChecked === true); f(r); return c; };
+    assert.equal(count(mutate((r) => { r.claim += " a new record"; })), before - 1, "a rendered pair whose claim says 'record' must be dropped by the renderers' buildRows");
+    assert.equal(count(mutate((r) => { r.sourceSha256 = "0".repeat(64); })), before - 1, "a rendered pair whose page hash is stale must be dropped by the renderers' buildRows");
+    assert.equal(count(mutate((r) => { delete r.match; })), before - 1, "a rendered pair with no match sentence must be dropped by the renderers' buildRows");
+    // 7b. Fields attached at composition, not on the record (Codex r3, 2026-10-30).
+    const fam = (c) => c.families.find((x) => (x.records || []).some((r) => r.id === target.id && r.statementChecked === true));
+    {
+      const c = structuredClone(real); const f = fam(c); f.title = "A new record"; for (const r of f.records) if (r.id === target.id) delete r.familyTitle;
+      assert.equal(count(c), before - 1, "a family title saying 'record', reached through the fallback, must be dropped by the renderers' buildRows");
+    }
+    {
+      const c = structuredClone(real); c.source.readAt = "soon";
+      assert.equal(count(c), 0, "a source read date that is not a date must drop every note (judged by shape, not by the word ban)");
+    }
   }
   console.log(`openai-math selftest: PASS (refuses the word "record" in any rendered string, a formal-proof or partial tag with no Lean statement path or quoted statement, a proof tag on a pair we did not read, and a map whose verdicts do not cover every family exactly once; renders only statement-checked pairs${real ? `; the committed map validates: ${real.families.length} families at ${String(real.source.sha).slice(0, 7)}, and every noted page and the index differ from their no-note render by exactly the note` : ""})`);
 }
@@ -346,7 +431,7 @@ if (entry === import.meta.url) {
     const bears = map.families.filter((f) => f.verdict === "bears");
     const pairs = bears.flatMap((f) => f.records);
     const byTag = Object.fromEntries(Object.keys(TAGS).map((t) => [t, pairs.filter((r) => r.tag === t).length]));
-    console.log(`openai-math: ${map.families.length} of ${map.source.familyCount} families at openai/math@${String(map.source.sha).slice(0, 7)} (an upstream sha): ${bears.length} bear on a watched record, ${map.families.length - bears.length} do not; ${pairs.length} pair(s): ${Object.entries(byTag).map(([t, c]) => `${t} ${c}`).join(", ")}; rendered ${pairs.filter((r) => r.statementChecked === true).length}`);
+    console.log(`openai-math: ${map.families.length} of ${map.source.familyCount} families at openai/math@${String(map.source.sha).slice(0, 7)} (an upstream sha): ${bears.length} bear on a watched record, ${map.families.length - bears.length} do not; ${pairs.length} pair(s): ${Object.entries(byTag).map(([t, c]) => `${t} ${c}`).join(", ")}; rendered ${(() => { const chk = recordCheck(ROOT); return bears.reduce((n, f) => n + f.records.filter((r) => mayRender(r) && !chk(String(f.family), r).length).length, 0); })()}`);
     if (errs.length) { console.log(`INVALID:\n${errs.join("\n")}`); process.exit(1); }
     console.log("RESULT: VALID (exit 0)");
   }

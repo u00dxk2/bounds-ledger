@@ -30,7 +30,7 @@ import { loadAudits, badgeFor, settledIds, attemptDate, refuseDroppedAudits, DEF
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { REPO, esc, issueUrl, copyCiteScript } from "./lib/html.mjs";
-import { loadMap, notesFor, badgeText } from "./openai-math.mjs";
+import { loadMap, notesFor, badgeText, recordCheck } from "./openai-math.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT = join(ROOT, "index.html");
@@ -183,6 +183,9 @@ export function buildRows(claims, { withDates = true, root = ROOT, reports = nul
   // A-78: preprint claims from OpenAI's math release, statement-checked pairs only. Kept OUT of
   // every bound field below; the notes ride beside the row and never touch upper/lower.
   const oai = oaiMap === undefined ? loadMap(root) : oaiMap;
+  // A note renders only if its record passes the map's own validation against this tree (Codex r2,
+  // 2026-10-30): the renderers never call validateMap, so the rule is applied per record here.
+  const oaiCheck = recordCheck(root);
   return constantIds(claims).map((id) => {
     const pins = pinsFor(id, claims);
     const upper = pins.find((p) => p.id.endsWith(":U"));
@@ -207,7 +210,7 @@ export function buildRows(claims, { withDates = true, root = ROOT, reports = nul
       audit: badgeFor(id, store, [upper && upper.expect, lower && lower.expect]),
       tableValues: tableValuesFor(id, root),
       aliases: aliasesFor(id, claims),
-      oai: notesFor(id, oai),
+      oai: notesFor(id, oai, oaiCheck),
     };
   }).map((r) => ({
     ...r,
