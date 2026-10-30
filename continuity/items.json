@@ -2979,7 +2979,11 @@
         "lines": 2,
         "sha256": "422721a9ad75831d"
       },
-      "lastEvaluated": "2026-10-27"
+      "lastEvaluated": "2026-10-27",
+      "linkedCommits": [
+        "8aa6e25",
+        "3bfe407"
+      ]
     },
     {
       "id": "A-79",
@@ -3392,11 +3396,19 @@
       ],
       "nextCheckDate": "2026-11-06",
       "adoptedBy": "David, in chat at about 13:40 MT on 2026-10-30 (paraphrase: he said yes to adopting this area, which CLAUDE.md makes his call alone). Recorded here as that adoption call.",
-      "note": "Opened 2026-10-30 MT, cycle 2 (David-started). Design: docs/decisions/2026-10-30-A92-eth-dependence-area-design.md. Primary sources read 2026-10-30: openai/math@4eaee87 family 378 and history.md, and anthropics/formal-math@16a5ce4 eth/README.md and eth/paper.pdf (both are upstream shas; they do not exist in this repo; the PDF's file digest is sha256 7af518b09342c967…). Anthropic's 'more than 800': the paper supplies no list or method, and the searches described in the design (paper text, the untruncated repo tree at 16a5ce4 filtered to data files under eth/, GitHub code search) found none. Frame: 638 arXiv abstracts with the exact phrase 'exponential time hypothesis' (arXiv API, fetched 2026-10-30T20:23:32Z, distinct ids = totalResults). Pilot: 8 drawn by a rule written before the fetch (tmp/eth-pilot-2026-10-30/draw-rule.md, local), 8 read, 0 unread; 3 at statement depth (all three with affected verdicts), 5 at abstract only. None publishable yet: quotations must be re-read raw and every row must pass the outward gate. Two verdict-rule gaps found and added to the design (stated-under-SETH-but-proved-via-OV; optimality-only). Per-paper verdicts stay local in tmp/ (unverified claims about other people's papers). Codex cross-family review r1 and r2 on 2026-10-30; findings dispositioned in the cycle-2 close (docs/daily/2026-10-30-prelaunch.md).\n\n | 2026-10-30 MT evening: (1) David ran the /deep-research prompt on two engines. Both reports are filed in skylark-site docs/research-library/2026-10-30-bounds-ledger-eth-dependence-frame-a.md and -frame-b.md. Their anchor (Anthropic Theorem 1 and the 800 sentence) was re-checked against the lane's own extraction of the paper; OpenAI's Theorem 1.1 is still unread. Six design decisions changed (see the design's \"What the deep research changed\" section): the unit is a theorem; stated assumption and proof route become mandatory fields; status changes are append-only events; the headline is four numbers; the frame moves to OpenAlex full text plus the IP01/IPZ01 citers, with measured recall; and the hypothesis table is refined. (2) 3SUM and APSP are no longer listed as standing. anthropics/formal-math/3sum-apsp formalizes an Alman–Vassilevska Williams paper stating 3SUM in O(n^1.9992) and APSP in O(n^2.99942) (its Theorem 22); unread, so any row resting on them is needs-reading. (3) All 8 pilot papers are now at statement depth: the 5 earlier abstract-depth reads were re-read from the raw PDF, with no verdict changed. Quotes stay local.",
+      "note": "Opened 2026-10-30 MT, cycle 2 (David-started). Design: docs/decisions/2026-10-30-A92-eth-dependence-area-design.md. Primary sources read 2026-10-30: openai/math@4eaee87 family 378 and history.md, and anthropics/formal-math@16a5ce4 eth/README.md and eth/paper.pdf (both are upstream shas; they do not exist in this repo; the PDF's file digest is sha256 7af518b09342c967…). Anthropic's 'more than 800': the paper supplies no list or method, and the searches described in the design (paper text, the untruncated repo tree at 16a5ce4 filtered to data files under eth/, GitHub code search) found none. Frame: 638 arXiv abstracts with the exact phrase 'exponential time hypothesis' (arXiv API, fetched 2026-10-30T20:23:32Z, distinct ids = totalResults). Pilot: 8 drawn by a rule written before the fetch (tmp/eth-pilot-2026-10-30/draw-rule.md, local), 8 read, 0 unread; 3 at statement depth (all three with affected verdicts), 5 at abstract only. None publishable yet: quotations must be re-read raw and every row must pass the outward gate. Two verdict-rule gaps found and added to the design (stated-under-SETH-but-proved-via-OV; optimality-only). Per-paper verdicts stay local in tmp/ (unverified claims about other people's papers). Codex cross-family review r1 and r2 on 2026-10-30; findings dispositioned in the cycle-2 close (docs/daily/2026-10-30-prelaunch.md).\n\n | 2026-10-30 MT evening: (1) David ran the /deep-research prompt on two engines. Both reports are filed in the skylark-site research library (its files dated 2026-10-30, eth-dependence frame-a and frame-b). Their anchor (Anthropic Theorem 1 and the 800 sentence) was re-checked against the lane's own extraction of the paper; OpenAI's Theorem 1.1 is still unread. Six design decisions changed (see the design's \"What the deep research changed\" section): the unit is a theorem; stated assumption and proof route become mandatory fields; status changes are append-only events; the headline is four numbers; the frame moves to OpenAlex full text plus the IP01/IPZ01 citers, with measured recall; and the hypothesis table is refined. (2) 3SUM and APSP are no longer listed as standing. anthropics/formal-math/3sum-apsp formalizes an Alman–Vassilevska Williams paper stating 3SUM in O(n^1.9992) and APSP in O(n^2.99942) (its Theorem 22); unread, so any row resting on them is needs-reading. (3) All 8 pilot papers are now at statement depth: the 5 earlier abstract-depth reads were re-read from the raw PDF, with no verdict changed. Quotes stay local.",
       "onTrigger": "By 2026-11-06: (1) settle 3SUM/APSP: read anthropics/formal-math/3sum-apsp EndStatement.lean and the paper's Theorem 22 hypotheses (the nu and weight ranges), then record in the design whether the usual 3SUM/APSP conjectures are contradicted; (2) build the OpenAlex candidate frame (design decision 5) and measure its recall against LMS 2011 and Cygan et al. chapter 14; (3) mint a watch row on the ETH refutation's status, cleared by a published human reading of either proof. Building eth.html is a separate David decision.",
       "closeWhen": "David decides to build the page (this row then hands to a build row) or retires the area.",
       "created": "2026-10-30",
-      "updated": "2026-10-30"
+      "updated": "2026-10-30",
+      "readCommandWaived": {
+        "reason": "The trigger is a reading (3SUM/APSP hypotheses in anthropics/formal-math/3sum-apsp) and a build (the OpenAlex frame). No committed command answers either yet. The first one will be the frame script's own reconcile read, which becomes this row's readCommand when it is committed with its selftest."
+      },
+      "linkedCommits": [
+        "8aa6e25",
+        "84fbc01",
+        "5e77583"
+      ]
     }
   ],
   "meta": {
