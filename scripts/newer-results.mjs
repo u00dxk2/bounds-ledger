@@ -301,6 +301,11 @@ export async function selftest() {
     writeFileSync(join(dir, "bad.json"), JSON.stringify(bad));
     const child = spawnSync(process.execPath, [join(ROOT, "scripts", "render-constant-pages.mjs"), "--check"], { encoding: "utf8", env: { ...process.env, CC_NEWER_RESULTS_STORE: join(dir, "bad.json") } });
     check("r6 #1: render-constant-pages --check REFUSES an invalid store through main(), exit 1, before composing", child.status === 1 && child.stdout.includes("the newer-results store is invalid, so nothing was composed or written"));
+    // A-84: both store refusals must run BEFORE buildRows (about 115 `git log -S` calls), read from main()'s
+    // own text, so moving either refusal back below it goes red here rather than only slowing this selftest.
+    const mainText = (await import("./render-constant-pages.mjs")).main.toString();
+    const rowsAt = mainText.indexOf("buildRows(claims)");
+    check("A-84: main() validates the newer-results AND open-pull-requests stores before it calls buildRows", rowsAt > 0 && ["validateNewerStore(", "validatePullsStore("].every((s) => { const i = mainText.indexOf(s); return i > 0 && i < rowsAt; }));
     // r7: a store file that EXISTS but parses to a falsy value, or does not parse, is refused too.
     const refusedFor = (content) => {
       writeFileSync(join(dir, "odd.json"), content);

@@ -2099,9 +2099,8 @@ async function selftest() {
 export function main({ check = false, storePath = DEFAULT_AUDIT_STORE } = {}) {
   const claims = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
   const manifest = JSON.parse(readFileSync(join(ROOT, "ledger", "teorth-optimizationproblems", "manifest.json"), "utf8"));
-  const rows = buildRows(claims);
-  // A-53 (b): refuse before anything is composed or written. Nothing above writes.
-  if (refuseDroppedAudits("render-constant-pages", { storePath, pageIds: new Set(rows.map((r) => r.id)) })) { process.exitCode = 1; return; }
+  // A-84: both store refusals run BEFORE buildRows, which shells about 115 `git log -S` calls; neither
+  // store's validation reads the rows, so a bad store is refused without paying for them.
   // A-82: refuse an INVALID newer-results store before anything is composed or written, in write AND
   // check mode (Codex r6: rendering used to print whatever the store held; only npm test validated it).
   // CC_NEWER_RESULTS_STORE is a test hook (newer-results.mjs's selftest points it at a bad store to
@@ -2134,7 +2133,10 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE } = {}) {
     process.exitCode = 1;
     return;
   }
-  const pages = new Map(rows.map((r) => [`${r.id}.html`, renderPage(r, manifest.sha, undefined, newer, pulls)]));
+  const rows = buildRows(claims);
+  // A-53 (b): refuse before anything is composed or written. Nothing above writes.
+  if (refuseDroppedAudits("render-constant-pages", { storePath, pageIds: new Set(rows.map((r) => r.id)) })) { process.exitCode = 1; return; }
+  const pages =new Map(rows.map((r) => [`${r.id}.html`, renderPage(r, manifest.sha, undefined, newer, pulls)]));
 
   if (check) {
     const onDisk = existsSync(OUTDIR) ? readdirSync(OUTDIR).filter((f) => f.endsWith(".html")) : [];
