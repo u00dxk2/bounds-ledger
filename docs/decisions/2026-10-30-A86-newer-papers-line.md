@@ -7,9 +7,11 @@ Status: DRAFT. It renders on public pages only after a cross-family claims pass,
 One new entry on every constant page (`c/<id>.html`), in the page's definition list beside the existing blocks:
 
 > **Newer papers**
-> On 2026-10-30 we searched arXiv for papers submitted from 2026-10-28 to 2026-10-30 whose abstracts name AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve. The search found no papers. Papers that name none of these tools, and results posted anywhere but arXiv, were not searched.
+> On 2026-10-30 we ran one search for every constant on this site, not this one alone: arXiv papers submitted from 2026-10-28 to 2026-10-30 that matched an abstract search for AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve. It found no papers. We searched no source other than arXiv, and papers matching none of these names were outside the search.
 
-When the search finds papers, the second sentence reads "The search found N papers." and nothing more. Whether any of them bears on THIS constant is a per-paper reading the store does not hold, so the line does not say. A result we checked ourselves still appears in its own block, as today (none exists at present: `ledger/newer-results.json` holds `"entries": []`).
+(This is the text after the Codex claims pass, round 1. The first draft read "we searched arXiv for papers … whose abstracts name …" and "Papers that name none of these tools, and results posted anywhere but arXiv, were not searched.")
+
+When the search finds papers, the second sentence reads "It found N papers." and nothing more. Whether any of them bears on THIS constant is a per-paper reading the store does not hold, so the line does not say. A result we checked ourselves still appears in its own block, as today (none exists at present: `ledger/newer-results.json` holds `"entries": []`).
 
 Every value in the line comes from a store field, never from the renderer or a clock:
 
@@ -35,4 +37,12 @@ The line renders only when all three new fields are present and valid, so the co
 
 ## Review record
 
-(filled in as the reviews run)
+**Codex round 1** (cross-family; read-only; one run doing the claims pass and the code review, on `6600c0a`; the banner workdir matched). Clause results: "On 2026-10-30 we searched arXiv" HOLDS. "Submitted from 2026-10-28 to 2026-10-30" HOLDS (the watcher filters on submittedDate, inclusive UTC dates). "The search found no papers" HOLDS. "Whose abstracts name …" UNVERIFIABLE-HERE. "Results posted anywhere but arXiv … were not searched" REFUTED-AS-WRITTEN. Findings and fates:
+
+1. MED, wording: "name" claims more about arXiv's matching than this repo can show. CONFIRMED; the text now says "matched an abstract search for".
+2. MED, wording: on every constant page, the count reads as being about that constant. CONFIRMED; the text now says "one search for every constant on this site, not this one alone".
+3. LOW, wording: a result posted both on arXiv and elsewhere is not outside the search. CONFIRMED; the text now says "We searched no source other than arXiv".
+4. HIGH, code: the validator checked shapes only. Codex reproduced a store with `2026-99-99`, an invented tool and 42 papers that validated and rendered. CONFIRMED for the dates and the tools. Dates must now be real calendar dates, and `tools` must equal the watcher's own query terms in order, read from its exported query. A changed query therefore refuses a stale store. DELIBERATE for `papersFound`: it is a reviewed data write, because the run's `papers.json` is never committed (a candidate is an unverified claim about someone else's paper).
+5. MED, code: no test tied `tools` to the query. Fixed by the binding in 4. Red-armed: removing the binding fails the mismatch case.
+6. MED, code: the wiring check only exercised pages with an entry. CONFIRMED; the guard now also renders a page with no entry. Red-armed: rendering the line only on 1b fails on 1a.
+7. LOW, code: nothing checked placement inside `<dl>`. CONFIRMED; checked now. Red-armed: the line placed after `</dl>` fails on both pages.
