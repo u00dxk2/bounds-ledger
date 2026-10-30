@@ -1,0 +1,135 @@
+{
+  "schema": "anthropic-formal-math-map/1",
+  "item": "A-93",
+  "method": "Every theorem a project's comparator configuration names was read in its Lean statement file at the pinned sha, and screened against every watched constant: the mirror (ledger/teorth-optimizationproblems/constants/) was searched for the statements' subjects, and each constant found was read in its own mirrored definition. A pair carries one verdict: states (the statement gives the constant a bound), implies (a bound follows, with the derivation written out), bears-without-number (it bears on the constant but gives no bound), or does-not-bear. Nothing in this map renders. A note on a constant page would need A-78's fields (statementChecked, sourceSha256), its render guard, a cross-family review and David's yes on a board card.",
+  "source": {
+    "repo": "anthropics/formal-math",
+    "sha": "16a5ce41304fcdaea4e0be7c132e1c361dc26da5",
+    "committedAt": "2026-10-27T03:07:21Z",
+    "readAt": "2026-10-30"
+  },
+  "projects": [
+    {
+      "folder": "eth",
+      "statementFile": "eth/MainResults.lean",
+      "comparatorConfigs": [
+        {
+          "path": "eth/comparator.json",
+          "theoremNames": [
+            "MainResults.ethIsFalse",
+            "MainResults.mainTheorem"
+          ]
+        }
+      ],
+      "subject": "ETHIsFalse: s_3 = 0 for deterministic machines (Mathlib's Turing.FinTM2). MainTheorem: one machine counts the satisfying assignments of every k-CNF with k >= 1, no clause written twice, m >= 2 clauses and n >= 4 variables, each occurring, within 2^{C min{km/sqrt(log m), k^2 n log log n/sqrt(log n)}} steps.",
+      "searched": "the mirror for SAT, satisfiab, exponential time and clique (case-insensitive); the one constant whose subject matches is 52a",
+      "pairs": [
+        {
+          "constant": "52a",
+          "verdict": "does-not-bear",
+          "reason": "52a is the conjectured threshold r_3, the clause density at which a random 3-CNF becomes unsatisfiable with high probability. Both statements bound the worst-case running time of deciding or counting, and say nothing about the probability that a random formula of a given density is satisfiable."
+        }
+      ]
+    },
+    {
+      "folder": "3sum-apsp",
+      "statementFile": "3sum-apsp/EndStatement.lean",
+      "comparatorConfigs": [
+        {
+          "path": "3sum-apsp/comparator-endstatement.json",
+          "theoremNames": [
+            "ThreeSumApsp.endStatement_theorem_19",
+            "ThreeSumApsp.endStatement_theorem_22_3SUM",
+            "ThreeSumApsp.endStatement_theorem_22_MinPlus",
+            "ThreeSumApsp.endStatement_theorem_22_APSP",
+            "ThreeSumApsp.endStatement_corollary_39_zeroWeight"
+          ]
+        }
+      ],
+      "excludedConfigs": [
+        {
+          "path": "3sum-apsp/comparator-paperstatements.json",
+          "reason": "The item-by-item statements of 3sum-apsp/PaperStatements.lean, the further results of the paper beyond the five headline claims. Not mapped theorem by theorem; see notCovered."
+        }
+      ],
+      "notCovered": "3sum-apsp/comparator-paperstatements.json (the item-by-item statements of 3sum-apsp/PaperStatements.lean) is not mapped theorem by theorem. That file was searched for the only subjects the mirror shares with it, the matrix multiplication exponents: its Corollary_40_fail holds for every real omega >= 2 ('whatever the value of omega') and its header says the exponents of matrix multiplication are not defined there.",
+      "subject": "Deterministic programs of a word RAM defined in the file, for every polynomial bound n^kappa on the input integers: Exact Triangle in O(n^{3-0.0017}), 3SUM in O(n^1.9992), the (min,+)-product and APSP (directed, no negative cycles) in O(n^2.99942), Zero-Weight k-Clique in O(n^{k-0.0017 floor(k/3)}) for every k >= 3.",
+      "searched": "the mirror for 3SUM, APSP, shortest path, matrix multiplication and clique (case-insensitive); the constants whose subject matches are 15a and 15b",
+      "pairs": [
+        {
+          "constant": "15a",
+          "verdict": "does-not-bear",
+          "reason": "15a is omega, the exponent of n x n matrix multiplication. No statement in the file bounds omega or mentions it; the five bound word-RAM steps for five combinatorial problems. 15a's own page names APSP only as a downstream use of omega, and an APSP algorithm gives no bound on omega."
+        },
+        {
+          "constant": "15b",
+          "verdict": "does-not-bear",
+          "reason": "15b is alpha = sup{k : omega(k) = 2}, about computing the whole n x n^k by n^k x n product. The paper's thin-product theorem (Theorem 1, in PaperStatements.lean) computes only a chosen set of at most N^2/sqrt(D) entries, in word-RAM operations, and bounds no omega(k)."
+        }
+      ]
+    },
+    {
+      "folder": "zeta23",
+      "statementFile": "zeta23/Challenge.lean",
+      "comparatorConfigs": [
+        {
+          "path": "zeta23/comparator.json",
+          "theoremNames": [
+            "two_thirds_on_critical_line",
+            "two_thirds_on_critical_line_cumulative",
+            "two_thirds_simple_on_critical_line",
+            "two_thirds_simple_on_critical_line_cumulative",
+            "five_sixths_distinct",
+            "five_sixths_distinct_cumulative",
+            "montgomery_taylor_on_critical_line",
+            "montgomery_taylor_simple_on_critical_line_mult",
+            "montgomery_taylor_simple_on_critical_line_mult_cumulative",
+            "montgomery_taylor_distinct_mult",
+            "montgomery_taylor_distinct_mult_cumulative",
+            "dirichlet_two_thirds_on_critical_line",
+            "dirichlet_two_thirds_simple_on_critical_line",
+            "dirichlet_five_sixths_distinct",
+            "dirichlet_montgomery_taylor_on_critical_line",
+            "dirichlet_montgomery_taylor_simple_on_critical_line_mult",
+            "dirichlet_montgomery_taylor_distinct_mult"
+          ]
+        },
+        {
+          "path": "zeta23/comparator-xiprime.json",
+          "theoremNames": [
+            "xiPrime_zeros_in_open_critical_strip",
+            "xiPrime_over_xi_re_pos",
+            "xiPrime_simple_zeros_on_critical_line",
+            "xiPrime_simple_zeros_on_critical_line_cumulative",
+            "xiPrime_simple_zeros_on_critical_line_quartic",
+            "xiPrime_simple_zeros_on_critical_line_quartic_cumulative"
+          ]
+        }
+      ],
+      "subject": "Lower bounds on liminf proportions of the nontrivial zeros of zeta (and of L(s, chi) for primitive chi mod q > 1) that are on the critical line, simple and on it, or distinct: 2/3, 2/3, 5/6, and the Montgomery-Taylor variants; and statements locating the zeros of xi'.",
+      "searched": "the mirror for critical line, zeros of the, Riemann zeta, Lindelof, simple zeros, de Bruijn, Montgomery, Conrey and Levinson (case-insensitive), which matched 8a, 21a and 62a; 62b was added by hand for Theorem E, because the mirror README's row for 62b names Dirichlet L-functions",
+      "pairs": [
+        {
+          "constant": "62a",
+          "verdict": "does-not-bear",
+          "reason": "62a is the Lindelof exponent mu, the least theta with |zeta(1/2+it)| << (1+|t|)^{theta+eps}. The statements count zeros on the line in proportion; no bound on the growth of |zeta(1/2+it)| follows from a proportion of zeros."
+        },
+        {
+          "constant": "62b",
+          "verdict": "does-not-bear",
+          "reason": "62b is a subconvexity exponent for Dirichlet L-functions in the conductor aspect. Theorem E bounds proportions of zeros of L(s, chi) for each fixed chi as T grows, and gives no bound on the size of L(1/2+it, chi) as q grows."
+        },
+        {
+          "constant": "8a",
+          "verdict": "does-not-bear",
+          "reason": "8a is the constant R of the classical zero-free region sigma > 1 - 1/(R log|t|). A liminf proportion of zeros on Re s = 1/2 allows the remaining zeros anywhere in the strip, so it excludes no region near Re s = 1."
+        },
+        {
+          "constant": "21a",
+          "verdict": "does-not-bear",
+          "reason": "21a is the de Bruijn-Newman constant Lambda, and Lambda <= 0 is equivalent to the Riemann hypothesis. A proportion of zeros on the line short of all of them is consistent with Lambda > 0, so no upper bound on Lambda follows; the lower bound 0 is already known."
+        }
+      ]
+    }
+  ]
+}

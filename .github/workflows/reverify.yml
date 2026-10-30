@@ -270,6 +270,11 @@ jobs:
       # differs from its no-note render by exactly the note, so no bound cell can move with it.
       - name: Self-test OpenAI-release map and its bound-cell guard (no network)
         run: node scripts/openai-math.mjs --selftest
+      # A-93: the second release map (anthropics/formal-math). Every comparator theorem is listed
+      # once, every pair names a mirrored constant and a verdict, and no pair asks to render.
+      # The --upstream comparison needs the network and stays out of CI.
+      - name: Self-test Anthropic formal-math map (no network)
+        run: node scripts/anthropic-formal-math.mjs --selftest
       # A-45's stale-value resolvability indicator. Only its SELF-TEST runs here: the live read
       # shells `git log`/`git show` over the whole history of ledger/claims.json, and CI checks out
       # at fetch-depth 1, so a live run on a runner would read a truncated history and report a
