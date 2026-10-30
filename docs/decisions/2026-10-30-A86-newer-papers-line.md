@@ -7,9 +7,9 @@ Status: DRAFT. It renders on public pages only after a cross-family claims pass,
 One new entry on every constant page (`c/<id>.html`), in the page's definition list beside the existing blocks:
 
 > **Newer papers**
-> On 2026-10-30 we ran one search for every constant on this site, not this one alone: arXiv papers submitted from 2026-10-28 to 2026-10-30 that matched an abstract search for AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve. It found no papers. We searched no source other than arXiv, and papers matching none of these names were outside the search.
+> On 2026-10-30 we ran one search for all the constants on this site's main list, not this one alone: arXiv papers submitted from 2026-10-28 to 2026-10-30 that matched an abstract search for AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve. It found no papers. We searched no source other than arXiv, and papers matching none of these names were outside the search.
 
-(This is the text after the Codex claims pass, round 1. The first draft read "we searched arXiv for papers … whose abstracts name …" and "Papers that name none of these tools, and results posted anywhere but arXiv, were not searched.")
+(This is the text after Codex claims passes 1 and 2. The first draft read "we searched arXiv for papers … whose abstracts name …" and "Papers that name none of these tools, and results posted anywhere but arXiv, were not searched." Round 1's text said "every constant on this site", and round 2 refuted that, because the small Ramsey numbers page is a separate area with its own search.)
 
 When the search finds papers, the second sentence reads "It found N papers." and nothing more. Whether any of them bears on THIS constant is a per-paper reading the store does not hold, so the line does not say. A result we checked ourselves still appears in its own block, as today (none exists at present: `ledger/newer-results.json` holds `"entries": []`).
 
@@ -46,3 +46,10 @@ The line renders only when all three new fields are present and valid, so the co
 5. MED, code: no test tied `tools` to the query. Fixed by the binding in 4. Red-armed: removing the binding fails the mismatch case.
 6. MED, code: the wiring check only exercised pages with an entry. CONFIRMED; the guard now also renders a page with no entry. Red-armed: rendering the line only on 1b fails on 1a.
 7. LOW, code: nothing checked placement inside `<dl>`. CONFIRMED; checked now. Red-armed: the line placed after `</dl>` fails on both pages.
+
+**Codex round 2** (same reviewer family; read-only; on `3ef254b`; the banner workdir matched). Every clause HOLDS except "every constant on this site", which is REFUTED-AS-WRITTEN. Findings and fates. Two of them land on guards round 1 had just patched, so the fix changes the guard's shape instead of adding a third patch:
+
+1. HIGH, wording: "every constant on this site" includes the small Ramsey numbers page, which this search does not cover (`ramsey.html` is a separate watched area with a different query). CONFIRMED; the text now says "all the constants on this site's main list".
+2. MED, code: reading the query's terms discarded its Boolean structure, so an AND query validated the old store and the line would have said "or". This is the second finding on the tools binding. New shape: a stated rule whose failure is a refusal. The query must be exactly `(abs:T OR abs:T …)`, and any other shape yields no terms, so a store carrying the search is refused. Red-armed: loosening the rule fails the shape case (AND, mixed, NOT, trailing text).
+3. MED, code: the guard checked one page with no entry, which is a sample. This is the second finding on the wiring guard, so it now checks the whole population, every page. Red-armed: rendering the line only on 1b and 1a fails on all 118 other pages.
+4. LOW, code: hiding the line in a `<template>` inside the `<dl>` would pass. DELIBERATE: that takes a hostile renderer edit. The guard claims position only, and its comment says so.

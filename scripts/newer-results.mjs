@@ -157,7 +157,14 @@ export function validateStore(store, { shown = constantsShown(), constantExists 
 // real calendar dates. `papersFound` stays a reviewed data write: the run's papers.json is never committed.
 const SEARCH_FIELDS = ["windowFrom", "tools", "papersFound"];
 // The watcher's query terms, read from its exported query string (a fixed constant of ours, not input).
-export const QUERY_TERMS = [...CONSTANTS_QUERY.matchAll(/abs:(?:"([^"]+)"|([A-Za-z0-9-]+))/g)].map((m) => m[1] ?? m[2]);
+// Codex r2: reading the terms alone discarded the Boolean structure, so an AND query read the same as the
+// OR query the line describes. Rather than a third patch, a stated rule whose failure is a refusal: the
+// query must be EXACTLY "(abs:T OR abs:T …)", each T a bare word or a quoted phrase; any other shape gives
+// no terms, and a store carrying the search is then refused, so the line cannot describe a query it misreads.
+const TERM = String.raw`abs:(?:"[^"]+"|[A-Za-z0-9-]+)`;
+const OR_QUERY = new RegExp(String.raw`^\(${TERM}(?: OR ${TERM})*\)$`);
+export const QUERY_TERMS = OR_QUERY.test(CONSTANTS_QUERY) ? [...CONSTANTS_QUERY.matchAll(/abs:(?:"([^"]+)"|([A-Za-z0-9-]+))/g)].map((m) => m[1] ?? m[2]) : [];
+export const queryTermsOf = (q) => (OR_QUERY.test(q) ? [...q.matchAll(/abs:(?:"([^"]+)"|([A-Za-z0-9-]+))/g)].map((m) => m[1] ?? m[2]) : []);
 const realDate = (s) => { if (!ISO.test(String(s))) return false; const d = new Date(`${s}T00:00:00Z`); return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s; };
 function searchFieldErrors(store) {
   const present = SEARCH_FIELDS.filter((f) => f in store);
@@ -167,7 +174,8 @@ function searchFieldErrors(store) {
   if (!realDate(store.checkedThrough)) errs.push("checkedThrough must be a real calendar date when the store carries the search");
   if (!realDate(store.windowFrom)) errs.push("windowFrom must be a real calendar date");
   else if (realDate(store.checkedThrough) && store.windowFrom > store.checkedThrough) errs.push("windowFrom must not be after checkedThrough");
-  if (!Array.isArray(store.tools) || store.tools.length !== QUERY_TERMS.length || !store.tools.every((t, i) => t === QUERY_TERMS[i])) errs.push(`tools must be the watcher's query terms, in order: ${QUERY_TERMS.join(", ")}`);
+  if (!QUERY_TERMS.length) errs.push("the watcher's query is not of the form (abs:T OR abs:T …), so this line cannot describe it");
+  else if (!Array.isArray(store.tools) || store.tools.length !== QUERY_TERMS.length || !store.tools.every((t, i) => t === QUERY_TERMS[i])) errs.push(`tools must be the watcher's query terms, in order: ${QUERY_TERMS.join(", ")}`);
   if (!Number.isInteger(store.papersFound) || store.papersFound < 0) errs.push("papersFound must be a whole number, zero or more");
   return errs;
 }
@@ -178,7 +186,7 @@ export function searchLine(store) {
   if (!store || typeof store !== "object" || !SEARCH_FIELDS.every((f) => f in store) || searchFieldErrors(store).length) return "";
   const n = store.papersFound;
   const found = n === 0 ? "It found no papers." : `It found ${n} paper${n === 1 ? "" : "s"}.`;
-  return `<dt>Newer papers</dt><dd>On ${esc(store.checkedThrough)} we ran one search for every constant on this site, not this one alone: arXiv papers submitted from ${esc(store.windowFrom)} to ${esc(store.checkedThrough)} that matched an abstract search for ${esc(orList(store.tools))}. ${found} We searched no source other than arXiv, and papers matching none of these names were outside the search.</dd>`;
+  return `<dt>Newer papers</dt><dd>On ${esc(store.checkedThrough)} we ran one search for all the constants on this site's main list, not this one alone: arXiv papers submitted from ${esc(store.windowFrom)} to ${esc(store.checkedThrough)} that matched an abstract search for ${esc(orList(store.tools))}. ${found} We searched no source other than arXiv, and papers matching none of these names were outside the search.</dd>`;
 }
 
 /** The entries for one constant. */
@@ -247,18 +255,21 @@ export async function boundCellGuard(store = loadStore()) {
     if (line && !insideDl(a, line)) errs.push(`${id}: the newer-papers line is not inside the page's <dl>`);
     if (FORBIDDEN.test(block)) errs.push(`${id}: the rendered block uses the word "record"`);
   }
-  // A-86 (Codex r1): the line is meant for EVERY constant page, so also check one page with no entry at all.
+  // A-86: the line is meant for EVERY constant page, so every page with no entry is checked too (Codex r1
+  // asked for one, r2 showed one is a sample; the whole population is 120 cheap renders). Placement is by
+  // position inside the page's single <dl> only: markup that hides the line there (a <template>, say) is a
+  // hostile renderer edit this guard does not claim to catch (Codex r2, kept as a stated limit).
   const line = searchLine(store);
   if (line) {
     const ids = new Set(store.entries.map((e) => e.id));
-    const plain = rows.find((x) => !ids.has(x.id));
-    if (!plain) errs.push("no constant without an entry to check the newer-papers line on");
-    else {
-      const a = pages.renderPage(plain, manifest.sha, undefined, store);
-      const b = pages.renderPage(plain, manifest.sha, undefined, null);
-      if (!a.includes(line)) errs.push(`${plain.id}: a page with no entry does not carry the newer-papers line`);
-      else if (a.replace(line, "") !== b) errs.push(`${plain.id}: a page with no entry differs from its no-store render by more than the newer-papers line`);
-      else if (!insideDl(a, line)) errs.push(`${plain.id}: the newer-papers line is not inside the page's <dl>`);
+    const plain = rows.filter((x) => !ids.has(x.id));
+    if (!plain.length) errs.push("no constant without an entry to check the newer-papers line on");
+    for (const p of plain) {
+      const a = pages.renderPage(p, manifest.sha, undefined, store);
+      const b = pages.renderPage(p, manifest.sha, undefined, null);
+      if (!a.includes(line)) errs.push(`${p.id}: a page with no entry does not carry the newer-papers line`);
+      else if (a.replace(line, "") !== b) errs.push(`${p.id}: a page with no entry differs from its no-store render by more than the newer-papers line`);
+      else if (!insideDl(a, line)) errs.push(`${p.id}: the newer-papers line is not inside the page's <dl>`);
     }
   }
   return errs;
@@ -295,9 +306,10 @@ export async function selftest() {
   // A-86: the newer-papers line. Meaning first (scope words, window, date), the exact-string pin last, so a
   // mutation names the property it broke instead of only "the string differs".
   check("A-86: the watcher's query terms are read as the four names, in order (the positive control for the tools binding)", QUERY_TERMS.join("|") === "AlphaEvolve|ThetaEvolve|TTT-Discover|OpenEvolve");
+  check("A-86: a query of any other shape gives no terms (AND, a mixed AND/OR, a NOT, trailing text), so the line is refused rather than describing it", ['(abs:A AND abs:B)', '(abs:A OR abs:B AND abs:C)', '(abs:A OR NOT abs:B)', '(abs:A OR abs:B) AND cat:math.CO', 'abs:A OR abs:B'].every((q) => queryTermsOf(q).length === 0) && queryTermsOf('(abs:A OR abs:"B-C")').join("|") === "A|B-C");
   const searched = { ...good, checkedThrough: "2026-10-30", windowFrom: "2026-10-28", tools: [...QUERY_TERMS], papersFound: 0 };
   const sl = searchLine(searched);
-  check("A-86: the line says the search was one run for every constant, not this one alone", sl.includes("we ran one search for every constant on this site, not this one alone"));
+  check("A-86: the line says the search was one run for every constant, not this one alone", sl.includes("we ran one search for all the constants on this site's main list, not this one alone"));
   check("A-86: the line names every query term, as an abstract SEARCH, so the scope sits beside the date", QUERY_TERMS.every((t) => sl.includes(t)) && sl.includes("that matched an abstract search for"));
   check("A-86: the line says what was outside the search", sl.includes("We searched no source other than arXiv, and papers matching none of these names were outside the search."));
   check("A-86: the line states the window from AND through, and the day it ran", sl.includes("submitted from 2026-10-28 to 2026-10-30") && sl.startsWith("<dt>Newer papers</dt><dd>On 2026-10-30 "));
@@ -310,7 +322,7 @@ export async function selftest() {
   check("A-86: tools that differ from the watcher's query (one missing, reordered, an extra or a stranger) are refused", searchRefused({ tools: QUERY_TERMS.slice(1) }) && searchRefused({ tools: [...QUERY_TERMS].reverse() }) && searchRefused({ tools: [...QUERY_TERMS, "FunSearch"] }) && searchRefused({ tools: ["<b>x</b>", ...QUERY_TERMS.slice(1)] }));
   check("A-86: impossible calendar dates are refused (Codex r1's 2026-99-99 and 2026-00-00, and 2026-02-30)", searchRefused({ checkedThrough: "2026-99-99" }) && searchRefused({ windowFrom: "2026-00-00" }) && searchRefused({ windowFrom: "2026-02-30" }));
   check("A-86: a window after its own end and a non-integer or negative count are refused", searchRefused({ windowFrom: "2026-10-31" }) && searchRefused({ papersFound: 1.5 }) && searchRefused({ papersFound: -1 }));
-  check("A-86: the exact line (pinned last)", sl === "<dt>Newer papers</dt><dd>On 2026-10-30 we ran one search for every constant on this site, not this one alone: arXiv papers submitted from 2026-10-28 to 2026-10-30 that matched an abstract search for AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve. It found no papers. We searched no source other than arXiv, and papers matching none of these names were outside the search.</dd>");
+  check("A-86: the exact line (pinned last)", sl === "<dt>Newer papers</dt><dd>On 2026-10-30 we ran one search for all the constants on this site's main list, not this one alone: arXiv papers submitted from 2026-10-28 to 2026-10-30 that matched an abstract search for AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve. It found no papers. We searched no source other than arXiv, and papers matching none of these names were outside the search.</dd>");
   check("REFUSES an upper bound printed BELOW its exact value (rounded the wrong way)", v({ value: "0.3808590566148" }).some((e) => e.includes("wrong side")));
   // 0.3808591 IS a valid rounding up at the 7th place (gap 4.3e-8 < 1e-7); 0.3808592 is not (gap 1.4e-7).
   check("ACCEPTS a coarser rounding up (0.3808591), REFUSES one more than a unit away (0.3808592)", !v({ value: "0.3808591" }).some((e) => e.includes("not a rounding")) && v({ value: "0.3808592" }).some((e) => e.includes("not a rounding")));
