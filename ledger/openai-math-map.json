@@ -546,11 +546,8 @@
       "records": [
         {
           "id": "46a",
-          "tag": "read-no-note",
-          "statementChecked": false,
-          "statementRead": true,
-          "bears": true,
-          "reason": "Read 2026-10-30 and it bears; the note is held, not shown, until David answers the board card for it. On a yes this pair becomes formal-proof with statementChecked and the page's sourceSha256.",
+          "tag": "formal-proof",
+          "statementChecked": true,
           "screenedBy": [
             "claude"
           ],
@@ -564,15 +561,14 @@
             "theorem": "spherical_restriction",
             "text": "theorem spherical_restriction :\n    ∀ n : ℕ, 2 ≤ n → ∀ a : ℝ≥0∞, 1 < a → ∀ b : ℝ,\n      2 * (n : ℝ) / (n - 1) < b →\n      ((n : ℝ) + 1) / ((n : ℝ) - 1) * conjugateExponent a < b →\n      ∃ C : ℝ, 0 < C ∧ ∀ g : Space n → ℂ, MemLp g a (sphereMeasure n) →\n        MemLp (sphericalExtension g) (ENNReal.ofReal b) ∧\n        eLpNorm (sphericalExtension g) (ENNReal.ofReal b) volume ≤\n          ENNReal.ofReal C * eLpNorm g a (sphereMeasure n)"
           },
-          "match": "Take n = 3 and a = ∞, so a′ = 1: the conditions become b > 3 and b > 2, and the statement gives the bound this constant defines, from L^∞ of the 2-sphere to L^b of 3-space, for every b > 3. That would make C₄₆ at most 3, equal to its listed lower bound. Lean's sphere measure and its exp(+i x·ω) convention differ from the definition's surface measure and Fourier transform only by constants and a reflection, which change no L^∞ or L^b bound. The release calls its manuscripts raw research data at different stages of verification (README) and says it published this one as the model's output (history.md, 26 October 2026); neither document reports a human check of this proof."
+          "match": "Take n = 3 and a = ∞, so a′ = 1: the conditions become b > 3 and b > 2, and the statement gives the bound this constant defines, from L^∞ of the 2-sphere to L^b of 3-space, for every b > 3. That would make C₄₆ at most 3, equal to its listed lower bound. Lean's sphere measure and its exp(+i x·ω) convention differ from the definition's surface measure and Fourier transform only by constants and a reflection, which change no L^∞ or L^b bound. The release calls its manuscripts raw research data at different stages of verification (README) and says it published this one as the model's output (history.md, 26 October 2026); neither document reports a human check of this proof.",
+          "sourceSha256": "680a2d59c5422fe27a01c26d36df167fb91336eb00c68a24e974ed6f03f85bdd",
+          "shownOn": "2026-10-30, on David's yes to board card d780e2ec"
         },
         {
           "id": "77a",
-          "tag": "read-no-note",
-          "statementChecked": false,
-          "statementRead": true,
-          "bears": true,
-          "reason": "Read 2026-10-30 and it bears; the note is held, not shown, until David answers the board card for it. On a yes this pair becomes formal-proof with statementChecked and the page's sourceSha256.",
+          "tag": "formal-proof",
+          "statementChecked": true,
           "screenedBy": [
             "claude"
           ],
@@ -586,7 +582,9 @@
             "theorem": "bochner_riesz",
             "text": "theorem bochner_riesz :\n    ∀ n : ℕ, 2 ≤ n → ∀ p : ℝ≥0∞, 1 ≤ p → ∀ δ : ℝ,\n      max ((n : ℝ) * |(p⁻¹).toReal - 1 / 2| - 1 / 2) 0 < δ →\n      ∃ C : ℝ, 0 < C ∧ ∀ R : ℝ, 0 < R → ∀ f : SchwartzMap (Space n) ℂ,\n        MemLp (bochnerRiesz δ R f) p ∧\n        eLpNorm (bochnerRiesz δ R f) p volume ≤\n          ENNReal.ofReal C * eLpNorm f p volume"
           },
-          "match": "Take n = 3: the order condition is this constant's λ > λ₃,ₚ. The statement bounds the operator on Schwartz functions; for finite p that bound extends to all of Lᵖ by density. At p = 1 and p = ∞ the condition is λ > 1, where the Bochner–Riesz kernel is integrable (a classical fact, not part of the Lean statement), so those endpoints hold by convolution. The range in the definition is then established for every p, and Γ = 3 qualifies. That would make C₇₇ at most 3, equal to its listed lower bound. The statement is uniform in the radius R, so the 2π convention of the Fourier transform does not matter. The release calls its manuscripts raw research data at different stages of verification (README) and says it published this one as the model's output (history.md, 26 October 2026); neither document reports a human check of this proof."
+          "match": "Take n = 3: the order condition is this constant's λ > λ₃,ₚ. The statement bounds the operator on Schwartz functions; for finite p that bound extends to all of Lᵖ by density. At p = 1 and p = ∞ the condition is λ > 1, where the Bochner–Riesz kernel is integrable (a classical fact, not part of the Lean statement), so those endpoints hold by convolution. The range in the definition is then established for every p, and Γ = 3 qualifies. That would make C₇₇ at most 3, equal to its listed lower bound. The statement is uniform in the radius R, so the 2π convention of the Fourier transform does not matter. The release calls its manuscripts raw research data at different stages of verification (README) and says it published this one as the model's output (history.md, 26 October 2026); neither document reports a human check of this proof.",
+          "sourceSha256": "4d3b9040c85617f26f07d0b08b68a1d82afc5c936922328f166a6282c72bcf55",
+          "shownOn": "2026-10-30, on David's yes to board card d780e2ec"
         },
         {
           "id": "3b",
