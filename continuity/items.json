@@ -3203,7 +3203,7 @@
       "closeWhen": "Either the 'checked through' line is live after its review and David's yes, with this row's owner duties moved to a standing watch row, or David declines it and the store's ownership is written onto a standing row with its readCommand.",
       "notes": "Minted 2026-10-19 MT at the round-3 close, when A-82 closed (its closeWhen met: all 3 candidates carry a verdict with its evidence path in tmp/, counts on the row). A-82 carried two things its closeWhen did not cover: ownership of the newer-results store and its evaluator (scripts/newer-results.mjs, scripts/step-overlap.mjs, the reverify.yml selftest steps, all of which name A-82 as their origin), and the still-owed newer-results-checked-through line, which A-82's notes kept as outward work behind review and David's gate. Both move here so they are not lost with the close.",
       "created": "2026-10-20",
-      "updated": "2026-10-27",
+      "updated": "2026-10-30",
       "readCommandLastTimeout": {
         "at": "2026-10-26T15:18:10.150Z",
         "capMs": 180000,
@@ -3215,7 +3215,8 @@
         "reason": "over-cap 180081ms vs 180000ms — the child was KILLED at the cap after 180081ms with 3384 byte(s) of partial output. A partial capture is an UNFINISHED read, not a short one. Raise readCommandTimeoutMs (cap 600000ms), split the command, or make it cheaper."
       },
       "readCommandTimeoutMs": "600000",
-      "lastEvaluated": "2026-10-27"
+      "lastEvaluated": "2026-10-27",
+      "progress2026_10_30": "2026-10-30 MT: leg (1) decided and run: the constants watch ran (window 2026-10-28 to 2026-10-30, \"RESULT: COMPLETE — no candidate (exit 0)\", 0 papers; output in tmp/, not committed). Leg (2): the line is built DARK (6600c0a, 3ef254b, fc1f071, a48d693, pushed): it renders only when ledger/newer-results.json carries windowFrom, tools and papersFound. Codex cross-family claims pass + adversarial review: r1 7 findings, r2 4, r3 \"SEND-READY\"; fates in docs/decisions/2026-10-30-A86-newer-papers-line.md. Card 903a38ba filed for David (needs-decision msg 0289b903), carrying the exact text. On his yes: write the three fields plus checkedThrough 2026-10-30, re-render the c/ pages, push, then npm run served. On a no: record it here, and the store's ownership moves to a standing row per closeWhen."
     },
     {
       "id": "A-87",
