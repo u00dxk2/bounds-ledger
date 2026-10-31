@@ -56,7 +56,7 @@
         },
         {
           "id": "65a",
-          "tag": "unchecked",
+          "tag": "read-no-note",
           "statementChecked": false,
           "screenedBy": [
             "claude",
@@ -65,39 +65,71 @@
           "confidence": {
             "claude": "low",
             "codex": "low"
+          },
+          "statementRead": true,
+          "bears": false,
+          "reason": "Read 2026-10-30 (cycle 4): the family's Lean statement, QuasiRiemannHypothesis.lean (the same file read for 8a), which says the Riemann zeta function has no zero with real part greater than 7/8. Linnik's exponent needs zero-free regions and zero-density estimates for the Dirichlet L-functions L(s, chi) modulo q, uniformly in q. A statement about zeta alone says nothing about L(s, chi) for any non-principal character, so it gives no exponent. Does not bear.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/QuasiRiemannHypothesis.lean",
+            "theorem": "riemannZeta_ne_zero_of_seven_eighths_lt_re",
+            "text": "theorem riemannZeta_ne_zero_of_seven_eighths_lt_re\n    {s : ℂ} (hs : (7 / 8 : ℝ) < s.re) : riemannZeta s ≠ 0"
           }
         },
         {
           "id": "21a",
-          "tag": "unchecked",
+          "tag": "read-no-note",
           "statementChecked": false,
           "screenedBy": [
             "codex"
           ],
           "confidence": {
             "codex": "low"
+          },
+          "statementRead": true,
+          "bears": false,
+          "reason": "Read 2026-10-30 (cycle 4): the family's Lean statement, QuasiRiemannHypothesis.lean (the same file read for 8a), which says the Riemann zeta function has no zero with real part greater than 7/8. With H_0(z) = (1/8) xi((1 + iz)/2), a zero at real part sigma has |Im z| = 2|sigma - 1/2|, so by the functional equation every zero of H_0 lies in |Im z| <= 3/4. De Bruijn's 1950 strip theorem (zeros of H_0 in |Im z| <= Delta give real zeros for lambda >= Delta^2/2; a classical fact, not part of the release) then gives this constant at most 9/32 = 0.28125. That is above the 0.2 and 0.22 rows already listed, so the statement implies only a weaker bound. Does not bear.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/QuasiRiemannHypothesis.lean",
+            "theorem": "riemannZeta_ne_zero_of_seven_eighths_lt_re",
+            "text": "theorem riemannZeta_ne_zero_of_seven_eighths_lt_re\n    {s : ℂ} (hs : (7 / 8 : ℝ) < s.re) : riemannZeta s ≠ 0"
           }
         },
         {
           "id": "62a",
-          "tag": "unchecked",
+          "tag": "read-no-note",
           "statementChecked": false,
           "screenedBy": [
             "codex"
           ],
           "confidence": {
             "codex": "low"
+          },
+          "statementRead": true,
+          "bears": false,
+          "reason": "Read 2026-10-30 (cycle 4): the family's Lean statement, QuasiRiemannHypothesis.lean (the same file read for 8a), which says the Riemann zeta function has no zero with real part greater than 7/8. The route we know from a zero-free half-plane to the Lindelof exponent (no zeros for sigma > 7/8 gives growth t^epsilon there, the functional equation gives exponent 3/8 at sigma = 1/8, and convexity between them) gives at most 3/16 = 0.1875 at the critical line. That is our derivation, not checked against a printed source, and it is above the listed 13/84 (about 0.1548). We found no route from this statement to a bound below 13/84. Does not bear.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/QuasiRiemannHypothesis.lean",
+            "theorem": "riemannZeta_ne_zero_of_seven_eighths_lt_re",
+            "text": "theorem riemannZeta_ne_zero_of_seven_eighths_lt_re\n    {s : ℂ} (hs : (7 / 8 : ℝ) < s.re) : riemannZeta s ≠ 0"
           }
         },
         {
           "id": "62b",
-          "tag": "unchecked",
+          "tag": "read-no-note",
           "statementChecked": false,
           "screenedBy": [
             "codex"
           ],
           "confidence": {
             "codex": "low"
+          },
+          "statementRead": true,
+          "bears": false,
+          "reason": "Read 2026-10-30 (cycle 4): the family's Lean statement, QuasiRiemannHypothesis.lean (the same file read for 8a), which says the Riemann zeta function has no zero with real part greater than 7/8. This constant is a q-aspect exponent for Dirichlet L-functions at the central point, over all primitive characters modulo q. A statement about zeta alone says nothing about L(1/2, chi) as q grows. Does not bear.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/QuasiRiemannHypothesis.lean",
+            "theorem": "riemannZeta_ne_zero_of_seven_eighths_lt_re",
+            "text": "theorem riemannZeta_ne_zero_of_seven_eighths_lt_re\n    {s : ℂ} (hs : (7 / 8 : ℝ) < s.re) : riemannZeta s ≠ 0"
           }
         }
       ]
@@ -486,13 +518,21 @@
       "records": [
         {
           "id": "23b",
-          "tag": "unchecked",
+          "tag": "read-no-note",
           "statementChecked": false,
           "screenedBy": [
             "codex"
           ],
           "confidence": {
             "codex": "high"
+          },
+          "statementRead": true,
+          "bears": false,
+          "reason": "Read 2026-10-30 (cycle 4): both of the family's Lean statements, AsymptoticallyMinimalLittlewood.lean and LittlewoodFiniteFlatness.lean, at the map's pinned sha. This constant is the decay exponent alpha in kappa(n) = 1 + f(n)/n^alpha for the condition number of n x n sign matrices. The natural route is a circulant sign matrix, whose singular values are |P(w)| at the N-th roots of unity. The first statement bounds only the MAXIMUM of |P| on the circle by (1 + eta) sqrt N, and says nothing about its minimum, so it does not bound the smallest singular value. The second is an L^p-mean statement on the whole circle, not a pointwise bound at roots of unity. Neither carries a rate in N (the scope page lean/docs/076.md says the results are existential with no effective convergence rate). So at most they would give kappa(n) tending to 1, which is the trivial alpha = 0 row, below the listed 17/92. Does not bear.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/AsymptoticallyMinimalLittlewood.lean",
+            "theorem": "main",
+            "text": "def MainStatement : Prop :=\n  ∀ η : ℝ, 0 < η → ∃ N₀ : ℕ, 1 ≤ N₀ ∧ ∀ N : ℕ, N₀ ≤ N →\n    ∃ ε : Fin N → ℝ, IsRealSigning ε ∧\n      ∀ z : ℂ, ‖z‖ = 1 → ‖littlewoodValue ε z‖ ≤ (1 + η) * Real.sqrt N"
           }
         }
       ]
@@ -777,7 +817,7 @@
       "records": [
         {
           "id": "50a",
-          "tag": "unchecked",
+          "tag": "read-no-note",
           "statementChecked": false,
           "screenedBy": [
             "claude",
@@ -786,6 +826,14 @@
           "confidence": {
             "claude": "low",
             "codex": "low"
+          },
+          "statementRead": true,
+          "bears": false,
+          "reason": "Read 2026-10-30 (cycle 4) by a reading agent at the map's pinned sha (every Lean file the scope page links), checked by the lead against the saved files. Files: UniqueGamesTheorem, OptimalMaxCut, VertexCover, MinUncut, DirectedFeedback. All five are about classical problems (unique games, Max-Cut, vertex cover, Min-UnCut, directed feedback vertex set); none mentions a quantum Hamiltonian. This constant is the best polynomial-time approximation ratio for quantum Max Cut. Reaching it from classical Max-Cut hardness would need a reduction that is in none of the files, and a hardness gap bounds an approximation ratio only under an assumption such as P different from NP, which the files do not build in. The listed upper bound below 1 is already of that kind. Does not bear.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/OptimalMaxCut.lean",
+            "theorem": "main",
+            "text": "def MainStatement : Prop :=\n  ∀ α : ℝ, alphaGW < α → α ≤ 1 → Nonempty (GapReduction α)"
           }
         }
       ]
@@ -1184,7 +1232,7 @@
       "records": [
         {
           "id": "ramsey-classical",
-          "tag": "unchecked",
+          "tag": "read-no-note",
           "statementChecked": false,
           "screenedBy": [
             "claude",
@@ -1193,6 +1241,14 @@
           "confidence": {
             "claude": "low",
             "codex": "low"
+          },
+          "statementRead": true,
+          "bears": false,
+          "reason": "Read 2026-10-30 (cycle 4) by a reading agent at the map's pinned sha (every Lean file the scope page links), checked by the lead against the saved files. Files: RamseyFive and SharpLogRamsey: sharp logarithmic exponents for R(5,t) and for R(s,t) with s at least 6, as t grows, with constants that exist but are not given and a threshold t0 that is not bounded. The ledger's Ramsey area watches specific small values R(k,l) with l at most 15 (Tables Ia and Ib of the survey), and these asymptotic statements imply none of them. They also say nothing about R(3,k), so not about 17b. Does not bear.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/SharpLogRamsey.lean",
+            "theorem": "main",
+            "text": "theorem main (s : ℕ) (hs : 6 ≤ s) : MainBounds s ∧ MainLimit s"
           }
         }
       ]
@@ -1217,13 +1273,21 @@
       "records": [
         {
           "id": "75a",
-          "tag": "unchecked",
+          "tag": "read-no-note",
           "statementChecked": false,
           "screenedBy": [
             "codex"
           ],
           "confidence": {
             "codex": "low"
+          },
+          "statementRead": true,
+          "bears": false,
+          "reason": "Read 2026-10-30 (cycle 4) by a reading agent at the map's pinned sha (every Lean file the scope page links), checked by the lead against the saved files. Files: StrongThinTree and AlgorithmicThinTrees: every k-edge-connected multigraph has a spanning tree that is C/k-thin, for some C > 0 whose value is not given (the scope page says no numerical value of C is asserted). This constant is the subtour LP integrality gap for metric TSP. Any route from thin trees to an integrality-gap bound needs an explicit small C, so nothing as strong as the listed 3/2 − 2.18·10^-34 follows. Does not bear.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/StrongThinTree.lean",
+            "theorem": "strongThinTree",
+            "text": "def MainStatement : Prop :=\n  ∃ C : ℝ, 0 < C ∧ ∀ (k : ℕ), 1 ≤ k → ∀ (n m : ℕ), 2 ≤ n →\n    ∀ G : MultiGraph n m, G.EdgeConnected k →\n      ∃ T : Finset (Fin m), G.SpanningTree T ∧\n        ∀ S : Finset (Fin n), S.Nonempty → S ≠ Finset.univ →\n          ((G.cut T S).card : ℝ) ≤ (C / (k : ℝ)) * (G.cut Finset.univ S).card"
           }
         }
       ]
@@ -1298,13 +1362,21 @@
       "records": [
         {
           "id": "ramsey-classical",
-          "tag": "unchecked",
+          "tag": "read-no-note",
           "statementChecked": false,
           "screenedBy": [
             "codex"
           ],
           "confidence": {
             "codex": "low"
+          },
+          "statementRead": true,
+          "bears": false,
+          "reason": "Read 2026-10-30 (cycle 4) by a reading agent at the map's pinned sha (every Lean file the scope page links), checked by the lead against the saved files. File: CliqueFreeLog: a K_r-free graph (r at least 4) with average degree d has independence number at least c·n·log d/d for some c > 0 that is not given. That yields only asymptotic upper bounds on R(r,t) with an unspecified constant, so no specific small R(k,l) the Ramsey area watches follows, and r at least 4 leaves R(3,k) untouched. Does not bear.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/CliqueFreeLog.lean",
+            "theorem": "logarithmic_independence_bound",
+            "text": "theorem logarithmic_independence_bound (r : ℕ) (hr : 4 ≤ r) :\n    ∃ c : ℝ, 0 < c ∧\n      ∀ {V : Type} [Fintype V] (G : SimpleGraph V),\n        G.CliqueFree r → 2 ≤ averageDegree G →\n        c * (Fintype.card V : ℝ) * Real.log (averageDegree G) / averageDegree G ≤\n          (G.indepNum : ℝ)"
           }
         }
       ]
@@ -1465,7 +1537,7 @@
       "records": [
         {
           "id": "80a",
-          "tag": "unchecked",
+          "tag": "read-no-note",
           "statementChecked": false,
           "screenedBy": [
             "claude",
@@ -1474,6 +1546,14 @@
           "confidence": {
             "claude": "low",
             "codex": "low"
+          },
+          "statementRead": true,
+          "bears": false,
+          "reason": "Read 2026-10-30 (cycle 4) by a reading agent at the map's pinned sha (every Lean file the scope page links), checked by the lead against the saved files. Files: IsingFiniteness, PerceptronFreeEnergy, SphericalField. This constant is the capacity of the zero-margin Ising perceptron (sign vectors). The only Ising statement is that a variational value is finite for a bounded continuous potential; its scope page says it does not assert convergence of the finite-system pressure. The convergence theorem is for the spherical perceptron, a different model, at finite temperature with a bounded continuous potential, while the capacity needs the hard indicator constraint. No bound on this constant follows in either direction. Does not bear.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/PerceptronFreeEnergy.lean",
+            "theorem": "main",
+            "text": "theorem main (P : Measure BrownianPath) [IsProbabilityMeasure P]\n    (hB : IsBrownianReal brownianEval P)\n    (α β : ℝ) (hα : 0 < α) (hβ : 0 < β) (φ : ℝ →ᵇ ℝ) :\n    ∃ p : ℝ, variationalValue P α β φ = (p : EReal) ∧\n      Tendsto (fun N : ℕ => expectedPressure α β φ (N + 1)) atTop (𝓝 p) ∧\n      ∀ ε : ℝ, 0 < ε →\n        Tendsto (fun N : ℕ => patternLaw α (N + 1)\n          {g | ε < |pressure α β φ (N + 1) g - p|}) atTop (𝓝 0)"
           }
         }
       ]
