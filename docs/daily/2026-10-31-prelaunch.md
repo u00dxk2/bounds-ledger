@@ -80,7 +80,13 @@ node C:/dev/skylark/bounds-ledger/scripts/arxiv-watch.mjs --selftest
 
 ## What changed
 
-- Nothing committed yet today. P1 is evidence and choice only.
+<!-- findings:begin -->
+- **The packet assumed a wider search would just widen the dates. It found papers, so the wording had to change.** The single search over 2026-09-26 to 2026-10-31 fetched 15 papers, and `arxiv-watch.mjs --check --area constants --from 2026-09-26` printed "papers fetched: 15 · verdicts: 15 · every fetched id has exactly one verdict", "claims-a-better-bound: 0", "stated bounds EQUAL to a value we show: 0 · WEAKER than it: 83" and "stated bounds on sides this script cannot rank (an unverified or symbolic row): 15 (to read by hand)". The manager's review had already said a nonzero count must not go live bare (as quoted: "It found 8 papers" would read as 8 newer results on every constant). So the store and pages stay unchanged, and a per-constant sentence went to David on card `f64e9a3b`.
+- **The readers' "states a bound" over-read what one paper says.** I read arXiv:2609.40340v1 myself. Its Appendix C.1 AC3 task measures the 1d quantity over step functions, and its Table 9 ("Mean ± Std / Best") gives 1.4564 as the best score of two search runs. The paper presents these numbers as evaluator scores, not bounds. 1.4564 is below every 1d row, including the asterisked 1.457854884921989*. So every sentence now says a paper "reports a value", and the 1d candidate stays out of the repository until someone checks the value.
+<!-- findings:end -->
+
+- `9c643ee`, `3fdc36a`, `a9a61b5`, `060206b`, `2dc5fe9` (pushed): `arxiv-watch.mjs --from` starts the constants window earlier than the mirror's fetch date, never later, and `--check` must be given the same date. Codex reviewed it four times: rounds 1 to 3 each said FIX FIRST, and round 4 found one overstated comment. Every finding was fixed and red-armed. Rounds 2 and 3 hit the same guard, so it became one stated rule and then a read-once copy rather than more checks.
+- `f8ae73f`, `d48bff2`, `069aa47`, `81fb1e4` (committed, not pushed while a last review runs): the newer-papers line says what the found papers mean for each constant, dark behind a new store field `perConstant`. `render-constant-pages --check` reads "120 constant page(s) match committed state". Codex claims pass round 2: "CLAIMS VERDICT: SEND-READY".
 
 ## Inputs (controllable)
 
