@@ -31,7 +31,7 @@
       "records": [
         {
           "id": "8a",
-          "tag": "unchecked",
+          "tag": "read-no-note",
           "statementChecked": false,
           "screenedBy": [
             "claude",
@@ -40,7 +40,18 @@
           "confidence": {
             "claude": "high",
             "codex": "high"
-          }
+          },
+          "statementRead": true,
+          "bears": true,
+          "reason": "Read 2026-10-30 (cycle 3) and it bears; the note is held, not shown, until David answers the board card for it. The derivation uses two facts outside the Lean statement, both stated on this constant's mirrored page. On a yes this pair becomes formal-proof with statementChecked and the page's sourceSha256. Codex claims pass 2026-10-30 (tmp/codex-c3c-out.txt, local): the derivation holds; the claim was narrowed to zeta and the README sentence narrowed. NOT ready for a card: the shared status line (\"We read the statement and it matches this constant's definition\") is misleading for a note that needs a derivation, and a per-note status needs a renderer change with its own review first.",
+          "familyTitle": "The quasi-Riemann hypothesis",
+          "claim": "that the Riemann zeta function has no zero with real part greater than 7/8.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/QuasiRiemannHypothesis.lean",
+            "theorem": "riemannZeta_ne_zero_of_seven_eighths_lt_re",
+            "text": "theorem riemannZeta_ne_zero_of_seven_eighths_lt_re\n    {s : ℂ} (hs : (7 / 8 : ℝ) < s.re) : riemannZeta s ≠ 0"
+          },
+          "match": "Every zero σ + it of ζ would then have σ ≤ 7/8. Two facts from outside the Lean statement, both stated on this constant's own page: the lowest zero has ordinate γ₁ = 14.1347… and lies on σ = 1/2 (the lower-bound row), and the Riemann hypothesis is verified up to height H = 3·10¹² (the comment on the 4.896 row). Take R = 2/log γ₁. A zero with 2 ≤ |t| ≤ H has σ = 1/2, and 1/2 ≤ 1 − 1/(R log|t|) because |t| ≥ γ₁. A zero with |t| > H has σ ≤ 7/8, below 1 − 1/(R log H) ≈ 0.954. So no zero lies in the region the definition excludes, σ > 1 − 1/(R log|t|) with |t| ≥ 2, which would make C₈ at most 2/log γ₁ ≈ 0.755106, equal to its listed lower bound. The release calls its manuscripts raw research data at different stages of verification and says its zero-free-region work was an exception to its usual procedure (README). Neither README.md nor history.md reports a human check of this 7/8 proof."
         },
         {
           "id": "65a",
@@ -1522,7 +1533,7 @@
       "records": [
         {
           "id": "52a",
-          "tag": "unchecked",
+          "tag": "read-no-note",
           "statementChecked": false,
           "screenedBy": [
             "claude",
@@ -1531,6 +1542,14 @@
           "confidence": {
             "claude": "medium",
             "codex": "high"
+          },
+          "statementRead": true,
+          "bears": true,
+          "reason": "Read 2026-10-30 (cycle 3). The statements claim that the threshold this page calls conjectured exists for uniform random 3-SAT (the page's model: clauses on three distinct variables, independent signs, drawn with replacement) and is a computable positive real. They set no value, so no bound on the page moves, and no note is built. Whether to show an existence note is a separate decision.",
+          "statement": {
+            "path": "lean/ComparatorChallenges/FixedClauseThreshold.lean",
+            "theorem": "main",
+            "text": "theorem main (k : ℕ) (hk : 3 ≤ k) : HasLimitingThreshold k"
           }
         }
       ]
