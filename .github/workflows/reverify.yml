@@ -275,6 +275,10 @@ jobs:
       # The --upstream comparison needs the network and stays out of CI.
       - name: Self-test Anthropic formal-math map (no network)
         run: node scripts/anthropic-formal-math.mjs --selftest
+      # A-92 decision 5: the OpenAlex candidate frame refuses a leg whose date slices do not account
+      # for the unsliced stated count exactly. The fetch itself needs the network and stays out of CI.
+      - name: Self-test ETH OpenAlex frame reconcile (no network)
+        run: node scripts/eth-openalex-frame.mjs --selftest
       # A-45's stale-value resolvability indicator. Only its SELF-TEST runs here: the live read
       # shells `git log`/`git show` over the whole history of ledger/claims.json, and CI checks out
       # at fetch-depth 1, so a live run on a runner would read a truncated history and report a
