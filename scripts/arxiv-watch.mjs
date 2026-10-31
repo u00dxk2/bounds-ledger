@@ -747,8 +747,9 @@ function selftest() {
   check("a CONTROL check says it makes no coverage claim", judge(papersDoc, good, shown, null).lines[0].startsWith("CONTROL set"));
 
   // THE OUTPUT RULE, pinned: every line judge() returns on every fixture above, hostile ones included,
-  // matches one exact shape in OUTPUT_SHAPES. A line carrying input text other than a validated date or a
-  // computed count cannot match ({D} admits only YYYY-MM-DD).
+  // matches one exact shape in OUTPUT_SHAPES: its fixed text must be exact, {D} admits only YYYY-MM-DD and
+  // {N} only digits. A shape cannot tell a computed count from some other integer in a {N} slot (Codex r4);
+  // the exact-lines fixtures below are what check values.
   const emitted = [
     ...refusals.map(([, pd, vd]) => judge(pd, vd, shown)),
     ...windowRefusals.map(([, patch]) => judge({ ...windowDoc, ...patch }, good, shown, expect)),
