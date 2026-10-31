@@ -51,7 +51,8 @@
 // THE SECOND AREA (--area constants, 2026-10-16): the 115 constants mirrored from teorth/optimizationproblems
 // under ledger/teorth-optimizationproblems/. Every flag above takes --area; without it the area is ramsey
 // and that path is unchanged. Its window starts at the mirror's fetch date (manifest.json fetchedAt), since
-// the mirror has no revision date of its own; its query is CONSTANTS_QUERY, which reaches only papers whose
+// the mirror has no revision date of its own, unless --from YYYY-MM-DD moves the start EARLIER (2026-10-31,
+// W-17's gap; never later, and --check must be given the same --from, see resolveFrom); its query is CONSTANTS_QUERY, which reaches only papers whose
 // abstract names one of four automated-discovery systems (CONSTANTS_BLIND_TO says what that misses). The
 // value each claim is compared with is the BEST row on that side of the table (the smallest upper bound, the
 // largest lower bound), never the last-listed row, because upstream does not keep rows in order (1a). A
@@ -344,6 +345,20 @@ export async function fetchWindow(from, to, { fetchImpl = fetch, pause = () => n
 // for forbidden content, which a pattern list can miss; they check syntax, the exact lines check values.
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
+// THE --from START (constants area only, 2026-10-31; W-17's gap). The constants window opens at the mirror's
+// fetch date, so a resnap starts a new window and the days between two runs can go unsearched (2026-10-17 to
+// 2026-10-27 did). --from moves the start EARLIER, never later: a later start would search less than the
+// default and hide that it did. --check must be given the same --from, and refuses a papers.json whose start
+// differs, so a run is judged against the window its caller says it searched. A missing value is refused,
+// never read as "no flag" (argValue returns null for both).
+export function resolveFrom(arg, mirrorFrom) {
+  if (arg === null || arg === undefined) return { from: mirrorFrom };
+  const t = ISO_DATE.test(arg) ? new Date(`${arg}T00:00:00Z`) : null;
+  if (!t || Number.isNaN(t.getTime()) || t.toISOString().slice(0, 10) !== arg) return { error: "--from takes a real date written YYYY-MM-DD" };
+  if (arg > mirrorFrom) return { error: "--from may only start the window earlier than the mirror's fetch date, never later" };
+  return { from: arg };
+}
+
 // Every line judge() may return, exactly: {N} is a script-computed integer, {D} a validated date.
 export const OUTPUT_SHAPES = [
   "REFUSED — papers.json holds no papers array",
@@ -382,12 +397,14 @@ export const OUTPUT_SHAPES = [
   // the constants area (--area constants)
   "REFUSED — papers.json was fetched against a different mirror than the ledger holds",
   "REFUSED — papers.json's window does not start at the mirror's fetch date",
+  "REFUSED — papers.json's window does not start at the --from date given to --check",
   "REFUSED — verdict #{N}: a claim is malformed (a constant id this mirror carries, side lower or upper, a decimal value written as a string, a relation matching the side)",
   "RESULT: UNREADABLE — papers.json does not exist in the --out directory (exit 2)",
   "RESULT: UNREADABLE — verdicts.json does not exist in the --out directory (exit 2)",
   "RESULT: UNREADABLE — papers.json is not valid JSON (exit 2)",
   "RESULT: UNREADABLE — verdicts.json is not valid JSON (exit 2)",
   "coverage: this watcher's constants query · submitted {D} to {D} (UTC dates), from the mirror's fetch date",
+  "coverage: this watcher's constants query · submitted {D} to {D} (UTC dates), from a --from start before the mirror's fetch date ({D})",
   "stated bounds on sides this script cannot rank (an unverified or symbolic row): {N} (to read by hand)",
   "stated bounds within the printed precision of a value we show: {N} (to read by hand)",
 ];
@@ -414,6 +431,7 @@ export const AREAS = {
   constants: {
     revisionRefusal: "papers.json was fetched against a different mirror than the ledger holds",
     startRefusal: "papers.json's window does not start at the mirror's fetch date",
+    fromRefusal: "papers.json's window does not start at the --from date given to --check",
     malformed: "a claim is malformed (a constant id this mirror carries, side lower or upper, a decimal value written as a string, a relation matching the side)",
     // relation is REQUIRED (Codex r3, I1): <= or < for an upper bound, >= or > for a lower one.
     validClaim: (c, shown) => !!c && typeof c.constant === "string" && shown.has(c.constant) && ["lower", "upper"].includes(c.side) && typeof c.value === "string" && DECIMAL_STRING.test(c.value)
@@ -424,9 +442,15 @@ export const AREAS = {
     // (a unicode minus read as "-"). Anything else is refused, and the reader appends "[= value]".
     quoteHas: (quote, value) => numberTokens(quote).includes(value),
     compare: (shown, c) => compareConstant(shown, c),
-    coverage: (expect, to) => `coverage: this watcher's constants query · submitted ${expect.from} to ${to} (UTC dates), from the mirror's fetch date`,
+    // The start is named for what it is: the mirror's fetch date, or a --from start before it (2026-10-31).
+    coverage: (expect, to) => (fromMoved(expect)
+      ? `coverage: this watcher's constants query · submitted ${expect.from} to ${to} (UTC dates), from a --from start before the mirror's fetch date (${expect.mirrorFrom})`
+      : `coverage: this watcher's constants query · submitted ${expect.from} to ${to} (UTC dates), from the mirror's fetch date`),
   },
 };
+
+// True when the caller's expected start is a --from date, not the population's own start date.
+const fromMoved = (expect) => typeof expect?.mirrorFrom === "string" && expect.from !== expect.mirrorFrom;
 
 export function judge(papersDoc, verdictsDoc, shown, expect = null, areaName = "ramsey") {
   const area = AREAS[areaName];
@@ -438,7 +462,8 @@ export function judge(papersDoc, verdictsDoc, shown, expect = null, areaName = "
   if (expect) {
     if (papersDoc.query !== expect.query) return refuse("papers.json was fetched with a different query than this watcher's");
     if (papersDoc.revision !== expect.revision) return refuse(area.revisionRefusal);
-    if (papersDoc.window?.from !== expect.from) return refuse(area.startRefusal);
+    if (fromMoved(expect) && !area.fromRefusal) return refuse(area.startRefusal);
+    if (papersDoc.window?.from !== expect.from) return refuse(fromMoved(expect) ? area.fromRefusal : area.startRefusal);
     const fetchedAt = new Date(papersDoc.fetchedAt);
     const to = papersDoc.window?.to;
     if (typeof to !== "string" || !ISO_DATE.test(to) || to < expect.from) return refuse("papers.json's window end is not a date on or after its start");
@@ -528,8 +553,11 @@ function argValue(args, flag) {
 function population(areaName) {
   if (areaName === "constants") {
     const m = JSON.parse(readFileSync(CONSTANTS_MANIFEST, "utf8"));
-    return { query: CONSTANTS_QUERY, revision: m.sha, from: m.fetchedAt.slice(0, 10), blindTo: CONSTANTS_BLIND_TO, shown: () => constantsShown(),
-      describe: (from, to) => `window: submitted ${from} to ${to}, UTC dates (from the mirror's fetch date in ledger/teorth-optimizationproblems/manifest.json)`,
+    const mirrorFrom = m.fetchedAt.slice(0, 10);
+    return { query: CONSTANTS_QUERY, revision: m.sha, from: mirrorFrom, blindTo: CONSTANTS_BLIND_TO, shown: () => constantsShown(),
+      describe: (from, to) => (from === mirrorFrom
+        ? `window: submitted ${from} to ${to}, UTC dates (from the mirror's fetch date in ledger/teorth-optimizationproblems/manifest.json)`
+        : `window: submitted ${from} to ${to}, UTC dates (start set by --from, earlier than the mirror's fetch date ${mirrorFrom} in ledger/teorth-optimizationproblems/manifest.json)`),
       out: () => join(defaultOut(), "constants") };
   }
   const doc = JSON.parse(readFileSync(LEDGER, "utf8"));
@@ -544,9 +572,16 @@ async function main(args) {
   if (!AREAS[areaName]) { console.error(`usage: --area takes ${Object.keys(AREAS).join(" or ")}`); return 2; }
   const pop = population(areaName);
   const out = argValue(args, "--out") ?? pop.out();
+  // --from (constants only): resolved once, so --fetch and --check apply the same rule.
+  let resolved = { from: pop.from };
+  if (args.includes("--from")) {
+    if (areaName !== "constants") { console.error("usage: --from applies to --area constants only"); return 2; }
+    resolved = resolveFrom(argValue(args, "--from") ?? "", pop.from);
+    if (resolved.error) { console.error(`usage: ${resolved.error}`); return 2; }
+  }
 
   if (args[0] === "--fetch") {
-    const from = pop.from;
+    const from = resolved.from;
     // ONE timestamp for both the window end and fetchedAt: a fetch that crosses UTC midnight would
     // otherwise record two dates, and --check would refuse its own file (Codex r3).
     const startedAt = new Date();
@@ -585,7 +620,7 @@ async function main(args) {
     for (const f of [pf, vf]) {
       try { parsed.push(JSON.parse(readFileSync(f, "utf8"))); } catch { console.log(`RESULT: UNREADABLE — ${label(f)} is not valid JSON (exit 2)`); return 2; }
     }
-    const expect = args.includes("--control") ? null : { query: pop.query, revision: pop.revision, from: pop.from };
+    const expect = args.includes("--control") ? null : { query: pop.query, revision: pop.revision, from: resolved.from, mirrorFrom: pop.from };
     const r = judge(parsed[0], parsed[1], pop.shown(), expect, areaName);
     for (const line of r.lines) console.log(line);
     if (r.code === 3) { console.log("RESULT: REFUSED (exit 3)"); return 3; }
@@ -594,7 +629,7 @@ async function main(args) {
     return r.code;
   }
 
-  console.error("usage: node scripts/arxiv-watch.mjs --fetch | --check [--control] [--out <dir>] | --selftest, each with [--area ramsey | constants]");
+  console.error("usage: node scripts/arxiv-watch.mjs --fetch | --check [--control] [--out <dir>] | --selftest, each with [--area ramsey | constants]; --area constants also takes [--from YYYY-MM-DD] on --fetch and --check");
   return 2;
 }
 
@@ -854,7 +889,27 @@ ${lowerTail}
     check(`constants judge REFUSES a window run with ${label}`, r.code === 3 && r.lines[0].includes(reason));
   }
   check("a Ramsey window run is REFUSED by the constants judge, and a constants one by the Ramsey judge", judge(windowDoc, good, cshown, cExpect, "constants").code === 3 && judge(cWindow, cGood, shown, expect, "ramsey").code === 3);
+  // --from (2026-10-31, W-17's gap): the start may move EARLIER, never later, and --check must be given it.
+  check("resolveFrom: no --from is the mirror's fetch date", resolveFrom(null, "2026-10-28").from === "2026-10-28");
+  check("resolveFrom: an earlier real date is accepted", resolveFrom("2026-09-26", "2026-10-28").from === "2026-09-26");
+  check("resolveFrom: the mirror's own date is accepted", resolveFrom("2026-10-28", "2026-10-28").from === "2026-10-28");
+  check("resolveFrom REFUSES a start later than the mirror's fetch date", /earlier than the mirror's fetch date/.test(resolveFrom("2026-10-29", "2026-10-28").error ?? ""));
+  check("resolveFrom REFUSES a date not written YYYY-MM-DD", /real date/.test(resolveFrom("2026-9-26", "2026-10-28").error ?? ""));
+  check("resolveFrom REFUSES a date that does not exist (02-30)", /real date/.test(resolveFrom("2026-02-30", "2026-10-28").error ?? ""));
+  check("resolveFrom REFUSES an empty value (a --from with nothing after it)", /real date/.test(resolveFrom("", "2026-10-28").error ?? ""));
+  const fExpect = { ...cExpect, from: "2026-09-01", mirrorFrom: "2026-09-26" };
+  const fWindow = { ...cWindow, window: { from: "2026-09-01", to: "2026-10-16" } };
+  const fOk = judge(fWindow, cGood, cshown, fExpect, "constants");
+  check("constants judge accepts a window that starts at the --from date given to --check", fOk.code === 1
+    && fOk.lines[0] === "coverage: this watcher's constants query · submitted 2026-09-01 to 2026-10-16 (UTC dates), from a --from start before the mirror's fetch date (2026-09-26)");
+  const fOther = judge(fWindow, cGood, cshown, { ...fExpect, from: "2026-09-10" }, "constants");
+  check("constants judge REFUSES a window whose start is not the --from date given to --check", fOther.code === 3 && fOther.lines[0].includes("the --from date given to --check"));
+  const fNoFlag = judge(fWindow, cGood, cshown, { ...cExpect, mirrorFrom: "2026-09-26" }, "constants");
+  check("constants judge REFUSES a --from window checked WITHOUT --from (the mirror's start is expected)", fNoFlag.code === 3 && fNoFlag.lines[0].includes("the mirror's fetch date"));
+  const fSame = judge(cWindow, cGood, cshown, { ...cExpect, mirrorFrom: "2026-09-26" }, "constants");
+  check("with mirrorFrom recorded and no --from, the coverage line still names the mirror's fetch date", fSame.code === 1 && fSame.lines[0].endsWith("from the mirror's fetch date"));
   const cEmitted = [
+    fOk, fOther, fNoFlag, fSame,
     ...cRefusals.map(([, vd]) => judge(cPapers, vd, cshown, null, "constants")),
     ...cWindowRefusals.map(([, patch]) => judge({ ...cWindow, ...patch }, cGood, cshown, cExpect, "constants")),
     judge(cWindow, cGood, cshown, cExpect, "constants"), judge(cPapers, cGood, cshown, null, "constants"),
