@@ -40,6 +40,7 @@ Each constant page says when we last looked for newer papers, but that search co
 - Harness: running 2.1.316 · fleet UNIFORM (28 of 28 panes) · installed 2.1.316 (SAME).
 - Recs yesterday: none (the 10-30 report's Recommendation section reads "None for David yet").
 - David's card `905de666` (yes to the 8a note and the 46a and 77a status line) is live: `npm run served` at anchor `274fb98872` printed "4 checked — 4 served, 0 in flight, 0 stale, 0 unreachable" (not David's words) for `c/46a.html`, `c/77a.html`, `c/8a.html` and `index.html`.
+- mechanism-verified: a live fetch of `https://u00dxk2.github.io/bounds-ledger/c/8a.html`, `c/46a.html` and `c/77a.html` at about 10:10 MT returned HTTP 200 for each, Last-Modified "Sat, 31 Oct 2026 14:59:02 GMT", bytes equal to the committed files, and 3 links to github.com/openai/math on each page (transcript: `tmp/live-fetch-905de666-2026-10-31.txt`, not committed).
 - Prior-day retro: 1 still-on-discipline finding, "a prose gate refused a factual sentence". It bears on today's post only, so this packet quotes tools' literal output rather than pairing a check with a verdict word.
 
 **Evidence** (each read today, 2026-10-31 MT):
