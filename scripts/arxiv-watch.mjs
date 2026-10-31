@@ -18,7 +18,8 @@
 // ledger/, commits, CI output and bus posts is a RULE for whoever runs this (AGENTS.md), not something
 // the script can enforce: --out accepts any directory. What the script does enforce: judge() prints no
 // paper id, pair, quote or claimed value. Its lines are fixed text, counts it computed, the ledger's own
-// revision and revision date, and one validated date from papers.json (the window end); an unparsable
+// revision and revision date, one validated date from papers.json (the window end) and, on a --from run,
+// the caller's --from date after it validated as a real date (2026-10-31); an unparsable
 // input file gets a fixed line; --check also prints the paths it was given. See THE OUTPUT RULE above
 // judge() for how the selftest checks this, and what it cannot.
 //
@@ -338,8 +339,10 @@ export async function fetchWindow(from, to, { fetchImpl = fetch, pause = () => n
 // THE OUTPUT RULE (changed shape after Codex r1 and r2 both found input text reaching stdout): every
 // line judge() returns is fixed text plus integers the script computed, the ledger's own revision and
 // revision date, and ONE value taken from papers.json, its window end, printed only after it validated as
-// a date equal to the UTC date of the file's fetchedAt. No other string from papers.json or verdicts.json
-// is interpolated, so no paper id, pair, quote or claimed value is printed. The selftest checks every
+// a date equal to the UTC date of the file's fetchedAt. Since 2026-10-31 a coverage line may also carry the
+// caller's --from date and the mirror's fetch date, each printed only after it validated as a real date
+// (Codex r3 on the --from work: this comment had said nothing but the above could be printed). No other
+// string from papers.json or verdicts.json is interpolated, so no paper id, pair, quote or claimed value is printed. The selftest checks every
 // line it emits against an exact shape (OUTPUT_SHAPES) and, for known fixtures, the exact expected lines,
 // so a value substituted into a number slot is caught too (Codex r3). Shapes replaced the r2-era search
 // for forbidden content, which a pattern list can miss; they check syntax, the exact lines check values.
@@ -466,6 +469,10 @@ export function judge(papersDoc, verdictsDoc, shown, expect = null, areaName = "
   if (!papers) return refuse("papers.json holds no papers array");
   if (!Number.isSafeInteger(papersDoc.total) || papers.length !== papersDoc.total) return refuse(`papers.json holds ${papers.length} paper(s), which is not the integer total it records`);
   let windowTo = null;
+  // judge() reads its expectation ONCE, into a plain copy, and every check and every printed line below uses
+  // only that copy (Codex r3: a getter returned one date to the check and another to the coverage line). So the
+  // rule below is a statement about the copy, which is what gets printed.
+  if (expect) expect = { query: expect.query, revision: expect.revision, from: expect.from, mirrorFrom: expect.mirrorFrom };
   if (expect) {
     if (papersDoc.query !== expect.query) return refuse("papers.json was fetched with a different query than this watcher's");
     if (papersDoc.revision !== expect.revision) return refuse(area.revisionRefusal);
@@ -740,7 +747,8 @@ function selftest() {
   check("a CONTROL check says it makes no coverage claim", judge(papersDoc, good, shown, null).lines[0].startsWith("CONTROL set"));
 
   // THE OUTPUT RULE, pinned: every line judge() returns on every fixture above, hostile ones included,
-  // matches one exact shape in OUTPUT_SHAPES. A line carrying any input text cannot match.
+  // matches one exact shape in OUTPUT_SHAPES. A line carrying input text other than a validated date or a
+  // computed count cannot match ({D} admits only YYYY-MM-DD).
   const emitted = [
     ...refusals.map(([, pd, vd]) => judge(pd, vd, shown)),
     ...windowRefusals.map(([, patch]) => judge({ ...windowDoc, ...patch }, good, shown, expect)),
@@ -936,8 +944,14 @@ ${lowerTail}
   const fMissing = [undefined, null].map((from) => judge({ ...cWindow, window: { from, to: "2026-10-16" } }, cGood, cshown, { ...cExpect, from, mirrorFrom: "2026-09-26" }, "constants"));
   check("constants judge REFUSES a missing expected start (undefined and null), with or without mirrorFrom", fMissing.every((r) => r.code === 3)
     && judge({ ...cWindow, window: { from: null, to: "2026-10-16" } }, cGood, cshown, { ...cExpect, from: null }, "constants").code === 3);
+  // Codex r3: a getter that answers the check with a valid date and the coverage line with hostile text. judge()
+  // reads expect once, so the check and the line see the same value.
+  let reads = 0;
+  const shifty = { query: CONSTANTS_QUERY, revision: cExpect.revision, mirrorFrom: "2026-09-26", get from() { return ["2026-09-01", "2026-09-01", "2026-09-01", "2610.00001 1a"][Math.min(reads++, 3)]; } };
+  const fShifty = judge(fWindow, cGood, cshown, shifty, "constants");
+  check("constants judge reads its expectation once: a shifting getter cannot print a value the check did not see", reads === 1 && !fShifty.lines.join("\n").includes("2610") && fShifty.lines[0].includes("submitted 2026-09-01"));
   const cEmitted = [
-    fOk, fOther, fNoFlag, fSame, fLater, fHostile, fHostileFrom, ...fMissing,
+    fOk, fOther, fNoFlag, fSame, fLater, fHostile, fHostileFrom, ...fMissing, fShifty,
     ...cRefusals.map(([, vd]) => judge(cPapers, vd, cshown, null, "constants")),
     ...cWindowRefusals.map(([, patch]) => judge({ ...cWindow, ...patch }, cGood, cshown, cExpect, "constants")),
     judge(cWindow, cGood, cshown, cExpect, "constants"), judge(cPapers, cGood, cshown, null, "constants"),
