@@ -31,8 +31,8 @@
       "records": [
         {
           "id": "8a",
-          "tag": "read-no-note",
-          "statementChecked": false,
+          "tag": "formal-proof",
+          "statementChecked": true,
           "screenedBy": [
             "claude",
             "codex"
@@ -41,9 +41,6 @@
             "claude": "high",
             "codex": "high"
           },
-          "statementRead": true,
-          "bears": true,
-          "reason": "Read 2026-10-30 (cycle 3) and it bears; the note is held, not shown, until David answers the board card for it. The derivation uses two facts outside the Lean statement, both stated on this constant's mirrored page. On a yes this pair becomes formal-proof with statementChecked and the page's sourceSha256. Codex claims pass 2026-10-30 (tmp/codex-c3c-out.txt, local): the derivation holds; the claim was narrowed to zeta and the README sentence narrowed. The shared status line (\"We read the statement and it matches this constant's definition\") is misleading for a note that needs a derivation, so this pair carries status \"derivation\" (cycle 4, 2026-10-30), which renders \"We read the statement and checked the derivation above against this constant's definition\" instead.",
           "status": "derivation",
           "familyTitle": "The quasi-Riemann hypothesis",
           "claim": "that the Riemann zeta function has no zero with real part greater than 7/8.",
@@ -52,7 +49,9 @@
             "theorem": "riemannZeta_ne_zero_of_seven_eighths_lt_re",
             "text": "theorem riemannZeta_ne_zero_of_seven_eighths_lt_re\n    {s : ℂ} (hs : (7 / 8 : ℝ) < s.re) : riemannZeta s ≠ 0"
           },
-          "match": "Every zero σ + it of ζ would then have σ ≤ 7/8. Two facts from outside the Lean statement, both stated on this constant's own page: the lowest zero has ordinate γ₁ = 14.1347… and lies on σ = 1/2 (the lower-bound row), and the Riemann hypothesis is verified up to height H = 3·10¹² (the comment on the 4.896 row). Take R = 2/log γ₁. A zero with 2 ≤ |t| ≤ H has σ = 1/2, and 1/2 ≤ 1 − 1/(R log|t|) because |t| ≥ γ₁. A zero with |t| > H has σ ≤ 7/8, below 1 − 1/(R log H) ≈ 0.954. So no zero lies in the region the definition excludes, σ > 1 − 1/(R log|t|) with |t| ≥ 2, which would make C₈ at most 2/log γ₁ ≈ 0.755106, equal to its listed lower bound. The release calls its manuscripts raw research data at different stages of verification and says its zero-free-region work was an exception to its usual procedure (README). Neither README.md nor history.md reports a human check of this 7/8 proof."
+          "match": "Every zero σ + it of ζ would then have σ ≤ 7/8. Two facts from outside the Lean statement, both stated on this constant's own page: the lowest zero has ordinate γ₁ = 14.1347… and lies on σ = 1/2 (the lower-bound row), and the Riemann hypothesis is verified up to height H = 3·10¹² (the comment on the 4.896 row). Take R = 2/log γ₁. A zero with 2 ≤ |t| ≤ H has σ = 1/2, and 1/2 ≤ 1 − 1/(R log|t|) because |t| ≥ γ₁. A zero with |t| > H has σ ≤ 7/8, below 1 − 1/(R log H) ≈ 0.954. So no zero lies in the region the definition excludes, σ > 1 − 1/(R log|t|) with |t| ≥ 2, which would make C₈ at most 2/log γ₁ ≈ 0.755106, equal to its listed lower bound. The release calls its manuscripts raw research data at different stages of verification and says its zero-free-region work was an exception to its usual procedure (README). Neither README.md nor history.md reports a human check of this 7/8 proof.",
+          "sourceSha256": "f5f0b19c7a37d3e3eeb06a435b269b77dd9a906f434da85d602b9dedefaf1f8b",
+          "shownOn": "2026-10-30, on David's yes to board card 905de666"
         },
         {
           "id": "65a",
@@ -615,7 +614,8 @@
           },
           "match": "Take n = 3 and a = ∞, so a′ = 1: the conditions become b > 3 and b > 2, and the statement gives the bound this constant defines, from L^∞ of the 2-sphere to L^b of 3-space, for every b > 3. That would make C₄₆ at most 3, equal to its listed lower bound. Lean's sphere measure and its exp(+i x·ω) convention differ from the definition's surface measure and Fourier transform only by constants and a reflection, which change no L^∞ or L^b bound. The release calls its manuscripts raw research data at different stages of verification (README) and says it published this one as the model's output (history.md, 26 October 2026); neither document reports a human check of this proof.",
           "sourceSha256": "680a2d59c5422fe27a01c26d36df167fb91336eb00c68a24e974ed6f03f85bdd",
-          "shownOn": "2026-10-30, on David's yes to board card d780e2ec"
+          "shownOn": "2026-10-30, on David's yes to board card d780e2ec",
+          "status": "derivation"
         },
         {
           "id": "77a",
@@ -636,7 +636,8 @@
           },
           "match": "Take n = 3: the order condition is this constant's λ > λ₃,ₚ. The statement bounds the operator on Schwartz functions; for finite p that bound extends to all of Lᵖ by density. At p = 1 and p = ∞ the condition is λ > 1, where the Bochner–Riesz kernel is integrable (a classical fact, not part of the Lean statement), so those endpoints hold by convolution. The range in the definition is then established for every p, and Γ = 3 qualifies. That would make C₇₇ at most 3, equal to its listed lower bound. The statement is uniform in the radius R, so the 2π convention of the Fourier transform does not matter. The release calls its manuscripts raw research data at different stages of verification (README) and says it published this one as the model's output (history.md, 26 October 2026); neither document reports a human check of this proof.",
           "sourceSha256": "4d3b9040c85617f26f07d0b08b68a1d82afc5c936922328f166a6282c72bcf55",
-          "shownOn": "2026-10-30, on David's yes to board card d780e2ec"
+          "shownOn": "2026-10-30, on David's yes to board card d780e2ec",
+          "status": "derivation"
         },
         {
           "id": "3b",

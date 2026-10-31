@@ -436,7 +436,8 @@ export async function selftest() {
     // whose record the map's rule refuses. Exercised through render-site, not through notesFor.
     const site = await import("./render-site.mjs");
     const claims = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
-    const target = real.families.flatMap((f) => (f.records || []).filter((r) => r.statementChecked === true))[0];
+    // A rendered pair with no status of its own, so the status tests below start from the shared line.
+    const target = real.families.flatMap((f) => (f.records || []).filter((r) => r.statementChecked === true && !Object.hasOwn(r, "status")))[0];
     assert.ok(target, "positive control failed: the committed map has no rendered pair to mutate");
     const rowsWith = (m) => site.buildRows(claims, { withDates: false, root: ROOT, oaiMap: m });
     const count = (m) => rowsWith(m).find((x) => x.id === target.id).oai.length;
