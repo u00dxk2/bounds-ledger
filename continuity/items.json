@@ -2982,7 +2982,8 @@
       "lastEvaluated": "2026-10-27",
       "linkedCommits": [
         "8aa6e25",
-        "3bfe407"
+        "3bfe407",
+        "4d30341"
       ]
     },
     {
@@ -3221,7 +3222,16 @@
       "readCommandTimeoutMs": "600000",
       "lastEvaluated": "2026-10-30",
       "progress2026_10_30": "2026-10-30 MT: leg (1) decided and run: the constants watch ran (window 2026-10-28 to 2026-10-30, \"RESULT: COMPLETE — no candidate (exit 0)\", 0 papers; output in tmp/, not committed). Leg (2): the line is built DARK (6600c0a, 3ef254b, fc1f071, a48d693, pushed): it renders only when ledger/newer-results.json carries windowFrom, tools and papersFound. Codex cross-family claims pass + adversarial review: r1 7 findings, r2 4, r3 \"SEND-READY\"; fates in docs/decisions/2026-10-30-A86-newer-papers-line.md. Card 903a38ba filed for David (needs-decision msg 0289b903), carrying the exact text. On his yes: write the three fields plus checkedThrough 2026-10-30, re-render the c/ pages, push, then npm run served. On a no: record it here, and the store's ownership moves to a standing row per closeWhen.",
-      "closedAt": "2026-10-30"
+      "closedAt": "2026-10-30",
+      "linkedCommits": [
+        "6600c0a",
+        "3ef254b",
+        "fc1f071",
+        "a48d693",
+        "57573d9",
+        "92bcf34",
+        "d7bd11d"
+      ]
     },
     {
       "id": "A-87",
@@ -3381,7 +3391,10 @@
       "notes": "Minted 2026-10-30 MT at A-86's close. David answered card 903a38ba on 2026-10-30 (paraphrased: yes, turn it on as written), and the line went live in 92bcf34 on all 120 constant pages. Its first search covered papers submitted 2026-10-28 to 2026-10-30 and found none. The window opens at the mirror's fetch date, so a resnap starts a new window, and the line states the dates it covered rather than claiming continuous coverage (2026-10-17 to 2026-10-27 was never searched). Owner duties moved here from A-86: ledger/newer-results.json, scripts/newer-results.mjs, scripts/step-overlap.mjs and the reverify.yml selftest steps that name A-82. The line is refused, and render-constant-pages refuses the store, if the watcher's query stops being a plain OR of abs: terms or its terms change; that is the reconcile signal, not a bug.",
       "created": "2026-10-30",
       "updated": "2026-10-30",
-      "gapScopeLimit2026_10_30": "DELIBERATE SCOPE LIMIT, recorded 2026-10-30 MT at the close (the manager review asked that it not be left implied). Papers submitted 2026-10-17 to 2026-10-27 were never searched by any run: the 2026-10-16 run covered 2026-09-26 to 2026-10-16 and today's covered 2026-10-28 to 2026-10-30, because the watcher's window opens at the mirror's fetch date (scripts/arxiv-watch.mjs --area constants) and it takes no start-date override. NOT backfilled today: a backfill needs a new --from flag on a reviewed instrument, whose --check refuses a window start that differs from the mirror date, so it is an instrument change with its own red-arm and review, not a data read. Why this is safe meanwhile: the public line states its exact window (from 2026-10-28) and never claims continuous coverage, so the gap is visible to a reader who reads the dates, not hidden. Revisit by 2026-11-06 (this row's nextCheckDate): either build the --from backfill through review, or keep this limit and say why again. Recorded here so nothing implies the gap was covered."
+      "gapScopeLimit2026_10_30": "DELIBERATE SCOPE LIMIT, recorded 2026-10-30 MT at the close (the manager review asked that it not be left implied). Papers submitted 2026-10-17 to 2026-10-27 were never searched by any run: the 2026-10-16 run covered 2026-09-26 to 2026-10-16 and today's covered 2026-10-28 to 2026-10-30, because the watcher's window opens at the mirror's fetch date (scripts/arxiv-watch.mjs --area constants) and it takes no start-date override. NOT backfilled today: a backfill needs a new --from flag on a reviewed instrument, whose --check refuses a window start that differs from the mirror date, so it is an instrument change with its own red-arm and review, not a data read. Why this is safe meanwhile: the public line states its exact window (from 2026-10-28) and never claims continuous coverage, so the gap is visible to a reader who reads the dates, not hidden. Revisit by 2026-11-06 (this row's nextCheckDate): either build the --from backfill through review, or keep this limit and say why again. Recorded here so nothing implies the gap was covered.",
+      "linkedCommits": [
+        "45228ae"
+      ]
     },
     {
       "id": "A-92",
@@ -3407,7 +3420,9 @@
       "linkedCommits": [
         "8aa6e25",
         "84fbc01",
-        "5e77583"
+        "5e77583",
+        "3703ce3",
+        "3fce375"
       ]
     },
     {
@@ -3422,10 +3437,14 @@
         "A-92"
       ],
       "readCommand": "node scripts/anthropic-formal-math.mjs --upstream",
-      "closeWhen": "Never closes on its own: the repository moves. Re-check on each nextCheckDate with the readCommand; a new project folder or a changed theorem list exits 1 and is mapped before the pin moves.",
+      "closeWhen": "Closes when a re-check finds a pair that bears on a watched constant (that pair then becomes a note decision on its own row, A-78's shape) or when David retires this second release map. Until then, re-check on each nextCheckDate with the readCommand: a new project folder, an unmapped comparator configuration or a changed theorem list exits 1 and is mapped before the pin moves.",
       "note": "Opened 2026-10-30 MT, cycle 3 (David-started; job 1 of the cycle brief). ledger/anthropic-formal-math-map.json pins anthropics/formal-math at 16a5ce4 (an upstream sha; it does not exist in this repo) and covers all 30 theorems the three projects' comparator configurations name (eth 2, 3sum-apsp 5 from EndStatement.lean, zeta23 17 + 6). Seven pairs, each read against the constant's mirrored definition: eth vs 52a, 3sum-apsp vs 15a and 15b, zeta23 vs 8a, 21a, 62a, 62b. All seven are does-not-bear, so nothing renders and no card is owed. 3sum-apsp's PaperStatements.lean is not mapped theorem by theorem; it was searched for the matrix multiplication exponents, and its Corollary_40_fail holds for every omega >= 2. A sibling store rather than an extension of A-78's validator: A-78's is keyed to OpenAI's family numbers and feeds the renderer of live notes, while this store renders nothing. scripts/anthropic-formal-math.mjs validates offline (selftest in npm test and CI, red-armed 2026-10-30: deleting the render refusal turned it red) and --upstream compares the README's project list and every comparator theorem list at the pinned sha (red-armed: one theorem removed from the map exited 1).\n\n | 2026-10-30 MT, after a Codex claims pass (tmp/codex-c3-claims-out.txt, local; reviewer model gpt-daybreak-blue-latest): every non-bearing verdict held and no pair was missed among the 30 theorems. Five sentences were narrowed (52a is a conjectured threshold; the ETH subject's k >= 1 and no-repeated-clause conditions; how 62b was found; the real-valued versions; \"withdrawn\"). One finding changed the code: --upstream compared only the configurations the map named, so it could not see one the map left out. It now reads the repository tree and refuses a comparator configuration that is neither mapped nor named in excludedConfigs (red-armed: removing the paperstatements exclusion exited 1).\n\n pragma: allowlist sha",
       "created": "2026-10-30",
-      "updated": "2026-10-30"
+      "updated": "2026-10-30",
+      "linkedCommits": [
+        "3703ce3"
+      ],
+      "lastEvaluated": "2026-10-30"
     }
   ],
   "meta": {
