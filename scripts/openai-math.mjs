@@ -390,7 +390,7 @@ export async function selftest() {
     assert.equal(notesFor("15a", noPath).length, 0, "a statement-checked pair with no statement path must not render");
   }
 
-  // 6c. The per-record status line (cycle 4, 2026-10-31). Meaning first: the derivation line says
+  // 6c. The per-record status line (cycle 4, 2026-10-30). Meaning first: the derivation line says
   // what was checked and claims nothing the shared line does not, and it is what the block shows.
   {
     const shared = TAGS["formal-proof"], deriv = STATUS_VARIANTS.derivation.text;
