@@ -44,6 +44,25 @@ export const TAGS = {
 };
 const READ_NO_NOTE = "read-no-note";
 
+// A per-record status line, chosen from fixed wordings and never free text. The shared
+// "formal-proof" line says the statement "matches this constant's definition", which overstates a
+// note whose match needs a derivation, or facts from outside the Lean statement (8a, 46a, 77a; cycle
+// 4, 2026-10-30, wording from the Codex pass on the 8a read). A record sets `status` to a key here
+// and renders that line in place of its tag's. Allowed on a rendered pair carrying `tag`, and on a
+// held read-no-note pair that bears, so a note can wait behind its board card with its line chosen.
+export const STATUS_VARIANTS = {
+  derivation: {
+    tag: "formal-proof",
+    text: "a Lean statement of it is published with a proof by its authors. We read the statement and checked the derivation above against this constant's definition; we have not compiled the proof, and we have not read the paper",
+  },
+};
+
+/** The status line a note renders: its variant's when it names one, else its tag's. */
+export function statusText(n) {
+  // Own property only: an inherited `status` must never change a live note (Codex c4 r1).
+  return Object.hasOwn(n, "status") && Object.hasOwn(STATUS_VARIANTS, n.status) ? STATUS_VARIANTS[n.status].text : TAGS[n.tag];
+}
+
 // Records outside the mirrored constants that the map may name.
 export const OTHER_RECORDS = new Set(["erdos-36", "ramsey-classical"]);
 
@@ -157,6 +176,11 @@ function validateRecord(n, r, constantExists, sourceCitesRelease, sourceHashOf) 
     if (!s.text || !String(s.text).trim()) errs.push(`${where}: a "${r.tag}" tag needs the statement text quoted`);
     if (!r.match || !String(r.match).trim()) errs.push(`${where}: a "${r.tag}" tag needs the sentence saying how the statement matches the definition`);
   }
+  if (Object.hasOwn(r, "status")) {
+    const v = Object.hasOwn(STATUS_VARIANTS, r.status) ? STATUS_VARIANTS[r.status] : null;
+    if (!v) errs.push(`${where}: status ${JSON.stringify(r.status)} is not one of ${Object.keys(STATUS_VARIANTS).join(", ")}`);
+    else if (r.tag === READ_NO_NOTE ? r.bears !== true : r.tag !== v.tag) errs.push(`${where}: status "${r.status}" belongs on a "${v.tag}" pair, or on a held "${READ_NO_NOTE}" pair that bears, not on "${r.tag}"${r.tag === READ_NO_NOTE ? " with bears false" : ""}`);
+  }
   if (r.statementChecked === true && !r.claim) errs.push(`${where}: a rendered note needs the claim in words`);
   for (const s of renderedStrings(r)) if (FORBIDDEN.test(s)) errs.push(`${where}: rendered text uses the word "record": ${JSON.stringify(s.slice(0, 80))}`);
   return errs;
@@ -242,7 +266,7 @@ export function noteBlock(notes) {
     const st = n.statement && n.statement.path
       ? `<p>Its Lean statement, <a href="${esc(statementUrl(sha, n.statement.path))}">${esc(n.statement.path.split("/").pop())}</a>:</p><code>${esc(n.statement.text)}</code>`
       : "";
-    return `<li><p><a href="${esc(familyUrl(sha))}">Family ${esc(n.family)}</a>, “${esc(n.familyTitle)}”, claims ${esc(n.claim)}</p>${st}<p>${esc(n.match || "")}</p><p class="tag">Status: ${esc(TAGS[n.tag])}.</p></li>`;
+    return `<li><p><a href="${esc(familyUrl(sha))}">Family ${esc(n.family)}</a>, “${esc(n.familyTitle)}”, claims ${esc(n.claim)}</p>${st}<p>${esc(n.match || "")}</p><p class="tag">Status: ${esc(statusText(n))}.</p></li>`;
   }).join("");
   return `<dt>Outside the source table: a claim in OpenAI's math release</dt><dd><ul class="oai">${items}</ul><span class="when">A claim in a preprint release, read at <a href="${esc(`${RELEASE}/tree/${sha}`)}">openai/math@${esc(sha.slice(0, 7))}</a> on ${esc(source.readAt)}. It is not in the source table, and this ledger has not changed the rows above because of it.</span></dd>`;
 }
@@ -366,6 +390,29 @@ export async function selftest() {
     assert.equal(notesFor("15a", noPath).length, 0, "a statement-checked pair with no statement path must not render");
   }
 
+  // 6c. The per-record status line (cycle 4, 2026-10-31). Meaning first: the derivation line says
+  // what was checked and claims nothing the shared line does not, and it is what the block shows.
+  {
+    const shared = TAGS["formal-proof"], deriv = STATUS_VARIANTS.derivation.text;
+    const [head, tail] = shared.split("it matches this constant's definition");
+    // Exact: the shared line with ONE clause replaced, so nothing else can be slipped in (Codex c4 r1).
+    assert.equal(deriv, `${head}checked the derivation above against this constant's definition${tail}`, "the derivation line is the shared line with only what was checked changed");
+    assert.ok(tail !== undefined && !deriv.includes("it matches this constant's definition"), "the derivation line does not say the statement matches the definition");
+    for (const v of Object.values(STATUS_VARIANTS)) assert.ok(!FORBIDDEN.test(v.text), "a status line never says 'record'");
+    const withStatus = (s, tweak = () => {}) => { const c = structuredClone(good); const r = c.families[1].records[0]; r.status = s; tweak(r); return c; };
+    const b = noteBlock(notesFor("15a", withStatus("derivation")));
+    assert.ok(b.includes(`Status: ${esc(deriv)}.`) && !b.includes(esc(shared)), "a derivation note renders the derivation line in place of the shared one");
+    assert.ok(noteBlock(notesFor("15a", good)).includes(`Status: ${esc(shared)}.`), "a note with no status keeps the shared line");
+    assert.deepEqual(validateMap(withStatus("derivation")), [], "a formal-proof pair with the derivation status validates");
+    assert.ok(validateMap(withStatus("checked")).some((e) => /status "checked" is not one of/.test(e)), "an unknown status must be refused");
+    assert.ok(validateMap(withStatus("toString")).some((e) => /status "toString" is not one of/.test(e)), "an inherited property name is not a status");
+    assert.ok(validateMap(withStatus("derivation", (r) => { r.tag = "partial"; })).some((e) => /status "derivation" belongs on a "formal-proof" pair/.test(e)), "the derivation status on a partial pair must be refused");
+    const held = (bears) => { const r = readNo(bears); r.status = "derivation"; return withRead(r); };
+    assert.deepEqual(validateMap(held(true)), [], "a held read-no-note pair that bears may carry its status while it waits");
+    assert.ok(validateMap(held(false)).some((e) => /status "derivation" belongs on/.test(e)), "a read-no-note pair that does not bear cannot carry a status");
+    assert.equal(notesFor("84a", held(true)).length, 0, "a held pair with a status still does not render");
+  }
+
   // Rendering: only statement-checked pairs render; unchecked ones stay data.
   assert.equal(notesFor("15a", good).length, 1);
   assert.equal(notesFor("84a", good).length, 0, "an unchecked pair must not render");
@@ -399,6 +446,22 @@ export async function selftest() {
     assert.equal(count(mutate((r) => { r.claim += " a new record"; })), before - 1, "a rendered pair whose claim says 'record' must be dropped by the renderers' buildRows");
     assert.equal(count(mutate((r) => { r.sourceSha256 = "0".repeat(64); })), before - 1, "a rendered pair whose page hash is stale must be dropped by the renderers' buildRows");
     assert.equal(count(mutate((r) => { delete r.match; })), before - 1, "a rendered pair with no match sentence must be dropped by the renderers' buildRows");
+    assert.equal(count(mutate((r) => { r.status = "checked"; })), before - 1, "a rendered pair with an unknown status must be dropped by the renderers' buildRows");
+    {
+      // The status reaches the constant page through the renderers, not only through noteBlock.
+      const pages = await import("./render-constant-pages.mjs");
+      const manifest = JSON.parse(readFileSync(join(ROOT, "ledger", "teorth-optimizationproblems", "manifest.json"), "utf8"));
+      const page = (m) => pages.renderPage(rowsWith(m).find((x) => x.id === target.id), manifest.sha);
+      assert.ok(!page(real).includes(esc(STATUS_VARIANTS.derivation.text)), `positive control failed: ${target.id}'s committed page already shows the derivation line`);
+      const p = page(mutate((r) => { r.status = "derivation"; }));
+      assert.ok(p.includes(esc(STATUS_VARIANTS.derivation.text)), "a rendered pair given the derivation status shows that line on its constant page");
+      // An INHERITED status opts nothing in: with Object.prototype polluted, the live page is unchanged.
+      const clean = page(real);
+      Object.prototype.status = "derivation";
+      let polluted;
+      try { polluted = page(real); } finally { delete Object.prototype.status; }
+      assert.equal(polluted, clean, "an inherited status must not change a live note's page");
+    }
     // 7b. Fields attached at composition, not on the record (Codex r3, 2026-10-30).
     const fam = (c) => c.families.find((x) => (x.records || []).some((r) => r.id === target.id && r.statementChecked === true));
     {
@@ -410,7 +473,7 @@ export async function selftest() {
       assert.equal(count(c), 0, "a source read date that is not a date must drop every note (judged by shape, not by the word ban)");
     }
   }
-  console.log(`openai-math selftest: PASS (refuses the word "record" in any rendered string, a formal-proof or partial tag with no Lean statement path or quoted statement, a proof tag on a pair we did not read, and a map whose verdicts do not cover every family exactly once; renders only statement-checked pairs${real ? `; the committed map validates: ${real.families.length} families at ${String(real.source.sha).slice(0, 7)}, and every noted page and the index differ from their no-note render by exactly the note` : ""})`);
+  console.log(`openai-math selftest: PASS (refuses the word "record" in any rendered string, a formal-proof or partial tag with no Lean statement path or quoted statement, a proof tag on a pair we did not read, and a map whose verdicts do not cover every family exactly once, and a status line outside the fixed wordings or on the wrong tag; renders only statement-checked pairs${real ? `; the committed map validates: ${real.families.length} families at ${String(real.source.sha).slice(0, 7)}, and every noted page and the index differ from their no-note render by exactly the note` : ""})`);
 }
 
 const entry = process.argv[1] ? pathToFileURL(realpathSync(process.argv[1])).href : null;

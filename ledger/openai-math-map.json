@@ -43,7 +43,8 @@
           },
           "statementRead": true,
           "bears": true,
-          "reason": "Read 2026-10-30 (cycle 3) and it bears; the note is held, not shown, until David answers the board card for it. The derivation uses two facts outside the Lean statement, both stated on this constant's mirrored page. On a yes this pair becomes formal-proof with statementChecked and the page's sourceSha256. Codex claims pass 2026-10-30 (tmp/codex-c3c-out.txt, local): the derivation holds; the claim was narrowed to zeta and the README sentence narrowed. NOT ready for a card: the shared status line (\"We read the statement and it matches this constant's definition\") is misleading for a note that needs a derivation, and a per-note status needs a renderer change with its own review first.",
+          "reason": "Read 2026-10-30 (cycle 3) and it bears; the note is held, not shown, until David answers the board card for it. The derivation uses two facts outside the Lean statement, both stated on this constant's mirrored page. On a yes this pair becomes formal-proof with statementChecked and the page's sourceSha256. Codex claims pass 2026-10-30 (tmp/codex-c3c-out.txt, local): the derivation holds; the claim was narrowed to zeta and the README sentence narrowed. The shared status line (\"We read the statement and it matches this constant's definition\") is misleading for a note that needs a derivation, so this pair carries status \"derivation\" (cycle 4, 2026-10-30), which renders \"We read the statement and checked the derivation above against this constant's definition\" instead.",
+          "status": "derivation",
           "familyTitle": "The quasi-Riemann hypothesis",
           "claim": "that the Riemann zeta function has no zero with real part greater than 7/8.",
           "statement": {
