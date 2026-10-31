@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-Each constant page says when we last looked for newer papers, but that search covered only three days. Today we plan to search the last five weeks instead, so the line tells a reader something useful. Tonight we also run the paper count for the planned third area.
+Each constant page now says we searched five weeks of new papers, not three days, and what they mean for that page. We found 15 papers. On most pages none of them mentions that number. On four pages they do, and none beats our table. On one page a paper reports a better value, which we name and have not checked. David said yes and it is live. Tonight we run the paper count for the planned third area.
 
 ### Selection packet
 
@@ -106,7 +106,32 @@ node C:/dev/skylark/bounds-ledger/scripts/arxiv-watch.mjs --selftest
 
 ## State Appendix
 
-Written at P1 from live commands; the close rewrites it.
+Rewritten at the close from live commands. The close commit itself cannot appear here.
 
-- HEAD `995ab9df2027a7990bfe38a6523858f244b5aea9`, equal to origin/main (`git rev-parse HEAD origin/main`, 2026-10-31 about 09:55 MT).
-- Due today: `check-due-gates-dispositioned.mjs --snapshot` printed "0 gate(s) due on/before 2026-10-31".
+- The switch-on commit `d4c0c0a74d` (W-17 — the newer-papers watch): `check-ci-status.mjs --workflow reverify.yml` and `--workflow page-check.yml` each printed "GREEN — 1 completed non-scheduled success(es) for HEAD, 0 failures, 0 pending" (read 19:13Z).
+- `npm run served` at anchor `d4c0c0a74d`: "120 checked — 120 served, 0 in flight, 0 stale, 0 unreachable" (exit 0, 19:13Z).
+- Due today: `check-due-gates-dispositioned.mjs` printed "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot "CURRENT (taken 2026-10-31)".
+
+### Close
+
+This closes the day's work on W-17 (the newer-papers watch).
+
+`ACTION: COMPLETED · item W-17 · P3 a5196ab8`. The acceptance in force was the manager's REDIRECT, and its "more than 0" branch was met. The run found 15 papers, every one read. The store and pages stayed unchanged until David's yes on card f64e9a3b (19:00Z). Then `d4c0c0a` switched the line on. The manager's review (COMPLETED, no defects) fetched all 120 live pages itself and found the card's sentences word for word.
+
+Since the P3 post (`a5196ab8`), nothing changed on the site. The receipt in that post stays true. Exposure is blind (A-59, the blind-encounter row), and the outcome is open.
+
+Ledger delta (through `continuity-edit.mjs`):
+- `W-17` (the newer-papers watch): `gapClosed2026_10_31` records the closed 2026-10-17 to 2026-10-27 gap, the run's printed figures, the live store and David's yes. `linkedCommits` gained `d4c0c0a`, `2dc5fe9` and `81fb1e4`. The row stays open as a standing watch (nextCheckDate 2026-11-06).
+
+hygiene draft: 0 lines — 0 accepted · 0 amended · 0 rejected. READ-MUTATED: none (0 reads guarded). The draft's two checks: `check-wait-justification` "RESULT: PASS — 1 of 114 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)" and `check-engineering-zero --project bounds-ledger` "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable". Positive control: the same run counted "4 finding(s)" across other lanes, so this lane's 0 comes from a read that can return nonzero.
+
+Pending reads:
+- `A-92` (the third watched area, results that rest on ETH): the OpenAlex frame run, ONCE, at or after 18:00 MDT today, 2026-10-31. Its figures go into "Next steps" item 2 of the A-92 design decision, and the result goes in tonight's close-out post. If it does not run tonight, the trigger moves to 18:00 MDT on 2026-11-01, as the primer banner says.
+- `A-45` and `A-91`: 2026-11-01.
+- `A-2`, `A-77`, `A-78`, `A-81` and `G-4`: 2026-11-02.
+- `A-94` (the close-primer gate fix): 2026-11-03.
+- `W-16` (the watch on upstream issue 289): by 2026-11-05.
+- `W-17` and `A-93`: 2026-11-06.
+- Open and optional, not a claim: the 1d value 1.4564 (arXiv:2609.40340v1, a best evaluator score) is unchecked and in no table.
+
+Classification: today's findings were instrument-facing, and this is a running count of at least one day of that. Both are about our own machinery: the widened search needed per-constant wording, and the readers' "states a bound" over-read a paper's scores. There was no drift. The 1d value is a candidate. It is not a record-facing catch until someone checks it. The standing prediction is unchanged: the next record-facing catch will be a citation-quality defect found by a human reading in the depth audit.
