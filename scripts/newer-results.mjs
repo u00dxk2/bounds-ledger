@@ -24,7 +24,7 @@
 // WHAT IT NEVER SAYS. That upstream is wrong (its rows remain true bounds; it is behind), that anyone
 // refereed the construction, or that upstream SHOULD list it. Upstream contact is David's gate.
 
-import { readFileSync, existsSync, mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { readFileSync, existsSync, mkdtempSync, writeFileSync, rmSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
@@ -166,7 +166,13 @@ const OR_QUERY = new RegExp(String.raw`^\(${TERM}(?: OR ${TERM})*\)$`);
 export const QUERY_TERMS = OR_QUERY.test(CONSTANTS_QUERY) ? [...CONSTANTS_QUERY.matchAll(/abs:(?:"([^"]+)"|([A-Za-z0-9-]+))/g)].map((m) => m[1] ?? m[2]) : [];
 export const queryTermsOf = (q) => (OR_QUERY.test(q) ? [...q.matchAll(/abs:(?:"([^"]+)"|([A-Za-z0-9-]+))/g)].map((m) => m[1] ?? m[2]) : []);
 const realDate = (s) => { if (!ISO.test(String(s))) return false; const d = new Date(`${s}T00:00:00Z`); return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s; };
-const onMirror = (id) => existsSync(join(CONSTANTS, `${id}.md`));
+// A constant id is a MEMBER of the mirror's set of constant files, never a path that happens to exist
+// (Codex r2: "../README" resolved to the mirror's README.md and passed a file-exists check).
+let mirrorIds = null;
+const onMirror = (id) => {
+  mirrorIds ??= new Set(readdirSync(CONSTANTS).filter((f) => f.endsWith(".md")).map((f) => f.slice(0, -3)));
+  return typeof id === "string" && mirrorIds.has(id);
+};
 function searchFieldErrors(store, constantExists = onMirror) {
   const present = SEARCH_FIELDS.filter((f) => f in store);
   // Codex claims/code pass 2026-10-31: perConstant belongs to the search, so it is never valid alone.
@@ -210,7 +216,7 @@ function perConstantErrors(store, constantExists = onMirror) {
     if (keys !== want) { errs.push(`perConstant ${id}: must carry exactly ${want.split(",").join(", ")}`); continue; }
     if (!Number.isInteger(e.papers) || e.papers < 1 || e.papers > store.papersFound) errs.push(`perConstant ${id}: papers must be a whole number from 1 to papersFound`);
     if (!STRONGER.includes(e.stronger)) errs.push(`perConstant ${id}: stronger must be one of ${STRONGER.join(", ")}`);
-    if (e.stronger === "reported-stronger" && !ARXIV.test(String(e.paper))) errs.push(`perConstant ${id}: paper must be a versioned arXiv abstract link`);
+    if (e.stronger === "reported-stronger" && !(typeof e.paper === "string" && ARXIV.test(e.paper))) errs.push(`perConstant ${id}: paper must be a versioned arXiv abstract link`);
   }
   return errs;
 }
@@ -390,6 +396,11 @@ export async function selftest() {
   check("W-17: a perConstant with no search fields is refused (it never validates alone)", validateStore(orphan, { shown, constantExists: exists }).length > 0);
   const ghost = found(3, { zz: { papers: 1, stronger: "none" } });
   check("W-17: an unknown constant id in perConstant is refused by validateStore AND renders nothing through searchLine", validateStore(ghost, { shown, constantExists: exists }).length > 0 && SL(ghost, "t1") === "" && searchLine(found(3, { zz: { papers: 1, stronger: "none" } }), "2a") === "");
+  // Codex r2, against the PRODUCTION mirror predicate (no injected fixture): a path that resolves to a real
+  // file is not a constant, and a non-string link is refused, never coerced and then rendered.
+  const refusedOnMirror = (pc) => validateStore(found(3, pc)).length > 0 && searchLine(found(3, pc), "2a") === "";
+  check("W-17: a path-shaped id ('../README', 'constants/1a', '1a.md') is refused by the mirror's own predicate, and a real id is not", ["../README", "constants/1a", "1a.md", "__proto__"].every((id) => refusedOnMirror({ [id]: { papers: 1, stronger: "none" } })) && searchLine(found(3, { "1a": { papers: 1, stronger: "none" } }), "2a") !== "");
+  check("W-17: a reported-stronger paper that is not a string (an array, an object) is refused and renders nothing", [[EVO], { href: EVO }].every((paper) => refusedOnMirror({ "1d": { papers: 1, stronger: "reported-stronger", paper } })));
   check("W-17: perConstant with a zero count is refused", validateStore({ ...searched, papersFound: 0, perConstant: {} }, { shown, constantExists: exists }).length > 0);
   const pcBad = (e) => validateStore(found(3, { t1: e }), { shown, constantExists: exists }).length > 0;
   check("W-17: a malformed perConstant entry is refused (0 papers, more than found, a non-integer, an unknown stronger, an extra field)", pcBad({ papers: 0, stronger: "none" }) && pcBad({ papers: 4, stronger: "none" }) && pcBad({ papers: 1.5, stronger: "none" }) && pcBad({ papers: 1, stronger: "weaker" }) && pcBad({ papers: 1, stronger: "none", note: "x" }));
