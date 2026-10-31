@@ -158,3 +158,12 @@ A third cycle, started by David in chat at about 17:06 MT from the brief written
 - **Codex cross-family review, two passes** (reviewer model gpt-daybreak-blue-latest, read-only, workdir checked). The claims pass on jobs 1 and 2 held every non-bearing verdict and found no missed pair. Five sentences were narrowed, and one finding added tree discovery to the upstream check. The pass on the frame script returned FAIL on over-claims. All were confirmed and fixed or narrowed, and a before-and-after count check was added and red-armed.
 
 Classification, cycle 3: instrument-facing only. Both findings were about our own machinery: the upstream check's blind spot and the frame script's over-claims. The 3SUM/APSP reading is a reading of a preprint, not a defect in any mirrored row, so it is not a record-facing catch. The standing prediction is neither met nor falsified.
+
+### Cycle 4: `A-47` slice 23 grid, pre-registered before any draw
+
+`A-47` (the depth audit) owes a new sampling grid, because slice 22 used up the offset-0 grid of the 726-row frame (`A-47.redate2026_10_29`). The grid below is derived by slice 17's rule (`A-47.slice17Draw2026_10_14`). This section is pushed before slice 23 is drawn.
+
+- Frame: `node scripts/depth-audit.mjs --corpus` printed "RESULT: PASS — 798 cited of 901 bound row(s) (exit 0)", run 2026-10-30 at about 22:08 MT.
+- Held set, measured rather than taken from earlier slices' declared offsets: a full-frame `--draw 1 … 798` (exit 0, "RESULT: PASS — drew 798 position(s) from a frame of 798"), keeping its holder lines only. 98 positions are held. Their residues mod 50 cover 44 of the 50 values, and 9, 11, 18, 24, 35 and 42 are missing.
+- Rule: on the 50-step grid, take the offset whose circular distance (mod 50) to the nearest held residue is largest, lowest on a tie. Every free residue is at distance 1, so the rule gives **offset 9**: positions 9, 59, 109, 159, 209, 259, 309, 359, 409, 459, 509, 559, 609, 659, 709 and 759 (16), and none of them is held.
+- Slice 23 takes the first four: **9, 59, 109, 159**, drawn by `node scripts/depth-audit.mjs --draw 9 59 109 159`. The other twelve are later slices, in order. If the frame no longer reads 798 when a later slice is drawn, the grid is re-derived by the same rule and pushed before that draw.
