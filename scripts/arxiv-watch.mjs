@@ -48,7 +48,7 @@
 //   mentions-only          class "bears", but nothing stated is stronger than what we show
 //   unrelated              class "unrelated", and no claims
 //
-// THE SECOND AREA (--area constants, 2026-10-16): the 115 constants mirrored from teorth/optimizationproblems
+// THE SECOND AREA (--area constants, 2026-10-16): the constants mirrored from teorth/optimizationproblems
 // under ledger/teorth-optimizationproblems/. Every flag above takes --area; without it the area is ramsey
 // and that path is unchanged. Its window starts at the mirror's fetch date (manifest.json fetchedAt), since
 // the mirror has no revision date of its own, unless --from YYYY-MM-DD moves the start EARLIER (2026-10-31,
@@ -150,7 +150,7 @@ export const CONSTANTS_MANIFEST = join(ROOT, "ledger", "teorth-optimizationprobl
 export const CONSTANTS_QUERY = '(abs:AlphaEvolve OR abs:ThetaEvolve OR abs:"TTT-Discover" OR abs:OpenEvolve)';
 export const CONSTANTS_BLIND_TO = [
   "every paper whose abstract does not name AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve, which is most human-written work on these constants (a per-constant query map is the next step, not built)",
-  "papers submitted before the mirror's fetch date that upstream has not credited yet",
+  "papers submitted before this run's window start that upstream has not credited yet",
   "results announced anywhere but arXiv (a GitHub repository, a blog, a talk): 1a's smallest listed upper bound cites a repository",
   "a bound on a constant this mirror does not carry, which a reader cannot record as a claim",
   "anything the reader misreads: verdicts are a reading, and this script checks their shape and arithmetic, not their truth",
@@ -398,6 +398,7 @@ export const OUTPUT_SHAPES = [
   "REFUSED — papers.json was fetched against a different mirror than the ledger holds",
   "REFUSED — papers.json's window does not start at the mirror's fetch date",
   "REFUSED — papers.json's window does not start at the --from date given to --check",
+  "REFUSED — the expected window start is not a real date on or before the population's own start date",
   "REFUSED — verdict #{N}: a claim is malformed (a constant id this mirror carries, side lower or upper, a decimal value written as a string, a relation matching the side)",
   "RESULT: UNREADABLE — papers.json does not exist in the --out directory (exit 2)",
   "RESULT: UNREADABLE — verdicts.json does not exist in the --out directory (exit 2)",
@@ -462,6 +463,9 @@ export function judge(papersDoc, verdictsDoc, shown, expect = null, areaName = "
   if (expect) {
     if (papersDoc.query !== expect.query) return refuse("papers.json was fetched with a different query than this watcher's");
     if (papersDoc.revision !== expect.revision) return refuse(area.revisionRefusal);
+    // The judgement boundary holds the --from invariant itself (Codex r1 #3, #4): both dates real, and the
+    // expected start never after the population's own start. Checked before either date is interpolated.
+    if (expect.mirrorFrom !== undefined && !(resolveFrom(expect.mirrorFrom, expect.mirrorFrom).from && resolveFrom(expect.from, expect.mirrorFrom).from)) return refuse("the expected window start is not a real date on or before the population's own start date");
     if (fromMoved(expect) && !area.fromRefusal) return refuse(area.startRefusal);
     if (papersDoc.window?.from !== expect.from) return refuse(fromMoved(expect) ? area.fromRefusal : area.startRefusal);
     const fetchedAt = new Date(papersDoc.fetchedAt);
@@ -576,6 +580,10 @@ async function main(args) {
   let resolved = { from: pop.from };
   if (args.includes("--from")) {
     if (areaName !== "constants") { console.error("usage: --from applies to --area constants only"); return 2; }
+    // Codex r1 #1 and #2: one --from only (argValue reads the first), and never beside --control, which
+    // judges with no window and would print COMPLETE for a start nobody checked.
+    if (args.filter((a) => a === "--from").length > 1) { console.error("usage: --from may be given once"); return 2; }
+    if (args.includes("--control")) { console.error("usage: --from cannot be combined with --control, which checks no window"); return 2; }
     resolved = resolveFrom(argValue(args, "--from") ?? "", pop.from);
     if (resolved.error) { console.error(`usage: ${resolved.error}`); return 2; }
   }
@@ -908,8 +916,15 @@ ${lowerTail}
   check("constants judge REFUSES a --from window checked WITHOUT --from (the mirror's start is expected)", fNoFlag.code === 3 && fNoFlag.lines[0].includes("the mirror's fetch date"));
   const fSame = judge(cWindow, cGood, cshown, { ...cExpect, mirrorFrom: "2026-09-26" }, "constants");
   check("with mirrorFrom recorded and no --from, the coverage line still names the mirror's fetch date", fSame.code === 1 && fSame.lines[0].endsWith("from the mirror's fetch date"));
+  // Codex r1 #3, #4: judge() holds the invariant itself, and refuses before interpolating either date.
+  const fLater = judge({ ...cWindow, window: { from: "2026-09-27", to: "2026-10-16" } }, cGood, cshown, { ...cExpect, from: "2026-09-27", mirrorFrom: "2026-09-26" }, "constants");
+  check("constants judge REFUSES an expected start later than the population's own start", fLater.code === 3 && fLater.lines[0].includes("on or before the population's own start date"));
+  const fHostile = judge(fWindow, cGood, cshown, { ...fExpect, mirrorFrom: "math/0301234v1 R(5,5)<=45" }, "constants");
+  check("constants judge REFUSES a hostile mirrorFrom and prints none of it", fHostile.code === 3 && !fHostile.lines.join("\n").includes("0301234"));
+  const fHostileFrom = judge(fWindow, cGood, cshown, { ...fExpect, from: "2610.00001 1a" }, "constants");
+  check("constants judge REFUSES a hostile expected start and prints none of it", fHostileFrom.code === 3 && !fHostileFrom.lines.join("\n").includes("2610"));
   const cEmitted = [
-    fOk, fOther, fNoFlag, fSame,
+    fOk, fOther, fNoFlag, fSame, fLater, fHostile, fHostileFrom,
     ...cRefusals.map(([, vd]) => judge(cPapers, vd, cshown, null, "constants")),
     ...cWindowRefusals.map(([, patch]) => judge({ ...cWindow, ...patch }, cGood, cshown, cExpect, "constants")),
     judge(cWindow, cGood, cshown, cExpect, "constants"), judge(cPapers, cGood, cshown, null, "constants"),
@@ -959,6 +974,15 @@ ${lowerTail}
     const hostileOut = join(ROOT, "tmp", "no-such-dir-2610.00001-1a-upper-1.5");
     const child = spawnSync(process.execPath, [fileURLToPath(import.meta.url), "--check", "--area", "constants", "--out", hostileOut], { encoding: "utf8" });
     check("r3 I4: --check --area constants with a missing --out prints the fixed label, exit 2, and no part of the path", child.status === 2 && child.stdout.trim() === "RESULT: UNREADABLE — papers.json does not exist in the --out directory (exit 2)" && !child.stdout.includes("2610"));
+    // --from through main() itself (Codex r1 #1, #2, 2026-10-31): each refusal exits 2 BEFORE any file is
+    // read, so a missing --out directory would give UNREADABLE instead, and a usage line on stderr proves
+    // the flag rule fired. The positive control: one valid --from reaches the file read (UNREADABLE).
+    const cli = (...a) => spawnSync(process.execPath, [fileURLToPath(import.meta.url), "--check", "--area", "constants", "--out", hostileOut, ...a], { encoding: "utf8" });
+    const usage = (r, text) => r.status === 2 && r.stdout.trim() === "" && r.stderr.includes(text);
+    check("--from (CLI): a repeated --from is refused before any read", usage(cli("--from", "2026-10-01", "--from", "2026-09-01"), "--from may be given once"));
+    check("--from (CLI): --from beside --control is refused before any read", usage(cli("--control", "--from", "2026-09-01"), "cannot be combined with --control"));
+    check("--from (CLI): a --from on the Ramsey area is refused", usage(spawnSync(process.execPath, [fileURLToPath(import.meta.url), "--check", "--out", hostileOut, "--from", "2026-09-01"], { encoding: "utf8" }), "applies to --area constants only"));
+    check("--from (CLI): a valid --from reaches the file read (positive control)", cli("--from", "2026-09-01").status === 2 && cli("--from", "2026-09-01").stdout.includes("RESULT: UNREADABLE"));
     console.log(failed ? `RESULT: FAIL — ${failed} case(s) (exit 3)` : "RESULT: PASS — comparison, parser, judge refusals and fetch reconciliation (exit 0)");
     return failed ? 3 : 0;
   })();
