@@ -351,10 +351,16 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 // default and hide that it did. --check must be given the same --from, and refuses a papers.json whose start
 // differs, so a run is judged against the window its caller says it searched. A missing value is refused,
 // never read as "no flag" (argValue returns null for both).
+// A real calendar date written YYYY-MM-DD, and nothing else (not null, not a number, not 2026-02-30).
+export const isRealDate = (s) => {
+  if (typeof s !== "string" || !ISO_DATE.test(s)) return false;
+  const t = new Date(`${s}T00:00:00Z`);
+  return !Number.isNaN(t.getTime()) && t.toISOString().slice(0, 10) === s;
+};
+
 export function resolveFrom(arg, mirrorFrom) {
   if (arg === null || arg === undefined) return { from: mirrorFrom };
-  const t = ISO_DATE.test(arg) ? new Date(`${arg}T00:00:00Z`) : null;
-  if (!t || Number.isNaN(t.getTime()) || t.toISOString().slice(0, 10) !== arg) return { error: "--from takes a real date written YYYY-MM-DD" };
+  if (!isRealDate(arg)) return { error: "--from takes a real date written YYYY-MM-DD" };
   if (arg > mirrorFrom) return { error: "--from may only start the window earlier than the mirror's fetch date, never later" };
   return { from: arg };
 }
@@ -463,9 +469,12 @@ export function judge(papersDoc, verdictsDoc, shown, expect = null, areaName = "
   if (expect) {
     if (papersDoc.query !== expect.query) return refuse("papers.json was fetched with a different query than this watcher's");
     if (papersDoc.revision !== expect.revision) return refuse(area.revisionRefusal);
-    // The judgement boundary holds the --from invariant itself (Codex r1 #3, #4): both dates real, and the
-    // expected start never after the population's own start. Checked before either date is interpolated.
-    if (expect.mirrorFrom !== undefined && !(resolveFrom(expect.mirrorFrom, expect.mirrorFrom).from && resolveFrom(expect.from, expect.mirrorFrom).from)) return refuse("the expected window start is not a real date on or before the population's own start date");
+    // The judgement boundary holds the --from invariant itself, as ONE stated rule (Codex r1 #3, #4; r2 found
+    // the first version routed through resolveFrom, whose null-means-default let a missing start through, so
+    // the shape changed rather than gaining a clause): expect.from is ALWAYS a real date string, and when the
+    // population's own start is given, it is a real date too and expect.from is not after it. Checked before
+    // either date is interpolated; anything else is refused.
+    if (!isRealDate(expect.from) || (expect.mirrorFrom !== undefined && (!isRealDate(expect.mirrorFrom) || expect.from > expect.mirrorFrom))) return refuse("the expected window start is not a real date on or before the population's own start date");
     if (fromMoved(expect) && !area.fromRefusal) return refuse(area.startRefusal);
     if (papersDoc.window?.from !== expect.from) return refuse(fromMoved(expect) ? area.fromRefusal : area.startRefusal);
     const fetchedAt = new Date(papersDoc.fetchedAt);
@@ -923,8 +932,12 @@ ${lowerTail}
   check("constants judge REFUSES a hostile mirrorFrom and prints none of it", fHostile.code === 3 && !fHostile.lines.join("\n").includes("0301234"));
   const fHostileFrom = judge(fWindow, cGood, cshown, { ...fExpect, from: "2610.00001 1a" }, "constants");
   check("constants judge REFUSES a hostile expected start and prints none of it", fHostileFrom.code === 3 && !fHostileFrom.lines.join("\n").includes("2610"));
+  // Codex r2: a missing expected start (undefined or null) is refused too, never defaulted inside judge().
+  const fMissing = [undefined, null].map((from) => judge({ ...cWindow, window: { from, to: "2026-10-16" } }, cGood, cshown, { ...cExpect, from, mirrorFrom: "2026-09-26" }, "constants"));
+  check("constants judge REFUSES a missing expected start (undefined and null), with or without mirrorFrom", fMissing.every((r) => r.code === 3)
+    && judge({ ...cWindow, window: { from: null, to: "2026-10-16" } }, cGood, cshown, { ...cExpect, from: null }, "constants").code === 3);
   const cEmitted = [
-    fOk, fOther, fNoFlag, fSame, fLater, fHostile, fHostileFrom,
+    fOk, fOther, fNoFlag, fSame, fLater, fHostile, fHostileFrom, ...fMissing,
     ...cRefusals.map(([, vd]) => judge(cPapers, vd, cshown, null, "constants")),
     ...cWindowRefusals.map(([, patch]) => judge({ ...cWindow, ...patch }, cGood, cshown, cExpect, "constants")),
     judge(cWindow, cGood, cshown, cExpect, "constants"), judge(cPapers, cGood, cshown, null, "constants"),
