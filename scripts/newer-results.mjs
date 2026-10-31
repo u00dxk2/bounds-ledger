@@ -90,7 +90,9 @@ export function bestShown(id, side, shown = constantsShown()) {
 }
 
 /** Every problem with the store, as sentences. Empty means valid. */
-export function validateStore(store, { shown = constantsShown(), constantExists = (id) => existsSync(join(CONSTANTS, `${id}.md`)) } = {}) {
+// constantExists defaults to the SAME exact-membership predicate searchLine uses (Codex r3: it still defaulted
+// to a file-exists test, so "../README" validated while searchLine refused it).
+export function validateStore(store, { shown = constantsShown(), constantExists = onMirror } = {}) {
   const errs = [];
   if (!store || typeof store !== "object") return ["the store is not an object"];
   if (!ISO.test(String(store.checkedThrough || ""))) errs.push("checkedThrough must be a YYYY-MM-DD date");
@@ -398,9 +400,15 @@ export async function selftest() {
   check("W-17: an unknown constant id in perConstant is refused by validateStore AND renders nothing through searchLine", validateStore(ghost, { shown, constantExists: exists }).length > 0 && SL(ghost, "t1") === "" && searchLine(found(3, { zz: { papers: 1, stronger: "none" } }), "2a") === "");
   // Codex r2, against the PRODUCTION mirror predicate (no injected fixture): a path that resolves to a real
   // file is not a constant, and a non-string link is refused, never coerced and then rendered.
-  const refusedOnMirror = (pc) => validateStore(found(3, pc)).length > 0 && searchLine(found(3, pc), "2a") === "";
-  check("W-17: a path-shaped id ('../README', 'constants/1a', '1a.md') is refused by the mirror's own predicate, and a real id is not", ["../README", "constants/1a", "1a.md", "__proto__"].every((id) => refusedOnMirror({ [id]: { papers: 1, stronger: "none" } })) && searchLine(found(3, { "1a": { papers: 1, stronger: "none" } }), "2a") !== "");
-  check("W-17: a reported-stronger paper that is not a string (an array, an object) is refused and renders nothing", [[EVO], { href: EVO }].every((paper) => refusedOnMirror({ "1d": { papers: 1, stronger: "reported-stronger", paper } })));
+  // Codex r3: the store under test carries NO entries, so a refusal can only come from perConstant (the fixture
+  // entry "t1" is not on the real mirror and made every case refuse, a false green). Positive control first: the
+  // same store with a real id validates with zero problems and renders.
+  const prod = (pc) => ({ ...found(3, pc), entries: [] });
+  const okProd = prod({ "1a": { papers: 1, stronger: "none" } });
+  check("W-17 (production predicate): the control store with a real id validates with 0 problems and renders", validateStore(okProd).length === 0 && searchLine(okProd, "2a") !== "");
+  const refusedOnMirror = (pc) => validateStore(prod(pc)).length > 0 && searchLine(prod(pc), "2a") === "";
+  check("W-17: a path-shaped or case-variant id is refused by validateStore AND searchLine on the real mirror", ["../README", "./1a", "../constants/1a", "x/../1a", "constants/1a", "1a.md", "..\\README", "1A", "__proto__"].every((id) => refusedOnMirror({ [id]: { papers: 1, stronger: "none" } })));
+  check("W-17: a reported-stronger paper that is not a string (an array, an object) is refused and renders nothing", validateStore(prod({ "1d": { papers: 1, stronger: "reported-stronger", paper: EVO } })).length === 0 && [[EVO], { href: EVO }].every((paper) => refusedOnMirror({ "1d": { papers: 1, stronger: "reported-stronger", paper } })));
   check("W-17: perConstant with a zero count is refused", validateStore({ ...searched, papersFound: 0, perConstant: {} }, { shown, constantExists: exists }).length > 0);
   const pcBad = (e) => validateStore(found(3, { t1: e }), { shown, constantExists: exists }).length > 0;
   check("W-17: a malformed perConstant entry is refused (0 papers, more than found, a non-integer, an unknown stronger, an extra field)", pcBad({ papers: 0, stronger: "none" }) && pcBad({ papers: 4, stronger: "none" }) && pcBad({ papers: 1.5, stronger: "none" }) && pcBad({ papers: 1, stronger: "weaker" }) && pcBad({ papers: 1, stronger: "none", note: "x" }));
