@@ -974,7 +974,7 @@ ${r.report ? `<a class="ours" href="${esc(r.report.url)}">${esc(reportLabel(r.re
 <dl>
 ${side("Upper", r.upper, r.upperChanged, r.upperKind, historyUrl(r.url, sha))}
 ${side("Lower", r.lower, r.lowerChanged, r.lowerKind, historyUrl(r.url, sha))}
-${auditBlock(r.id, audits, [r.upper, r.lower])}${noteBlock(r.oai)}${newerBlock(newerFor(r.id, newer))}${searchLine(newer)}${pullsBlock(r.id, pulls)}
+${auditBlock(r.id, audits, [r.upper, r.lower])}${noteBlock(r.oai)}${newerBlock(newerFor(r.id, newer))}${searchLine(newer, r.id)}${pullsBlock(r.id, pulls)}
 </dl>
 <div class="actions">
 <a href="${esc(upstream)}">the mirrored file</a> &middot;

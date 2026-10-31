@@ -96,6 +96,7 @@ export function validateStore(store, { shown = constantsShown(), constantExists 
   if (!ISO.test(String(store.checkedThrough || ""))) errs.push("checkedThrough must be a YYYY-MM-DD date");
   if (typeof store.watchScope !== "string" || !store.watchScope.trim()) errs.push("watchScope must say what the watch searched");
   errs.push(...searchFieldErrors(store));
+  if (store.perConstant && typeof store.perConstant === "object") for (const id of Object.keys(store.perConstant)) if (!constantExists(id)) errs.push(`perConstant: the mirror carries no constant ${JSON.stringify(id)}`);
   const entries = Array.isArray(store.entries) ? store.entries : null;
   if (!entries) return [...errs, "entries must be an array"];
   for (const [i, e] of entries.entries()) {
@@ -177,15 +178,55 @@ function searchFieldErrors(store) {
   if (!QUERY_TERMS.length) errs.push("the watcher's query is not of the form (abs:T OR abs:T …), so this line cannot describe it");
   else if (!Array.isArray(store.tools) || store.tools.length !== QUERY_TERMS.length || !store.tools.every((t, i) => t === QUERY_TERMS[i])) errs.push(`tools must be the watcher's query terms, in order: ${QUERY_TERMS.join(", ")}`);
   if (!Number.isInteger(store.papersFound) || store.papersFound < 0) errs.push("papersFound must be a whole number, zero or more");
+  errs.push(...perConstantErrors(store));
   return errs;
+}
+
+// W-17 (2026-10-31, the manager's REDIRECT): a count alone does not answer the reader's question. When the
+// search found papers, the store must also say what they mean for EACH constant, so the line never prints a
+// bare "It found N papers" on a page those papers may not concern. perConstant maps a constant id to
+// { papers, stronger }: papers = how many of the found papers state a bound on that constant (1..papersFound),
+// stronger = "none" (every stated bound was compared and none is stronger than the strongest bound on its side
+// of the page's tables) or "not-compared" (at least one is not finished: not compared, or compared but not yet
+// confirmed to be about this very constant; the line then says neither stronger nor weaker). A constant absent from the map
+// had no paper stating a bound on it. Required when papersFound > 0, refused when it is 0. Existence of each
+// id is checked in validateStore, which knows the mirror.
+export const STRONGER = ["none", "not-compared"];
+function perConstantErrors(store) {
+  if (!Number.isInteger(store.papersFound) || store.papersFound < 0) return [];
+  const pc = store.perConstant;
+  if (store.papersFound === 0) return pc === undefined ? [] : ["perConstant must be absent when the search found no papers"];
+  if (!pc || typeof pc !== "object" || Array.isArray(pc)) return ["perConstant is required when the search found papers: say what they mean for each constant"];
+  const errs = [];
+  for (const [id, e] of Object.entries(pc)) {
+    if (!e || typeof e !== "object" || Object.keys(e).sort().join(",") !== "papers,stronger") { errs.push(`perConstant ${id}: must carry exactly papers and stronger`); continue; }
+    if (!Number.isInteger(e.papers) || e.papers < 1 || e.papers > store.papersFound) errs.push(`perConstant ${id}: papers must be a whole number from 1 to papersFound`);
+    if (!STRONGER.includes(e.stronger)) errs.push(`perConstant ${id}: stronger must be one of ${STRONGER.join(", ")}`);
+  }
+  return errs;
+}
+
+// What the found papers mean for one constant, as sentences after the count. Only called on a valid store.
+function perConstantSentence(store, id) {
+  const e = store.perConstant?.[id];
+  if (!e) return "None of them states a bound on this constant.";
+  const one = e.papers === 1;
+  if (e.stronger === "none") return one
+    ? "One of them states a bound on this constant, and it is not stronger than the strongest bound on its side in this page's tables."
+    : `${e.papers} of them state bounds on this constant, and none of those bounds is stronger than the strongest bound on its side in this page's tables.`;
+  return one
+    ? "One of them states a bound on this constant that we have not finished checking against this page's tables."
+    : `${e.papers} of them state bounds on this constant that we have not finished checking against this page's tables.`;
 }
 const orList = (xs) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} or ${xs[xs.length - 1]}`);
 
 /** The newer-papers line: a <dt>/<dd> pair for a constant page's <dl>. Empty when the store does not carry the search. */
-export function searchLine(store) {
+export function searchLine(store, id) {
   if (!store || typeof store !== "object" || !SEARCH_FIELDS.every((f) => f in store) || searchFieldErrors(store).length) return "";
   const n = store.papersFound;
-  const found = n === 0 ? "It found no papers." : `It found ${n} paper${n === 1 ? "" : "s"}.`;
+  // A nonzero count renders only for a named constant, with what the papers mean for it (W-17, 2026-10-31).
+  if (n > 0 && typeof id !== "string") return "";
+  const found = n === 0 ? "It found no papers." : `It found ${n} paper${n === 1 ? "" : "s"}, and we read each one. ${perConstantSentence(store, id)}`;
   return `<dt>Newer papers</dt><dd>On ${esc(store.checkedThrough)} we ran one search for all the constants on this site's main list, not this one alone: arXiv papers submitted from ${esc(store.windowFrom)} to ${esc(store.checkedThrough)} that matched an abstract search for ${esc(orList(store.tools))}. ${found} We searched no source other than arXiv, and papers matching none of these names were outside the search.</dd>`;
 }
 
@@ -249,7 +290,7 @@ export async function boundCellGuard(store = loadStore()) {
     if (!block || !a.includes(block)) { errs.push(`${id}: the page does not carry its newer-construction block`); continue; }
     // A-86: a store carrying the search also puts the newer-papers line on the page; it is removed the same
     // exact way, and must be there when the store carries it.
-    const line = searchLine(store);
+    const line = searchLine(store, id);
     if (line && !a.includes(line)) { errs.push(`${id}: the store carries the search but the page does not carry the newer-papers line`); continue; }
     if (a.replace(block, "").replace(line, "") !== b) errs.push(`${id}: the page differs from its no-note render by more than the block${line ? " and the newer-papers line" : ""}`);
     if (line && !insideDl(a, line)) errs.push(`${id}: the newer-papers line is not inside the page's <dl>`);
@@ -259,12 +300,14 @@ export async function boundCellGuard(store = loadStore()) {
   // asked for one, r2 showed one is a sample; the whole population is 120 cheap renders). Placement is by
   // position inside the page's single <dl> only: markup that hides the line there (a <template>, say) is a
   // hostile renderer edit this guard does not claim to catch (Codex r2, kept as a stated limit).
-  const line = searchLine(store);
-  if (line) {
+  // W-17: the line is per constant now (its found-papers sentence names this constant), so each page is
+  // checked against its OWN line.
+  if (rows.some((x) => searchLine(store, x.id))) {
     const ids = new Set(store.entries.map((e) => e.id));
     const plain = rows.filter((x) => !ids.has(x.id));
     if (!plain.length) errs.push("no constant without an entry to check the newer-papers line on");
     for (const p of plain) {
+      const line = searchLine(store, p.id);
       const a = pages.renderPage(p, manifest.sha, undefined, store);
       const b = pages.renderPage(p, manifest.sha, undefined, null);
       if (!a.includes(line)) errs.push(`${p.id}: a page with no entry does not carry the newer-papers line`);
@@ -314,7 +357,20 @@ export async function selftest() {
   check("A-86: the line says what was outside the search", sl.includes("We searched no source other than arXiv, and papers matching none of these names were outside the search."));
   check("A-86: the line states the window from AND through, and the day it ran", sl.includes("submitted from 2026-10-28 to 2026-10-30") && sl.startsWith("<dt>Newer papers</dt><dd>On 2026-10-30 "));
   check("A-86: the line never says 'checked through' or 'record'", !/checked through/i.test(sl) && !FORBIDDEN.test(sl));
-  check("A-86: a found count reads as a count, singular and plural", searchLine({ ...searched, papersFound: 1 }).includes("It found 1 paper.") && searchLine({ ...searched, papersFound: 3 }).includes("It found 3 papers."));
+  // W-17 (2026-10-31): a nonzero count renders only with what the papers mean for THIS constant.
+  const found = (n, pc) => ({ ...searched, papersFound: n, perConstant: pc });
+  check("W-17: a nonzero count with NO perConstant is refused and renders nothing (never a bare count)", validateStore({ ...searched, papersFound: 3 }, { shown, constantExists: exists }).length > 0 && searchLine({ ...searched, papersFound: 3 }, "t1") === "");
+  check("W-17: a nonzero count renders nothing without a constant to speak about", searchLine(found(3, {}), undefined) === "");
+  check("W-17: a constant no paper bears on is told so", searchLine(found(3, {}), "t1").includes("It found 3 papers, and we read each one. None of them states a bound on this constant."));
+  check("W-17: one paper, compared, none stronger (singular)", searchLine(found(1, { t1: { papers: 1, stronger: "none" } }), "t1").includes("It found 1 paper, and we read each one. One of them states a bound on this constant, and it is not stronger than the strongest bound on its side in this page's tables."));
+  check("W-17: several papers, compared, none stronger (plural)", searchLine(found(15, { t1: { papers: 3, stronger: "none" } }), "t1").includes("3 of them state bounds on this constant, and none of those bounds is stronger than the strongest bound on its side in this page's tables."));
+  check("W-17: not yet compared says so, and never says stronger or weaker", (() => { const l = searchLine(found(15, { t1: { papers: 1, stronger: "not-compared" } }), "t1"); return l.includes("One of them states a bound on this constant that we have not finished checking against this page's tables.") && !/stronger|weaker|better/.test(l); })());
+  check("W-17: perConstant with a zero count is refused", validateStore({ ...searched, papersFound: 0, perConstant: {} }, { shown, constantExists: exists }).length > 0);
+  const pcBad = (e) => validateStore(found(3, { t1: e }), { shown, constantExists: exists }).length > 0;
+  check("W-17: a malformed perConstant entry is refused (0 papers, more than found, a non-integer, an unknown stronger, an extra field)", pcBad({ papers: 0, stronger: "none" }) && pcBad({ papers: 4, stronger: "none" }) && pcBad({ papers: 1.5, stronger: "none" }) && pcBad({ papers: 1, stronger: "weaker" }) && pcBad({ papers: 1, stronger: "none", note: "x" }));
+  check("W-17: a perConstant id the mirror does not carry is refused", validateStore(found(3, { "9z": { papers: 1, stronger: "none" } }), { shown, constantExists: exists }).length > 0);
+  check("W-17: a valid nonzero store passes (the silent half)", validateStore(found(15, { t1: { papers: 3, stronger: "none" } }), { shown, constantExists: exists }).length === 0);
+  check("W-17: the exact 15-paper line for a constant with compared bounds (pinned last)", searchLine({ ...found(15, { t1: { papers: 3, stronger: "none" } }), checkedThrough: "2026-10-31", windowFrom: "2026-09-26" }, "t1") === "<dt>Newer papers</dt><dd>On 2026-10-31 we ran one search for all the constants on this site's main list, not this one alone: arXiv papers submitted from 2026-09-26 to 2026-10-31 that matched an abstract search for AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve. It found 15 papers, and we read each one. 3 of them state bounds on this constant, and none of those bounds is stronger than the strongest bound on its side in this page's tables. We searched no source other than arXiv, and papers matching none of these names were outside the search.</dd>");
   check("A-86: a store WITHOUT the search fields validates and renders no line (the dark state)", validateStore(good, { shown, constantExists: exists }).length === 0 && searchLine(good) === "");
   const searchRefused = (patch, drop) => { const s = { ...searched, ...patch }; if (drop) delete s[drop]; return validateStore(s, { shown, constantExists: exists }).length > 0 && searchLine(s) === ""; };
   check("A-86: a partial set (tools missing) is refused and renders nothing", searchRefused({}, "tools"));
@@ -385,7 +441,9 @@ export async function selftest() {
   check(`the bound-cell guard holds on every noted page${guardStore === store ? "" : " (on the retired-entry fixture, the committed store being empty)"} (${guard.length} problem(s)${guard.length ? ": " + guard.join("; ") : ""})`, guard.length === 0);
   // A-86 WIRING: the same guard on a store that also carries the search fields. It requires renderPage to
   // put the newer-papers line on the page, and nothing else to change because of it.
-  const searchFixture = { ...guardStore, checkedThrough: "2026-10-30", windowFrom: "2026-10-28", tools: [...QUERY_TERMS], papersFound: 2 };
+  // W-17: a nonzero count needs perConstant, or no line renders and the guard below would check nothing.
+  const searchFixture = { ...guardStore, checkedThrough: "2026-10-30", windowFrom: "2026-10-28", tools: [...QUERY_TERMS], papersFound: 2, perConstant: { "1b": { papers: 1, stronger: "none" } } };
+  check("W-17: the guard's fixture renders a per-constant line on a noted page AND on a plain one (positive control, so the guard below checks something)", searchLine(searchFixture, "1b").includes("One of them states a bound on this constant") && searchLine(searchFixture, "2a").includes("None of them states a bound on this constant"));
   const wired = await boundCellGuard(searchFixture);
   check(`A-86: renderPage carries the newer-papers line, and the page differs from its no-store render by exactly the block and the line (${wired.length} problem(s)${wired.length ? ": " + wired.join("; ") : ""})`, wired.length === 0);
   // r6 #1, through main() itself: render-constant-pages --check must REFUSE an invalid store before it
