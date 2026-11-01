@@ -3449,7 +3449,7 @@
         "3703ce3",
         "3fce375"
       ],
-      "openAlexRun2026_11_01": "SCHEDULED, not run yet (written at the 11-01 close, about 10:20 MDT): run once at or after 18:00 MDT 2026-11-01, after the shared OpenAlex budget resets at midnight UTC: node scripts/eth-openalex-frame.mjs --fetch. Figures go into Next steps item 2 of docs/decisions/2026-10-30-A92-eth-dependence-area-design.md; output stays in tmp/. Never twice in a day. On a budget refusal, ask on the bus and never request a key (a key needs an email address, David's call). This field is overwritten with the result or the deferral when the run happens."
+      "openAlexRun2026_11_01": "DEFERRED, not run (written at the 11-01 close, about 10:50 MST): the lane closed at about 10:50 MST, before the shared OpenAlex budget's reset at midnight UTC (17:00 MST since DST ended on 2026-11-01; it was 18:00 MDT before), and the close rule is never to sit idle waiting. Run once by the next session at or after 00:00 UTC, which is 17:00 MST on 2026-11-02: node scripts/eth-openalex-frame.mjs --fetch. Figures go into Next steps item 2 of docs/decisions/2026-10-30-A92-eth-dependence-area-design.md; output stays in tmp/. Never twice in a day. On a budget refusal, ask on the bus and never request a key (a key needs an email address, David's call)."
     },
     {
       "id": "A-93",
