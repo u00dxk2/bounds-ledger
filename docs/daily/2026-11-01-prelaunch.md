@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-The 1d page says a new paper reports a better value that we have not checked. We looked: the paper and its code share the function for five other problems but not for this one, so no reader can check the value either. Today the page will say that, so nobody cites 1.4564 as a bound. Tonight we run the paper count for the planned third area.
+The 1d page said a new paper reports a better value that we have not checked. We looked, and the paper's text gives no function for that value. Since about 10:05 this morning, on David's yes, the page says so and tells readers to cite 1.4564 as a result the paper reports, not as a bound. Tonight we run the paper count for the planned third area.
 
 ### Selection packet
 
@@ -104,3 +104,18 @@ node C:/dev/skylark/bounds-ledger/scripts/newer-results.mjs --selftest
 ## State Appendix
 
 Written at the close from live commands. The close commit itself cannot appear here.
+
+- HEAD before the close commit: `d2eac5d`, on origin/main (`git log -1` at the close). CI at `d2eac5d`: reverify.yml and page-check.yml each "GREEN — 1 completed non-scheduled success(es) for HEAD" (`check-ci-status.mjs --workflow <file>`).
+- Served: `npm run served` → "1 checked — 1 served, 0 in flight, 0 stale, 0 unreachable" for `c/1d.html` at anchor `d2eac5d`.
+- Due gates: `check-due-gates-dispositioned.mjs` → "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT (taken 2026-11-01).
+
+## Close
+
+ACTION: COMPLETED · item `W-17` (the newer-papers watch) · P3 msg cd0dbddd
+
+- **Acceptance met:** David answered yes on card 59503849 at 16:53Z. The switch-on is `d2eac5d` (only `c/1d.html` changed). `npm run served` SERVED it, and a live fetch showed the sentence once and "EvoDuet" 0 times, with Last-Modified "Sun, 01 Nov 2026 17:05:15 GMT" (not David's words), which is 10:05 MST. The orchestrator's own fetch agreed (manager review, 17:10Z). Card 59503849 is dismissed as done.
+- **Changed since the P3 post:** the switch-on above, posted as status msg 82f83974 with the user-visible receipt. That receipt still holds.
+- **Hygiene draft:** 5 lines, 5 accepted, 0 amended, 0 rejected. `A-45` (the stale-value resolvability read) re-dated to 2026-11-08 via `expectedSignalBy`. `A-91` (67a's withdrawn preprint) re-dated to 2026-11-08 via `nextCheckDate`, with today's read and its positive control appended to its note. The three cards were dismissed at P3. The draft's READ-MUTATED lines both named `scripts/newer-results.mjs`; that was my own concurrent P3 edit, and HEAD did not move during either read. Its checks: check-wait-justification "RESULT: PASS — 1 of 114 row(s) carry `waitJustification`; 0 warn / 0 info", and check-engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable".
+- **Ledger delta:** `W-17` (the newer-papers watch) gains `lookup1d2026_11_01` (the evidence) and `lookup1dSwitchedOn`. `A-92` (the third watched area, results that rest on ETH) gains `openAlexRun2026_11_01`, which reads SCHEDULED until tonight's run writes its result or deferral.
+- **Pending reads:** `A-92`'s OpenAlex frame run, once, at or after 18:00 MDT on 2026-11-01, to be recorded on that field and in the design doc's Next steps item 2. On 11-02: the dated gates due that day.
+- **Findings classification:** today's one finding is instrument-facing. It concerns our own page wording, not a mirrored record, so the running count of consecutive instrument-facing days continues. The standing prediction (the next record-facing catch is a citation-quality defect found by a human reading a cited source in the depth audit) was neither tested nor falsified today. The 1d lookup reads an outside paper's reported value, not a mirrored row.
