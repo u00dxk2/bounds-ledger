@@ -226,17 +226,16 @@ function perConstantErrors(store, constantExists = onMirror) {
 }
 
 // W-17 (2026-11-01): constructionLookup records that someone LOOKED for a function giving a reported-stronger
-// value and found none: not in the paper's text (the linked version, appendices included), and not among the
-// best programs published in the code repository its project page links to. { on: the date looked, repository: that
-// repository's tree at the commit current that day }. The page then tells the reader so, and how to cite the
-// value meanwhile. The field states only what was looked at: the paper's own text and ONE repository at ONE
-// commit. It cannot say the value is wrong, and the sentence never does. The repository link is pinned to a
-// full commit sha so a reader lands on what was searched. Codex r1 (2026-11-01) narrowed "the paper publishes
-// it" to the version read, appendices included (the paper calls its Appendices I-K its supplementary materials).
-// Codex r2 found the same class again ("nor links to one" claimed the contents of 20 unopened links; "has none
-// for this problem" claimed file contents from a read of file names), so the shape changed rather than adding
-// clauses: the sentence now reports OUR SEARCH ("we looked ... and found none: not in X, not among Y"), never
-// what a paper or repository contains.
+// value and found none in the paper's text (the linked version, appendices included). { on: the date looked,
+// repository: the code repository the paper's project page links to, as a tree at the commit current that day }.
+// The page tells the reader the date and the paper-text finding, and how to cite the value meanwhile. It never
+// says the value is wrong. The repository is PROVENANCE ONLY: it stays in the store, validated, and is NEVER
+// rendered. History: Codex r1 narrowed "the paper publishes it" to the version read, appendices included (the
+// paper calls its Appendices I-K its supplementary materials); r2 and r3 found the same class twice more in the
+// repository clause (contents claimed from a read of file names, and links listed but not opened), and r3 found
+// that a repository clause contradicts the line's closing "We searched no source other than arXiv". So the
+// repository clause was dropped (claim less, portable rule 2), never re-patched; the repository finding lives
+// in the W-17 ledger row and the card to David, not on the page.
 const ARXIV_VERSION = (url) => /v(\d+)$/.exec(url)[1]; // only called on a paper ARXIV already validated
 const GH_TREE = /^https:\/\/github\.com\/[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\/([A-Za-z0-9_.-]+)\/tree\/[0-9a-f]{40}$/;
 function lookupErrors(id, lk) {
@@ -264,7 +263,7 @@ function perConstantSentence(store, id) {
   const lk = e.constructionLookup;
   // Manager review 2026-11-01: state what was found, not what follows from it, then one plain clause for the
   // reader about citing. "Cannot be checked" was refused: the evaluator is public, so a search could be re-run.
-  const looked = lk ? ` On ${esc(lk.on)} we looked for a function that gives that value and found none: not in the paper's text (version ${ARXIV_VERSION(e.paper)}, appendices included), and not among the best programs published in <a href="${esc(lk.repository)}">the code repository its project page links to</a> (at the commit current that day). Until one is published and checked, cite that value as a result the paper reports, not as a bound.` : "";
+  const looked = lk ? ` On ${esc(lk.on)} we looked for a function that gives that value and found none in the paper's text (version ${ARXIV_VERSION(e.paper)}, appendices included). Until one is published and checked, cite that value as a result the paper reports, not as a bound.` : "";
   return `${one ? `One of them, ${link}, reports` : `${lead}. One of those, ${link}, reports`} a value for this constant stronger than every bound on its side in this page's tables. We have not checked that value, and this page's tables do not include it.${looked}`;
 }
 const orList = (xs) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} or ${xs[xs.length - 1]}`);
@@ -429,7 +428,8 @@ export async function selftest() {
   const rsl = (lk, papers = 1) => SL(found(15, { t1: { papers, stronger: "reported-stronger", paper: EVO, ...(lk === undefined ? {} : { constructionLookup: lk }) } }), "t1");
   const withLk = rsl(LK);
   check("W-17 lookup: the store with a lookup validates (positive control, so the refusals below are about the lookup)", validateStore(found(15, { t1: { papers: 1, stronger: "reported-stronger", paper: EVO, constructionLookup: LK } }), { shown, constantExists: exists }).length === 0 && withLk !== "");
-  check("W-17 lookup: the line says the date looked, that we found none in the paper's text (v1, appendices included) or among the linked repository's published best programs, and links the pinned repository", withLk.includes(`On 2026-11-01 we looked for a function that gives that value and found none: not in the paper's text (version 1, appendices included), and not among the best programs published in <a href="${REPO}">the code repository its project page links to</a> (at the commit current that day).`));
+  check("W-17 lookup: the line says the date looked and that we found none in the paper's text (v1, appendices included)", withLk.includes("On 2026-11-01 we looked for a function that gives that value and found none in the paper's text (version 1, appendices included)."));
+  check("W-17 lookup (Codex r3): the repository is NEVER rendered, so the line claims nothing about its contents and stays inside the arXiv-only closing sentence", !withLk.includes(REPO) && !/github|repositor/i.test(withLk) && withLk.includes("We searched no source other than arXiv"));
   check("W-17 lookup: the line tells the reader to cite it as a reported result, not as a bound", withLk.includes("Until one is published and checked, cite that value as a result the paper reports, not as a bound."));
   check("W-17 lookup: the line never says the value is wrong, false, cannot be checked, or 'record'", !/\b(wrong|false|incorrect|cannot be checked|unverifiable)\b/i.test(withLk) && !FORBIDDEN.test(withLk));
   check("W-17 lookup: the lookup keeps the not-checked sentence and adds to it, it never replaces it", withLk.includes("We have not checked that value, and this page's tables do not include it. On 2026-11-01"));
@@ -445,9 +445,9 @@ export async function selftest() {
     `https://gitlab.com/Open-Galapagos/EvoDuet/tree/${"7".repeat(40)}`, `http://github.com/Open-Galapagos/EvoDuet/tree/${"7".repeat(40)}`, `${REPO}?x=1`, `${REPO}/`, `${REPO}#a`,
     `https://github.com/Open-Galapagos/../tree/${"7".repeat(40)}`, `https://github.com/o/./tree/${"7".repeat(40)}`, `https://github.com/Open-Galapagos/EvoDuet/tree/${"7".repeat(40)}/benchmarks`, `https://github.com/O"><b>/EvoDuet/tree/${"7".repeat(40)}`, 42,
   ].every((repository) => lkRefused({ ...LK, repository })));
-  check("W-17 lookup: a repository whose name carries the word 'record' is refused, so the link cannot print it", lkRefused({ ...LK, repository: `https://github.com/o/records/tree/${"7".repeat(40)}` }));
+  check("W-17 lookup: a repository whose name carries the word 'record' is refused (store hygiene: the field is public JSON even though the page never prints it)", lkRefused({ ...LK, repository: `https://github.com/o/records/tree/${"7".repeat(40)}` }));
   check("W-17 lookup (production predicate): 1d with a lookup validates on the real mirror and renders the lookup", (() => { const s = { ...found(3, { "1d": { papers: 1, stronger: "reported-stronger", paper: EVO, constructionLookup: LK } }), entries: [] }; return validateStore(s).length === 0 && searchLine(s, "1d").includes("we looked for a function that gives that value"); })());
-  check("W-17 lookup: the exact reported-stronger line with a lookup (pinned last)", withLk.endsWith(`One of them, <a href="${EVO}">arXiv:2609.40340v1</a>, reports a value for this constant stronger than every bound on its side in this page's tables. We have not checked that value, and this page's tables do not include it. On 2026-11-01 we looked for a function that gives that value and found none: not in the paper's text (version 1, appendices included), and not among the best programs published in <a href="${REPO}">the code repository its project page links to</a> (at the commit current that day). Until one is published and checked, cite that value as a result the paper reports, not as a bound. We searched no source other than arXiv, and papers matching none of these names were outside the search.</dd>`));
+  check("W-17 lookup: the exact reported-stronger line with a lookup (pinned last)", withLk.endsWith(`One of them, <a href="${EVO}">arXiv:2609.40340v1</a>, reports a value for this constant stronger than every bound on its side in this page's tables. We have not checked that value, and this page's tables do not include it. On 2026-11-01 we looked for a function that gives that value and found none in the paper's text (version 1, appendices included). Until one is published and checked, cite that value as a result the paper reports, not as a bound. We searched no source other than arXiv, and papers matching none of these names were outside the search.</dd>`));
   // Codex code pass: searchLine and validateStore must agree on the same store.
   const orphan = { ...good, perConstant: { t1: { papers: 1, stronger: "none" } } };
   check("W-17: a perConstant with no search fields is refused (it never validates alone)", validateStore(orphan, { shown, constantExists: exists }).length > 0);
