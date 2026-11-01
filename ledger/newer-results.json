@@ -12,7 +12,7 @@
   "perConstant": {
     "1a": { "papers": 3, "stronger": "none" },
     "1b": { "papers": 3, "stronger": "none" },
-    "1d": { "papers": 1, "stronger": "reported-stronger", "paper": "https://arxiv.org/abs/2609.40340v1" },
+    "1d": { "papers": 1, "stronger": "reported-stronger", "paper": "https://arxiv.org/abs/2609.40340v1", "constructionLookup": { "on": "2026-11-01", "repository": "https://github.com/Open-Galapagos/EvoDuet/tree/75c9ba36b5a17b53e6bfa74a4e63b633971a2fca" } },
     "3a": { "papers": 1, "stronger": "none" },
     "3d": { "papers": 1, "stronger": "none" }
   },
