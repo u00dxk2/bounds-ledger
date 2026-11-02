@@ -107,4 +107,19 @@ node C:/dev/skylark/bounds-ledger/scripts/arxiv-watch.mjs --check
 
 ## State Appendix
 
-Written at the close from live commands.
+Written at the close from live commands. The close commit itself cannot appear here.
+
+- HEAD before the close commit: `7800321`, on origin/main (`git log -1` at the close). CI at `7800321`: reverify.yml "GREEN — 1 completed non-scheduled success(es) for HEAD" (`check-ci-status.mjs --workflow reverify.yml`). page-check.yml green at `fb8fc5d`, the last commit that touched code.
+- Served: not read today. No page changed: `render-ramsey.mjs --check` "RESULT: PASS — ramsey.html matches the committed table", and the store ships `"render": false`.
+- Due gates: `check-due-gates-dispositioned.mjs` → "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT (taken 2026-11-02).
+
+## Close
+
+ACTION: DEFERRED — the Ramsey arXiv-screen paragraph is built and switched off; going live needs David's yes · trigger David's answer on card 42e3d6c8 (needs-decision msg c6060c9b) · item `A-81` (the Ramsey newer-papers watch) · P3 fe31c1a3
+
+- The acceptance in force at P3 ("store, renderer and sentence built dark, claims pre-pass, Codex rounds, David card", the manager review) was met; the manager review of P3 read the live ramsey.html at Pages build `7800321` and found none of the paragraph's words on it. The switch-on is the deferred part: on David's yes, set `render` true, re-render, push, then `npm run served` and a live fetch as the delivery proof. If more than two weeks have passed since 2026-11-02, re-run the watch and update the store first.
+- Ledger delta: `A-2`, `A-78` re-dated to 2026-11-09 and `G-4`'s expectedSignalBy to 2026-11-09 (hygiene draft, accepted). `A-77` (the filed-report check) re-dated to 2026-11-05, not 11-09 (amended: its baseline row waits on `A-95`), with the read in `read2026_11_02`. `A-81` re-dated to 2026-11-16 with `run2026_11_02` and `switchOnDeferred2026_11_02`. `A-95` (the 87a row discloses our closed issue 150 and not our open issue 289) minted, re-check 2026-11-05.
+- Hygiene draft: 4 lines, 3 accepted, 1 amended, 0 rejected. Its checks: wait-justification "RESULT: PASS — 1 of 114 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)"; engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)". READ-MUTATED: none, 0 reads guarded (the reads ran before the helper did).
+- Pending reads: `A-92`'s OpenAlex frame run, once, at or after 17:00 MST today (00:00 UTC), with its figures going into "Next steps" item 2 of `docs/decisions/2026-10-30-A92-eth-dependence-area-design.md`. Not run at this close (about 10:35 MST); the evening close records whether it ran.
+- Classification of today's findings, one sentence of human judgment: both are instrument-facing (our own search's stated end date and our own disclosure renderer), no catch was counted, numeric or byte-only (A-2's read: "No drift."), and the running count of consecutive instrument-facing days is at least 3, counted by hand (the 10-31 report said "at least one" and the 11-01 report said the run continues).
+- The standing prediction, quoted from CLAUDE.md: "the next record-facing catch will be a citation-quality defect in a mirrored upstream entry … found by a human reading the cited source in the depth audit (`A-47`), not by any alarm." Not tested today: there was no catch.
