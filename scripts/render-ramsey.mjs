@@ -24,7 +24,8 @@
 // class is "a guard that reads prose for meaning", and a matcher over prose is an arms race. So the
 // guard claims less: it checks the committed page against the store, under the layout this renderer
 // emits, with input SHAPES held (the store's fields, the table's survey id and revision date) and
-// one stated word rule ("arXiv" in the note box only inside the gated paragraph). A renderer layout
+// one stated word rule ("arXiv" in the note box only inside the gated paragraph and the not-covered
+// sentence's one pinned pointer to it, ", apart from the arXiv screen described below."). A renderer layout
 // change, and screen-like prose that never says "arXiv", are code changes that reach the page only
 // through review. Do not answer a fourth round of that class with another matcher.
 
