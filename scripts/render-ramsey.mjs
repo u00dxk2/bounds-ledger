@@ -391,7 +391,13 @@ const BRIEF_URL = `${REPO}/blob/main/docs/arxiv-watch-reader-brief.md`;
 // incomplete, and the check's own RESULT word. They are copied from `arxiv-watch.mjs --check`'s
 // output by hand, like every other field here; the gate holds them to each other, not to the run.
 const SEARCH_KEYS = ["revision", "windowFrom", "listedOn", "newestSubmitted", "query", "papersFound", "papersScreened", "incomplete", "checkResult", "candidates", "render", "note"];
-const isDate = (s) => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) && new Date(`${s}T00:00:00Z`).toISOString().slice(0, 10) === s;
+// A month or day out of range makes an Invalid Date, whose toISOString THROWS (Codex r2 NIT on
+// 8fe8abd); the gate must refuse, not crash, so validity is read before formatting.
+const isDate = (s) => {
+  if (typeof s !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const d = new Date(`${s}T00:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
+};
 export function searchGate(exists, parsed, doc) {
   // Absence is not darkness (Codex r1 SHOULD on 586770d, the same rule storeGate applies to the depth
   // store): a deleted store would silently take a live screen off the page with --check passing.
@@ -563,6 +569,22 @@ export function guardPage(page, doc, rows = [], search = null) {
     if (searchParas.length === 1 && p !== searchHtml(search)) v.push("the arXiv search paragraph differs from what the store renders");
   } else if (searchMentions) {
     v.push(`mentions the arXiv search ${searchMentions} time(s) while the store does not render it`);
+  }
+  // A STATED RULE, not a list of phrasings (Codex r2 BLOCKER on 8fe8abd: other prose in the note box
+  // could claim an arXiv screen the gated store does not state, and the checks above read only the
+  // canonical paragraph). Inside the note box, "arXiv" may appear ONLY in the gated paragraph, and not
+  // at all while the store is dark. Its failure mode is a refusal. What it does NOT see, deliberately
+  // (r2's SHOULD, the second round to find a hiding route outside what a check reads, so the shape
+  // stops growing here): arXiv prose OUTSIDE the note box (entry notes legitimately cite arXiv
+  // preprints), and a renderer LAYOUT change that wraps the page before the jump links. Both are
+  // changes to this file's code, and a code change reaches the page only through review; the guard's
+  // job is the committed page against the store under the layout this renderer emits.
+  const noteBox = html.match(/<\/nav>\n\n<div class="note">\n([\s\S]*?)\n<\/div>\n/)?.[1];
+  if (noteBox !== undefined) {
+    // The two sanctioned places, both pinned above when the store renders: the paragraph itself and
+    // the not-covered sentence's exact pointer to it.
+    const outside = search?.render && searchParas.length === 1 ? noteBox.replace(searchParas[0], "").replace(", apart from the arXiv screen described below.", ".") : noteBox;
+    if (/arxiv/i.test(outside)) v.push("the note box mentions arXiv outside the gated arXiv-search paragraph");
   }
   const so = html.match(/So far, of the (\d+) bounds Table Ia prints \([^)]*\): ([^<]*)\./);
   if (!so) v.push("does not state what has been checked");
@@ -784,6 +806,8 @@ function selftest() {
     ["a second stylesheet", onPage.replace("</style>", "</style><style>#arxiv-search{display:none}</style>"), /stylesheet that is not the renderer's own/],
     ["the whole note box inside a hidden ancestor", onPage.replace('<div class="note">', '<div hidden>\n<div class="note">').replace("\n</div>\n\n<h2", "\n</div>\n</div>\n\n<h2"), /not in the plain note box/],
     ["the note box hidden by its own attribute", onPage.replace('<div class="note">', '<div class="note" hidden>'), /not in the plain note box/],
+    ["another note-box paragraph claiming an arXiv screen", onPage.replace("<p><strong>What has been checked", "<p>We screened every relevant arXiv paper; no newer result exists.</p>\n<p><strong>What has been checked"), /mentions arXiv outside the gated/],
+    ["arXiv prose in the box while the store is dark", html.replace("<p><strong>What has been checked", "<p>Our arXiv screen found nothing newer.</p>\n<p><strong>What has been checked"), /mentions arXiv outside the gated/, sOff],
     ["a template around the three paragraphs", onPage.replace("<p><strong>What is watched.</strong>", "<template><p><strong>What is watched.</strong>").replace("<p><strong>What has been checked", "</template><p><strong>What has been checked"), /not in the plain note box/],
     ["the search shown while the store is dark", onPage, /while the store does not render it/, sOff],
   ];
@@ -803,6 +827,7 @@ function selftest() {
     ["a window not starting at the revision", { ...sOn, windowFrom: "2026-05-01" }, /not at the revision date/],
     ["a listing date before its start", { ...sOn, listedOn: "2026-04-01" }, /listing date .* not a date on or after/],
     ["an impossible date", { ...sOn, listedOn: "2026-02-30" }, /listing date .* not a date on or after/],
+    ["a month out of range", { ...sOn, listedOn: "2026-13-01" }, /listing date .* not a date on or after/],
     ["a newest submission after the listing date", { ...sOn, newestSubmitted: "2026-11-03" }, /newest submission date .* not a date between/],
     ["a newest submission before the start", { ...sOn, newestSubmitted: "2026-04-01" }, /newest submission date .* not a date between/],
     ["no newest submission", { ...sOn, newestSubmitted: undefined }, /newest submission date/],
