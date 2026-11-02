@@ -1,8 +1,8 @@
 # read-output sidecar for A-78 — written by check-due-gates-dispositioned --run
 # readCommand: node C:/dev/skylark/bounds-ledger/scripts/openai-math.mjs
-# ran: 2026-10-26T15:26:57.316Z · exit: 0
-# lines: 2 · sha256: 422721a9ad75831d (first 16 hex of the output below)
+# ran: 2026-11-02T15:02:45.535Z · exit: 0
+# lines: 2 · sha256: c3f9fc00f8eaa694 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
-openai-math: 372 of 372 families at openai/math@1581d4c (an upstream sha): 23 bear on a watched record, 349 do not; 31 pair(s): formal-proof 10, partial 0, none 0, unchecked 18, read-no-note 3; rendered 10
+openai-math: 373 of 373 families at openai/math@4eaee87 (an upstream sha): 23 bear on a watched record, 350 do not; 33 pair(s): formal-proof 13, partial 0, none 0, unchecked 4, read-no-note 16; rendered 13
 RESULT: VALID (exit 0)

@@ -1,0 +1,16 @@
+# read-output sidecar for A-81 — written by check-due-gates-dispositioned --run
+# readCommand: node scripts/arxiv-watch.mjs --check
+# ran: 2026-11-02T15:11:52.936Z · exit: 0
+# lines: 10 · sha256: 323362a30363dbf6 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+coverage: this watcher's query · submitted 2026-04-24 to 2026-11-02 (UTC dates) · survey revision 18
+papers fetched: 169 · verdicts: 169 · every fetched id has exactly one verdict
+  claims-a-better-bound: 0
+  mentions-only: 12
+  unrelated: 157
+parts reconcile: 0 + 12 + 157 = 169
+candidate bound(s) beating or contradicting a value we show: 0 (details stay in verdicts.json, never printed)
+stated bounds EQUAL to a value we show: 72 · WEAKER than it: 0
+stated bounds on rows this table does not carry: 8
+RESULT: COMPLETE — no candidate (exit 0)
