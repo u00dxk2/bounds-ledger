@@ -3449,7 +3449,7 @@
       "onTrigger": "By 2026-11-06: (1) settle 3SUM/APSP: read anthropics/formal-math/3sum-apsp EndStatement.lean and the paper's Theorem 22 hypotheses (the nu and weight ranges), then record in the design whether the usual 3SUM/APSP conjectures are contradicted; (2) build the OpenAlex candidate frame (design decision 5) and measure its recall against LMS 2011 and Cygan et al. chapter 14; (3) mint a watch row on the ETH refutation's status, cleared by a published human reading of either proof. Building eth.html is a separate David decision.",
       "closeWhen": "David decides to build the page (this row then hands to a build row) or retires the area.",
       "created": "2026-10-30",
-      "updated": "2026-11-01",
+      "updated": "2026-11-02",
       "readCommandWaived": {
         "reason": "The trigger is a reading (3SUM/APSP hypotheses in anthropics/formal-math/3sum-apsp) and a build (the OpenAlex frame). No committed command answers either yet. The first one will be the frame script's own reconcile read, which becomes this row's readCommand when it is committed with its selftest."
       },
@@ -3460,7 +3460,8 @@
         "3703ce3",
         "3fce375"
       ],
-      "openAlexRun2026_11_01": "DEFERRED, not run (written at the 11-01 close, about 10:50 MST): the lane closed at about 10:50 MST, before the shared OpenAlex budget's reset at midnight UTC (17:00 MST since DST ended on 2026-11-01; it was 18:00 MDT before), and the close rule is never to sit idle waiting. Run once by the next session at or after 00:00 UTC, which is 17:00 MST on 2026-11-02: node scripts/eth-openalex-frame.mjs --fetch. Figures go into Next steps item 2 of docs/decisions/2026-10-30-A92-eth-dependence-area-design.md; output stays in tmp/. Never twice in a day. On a budget refusal, ask on the bus and never request a key (a key needs an email address, David's call)."
+      "openAlexRun2026_11_01": "DEFERRED, not run (written at the 11-01 close, about 10:50 MST): the lane closed at about 10:50 MST, before the shared OpenAlex budget's reset at midnight UTC (17:00 MST since DST ended on 2026-11-01; it was 18:00 MDT before), and the close rule is never to sit idle waiting. Run once by the next session at or after 00:00 UTC, which is 17:00 MST on 2026-11-02: node scripts/eth-openalex-frame.mjs --fetch. Figures go into Next steps item 2 of docs/decisions/2026-10-30-A92-eth-dependence-area-design.md; output stays in tmp/. Never twice in a day. On a budget refusal, ask on the bus and never request a key (a key needs an email address, David's call).",
+      "openAlexRun2026_11_02": "DEFERRED again, to the 2026-11-03 session: the lane closed at about 10:45 MST on 11-02 (close-session prompt msg 3d4afad3), before the 17:00 MST (00:00 UTC) budget reset, and the close rules say a read due later than the close goes in the banner rather than being waited for. Any time in the 11-03 MT session is after that reset, so it runs inside the 2026-11-03 UTC budget day. Command: node scripts/eth-openalex-frame.mjs --fetch, once; figures into Next steps item 2 of docs/decisions/2026-10-30-A92-eth-dependence-area-design.md. Never twice in a day; never request a key."
     },
     {
       "id": "A-93",
