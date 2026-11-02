@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-The Ramsey page tells a reader it does not cover anything published after the survey's last revision. We do search arXiv for newer Ramsey papers, but the page never says so. Today's search screened 169 papers and found none that improves on a value the page shows. A dated paragraph saying so is built and switched off, and David's card asks whether to turn it on.
+The Ramsey page told a reader it did not cover anything published after the survey's last revision, though we search arXiv for newer Ramsey papers. Today's search screened 169 papers and found none that improves on a value the page shows. Since about 10:35 MT, on David's yes, the page says so with the dates and the method.
 
 ### Selection packet
 
@@ -122,4 +122,5 @@ ACTION: DEFERRED — the Ramsey arXiv-screen paragraph is built and switched off
 - Hygiene draft: 4 lines, 3 accepted, 1 amended, 0 rejected. Its checks: wait-justification "RESULT: PASS — 1 of 114 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)"; engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)". READ-MUTATED: none, 0 reads guarded (the reads ran before the helper did).
 - Pending reads: `A-92`'s OpenAlex frame run, once, at or after 17:00 MST today (00:00 UTC), with its figures going into "Next steps" item 2 of `docs/decisions/2026-10-30-A92-eth-dependence-area-design.md`. Not run at this close (about 10:35 MST); the evening close records whether it ran.
 - Classification of today's findings, one sentence of human judgment: both are instrument-facing (our own search's stated end date and our own disclosure renderer), no catch was counted, numeric or byte-only (A-2's read: "No drift."), and the running count of consecutive instrument-facing days is at least 3, counted by hand (the 10-31 report said "at least one" and the 11-01 report said the run continues).
+- **After the close, the action completed.** David answered card 42e3d6c8 at 17:26:02Z (paraphrased: yes, switch it on as written). `fa00067` set `render` true and re-rendered `ramsey.html` (+2 −1 lines; `copying.html` byte-identical); `render-ramsey.mjs --check` PASS; CI page-check.yml green on `fa00067`. `npm run served` at 17:35:30Z: "1 checked — 1 served, 0 in flight, 0 stale, 0 unreachable" (not David's words). A live fetch returned HTTP 200, Last-Modified "Mon, 02 Nov 2026 17:35:08 GMT" (not David's words), with the paragraph, its heading, the pointer and "169 papers, the newest submitted on 30 October 2026" (not David's words) each found once. The card is dismissed as done. ACTION: COMPLETED · item `A-81` (the Ramsey newer-papers watch) · P3 fe31c1a3.
 - The standing prediction, quoted from CLAUDE.md: "the next record-facing catch will be a citation-quality defect in a mirrored upstream entry … found by a human reading the cited source in the depth audit (`A-47`), not by any alarm." Not tested today: there was no catch.
