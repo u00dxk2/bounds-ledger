@@ -5,6 +5,9 @@
   "newestSubmitted": "2026-10-30",
   "query": "cat:math.CO AND abs:Ramsey",
   "papersFound": 169,
+  "papersScreened": 169,
+  "incomplete": 0,
+  "checkResult": "COMPLETE",
   "candidates": 0,
   "render": false,
   "note": "A-81 run of 2026-11-02 MT: arxiv-watch.mjs --fetch at 2026-11-02T15:04:30Z (window 2026-04-24 to 2026-11-02, UTC dates) listed 169 papers, the newest submitted 2026-10-30T16:44:24Z, so listedOn is the day arXiv was read and newestSubmitted is the last submission it showed. --check printed 'papers fetched: 169 · verdicts: 169 · every fetched id has exactly one verdict', 'claims-a-better-bound: 0', 'candidate bound(s) beating or contradicting a value we show: 0', 'RESULT: COMPLETE — no candidate (exit 0)'. 149 verdicts carried from the 2026-10-16 run (same arXiv id and version), 20 read on 2026-11-02 by two model readers. The run's papers.json and verdicts.json stay in tmp/ and are never committed. render stays false until David says yes."

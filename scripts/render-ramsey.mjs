@@ -386,10 +386,17 @@ export function rowsFromStore(parsed) {
 // fetch (newestSubmitted), and the page states both.
 export const SEARCH = join(ROOT, "ledger", "ejc-ds1", "arxiv-search.json");
 const BRIEF_URL = `${REPO}/blob/main/docs/arxiv-watch-reader-brief.md`;
-const SEARCH_KEYS = ["revision", "windowFrom", "listedOn", "newestSubmitted", "query", "papersFound", "candidates", "render", "note"];
+// THE PAGE SAYS "SCREENED EACH ONE", so the store must carry that run's completeness, not only its
+// found count (Codex r1 BLOCKER on 586770d): papersScreened equal to papersFound, no reading marked
+// incomplete, and the check's own RESULT word. They are copied from `arxiv-watch.mjs --check`'s
+// output by hand, like every other field here; the gate holds them to each other, not to the run.
+const SEARCH_KEYS = ["revision", "windowFrom", "listedOn", "newestSubmitted", "query", "papersFound", "papersScreened", "incomplete", "checkResult", "candidates", "render", "note"];
 const isDate = (s) => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) && new Date(`${s}T00:00:00Z`).toISOString().slice(0, 10) === s;
 export function searchGate(exists, parsed, doc) {
-  if (!exists) return { search: null };
+  // Absence is not darkness (Codex r1 SHOULD on 586770d, the same rule storeGate applies to the depth
+  // store): a deleted store would silently take a live screen off the page with --check passing.
+  // Dark is stated, with "render": false.
+  if (!exists) return { error: 'is missing. A dark screen declares "render": false; absence is not darkness, and rendering without it would silently remove a live screen.' };
   if (parsed && typeof parsed.__unreadable === "string") return { error: `not readable JSON (${parsed.__unreadable})` };
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return { error: "is not an object" };
   const extra = Object.keys(parsed).filter((k) => !SEARCH_KEYS.includes(k));
@@ -400,6 +407,9 @@ export function searchGate(exists, parsed, doc) {
   if (!isDate(parsed.newestSubmitted) || parsed.newestSubmitted < parsed.windowFrom || parsed.newestSubmitted > parsed.listedOn) return { error: `has a newest submission date ${JSON.stringify(parsed.newestSubmitted)} that is not a date between its start and its listing date` };
   if (parsed.query !== WATCH_QUERY) return { error: `records the query ${JSON.stringify(parsed.query)}, not the watcher's ${JSON.stringify(WATCH_QUERY)}` };
   if (!Number.isSafeInteger(parsed.papersFound) || parsed.papersFound < 1) return { error: `has papersFound ${JSON.stringify(parsed.papersFound)}, not a positive integer` };
+  if (parsed.papersScreened !== parsed.papersFound) return { error: `has papersScreened ${JSON.stringify(parsed.papersScreened)} against papersFound ${JSON.stringify(parsed.papersFound)}; the page says each one was screened` };
+  if (parsed.incomplete !== 0) return { error: `has incomplete ${JSON.stringify(parsed.incomplete)}; a run with a reading marked incomplete is not complete` };
+  if (parsed.checkResult !== "COMPLETE") return { error: `has checkResult ${JSON.stringify(parsed.checkResult)}, not "COMPLETE"` };
   if (parsed.candidates !== 0) return { error: `has candidates ${JSON.stringify(parsed.candidates)}; a candidate is unverified and is never rendered, so only a run with none may be stored` };
   if (typeof parsed.render !== "boolean") return { error: "has no boolean render field" };
   if ("note" in parsed && typeof parsed.note !== "string") return { error: "has a note that is not a string" };
@@ -543,6 +553,13 @@ export function guardPage(page, doc, rows = [], search = null) {
     // checked, with nothing between. A paragraph wrapped in a comment or a hidden container still
     // counts once and still equals the pin below, so position is asserted on its own.
     if (searchParas.length === 1 && !html.includes(`this page is not.</p>\n${p}\n<p><strong>What has been checked against its source.</strong>`)) v.push("the arXiv search is not where the renderer puts it, between What is watched and What has been checked");
+    // Hidden by an ANCESTOR or by CSS (Codex r1 SHOULD on 586770d): the position pin above cannot see
+    // a stylesheet rule or a wrapper around all three paragraphs. So the stylesheet must be the
+    // renderer's own and the only one, and the note box must open directly after the jump links with
+    // its exact tag and hold nothing but one plain paragraph per line. Shape, not a list of ways to hide.
+    if ((html.match(/<style\b/gi) ?? []).length !== 1 || !html.includes(`<style>${STYLE}</style>`)) v.push("the arXiv search page carries a stylesheet that is not the renderer's own");
+    const box = html.match(/<\/nav>\n\n<div class="note">\n([\s\S]*?)\n<\/div>\n/);
+    if (!box || !box[1].includes(p) || !box[1].split("\n").every((l) => /^<p(?: id="arxiv-search")?>[\s\S]*<\/p>$/.test(l) && !/<(?:div|template|details|style|script)\b/i.test(l))) v.push("the arXiv search is not in the plain note box, one plain paragraph per line, straight after the jump links");
     if (searchParas.length === 1 && p !== searchHtml(search)) v.push("the arXiv search paragraph differs from what the store renders");
   } else if (searchMentions) {
     v.push(`mentions the arXiv search ${searchMentions} time(s) while the store does not render it`);
@@ -738,7 +755,7 @@ function selftest() {
   // THE ARXIV SEARCH (A-81), both answers. Dark: a store with render false leaves the page
   // byte-identical to no store at all. On: the sentence renders once and passes; each mutation trips
   // the guard that carries its meaning, not only the exact-match pin at the end.
-  const sOn = { revision: 18, windowFrom: "2026-04-24", listedOn: "2026-11-02", newestSubmitted: "2026-10-30", query: WATCH_QUERY, papersFound: 169, candidates: 0, render: true };
+  const sOn = { revision: 18, windowFrom: "2026-04-24", listedOn: "2026-11-02", newestSubmitted: "2026-10-30", query: WATCH_QUERY, papersFound: 169, papersScreened: 169, incomplete: 0, checkResult: "COMPLETE", candidates: 0, render: true };
   const sOff = { ...sOn, render: false };
   if (renderRamsey(doc, [], sOff) !== html) return fail("a store with render false changed the page");
   if (guardPage(html, doc, [], sOff).length) return fail(`the dark page fails its guard: ${JSON.stringify(guardPage(html, doc, [], sOff))}`);
@@ -763,6 +780,11 @@ function selftest() {
     ["a reworded clause", onPage.replace("a script compared", "a script carefully compared"), /differs from what the store renders/],
     ["the paragraph inside a comment", onPage.replace(searchHtml(sOn), `<!--${searchHtml(sOn)}-->`), /not where the renderer puts it/],
     ["the paragraph inside a hidden div", onPage.replace(searchHtml(sOn), `<div hidden>${searchHtml(sOn)}</div>`), /not where the renderer puts it/],
+    ["a CSS rule hiding the paragraph", onPage.replace("</style>", "#arxiv-search{display:none}</style>"), /stylesheet that is not the renderer's own/],
+    ["a second stylesheet", onPage.replace("</style>", "</style><style>#arxiv-search{display:none}</style>"), /stylesheet that is not the renderer's own/],
+    ["the whole note box inside a hidden ancestor", onPage.replace('<div class="note">', '<div hidden>\n<div class="note">').replace("\n</div>\n\n<h2", "\n</div>\n</div>\n\n<h2"), /not in the plain note box/],
+    ["the note box hidden by its own attribute", onPage.replace('<div class="note">', '<div class="note" hidden>'), /not in the plain note box/],
+    ["a template around the three paragraphs", onPage.replace("<p><strong>What is watched.</strong>", "<template><p><strong>What is watched.</strong>").replace("<p><strong>What has been checked", "</template><p><strong>What has been checked"), /not in the plain note box/],
     ["the search shown while the store is dark", onPage, /while the store does not render it/, sOff],
   ];
   for (const [label, mutated, re, store = sOn] of searchFires) {
@@ -773,6 +795,10 @@ function selftest() {
   const gate = (o) => searchGate(true, o, doc).error ?? "";
   for (const [label, o, re] of [
     ["a candidate", { ...sOn, candidates: 1 }, /never rendered/],
+    ["fewer papers screened than found", { ...sOn, papersScreened: 168 }, /each one was screened/],
+    ["no screened count", { ...sOn, papersScreened: undefined }, /each one was screened/],
+    ["an incomplete reading", { ...sOn, incomplete: 1 }, /not complete/],
+    ["a check that was not COMPLETE", { ...sOn, checkResult: "REFUSED" }, /not "COMPLETE"/],
     ["another revision", { ...sOn, revision: 19 }, /is for revision 19/],
     ["a window not starting at the revision", { ...sOn, windowFrom: "2026-05-01" }, /not at the revision date/],
     ["a listing date before its start", { ...sOn, listedOn: "2026-04-01" }, /listing date .* not a date on or after/],
@@ -786,7 +812,8 @@ function selftest() {
     ["an unknown field", { ...sOn, verdict: "fine" }, /does not know: verdict/],
     ["unreadable JSON", { __unreadable: "x" }, /not readable JSON/],
   ]) if (!re.test(gate(o))) return fail(`arXiv search store, ${label}: the gate did not refuse (it said ${JSON.stringify(gate(o))})`);
-  if (searchGate(true, sOn, doc).error || searchGate(false, null, doc).search !== null) return fail("the search gate refused a well-formed store, or invented one that is absent");
+  if (searchGate(true, sOn, doc).error) return fail(`the search gate refused a well-formed store: ${searchGate(true, sOn, doc).error}`);
+  if (!/is missing/.test(searchGate(false, null, doc).error ?? "")) return fail("the search gate accepted an absent store as dark");
   // The table's first screen is NUMBERS, not prose: the jump nav precedes the note box. A phone
   // reader met seven dense paragraphs before the first number until 2026-09-20, and nothing asserted
   // the order, so it could drift back with every guard still green.
@@ -1007,7 +1034,7 @@ function selftest() {
   if (crlf === html) return fail("the CRLF control did not convert anything");
   if (guard(crlf).length) return fail(`the same page with CRLF line endings failed its own guard: ${JSON.stringify(guard(crlf).slice(0, 3))}`);
   if (gu(withNote.replace(/\n/g, "\r\n")).length) return fail("a CRLF page carrying a real reading failed its own guard");
-  console.log(`render-ramsey selftest: PASS (${fires.length} guards each fire on their condition — record wording, an external script, an unexpected host, a dropped entry, a changed value, a merged audit state, a bound's state dropped, an uncounted report title, unsummed counts, no not-covered line; report-rate counts the row link; outcomes equal depth-audit.json's; markup escaped; a reading renders on its own bound only; a missing reading, a state whose words disagree, and a verdict moved to another bound of the same entry with every count preserved all fire; a reading of an unprinted value is not drawn; an unresolved reading renders its pageNote and the guard fires on all thirteen mutations tried against it — the note stripped from the page, the store carrying none, a dropped "How it was read" link, four ways of hiding the note in place (a hidden span, a CSS-hidden span, a hidden anchor, an HTML comment), the dd itself hidden by a bare attribute or by style, and six that leave the reading intact and hide its SURROUNDINGS (the dd wrapped in a comment, a template or a hidden div, the enclosing dl hidden, and the reading nested inside a dt's template under both LF and CRLF); those thirteen trip seven distinct assertions, not thirteen; and the real page passes in LF and in CRLF; the well-formed page passes; the jump links precede the note box and the table links copying.html; and copying.html's OWN guard fires on ten mutations — record wording, no not-copied statement, a dropped no-licence sentence, a dropped publication date, the disclosure rewritten to read as clearance obtained beforehand, a dropped promise to act, an external script, an unexpected host, a disclosure that omits the survey material kept outside the table, a bibliography count that disagrees with the audit store, and an ENTRY count stated where a NUMBER count belongs — and is silent on the page as rendered, with and without stored bibliography entries; THE REBUILD: a census reading renders and moves the page; a sound reading marked credited-to-the-survey, a not-yet-read bound marked independently sourced, and a Table Ib value with its mark dropped each fire; two agreeing readings of one bound show the census one and pass, two disagreeing ones are refused; copying.html counts an entry quoted in a note and its guard fires on a count that leaves one out; and the copied-entry marker is refused when missing for the row's own key or its alias, refused when it names a field with no quotation, and silent on checker output under another key; THE ARXIV SEARCH (A-81): a dark store leaves the page byte-identical, a lit one renders the sentence once after What is watched and passes, ${searchFires.length} page mutations each trip the guard that carries their meaning, and the store gate refuses a candidate, another revision, a window not starting at the revision, a bad or impossible listing date, a newest submission outside the window or missing, another query, no papers, a non-boolean render, an unknown field and unreadable JSON)`);
+  console.log(`render-ramsey selftest: PASS (${fires.length} guards each fire on their condition — record wording, an external script, an unexpected host, a dropped entry, a changed value, a merged audit state, a bound's state dropped, an uncounted report title, unsummed counts, no not-covered line; report-rate counts the row link; outcomes equal depth-audit.json's; markup escaped; a reading renders on its own bound only; a missing reading, a state whose words disagree, and a verdict moved to another bound of the same entry with every count preserved all fire; a reading of an unprinted value is not drawn; an unresolved reading renders its pageNote and the guard fires on all thirteen mutations tried against it — the note stripped from the page, the store carrying none, a dropped "How it was read" link, four ways of hiding the note in place (a hidden span, a CSS-hidden span, a hidden anchor, an HTML comment), the dd itself hidden by a bare attribute or by style, and six that leave the reading intact and hide its SURROUNDINGS (the dd wrapped in a comment, a template or a hidden div, the enclosing dl hidden, and the reading nested inside a dt's template under both LF and CRLF); those thirteen trip seven distinct assertions, not thirteen; and the real page passes in LF and in CRLF; the well-formed page passes; the jump links precede the note box and the table links copying.html; and copying.html's OWN guard fires on ten mutations — record wording, no not-copied statement, a dropped no-licence sentence, a dropped publication date, the disclosure rewritten to read as clearance obtained beforehand, a dropped promise to act, an external script, an unexpected host, a disclosure that omits the survey material kept outside the table, a bibliography count that disagrees with the audit store, and an ENTRY count stated where a NUMBER count belongs — and is silent on the page as rendered, with and without stored bibliography entries; THE REBUILD: a census reading renders and moves the page; a sound reading marked credited-to-the-survey, a not-yet-read bound marked independently sourced, and a Table Ib value with its mark dropped each fire; two agreeing readings of one bound show the census one and pass, two disagreeing ones are refused; copying.html counts an entry quoted in a note and its guard fires on a count that leaves one out; and the copied-entry marker is refused when missing for the row's own key or its alias, refused when it names a field with no quotation, and silent on checker output under another key; THE ARXIV SEARCH (A-81): a dark store leaves the page byte-identical, a lit one renders the sentence once after What is watched and passes, ${searchFires.length} page mutations each trip the guard that carries their meaning, and the store gate refuses an absent store, a candidate, fewer papers screened than found, an incomplete reading, a check that was not COMPLETE, another revision, a window not starting at the revision, a bad or impossible listing date, a newest submission outside the window or missing, another query, no papers, a non-boolean render, an unknown field and unreadable JSON)`);
   return 0;
 }
 
