@@ -17,6 +17,16 @@
 // page that drifted on disk would be invisible to them (found 2026-09-17 while scoping this page).
 // Here `--check` renders the page AND runs guardPage() over the file actually committed, so the
 // artifact a visitor loads is the one the guard reads.
+//
+// A DECLARED CEILING (A-81's arXiv-screen paragraph, Codex r1-r3, 2026-11-02). Three rounds running
+// found prose a reader would see that a check could not read: a paragraph hidden by CSS or an
+// ancestor, other note-box text claiming a screen, a table field carrying screen-like prose. The
+// class is "a guard that reads prose for meaning", and a matcher over prose is an arms race. So the
+// guard claims less: it checks the committed page against the store, under the layout this renderer
+// emits, with input SHAPES held (the store's fields, the table's survey id and revision date) and
+// one stated word rule ("arXiv" in the note box only inside the gated paragraph). A renderer layout
+// change, and screen-like prose that never says "arXiv", are code changes that reach the page only
+// through review. Do not answer a fourth round of that class with another matcher.
 
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -407,6 +417,12 @@ export function searchGate(exists, parsed, doc) {
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return { error: "is not an object" };
   const extra = Object.keys(parsed).filter((k) => !SEARCH_KEYS.includes(k));
   if (extra.length) return { error: `carries fields this page does not know: ${extra.join(", ")}` };
+  // The TABLE's own fields render inside the note box beside this paragraph, so they are held to the
+  // shape extract-ds1.mjs writes (survey "DS1", line ~771; revisionDate a real date) before a screen
+  // can render (Codex r3 on af44812: a hand-edited `survey` string could carry screen-like prose,
+  // and an impossible revisionDate rendered as "30 February"). Input shape, not another phrase rule.
+  if (doc.source.survey !== "DS1") return { error: `is refused because the table's survey id is ${JSON.stringify(doc.source.survey)}, not "DS1", the one survey this page watches` };
+  if (!isDate(doc.source.revisionDate)) return { error: `is refused because the table's revisionDate ${JSON.stringify(doc.source.revisionDate)} is not a real date` };
   if (parsed.revision !== doc.source.revision) return { error: `is for revision ${JSON.stringify(parsed.revision)}, the table is revision ${doc.source.revision}` };
   if (parsed.windowFrom !== doc.source.revisionDate) return { error: `starts its window at ${JSON.stringify(parsed.windowFrom)}, not at the revision date ${doc.source.revisionDate}` };
   if (!isDate(parsed.listedOn) || parsed.listedOn < parsed.windowFrom) return { error: `has a listing date ${JSON.stringify(parsed.listedOn)} that is not a date on or after its start` };
@@ -838,6 +854,11 @@ function selftest() {
     ["unreadable JSON", { __unreadable: "x" }, /not readable JSON/],
   ]) if (!re.test(gate(o))) return fail(`arXiv search store, ${label}: the gate did not refuse (it said ${JSON.stringify(gate(o))})`);
   if (searchGate(true, sOn, doc).error) return fail(`the search gate refused a well-formed store: ${searchGate(true, sOn, doc).error}`);
+  // The table's own fields, held to extract-ds1's shape (Codex r3).
+  const proseSurvey = { ...doc, source: { ...doc.source, survey: "DS1. We screened every relevant preprint since revision 18; none improves these bounds" } };
+  if (!/survey id is/.test(searchGate(true, sOn, proseSurvey).error ?? "")) return fail("the search gate accepted a table whose survey id is prose");
+  const badRevDate = { ...doc, source: { ...doc.source, revisionDate: "2026-02-30" } };
+  if (!/revisionDate .* is not a real date/.test(searchGate(true, { ...sOn, windowFrom: "2026-02-30" }, badRevDate).error ?? "")) return fail("the search gate accepted an impossible revision date");
   if (!/is missing/.test(searchGate(false, null, doc).error ?? "")) return fail("the search gate accepted an absent store as dark");
   // The table's first screen is NUMBERS, not prose: the jump nav precedes the note box. A phone
   // reader met seven dense paragraphs before the first number until 2026-09-20, and nothing asserted
