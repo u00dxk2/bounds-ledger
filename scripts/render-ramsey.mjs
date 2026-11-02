@@ -26,6 +26,7 @@ import { LEDGER } from "./extract-ds1.mjs";
 import { arrivalKind } from "./report-rate.mjs";
 import { frameOf, sameBound, readStore, STORE } from "./ds1-depth.mjs";
 import { REPO, esc, unesc, issueUrl } from "./lib/html.mjs";
+import { QUERY as WATCH_QUERY } from "./arxiv-watch.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 export const OUT = join(ROOT, "ramsey.html");
@@ -282,7 +283,8 @@ function flagUrl(e, doc) {
   return issueUrl(title, body);
 }
 
-export function renderRamsey(doc, rows = []) {
+export function renderRamsey(doc, rows = [], search = null) {
+  const shown = Boolean(search?.render);
   const entries = entriesOf(doc);
   const src = doc.source;
   const { frame, left } = frameOf(doc);
@@ -330,8 +332,8 @@ ${jump}
 
 <div class="note">
 <p><strong>The source.</strong> Stanisław Radziszowski, <a href="${esc(src.landing)}">Small Ramsey Numbers</a>, The Electronic Journal of Combinatorics, dynamic survey ${esc(src.survey)}, <strong>revision #${esc(src.revision)}, ${esc(longDate(src.revisionDate))}</strong>, Section 2.1, Tables Ia and Ib. The survey is credited for every value here and remains the authority. This page is our arrangement of its values and reference keys, not a copy of the document. <a href="copying.html">What this page copies from the survey, and how to ask for a change</a>.</p>
-<p><strong>What is covered.</strong> Section 2.1 only: ${entries.length} values of R(k, l). Table Ia prints something for ${doc.tableIa.length} of them, and Table Ib prints a newer upper bound for ${doc.tableIb.length}. <strong>Not covered</strong>: everything else in the survey, including other graphs, more than two colours and hypergraphs, and any result published after revision #${esc(src.revision)}.</p>
-<p><strong>What is watched.</strong> Once a day a scheduled job checks the journal&rsquo;s page and the <a href="${esc(AUTHOR_PAGE)}">author&rsquo;s revision list</a> for a newer revision, and re-reads this table from the survey&rsquo;s PDF, whose fingerprint is pinned. A new revision turns that job red until a person has compared it with this page. The <a href="${esc(RUNS)}">run history</a> is the live read; this page is not.</p>
+<p><strong>What is covered.</strong> Section 2.1 only: ${entries.length} values of R(k, l). Table Ia prints something for ${doc.tableIa.length} of them, and Table Ib prints a newer upper bound for ${doc.tableIb.length}. <strong>Not covered</strong>: everything else in the survey, including other graphs, more than two colours and hypergraphs, and any result published after revision #${esc(src.revision)}${shown ? ", apart from the arXiv screen described below" : ""}.</p>
+<p><strong>What is watched.</strong> Once a day a scheduled job checks the journal&rsquo;s page and the <a href="${esc(AUTHOR_PAGE)}">author&rsquo;s revision list</a> for a newer revision, and re-reads this table from the survey&rsquo;s PDF, whose fingerprint is pinned. A new revision turns that job red until a person has compared it with this page. The <a href="${esc(RUNS)}">run history</a> is the live read; this page is not.</p>${shown ? `\n${searchHtml(search)}` : ""}
 <p><strong>What has been checked against its source.</strong> The survey credits each bound to a paper by the key shown beside it, such as [AnM4], and an entry can credit its lower and upper bound to different papers. So every bound carries its own mark. Every bound Table Ia credits to a reference was taken in a census, completed on ${esc(longDate(CENSUS_DONE))}: the ${frame.length} bounds credited under ${sources} reference keys were each attempted, and the note kept on each records what was tried. What a key credits is usually a paper, but can be a thesis, a manuscript, a personal communication, a web page, a published graph file, or a derivation the survey gives itself. A bound is marked <em>${SOURCED}</em> only when the reading was SOUND: what the key credits, or a construction or derivation it gives, was reached and supports the value; the notes kept on each reading say which edition or file that was. Every other bound is marked <em>${SURVEY_ONLY}</em>, with a sentence saying why; that includes bounds whose value was seen only in an abstract or in a different edition from the one the survey cites. A bound whose credited source was read and does not support it would carry neither mark; ${counts.DEFECTIVE ? `${counts.DEFECTIVE} do` : "there are none"}. ${left.length} values Table Ia prints credit no source to read (no reference is printed, or the reference is an item of the survey&rsquo;s own Section 2.3), and Table Ib&rsquo;s upper bounds were outside the census; the one Table Ib value the survey credits to a single paper is marked by that paper&rsquo;s reading of the same bound in Table Ia. The <a href="${esc(STORE_URL)}">notes kept on each reading</a> name what was read and what it said. So far, of the ${total} bounds Table Ia prints (its ${numbersIn(doc.tableIa)} numbers, with an exact value counted twice where its lower and upper halves are credited to different references): ${esc(countLine)}. In all, ${counts.SOUND} are ${SOURCED} and ${total - counts.SOUND - counts.DEFECTIVE} are ${SURVEY_ONLY}.</p>
 <p><strong>Table Ia and Table Ib can print different upper bounds for the same number.</strong> Table Ib lists upper bounds from computations by Angeltveit and McKay ([AnM2], [AnM3], [AnM4]) and R(4, 5) from [MR4], and the survey says they improve on the upper bounds in Table Ia. Where both tables print one, this page shows both and does not choose between them for you.</p>
 <p><strong>[HW+]</strong> is the survey&rsquo;s own abbreviation of [HWSYZH], as enhanced in [Boza5]. A reference written as <em>item 2.3.h of the survey</em> points to a numbered item of its Section 2.3, not to a paper.</p>
@@ -368,6 +370,46 @@ export function rowsFromStore(parsed) {
   return { rows: parsed.rows };
 }
 
+// THE ARXIV SEARCH SINCE THE REVISION (A-81, 2026-11-02). The page says it does not cover results
+// published after the survey's revision; A-81's watcher searches arXiv for exactly those. This store
+// holds ONE completed run's figures, copied from `arxiv-watch.mjs --check` on RESULT: COMPLETE, and the
+// page states them as a dated search, never as "nothing newer exists". `render: false` keeps the
+// sentence off the page (built dark): putting it on is David's call (A-81 onTrigger, outward gate).
+// What the store may NOT say: a candidate count above zero. A candidate is an UNVERIFIED claim about
+// someone else's paper, it stays in tmp/, and a sentence that rendered it would publish it; so a
+// store carrying one is refused rather than rendered. The query is the watcher's own constant, so a
+// changed query refuses the store instead of publishing a scope the search no longer had.
+// THE END OF THE SEARCH IS TWO DATES, NOT ONE (claims pre-pass, 2026-11-02). The query's window runs
+// to the fetch's UTC date, but arXiv lists a paper only once it is announced, so on 2 November the
+// newest paper listed was submitted on 30 October. "Up to 2 November" claimed three days nobody
+// searched. The store keeps the day arXiv was read (listedOn) and the newest submission date in the
+// fetch (newestSubmitted), and the page states both.
+export const SEARCH = join(ROOT, "ledger", "ejc-ds1", "arxiv-search.json");
+const BRIEF_URL = `${REPO}/blob/main/docs/arxiv-watch-reader-brief.md`;
+const SEARCH_KEYS = ["revision", "windowFrom", "listedOn", "newestSubmitted", "query", "papersFound", "candidates", "render", "note"];
+const isDate = (s) => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s) && new Date(`${s}T00:00:00Z`).toISOString().slice(0, 10) === s;
+export function searchGate(exists, parsed, doc) {
+  if (!exists) return { search: null };
+  if (parsed && typeof parsed.__unreadable === "string") return { error: `not readable JSON (${parsed.__unreadable})` };
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return { error: "is not an object" };
+  const extra = Object.keys(parsed).filter((k) => !SEARCH_KEYS.includes(k));
+  if (extra.length) return { error: `carries fields this page does not know: ${extra.join(", ")}` };
+  if (parsed.revision !== doc.source.revision) return { error: `is for revision ${JSON.stringify(parsed.revision)}, the table is revision ${doc.source.revision}` };
+  if (parsed.windowFrom !== doc.source.revisionDate) return { error: `starts its window at ${JSON.stringify(parsed.windowFrom)}, not at the revision date ${doc.source.revisionDate}` };
+  if (!isDate(parsed.listedOn) || parsed.listedOn < parsed.windowFrom) return { error: `has a listing date ${JSON.stringify(parsed.listedOn)} that is not a date on or after its start` };
+  if (!isDate(parsed.newestSubmitted) || parsed.newestSubmitted < parsed.windowFrom || parsed.newestSubmitted > parsed.listedOn) return { error: `has a newest submission date ${JSON.stringify(parsed.newestSubmitted)} that is not a date between its start and its listing date` };
+  if (parsed.query !== WATCH_QUERY) return { error: `records the query ${JSON.stringify(parsed.query)}, not the watcher's ${JSON.stringify(WATCH_QUERY)}` };
+  if (!Number.isSafeInteger(parsed.papersFound) || parsed.papersFound < 1) return { error: `has papersFound ${JSON.stringify(parsed.papersFound)}, not a positive integer` };
+  if (parsed.candidates !== 0) return { error: `has candidates ${JSON.stringify(parsed.candidates)}; a candidate is unverified and is never rendered, so only a run with none may be stored` };
+  if (typeof parsed.render !== "boolean") return { error: "has no boolean render field" };
+  if ("note" in parsed && typeof parsed.note !== "string") return { error: "has a note that is not a string" };
+  return { search: parsed };
+}
+
+export function searchHtml(s) {
+  return `<p id="arxiv-search"><strong>Newer papers on arXiv.</strong> We searched arXiv for papers listed under combinatorics (math.CO) with &ldquo;Ramsey&rdquo; in the abstract and submitted on or after ${esc(longDate(s.windowFrom))}, the date of revision #${esc(s.revision)}, as arXiv listed them on ${esc(longDate(s.listedOn))}: ${esc(s.papersFound)} papers, the newest submitted on ${esc(longDate(s.newestSubmitted))}. Language-model readers screened each one for an explicit value or bound on a two-colour classical R(k, l), with instructions to read the full text where the title or abstract suggested one, and a script compared what they recorded with the values on this page. As screened, none of the ${esc(s.papersFound)} states a bound that improves on, or contradicts, what this page shows for the same R(k, l). The screen can misread a paper, and the search cannot see a paper outside that listing, one whose abstract does not say &ldquo;Ramsey&rdquo;, or a result announced anywhere but arXiv, so a newer result could exist without appearing here. <a href="${esc(BRIEF_URL)}">How the papers were screened</a>.</p>`;
+}
+
 function longDate(iso) {
   const [y, m, d] = iso.split("-").map(Number);
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -376,7 +418,7 @@ function longDate(iso) {
 
 // The page's own guard. Returns the violations found; an empty list is a pass. Run on a fixture in
 // the selftest AND on the committed file by --check.
-export function guardPage(page, doc, rows = []) {
+export function guardPage(page, doc, rows = [], search = null) {
   // CRLF FIRST, before any assertion reads a newline. The entry-shape rule below matches `\n<dl>\n`,
   // and this checkout is core.autocrlf=true with no .gitattributes — so a fresh Windows clone would
   // hand this function CRLF and fail all 72 entries on a page whose content never changed. main()
@@ -476,6 +518,35 @@ export function guardPage(page, doc, rows = []) {
   // 6. It says what is covered and what has been read, and the counts add up.
   if (!html.includes(`revision #${doc.source.revision}`)) v.push("does not name the revision");
   if (!/<strong>Not covered<\/strong>/.test(html)) v.push("does not say what is not covered");
+  // 6b. The arXiv search (A-81). MEANING FIRST, the exact-match pin LAST (KP-78, 2026-09-06: a pin
+  //     placed first trips on every mutation and leaves the guards that carry the meaning dead).
+  const searchParas = [...html.matchAll(/<p id="arxiv-search">[\s\S]*?<\/p>/g)].map((m) => m[0]);
+  const searchMentions = (html.match(/arxiv-search|Newer papers on arXiv|apart from the arXiv screen/g) ?? []).length;
+  if (search?.render) {
+    if (searchParas.length !== 1) v.push(`states the arXiv search ${searchParas.length} time(s), not once`);
+    const p = searchParas[0] ?? "";
+    const words = unesc(p.replace(/<[^>]+>/g, ""));
+    for (const [need, what] of [
+      [`${search.papersFound} papers`, "how many papers the search found"],
+      [longDate(search.windowFrom), "the date the search starts"],
+      [`as arXiv listed them on ${longDate(search.listedOn)}`, "the day arXiv was read"],
+      [`the newest submitted on ${longDate(search.newestSubmitted)}`, "the newest submission it saw, so the listing date does not read as coverage"],
+      ["math.CO", "the listing it searched"],
+      ["&ldquo;Ramsey&rdquo; in the abstract", "the term it searched for"],
+      ["Language-model readers screened", "that the papers were screened by a model, not read by a person"],
+      ["a newer result could exist without appearing here", "that a newer result can exist without appearing here"],
+    ]) if (!words.includes(need)) v.push(`the arXiv search does not state ${what}`);
+    if (/\b(no|nothing) (newer|better|stronger)\b[^.]*\b(exists?|has been (found|published))\b/i.test(words) || /\bthere (is|are) no (newer|better|stronger)\b/i.test(words)) v.push("the arXiv search says no newer result exists");
+    if (!p.includes(`href="${esc(BRIEF_URL)}"`)) v.push("the arXiv search does not link how the papers were screened");
+    if (!html.includes(`after revision #${doc.source.revision}, apart from the arXiv screen described below.`)) v.push("the not-covered sentence does not point to the arXiv search, so the two read as contradicting");
+    // Where it sits, as a reader would meet it: straight after What is watched and before What has been
+    // checked, with nothing between. A paragraph wrapped in a comment or a hidden container still
+    // counts once and still equals the pin below, so position is asserted on its own.
+    if (searchParas.length === 1 && !html.includes(`this page is not.</p>\n${p}\n<p><strong>What has been checked against its source.</strong>`)) v.push("the arXiv search is not where the renderer puts it, between What is watched and What has been checked");
+    if (searchParas.length === 1 && p !== searchHtml(search)) v.push("the arXiv search paragraph differs from what the store renders");
+  } else if (searchMentions) {
+    v.push(`mentions the arXiv search ${searchMentions} time(s) while the store does not render it`);
+  }
   const so = html.match(/So far, of the (\d+) bounds Table Ia prints \([^)]*\): ([^<]*)\./);
   if (!so) v.push("does not state what has been checked");
   else {
@@ -663,6 +734,59 @@ function selftest() {
     const found = guard(mutated);
     if (!found.some((m) => re.test(m))) return fail(`${label}: the guard did not fire (it said ${JSON.stringify(found)})`);
   }
+
+  // THE ARXIV SEARCH (A-81), both answers. Dark: a store with render false leaves the page
+  // byte-identical to no store at all. On: the sentence renders once and passes; each mutation trips
+  // the guard that carries its meaning, not only the exact-match pin at the end.
+  const sOn = { revision: 18, windowFrom: "2026-04-24", listedOn: "2026-11-02", newestSubmitted: "2026-10-30", query: WATCH_QUERY, papersFound: 169, candidates: 0, render: true };
+  const sOff = { ...sOn, render: false };
+  if (renderRamsey(doc, [], sOff) !== html) return fail("a store with render false changed the page");
+  if (guardPage(html, doc, [], sOff).length) return fail(`the dark page fails its guard: ${JSON.stringify(guardPage(html, doc, [], sOff))}`);
+  const onPage = renderRamsey(doc, [], sOn);
+  if (onPage === html) return fail("a store with render true did not change the page");
+  const onFound = guardPage(onPage, doc, [], sOn);
+  if (onFound.length) return fail(`the page with the arXiv search fails its guard: ${JSON.stringify(onFound)}`);
+  if ((onPage.match(/<p id="arxiv-search">/g) ?? []).length !== 1) return fail("the arXiv search does not render exactly once");
+  if (onPage.indexOf('id="arxiv-search"') < onPage.indexOf("<strong>What is watched.</strong>")) return fail("the arXiv search renders before What is watched");
+  const searchFires = [
+    ["the paper count changed", onPage.replace("169 papers,", "170 papers,"), /does not state how many papers/],
+    ["the listing date dropped", onPage.replace("as arXiv listed them on 2 November 2026", "up to 2 November 2026"), /does not state the day arXiv was read/],
+    ["the newest submission dropped", onPage.replace(", the newest submitted on 30 October 2026", ""), /does not state the newest submission/],
+    ["the listing dropped", onPage.replace("(math.CO)", "(all of arXiv)"), /does not state the listing it searched/],
+    ["the screen made to sound human", onPage.replace("Language-model readers screened", "We read"), /screened by a model/],
+    ["the caveat dropped", onPage.replace(", so a newer result could exist without appearing here", ""), /a newer result can exist/],
+    ["an absolute no-newer claim", onPage.replace("As screened, none", "No newer bound exists; none"), /says no newer result exists/],
+    ["the method link dropped", onPage.replace(/ <a href="[^"]*arxiv-watch-reader-brief\.md">How the papers were screened<\/a>\./, ""), /does not link how the papers were screened/],
+    ["the not-covered pointer dropped", onPage.replace(", apart from the arXiv screen described below", ""), /read as contradicting/],
+    ["the paragraph doubled", onPage.replace(searchHtml(sOn), `${searchHtml(sOn)}\n${searchHtml(sOn)}`), /states the arXiv search 2 time/],
+    ["a hidden attribute", onPage.replace('<p id="arxiv-search">', '<p id="arxiv-search" hidden>'), /states the arXiv search 0 time/],
+    ["a reworded clause", onPage.replace("a script compared", "a script carefully compared"), /differs from what the store renders/],
+    ["the paragraph inside a comment", onPage.replace(searchHtml(sOn), `<!--${searchHtml(sOn)}-->`), /not where the renderer puts it/],
+    ["the paragraph inside a hidden div", onPage.replace(searchHtml(sOn), `<div hidden>${searchHtml(sOn)}</div>`), /not where the renderer puts it/],
+    ["the search shown while the store is dark", onPage, /while the store does not render it/, sOff],
+  ];
+  for (const [label, mutated, re, store = sOn] of searchFires) {
+    if (mutated === onPage && store === sOn) return fail(`arXiv search, ${label}: the mutation did not land`);
+    const found = guardPage(mutated, doc, [], store);
+    if (!found.some((m) => re.test(m))) return fail(`arXiv search, ${label}: the guard did not fire (it said ${JSON.stringify(found)})`);
+  }
+  const gate = (o) => searchGate(true, o, doc).error ?? "";
+  for (const [label, o, re] of [
+    ["a candidate", { ...sOn, candidates: 1 }, /never rendered/],
+    ["another revision", { ...sOn, revision: 19 }, /is for revision 19/],
+    ["a window not starting at the revision", { ...sOn, windowFrom: "2026-05-01" }, /not at the revision date/],
+    ["a listing date before its start", { ...sOn, listedOn: "2026-04-01" }, /listing date .* not a date on or after/],
+    ["an impossible date", { ...sOn, listedOn: "2026-02-30" }, /listing date .* not a date on or after/],
+    ["a newest submission after the listing date", { ...sOn, newestSubmitted: "2026-11-03" }, /newest submission date .* not a date between/],
+    ["a newest submission before the start", { ...sOn, newestSubmitted: "2026-04-01" }, /newest submission date .* not a date between/],
+    ["no newest submission", { ...sOn, newestSubmitted: undefined }, /newest submission date/],
+    ["another query", { ...sOn, query: "abs:Ramsey" }, /not the watcher's/],
+    ["no papers", { ...sOn, papersFound: 0 }, /not a positive integer/],
+    ["a render that is a string", { ...sOn, render: "yes" }, /no boolean render/],
+    ["an unknown field", { ...sOn, verdict: "fine" }, /does not know: verdict/],
+    ["unreadable JSON", { __unreadable: "x" }, /not readable JSON/],
+  ]) if (!re.test(gate(o))) return fail(`arXiv search store, ${label}: the gate did not refuse (it said ${JSON.stringify(gate(o))})`);
+  if (searchGate(true, sOn, doc).error || searchGate(false, null, doc).search !== null) return fail("the search gate refused a well-formed store, or invented one that is absent");
   // The table's first screen is NUMBERS, not prose: the jump nav precedes the note box. A phone
   // reader met seven dense paragraphs before the first number until 2026-09-20, and nothing asserted
   // the order, so it could drift back with every guard still green.
@@ -883,7 +1007,7 @@ function selftest() {
   if (crlf === html) return fail("the CRLF control did not convert anything");
   if (guard(crlf).length) return fail(`the same page with CRLF line endings failed its own guard: ${JSON.stringify(guard(crlf).slice(0, 3))}`);
   if (gu(withNote.replace(/\n/g, "\r\n")).length) return fail("a CRLF page carrying a real reading failed its own guard");
-  console.log(`render-ramsey selftest: PASS (${fires.length} guards each fire on their condition — record wording, an external script, an unexpected host, a dropped entry, a changed value, a merged audit state, a bound's state dropped, an uncounted report title, unsummed counts, no not-covered line; report-rate counts the row link; outcomes equal depth-audit.json's; markup escaped; a reading renders on its own bound only; a missing reading, a state whose words disagree, and a verdict moved to another bound of the same entry with every count preserved all fire; a reading of an unprinted value is not drawn; an unresolved reading renders its pageNote and the guard fires on all thirteen mutations tried against it — the note stripped from the page, the store carrying none, a dropped "How it was read" link, four ways of hiding the note in place (a hidden span, a CSS-hidden span, a hidden anchor, an HTML comment), the dd itself hidden by a bare attribute or by style, and six that leave the reading intact and hide its SURROUNDINGS (the dd wrapped in a comment, a template or a hidden div, the enclosing dl hidden, and the reading nested inside a dt's template under both LF and CRLF); those thirteen trip seven distinct assertions, not thirteen; and the real page passes in LF and in CRLF; the well-formed page passes; the jump links precede the note box and the table links copying.html; and copying.html's OWN guard fires on ten mutations — record wording, no not-copied statement, a dropped no-licence sentence, a dropped publication date, the disclosure rewritten to read as clearance obtained beforehand, a dropped promise to act, an external script, an unexpected host, a disclosure that omits the survey material kept outside the table, a bibliography count that disagrees with the audit store, and an ENTRY count stated where a NUMBER count belongs — and is silent on the page as rendered, with and without stored bibliography entries; THE REBUILD: a census reading renders and moves the page; a sound reading marked credited-to-the-survey, a not-yet-read bound marked independently sourced, and a Table Ib value with its mark dropped each fire; two agreeing readings of one bound show the census one and pass, two disagreeing ones are refused; copying.html counts an entry quoted in a note and its guard fires on a count that leaves one out; and the copied-entry marker is refused when missing for the row's own key or its alias, refused when it names a field with no quotation, and silent on checker output under another key)`);
+  console.log(`render-ramsey selftest: PASS (${fires.length} guards each fire on their condition — record wording, an external script, an unexpected host, a dropped entry, a changed value, a merged audit state, a bound's state dropped, an uncounted report title, unsummed counts, no not-covered line; report-rate counts the row link; outcomes equal depth-audit.json's; markup escaped; a reading renders on its own bound only; a missing reading, a state whose words disagree, and a verdict moved to another bound of the same entry with every count preserved all fire; a reading of an unprinted value is not drawn; an unresolved reading renders its pageNote and the guard fires on all thirteen mutations tried against it — the note stripped from the page, the store carrying none, a dropped "How it was read" link, four ways of hiding the note in place (a hidden span, a CSS-hidden span, a hidden anchor, an HTML comment), the dd itself hidden by a bare attribute or by style, and six that leave the reading intact and hide its SURROUNDINGS (the dd wrapped in a comment, a template or a hidden div, the enclosing dl hidden, and the reading nested inside a dt's template under both LF and CRLF); those thirteen trip seven distinct assertions, not thirteen; and the real page passes in LF and in CRLF; the well-formed page passes; the jump links precede the note box and the table links copying.html; and copying.html's OWN guard fires on ten mutations — record wording, no not-copied statement, a dropped no-licence sentence, a dropped publication date, the disclosure rewritten to read as clearance obtained beforehand, a dropped promise to act, an external script, an unexpected host, a disclosure that omits the survey material kept outside the table, a bibliography count that disagrees with the audit store, and an ENTRY count stated where a NUMBER count belongs — and is silent on the page as rendered, with and without stored bibliography entries; THE REBUILD: a census reading renders and moves the page; a sound reading marked credited-to-the-survey, a not-yet-read bound marked independently sourced, and a Table Ib value with its mark dropped each fire; two agreeing readings of one bound show the census one and pass, two disagreeing ones are refused; copying.html counts an entry quoted in a note and its guard fires on a count that leaves one out; and the copied-entry marker is refused when missing for the row's own key or its alias, refused when it names a field with no quotation, and silent on checker output under another key; THE ARXIV SEARCH (A-81): a dark store leaves the page byte-identical, a lit one renders the sentence once after What is watched and passes, ${searchFires.length} page mutations each trip the guard that carries their meaning, and the store gate refuses a candidate, another revision, a window not starting at the revision, a bad or impossible listing date, a newest submission outside the window or missing, another query, no papers, a non-boolean render, an unknown field and unreadable JSON)`);
   return 0;
 }
 
@@ -908,7 +1032,13 @@ function main(args) {
   if (conflicts.length) { console.log(`REFUSED — two readings of one bound disagree, and the page shows only one:\n  ${conflicts.join("\n  ")}`); return args.includes("--check") ? 1 : 3; }
   const quoted = quotedEntryViolations(rows);
   if (quoted.length) { console.log(`REFUSED — the copied-entry marker disagrees with the rows it describes, so copying.html's count would be wrong:\n  ${quoted.join("\n  ")}`); return args.includes("--check") ? 1 : 3; }
-  const html = renderRamsey(doc, rows);
+  const searchExists = existsSync(SEARCH);
+  let searchParsed = null;
+  if (searchExists) { try { searchParsed = JSON.parse(readFileSync(SEARCH, "utf8")); } catch (e) { searchParsed = { __unreadable: e.message }; } }
+  const sg = searchGate(searchExists, searchParsed, doc);
+  if (sg.error) { console.log(`REFUSED — ledger/ejc-ds1/arxiv-search.json ${sg.error}`); return args.includes("--check") ? 1 : 3; }
+  const search = sg.search;
+  const html = renderRamsey(doc, rows, search);
   const copying = renderCopying(doc, rows);
   if (args.includes("--check")) {
     if (!existsSync(OUT)) { console.log("STALE — ramsey.html is missing; run node scripts/render-ramsey.mjs and commit it."); return 1; }
@@ -916,7 +1046,7 @@ function main(args) {
     const onDisk = readFileSync(OUT, "utf8");
     const copyOnDisk = readFileSync(OUT_COPYING, "utf8");
     const norm = (s) => s.replace(/\r\n/g, "\n");
-    const violations = guardPage(onDisk, doc, rows);
+    const violations = guardPage(onDisk, doc, rows, search);
     if (violations.length) { console.log(`GUARD FAILED on the committed ramsey.html:\n  ${violations.join("\n  ")}`); return 1; }
     const copyViolations = guardCopying(copyOnDisk, doc, allRows);
     if (copyViolations.length) { console.log(`GUARD FAILED on the committed copying.html:\n  ${copyViolations.join("\n  ")}`); return 1; }
@@ -925,7 +1055,7 @@ function main(args) {
     console.log(`RESULT: PASS — ramsey.html matches the committed table (${entriesOf(doc).length} entries, revision #${doc.source.revision}) and ramsey.html and copying.html both pass their own guards.`);
     return 0;
   }
-  const violations = guardPage(html, doc, rows);
+  const violations = guardPage(html, doc, rows, search);
   if (violations.length) { console.log(`REFUSED to write: the rendered page fails its own guard:\n  ${violations.join("\n  ")}`); return 3; }
   const copyViolations = guardCopying(copying, doc, allRows);
   if (copyViolations.length) { console.log(`REFUSED to write: the rendered copying.html fails its own guard:\n  ${copyViolations.join("\n  ")}`); return 3; }
