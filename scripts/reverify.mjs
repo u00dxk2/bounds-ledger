@@ -187,7 +187,12 @@ export async function filedReports(path = REPORTS) {
     // Map of path -> report, which kept the LAST record and silently dropped issue 150 the moment
     // issue 289 was recorded on the same file.
     const map = new Map();
-    for (const r of rows.filter((x) => x?.path)) map.set(r.path, [...(map.get(r.path) || []), r]);
+    for (const r of rows.filter((x) => x?.path)) {
+      // A record with no filing time cannot be ordered and would print "on ." in the go-look line, so
+      // the whole leg refuses and says so below rather than guessing (Codex r2 on fce4ba7).
+      if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(String(r.filed ?? ""))) throw new Error(`report ${r.issue} has no ISO UTC filed time`);
+      map.set(r.path, [...(map.get(r.path) || []), r]);
+    }
     for (const list of map.values()) list.sort((a, b) => String(a.filed ?? "").localeCompare(String(b.filed ?? "")) || Number(a.issue) - Number(b.issue));
     return { map };
   } catch (err) {

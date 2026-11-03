@@ -303,6 +303,13 @@ assert.ok(!readable.error && readable.map.has("constants/87a.md"),
   "positive control: the committed report map must be readable and name constants/87a.md");
 assert.deepEqual(readable.map.get("constants/87a.md").map((r) => r.issue), [150, 289],
   "the committed map must hold BOTH 87a reports, oldest filing first (A-95)");
+// A record with no filing time is REFUSED (the leg reports it did not run), never sorted first and
+// never printed as "on ." in a go-look line (Codex r2 on fce4ba7).
+const noFiledPath = join(TMP, "no-filed-report-map.json");
+await writeFile(noFiledPath, JSON.stringify({ reports: [{ path: "constants/87a.md", issue: 9, url: "https://example.invalid/9" }] }));
+const noFiled = await filedReports(noFiledPath);
+assert.match(noFiled.error ?? "", /no ISO UTC filed time/, "a report with no filing time must make leg 2 refuse, not guess its order");
+assert.equal(noFiled.map.size, 0, "a refused map flags nothing");
 await freshLive();
 console.log("A-33 leg 2 assertion: PASS (fires on the reported-against file beside its CHANGED line, silent on a file we filed nothing against, suppressed under CI so the annotation never reaches the public issue while the CHANGED line still does, and an unreadable map says so instead of reading as nothing-filed)");
 

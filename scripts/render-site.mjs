@@ -162,6 +162,7 @@ export function reportsFor(id, reports) {
   if (!Array.isArray(reports)) return [];
   return reports
     .filter((r) => r && r.path === `constants/${id}.md`)
+    .map(assertFiled)
     .sort((a, b) => String(a.filed ?? "").localeCompare(String(b.filed ?? "")) || Number(a.issue) - Number(b.issue));
 }
 
@@ -170,17 +171,30 @@ export function reportsFor(id, reports) {
 // a MISSING topic is refused too (Codex r1 on 0b8c0c6) — because a label without one no longer says
 // which question is which, the very thing the topic exists for.
 //
-// THE RULE IS A SHAPE, NOT A WORD LIST (portable rule 2; Codex r1 found "prompted by our report"
-// passing the first version's causal blacklist). A causal claim about OUR report has to name us, so
-// the topic may not contain a first-person word at all (we, us, our, ours, I, my). Beyond that it is
-// a floor, not a proof: "record" and the old causal words stay refused, markup is refused, and the
-// topic is hand-written data reviewed at commit like any other reader-facing sentence here.
-export const REPORT_TOPIC_FORBIDDEN = [/\b(we|us|our|ours|i|my|me)\b/i, /caus/i, /because/i, /thanks/i, /led to/i, /fixed/i, /record/i, /[<>&"`]/];
-export function reportTopic(report) {
+// THE RULE IS AN ALLOWLIST, NOT A MATCHER (portable rule 2, applied at the second appearance).
+// Codex r1 on 0b8c0c6 found "prompted by our report" passing a causal word list; the first-person
+// shape rule that replaced it was beaten in r2 on fce4ba7 by "the update prompted by this report",
+// and it refused an ordinary mathematical "i". Two rounds of the same class means no matcher over
+// free text will hold, so the renderer claims less: it renders ONLY a topic written into this set,
+// and a topic outside it is REFUSED (thrown). Adding a topic is a code change, reviewed like any
+// other reader-facing sentence on the page, and each new report already passes the outward gate.
+// The set carries no claim about cause because each phrase names a QUESTION, never an outcome.
+export const APPROVED_REPORT_TOPICS = new Set([
+  "which construction gives the value", // issue 150, 87a
+  "which paper proves the bound", // issue 218, 46a
+  "the printed value", // issue 289, 87a
+]);
+export function reportTopic(report, approved = APPROVED_REPORT_TOPICS) {
   const t = report.topic === undefined || report.topic === null ? "" : String(report.topic);
-  if (!t.trim() || t !== t.trim() || t.length > 60) throw new Error(`upstream report ${report.issue}: topic is required, 1-60 characters with no surrounding space`);
-  for (const f of REPORT_TOPIC_FORBIDDEN) if (f.test(t)) throw new Error(`upstream report ${report.issue}: topic matches forbidden ${f}`);
+  if (!approved.has(t)) throw new Error(`upstream report ${report.issue}: topic ${JSON.stringify(t)} is not in APPROVED_REPORT_TOPICS (render-site.mjs); add it there in a reviewed commit`);
   return t;
+}
+
+// A report's filing time decides its order on the row and appears in the drift report, so a record
+// without one is REFUSED rather than sorted first by an empty string (Codex r2 on fce4ba7).
+export function assertFiled(report) {
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(String(report.filed ?? ""))) throw new Error(`upstream report ${report.issue}: filed must be an ISO UTC timestamp, got ${JSON.stringify(report.filed)}`);
+  return report;
 }
 
 /**
@@ -875,7 +889,7 @@ ${body}
 <p><strong>Read this before you trust a number here.</strong> This page is a <em>snapshot</em>, not a live read. It shows our mirror of <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a> at upstream commit <code style="display:inline;padding:.1rem .3rem">${esc(sha.slice(0, 7))}</code>.</p>
 <p><strong>${esc(generatedOn)} is the date this mirror last CHANGED &mdash; not the last time it was checked.</strong> Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date does not mean nobody has looked. Nor does it prove nothing moved: the dates and values here change only after an upstream change has been verified and published.${quietSentence} To see the actual last check and its verdict, read the <a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a> &mdash; that is the live read, and this page is deliberately not.</p>
 <p>Every row links to its primary source so you can check us in one hop — and if a row disagrees with its source, that is a bug worth reporting. Use the <strong>looks wrong?</strong> link on that row: the report arrives already naming the constant and the exact mirror commit, so you never have to work out how to describe which of ${rows.length} rows you meant.</p>
-<p>Some rows carry a <strong>we reported this row</strong> link. That means we ourselves filed a report upstream about that row, and the link goes to it so you can read what we said and judge it. We show it because our own involvement in a row is part of what you need in order to weigh the row — and <strong>it is not a claim that anything upstream changed because of us</strong>. The state shown is the report's own; whether it caused anything is a separate question this page does not answer.</p>
+<p>Some rows carry one or more <strong>we reported this row</strong> links. Each means we ourselves filed a report upstream about that row; it names the report's number and what it asked, and goes to the report so you can read what we said and judge it. We show them because our own involvement in a row is part of what you need in order to weigh the row — and <strong>they are not a claim that anything upstream changed because of us</strong>. The state shown on each is that report's own; whether it caused anything is a separate question this page does not answer.</p>
 <p><strong>Every row has its own link.</strong> Click a row&rsquo;s short id — the grey code under the constant&rsquo;s name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred.</p>
 <p><strong>These are last-listed table rows, not a claim about which bound is “the record.”</strong> Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.</p>
 </div>
@@ -1014,7 +1028,7 @@ ${copyCiteScript("details.cite")}
 
 // The note block's exact rendered text for the fixture below. Updated DELIBERATELY when the note
 // changes; that is the point of pinning it — an added sentence cannot slip in unreviewed.
-const NOTE_PIN = "Read this before you trust a number here. This page is a snapshot, not a live read. It shows our mirror of teorth/optimizationproblems at upstream commit e70b4a4. 2026-08-20 is the date this mirror last CHANGED -- not the last time it was checked. Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date does not mean nobody has looked. Nor does it prove nothing moved: the dates and values here change only after an upstream change has been verified and published. To see the actual last check and its verdict, read the run history -- that is the live read, and this page is deliberately not. Every row links to its primary source so you can check us in one hop — and if a row disagrees with its source, that is a bug worth reporting. Use the looks wrong? link on that row: the report arrives already naming the constant and the exact mirror commit, so you never have to work out how to describe which of 2 rows you meant. Some rows carry a we reported this row link. That means we ourselves filed a report upstream about that row, and the link goes to it so you can read what we said and judge it. We show it because our own involvement in a row is part of what you need in order to weigh the row — and it is not a claim that anything upstream changed because of us. The state shown is the report's own; whether it caused anything is a separate question this page does not answer. Every row has its own link. Click a row's short id — the grey code under the constant's name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred. These are last-listed table rows, not a claim about which bound is “the record.” Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.";
+const NOTE_PIN = "Read this before you trust a number here. This page is a snapshot, not a live read. It shows our mirror of teorth/optimizationproblems at upstream commit e70b4a4. 2026-08-20 is the date this mirror last CHANGED -- not the last time it was checked. Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date does not mean nobody has looked. Nor does it prove nothing moved: the dates and values here change only after an upstream change has been verified and published. To see the actual last check and its verdict, read the run history -- that is the live read, and this page is deliberately not. Every row links to its primary source so you can check us in one hop — and if a row disagrees with its source, that is a bug worth reporting. Use the looks wrong? link on that row: the report arrives already naming the constant and the exact mirror commit, so you never have to work out how to describe which of 2 rows you meant. Some rows carry one or more we reported this row links. Each means we ourselves filed a report upstream about that row; it names the report's number and what it asked, and goes to the report so you can read what we said and judge it. We show them because our own involvement in a row is part of what you need in order to weigh the row — and they are not a claim that anything upstream changed because of us. The state shown on each is that report's own; whether it caused anything is a separate question this page does not answer. Every row has its own link. Click a row's short id — the grey code under the constant's name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred. These are last-listed table rows, not a claim about which bound is “the record.” Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.";
 
 async function selftest() {
   const assert = (await import("node:assert/strict")).default;
@@ -1490,7 +1504,7 @@ async function selftest() {
     issue: 289,
     url: "https://example.invalid/issues/289",
     filed: "2026-10-29T15:59:10Z",
-    topic: "the printed decimal",
+    topic: "the printed value",
     state: "OPEN",
     closedAt: null,
   }, {
@@ -1535,7 +1549,7 @@ async function selftest() {
     assert.ok(aria.startsWith(o[1]), `the accessible name must open with the whole visible label — got ${aria}`);
   }
   assert.equal(oursAll[0][1], "we reported this row · #150, about which construction gives the value · closed 2026-08-23");
-  assert.equal(oursAll[1][1], "we reported this row · #289, about the printed decimal · open");
+  assert.equal(oursAll[1][1], "we reported this row · #289, about the printed value · open");
 
   // SILENT: only the mapped row carries disclosures, so the unmapped row carries none. Counted in
   // the th: since A-69 each badge is emitted twice (the th copy and the card-layout copy), and the
@@ -1585,7 +1599,7 @@ async function selftest() {
   for (const forbidden of [/caused/i, /because of us/i, /candidate causal/i, /thanks to/i, /led to/i, /our report fixed/i]) {
     assert.ok(!forbidden.test(ours[0]), `the disclosure must assert no cause — matched ${forbidden}`);
   }
-  assert.match(disclosed, /it is not a claim that anything upstream changed because of us/,
+  assert.match(disclosed, /they are not a claim that anything upstream changed because of us/,
     "the page must say in words that the disclosure asserts no cause");
 
   // --- The "read against its cited source" badge (2026-09-14). The page's audit block already
@@ -1901,16 +1915,23 @@ async function selftest() {
   assert.equal(reportLabel({ issue: 7, topic: "the printed value", state: "OPEN", closedAt: null }), "we reported this row · #7, about the printed value · open");
   assert.equal(reportLabel({ issue: 7, topic: "the printed value", state: "OPEN", closedAt: "2026-08-23T17:15:35Z" }), "we reported this row · #7, about the printed value · open");
 
-  // A topic we wrote is held to the label's own rule: nothing causal, never "record", plain text,
-  // short. Each is REFUSED, never dropped: the guards carrying meaning first, the shape guards after.
-  // The first-person forms come first: they are the SHAPE rule (Codex r1's "prompted by our report"
-  // passed the word list it replaced). Then the floor words, then markup, then the shape guards, and
-  // a missing topic last.
-  for (const bad of ["prompted by our report", "changed after we asked", "what us asked", "the value I flagged", "fixed by a note", "the record row", "why it was caused", "thanks to a note", "a <b>tag</b>", " padded", "", "x".repeat(61), undefined, null]) {
-    assert.throws(() => reportLabel({ issue: 9, state: "OPEN", topic: bad }), /topic/, `a topic ${JSON.stringify(bad)} must be refused`);
+  // ONLY an approved topic renders; everything else is REFUSED, never dropped (Codex r1 and r2: two
+  // rounds beat a matcher over free text). The causal phrasings both rounds found come first, then a
+  // near-miss of an approved phrase (proving this is exact membership, not a pattern), then the
+  // shape cases and a missing topic.
+  for (const bad of ["prompted by our report", "the update prompted by this report", "the printed value ", "The printed value", "the record row", "a <b>tag</b>", "", undefined, null]) {
+    assert.throws(() => reportLabel({ issue: 9, state: "OPEN", topic: bad }), /APPROVED_REPORT_TOPICS/, `a topic ${JSON.stringify(bad)} must be refused`);
   }
-  assert.equal(reportLabel({ issue: 9, state: "OPEN", topic: "the printed decimal" }), "we reported this row · #9, about the printed decimal · open",
-    "positive control: an ordinary topic renders");
+  // Every approved topic must itself keep the rule the set exists for: it names a question, never an
+  // outcome, and never says "record" (generated pins assert position, never "the record").
+  for (const t of APPROVED_REPORT_TOPICS) {
+    assert.ok(!/caus|because|thanks|led to|fixed|prompt|record|\b(we|us|our)\b|[<>&"`]/i.test(t), `approved topic ${JSON.stringify(t)} breaks the set's own rule`);
+  }
+  assert.equal(reportLabel({ issue: 9, state: "OPEN", topic: "the printed value" }), "we reported this row · #9, about the printed value · open",
+    "positive control: an approved topic renders");
+  // A record with no filing time is REFUSED rather than sorted first (Codex r2).
+  assert.throws(() => reportsFor("87a", [{ path: "constants/87a.md", issue: 3, topic: "the printed value", state: "OPEN" }]), /filed must be an ISO UTC timestamp/,
+    "a report with no filing time must be refused, not sorted first");
 
   // reportsFor keys on the exact upstream path, so a neighbouring id never inherits a disclosure,
   // and it returns EVERY report for the path, oldest filing first (A-95).
@@ -1919,7 +1940,7 @@ async function selftest() {
   assert.deepEqual(reportsFor("87a", []), []);
   assert.deepEqual(reportsFor("87a", null), []);
 
-  // THE COMMITTED RECORD renders: every topic in ledger/upstream-reports.json passes the rule above,
+  // THE COMMITTED RECORD renders: every topic in ledger/upstream-reports.json is an approved one,
   // and the real 87a row discloses every report the record holds for it.
   const committed = loadReports();
   for (const rep of committed) assert.doesNotThrow(() => reportLabel(rep), `the committed record's report ${rep.issue} must render`);
@@ -1928,7 +1949,7 @@ async function selftest() {
   assert.equal(reportsFor("87a", committed).length, committed87a, "the 87a row must disclose every report the record holds for it");
 
   // A hostile url in the record is attribute-escaped rather than breaking out of the href.
-  const hostileFiled = [{ path: "constants/87a.md", issue: 1, topic: "the printed value", url: 'https://example.invalid/"><script>x</script>', state: "OPEN" }];
+  const hostileFiled = [{ path: "constants/87a.md", issue: 1, filed: "2026-08-01T00:00:00Z", topic: "the printed value", url: 'https://example.invalid/"><script>x</script>', state: "OPEN" }];
   const hostileDisclosed = renderHtml(buildRows(discloseClaims, { withDates: false, reports: hostileFiled, audits: { audits: [] } }), manifest, "2026-09-02");
   assert.ok(hostileDisclosed.length > 2000, "positive control: the hostile-disclosure page must render before any absence is asserted");
   assert.ok(!/<script>x<\/script>/.test(hostileDisclosed), "a url in the filed-report record reached the page as markup");

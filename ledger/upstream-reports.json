@@ -41,5 +41,5 @@
       "baselineSource": "gh issue view 289 --repo teorth/optimizationproblems --json number,createdAt,closedAt,state,title,url — run 2026-11-03, every field above copied from its output rather than recalled"
     }
   ],
-  "note4": "`topic` (A-95, 2026-11-03) is OUR short phrase for what each report asked. It is rendered on the public page beside the issue number, so a row carrying two reports shows two distinguishable links. render-site.mjs refuses a topic that is empty, over 60 characters, carries markup, or uses causal wording or the word 'record' — it is our text about our own artifact and gets the same rule as the label's fixed words."
+  "note4": "`topic` (A-95, 2026-11-03) is OUR short phrase for what each report asked. It is rendered on the public page beside the issue number, so a row carrying two reports shows two distinguishable links. render-site.mjs renders a topic ONLY if it is in APPROVED_REPORT_TOPICS there and refuses (throws on) any other, so a new report's topic is added to that set in a reviewed commit. Each approved phrase names a question, never an outcome. Every report also needs an ISO UTC `filed` time; both consumers refuse a record without one."
 }
