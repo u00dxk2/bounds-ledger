@@ -179,21 +179,32 @@ export function reportsFor(id, reports) {
 // and a topic outside it is REFUSED (thrown). Adding a topic is a code change, reviewed like any
 // other reader-facing sentence on the page, and each new report already passes the outward gate.
 // The set carries no claim about cause because each phrase names a QUESTION, never an outcome.
-export const APPROVED_REPORT_TOPICS = new Set([
+// A frozen array, not a Set: a Set can be mutated through its exported reference, and the check
+// takes no override (Codex r3 on 66ff14d). A topic must be a STRING equal to one entry.
+export const APPROVED_REPORT_TOPICS = Object.freeze([
   "which construction gives the value", // issue 150, 87a
   "which paper proves the bound", // issue 218, 46a
   "the printed value", // issue 289, 87a
 ]);
-export function reportTopic(report, approved = APPROVED_REPORT_TOPICS) {
-  const t = report.topic === undefined || report.topic === null ? "" : String(report.topic);
-  if (!approved.has(t)) throw new Error(`upstream report ${report.issue}: topic ${JSON.stringify(t)} is not in APPROVED_REPORT_TOPICS (render-site.mjs); add it there in a reviewed commit`);
+export function reportTopic(report) {
+  const t = report.topic;
+  if (typeof t !== "string" || !APPROVED_REPORT_TOPICS.includes(t)) throw new Error(`upstream report ${report.issue}: topic ${JSON.stringify(t)} is not in APPROVED_REPORT_TOPICS (render-site.mjs); add it there in a reviewed commit`);
   return t;
 }
 
 // A report's filing time decides its order on the row and appears in the drift report, so a record
-// without one is REFUSED rather than sorted first by an empty string (Codex r2 on fce4ba7).
+// without a REAL one is REFUSED rather than sorted first by an empty string (Codex r2 on fce4ba7).
+// Shape AND round-trip: "2026-99-99T99:99:99Z" has the shape and is not a time (Codex r3).
+export function isIsoUtc(s) {
+  if (typeof s !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(s)) return false;
+  const d = new Date(s);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 19) + "Z" === s;
+}
+// Every disclosure names its report number, as the page's intro promises, so a record whose issue is
+// not a positive integer is REFUSED rather than rendered without one (Codex r3).
 export function assertFiled(report) {
-  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(String(report.filed ?? ""))) throw new Error(`upstream report ${report.issue}: filed must be an ISO UTC timestamp, got ${JSON.stringify(report.filed)}`);
+  if (!Number.isInteger(report.issue) || report.issue <= 0) throw new Error(`upstream report: issue must be a positive integer, got ${JSON.stringify(report.issue)}`);
+  if (!isIsoUtc(report.filed)) throw new Error(`upstream report ${report.issue}: filed must be an ISO UTC timestamp, got ${JSON.stringify(report.filed)}`);
   return report;
 }
 
@@ -206,7 +217,8 @@ export function assertFiled(report) {
 export function reportLabel(report) {
   const state = String(report.state || "").toUpperCase();
   const when = state === "CLOSED" && report.closedAt ? ` ${String(report.closedAt).slice(0, 10)}` : "";
-  const issue = Number.isInteger(Number(report.issue)) && report.issue !== undefined && report.issue !== null ? ` · #${Number(report.issue)}` : "";
+  if (!Number.isInteger(report.issue) || report.issue <= 0) throw new Error(`upstream report: issue must be a positive integer, got ${JSON.stringify(report.issue)}`);
+  const issue = ` · #${report.issue}`;
   return `we reported this row${issue}, about ${reportTopic(report)} · ${state === "CLOSED" ? `closed${when}` : "open"}`;
 }
 
@@ -1919,7 +1931,7 @@ async function selftest() {
   // rounds beat a matcher over free text). The causal phrasings both rounds found come first, then a
   // near-miss of an approved phrase (proving this is exact membership, not a pattern), then the
   // shape cases and a missing topic.
-  for (const bad of ["prompted by our report", "the update prompted by this report", "the printed value ", "The printed value", "the record row", "a <b>tag</b>", "", undefined, null]) {
+  for (const bad of ["prompted by our report", "the update prompted by this report", "the printed value ", "The printed value", ["the printed value"], "the record row", "a <b>tag</b>", "", undefined, null]) {
     assert.throws(() => reportLabel({ issue: 9, state: "OPEN", topic: bad }), /APPROVED_REPORT_TOPICS/, `a topic ${JSON.stringify(bad)} must be refused`);
   }
   // Every approved topic must itself keep the rule the set exists for: it names a question, never an
@@ -1929,6 +1941,17 @@ async function selftest() {
   }
   assert.equal(reportLabel({ issue: 9, state: "OPEN", topic: "the printed value" }), "we reported this row · #9, about the printed value · open",
     "positive control: an approved topic renders");
+  // The canonical list cannot be changed through its export, and the check takes no override (Codex r3).
+  assert.ok(Object.isFrozen(APPROVED_REPORT_TOPICS), "the approved-topic list must be frozen");
+  assert.throws(() => reportTopic({ issue: 9, topic: "the update prompted by this report" }, ["the update prompted by this report"]), /APPROVED_REPORT_TOPICS/,
+    "a caller-supplied list must not widen the allowlist");
+  // Every link names its report number, as the intro promises, so a non-integer issue is REFUSED (Codex r3).
+  for (const badIssue of [1.5, 0, -2, "150", null, undefined]) {
+    assert.throws(() => reportLabel({ issue: badIssue, topic: "the printed value", state: "OPEN" }), /issue must be a positive integer/, `issue ${JSON.stringify(badIssue)} must be refused`);
+  }
+  // A filing time must be a REAL time, not only the shape of one (Codex r3).
+  assert.ok(isIsoUtc("2026-10-29T15:59:10Z"), "positive control: a real ISO UTC time passes");
+  for (const badTime of ["2026-99-99T99:99:99Z", "2026-02-30T00:00:00Z", "2026-10-29", "", null]) assert.ok(!isIsoUtc(badTime), `filed ${JSON.stringify(badTime)} must be refused`);
   // A record with no filing time is REFUSED rather than sorted first (Codex r2).
   assert.throws(() => reportsFor("87a", [{ path: "constants/87a.md", issue: 3, topic: "the printed value", state: "OPEN" }]), /filed must be an ISO UTC timestamp/,
     "a report with no filing time must be refused, not sorted first");

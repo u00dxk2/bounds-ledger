@@ -310,6 +310,9 @@ await writeFile(noFiledPath, JSON.stringify({ reports: [{ path: "constants/87a.m
 const noFiled = await filedReports(noFiledPath);
 assert.match(noFiled.error ?? "", /no ISO UTC filed time/, "a report with no filing time must make leg 2 refuse, not guess its order");
 assert.equal(noFiled.map.size, 0, "a refused map flags nothing");
+// A time of the right SHAPE that is not a real time is refused too (Codex r3).
+await writeFile(noFiledPath, JSON.stringify({ reports: [{ path: "constants/87a.md", issue: 9, url: "https://example.invalid/9", filed: "2026-99-99T99:99:99Z" }] }));
+assert.match((await filedReports(noFiledPath)).error ?? "", /no ISO UTC filed time/, "a shape-valid but impossible filing time must make leg 2 refuse");
 await freshLive();
 console.log("A-33 leg 2 assertion: PASS (fires on the reported-against file beside its CHANGED line, silent on a file we filed nothing against, suppressed under CI so the annotation never reaches the public issue while the CHANGED line still does, and an unreadable map says so instead of reading as nothing-filed)");
 

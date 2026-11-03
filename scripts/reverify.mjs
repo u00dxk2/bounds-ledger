@@ -190,7 +190,10 @@ export async function filedReports(path = REPORTS) {
     for (const r of rows.filter((x) => x?.path)) {
       // A record with no filing time cannot be ordered and would print "on ." in the go-look line, so
       // the whole leg refuses and says so below rather than guessing (Codex r2 on fce4ba7).
-      if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(String(r.filed ?? ""))) throw new Error(`report ${r.issue} has no ISO UTC filed time`);
+      // Shape AND round-trip, so "2026-99-99T99:99:99Z" is refused too (Codex r3). Inlined rather than
+      // imported from render-site.mjs: importing a CLI script here can run it (A-50).
+      const f = typeof r.filed === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(r.filed) ? new Date(r.filed) : null;
+      if (!f || Number.isNaN(f.getTime()) || f.toISOString().slice(0, 19) + "Z" !== r.filed) throw new Error(`report ${r.issue} has no ISO UTC filed time`);
       map.set(r.path, [...(map.get(r.path) || []), r]);
     }
     for (const list of map.values()) list.sort((a, b) => String(a.filed ?? "").localeCompare(String(b.filed ?? "")) || Number(a.issue) - Number(b.issue));
@@ -243,7 +246,7 @@ export async function check(liveDir, reportsPath = REPORTS, causal = !process.en
   let drift = 0;
   const lines = [`# Drift report — ${REPO} (${SUBDIR}/ + ${ROOT_FILES.join(", ")}) — ${new Date().toISOString()}`, `Snapshot: ${manifest.sha} · Live: ${live.sha}`, ""];
   const filed = causal ? await filedReports(reportsPath) : { map: new Map() };
-  if (filed.error) lines.push(`(A-33 leg 2 DID NOT RUN: ledger/upstream-reports.json could not be read — ${filed.error}.`, ` No file below has been checked against the reports we have filed, so silence here means nothing.)`, "");
+  if (filed.error) lines.push(`(A-33 leg 2 DID NOT RUN: ledger/upstream-reports.json could not be read or failed validation — ${filed.error}.`, ` No file below has been checked against the reports we have filed, so silence here means nothing.)`, "");
   for (const name of names) {
     const a = snap.get(name), b = live.files.get(name);
     if (a === b) continue;
