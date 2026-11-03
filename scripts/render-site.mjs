@@ -166,15 +166,19 @@ export function reportsFor(id, reports) {
 }
 
 // A report's `topic` is OUR short phrase for what the report asked. It is reader-facing text we
-// wrote about our own artifact, so it gets the same refusal the label's fixed words are held to:
-// nothing causal, never "record", plain text, short. A topic that fails is REFUSED (thrown), never
-// silently dropped, because a dropped topic would publish a label that no longer says which
-// question is which — the very thing the topic exists for.
-export const REPORT_TOPIC_FORBIDDEN = [/caus/i, /because/i, /thanks/i, /led to/i, /fixed/i, /record/i, /[<>&"`]/];
+// wrote about our own artifact. A topic that fails is REFUSED (thrown), never silently dropped — and
+// a MISSING topic is refused too (Codex r1 on 0b8c0c6) — because a label without one no longer says
+// which question is which, the very thing the topic exists for.
+//
+// THE RULE IS A SHAPE, NOT A WORD LIST (portable rule 2; Codex r1 found "prompted by our report"
+// passing the first version's causal blacklist). A causal claim about OUR report has to name us, so
+// the topic may not contain a first-person word at all (we, us, our, ours, I, my). Beyond that it is
+// a floor, not a proof: "record" and the old causal words stay refused, markup is refused, and the
+// topic is hand-written data reviewed at commit like any other reader-facing sentence here.
+export const REPORT_TOPIC_FORBIDDEN = [/\b(we|us|our|ours|i|my|me)\b/i, /caus/i, /because/i, /thanks/i, /led to/i, /fixed/i, /record/i, /[<>&"`]/];
 export function reportTopic(report) {
-  if (report.topic === undefined || report.topic === null) return null;
-  const t = String(report.topic);
-  if (!t.trim() || t !== t.trim() || t.length > 60) throw new Error(`upstream report ${report.issue}: topic must be 1-60 characters with no surrounding space`);
+  const t = report.topic === undefined || report.topic === null ? "" : String(report.topic);
+  if (!t.trim() || t !== t.trim() || t.length > 60) throw new Error(`upstream report ${report.issue}: topic is required, 1-60 characters with no surrounding space`);
   for (const f of REPORT_TOPIC_FORBIDDEN) if (f.test(t)) throw new Error(`upstream report ${report.issue}: topic matches forbidden ${f}`);
   return t;
 }
@@ -189,14 +193,20 @@ export function reportLabel(report) {
   const state = String(report.state || "").toUpperCase();
   const when = state === "CLOSED" && report.closedAt ? ` ${String(report.closedAt).slice(0, 10)}` : "";
   const issue = Number.isInteger(Number(report.issue)) && report.issue !== undefined && report.issue !== null ? ` · #${Number(report.issue)}` : "";
-  const topic = reportTopic(report);
-  return `we reported this row${issue}${topic ? `, about ${topic}` : ""} · ${state === "CLOSED" ? `closed${when}` : "open"}`;
+  return `we reported this row${issue}, about ${reportTopic(report)} · ${state === "CLOSED" ? `closed${when}` : "open"}`;
 }
 
-/** Every disclosure link for a row, in order. One string so the th and card copies stay identical. */
+/**
+ * Every disclosure link for a row, in order. One string so the th and card copies stay identical.
+ * The aria-label REPLACES the visible text as the accessible name, so it carries the whole visible
+ * label (number, topic, state) and then the constant — a screen-reader user must hear which report
+ * is open and which is closed (Codex r1 on 0b8c0c6).
+ */
 export function reportLinks(r) {
-  return (r.reports || []).map((rep) =>
-    `<a class="ours" href="${esc(rep.url)}" aria-label="${esc(`Report${rep.issue != null ? ` #${Number(rep.issue)}` : ""} we filed upstream about ${r.title}`)}">${esc(reportLabel(rep))}</a>`).join("");
+  return (r.reports || []).map((rep) => {
+    const label = reportLabel(rep);
+    return `<a class="ours" href="${esc(rep.url)}" aria-label="${esc(`${label} — filed upstream about ${r.title}`)}">${esc(label)}</a>`;
+  }).join("");
 }
 
 /** Load the filed-report record. Absent file means no disclosures, never a crash. */
@@ -1516,6 +1526,14 @@ async function selftest() {
   assert.match(oursAll[0][1], /#150\b[\s\S]*· closed 2026-08-23$/, "the closed report must carry its own number and its own state");
   assert.match(oursAll[1][1], /#289\b[\s\S]*· open$/, "the open report must carry its own number and read open, never the other report's state");
   assert.notEqual(oursAll[0][1], oursAll[1][1], "two reports on one row must not show two identical links");
+  // The ACCESSIBLE name carries the same facts as the visible text (Codex r1): an aria-label replaces
+  // the anchor text, so one that dropped the state would tell a screen-reader user nothing about
+  // which report is still open.
+  for (const o of oursAll) {
+    const aria = (o[0].match(/aria-label="([^"]*)"/) || [])[1];
+    assert.ok(aria, "each disclosure link carries an accessible name");
+    assert.ok(aria.startsWith(o[1]), `the accessible name must open with the whole visible label — got ${aria}`);
+  }
   assert.equal(oursAll[0][1], "we reported this row · #150, about which construction gives the value · closed 2026-08-23");
   assert.equal(oursAll[1][1], "we reported this row · #289, about the printed decimal · open");
 
@@ -1556,7 +1574,7 @@ async function selftest() {
   // Every badge kind at once (Codex r1: the copy test ran only on the disclosure fixtures).
   const allBadges = renderHtml([{ id: "5z", title: "All badges", url: "https://example.invalid/5z.md",
     upper: "| 1 | X |", lower: "| 0 | Y |",
-    reports: [{ url: "https://example.invalid/issues/1", issue: 1, state: "OPEN" }],
+    reports: [{ url: "https://example.invalid/issues/1", issue: 1, topic: "the printed value", state: "OPEN" }],
     audit: { kind: "read", verdict: "UNRESOLVED", text: "checked against material for its source, not settled" },
     oai: [{ family: "107" }] }], manifest, "2026-10-13");
   assert.equal(copiesHold(allBadges), 1, "a row carrying all three badge kinds must copy them exactly");
@@ -1880,12 +1898,15 @@ async function selftest() {
 
   // An OPEN report reads "open" and gets no date — a closed-on date on an open report would be
   // a fabricated fact, and the label builds that date from state rather than from presence.
-  assert.equal(reportLabel({ state: "OPEN", closedAt: null }), "we reported this row · open");
-  assert.equal(reportLabel({ state: "OPEN", closedAt: "2026-08-23T17:15:35Z" }), "we reported this row · open");
+  assert.equal(reportLabel({ issue: 7, topic: "the printed value", state: "OPEN", closedAt: null }), "we reported this row · #7, about the printed value · open");
+  assert.equal(reportLabel({ issue: 7, topic: "the printed value", state: "OPEN", closedAt: "2026-08-23T17:15:35Z" }), "we reported this row · #7, about the printed value · open");
 
   // A topic we wrote is held to the label's own rule: nothing causal, never "record", plain text,
   // short. Each is REFUSED, never dropped: the guards carrying meaning first, the shape guards after.
-  for (const bad of ["fixed by our note", "the record row", "why it was caused", "thanks to us", "a <b>tag</b>", " padded", "", "x".repeat(61)]) {
+  // The first-person forms come first: they are the SHAPE rule (Codex r1's "prompted by our report"
+  // passed the word list it replaced). Then the floor words, then markup, then the shape guards, and
+  // a missing topic last.
+  for (const bad of ["prompted by our report", "changed after we asked", "what us asked", "the value I flagged", "fixed by a note", "the record row", "why it was caused", "thanks to a note", "a <b>tag</b>", " padded", "", "x".repeat(61), undefined, null]) {
     assert.throws(() => reportLabel({ issue: 9, state: "OPEN", topic: bad }), /topic/, `a topic ${JSON.stringify(bad)} must be refused`);
   }
   assert.equal(reportLabel({ issue: 9, state: "OPEN", topic: "the printed decimal" }), "we reported this row · #9, about the printed decimal · open",
@@ -1907,7 +1928,7 @@ async function selftest() {
   assert.equal(reportsFor("87a", committed).length, committed87a, "the 87a row must disclose every report the record holds for it");
 
   // A hostile url in the record is attribute-escaped rather than breaking out of the href.
-  const hostileFiled = [{ path: "constants/87a.md", issue: 1, url: 'https://example.invalid/"><script>x</script>', state: "OPEN" }];
+  const hostileFiled = [{ path: "constants/87a.md", issue: 1, topic: "the printed value", url: 'https://example.invalid/"><script>x</script>', state: "OPEN" }];
   const hostileDisclosed = renderHtml(buildRows(discloseClaims, { withDates: false, reports: hostileFiled, audits: { audits: [] } }), manifest, "2026-09-02");
   assert.ok(hostileDisclosed.length > 2000, "positive control: the hostile-disclosure page must render before any absence is asserted");
   assert.ok(!/<script>x<\/script>/.test(hostileDisclosed), "a url in the filed-report record reached the page as markup");
