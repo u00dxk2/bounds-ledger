@@ -411,12 +411,12 @@
       "exercised2026_09_12": "FIRED TWICE TODAY on new detectors, which is what this standing watch is for. (1) The depth-audit draw fixes: six selftest cases covering a commented-out duplicate stealing a live row's line, an inline comment reporting line 0, and a frame the corpus check rejects - each with its silent half. (2) A-39's jitter: the suite asserts ten 429 draws are not identical AND carries the constant-rng control proving the assertion rejects a real condition, then red-armed through the production constant.",
       "updated": "2026-10-20",
       "readCommandTimeoutMs": 300000,
-      "readCommandLastRun": "2026-10-20T15:35:42.878Z",
+      "readCommandLastRun": "2026-11-03T15:01:11.605Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 43003,
+      "readCommandLastDurationMs": 257807,
       "readCommandLastOutputRef": {
         "lines": 77,
-        "sha256": "3ea5070587e740a8"
+        "sha256": "846c30951b24ecaf"
       },
       "disposition2026_09_22": "DISPOSITION 2026-09-22. STANDING WATCH, so it does not close; nextCheckDate is moved to 2026-10-06.\n\nTHE READ, literal, through the gate (check-due-gates-dispositioned --run W-4, exit 0, 166288ms; sidecar continuity/read-outputs/W-4.txt, line 83, below the output marker): \"39 workflow steps, piped steps pipefail-guarded; 31 self-tests present in CI\". POSITIVE CONTROL that the count moves when a detector is added: this row recorded \"23 workflow steps … 17 self-tests present in CI\" on 2026-08-25, so it rose by 14 self-tests in four weeks, and the suite still fails when a --selftest lacks a workflow step.\n\nINSTRUMENT FIX, made today: this readCommand had never been stampable. The runner killed it at 60 s, and the script runs 164 to 182 s. readCommandTimeoutMs is now 300000 here and on W-10.\n\nWHERE KP-78 BINDS TODAY: A-55's served-bytes check is a new detector and ships at P3. It owes both answers (a stale fixture fires, a fresh fixture is silent), with the mutation proved landed before either result is believed, and a CI workflow step for its selftest, or this suite fails.",
       "lastEvaluated": "2026-10-20",
@@ -1047,12 +1047,12 @@
       "linkedCommits": [
         "2bd8292"
       ],
-      "readCommandLastRun": "2026-10-20T15:35:48.420Z",
+      "readCommandLastRun": "2026-11-03T15:01:55.580Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 1251,
+      "readCommandLastDurationMs": 25559,
       "readCommandLastOutputRef": {
-        "lines": 4,
-        "sha256": "b20d5add44c1ae88"
+        "lines": 5,
+        "sha256": "d945fae206950241"
       },
       "disposition2026_09_22": "DISPOSITION 2026-09-22. CONTRADICTION FIRST: the row was written expecting Branch 0 (an empty send window), and the window was NOT empty. Pull request #194 went to teorth/optimizationproblems on 2026-09-21. So Branch 0 does not apply.\n\nBUT THE CASE THIS ROW EXISTS FOR DID NOT ARISE EITHER. W-8 is about an artifact materially amended AFTER David has seen it. For #194 the order was reversed: both adversarial rounds ran BEFORE the card reached his board (A-51.cardFiled2026_09_21: round 1 rewrote two pre-send checks, round 2 cleared them, then the card was filed), and he approved the reviewed draft verbatim at 16:30:11Z. After his \"Yes\", the only change was the commit's author identity (a personal email replaced with the noreply one, A-51 notes). Under note2's definition, that is neither the claim, the method sentence nor the channel. So no material amendment happened after his approval, and the one-line question could not be asked live.\n\nTHE STRUCTURAL OBSERVATION WORTH KEEPING: putting the adversarial review before the card, rather than after it, removes the question by construction, because David then approves the final artifact. The question only returns if something must change after his approval.\n\nINSTRUMENT FIX, made today. The old readCommand (gh issue list) was BLIND to pull requests. Run through the gate this morning, it printed only #150 while #194 was open upstream, and its positive control (#150 present) still held while it missed the very send the row watches. Replaced with gh search issues --include-prs. Re-run through the gate: exit 0, \"pr … 194 open\", \"issue … 150 closed\", \"pr … 141 merged\". That run took 58784 ms against the gate's 60000 ms default, so readCommandTimeoutMs is set to 120000 on this row. Otherwise the next run would time out and read as a miss.\n\nRE-DATED to 2026-10-06, the next send window. The lane sends about twice a month, and the next candidate sends (A-47 slice 6's three found-not-filed citation discrepancies) wait on upstream's answer to #194, which W-12 reads on 2026-09-28. The conservative default in note2 governs every send in the meantime.",
       "readCommandTimeoutMs": 120000
@@ -1455,12 +1455,12 @@
         "b7e6afb"
       ],
       "readCommandHistory": "node scripts/depth-audit.mjs # BUILT AND FIRST-RUN 2026-09-10; supersedes the check-claims placeholder kept at readCommandRetired2026_09_10, which correctly said no command answered this row while no audit store existed. LITERAL OUTPUT, pasted from the run rather than described: \"depth audit (A-47): 3 row(s) audited — 2 sound, 0 defective, 1 unresolved, 0 unreachable\" at exit 0. It prints the denominator and the SAMPLING RULE beside the count, and it REFUSES a bare zero: exit 2 when the store is missing or empty (a zero about the WORK, not about the records), exit 3 when the verdict counts do not sum to the row count. Both refusals red-armed 2026-09-10 with the mutations proven to land by sha256 and the restore verified against the original.\n\n — LITERAL OUTPUT RE-RECORDED 2026-09-11, because the line above is dated 2026-09-10 and a stale literal output is the defect this field exists to prevent: \"depth audit (A-47): 8 row(s) audited — 2 sound, 0 defective, 4 unresolved, 2 unreachable\" at exit 0. The verdict mix moved for two reasons on one day: slice 2 added five rows, and three earlier rows were downgraded to UNRESOLVED by adversarial review. A second command now answers the population half of this row: `node scripts/depth-audit.mjs --corpus`, which prints 770 bound rows across 115 constant files, 673 cited, 97 uncited, and refuses (exit 2) when either baseline cannot be established.",
-      "readCommandLastRun": "2026-10-29T15:12:00.171Z",
+      "readCommandLastRun": "2026-11-03T14:56:45.356Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 781,
+      "readCommandLastDurationMs": 241,
       "readCommandLastOutputRef": {
-        "lines": 273,
-        "sha256": "a3ead5f8bad5d734"
+        "lines": 267,
+        "sha256": "bd0e70f9c96c465e"
       },
       "lastEvaluated": "2026-10-30",
       "notes": "RE-DATED 2026-09-16 → 2026-09-18 AFTER THE READ RAN, not instead of it. Slice 5 landed today (A-47-0020..0024, commit 739ce16, live on the public pages): positions 400, 500, 600, 25 and 75, drawn before any row was read, 3 SOUND and 2 UNREACHABLE. The store now holds 24 rows — 13 sound, 0 defective, 5 unresolved, 6 unreachable — with 10 systematic reads and 7 suspicion-drawn reads counted apart. The gate runner stamped the read today (exit 0, 210ms, sidecar continuity/read-outputs/A-47.txt, 81 lines; its content hash is in this row's readCommandLastOutputRef, printed by `check-due-gates-dispositioned --run A-47`).\n\nWHY 2026-09-18 AND NOT TOMORROW. Slice 6 is the next 25-offset step (125, 175, 225, 275, 325 are the untaken positions below 350), and A-51 — the upstream dead-link correction — is dated 2026-09-18 already; the depth read and that decision are the same kind of work on the same sources, so they share a day rather than splitting two.\n\nWHAT THIS ROW OWES AT THAT READ, unchanged: a count audited, a count sound, a count defective, a count UNREACHABLE — and if the audited count has not moved since today's 24, that is the finding and it gets reported as one.",
@@ -2352,12 +2352,12 @@
       "linkedCommits": [
         "ea25512"
       ],
-      "readCommandLastRun": "2026-10-27T15:44:49.017Z",
+      "readCommandLastRun": "2026-11-03T15:02:25.557Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 26578,
+      "readCommandLastDurationMs": 9444,
       "readCommandLastOutputRef": {
-        "lines": 68,
-        "sha256": "d44ac7a16b464aa4"
+        "lines": 10,
+        "sha256": "5d73818f2b960509"
       },
       "expectedSignalBy": "2026-11-03",
       "disposition2026_09_29": "DISPOSITION 2026-09-29. RE-DATED to 2026-10-06 by the hygiene helper's draft, as this row's onTrigger asks on exit 0. Two reads today, both literal. (1) The helper's --run, inside the helper's pass (its draft is stamped as finished at 13:44Z), anchored on 9ee0a9a: \"1 checked — 1 served, 0 in flight, 0 stale, 0 unreachable\", exit 0. That read was thin, since that commit touched one published file. (2) After slice 9's push, anchored on b2dbe8f (the last page-changing commit, 30 of 118 published files): \"30 checked — 30 served, 0 in flight, 0 stale, 0 unreachable\", \"RESULT: PASS — every file the last page-changing commit touched is being served as committed (exit 0)\". closeWhen (A) is still unmet: no served.yml workflow exists, so the row stays open.",
@@ -3494,7 +3494,14 @@
       "nextCheckDate": "2026-11-03",
       "readCommand": "npm run close:primer",
       "created": "2026-10-31",
-      "updated": "2026-10-31"
+      "updated": "2026-10-31",
+      "readCommandLastRun": "2026-11-03T14:56:50.162Z",
+      "readCommandLastExit": 1,
+      "readCommandLastDurationMs": 1416,
+      "readCommandLastOutputRef": {
+        "lines": 7,
+        "sha256": "98df7843ce04880b"
+      }
     },
     {
       "id": "A-95",
@@ -3510,7 +3517,8 @@
         "W-16"
       ],
       "created": "2026-11-02",
-      "updated": "2026-11-02"
+      "updated": "2026-11-03",
+      "built2026_11_03": "Built 2026-11-03 MT on branch a95-87a-both-reports (not on main, not live): 0b8c0c6, fce4ba7, 66ff14d, 7f8a0c1. Codex read-only: r1 on 0b8c0c6 SHIP WITH FIXES (2 MAJOR, fixed in fce4ba7); r2 on fce4ba7 SHIP WITH FIXES (1 MAJOR 3 MINOR, fixed in 66ff14d; the topic check was replaced by an allowlist at the class's second appearance); r3 on 66ff14d SHIP WITH FIXES (1 Medium 3 Low, fixed in 7f8a0c1). David's card 87acfd78 (needs-decision msg 38cdfed2) names the branch. On his yes: merge to main, push, npm run served and a live fetch of index.html and c/87a.html showing both links, then close A-95 and re-run A-77's read."
     }
   ],
   "meta": {
