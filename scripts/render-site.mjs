@@ -153,20 +153,50 @@ export function citation(r, sha) {
  * ourselves reported against is the one row where our own involvement is part of what a reader
  * needs in order to judge it, and until today the page was silent about that.
  */
-export function reportFor(id, reports) {
-  if (!Array.isArray(reports)) return null;
-  return reports.find((r) => r && r.path === `constants/${id}.md`) || null;
+//
+// EVERY report, not the first (A-95, 2026-11-03). This returned `find()` — the FIRST report for a
+// path — so once we filed a second report on 87a (issue 289, open) the row went on disclosing only
+// issue 150 ("closed") and read as settled while our own open question about its printed value went
+// unmentioned. Returned in filing order (then issue number), so the older report reads first.
+export function reportsFor(id, reports) {
+  if (!Array.isArray(reports)) return [];
+  return reports
+    .filter((r) => r && r.path === `constants/${id}.md`)
+    .sort((a, b) => String(a.filed ?? "").localeCompare(String(b.filed ?? "")) || Number(a.issue) - Number(b.issue));
+}
+
+// A report's `topic` is OUR short phrase for what the report asked. It is reader-facing text we
+// wrote about our own artifact, so it gets the same refusal the label's fixed words are held to:
+// nothing causal, never "record", plain text, short. A topic that fails is REFUSED (thrown), never
+// silently dropped, because a dropped topic would publish a label that no longer says which
+// question is which — the very thing the topic exists for.
+export const REPORT_TOPIC_FORBIDDEN = [/caus/i, /because/i, /thanks/i, /led to/i, /fixed/i, /record/i, /[<>&"`]/];
+export function reportTopic(report) {
+  if (report.topic === undefined || report.topic === null) return null;
+  const t = String(report.topic);
+  if (!t.trim() || t !== t.trim() || t.length > 60) throw new Error(`upstream report ${report.issue}: topic must be 1-60 characters with no surrounding space`);
+  for (const f of REPORT_TOPIC_FORBIDDEN) if (f.test(t)) throw new Error(`upstream report ${report.issue}: topic matches forbidden ${f}`);
+  return t;
 }
 
 /**
- * The reader-facing label for a filed report. Deliberately flat: what we did, and where it
- * stands. No verb here may imply that upstream acted BECAUSE of us — "closed" is the issue's
- * own state, reported as such.
+ * The reader-facing label for a filed report. Deliberately flat: what we did, which report, what
+ * it was about, and where it stands. No verb here may imply that upstream acted BECAUSE of us —
+ * "closed" is the issue's own state, reported as such. The issue number and topic are there so a
+ * row carrying two reports does not show two identical links (A-95).
  */
 export function reportLabel(report) {
   const state = String(report.state || "").toUpperCase();
   const when = state === "CLOSED" && report.closedAt ? ` ${String(report.closedAt).slice(0, 10)}` : "";
-  return `we reported this row · ${state === "CLOSED" ? `closed${when}` : "open"}`;
+  const issue = Number.isInteger(Number(report.issue)) && report.issue !== undefined && report.issue !== null ? ` · #${Number(report.issue)}` : "";
+  const topic = reportTopic(report);
+  return `we reported this row${issue}${topic ? `, about ${topic}` : ""} · ${state === "CLOSED" ? `closed${when}` : "open"}`;
+}
+
+/** Every disclosure link for a row, in order. One string so the th and card copies stay identical. */
+export function reportLinks(r) {
+  return (r.reports || []).map((rep) =>
+    `<a class="ours" href="${esc(rep.url)}" aria-label="${esc(`Report${rep.issue != null ? ` #${Number(rep.issue)}` : ""} we filed upstream about ${r.title}`)}">${esc(reportLabel(rep))}</a>`).join("");
 }
 
 /** Load the filed-report record. Absent file means no disclosures, never a crash. */
@@ -206,7 +236,7 @@ export function buildRows(claims, { withDates = true, root = ROOT, reports = nul
       lowerKind: lc.kind,
       upperPrev: uc.prevExpect || null,
       lowerPrev: lc.prevExpect || null,
-      report: reportFor(id, filed),
+      reports: reportsFor(id, filed),
       audit: badgeFor(id, store, [upper && upper.expect, lower && lower.expect]),
       tableValues: tableValuesFor(id, root),
       aliases: aliasesFor(id, claims),
@@ -676,7 +706,7 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   // every search, so a mark is only ever drawn around text the reader can see.
   const sha = String(manifest.sha);
   const body = rows.map((r) => {
-    const badges = `${r.report ? `<a class="ours" href="${esc(r.report.url)}" aria-label="The report we filed upstream about ${esc(r.title)}">${esc(reportLabel(r.report))}</a>` : ""}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}${r.oai && r.oai.length ? `<a class="oai" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(badgeText(r.oai))}. Open its page for the claim, its Lean statement and what we checked">${esc(badgeText(r.oai))}</a>` : ""}`;
+    const badges = `${reportLinks(r)}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}${r.oai && r.oai.length ? `<a class="oai" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(badgeText(r.oai))}. Open its page for the claim, its Lean statement and what we checked">${esc(badgeText(r.oai))}</a>` : ""}`;
     return `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
 <th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md" data-mark>${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}" data-mark>${esc(r.id)}</a>${badges}</th>
 ${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)", historyUrl(r.url, sha))}
@@ -1442,10 +1472,23 @@ async function selftest() {
     { id: "pin:87a:U", statement: "Last-listed upper-bound table row for Widget (87a.md)", url: "https://example.invalid/87a.md", expect: "| 857.5662 |" },
     { id: "pin:10a:U", statement: "Last-listed upper-bound table row for Gadget (10a.md)", url: "https://example.invalid/10a.md", expect: "| 4 |" },
   ];
+  // A-95 (2026-11-03): TWO reports on one path, listed NEWEST FIRST so the test also proves the
+  // renderer orders them by filing date rather than by record order. Before A-95 reportFor() kept
+  // only the first record, so the open report vanished from the row.
   const filedFixture = [{
+    path: "constants/87a.md",
+    issue: 289,
+    url: "https://example.invalid/issues/289",
+    filed: "2026-10-29T15:59:10Z",
+    topic: "the printed decimal",
+    state: "OPEN",
+    closedAt: null,
+  }, {
     path: "constants/87a.md",
     issue: 150,
     url: "https://example.invalid/issues/150",
+    filed: "2026-08-20T22:38:32Z",
+    topic: "which construction gives the value",
     state: "CLOSED",
     closedAt: "2026-08-23T17:15:35Z",
   }];
@@ -1454,17 +1497,34 @@ async function selftest() {
   assert.match(disclosed, /<tr id="c-87a"/, "positive control: the mapped row must render before its disclosure is asserted");
   assert.match(disclosed, /<tr id="c-10a"/, "positive control: the unmapped row must render before its silence is asserted");
 
-  // FIRES: the mapped row carries the link, pointing at the report we filed.
-  const ours = disclosed.match(/<a class="ours"[^>]*>([^<]*)<\/a>/);
-  assert.ok(ours, "the mapped row must disclose the report we filed against it");
-  assert.match(ours[0], /href="https:\/\/example\.invalid\/issues\/150"/, "the disclosure must link the report itself, not the repo");
-  assert.equal(ours[1], "we reported this row · closed 2026-08-23");
+  // FIRES: the mapped row's th carries BOTH links, each pointing at its own report.
+  // ASSERTION ORDER (KP-78, 2026-09-06): the guards that carry the MEANING run first — no causal
+  // wording, both reports present, each with its own state — and the exact-label equality pins run
+  // LAST, so a mutation names the property it broke instead of tripping a string comparison.
+  const thOf = (h) => (h.match(/<th scope="row">[\s\S]*?<\/th>/g) || []).join("\n");
+  const oursAll = [...thOf(disclosed).matchAll(/<a class="ours"[^>]*>([^<]*)<\/a>/g)];
+  assert.ok(oursAll.length > 0, "the mapped row must disclose the reports we filed against it");
+  const ours = oursAll[0];
+  for (const o of oursAll) {
+    for (const forbidden of [/caused/i, /because of us/i, /candidate causal/i, /thanks to/i, /led to/i, /our report fixed/i]) {
+      assert.ok(!forbidden.test(o[0]), `the disclosure must assert no cause — matched ${forbidden}`);
+    }
+  }
+  assert.equal(oursAll.length, 2, "a row we filed two reports against must disclose BOTH, not only the first (A-95)");
+  assert.match(oursAll[0][0], /href="https:\/\/example\.invalid\/issues\/150"/, "the older report must read first, linking the report itself");
+  assert.match(oursAll[1][0], /href="https:\/\/example\.invalid\/issues\/289"/, "the newer report must read second, linking the report itself");
+  assert.match(oursAll[0][1], /#150\b[\s\S]*· closed 2026-08-23$/, "the closed report must carry its own number and its own state");
+  assert.match(oursAll[1][1], /#289\b[\s\S]*· open$/, "the open report must carry its own number and read open, never the other report's state");
+  assert.notEqual(oursAll[0][1], oursAll[1][1], "two reports on one row must not show two identical links");
+  assert.equal(oursAll[0][1], "we reported this row · #150, about which construction gives the value · closed 2026-08-23");
+  assert.equal(oursAll[1][1], "we reported this row · #289, about the printed decimal · open");
 
-  // SILENT: exactly one disclosure on a two-row page, so the unmapped row carries none. Counted in
+  // SILENT: only the mapped row carries disclosures, so the unmapped row carries none. Counted in
   // the th: since A-69 each badge is emitted twice (the th copy and the card-layout copy), and the
   // copy test below holds the second to the first.
-  const thOf = (h) => (h.match(/<th scope="row">[\s\S]*?<\/th>/g) || []).join("\n");
-  assert.equal((thOf(disclosed).match(/class="ours"/g) || []).length, 1, "a row we filed nothing against must carry no disclosure");
+  const tenA = (disclosed.match(/<tr id="c-10a"[\s\S]*?<\/th>/) || [""])[0];
+  assert.ok(tenA.includes("10a"), "positive control: the unmapped row's th was found before its silence is asserted");
+  assert.ok(!tenA.includes('class="ours"'), "a row we filed nothing against must carry no disclosure");
 
   // Negative control on the SILENCE: with the fixture removed the count drops to zero, proving
   // the assertion above tracks the map rather than counting a string that is always there once.
@@ -1496,7 +1556,7 @@ async function selftest() {
   // Every badge kind at once (Codex r1: the copy test ran only on the disclosure fixtures).
   const allBadges = renderHtml([{ id: "5z", title: "All badges", url: "https://example.invalid/5z.md",
     upper: "| 1 | X |", lower: "| 0 | Y |",
-    report: { url: "https://example.invalid/issues/1", state: "OPEN" },
+    reports: [{ url: "https://example.invalid/issues/1", issue: 1, state: "OPEN" }],
     audit: { kind: "read", verdict: "UNRESOLVED", text: "checked against material for its source, not settled" },
     oai: [{ family: "107" }] }], manifest, "2026-10-13");
   assert.equal(copiesHold(allBadges), 1, "a row carrying all three badge kinds must copy them exactly");
@@ -1823,11 +1883,28 @@ async function selftest() {
   assert.equal(reportLabel({ state: "OPEN", closedAt: null }), "we reported this row · open");
   assert.equal(reportLabel({ state: "OPEN", closedAt: "2026-08-23T17:15:35Z" }), "we reported this row · open");
 
-  // reportFor keys on the exact upstream path, so a neighbouring id never inherits a disclosure.
-  assert.equal(reportFor("87a", filedFixture).issue, 150);
-  assert.equal(reportFor("7a", filedFixture), null);
-  assert.equal(reportFor("87a", []), null);
-  assert.equal(reportFor("87a", null), null);
+  // A topic we wrote is held to the label's own rule: nothing causal, never "record", plain text,
+  // short. Each is REFUSED, never dropped: the guards carrying meaning first, the shape guards after.
+  for (const bad of ["fixed by our note", "the record row", "why it was caused", "thanks to us", "a <b>tag</b>", " padded", "", "x".repeat(61)]) {
+    assert.throws(() => reportLabel({ issue: 9, state: "OPEN", topic: bad }), /topic/, `a topic ${JSON.stringify(bad)} must be refused`);
+  }
+  assert.equal(reportLabel({ issue: 9, state: "OPEN", topic: "the printed decimal" }), "we reported this row · #9, about the printed decimal · open",
+    "positive control: an ordinary topic renders");
+
+  // reportsFor keys on the exact upstream path, so a neighbouring id never inherits a disclosure,
+  // and it returns EVERY report for the path, oldest filing first (A-95).
+  assert.deepEqual(reportsFor("87a", filedFixture).map((r) => r.issue), [150, 289]);
+  assert.deepEqual(reportsFor("7a", filedFixture), []);
+  assert.deepEqual(reportsFor("87a", []), []);
+  assert.deepEqual(reportsFor("87a", null), []);
+
+  // THE COMMITTED RECORD renders: every topic in ledger/upstream-reports.json passes the rule above,
+  // and the real 87a row discloses every report the record holds for it.
+  const committed = loadReports();
+  for (const rep of committed) assert.doesNotThrow(() => reportLabel(rep), `the committed record's report ${rep.issue} must render`);
+  const committed87a = committed.filter((r) => r.path === "constants/87a.md").length;
+  assert.ok(committed87a > 0, "positive control: the committed record names constants/87a.md");
+  assert.equal(reportsFor("87a", committed).length, committed87a, "the 87a row must disclose every report the record holds for it");
 
   // A hostile url in the record is attribute-escaped rather than breaking out of the href.
   const hostileFiled = [{ path: "constants/87a.md", issue: 1, url: 'https://example.invalid/"><script>x</script>', state: "OPEN" }];
@@ -2306,7 +2383,7 @@ async function selftest() {
   // into the visible row a reader would read 0.380927 as something this ledger asserts, which it
   // is not — nobody pinned it and upstream no longer lists it.
   const aliasPage = renderHtml(
-    [{ id: "1b", title: "Erdos minimum overlap", url: "https://example.invalid/1b.md", upper: "| $0.380926$ | [H2016] |", lower: null, upperChanged: null, lowerChanged: null, upperKind: null, lowerKind: null, upperPrev: null, lowerPrev: null, changed: null, report: null, tableValues: [], aliases: ["0.380927"] }],
+    [{ id: "1b", title: "Erdos minimum overlap", url: "https://example.invalid/1b.md", upper: "| $0.380926$ | [H2016] |", lower: null, upperChanged: null, lowerChanged: null, upperKind: null, lowerKind: null, upperPrev: null, lowerPrev: null, changed: null, reports: [], tableValues: [], aliases: ["0.380927"] }],
     { commit: "deadbee", fetchedAt: "2026-09-05" }, "2026-09-05", 1);
   const visible1b = aliasPage.replace(/<[^>]*>/g, " ");
   assert.ok(aliasPage.includes("0.380927"), "positive control: the alias IS emitted, into the search attribute");

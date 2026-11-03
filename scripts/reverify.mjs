@@ -183,7 +183,13 @@ async function readMirror(dir) {
 export async function filedReports(path = REPORTS) {
   try {
     const rows = JSON.parse(await readFile(path, "utf8")).reports ?? [];
-    return { map: new Map(rows.filter((r) => r?.path).map((r) => [r.path, r])) };
+    // A path maps to EVERY report filed against it, in filing order (A-95, 2026-11-03). This was a
+    // Map of path -> report, which kept the LAST record and silently dropped issue 150 the moment
+    // issue 289 was recorded on the same file.
+    const map = new Map();
+    for (const r of rows.filter((x) => x?.path)) map.set(r.path, [...(map.get(r.path) || []), r]);
+    for (const list of map.values()) list.sort((a, b) => String(a.filed ?? "").localeCompare(String(b.filed ?? "")) || Number(a.issue) - Number(b.issue));
+    return { map };
   } catch (err) {
     // UNREADABLE is never read as "we have filed nothing": that would make every drifted file look
     // unreported, silently, which is this lane's founding defect pointed at its own records.
@@ -255,8 +261,7 @@ export async function check(liveDir, reportsPath = REPORTS, causal = !process.en
       for (const l of d.removed) lines.push(`  - ${l}`);
       for (const l of d.added) lines.push(`  + ${l}`);
     }
-    const report = filed.map.get(name);
-    if (report) {
+    for (const report of filed.map.get(name) || []) {
       lines.push(`  CANDIDATE CAUSAL EVENT — we filed ${report.url} against this file on ${String(report.filed ?? "").slice(0, 10)}.`);
       lines.push(`  GO LOOK. This says the file MOVED and that we hold an artifact about it. It is not a`);
       lines.push(`  verdict that our report caused the change, and it can never be a G-4 arrival: G-4 forbids`);

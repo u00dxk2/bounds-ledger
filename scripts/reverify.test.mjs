@@ -258,6 +258,12 @@ const flagged = runCheck({ CI: "" });
 assert.equal(flagged.code, 1, `a drifted reported-against file should exit 1, got ${flagged.code}`);
 assert.ok(flagged.out.includes("CANDIDATE CAUSAL EVENT — we filed https://github.com/teorth/optimizationproblems/issues/150 against this file on 2026-08-20."),
   `the drift report should name the report we filed against this file:\n${flagged.out}`);
+// A-95 (2026-11-03): a SECOND report on the same file is named too. filedReports() was a Map of
+// path -> one report and kept only the last record, so recording issue 289 silently dropped 150.
+assert.ok(flagged.out.includes("CANDIDATE CAUSAL EVENT — we filed https://github.com/teorth/optimizationproblems/issues/289 against this file on 2026-10-29."),
+  `the drift report should name EVERY report we filed against this file, not only one:\n${flagged.out}`);
+assert.equal((flagged.out.match(/CANDIDATE CAUSAL EVENT/g) || []).length, 2,
+  `one annotation per report filed against the drifted file, and none for any other:\n${flagged.out}`);
 assert.ok(flagged.out.includes("GO LOOK."), `leg 2 must say go look, never render a verdict:\n${flagged.out}`);
 assert.ok(flagged.out.includes(`CHANGED constants/${REPORTED}`),
   `leg 2 must print BESIDE the ordinary classification, never instead of it:\n${flagged.out}`);
@@ -295,6 +301,8 @@ assert.ok(blindOut.includes(`CHANGED constants/${REPORTED}`), `drift detection m
 const readable = await filedReports();
 assert.ok(!readable.error && readable.map.has("constants/87a.md"),
   "positive control: the committed report map must be readable and name constants/87a.md");
+assert.deepEqual(readable.map.get("constants/87a.md").map((r) => r.issue), [150, 289],
+  "the committed map must hold BOTH 87a reports, oldest filing first (A-95)");
 await freshLive();
 console.log("A-33 leg 2 assertion: PASS (fires on the reported-against file beside its CHANGED line, silent on a file we filed nothing against, suppressed under CI so the annotation never reaches the public issue while the CHANGED line still does, and an unreadable map says so instead of reading as nothing-filed)");
 

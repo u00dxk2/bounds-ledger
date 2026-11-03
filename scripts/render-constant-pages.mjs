@@ -21,7 +21,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
-import { buildRows, flagUrl, citation, reportLabel, whenLabel, whenHtml, historyUrl, displayCell, readable } from "./render-site.mjs";
+import { buildRows, flagUrl, citation, reportLinks, whenLabel, whenHtml, historyUrl, displayCell, readable } from "./render-site.mjs";
 import { boundCell } from "./lookup.mjs";
 import crypto from "node:crypto";
 import { REPO, esc, copyCiteScript } from "./lib/html.mjs";
@@ -71,7 +71,8 @@ dd{margin:.35rem 0 0}code{display:block;background:var(--code);padding:.6rem .7r
 .none{color:var(--muted)}
 ul.audit{margin:.35rem 0 0;padding-left:1.1rem}ul.audit li{margin:.2rem 0}
 ul.oai{margin:.35rem 0 0;padding-left:1.1rem}ul.oai li{margin:.2rem 0 .8rem}ul.oai p{margin:.3rem 0}ul.oai .tag{color:var(--muted);font-size:.9rem}
-.ours{display:inline-block;margin-top:.6rem;font-size:.85rem}
+.ours{display:block;width:max-content;max-width:100%;margin-top:.6rem;font-size:.85rem}
+.ours+.ours{margin-top:.25rem}
 .actions{margin:1.6rem 0;padding-top:1rem;border-top:1px solid var(--line);font-size:.9rem}
 .cite code{user-select:all;margin-top:.5rem}
 .copy{margin-left:.5rem}.copied{margin-left:.5rem;color:var(--muted);font-size:.85rem}
@@ -970,7 +971,7 @@ export function renderPage(r, sha, audits = loadAudits(), newer = loadNewerStore
 <a class="back" href="${esc(`${SITE}#c-${r.id}`)}">&larr; all constants</a>
 <h1>${esc(r.title)}</h1>
 <div class="id">${esc(r.id)}</div>
-${r.report ? `<a class="ours" href="${esc(r.report.url)}">${esc(reportLabel(r.report))}</a>` : ""}
+${reportLinks(r)}
 <dl>
 ${side("Upper", r.upper, r.upperChanged, r.upperKind, historyUrl(r.url, sha))}
 ${side("Lower", r.lower, r.lowerChanged, r.lowerKind, historyUrl(r.url, sha))}
