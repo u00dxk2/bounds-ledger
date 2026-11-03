@@ -2950,16 +2950,17 @@
       "closeWhen": "The check is run by something that does not depend on a person remembering it, with a recorded red-arm; and the pull-request question is either answered in code or closed with a written decision.",
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/check-upstream-reports.mjs — exit 0 '0 transition(s)' and no UNRECORDED line means every issue in its listing (`gh issue list --author u00dxk2 --state all --limit 100`, read once with no completeness check) has a baseline row whose state matches; exit 1 names the issue. Blind to pull requests, to issues past the first 100 returned, and to a closedAt, URL, title or path that changed while the state did not (Codex review r1, 2026-10-12).",
       "created": "2026-10-12",
-      "updated": "2026-11-02",
-      "readCommandLastRun": "2026-11-02T15:02:32.695Z",
-      "readCommandLastExit": 1,
-      "readCommandLastDurationMs": 1604,
+      "updated": "2026-11-03",
+      "readCommandLastRun": "2026-11-03T17:27:34.648Z",
+      "readCommandLastExit": 0,
+      "readCommandLastDurationMs": 15879,
       "readCommandLastOutputRef": {
-        "lines": 6,
-        "sha256": "d75b9a1e48087f52"
+        "lines": 5,
+        "sha256": "0f56a191280afa1c"
       },
       "lastEvaluated": "2026-11-02",
-      "read2026_11_02": "2026-11-02 read (--run, 15:02:32Z): exit 1, 'UNRECORDED — issue 289 is ours and has no baseline row.' The baseline row was added and taken back out the same hour: it made reverify.test.mjs:259 fail, because reportFor() (scripts/render-site.mjs:156) keeps the first report per file and filedReports() (scripts/reverify.mjs:186) keeps the last. Recording it needs A-95's code change first, so this row is re-dated to A-95's check date (2026-11-05), not a week out. The caller question (who runs this without a person remembering) is still open."
+      "read2026_11_02": "2026-11-02 read (--run, 15:02:32Z): exit 1, 'UNRECORDED — issue 289 is ours and has no baseline row.' The baseline row was added and taken back out the same hour: it made reverify.test.mjs:259 fail, because reportFor() (scripts/render-site.mjs:156) keeps the first report per file and filedReports() (scripts/reverify.mjs:186) keeps the last. Recording it needs A-95's code change first, so this row is re-dated to A-95's check date (2026-11-05), not a week out. The caller question (who runs this without a person remembering) is still open.",
+      "read2026_11_03": "2026-11-03 read (--run, 17:27:34Z) after A-95 merged in 025bc88: exit 0, 'RESULT: PASS — 0 transition(s) across 3 recorded report(s)'. Issue 289 now has its baseline row, so the UNRECORDED line is gone. The caller question (who runs this without a person remembering) and the pull-request question are still open; the row keeps its 2026-11-05 date."
     },
     {
       "id": "A-78",
@@ -3509,7 +3510,7 @@
     {
       "id": "A-95",
       "type": "action",
-      "status": "open",
+      "status": "closed",
       "title": "The public 87a row discloses our CLOSED issue 150 and not our OPEN issue 289: two consumers each assume one filed report per upstream file",
       "note": "Found 2026-11-02 MT while recording issue 289's baseline for A-77 (the filed-report check exited 1, 'UNRECORDED — issue 289 is ours and has no baseline row'). reportFor() in scripts/render-site.mjs:156 returns the FIRST report whose path matches, so the index and the 87a page say 'we reported this row · closed 2026-08-23' (issue 150) and never link issue 289, filed 2026-10-29 and OPEN (gh issue view 289, read 2026-11-02). filedReports() in scripts/reverify.mjs:186 builds a Map keyed by path, so it keeps the LAST. Adding the 289 row made reverify.test.mjs:259 fail (it expects issue 150 named), so the row was taken back out the same hour and A-77 still exits 1. Fix: both consumers list EVERY report for a path (render: one disclosure per report, each with its own state; reverify: one CANDIDATE CAUSAL EVENT line per report, still suppressed under CI), then add the 289 row copied from gh, and update the test to assert both issues. A public-page wording change: adversarial review and David's yes before it goes live.",
       "closeWhen": "The 87a row on index.html and c/87a.html discloses both issue 150 and issue 289 with their own states, reverify.test.mjs asserts both CANDIDATE CAUSAL EVENT lines, and check-upstream-reports.mjs exits 0 with 3 recorded reports.",
@@ -3526,7 +3527,10 @@
         "unWaitOn": "David's reply on board card 87acfd78 (needs-decision msg 38cdfed2), whose draft reply is ours: \"Yes, merge it as written.\" (not David's words). On yes: merge branch a95-87a-both-reports to main, push, npm run served, and a live fetch of index.html and c/87a.html showing both #150 and #289; then close A-95 and re-run A-77's read.",
         "loadBearing": "The public 87a row is a page change the row's own note puts behind David's yes; merging before his answer would publish it unapproved.",
         "owner": "David (card 87acfd78); then this lane"
-      }
+      },
+      "closedAt": "2026-11-03",
+      "lastEvaluated": "2026-11-03",
+      "notes": " | CLOSED 2026-11-03 MT. David answered card 87acfd78 at 2026-11-03T17:19:48Z (inbox msgId 644fd221), paraphrased: yes, merge it as written. Branch a95-87a-both-reports merged to main in 025bc88 (git merge-tree printed a clean tree first) and pushed (1abc38c..025bc88). render-site --check at 025bc88: \"RESULT: PASS — index.html matches committed state\". npm run served: \"1 checked — 1 served, 0 in flight, 0 stale, 0 unreachable\" (it anchors on 66ff14d and reads index.html only). Live fetch, both HTTP 200: index.html (Last-Modified 17:26:20 GMT) carries the #150 label 4 times and the #289 label 4 times (th and card copy, each in text and aria-label); c/87a.html (17:26:21 GMT) carries each twice; the old single \"closed\" label 0 times on both. closeWhen met: both pages disclose 150 and 289 with their own states; reverify.test.mjs asserts both go-look lines (green in CI run 41676059688 on 7f8a0c1); check-upstream-reports.mjs exits 0 with 3 recorded reports. Encounter stays blind (A-59)."
     }
   ],
   "meta": {
