@@ -21,7 +21,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
-import { buildRows, flagUrl, citation, reportLabel, whenLabel, whenHtml, historyUrl, displayCell, readable } from "./render-site.mjs";
+import { buildRows, flagUrl, citation, reportLinks, whenLabel, whenHtml, historyUrl, displayCell, readable } from "./render-site.mjs";
 import { boundCell } from "./lookup.mjs";
 import crypto from "node:crypto";
 import { REPO, esc, copyCiteScript } from "./lib/html.mjs";
@@ -71,7 +71,8 @@ dd{margin:.35rem 0 0}code{display:block;background:var(--code);padding:.6rem .7r
 .none{color:var(--muted)}
 ul.audit{margin:.35rem 0 0;padding-left:1.1rem}ul.audit li{margin:.2rem 0}
 ul.oai{margin:.35rem 0 0;padding-left:1.1rem}ul.oai li{margin:.2rem 0 .8rem}ul.oai p{margin:.3rem 0}ul.oai .tag{color:var(--muted);font-size:.9rem}
-.ours{display:inline-block;margin-top:.6rem;font-size:.85rem}
+.ours{display:block;width:max-content;max-width:100%;margin-top:.6rem;font-size:.85rem}
+.ours+.ours{margin-top:.25rem}
 .actions{margin:1.6rem 0;padding-top:1rem;border-top:1px solid var(--line);font-size:.9rem}
 .cite code{user-select:all;margin-top:.5rem}
 .copy{margin-left:.5rem}.copied{margin-left:.5rem;color:var(--muted);font-size:.85rem}
@@ -970,7 +971,7 @@ export function renderPage(r, sha, audits = loadAudits(), newer = loadNewerStore
 <a class="back" href="${esc(`${SITE}#c-${r.id}`)}">&larr; all constants</a>
 <h1>${esc(r.title)}</h1>
 <div class="id">${esc(r.id)}</div>
-${r.report ? `<a class="ours" href="${esc(r.report.url)}">${esc(reportLabel(r.report))}</a>` : ""}
+${reportLinks(r)}
 <dl>
 ${side("Upper", r.upper, r.upperChanged, r.upperKind, historyUrl(r.url, sha))}
 ${side("Lower", r.lower, r.lowerChanged, r.lowerKind, historyUrl(r.url, sha))}
@@ -2086,11 +2087,19 @@ async function selftest() {
   const noCorpus = renderPage(row, "abc1234def", { audits: [store.audits[0]], corpus: null });
   assert.ok(noCorpus.includes("not recorded"), "with no denominator the block must say so rather than showing verdicts alone");
   // The filed-report disclosure appears only when the record maps this constant.
+  // A-95: TWO reports on one constant, record order newest first, so the page proves it shows both,
+  // oldest filing first, each carrying its own state (Codex r1 on 0b8c0c6: the page had no such test).
   const withReport = renderPage(
-    buildRows(claims, { withDates: false, reports: [{ path: "constants/9z.md", url: "https://example.invalid/i/1", state: "CLOSED", closedAt: "2026-08-23T00:00:00Z" }] })[0],
+    buildRows(claims, { withDates: false, reports: [
+      { path: "constants/9z.md", issue: 2, url: "https://example.invalid/i/2", filed: "2026-10-01T00:00:00Z", topic: "the printed value", state: "OPEN", closedAt: null },
+      { path: "constants/9z.md", issue: 1, url: "https://example.invalid/i/1", filed: "2026-08-01T00:00:00Z", topic: "which paper proves the bound", state: "CLOSED", closedAt: "2026-08-23T00:00:00Z" },
+    ] })[0],
     "abc1234def",
   );
-  assert.match(withReport, /we reported this row/);
+  const pageOurs = [...withReport.matchAll(/<a class="ours"[^>]*>([^<]*)<\/a>/g)].map((m) => m[1]);
+  assert.equal(pageOurs.length, 2, "a constant we filed two reports against must disclose both on its page");
+  assert.match(pageOurs[0], /#1\b[\s\S]*· closed 2026-08-23$/, "the older, closed report reads first with its own state");
+  assert.match(pageOurs[1], /#2\b[\s\S]*· open$/, "the newer, open report reads second with its own state");
   assert.ok(!/we reported this row/.test(html), "a constant we filed nothing against must carry no disclosure");
 
   console.log(`render-constant-pages selftest: PASS (renders title, both pinned rows and the upstream sha after proving the page is non-empty; carries a canonical URL, and its cite block quotes the SHARED citation unchanged — so the table and the page hand out the same address for the same constant, and a re-added local substitution fails here; a missing side reads "not pinned"; a hostile title is escaped, with the raw fixture proven to contain the markup so the check tests the renderer; the filed-report disclosure appears only for a mapped constant; and the A-47 audit block carries the no-record prohibition on the AUDITED page rather than only the unaudited one, drops an unrecognised verdict instead of printing it, matches link text to verdict so UNREACHABLE never offers 'the source we read', links each source as an anchor whose href IS that source, refuses a javascript: scheme, escapes hostile citedRef and sourceRead, survives a null entry beside a good one, renders the denominator FROM THE STORE with a fixture of 999 proving it is not baked in, carries the date it was measured, counts bound rows separately from reference entries against a bound-row denominator, shows only THIS constant's rows with the other proven present in the fixture, is ABSENT for an unaudited constant, says 'not recorded' rather than implying a proportion when the corpus is missing, and — since 2026-09-13 — tells the reader how each row was CHOSEN, counts the ledger-wide coverage figure from rows drawn by position ONLY — and, since 2026-09-21, counts every drawn row whether or not its source could be read and says how many were read, files an unlabelled row with the suspicion set rather than as coverage, and carries the no-record prohibition on that selection-labelled surface too; and, since 2026-10-10 (A-70), puts a 44px floor on the action links and the copy button in the phone block only, carries exactly one inline script and nothing from another host, and runs that script — its selector read back out of the page and proven to match the page's own cite block — against a two-block stub DOM: it copies the citation alone, exactly, says Copied, and on a refused or absent clipboard selects the citation and never claims a copy)`);

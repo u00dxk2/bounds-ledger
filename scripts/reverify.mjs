@@ -183,7 +183,21 @@ async function readMirror(dir) {
 export async function filedReports(path = REPORTS) {
   try {
     const rows = JSON.parse(await readFile(path, "utf8")).reports ?? [];
-    return { map: new Map(rows.filter((r) => r?.path).map((r) => [r.path, r])) };
+    // A path maps to EVERY report filed against it, in filing order (A-95, 2026-11-03). This was a
+    // Map of path -> report, which kept the LAST record and silently dropped issue 150 the moment
+    // issue 289 was recorded on the same file.
+    const map = new Map();
+    for (const r of rows.filter((x) => x?.path)) {
+      // A record with no filing time cannot be ordered and would print "on ." in the go-look line, so
+      // the whole leg refuses and says so below rather than guessing (Codex r2 on fce4ba7).
+      // Shape AND round-trip, so "2026-99-99T99:99:99Z" is refused too (Codex r3). Inlined rather than
+      // imported from render-site.mjs: importing a CLI script here can run it (A-50).
+      const f = typeof r.filed === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(r.filed) ? new Date(r.filed) : null;
+      if (!f || Number.isNaN(f.getTime()) || f.toISOString().slice(0, 19) + "Z" !== r.filed) throw new Error(`report ${r.issue} has no ISO UTC filed time`);
+      map.set(r.path, [...(map.get(r.path) || []), r]);
+    }
+    for (const list of map.values()) list.sort((a, b) => String(a.filed ?? "").localeCompare(String(b.filed ?? "")) || Number(a.issue) - Number(b.issue));
+    return { map };
   } catch (err) {
     // UNREADABLE is never read as "we have filed nothing": that would make every drifted file look
     // unreported, silently, which is this lane's founding defect pointed at its own records.
@@ -232,7 +246,7 @@ export async function check(liveDir, reportsPath = REPORTS, causal = !process.en
   let drift = 0;
   const lines = [`# Drift report — ${REPO} (${SUBDIR}/ + ${ROOT_FILES.join(", ")}) — ${new Date().toISOString()}`, `Snapshot: ${manifest.sha} · Live: ${live.sha}`, ""];
   const filed = causal ? await filedReports(reportsPath) : { map: new Map() };
-  if (filed.error) lines.push(`(A-33 leg 2 DID NOT RUN: ledger/upstream-reports.json could not be read — ${filed.error}.`, ` No file below has been checked against the reports we have filed, so silence here means nothing.)`, "");
+  if (filed.error) lines.push(`(A-33 leg 2 DID NOT RUN: ledger/upstream-reports.json could not be read or failed validation — ${filed.error}.`, ` No file below has been checked against the reports we have filed, so silence here means nothing.)`, "");
   for (const name of names) {
     const a = snap.get(name), b = live.files.get(name);
     if (a === b) continue;
@@ -255,8 +269,7 @@ export async function check(liveDir, reportsPath = REPORTS, causal = !process.en
       for (const l of d.removed) lines.push(`  - ${l}`);
       for (const l of d.added) lines.push(`  + ${l}`);
     }
-    const report = filed.map.get(name);
-    if (report) {
+    for (const report of filed.map.get(name) || []) {
       lines.push(`  CANDIDATE CAUSAL EVENT — we filed ${report.url} against this file on ${String(report.filed ?? "").slice(0, 10)}.`);
       lines.push(`  GO LOOK. This says the file MOVED and that we hold an artifact about it. It is not a`);
       lines.push(`  verdict that our report caused the change, and it can never be a G-4 arrival: G-4 forbids`);

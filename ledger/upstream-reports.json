@@ -9,6 +9,7 @@
       "issue": 150,
       "url": "https://github.com/teorth/optimizationproblems/issues/150",
       "title": "constants/87a.md: the current-record row quotes Martin's degree-8 discriminant, not the degree-12 construction that gives 857.5662",
+      "topic": "which construction gives the value",
       "filed": "2026-08-20T22:38:32Z",
       "state": "CLOSED",
       "closedAt": "2026-08-23T17:15:35Z",
@@ -20,11 +21,25 @@
       "issue": 218,
       "url": "https://github.com/teorth/optimizationproblems/issues/218",
       "title": "46a: the 4 − 2/15 bound is credited to Bourgain's GAFA 1991 paper, which proves 31/8",
+      "topic": "which paper proves the bound",
       "filed": "2026-10-07T19:39:29Z",
       "state": "OPEN",
       "closedAt": null,
       "baselineRecordedAt": "2026-10-12",
       "baselineSource": "gh issue view 218 --repo teorth/optimizationproblems --json number,createdAt,closedAt,state,title,url — run 2026-10-12, every field above copied from its output rather than recalled"
+    },
+    {
+      "path": "constants/87a.md",
+      "issue": 289,
+      "url": "https://github.com/teorth/optimizationproblems/issues/289",
+      "title": "87a: the [Mar1978] row prints 1058.565, slightly below the bound Martinet proves",
+      "topic": "the printed value",
+      "filed": "2026-10-29T15:59:10Z",
+      "state": "OPEN",
+      "closedAt": null,
+      "baselineRecordedAt": "2026-11-03",
+      "baselineSource": "gh issue view 289 --repo teorth/optimizationproblems --json number,createdAt,closedAt,state,title,url — run 2026-11-03, every field above copied from its output rather than recalled"
     }
-  ]
+  ],
+  "note4": "`topic` (A-95, 2026-11-03) is OUR short phrase for what each report asked. It is rendered on the public page beside the issue number, so a row carrying two reports shows two distinguishable links. render-site.mjs renders a topic ONLY if it is in APPROVED_REPORT_TOPICS there and refuses (throws on) any other, so a new report's topic is added to that set in a reviewed commit. Each approved phrase names a question, never an outcome. Every report also needs an ISO UTC `filed` time; both consumers refuse a record without one."
 }
