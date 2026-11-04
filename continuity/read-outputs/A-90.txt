@@ -1,6 +1,6 @@
 # read-output sidecar for A-90 — written by check-due-gates-dispositioned --run
 # readCommand: node scripts/open-pulls.mjs --selftest
-# ran: 2026-10-28T20:57:43.096Z · exit: 0
+# ran: 2026-11-04T15:10:57.783Z · exit: 0
 # lines: 39 · sha256: ed0b7dfa3120ef6f (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--

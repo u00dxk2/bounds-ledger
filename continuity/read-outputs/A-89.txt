@@ -1,7 +1,7 @@
 # read-output sidecar for A-89 — written by check-due-gates-dispositioned --run
 # readCommand: node C:/dev/skylark/bounds-ledger/scripts/decimal-vs-exact.mjs
-# ran: 2026-10-28T20:57:43.675Z · exit: 1
-# lines: 250 · sha256: 1869765c8112ece9 (first 16 hex of the output below)
+# ran: 2026-11-04T15:49:48.337Z · exit: 1
+# lines: 250 · sha256: 6b7a905f4b595d25 (first 16 hex of the output below)
 # truncated: false
 # secretsRedacted: 2 (shapes: long-hex; each replaced by "[redacted:<shape>]" BEFORE the byte cap and the sha256, which describe the redacted bytes below)
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
@@ -252,6 +252,6 @@ AGREES   SOURCE   A-47-0070 4a.md:22 lower — prints 2.2180; source states 2.21
 search space: 901 bound row(s) across 120 file(s) of ledger/teorth-optimizationproblems/constants (depth-audit.mjs boundRowsOf, the --corpus definition)
 IN-CELL  (a value cell holding a decimal that is not a plain decimal; only a rational first form is decided): 199 found, 61 decided — 61 agree, 0 cut against the exact value, 73 exact form shown beside a decimal marked approximate (not judged), 65 unknown
 COMMENT  (a bare decimal whose Comments cell prints a longer decimal agreeing to its last place): 35 found, 35 decided — 34 agree, 1 cut, 0 unknown
-SOURCE   (ledger/source-exact-values.json, keyed to depth-audit entries): 10 listed, 4 decided — 2 agree, 2 cut against the source, 6 unknown; drawn from 100 value-vs-source entries, the other 90 carry no exact value on record (11 of them considered and not entered, each with its reason in the table)
+SOURCE   (ledger/source-exact-values.json, keyed to depth-audit entries): 10 listed, 4 decided — 2 agree, 2 cut against the source, 6 unknown; drawn from 104 value-vs-source entries, the other 94 carry no exact value on record (11 of them considered and not entered, each with its reason in the table)
 not looked at: 661 of 901 bound row(s) are in none of the three populations — UNKNOWN by construction, never counted as agreeing
 RESULT: CUT — 3 member(s) print a decimal past the exact value in the overstating direction; each is a question for upstream about display convention, through the outward gate (exit 1)

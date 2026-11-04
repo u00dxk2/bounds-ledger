@@ -372,9 +372,9 @@
       "linkedCommits": [
         "28eebf4"
       ],
-      "readCommandLastRun": "2026-10-06T16:23:09.812Z",
+      "readCommandLastRun": "2026-11-04T15:50:07.503Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 932,
+      "readCommandLastDurationMs": 1827,
       "readCommandLastOutputRef": {
         "lines": 1,
         "sha256": "77d5bbee0341162d"
@@ -2000,12 +2000,12 @@
       "linkedCommits": [
         "c5a964b"
       ],
-      "readCommandLastRun": "2026-10-28T20:57:44.152Z",
+      "readCommandLastRun": "2026-11-04T15:47:23.054Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 114,
+      "readCommandLastDurationMs": 2880,
       "readCommandLastOutputRef": {
-        "lines": 1,
-        "sha256": "a44df5ff6dad108a"
+        "lines": 2,
+        "sha256": "36850ebe8ea2d44e"
       },
       "lastEvaluated": "2026-10-28",
       "redate2026_09_30": "2026-09-30 re-date to 2026-10-14, per onTrigger (\"never re-date it silently\"). The readCommand ran (exit 0, output continuity/read-outputs/A-50.txt) and listed 18 commits since 2026-09-16 touching scripts/ or reverify.yml, none of which builds the selftest. What outranks it: the A-54 census (David's depth ruling; census slots every second day to 2026-10-16) and A-47 slices on the days between. Fourth instance of the class: none found. Searched commit messages since 2026-09-16 with git log -i --grep=import (1 hit, 85eb436, about A-49's grammar import, not an import running a script) and docs/ for import-then-ran wording (5 files, all dated 2026-09-15 or earlier).",
@@ -2479,12 +2479,12 @@
       "owner": "bounds-ledger",
       "created": "2026-09-28",
       "updated": "2026-10-28",
-      "readCommandLastRun": "2026-10-28T20:57:46.272Z",
+      "readCommandLastRun": "2026-11-04T15:48:14.315Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 1719,
+      "readCommandLastDurationMs": 21988,
       "readCommandLastOutputRef": {
         "lines": 16,
-        "sha256": "8f761b3bae007f67"
+        "sha256": "c93955817fd780fc"
       },
       "lastEvaluated": "2026-10-28",
       "redate2026_10_28": "Read 2026-10-28: npm run reports, 37 raw issues, 37 ours, 0 outside arrivals, parts reconcile 37+0+0=37. Encounter on the pages stays blind; light day, no build."
@@ -2766,12 +2766,12 @@
         "7f3eb6b"
       ],
       "constantPages2026_10_10": "CONSTANT-PAGE LEG, added 2026-10-10 MT (cycle 5; selected at P1, bus bbe89920-5654-43a2-82ff-b0ade58a8eb6; approved by the manager, inbox 3a950b5c-df80-4df1-afa1-aa60239f7043). The 2026-10-04 ship covered only the index; closeWhen names only the live index, as the manager's review hypothesised and this row's own text confirms. ACCEPTANCE FOR THIS LEG, judged at the 2026-10-28 read with the rest of this row: on the live c/8a.html at 393x659, each of the three action links (\"the mirrored file\", \"upstream source\", \"looks wrong?\") measures at least 44px tall and the cite block carries a \"Copy citation\" button at least 44px tall; one tap puts on the clipboard exactly the text of the cite block's <code>, without the \"Cite this row\" heading or the button's label; at 1440x900 the action links and the cite block are unchanged apart from the button itself; all 115 constant pages carry the one inline copy script and load nothing from another host; render-constant-pages --check passes. DESIGN: the copy script is one function in scripts/lib/html.mjs (copyCiteScript), used by the index with 'details.cite' (index.html byte-identical, render-site --check PASS) and by the constant pages with 'div.cite'. DECLINED, the manager's suggestion to add an \"Accessed <date>\" line at copy time: it would make the copied citation differ from the shown one, which is the property this button exists to keep, and it is new public text. If it is wanted, the honest place is the shown cite block itself, so the reader sees what they copy.",
-      "readCommandLastRun": "2026-10-28T20:57:48.184Z",
+      "readCommandLastRun": "2026-11-04T15:49:10.634Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 1451,
+      "readCommandLastDurationMs": 30160,
       "readCommandLastOutputRef": {
         "lines": 16,
-        "sha256": "8f761b3bae007f67"
+        "sha256": "c93955817fd780fc"
       },
       "redate2026_10_28": "Read 2026-10-28: npm run reports, 0 outside arrivals of 37 raw (parts reconcile); render-site.mjs --check exit 0 after the 5a resnap (8be7f8a, CI green). No encounter to read yet."
     },
@@ -2854,9 +2854,9 @@
       "closeWhen": "A maintainer comment or a close of issue 218 is recorded on this row, with its date and the drift cycle's resolving sha if the record moved; or David decides the watch ends.",
       "created": "2026-10-08",
       "updated": "2026-10-29",
-      "readCommandLastRun": "2026-10-28T20:57:22.682Z",
+      "readCommandLastRun": "2026-11-04T15:51:08.432Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 641,
+      "readCommandLastDurationMs": 40369,
       "readCommandLastOutputRef": {
         "lines": 1,
         "sha256": "3440f024463a5fa0"
@@ -3325,12 +3325,12 @@
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/decimal-vs-exact.mjs — the census (exit 1 = a CUT); the six-shape check is not yet a committed script, so this row reads the census and the shapes by hand until one exists",
       "created": "2026-10-21",
       "updated": "2026-10-28",
-      "readCommandLastRun": "2026-10-28T20:57:43.675Z",
+      "readCommandLastRun": "2026-11-04T15:49:48.337Z",
       "readCommandLastExit": 1,
-      "readCommandLastDurationMs": 171,
+      "readCommandLastDurationMs": 2667,
       "readCommandLastOutputRef": {
         "lines": 250,
-        "sha256": "1869765c8112ece9"
+        "sha256": "6b7a905f4b595d25"
       },
       "lastEvaluated": "2026-10-28",
       "redate2026_10_28": "Read 2026-10-28: decimal-vs-exact.mjs exit 1, CUT 3 (1d.md:19, A-47-0075 87a.md:17, A-47-0019 1b.md:22), unchanged from 10-27. Positive control: it read the three new 5a comment rows (5a.md:17-19) as AGREES. The six-shape check is still unwritten; light day, so no build."
@@ -3339,27 +3339,28 @@
       "id": "A-90",
       "title": "A stale open-pull-requests list says so on the page: when the last good read is older than 7 days, add one plain line under the list",
       "type": "action",
-      "status": "open",
+      "status": "closed",
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-11-04",
       "links": [
         "A-83"
       ],
-      "notes": "Minted 2026-10-22 MT on the orchestrator's ruling (bus 2026-10-22T16:48Z) on the A-83 P3→P5 review. A refused fetch (scripts/open-pulls.mjs --fetch) writes nothing, so each c/ page keeps its last good list under that list's own read date. The orchestrator accepted that as shipped, and asked that it not age silently. Verified the same day: all 39 pages carrying the block show the read date beside the list (39 blocks, 39 dated sentences). The rule's residual stays: it trusts the paths gh reports.",
+      "notes": "Minted 2026-10-22 MT on the orchestrator's ruling (bus 2026-10-22T16:48Z) on the A-83 P3→P5 review. A refused fetch (scripts/open-pulls.mjs --fetch) writes nothing, so each c/ page keeps its last good list under that list's own read date. The orchestrator accepted that as shipped, and asked that it not age silently. Verified the same day: all 39 pages carrying the block show the read date beside the list (39 blocks, 39 dated sentences). The rule's residual stays: it trusts the paths gh reports. | CLOSED 2026-11-04 MT. Built in 1cef357 (pushed a9433c4..1cef357): each c/ page's open-pull-requests block carries data-read-at and a hidden sentence, \"This list was last checked on <MT day>, more than a week ago, so it may be missing newer pull requests and may still show ones that have since closed.\"; the page's one inline script shows it when the reader's clock is more than 7 days past the read. Render date decided as VIEW time, so committed bytes carry no render clock. closeWhen, each leg: (1) the stale line renders on a fixture older than 7 days and not on a fresh one: open-pulls.mjs --selftest PASS (shown at 7d+1s; quiet at exactly 7d, 1d, a clock behind the read, an unparseable instant), and render-constant-pages.mjs --selftest runs the rendered page's own script; (2) red-armed: > to < -> exit 3; hidden dropped -> exit 3; selector mismatch -> exit 1; unscoped .stale{} -> exit 1; each restored IDENTICAL; (3) Codex-reviewed: r1 read-only on 1cef357, banner workdir C:\\dev\\skylark\\bounds-ledger, SHIP, no defects (test ceilings named, accepted); (4) render-constant-pages --check deterministic: \"RESULT: PASS — 120 constant page(s) match committed state (@ 87b4ebb)\" twice at 1cef357. CI reverify.yml and page-check.yml green on 1cef357. Delivery: Pages build for 1cef357 \"built\" 16:28:03Z; live fetch of 10a, 10b, 13a, 2a, 87a: HTTP 200, Last-Modified 16:28:02 GMT, each byte-identical to HEAD, the three with a block carrying data-read-at 2026-11-04T15:56:26Z and one hidden stale span. Real browser (playwright-cli, live c/10a.html): today's clock -> hidden, display none, height 0; clock 8 days past the read, the page's own script -> shown, display block, 40.9px, the sentence's text. Same commit refreshed the list: 60 open (was 30 at the 10-28 read). Follow-up: A-96 (refresh without a human).",
       "onTrigger": "On 2026-10-28: in pullsBlock, when the store's readAt is more than 7 days before the render date, add one plain line under the list, e.g. 'This list was last checked on <date>; newer pull requests may be missing.' Selftest it red-armed (a stale fixture shows the line, a fresh one does not), Codex read-only review, page sentence updated in the same commit. Decide first how the render date is read, since a render-time clock makes the c/ pages differ between runs and render-constant-pages --check must stay deterministic.",
       "closeWhen": "The stale line renders on a fixture older than 7 days and not on a fresh one, red-armed, Codex-reviewed, and render-constant-pages --check stays deterministic.",
       "readCommand": "node scripts/open-pulls.mjs --selftest",
       "created": "2026-10-22",
-      "updated": "2026-10-28",
-      "readCommandLastRun": "2026-10-28T20:57:43.096Z",
+      "updated": "2026-11-04",
+      "readCommandLastRun": "2026-11-04T15:10:57.783Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 18870,
+      "readCommandLastDurationMs": 3368,
       "readCommandLastOutputRef": {
         "lines": 39,
         "sha256": "ed0b7dfa3120ef6f"
       },
-      "lastEvaluated": "2026-10-28",
-      "redate2026_10_28": "Read 2026-10-28: open-pulls.mjs --selftest RESULT PASS, exit 0. The listing itself was re-fetched today inside npm run resnap (30 open, written to ledger/open-pull-requests.json in e8f7e7f). Light day, so the stale-list notice is not built."
+      "lastEvaluated": "2026-11-04",
+      "redate2026_10_28": "Read 2026-10-28: open-pulls.mjs --selftest RESULT PASS, exit 0. The listing itself was re-fetched today inside npm run resnap (30 open, written to ledger/open-pull-requests.json in e8f7e7f). Light day, so the stale-list notice is not built.",
+      "closedAt": "2026-11-04"
     },
     {
       "id": "A-91",
@@ -3531,6 +3532,25 @@
       "closedAt": "2026-11-03",
       "lastEvaluated": "2026-11-03",
       "notes": " | CLOSED 2026-11-03 MT. David answered card 87acfd78 at 2026-11-03T17:19:48Z (inbox msgId 644fd221), paraphrased: yes, merge it as written. Branch a95-87a-both-reports merged to main in 025bc88 (git merge-tree printed a clean tree first) and pushed (1abc38c..025bc88). render-site --check at 025bc88: \"RESULT: PASS — index.html matches committed state\". npm run served: \"1 checked — 1 served, 0 in flight, 0 stale, 0 unreachable\" (it anchors on 66ff14d and reads index.html only). Live fetch, both HTTP 200: index.html (Last-Modified 17:26:20 GMT) carries the #150 label 4 times and the #289 label 4 times (th and card copy, each in text and aria-label); c/87a.html (17:26:21 GMT) carries each twice; the old single \"closed\" label 0 times on both. closeWhen met: both pages disclose 150 and 289 with their own states; reverify.test.mjs asserts both go-look lines (green in CI run 41676059688 on 7f8a0c1); check-upstream-reports.mjs exits 0 with 3 recorded reports. Encounter stays blind (A-59)."
+    },
+    {
+      "id": "A-96",
+      "title": "Refresh the open-pull-requests list without a human, so a reader rarely meets A-90's stale sentence",
+      "type": "action",
+      "status": "open",
+      "owner": "bounds-ledger",
+      "links": [
+        "A-90",
+        "A-83",
+        "A-31"
+      ],
+      "nextCheckDate": "2026-11-11",
+      "notes": "Minted 2026-11-04 MT from the orchestrator's P3 review of A-90 (bus msg 0bfd5a08), which said the great version is a list refreshed before it goes stale and the stale sentence is the safety net (paraphrased). Measured before minting: no workflow under .github/workflows writes to the repo (grep for 'contents: write|git push|git commit' over that directory: no matches). The scheduled drift job only reads and files issues. Every push to main publishes through Pages with no CI gate (AGENTS.md), so a job that runs open-pulls.mjs --fetch and re-renders would be a NEW automatic publishing path, writing other people's pull-request numbers to the public page with no human in the loop. That is a design decision, not a same-day add-on.",
+      "onTrigger": "On 2026-11-11: decide between (a) a scheduled workflow with contents: write that runs open-pulls.mjs --fetch, render-constant-pages.mjs, the page checks, and pushes only when the list changed and every check passed; (b) moving the refresh into the steward cadence's first command so a human session runs it daily; (c) keeping the weekly-or-resnap refresh with A-90's sentence as the only guard. (a) is a new publish path: adversarial review before it is armed. Record which, and why.",
+      "closeWhen": "One of (a), (b), (c) is chosen and in place, with the reason recorded on this row.",
+      "readCommand": "node scripts/open-pulls.mjs --selftest",
+      "created": "2026-11-04",
+      "updated": "2026-11-04"
     }
   ],
   "meta": {
