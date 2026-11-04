@@ -1,9 +1,278 @@
 {
   "purpose": "Open pull requests on teorth/optimizationproblems and the constant files each changes (A-83), read by scripts/open-pulls.mjs --fetch and shown on each constant's c/ page. Numbers, dates and file names only: no titles and no author names.",
   "repository": "teorth/optimizationproblems",
-  "readAt": "2026-10-28T19:54:15Z",
-  "count": 30,
+  "readAt": "2026-11-04T15:56:26Z",
+  "count": 60,
   "pulls": [
+    {
+      "number": 326,
+      "createdOn": "2026-11-04",
+      "constants": [
+        "16a",
+        "1d",
+        "49a",
+        "70a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 324,
+      "createdOn": "2026-11-04",
+      "constants": [
+        "22b"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 322,
+      "createdOn": "2026-11-04",
+      "constants": [
+        "49a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 321,
+      "createdOn": "2026-11-04",
+      "constants": [
+        "47a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 320,
+      "createdOn": "2026-11-03",
+      "constants": [
+        "78a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 319,
+      "createdOn": "2026-11-03",
+      "constants": [
+        "16a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 318,
+      "createdOn": "2026-11-03",
+      "constants": [
+        "1c"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 317,
+      "createdOn": "2026-11-03",
+      "constants": [
+        "17a",
+        "30a",
+        "38a",
+        "57a",
+        "57b",
+        "62b",
+        "63a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 316,
+      "createdOn": "2026-11-03",
+      "constants": [
+        "35a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 315,
+      "createdOn": "2026-11-03",
+      "constants": [
+        "64a",
+        "84a",
+        "86a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 314,
+      "createdOn": "2026-11-03",
+      "constants": [
+        "13a",
+        "13b"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 313,
+      "createdOn": "2026-11-03",
+      "constants": [
+        "17a",
+        "30a",
+        "38a",
+        "57a",
+        "57b",
+        "62b",
+        "63a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 312,
+      "createdOn": "2026-11-03",
+      "constants": [
+        "1d"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 311,
+      "createdOn": "2026-11-03",
+      "constants": [
+        "57c"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 310,
+      "createdOn": "2026-11-02",
+      "constants": [
+        "42a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 308,
+      "createdOn": "2026-11-01",
+      "constants": [
+        "89b",
+        "89c"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 307,
+      "createdOn": "2026-11-01",
+      "constants": [
+        "89b"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 306,
+      "createdOn": "2026-11-01",
+      "constants": [
+        "91a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 305,
+      "createdOn": "2026-10-31",
+      "constants": [
+        "42a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 303,
+      "createdOn": "2026-10-31",
+      "constants": [
+        "20a",
+        "20c"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 302,
+      "createdOn": "2026-10-31",
+      "constants": [
+        "42a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 301,
+      "createdOn": "2026-10-31",
+      "constants": [
+        "82a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 300,
+      "createdOn": "2026-10-30",
+      "constants": [
+        "10a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 299,
+      "createdOn": "2026-10-30",
+      "constants": [
+        "68a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 298,
+      "createdOn": "2026-10-30",
+      "constants": [
+        "86a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 297,
+      "createdOn": "2026-10-30",
+      "constants": [
+        "59a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 296,
+      "createdOn": "2026-10-30",
+      "constants": [
+        "9a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 294,
+      "createdOn": "2026-10-30",
+      "constants": [
+        "44a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 292,
+      "createdOn": "2026-10-30",
+      "constants": [
+        "1c",
+        "86a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 291,
+      "createdOn": "2026-10-30",
+      "constants": [
+        "21a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 290,
+      "createdOn": "2026-10-29",
+      "constants": [
+        "45a"
+      ],
+      "byThisLedger": false
+    },
     {
       "number": 288,
       "createdOn": "2026-10-28",
@@ -190,30 +459,6 @@
       "createdOn": "2026-10-18",
       "constants": [
         "49a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 223,
-      "createdOn": "2026-10-12",
-      "constants": [
-        "10b",
-        "13a",
-        "13b",
-        "17a",
-        "1a",
-        "30a",
-        "35a",
-        "38a",
-        "57a",
-        "57b",
-        "62b",
-        "63a",
-        "64a",
-        "68a",
-        "7a",
-        "84a",
-        "86a"
       ],
       "byThisLedger": false
     },

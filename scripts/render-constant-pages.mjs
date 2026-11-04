@@ -27,7 +27,7 @@ import crypto from "node:crypto";
 import { REPO, esc, copyCiteScript } from "./lib/html.mjs";
 import { noteBlock } from "./openai-math.mjs";
 import { newerBlock, newerFor, searchLine, loadStore as loadNewerStore, validateStore as validateNewerStore, STORE as NEWER_STORE } from "./newer-results.mjs";
-import { pullsBlock, loadStore as loadPullsStore, validateStore as validatePullsStore, STORE as PULLS_STORE } from "./open-pulls.mjs";
+import { pullsBlock, staleListScript, loadStore as loadPullsStore, validateStore as validatePullsStore, STORE as PULLS_STORE } from "./open-pulls.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const OUTDIR = join(ROOT, "c");
@@ -66,6 +66,7 @@ a{color:var(--accent)}h1{font-size:1.4rem;line-height:1.3;margin:.2rem 0 .1rem}
 dl{margin:1.4rem 0;padding:0}dt{font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:1.1rem}
 dd{margin:.35rem 0 0}code{display:block;background:var(--code);padding:.6rem .7rem;font-size:.85rem;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
 .when{display:block;font-size:.8rem;color:var(--muted);margin-top:.3rem}
+.stale:not([hidden]){display:block;font-size:.8rem;font-weight:600;margin-top:.3rem}
 .pin{font-size:.8rem;color:var(--muted);margin-top:.3rem}
 .sel{color:var(--muted);font-size:.85rem}
 .none{color:var(--muted)}
@@ -988,6 +989,7 @@ ${auditBlock(r.id, audits, [r.upper, r.lower])}${noteBlock(r.oai)}${newerBlock(n
 <p>${esc(FRESHNESS)} The latest check and its verdict: <a href="${esc(RUNS)}">run history</a>.</p></footer>
 <script>
 ${copyCiteScript("div.cite")}
+${staleListScript()}
 </script>
 </html>`;
 }
@@ -1158,6 +1160,32 @@ async function selftest() {
   // Equality LAST: the clipboard receives the citation's exact text, multi-line and non-ASCII intact.
   assert.equal(copied, CITE_FIXTURE, "the copied text must equal the citation's own text, exactly");
   assert.equal(ok.code.textContent, CITE_FIXTURE, "the script must never alter the citation it copies");
+
+  // A-90 (2026-11-04) THE WIRING on a real rendered page: a page carrying an open-pull-requests block runs
+  // its OWN one script, and that script shows the block's stale sentence once the reader's clock is more
+  // than seven days past the read. The stub answers only the selector, attribute and class the PAGE's
+  // markup carries (read out of the html), so a script/markup mismatch shows nothing and fails here.
+  const ageStore = { readAt: "2026-10-28T19:54:15Z", pulls: [{ number: 7, createdOn: "2026-10-27", constants: ["9z"], byThisLedger: false }] };
+  const agedHtml = renderPage(row, "abc1234def", undefined, undefined, ageStore);
+  const agedScripts = [...agedHtml.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+  assert.equal(agedScripts.length, 1, "a page with a pull-request block still carries exactly one script");
+  const agedDd = agedHtml.match(/<dd ([a-z-]+)="([^"]+)"><ul class="oai">/);
+  assert.ok(agedDd, "positive control: the page must render the pull-request block with its read instant");
+  const staleClass = (agedHtml.match(/<span class="([a-z]+)" hidden>/) || [])[1];
+  assert.ok(staleClass, "positive control: the page must carry the hidden stale sentence");
+  const runPageAge = (nowIso) => {
+    const span = { hidden: true };
+    const dd = { getAttribute: (k) => (k === agedDd[1] ? agedDd[2] : null), querySelector: (q) => (q === `.${staleClass}` ? span : null) };
+    const doc = { querySelectorAll: (q) => (q === `dd[${agedDd[1]}]` ? [dd] : []), createElement: () => ({ setAttribute() {}, addEventListener() {} }) };
+    new Function("document", "navigator", "window", "Date", agedScripts[0])(doc, {}, {}, { parse: Date.parse, now: () => Date.parse(nowIso) });
+    return span.hidden === false;
+  };
+  assert.ok(runPageAge("2026-11-05T00:00:00Z"), "the page's own script must show the stale sentence once the list is more than seven days old");
+  assert.ok(!runPageAge("2026-10-30T00:00:00Z"), "…and must leave it hidden while the list is fresh");
+  // The UA's [hidden]{display:none} loses to any author display rule, so the stale class may set display
+  // only under :not([hidden]); `.when{display:block}` would have shown the sentence to every reader.
+  assert.ok(new RegExp(`\\.${staleClass}:not\\(\\[hidden\\]\\)\\{`).test(css), "the stale sentence's style must apply only when it is shown");
+  assert.ok(!new RegExp(`\\.${staleClass}\\{`).test(css) && !new RegExp(`class="[^"]*\\bwhen\\b[^"]*" hidden`).test(agedHtml), "no unscoped display rule may reach the hidden stale sentence");
 
   // A missing side reads as "not pinned" rather than vanishing.
   const [oneSided] = buildRows([claims[0]], { withDates: false, reports: [] });

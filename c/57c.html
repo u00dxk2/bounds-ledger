@@ -13,6 +13,7 @@ a{color:var(--accent)}h1{font-size:1.4rem;line-height:1.3;margin:.2rem 0 .1rem}
 dl{margin:1.4rem 0;padding:0}dt{font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:1.1rem}
 dd{margin:.35rem 0 0}code{display:block;background:var(--code);padding:.6rem .7rem;font-size:.85rem;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
 .when{display:block;font-size:.8rem;color:var(--muted);margin-top:.3rem}
+.stale:not([hidden]){display:block;font-size:.8rem;font-weight:600;margin-top:.3rem}
 .pin{font-size:.8rem;color:var(--muted);margin-top:.3rem}
 .sel{color:var(--muted);font-size:.85rem}
 .none{color:var(--muted)}
@@ -35,7 +36,7 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Upper bound, last-listed row</dt><dd><code>| $0.65628589^\*$ | [vS2026] | Disc of radius $R=5.001117628756668$ minus 24 slits $z=\exp w$, $w=\log R+s+i(\theta+b\_1s^2+b\_2s^4)$, $\log(t/R)\le s\le 0$, with $(\theta,t,b\_1,b\_2)$ equal to $(0,1,0,0)$, $(\pi/3,1.9999999974092333,0,0)$, $(0.029930188727091613,2.789342409403121,0.9026921410641155,-0.3301459494660587)$, $(1.0157094972537686,3.473381248030611,-1.2656124700253997,0.9794269477754911)$, $(0.5757776442359243,4.342874184977691,0.03225521024585182,2.9360081049550737)$, and their images under rotation by $2\pi/3$ and complex conjugation. Computer-assisted proof: inradius $\le 1+10^{-9}$ (exact covering), conformal radius $\ge 1.523726208329$ (comparison function, Arb ball arithmetic). Floating-point value of the ratio $0.656285866$. |</code><details class="pin"><summary>exact pinned row</summary><code>| $0.65628589^\*$ | &lt;a href=&quot;#vS2026&quot;&gt;[vS2026]&lt;/a&gt; | Disc of radius $R=5.001117628756668$ minus 24 slits $z=\exp w$, $w=\log R+s+i(\theta+b\_1s^2+b\_2s^4)$, $\log(t/R)\le s\le 0$, with $(\theta,t,b\_1,b\_2)$ equal to $(0,1,0,0)$, $(\pi/3,1.9999999974092333,0,0)$, $(0.029930188727091613,2.789342409403121,0.9026921410641155,-0.3301459494660587)$, $(1.0157094972537686,3.473381248030611,-1.2656124700253997,0.9794269477754911)$, $(0.5757776442359243,4.342874184977691,0.03225521024585182,2.9360081049550737)$, and their images under rotation by $2\pi/3$ and complex conjugation. Computer-assisted proof: inradius $\le 1+10^{-9}$ (exact covering), conformal radius $\ge 1.523726208329$ (comparison function, Arb ball arithmetic). Floating-point value of the ratio $0.656285866$. |</code></details><span class="when"><a href="https://github.com/teorth/optimizationproblems/commits/87b4ebbd426ff8db597a2004cc45da17903bdcf2/constants/57c.md" title="upstream's history of this file, at the commit this ledger mirrors">value changed 2026-10-26</a></span></dd>
 <dt>Lower bound, last-listed row</dt><dd><code>| $0.5708858$ | [Skin2009] | Best recorded lower bound (as summarized in [BS2023]). [BS2023-latest-Bu-lb] |</code><details class="pin"><summary>exact pinned row</summary><code>| $0.5708858$ | &lt;a href=&quot;#Skin2009&quot;&gt;[Skin2009]&lt;/a&gt; | Best recorded lower bound (as summarized in &lt;a href=&quot;#BS2023&quot;&gt;[BS2023]&lt;/a&gt;). &lt;a href=&quot;#BS2023-latest-Bu-lb&quot;&gt;[BS2023-latest-Bu-lb]&lt;/a&gt; |</code></details><span class="when">tracked since 2026-07-24 — no movement seen yet</span></dd>
-<dt>Newer papers</dt><dd>On 2026-10-31 we ran one search for all the constants on this site's main list, not this one alone: arXiv papers submitted from 2026-09-26 to 2026-10-31 that matched an abstract search for AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve. It found 15 papers, and we read each one. None of them reports a value for this constant. We searched no source other than arXiv, and papers matching none of these names were outside the search.</dd>
+<dt>Newer papers</dt><dd>On 2026-10-31 we ran one search for all the constants on this site's main list, not this one alone: arXiv papers submitted from 2026-09-26 to 2026-10-31 that matched an abstract search for AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve. It found 15 papers, and we read each one. None of them reports a value for this constant. We searched no source other than arXiv, and papers matching none of these names were outside the search.</dd><dt>Open pull request that changes this constant's file upstream</dt><dd data-read-at="2026-11-04T15:56:26Z"><ul class="oai"><li><a href="https://github.com/teorth/optimizationproblems/pull/311">pull request 311</a>, opened 2026-11-03</li></ul><span class="when">It was open and not merged when we read the source repository's list on 2026-11-04. This list does not say what it proposes. The rows above come from the source table's merged version.</span><span class="stale" hidden>This list was last checked on 2026-11-04, more than a week ago, so it may be missing newer pull requests and may still show ones that have since closed.</span></dd>
 </dl>
 <div class="actions">
 <a href="https://github.com/u00dxk2/bounds-ledger/blob/main/ledger/teorth-optimizationproblems/constants/57c.md">the mirrored file</a> &middot;
@@ -74,6 +75,14 @@ https://u00dxk2.github.io/bounds-ledger/c/57c.html</code></div>
       try{navigator.clipboard.writeText(text).then(function(){if(me===last)st.textContent='Copied';},pick);}
       catch(e){pick();}
     });
+  }
+})();
+(function(){
+  var ls=document.querySelectorAll('dd[data-read-at]');
+  for(var i=0;i<ls.length;i++){
+    var t=Date.parse(ls[i].getAttribute('data-read-at'));
+    if(!(t>0))continue;
+    if(Date.now()-t>604800000){var s=ls[i].querySelector('.stale');if(s)s.hidden=false;}
   }
 })();
 </script>

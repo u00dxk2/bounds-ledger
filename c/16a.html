@@ -13,6 +13,7 @@ a{color:var(--accent)}h1{font-size:1.4rem;line-height:1.3;margin:.2rem 0 .1rem}
 dl{margin:1.4rem 0;padding:0}dt{font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:1.1rem}
 dd{margin:.35rem 0 0}code{display:block;background:var(--code);padding:.6rem .7rem;font-size:.85rem;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
 .when{display:block;font-size:.8rem;color:var(--muted);margin-top:.3rem}
+.stale:not([hidden]){display:block;font-size:.8rem;font-weight:600;margin-top:.3rem}
 .pin{font-size:.8rem;color:var(--muted);margin-top:.3rem}
 .sel{color:var(--muted);font-size:.85rem}
 .none{color:var(--muted)}
@@ -35,7 +36,7 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <dl>
 <dt>Upper bound, last-listed row</dt><dd><code>| $2.1562256466^\*$ | [certificate](https://github.com/maximusrufus/c16-bgw-certificates) | Cauchy–Schwarz dual bound with weights $\lvert k\rvert^2(1+\mu\lvert k\rvert^2)$; certified lattice sums with tail bounds; interval branch-and-bound over $\delta$ |</code><span class="when"><a href="https://github.com/teorth/optimizationproblems/commits/87b4ebbd426ff8db597a2004cc45da17903bdcf2/constants/16a.md" title="upstream's history of this file, at the commit this ledger mirrors">value changed 2026-10-26</a></span></dd>
 <dt>Lower bound, last-listed row</dt><dd><code>| $2.1562247706^\*$ | [certificate](https://github.com/maximusrufus/c16-bgw-certificates) | Explicit trial function $u=\sum_{0&lt;\lvert k\rvert\le 4000} e^{ik\cdot x}/(\lvert k\rvert^2(1+\mu\lvert k\rvert^2))$, $\mu=0.1221$; lattice sums enclosed with outward rounding; refines $2.156224$ from [#226](https://github.com/teorth/optimizationproblems/pull/226) |</code><span class="when"><a href="https://github.com/teorth/optimizationproblems/commits/87b4ebbd426ff8db597a2004cc45da17903bdcf2/constants/16a.md" title="upstream's history of this file, at the commit this ledger mirrors">value changed 2026-10-26</a></span></dd>
-<dt>Newer papers</dt><dd>On 2026-10-31 we ran one search for all the constants on this site's main list, not this one alone: arXiv papers submitted from 2026-09-26 to 2026-10-31 that matched an abstract search for AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve. It found 15 papers, and we read each one. None of them reports a value for this constant. We searched no source other than arXiv, and papers matching none of these names were outside the search.</dd><dt>Open pull request that changes this constant's file upstream</dt><dd><ul class="oai"><li><a href="https://github.com/teorth/optimizationproblems/pull/270">pull request 270</a>, opened 2026-10-26</li></ul><span class="when">It was open and not merged when we read the source repository's list on 2026-10-28. This list does not say what it proposes. The rows above come from the source table's merged version.</span></dd>
+<dt>Newer papers</dt><dd>On 2026-10-31 we ran one search for all the constants on this site's main list, not this one alone: arXiv papers submitted from 2026-09-26 to 2026-10-31 that matched an abstract search for AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve. It found 15 papers, and we read each one. None of them reports a value for this constant. We searched no source other than arXiv, and papers matching none of these names were outside the search.</dd><dt>Open pull requests that change this constant's file upstream</dt><dd data-read-at="2026-11-04T15:56:26Z"><ul class="oai"><li><a href="https://github.com/teorth/optimizationproblems/pull/326">pull request 326</a>, opened 2026-11-04</li><li><a href="https://github.com/teorth/optimizationproblems/pull/319">pull request 319</a>, opened 2026-11-03</li><li><a href="https://github.com/teorth/optimizationproblems/pull/270">pull request 270</a>, opened 2026-10-26</li></ul><span class="when">Each was open and not merged when we read the source repository's list on 2026-11-04. This list does not say what any of them proposes. The rows above come from the source table's merged version.</span><span class="stale" hidden>This list was last checked on 2026-11-04, more than a week ago, so it may be missing newer pull requests and may still show ones that have since closed.</span></dd>
 </dl>
 <div class="actions">
 <a href="https://github.com/u00dxk2/bounds-ledger/blob/main/ledger/teorth-optimizationproblems/constants/16a.md">the mirrored file</a> &middot;
@@ -74,6 +75,14 @@ https://u00dxk2.github.io/bounds-ledger/c/16a.html</code></div>
       try{navigator.clipboard.writeText(text).then(function(){if(me===last)st.textContent='Copied';},pick);}
       catch(e){pick();}
     });
+  }
+})();
+(function(){
+  var ls=document.querySelectorAll('dd[data-read-at]');
+  for(var i=0;i<ls.length;i++){
+    var t=Date.parse(ls[i].getAttribute('data-read-at'));
+    if(!(t>0))continue;
+    if(Date.now()-t>604800000){var s=ls[i].querySelector('.stale');if(s)s.hidden=false;}
   }
 })();
 </script>

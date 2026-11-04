@@ -30,8 +30,13 @@
 //
 // REFRESH. `node scripts/open-pulls.mjs --fetch`, then render-constant-pages. `npm run resnap` runs it,
 // because a pull request that merges into a constant's file is exactly what turns the drift alarm red.
-// Between refreshes the page's date says how old the list is. Read-only: commenting on a pull request
-// stays behind the outward gate.
+// Between refreshes the page's date says how old the list is, and (A-90, 2026-11-04) once that read is
+// more than STALE_AFTER_MS old the block says so in a sentence of its own. The age is judged when the
+// page is VIEWED, by staleListScript() in the page's one inline script, against the read instant the
+// block carries as data-read-at: a render-time clock would make the committed pages differ between runs
+// and break render-constant-pages --check. The sentence is in the markup, `hidden`, so its wording stays
+// here where the word guards see it; a reader without scripts still has the dated sentence beside it.
+// Read-only: commenting on a pull request stays behind the outward gate.
 
 import { readFileSync, writeFileSync, existsSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -133,6 +138,27 @@ export function pullsFor(id, store = loadStore()) {
   return store && Array.isArray(store.pulls) ? store.pulls.filter((p) => Array.isArray(p.constants) && p.constants.includes(id)) : [];
 }
 
+/** A-90: how old the list may get before the page says so. More than seven days, judged at view time. */
+export const STALE_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
+
+/** The sentence a stale list shows. Rendered into the markup, hidden, so every word guard reads it. */
+export const staleSentence = (readAt) => `This list was last checked on ${mtDay(readAt)}, more than a week ago, so it may be missing newer pull requests and may still show ones that have since closed.`;
+
+/**
+ * A-90's view-time age check, appended to the page's one inline script. For each block carrying a
+ * read instant, it shows that block's hidden stale sentence when the reader's clock is more than
+ * STALE_AFTER_MS past the read. An unparseable instant leaves the sentence hidden (the store's own
+ * validation refuses one before it reaches a page). It reads no clock but the browser's, and loads nothing.
+ */
+export const staleListScript = () => `(function(){
+  var ls=document.querySelectorAll('dd[data-read-at]');
+  for(var i=0;i<ls.length;i++){
+    var t=Date.parse(ls[i].getAttribute('data-read-at'));
+    if(!(t>0))continue;
+    if(Date.now()-t>${STALE_AFTER_MS}){var s=ls[i].querySelector('.stale');if(s)s.hidden=false;}
+  }
+})();`;
+
 /** The constant-page block: a <dt>/<dd> pair for the page's <dl>. Empty string when none. */
 export function pullsBlock(id, store = loadStore()) {
   const list = pullsFor(id, store);
@@ -143,7 +169,7 @@ export function pullsBlock(id, store = loadStore()) {
   // and "the rows above include none of these changes". Neither is established by a listing (another
   // merge can carry part of an open request's change, and a newer-results entry can evaluate one), so
   // the block now says only what the listing and the mirror's own mechanism establish.
-  return `<dt>Open pull ${many ? "requests that change" : "request that changes"} this constant's file upstream</dt><dd><ul class="oai">${items}</ul><span class="when">${many ? "Each was" : "It was"} open and not merged when we read the source repository's list on ${esc(mtDay(store.readAt))}. This list does not say what ${many ? "any of them proposes" : "it proposes"}. The rows above come from the source table's merged version.</span></dd>`;
+  return `<dt>Open pull ${many ? "requests that change" : "request that changes"} this constant's file upstream</dt><dd data-read-at="${esc(store.readAt)}"><ul class="oai">${items}</ul><span class="when">${many ? "Each was" : "It was"} open and not merged when we read the source repository's list on ${esc(mtDay(store.readAt))}. This list does not say what ${many ? "any of them proposes" : "it proposes"}. The rows above come from the source table's merged version.</span><span class="stale" hidden>${esc(staleSentence(store.readAt))}</span></dd>`;
 }
 
 function fetchListing() {
@@ -187,6 +213,31 @@ export async function selftest() {
   check("no title and no author name is stored, though the input carried both", !JSON.stringify(s).includes("someone") && !JSON.stringify(s).includes(OURS) && !JSON.stringify(s).includes("alert(1)") && !s.pulls.some((p) => "title" in p || "author" in p));
   check("no block ever says 'record' or carries the title's markup, though one input title did", ["31a", "13a", "2a"].every((id) => !FORBIDDEN.test(pullsBlock(id, s)) && !pullsBlock(id, s).includes("<script")));
   check("a constant with no open pull request gets no block", pullsBlock("9z", s) === "" && pullsBlock("9z", null) === "");
+  // A-90 (2026-11-04): the stale sentence, judged at VIEW time. The script is EXECUTED (never pattern-
+  // matched) against a stub DOM built from the block's own markup, with the reader's clock injected, so
+  // a script whose selector, attribute or class no longer matches the markup shows nothing and fails here.
+  const READ = "2026-10-28T19:54:15Z";
+  const runAge = (nowIso, { readAt = READ, attrOverride } = {}) => {
+    const block = pullsBlock("31a", { ...s, readAt });
+    const attr = attrOverride ?? (block.match(/<dd data-read-at="([^"]*)">/) || [])[1];
+    const span = { hidden: true };
+    const hasStale = /<span class="stale" hidden>/.test(block);
+    const dd = { getAttribute: (k) => (k === "data-read-at" ? attr : null), querySelector: (q) => (q === ".stale" && hasStale ? span : null) };
+    const doc = { querySelectorAll: (q) => (q === "dd[data-read-at]" && attr !== undefined ? [dd] : []) };
+    new Function("document", "Date", staleListScript())(doc, { parse: Date.parse, now: () => Date.parse(nowIso) });
+    return { shown: span.hidden === false, block };
+  };
+  check("A-90: a list read more than seven days before the reader's clock SHOWS the stale sentence", runAge("2026-11-04T19:54:16Z").shown);
+  check("A-90: a list read exactly seven days before stays quiet (the rule is MORE than seven)", !runAge("2026-11-04T19:54:15Z").shown);
+  check("A-90: a list read one day before stays quiet", !runAge("2026-10-29T19:54:15Z").shown);
+  check("A-90: a reader clock BEHIND the read instant stays quiet", !runAge("2026-10-20T00:00:00Z").shown);
+  check("A-90: an unparseable read instant stays quiet rather than throwing", (() => { try { return !runAge("2026-12-01T00:00:00Z", { attrOverride: "not a date" }).shown; } catch { return false; } })());
+  const ageBlock = runAge("2026-11-04T19:54:16Z").block;
+  check("A-90: the sentence is in the markup and HIDDEN by default, so a reader without scripts sees only the dated line", /<span class="stale" hidden>[^<]+<\/span><\/dd>$/.test(ageBlock) && ageBlock.includes('<span class="when">'));
+  check("A-90: the sentence names the read's MT day and says how old 'stale' is", ageBlock.includes("last checked on 2026-10-28, more than a week ago") && mtDay(READ) === "2026-10-28");
+  check("A-90: the sentence says what is wrong in both directions (missing new ones, showing closed ones)", ageBlock.includes("may be missing newer pull requests") && ageBlock.includes("may still show ones that have since closed"));
+  check("A-90: the age script loads nothing and reads no clock but the browser's", !/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket|EventSource|importScripts|Image|Audio|Worker|SharedWorker)\b|\bimport\s*\(|\.src\s*=/.test(staleListScript()) && STALE_AFTER_MS === 604800000);
+  check("A-90: no stale sentence says 'record'", !FORBIDDEN.test(staleSentence(READ)));
   check("the built store validates (the silent half)", validateStore(s).length === 0);
   const refuses = (rows, frag) => { try { buildStore(rows, at); return false; } catch (e) { return e.message.includes(frag); } };
   check("REFUSES an empty listing", refuses([], "empty"));
