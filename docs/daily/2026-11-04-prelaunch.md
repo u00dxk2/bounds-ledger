@@ -1,8 +1,27 @@
-# bounds-ledger — 2026-11-04 (Wednesday)
+---
+north_star_metric: an outside party acts on a watched record WITHOUT us filing the report (G-4; primary indicator = npm run reports, arrivals through the per-row links)
+north_star_value: 0
+north_star_status: read-today
+north_star_classification: expected-zero
+product: bounds-ledger
+date: 2026-11-04
+lifecycle_stage: launched
+last_deploy: 1cef357 (CI GREEN on reverify.yml and page-check.yml; GitHub Pages build built 16:28:03Z; no Render service)
+on_hold_items: 0
+top_action_today: the open-pull-requests list on the constant pages is refreshed and says so itself when it is more than a week old
+# The four keys below have NO instrument in this lane and are left null rather than filled with a
+# zero nobody measured: pre-revenue, no billing, no analytics on the published page, no Sentry project.
+mrr_usd: null
+n_active_users_28d: null
+sentry_open_p1: null
+sentry_open_p2: null
+---
+
+# bounds-ledger — 2026-11-04 (Wednesday, MT)
 
 ## BLUF
 
-Thirty-six constant pages list the open pull requests that would change that constant upstream, and every one of those lists was last read on 28 October. Upstream has opened about thirty more since, and the pages do not say their list is a week old. Today's pick is to make the page say so when the list is old, and to refresh it.
+Thirty-six constant pages list the open pull requests that would change that constant upstream, and every one of those lists was last read on 28 October. Upstream has opened about thirty more since, and the pages did not say their list was a week old. Since this morning the lists are refreshed, now 60 pull requests on 46 pages, and each list says so itself once it is more than a week old.
 
 ### Selection packet
 
@@ -13,10 +32,10 @@ Thirty-six constant pages list the open pull requests that would change that con
 **The user problem, in the user's words:** "I got this constant from a page that says it was last edited in January. I don't know if that means it's current or that nobody has looked at it since." (`docs/evangelism-bar.md`.) Our own pull-request list now has that exact defect: a dated list that a reader cannot tell is a week behind.
 
 **Section 0.**
-- Primer: `docs/cold-starts/2026-11-03.md` (no 2026-11-04 primer; primers are named for the day they are written). Its banner names the seven gates due today and asks whether `W-14`'s empty read is the answer or a dead source.
+- Primer: `docs/cold-starts/2026-11-03.md` (no 2026-11-04 primer; primers are named for the day they are written). Its banner names the seven gates due today and asks whether the empty read of `W-14` (the watch on upstream issue 218) is the answer or a dead source.
 - Listener: 🟢 SSE alive (restart marker 2026-11-04T14:53:48Z, pid 11296, with `hello` and `replay-complete` below it). The loop is armed by a `ScheduleWakeup` tool call; waker ranks 1 to 3 are running (rank 1 exited on purpose at the kickoff, a WAKE-SHORTEN fire, and was relaunched).
 - Codex: GREEN (the kickoff's `[codex-probe: GREEN …]` line, machine-level exec at 14:57:15Z).
-- CI: GREEN at `a9433c4df8` for reverify.yml and page-check.yml (`check-ci-status.mjs --workflow <file>`, each "GREEN — 1 completed non-scheduled success(es) for HEAD, 0 failures, 0 pending"). The overnight scheduled drift run, 41806658736 at 09:20Z on `a9433c4df8`, concluded success. `npm run verify` receipt: exitCode 0 at `a9433c4df8` (15:21:30Z); the first attempt was refused before running (exit 2, "1 untracked path(s)", this report file written while it queued) and re-run after staging it. Its page legs: "RESULT: PASS — 120 constant page(s) match committed state (@ 87b4ebb)"; the brief leg UNVERIFIABLE, as expected.
+- CI: GREEN at `a9433c4df8` for reverify.yml and page-check.yml (`check-ci-status.mjs --workflow <file>`, each "GREEN — 1 completed non-scheduled success(es) for HEAD, 0 failures, 0 pending"). The overnight scheduled drift run, 41806658736 at 09:20Z on `a9433c4df8`, concluded success. `npm run verify` receipt: exitCode 0 at `a9433c4df8` (15:21:30Z); the first attempt was refused before running (exit 2, "1 untracked path(s)", this report file written while it queued) and re-run after staging it. Its page legs: "RESULT: PASS — 120 constant page(s) match committed state …" (the elided part names upstream commit 87b4ebb, the mirror's teorth sha; it does not exist in this repo); the brief leg UNVERIFIABLE, as expected. pragma: allowlist sha
 - Deploy drift: `check-deployed-sha-drift.mjs` exit 0, "0 finding(s) across 38 service(s)". This is a GitHub Pages lane with no Render service, so the read sweeps nothing of ours: neither a stop nor a pass.
 - positive control: the same read listed 38 services with a live commit each (for example `skylark-site` in-sync-by-filter), so it read the fleet and was not empty.
 - Harness: running 2.1.318 · fleet UNIFORM (28 of 28 panes) · installed 2.1.318 (SAME).
@@ -65,7 +84,7 @@ node C:/dev/skylark/bounds-ledger/scripts/open-pulls.mjs --selftest
 - Selftests execute the script, never pattern-match it: `open-pulls.mjs --selftest` runs it against a stub built from the block's own markup with the reader's clock injected (shown at 7 days + 1 s; quiet at exactly 7 days, at 1 day, with a clock behind the read, and on an unparseable instant); `render-constant-pages.mjs --selftest` runs the RENDERED page's whole script against a stub answering only the attribute and class the page's markup carries.
 - Red-arms, each restored from a hashed backup ("restore pulls: IDENTICAL", "restore pages: IDENTICAL"): `>` to `<` → open-pulls exit 3; `hidden` dropped → open-pulls exit 3 "FAIL … HIDDEN by default"; script selector `dd[data-read]` → render-constant-pages exit 1 "the page's own script must show the stale sentence …"; unscoped `.stale{display:block}` → exit 1 "the stale sentence's style must apply only when it is shown". The first try at the second mutation did not land (3 matches, the string is also in the tests) and was re-aimed at the template.
 - Data refresh: `open-pulls.mjs --fetch` → "60 open pull request(s) … 59 changing a constant file, 50 distinct constant(s)". 120 pages re-rendered (every page gains the age code, which the bound-cell guard requires).
-- `npm test` exit 0 before the commit. At `1cef357`: render-constant-pages --check "RESULT: PASS — 120 constant page(s) match committed state (@ 87b4ebb)", run twice with identical output; render-site --check "RESULT: PASS — index.html matches committed state (120 constants @ 87b4ebb)".
+- `npm test` exit 0 before the commit. At `1cef357`: render-constant-pages --check "RESULT: PASS — 120 constant page(s) match committed state …" (the elided part names upstream commit 87b4ebb, the mirror's teorth sha; it does not exist in this repo), run twice with identical output; render-site --check "RESULT: PASS — index.html matches committed state (120 constants …)". pragma: allowlist sha
 - Codex r1, read-only (banner `workdir: C:\dev\skylark\bounds-ledger`, on `1cef357`, verdict written 16:22:51Z): SHIP, no defects, all STATIC. It named test ceilings rather than defects: neither stub models HTML parsing, script placement or the full CSS cascade, so moving the script above the block or adding an unrelated `[hidden]{display:block}` rule could pass both stubs. Dispositioned DELIBERATE / accepted ceiling: the committed page has neither, and the live fetch below reads the real page.
 - Pushed `a9433c4..1cef357`.
 - CI green on `1cef357`: `check-ci-status.mjs --workflow reverify.yml` and `--workflow page-check.yml` each "GREEN — 1 completed non-scheduled success(es) for HEAD, 0 failures, 0 pending".
@@ -77,11 +96,11 @@ node C:/dev/skylark/bounds-ledger/scripts/open-pulls.mjs --selftest
 
 ## Inputs (controllable)
 
-- None yet.
+- One user-visible ship (`A-90`, the stale pull-request notice, plus the list refresh), one Codex read-only round, one hygiene helper.
 
 ## Outputs (lagging)
 
-- Not read yet today.
+- Outside report arrivals: 0 among 37 raw issues, parts reconciling (`npm run reports`, run by the hygiene helper today). Readers of the new sentence: unmeasurable, the pages carry no analytics (`A-59`).
 
 ## Recommendation
 
@@ -93,4 +112,30 @@ node C:/dev/skylark/bounds-ledger/scripts/open-pulls.mjs --selftest
 
 ## State Appendix
 
-Written at the close from live commands.
+Written at the close from live commands. The close commit itself cannot appear here.
+
+- HEAD on main before the close commit: `e2306ef`, equal to origin/main (`git rev-parse HEAD origin/main` printed the same sha twice). CI reverify.yml green on it: "GREEN — 1 completed non-scheduled success(es) for HEAD, 0 failures, 0 pending". The page change is `1cef357`, green on reverify.yml and page-check.yml (P3).
+- Due gates: `check-due-gates-dispositioned.mjs` → "verdict: CLEAR — every gate due at Phase 0 was dispositioned.", "snapshot: tmp\due-gates-snapshot.json — CURRENT (taken 2026-11-04)".
+- Tomorrow's gates: `check-due-gates-dispositioned.mjs --print --today=2026-11-05` at 09:54 MT: "3 gate(s) due on/before 2026-11-05": `A-77` (the filed-report check's caller), `W-16` (the watch on upstream issue 289; never run), `W-3` (the erdosproblems.com/36 watch).
+- Primer: `docs/cold-starts/2026-11-04.md`, `gen-primer-first-action.mjs --check` "RESULT: PASS — checked candidate + target PASS".
+
+## Close
+
+ACTION: COMPLETED · item `A-90` (a stale open-pull-requests list says so on the page) · P3 msg 6fff69e1
+
+- The acceptance in force (P1's, approved unchanged by the manager, msg `0bfd5a08`) is met: the selftest shows the sentence past 7 days and not before, red-armed four ways; render-constant-pages --check passed twice at `1cef357`; `npm test` exit 0; Codex r1 SHIP; live fetch of five pages byte-identical to HEAD; real-browser read of both states. The manager's P3 review (msg `025880b3`) read it as COMPLETED, no defects.
+- The manager's question, answered: the refresh named 50 distinct constants and 46 pages carry the block. The four without a page are 31b, 89b, 89c and 91a, and none of them is in our mirror (`ledger/teorth-optimizationproblems/constants/<id>.md` absent for all four). They are new constants that open upstream pull requests propose to add (#272; #308, #307, #279, #277; #308, #279; #306, #273), so there is no page of ours for them to appear on. Real and expected: the mirror follows upstream's merged table, and when one merges, the drift alarm and the next resnap give it a page.
+- No state changed since the P3 post beyond the close itself.
+- Ledger delta: `A-90` CLOSED (receipt on its row, commit `e2306ef`). `A-96` minted (refresh the list without a human; decide 2026-11-11). Hygiene draft applied, 6 lines — 4 accepted · 2 amended · 0 rejected:
+  - ACCEPTED `A-59` (encounter is blind) and `A-70` (phone touch targets) → nextCheckDate 2026-11-11; `A-70`'s second leg, render-site --check, was run at `1cef357` in P3 and passed.
+  - ACCEPTED `A-89` (census blind shapes) → nextCheckDate 2026-11-18; the six-shape hand check was not run, and the mirror has not changed since its last read, so its answer cannot have moved.
+  - ACCEPTED `W-14` (issue 218 watch) → expectedSignalBy 2026-11-11, plus `readCommandSourceEmptyOk` with the positive-control reason. The draft's owed wording fix is not owed: the onTrigger already names the mirrored path `ledger/teorth-optimizationproblems/constants/46a.md`.
+  - AMENDED `A-9` (engineering-health backlog) to option (b): the 2026-10-05 review counts (David's 2026-10-10 ruling, as recorded in skylark-site `docs/cycle-rotation.json`), but no record shows it read this repo's P2 list, so it is not superseded. nextCheckDate 2027-01-03; the lapsed hold and its false reason deleted; reasoning in `disposition2026_11_04`.
+  - AMENDED `A-50` (import-is-inert selftest): 7f8a0c1 is not counted as an instance, since it designed around the class rather than running a CLI on import. The fourth instance was already recorded on 2026-10-21, so building it is the answer. Re-dated to 2026-11-06 as the lead non-product candidate, reason in `redate2026_11_04`.
+- READ-MUTATED, quoted from the draft: "READ-MUTATED A-59 scripts/open-pulls.mjs", "READ-MUTATED A-70 scripts/open-pulls.mjs", "READ-MUTATED A-70 scripts/render-constant-pages.mjs", "READ-MUTATED A-89 scripts/render-constant-pages.mjs". All four are files this P3 was editing while the helper read; HEAD stayed `a9433c4` through its window.
+- The draft's checks: wait-justification "RESULT: PASS — 2 of 115 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)"; engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)". No wait was touched after the helper ran.
+- Board: card 87acfd78 dismissed as spent (A-95 executed), `update-david-board --dismiss` "state":"dismissed".
+- Receipt: P3's is still true; nothing new written.
+- Pending reads: `A-77` (the filed-report check's caller), `W-16` (the watch on upstream issue 289) and `W-3` (the erdosproblems.com/36 watch) on 2026-11-05; `A-50`, `A-47` (the depth audit) and `A-94` (close:primer's tomorrow-named rule) on 2026-11-06; `A-59`, `A-70` and `W-14` (the watch on upstream issue 218) on 2026-11-11, with `A-96`'s decision the same day; `A-89` on 2026-11-18; `A-9` on 2027-01-03. The list on the `c/` pages turns stale at 2026-11-11T15:56Z unless refreshed.
+- Classification of today's findings, one sentence of human judgment: every finding today was instrument-facing (the page's own disclosure of a list's age, and a hold whose reason had gone false), no catch was counted, numeric or byte-only, and the running count of consecutive instrument-facing days is at least 5, counted by hand (the 11-03 report said at least 4).
+- The standing prediction, quoted from CLAUDE.md: "the next record-facing catch will be a citation-quality defect in a mirrored upstream entry … found by a human reading the cited source in the depth audit (`A-47`), not by any alarm." Not tested today: no catch, and no depth-audit slice was read.

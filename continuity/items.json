@@ -361,14 +361,14 @@
         "owner": "bounds-ledger"
       },
       "onTrigger": "When the next engineering-health audit runs: check its P2 list against this one. Empty, or superseded by the new audit's list — either closes this item, and superseding is a legitimate close here rather than an evasion.",
-      "nextCheckDate": "2026-11-04",
+      "nextCheckDate": "2027-01-03",
       "nextCheckDateNote": "DATED 2026-08-22 with nextCheckDate, NOT expectedSignalBy, and the distinction is the whole point. In P4 today I argued that dating a STANDING row invents a decision that does not exist, and that is still true of a SIGNAL date, which promises a verdict. A RE-READ date promises only that someone looks again. The continuity check was right that an undated row is invisible to every overdue scan and therefore green by construction — the same defect that left G-2, this lane's Tier-1 goal, unscanned until today. A standing row still needs to be seen; it just does not need to be decided. NO readCommand is attached, deliberately: the read here is a human re-reading prose, and inventing a command that only prints the row back would be a detector that cannot fail. 2026-09-03 aligns with A-7, the engineering-health item whose next audit this row's own closeWhen names as the thing that supersedes it — so the two are read together rather than drifting apart.",
       "prestage2026_09_02": "PRE-STAGED the day before its 2026-09-03 nextCheckDate. SEPARATOR CONVERTED at pre-stage, em dash to hash. READ RE-RUN 2026-09-02, literal output, two commits in the 30-day window: 1cb3f65 'The corrected grep found four more, including today's primer - fifth gate-sweep miss' and fbd63e7 'docs(A-13): clear flip blockers 1-4 + the working-tree leg of 5 and 7'. The positive control is therefore SATISFIED — the path resolves and the window returns real commits, so an empty result here would have meant a wrong path rather than a quiet backlog. WHAT TOMORROW DECIDES, and it is deliberately small: this is a fix-on-touch backlog with no state to poll, so the only honest question is whether the review doc has been touched, and it has. Re-confirm the date and move on; do NOT treat age as decay on this row, and do NOT convert it into scheduled work — that is precisely what it was filed not to be.",
       "readCommand": "git log --oneline -1 -- docs/engineering-health-review-2026-07-29.md # RE-POINTED 2026-10-05: the 30-day window let the 2026-08-26 positive control age out, and the 10-05 read returned empty. No window now, so this ALWAYS prints the doc's newest touch (1cb3f65 as of 2026-10-05); empty means the path is wrong, and a sha other than 1cb3f65 means the backlog doc was touched. The closing event is NOT this read: it is skylark-site docs/cycle-rotation.json (dead-ref-ok: a path in skylark-site, not in this repo) security-review.lastRun moving past 2026-07-07, read by a human.",
       "disposition2026_09_03": "DISPOSITION 2026-09-03. Read re-run, literal output, two commits in the 30-day window: 1cb3f65 \"The corrected grep found four more, including today's primer - fifth gate-sweep miss\" and fbd63e7 \"docs(A-13): clear flip blockers 1-4 + the working-tree leg of 5 and 7\" — the same two the pre-stage recorded. The POSITIVE CONTROL is satisfied: 1cb3f65 is the 2026-08-26 commit the readCommand names, so the path resolves and the window returns real commits; an empty result would have meant a wrong path rather than a quiet backlog.\n\nPer the pre-stage's own instruction this disposition is deliberately small. The review doc has been touched, age is not decay on a fix-on-touch row, and it is NOT being converted into scheduled work — that is what this row was filed not to be. No P2 was fixed today because no P2's file was touched today, which is the row working as designed rather than a miss.\n\nRE-DATED to 2026-09-17, holding the deliberate alignment with A-7. A-7 did not close today either, so the reason for reading the two together — A-7's next engineering-health audit is the thing this row's own closeWhen names as superseding it — is still intact rather than dissolving.",
       "disposition2026_09_17": "DISPOSITION 2026-09-17. THE RUNNER'S FIRST STAMP WAS A SHELL FAILURE, NOT A READ: --run A-9 exited 128 with `fatal: bad revision 'days'`. The fleet runner spawns through cmd.exe, which does not honour single quotes, so `--since='30 days ago'` reached git as three arguments; the 2026-09-11 CLAUDE.md gotcha, a second instance. The stored bytes were run through bash per that rule, literal output, one commit: `1cb3f65 The corrected grep found four more, including today's primer - fifth gate-sweep miss`. POSITIVE CONTROL SATISFIED AND RE-CHECKED rather than inherited: `git show --stat 1cb3f65 -- docs/engineering-health-review-2026-07-29.md` reports 2026-08-26 and 26 insertions, 1 deletion to that file. The 2026-09-03 read's second commit, fbd63e7, has aged out of the 30-day window, which is the window moving, not a change. THE COMMAND WAS CHANGED so the runner can execute it: `--since='30 days ago'` became `--since=30.days.ago`, which git's date parser reads identically and which carries no quotes for cmd.exe to split. Bash printed the same single line for both forms before the edit. The runner re-read is stamped after this edit. NO P2 FIXED TODAY, because no P2's file was touched today; that is the fix-on-touch row working as designed. RE-DATED to 2026-09-24, holding the alignment with A-7, which moved to the same date.",
       "notes": "2026-09-17 DECISION, NOT A RE-DATE — correcting this morning's disposition2026_09_17, whose last sentence re-dated this row to 2026-09-24. The 2026-09-16 report's Recommendation said A-7 and A-9 'each needs a decision or a written close rather than a re-date', and I dispositioned both before reading it (Section 0 step 0.10 was run after the gates, not before). A-7's disposition was a decision: the fork ask to the orchestrator, bus 63246b2b. This row's was not. THE DECISION: stop re-reading this backlog on a one- or two-week clock. Since 2026-08-26 every read has returned the same answer, the review doc touched once on that day, and a fix-on-touch backlog has no state that a short clock can catch. Its closeWhen names exactly one event that can close it: the next engineering-health audit superseding the P2 list. That audit is the security-review cycle in skylark-site docs/cycle-rotation.json, read today: cadenceDays 90, lastRun 2026-07-07, so it is due 2026-10-05. nextCheckDate is therefore 2026-10-05, the date the closing event is due, not an interval. ON THAT DATE: if the audit has run for this repo, close this row as superseded and carry any still-open P2 into the audit's own list; if it has not run, say so and name the audit's new date, never re-date on a short interval again. The alignment with A-7 is deliberately broken: A-7 waits on an orchestrator reply, this row waits on an audit, and those clocks are unrelated.\n\n | RE-DATED 2026-10-06 evening close: nextCheckDate 2026-10-05 -> 2026-11-04, aligned with the existing hold (overdueAcknowledgedUntil 2026-11-04). Its 16:23Z read printed 1cb3f65 again (backlog doc untouched), and skylark-site security-review.lastRun still reads 2026-07-07 with no new date named. readCommand comment marked dead-ref-ok for the skylark-site path, which cleared the READ-PATH exit 3; what runs is unchanged. Source: the evening hygiene draft, both commands ACCEPTED.",
-      "updated": "2026-10-06",
+      "updated": "2026-11-04",
       "linkedCommits": [
         "28eebf4"
       ],
@@ -379,10 +379,9 @@
         "lines": 1,
         "sha256": "77d5bbee0341162d"
       },
-      "overdueAcknowledgedUntil": "2026-11-04",
-      "overdueAcknowledgedReason": "closing event is the quarterly engineering-health audit (cycle-rotation security-review, lastRun 2026-07-07, due 2026-10-05, owner orchestrator), not yet run and no new date named; the 2026-10-04 repo-health-matrix is the monthly sweep, no Mode 1, so not a supersession",
       "readCommandBefore2026_10_05": "git log --oneline --since=30.days.ago -- docs/engineering-health-review-2026-07-29.md # this row is a fix-on-touch BACKLOG, not scheduled work, so there is no state to poll and age is not decay. The only honest machine read is whether the review doc has been touched. POSITIVE CONTROL: the file gained a 'Superseded fact' note on 2026-08-26 (the Auto-deploy-on-push row went stale when Pages was turned on), so a 30-day window MUST return at least that commit; an empty result means the path is wrong, not that nothing happened.",
-      "lastEvaluated": "2026-10-06"
+      "lastEvaluated": "2026-11-04",
+      "disposition2026_11_04": "2026-11-04 P5 (hygiene draft line AMENDED from its option (b)): the hold's reason was false. skylark-site docs/cycle-rotation.json security-review now reads lastRun \"2026-10-05\", with the note \"stamped 2026-10-10 on David's ruling ... the 2026-10-05 security day counts as the quarterly review\" (paraphrased: the 10-05 security day counts as the quarterly review). That makes the review count, but it does not show the review read THIS repo's P2 list: a Grep for \"bounds-ledger\" over skylark-site docs/*2026-10-0[5-6]* returned two primers, and the one read (2026-10-06) mentions this lane only in the evening's list of lanes that closed. With no audit P2 list for this repo, closeWhen's supersession leg is not met, so this row is NOT closed as superseded. The read today printed 1cb3f65 again (backlog doc untouched). Remaining P2s unchanged: R13, R29, R34, R19, plus the A-20 carried F3-F5. RE-DATED nextCheckDate 2026-11-04 -> 2027-01-03 (the review's next due date, lastRun 2026-10-05 + cadenceDays 90). The lapsed overdueAcknowledged hold and its false reason are deleted. ON 2027-01-03: if that audit names this repo, compare its P2 list with this one and close as superseded; if not, name its new date."
     },
     {
       "id": "W-4",
@@ -1988,7 +1987,7 @@
       "status": "open",
       "title": "Importing one of our CLI scripts can run it — one selftest that imports every CLI module and asserts the import did nothing",
       "note": "FILED 2026-09-16 at P2. Proposed in the 2026-09-14 daily report and carried with no row through 2026-09-15.\n\nOWNER: THIS LANE. Ruled by the orchestrator on 2026-09-16 (bus 22179070): the code it covers is all this lane's own, so the fix and its proof live here, and it is built when it is the highest-value item, not today by default.\n\nTHE CLASS AND THE PROPOSAL, quoted from docs/daily/2026-09-14-prelaunch.md: \"The class has now bitten three times here — `lookup.mjs`, then `render-site.mjs` (whose own guard comment records it repeating the shape its own commit had just fixed), then `render-constant-pages.mjs` today. A fourth comment will not stop a fourth instance. The proposal is one selftest that imports every CLI module in a single spawned process and asserts the import was inert: stdout empty, file mtimes unchanged. It tests the property rather than the shape, which matters because a guard-presence lint passes on a guard that is present and wrong.\"\n\nWIRING NOTE: reverify.test.mjs fails when a selftest exists without a matching workflow step, so the build includes that step.\n\n | 2026-10-21 MT: FOURTH INSTANCE of the class. A scratch script for A-76 imported scripts/depth-audit.mjs to reuse boundRowsOf; its CLI ran on import (printed the depth-audit summary) and called process.exit, so the importer's own output never appeared. Fixed for that one module with a main-module guard in ce28589 (the check-audit-lines.mjs shape; scripts/decimal-vs-exact.mjs now imports it). Per this row's onTrigger, a fourth instance makes building the class-wide selftest the answer at its next read (2026-10-28); it is still unbuilt.",
-      "expectedSignalBy": "2026-11-04",
+      "expectedSignalBy": "2026-11-06",
       "onTrigger": "On 2026-09-30 run the readCommand. If the selftest is still unbuilt, either build it (a fourth instance of the class before then makes that the answer), or record why something else still outranks it and re-date with that reason. Never re-date it silently.",
       "closeWhen": "A selftest in `npm test` and in CI that exits non-zero when a CLI module is mutated to act on import and 0 on the current tree, both literal outputs pasted on this row.",
       "readCommand": "git log --oneline --grep=A-50 -- scripts/ .github/workflows/",
@@ -1996,7 +1995,7 @@
         "docs/daily/2026-09-14-prelaunch.md"
       ],
       "created": "2026-09-16",
-      "updated": "2026-10-28",
+      "updated": "2026-11-04",
       "linkedCommits": [
         "c5a964b"
       ],
@@ -2007,9 +2006,10 @@
         "lines": 2,
         "sha256": "36850ebe8ea2d44e"
       },
-      "lastEvaluated": "2026-10-28",
+      "lastEvaluated": "2026-11-04",
       "redate2026_09_30": "2026-09-30 re-date to 2026-10-14, per onTrigger (\"never re-date it silently\"). The readCommand ran (exit 0, output continuity/read-outputs/A-50.txt) and listed 18 commits since 2026-09-16 touching scripts/ or reverify.yml, none of which builds the selftest. What outranks it: the A-54 census (David's depth ruling; census slots every second day to 2026-10-16) and A-47 slices on the days between. Fourth instance of the class: none found. Searched commit messages since 2026-09-16 with git log -i --grep=import (1 hit, 85eb436, about A-49's grammar import, not an import running a script) and docs/ for import-then-ran wording (5 files, all dated 2026-09-15 or earlier).",
-      "redate2026_10_28": "Read 2026-10-28: the readCommand printed one commit line and no A-50 fix (continuity/read-outputs/A-50.txt). Light day, so the selftest is not built."
+      "redate2026_10_28": "Read 2026-10-28: the readCommand printed one commit line and no A-50 fix (continuity/read-outputs/A-50.txt). Light day, so the selftest is not built.",
+      "redate2026_11_04": "2026-11-04 P5 (hygiene draft line UNDECIDED, resolved as AMEND): the read printed two lines, 7f8a0c1 (A-95's r3 fix) and c5a964b; no commit builds the selftest. 7f8a0c1 is NOT counted as a further instance: its body says a check was inlined in reverify.mjs because importing a CLI script can run it, which is the class steering a design around itself, not an import that ran a CLI. The decisive fact is older: the FOURTH instance was recorded on 2026-10-21 (this row's note, ce28589), so by this row's own onTrigger the answer has been \"build it\" since 10-28, and it has now been re-dated twice without being built (10-28 light day; today A-90 was the P1 selection, a user-visible ship that outranked it). RE-DATED expectedSignalBy 2026-11-04 -> 2026-11-06, two days, not two weeks, and named here as the lead non-product candidate for that day: build the class-wide import-is-inert selftest (one spawned process imports every CLI module, asserts stdout empty and file mtimes unchanged), wired into npm test and a CI step, red-armed by mutating one module to act on import."
     },
     {
       "id": "A-51",
@@ -2467,7 +2467,7 @@
       "type": "active",
       "status": "open",
       "title": "Encounter is BLIND on the public pages: nothing can tell whether a real reader met a changed page",
-      "nextCheckDate": "2026-11-04",
+      "nextCheckDate": "2026-11-11",
       "links": [
         "A-47",
         "G-4"
@@ -2478,7 +2478,7 @@
       "readCommand": "npm run reports",
       "owner": "bounds-ledger",
       "created": "2026-09-28",
-      "updated": "2026-10-28",
+      "updated": "2026-11-04",
       "readCommandLastRun": "2026-11-04T15:48:14.315Z",
       "readCommandLastExit": 0,
       "readCommandLastDurationMs": 21988,
@@ -2486,7 +2486,7 @@
         "lines": 16,
         "sha256": "c93955817fd780fc"
       },
-      "lastEvaluated": "2026-10-28",
+      "lastEvaluated": "2026-11-04",
       "redate2026_10_28": "Read 2026-10-28: npm run reports, 37 raw issues, 37 ours, 0 outside arrivals, parts reconcile 37+0+0=37. Encounter on the pages stays blind; light day, no build."
     },
     {
@@ -2744,7 +2744,7 @@
       "shipped2026_10_04": "SHIPPED 2026-10-04 at P3, meeting its closeWhen and the manager's replacement acceptance condition (bus e26a74ff), confirmed COMPLETED by the manager's re-read at about 17:44Z (bus 321b12f8), read on the LIVE index after the push of 3b445dc..b1e6b08. Shipped in 5f42ce7, with review fixes a371655, 5b6bd04, bd0d1fb and b1e6b08. iPHONE 15 (playwright-cli --device \"iPhone 15\"; touch proof pointer:coarse true, ontouchstart true; 393x659), row c-22a after 10.02 typed: BEFORE (live, about 16:11Z) source 42x20, page 32x20, looks wrong? 85x20, cite 38x22, no copy button; AFTER (live, about 17:19Z) source 51x45, page 41x45, looks wrong? 94x45, cite 47x45, scrollWidth 393, 115 copy buttons in 115 cite blocks. One tap on cite, one on Copy citation: the status line read 'Copied', the button measured 104x44, and the text pasted into a scratch textarea was 516 characters and equal to the block's textContent. At root font sizes of 14px and 12px (local render, iPhone 15) all four controls measured 44px: the floor is a px min-height. 1440x900, live, row c-22a with the cite block closed: row, all four cells, all four controls, the table box and the page height read identical before (about 16:21Z) and after (about 17:20Z). render-site --check PASS; npm run verify exit 0 at b1e6b08; reverify.yml GREEN at b1e6b08; npm run served PASS at anchor bd0d1fb. REVIEW: four Codex read-only rounds, the third a cold round against six stated invariants; every finding fixed or narrowed, each fix red-armed; closed on that enumeration rather than a fifth round. NOT MEASURED: WebKit/Safari (the emulation is Chromium with an iPhone user agent), and a real person pressing the button (encounter is blind, A-59).",
       "title": "On a phone the index rows' page and cite links are 20 to 22px tall, and the citation block has no copy button",
       "owner": "bounds-ledger",
-      "nextCheckDate": "2026-11-04",
+      "nextCheckDate": "2026-11-11",
       "links": [
         "A-68",
         "A-59"
@@ -2754,8 +2754,8 @@
       "closeWhen": "On the live index at 393x659 each of the four row controls measures at least 44px tall; the cite block has a working copy button whose copied text equals the block text; 1440x900 unchanged; render-site --check passes.\n\n AND, since 2026-10-10, the constant-page leg in constantPages2026_10_10 holds on the live c/8a.html.",
       "readCommand": "npm --prefix C:/dev/skylark/bounds-ledger run reports — A-59's encounter read, the one pending read for this row: it prints the raw issue count, excludes our own authors, and requires the parts to reconcile; an OUTSIDE ARRIVAL through a row's 'looks wrong?' link is the only encounter this page can show. The ship's own regression read stays: node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check (PASS means index.html matches its renderer, whose self-test pins the 44px floor and the copy script).",
       "created": "2026-10-02",
-      "updated": "2026-10-28",
-      "lastEvaluated": "2026-10-28",
+      "updated": "2026-11-04",
+      "lastEvaluated": "2026-11-04",
       "linkedCommits": [
         "3b445dc",
         "5f42ce7",
@@ -2844,7 +2844,7 @@
       "type": "watch",
       "status": "open",
       "owner": "bounds-ledger",
-      "expectedSignalBy": "2026-11-04",
+      "expectedSignalBy": "2026-11-11",
       "links": [
         "A-57"
       ],
@@ -2853,7 +2853,7 @@
       "onTrigger": "On a maintainer comment: record its substance paraphrased (never quoted at length) with its date, and do NOT reply. Any reply on the issue is outward contact, which needs an adversarial review and David's approval. On the issue closing, or upstream's 46a file changing (mirrored here as ledger/teorth-optimizationproblems/constants/46a.md): verify the change against the mirror through the drift cycle (verify, snapshot, re-pin) and record which happened. On no change: re-date one week.",
       "closeWhen": "A maintainer comment or a close of issue 218 is recorded on this row, with its date and the drift cycle's resolving sha if the record moved; or David decides the watch ends.",
       "created": "2026-10-08",
-      "updated": "2026-10-29",
+      "updated": "2026-11-04",
       "readCommandLastRun": "2026-11-04T15:51:08.432Z",
       "readCommandLastExit": 0,
       "readCommandLastDurationMs": 40369,
@@ -2861,8 +2861,11 @@
         "lines": 1,
         "sha256": "3440f024463a5fa0"
       },
-      "lastEvaluated": "2026-10-28",
-      "redate2026_10_28": "Read 2026-10-28: gh issue view 218 printed state OPEN, comments [], updatedAt 2026-10-07T19:39:29Z; no change since it was sent. The gate warns that onTrigger names constants/46a.md bare (upstream's path); the mirrored file is ledger/teorth-optimizationproblems/constants/46a.md. Fix that wording on a normal day."
+      "lastEvaluated": "2026-11-04",
+      "redate2026_10_28": "Read 2026-10-28: gh issue view 218 printed state OPEN, comments [], updatedAt 2026-10-07T19:39:29Z; no change since it was sent. The gate warns that onTrigger names constants/46a.md bare (upstream's path); the mirrored file is ledger/teorth-optimizationproblems/constants/46a.md. Fix that wording on a normal day.",
+      "readCommandSourceEmptyOk": {
+        "reason": "comments [] is the answer: the same response carries issue 218s own title, state and updatedAt (positive control, 2026-11-04 P1), so an empty list means no reply, not a failed read"
+      }
     },
     {
       "id": "A-74",
@@ -3314,7 +3317,7 @@
       "status": "open",
       "title": "The decimal-vs-exact census is blind to six input shapes Codex round 4 found; watch the mirror for any of them",
       "owner": "bounds-ledger",
-      "nextCheckDate": "2026-11-04",
+      "nextCheckDate": "2026-11-18",
       "links": [
         "A-76",
         "A-88"
@@ -3324,7 +3327,7 @@
       "closeWhen": "Each of the six shapes is handled by the census (a selftest fixture per shape, red-first, and a Codex round), or the census prints a blind-to line naming the unhandled ones so its own output carries the gap.",
       "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/decimal-vs-exact.mjs — the census (exit 1 = a CUT); the six-shape check is not yet a committed script, so this row reads the census and the shapes by hand until one exists",
       "created": "2026-10-21",
-      "updated": "2026-10-28",
+      "updated": "2026-11-04",
       "readCommandLastRun": "2026-11-04T15:49:48.337Z",
       "readCommandLastExit": 1,
       "readCommandLastDurationMs": 2667,
@@ -3332,7 +3335,7 @@
         "lines": 250,
         "sha256": "6b7a905f4b595d25"
       },
-      "lastEvaluated": "2026-10-28",
+      "lastEvaluated": "2026-11-04",
       "redate2026_10_28": "Read 2026-10-28: decimal-vs-exact.mjs exit 1, CUT 3 (1d.md:19, A-47-0075 87a.md:17, A-47-0019 1b.md:22), unchanged from 10-27. Positive control: it read the three new 5a comment rows (5a.md:17-19) as AGREES. The six-shape check is still unwritten; light day, so no build."
     },
     {
