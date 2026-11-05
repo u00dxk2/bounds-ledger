@@ -3554,6 +3554,20 @@
       "readCommand": "node scripts/open-pulls.mjs --selftest",
       "created": "2026-11-04",
       "updated": "2026-11-04"
+    },
+    {
+      "id": "A-97",
+      "title": "Public README and page sentences that say more than their source, from the 2026-11-04 night claims pass",
+      "type": "action",
+      "status": "open",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-11-06",
+      "notes": "Minted late on 2026-11-04 MT, on the overnight repair night, item 3. A read-only Codex claims pass (workdir checked; 461 factual sentences by its own coverage table, not re-counted) covered README.md, docs/lane-brief.md, the page text in scripts/render-site.mjs, the last three daily reports and the open rows here. Each finding below was then read against source by the lead. None is a claim about a person. README.md and the renderer were not changed that night, by the night's instruction; three sentences of the David-facing docs/lane-brief.md were narrowed.\nCONFIRMED, each says more than the code does: (1) README.md:30 and scripts/render-site.mjs:903 say every number or row links to its primary source; the link on a row is its upstream constant table, which holds the citation key, and generated pins all point at raw.githubusercontent.com. (2) README.md:112 counts nine more legs and the list omits check:lines; the housekeeping inventory of 2026-11-04 found this. (3) README.md:139 calls npm install a no-op; it runs prepare, which sets core.hooksPath. (4) README.md:148 says indicators never run in CI; their --selftest forms do, their live reads do not. (5) README.md:154 says any change upstream trips the mirror diff and that it catches everything inside one repo; reverify.mjs filters to constants/*.md and the root README. (6) README.md:156 says pins cover every surface the ledger cites; they cover the URLs in ledger/claims.json, and mirrored files also cite other hosts.\nPLAUSIBLE, unsourced superlatives with no measurement behind them: README.md:24 and :188 (widely-cited), README.md:32 (most visitors), README.md:203 (widely-cited numbers go unchecked for months, plural, from one documented case), scripts/render-site.mjs:884 (where most numbers in circulation sit).\nDATED, not false: README.md:89 reads 34 audited rows as of 2026-09-26, and the live audit reads 106; the sentence carries its date and is five weeks old.\nREFUTED by the lead: Codex called the quotation at README.md:73 upstream's-words-not-found. It is verbatim in the body of upstream commit 01a0bc8 (an upstream sha; it does not exist in this repo), a surface our mirror never carries. Also refuted: its two findings on A-47's slice 16 and slice 23 draw fields, which are claims named before reading with their verdicts recorded beside them. pragma: allowlist sha",
+      "onTrigger": "On 2026-11-06: draft the narrower sentence for each CONFIRMED item, run the outward gate on the draft, and ship the ones that pass. A change to scripts/render-site.mjs re-renders the public page. Treat the PLAUSIBLE ones as a judgment call: cut the superlative or record why it stays.",
+      "closeWhen": "Each sentence listed in the notes is corrected through the outward gate, or dispositioned here with its reason.",
+      "readCommand": "git grep -n -E \"primary source beside|links to its primary source|those two plus nine more|is a no-op|never run in CI|Any change upstream trips|across every surface\" -- README.md scripts/render-site.mjs",
+      "created": "2026-11-04",
+      "updated": "2026-11-04"
     }
   ],
   "meta": {

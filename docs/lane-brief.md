@@ -139,7 +139,7 @@
 
 ---
 
-The most-used index of Erdős problems lists a number that two later results have beaten. Below is everything behind the correction that was sent, including what we did *not* check.
+An index of Erdős problems lists a number that two later results have beaten. Below is everything behind the correction that was sent, including what we did *not* check.
 
 ---
 
@@ -149,7 +149,7 @@ There's an old Erdős puzzle: split the numbers 1 to 2N into two equal halves. N
 
 Nobody knows the exact value. What exists is a bracket - a floor and a ceiling that it must sit between. Lowering the ceiling means someone found a cleverer split. That's a search problem, which is why AI systems have been hammering on it: the ceiling has dropped three times since January.
 
-[erdosproblems.com/36](https://www.erdosproblems.com/36) - the reference page most people land on for this problem - still shows the January ceiling. It was last edited 23 January 2026.
+[erdosproblems.com/36](https://www.erdosproblems.com/36) still shows the January ceiling. It was last edited 23 January 2026.
 
 **What the page shows:** `0.379005 < c < 0.380876`
 **What the field's curated table shows:** `0.379005 < c < 0.380868`
@@ -170,7 +170,7 @@ The correction is one line: the ceiling is 0.380868, not 0.380876.
 
 Honestly? The number itself barely matters. The difference is eight parts in a million, nobody's work breaks because of it, and a stale bound harms no one on a clock. If this were only about the number, I'd say drop it.
 
-It matters because it is **the exact thing this lane was built to do, actually happening**. The premise was that published records drift faster than the pages citing them get updated, and that a machine watching continuously would catch it. That premise is now demonstrated rather than argued - on the field's most-used index, on the very first surface we watched.
+It matters because it is **the exact thing this lane was built to do, actually happening**. The premise was that published records drift faster than the pages citing them get updated. That is now demonstrated rather than argued, on the very first surface we watched. The catch came from the comparison that started this lane, before the continuous alarm existed.
 
 Until now that catch had an audience of one: us. The lane has produced **zero external acknowledgements**, and that number is the whole point - a steward nobody has ever confirmed is right is just a script. Sending this was the shortest path from "we think this works" to someone outside saying so.
 
