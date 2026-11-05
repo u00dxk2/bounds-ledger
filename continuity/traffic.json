@@ -361,6 +361,90 @@
       "viewUniques": 0,
       "clones": 5,
       "cloneUniques": 3
+    },
+    "2026-10-22": {
+      "views": 0,
+      "viewUniques": 0,
+      "clones": 91,
+      "cloneUniques": 28
+    },
+    "2026-10-23": {
+      "views": 0,
+      "viewUniques": 0,
+      "clones": 30,
+      "cloneUniques": 5
+    },
+    "2026-10-24": {
+      "views": 0,
+      "viewUniques": 0,
+      "clones": 108,
+      "cloneUniques": 33
+    },
+    "2026-10-25": {
+      "views": 0,
+      "viewUniques": 0,
+      "clones": 79,
+      "cloneUniques": 30
+    },
+    "2026-10-26": {
+      "views": 1,
+      "viewUniques": 1,
+      "clones": 75,
+      "cloneUniques": 26
+    },
+    "2026-10-27": {
+      "views": 0,
+      "viewUniques": 0,
+      "clones": 56,
+      "cloneUniques": 20
+    },
+    "2026-10-28": {
+      "views": 0,
+      "viewUniques": 0,
+      "clones": 41,
+      "cloneUniques": 12
+    },
+    "2026-10-29": {
+      "views": 2,
+      "viewUniques": 2,
+      "clones": 71,
+      "cloneUniques": 18
+    },
+    "2026-10-30": {
+      "views": 1,
+      "viewUniques": 1,
+      "clones": 155,
+      "cloneUniques": 38
+    },
+    "2026-10-31": {
+      "views": 0,
+      "viewUniques": 0,
+      "clones": 126,
+      "cloneUniques": 21
+    },
+    "2026-11-01": {
+      "views": 2,
+      "viewUniques": 2,
+      "clones": 249,
+      "cloneUniques": 84
+    },
+    "2026-11-02": {
+      "views": 0,
+      "viewUniques": 0,
+      "clones": 90,
+      "cloneUniques": 23
+    },
+    "2026-11-03": {
+      "views": 0,
+      "viewUniques": 0,
+      "clones": 60,
+      "cloneUniques": 16
+    },
+    "2026-11-04": {
+      "views": 1,
+      "viewUniques": 1,
+      "clones": 76,
+      "cloneUniques": 25
     }
   },
   "rollups": {
@@ -568,6 +652,11 @@
       "window": "14d",
       "viewUniques": 2,
       "cloneUniques": 255
+    },
+    "2026-11-05": {
+      "window": "14d",
+      "viewUniques": 7,
+      "cloneUniques": 283
     }
   }
 }
