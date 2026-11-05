@@ -42,7 +42,9 @@ const RUNS = `${REPO}/actions/workflows/reverify.yml`;
  *   - font wrappers (\mathbf \mathbb \mathrm, braced or not) drop to their letters;
  *   - the named symbols in SYMBOLS become their Unicode characters;
  *   - `^x` / `_x` become Unicode super/subscripts when every character has one; a subscript that
- *     cannot be written that way is put in parentheses (`\mu_{\mathbb{Z}^2}` → `μ(Z²)`);
+ *     cannot be written that way keeps the plain-text underscore (`\mu_{\mathbb{Z}^2}` → `μ_Z²`).
+ *     NOT parentheses: `μ(Z²)` reads as a function applied to Z², a different relation (Codex r1,
+ *     2026-11-05);
  *   - `\_` is an escaped underscore and reads as a subscript marker.
  * ANYTHING LEFT OVER (a backslash, a brace, a `^`, a `_` or an unmatched `$`) is a REFUSAL: it
  * throws, naming the title, so a new upstream title the rule does not cover fails the render rather
@@ -67,9 +69,10 @@ function plainMath(tex, title) {
   });
   // Superscripts first, so a subscript that holds one (`_{Z^2}`) sees the finished `Z²`.
   s = s.replace(/\^\{([^{}]*)\}|\^(.)/gu, (m, a, b) => scriptOf(a ?? b, SUP, (x) => (x === "∞" ? "^∞" : `^${x}`)));
-  s = s.replace(/_\{([^{}]*)\}|_(.)/gu, (m, a, b) => scriptOf(a ?? b, SUB, (x) => `(${x})`));
+  // Every raw `_` is consumed here, so an `_` left afterwards is only this fallback's own.
+  s = s.replace(/_\{([^{}]*)\}|_(.)/gu, (m, a, b) => scriptOf(a ?? b, SUB, (x) => `_${x}`));
   // `^∞` is the one superscript with no Unicode form; `L^∞` is how it is written in plain text.
-  if (/[\\{}_]|\^(?!∞)/.test(s)) throw new Error(`plainTitle: left over after conversion in "${title}": ${s}`);
+  if (/[\\{}]|\^(?!∞)/.test(s)) throw new Error(`plainTitle: left over after conversion in "${title}": ${s}`);
   return s;
 }
 
@@ -77,6 +80,10 @@ export function plainTitle(title) {
   const t = String(title);
   const parts = t.split("$");
   if (parts.length % 2 === 0) throw new Error(`plainTitle: unmatched $ in "${t}"`);
+  // The refusal covers the prose too (Codex r1): `R^4` outside `$…$` would otherwise pass unconverted.
+  for (const p of parts.filter((_, i) => i % 2 === 0)) {
+    if (/[\\{}^_]/.test(p)) throw new Error(`plainTitle: TeX markup outside $…$ in "${t}"`);
+  }
   const out = parts.map((p, i) => (i % 2 ? plainMath(p, t) : p)).join("");
   if (/[\\$]/.test(out)) throw new Error(`plainTitle: left over after conversion in "${t}": ${out}`);
   return out;
@@ -88,8 +95,12 @@ export function pageTitle(r) {
   return `${plainTitle(r.title)}: upper and lower bounds (${r.id}) — Bounds Ledger`;
 }
 
+// Each clause names something the page body shows (Codex r1 claims pass, 2026-11-05): most rows say
+// "tracked since … no movement seen yet", so NOT "when each row last changed"; the page links the
+// upstream file and offers a copyable citation, so NOT "the source to cite"; the daily re-check is
+// the footer's own sentence.
 export function pageDescription(r) {
-  return `The upper and lower bounds listed for ${plainTitle(r.title)} in teorth/optimizationproblems, when each row last changed, the source to cite, and a daily re-check against upstream.`;
+  return `The last-listed upper and lower bounds for ${plainTitle(r.title)} in teorth/optimizationproblems, with any change this ledger has seen since it began tracking, a link to the upstream source file, and a citation you can copy. Re-checked against upstream by a daily scheduled job.`;
 }
 
 // Every page plus the index, for search engines. robots.txt cannot point at it: crawlers read
@@ -1121,19 +1132,41 @@ async function selftest() {
     assert.throws(() => plainTitle("Constant on $\\Sigma_3$"), /no rule for \\Sigma/, "an unknown command must refuse, not publish");
     assert.throws(() => plainTitle("Constant on $X^{\\frac12}"), /unmatched \$/, "an unmatched $ must refuse");
     assert.throws(() => plainTitle("Constant $\\mathbf{R}^{\\alpha}$"), /no rule/, "a nested unknown inside a script must refuse");
+    assert.throws(() => plainTitle("Constant in R^4"), /outside \$/, "TeX markup in the prose, outside $…$, must refuse too");
+    assert.throws(() => plainTitle("Exponent $x^{d}$"), /left over/, "a superscript with no Unicode form must refuse, not publish a caret");
+    // The description names only what the page body shows (Codex r1 claims pass).
+    const desc = (head.match(/content="([^"]*)"/) || [])[1] || "";
+    assert.ok(desc.length > 50, "positive control: the description must exist before its clauses are judged");
+    assert.ok(!/last changed|source to cite/i.test(desc), `the description must not promise a change date or a cited source the page does not show: ${desc}`);
     const sm = sitemapXml(["9z", "10a", "2a"]);
     assert.ok(sm.includes(`<loc>${SITE}</loc>`) && sm.includes(`<loc>${SITE}c/9z.html</loc>`), "the sitemap must list the index and every page");
     assert.ok(sm.indexOf("c/2a.html") < sm.indexOf("c/9z.html") && sm.indexOf("c/9z.html") < sm.indexOf("c/10a.html"), "the sitemap lists pages in numeric order, so a regenerated file diffs cleanly");
+    // EVERY LaTeX title upstream had at 87b4ebb (an upstream sha; it does not exist in this repo), 22 of
+    // them, each read by a human and by Codex r1, plus one plain control. A changed SYMBOLS entry or
+    // script rule now fails here by name (r1: `kappa → π` passed the old ten). pragma: allowlist sha
     for (const [tex, plain] of [
+      ["The irrationality measure of $\\pi$", "The irrationality measure of π"],
+      ["The irrationality measure of $\\Gamma(1/4)$", "The irrationality measure of Γ(1/4)"],
+      ["The $L^1$ Poincaré constant on the Hamming cube", "The L¹ Poincaré constant on the Hamming cube"],
+      ["Smallest $n$ for which the value of $BB(n)$ is undecidable", "Smallest n for which the value of BB(n) is undecidable"],
+      ["Asymptotic constant for the off-diagonal Ramsey numbers $R(3,k)$", "Asymptotic constant for the off-diagonal Ramsey numbers R(3,k)"],
+      ["The thin shell conjecture (variance of $|X|^2$)", "The thin shell conjecture (variance of |X|²)"],
+      ["Rate at which $\\kappa(n)$ approaches $1$", "Rate at which κ(n) approaches 1"],
+      ["Ihara constant over $\\mathbf{F}_2$", "Ihara constant over F₂"],
+      ["Falconer distance problem in $\\mathbf{R}^2$", "Falconer distance problem in R²"],
       ["Sphere packing density in $\\mathbf{R}^4$", "Sphere packing density in R⁴"],
-      ["Square-lattice self-avoiding walk connective constant $\\mu_{\\mathbb{Z}^2}$", "Square-lattice self-avoiding walk connective constant μ(Z²)"],
-      ["Asymptotic line-count constant for smooth degree-$d$ surfaces in $\\mathbb P^3$ in characteristic $0$", "Asymptotic line-count constant for smooth degree-d surfaces in P³ in characteristic 0"],
+      ["Square-lattice self-avoiding walk connective constant $\\mu_{\\mathbb{Z}^2}$", "Square-lattice self-avoiding walk connective constant μ_Z²"],
+      ["Hadwiger covering / illumination number in $\\mathbb{R}^3$", "Hadwiger covering / illumination number in R³"],
+      ["Maximal number of relevant variables in degree-$d$ Boolean functions", "Maximal number of relevant variables in degree-d Boolean functions"],
       ["Restriction exponent for the 2-sphere (Stein's $L^\\infty$ extension problem)", "Restriction exponent for the 2-sphere (Stein's L^∞ extension problem)"],
+      ["Centered Hardy–Littlewood maximal constant in dimension $2$", "Centered Hardy–Littlewood maximal constant in dimension 2"],
+      ["Erdős–Szemerédi $3$-sunflower-free capacity", "Erdős–Szemerédi 3-sunflower-free capacity"],
       ["Davenport constant for $C_n^3$", "Davenport constant for Cₙ³"],
       ["$\\mathrm{GL}_2$ Ramanujan conjecture exponent", "GL₂ Ramanujan conjecture exponent"],
+      ["Burgess-quality subconvexity exponent for Dirichlet $L$-functions", "Burgess-quality subconvexity exponent for Dirichlet L-functions"],
+      ["10-point multi-point Seshadri constant on $\\mathbb{P}^2$", "10-point multi-point Seshadri constant on P²"],
+      ["Asymptotic line-count constant for smooth degree-$d$ surfaces in $\\mathbb P^3$ in characteristic $0$", "Asymptotic line-count constant for smooth degree-d surfaces in P³ in characteristic 0"],
       ["Ramsey multiplicity constant of $K\\_4$", "Ramsey multiplicity constant of K₄"],
-      ["The irrationality measure of $\\Gamma(1/4)$", "The irrationality measure of Γ(1/4)"],
-      ["The thin shell conjecture (variance of $|X|^2$)", "The thin shell conjecture (variance of |X|²)"],
       ["Matrix multiplication exponent", "Matrix multiplication exponent"],
     ]) assert.equal(plainTitle(tex), plain);
   }
