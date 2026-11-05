@@ -14,7 +14,17 @@ git rev-parse HEAD origin/main
 git rev-list --count origin/main...HEAD
 npm run verify > tmp/verify-out.txt 2>&1
 node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml
+npm run upstream
+npm run traffic
 ```
+
+**`npm run upstream` and `npm run traffic` joined the first action on 2026-11-05.** `npm run upstream` is
+`A-77`'s caller, decided that day as option (a) of its onTrigger: the filed-report check runs in this
+cadence beside the gate instead of when someone remembers (option (b), a scheduled workflow filing a
+public issue, was not chosen: it adds an automation that writes to a public surface, for a check whose
+population is three issues). Exit 1 names an issue whose state moved; read it before anything else.
+`npm run traffic` keeps the 14-day GitHub traffic window from being lost (it had not run from 09-25 to
+11-05, and those days are gone); commit `continuity/traffic.json` with the day's close.
 
 Run from the repo root, one command per line, **no leading `cd`** and no `&&` chain — a compound the
 permission classifier cannot statically resolve parks the pane at a silent prompt that reads exactly

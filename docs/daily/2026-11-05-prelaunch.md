@@ -41,13 +41,31 @@ Every constant page now has a plain-text title a mathematician can search for, a
 
 ## Recommendation
 
-- David: verify the site in Google Search Console and submit `sitemap.xml`. The steps are on card `207bbc2c`. The goal's first impressions read is due 11-11.
+- David: press Verify in Google Search Console and submit `sitemap.xml` (card 901dddba). He answered the first card (`207bbc2c`) with the verification file at 17:26Z; it is live (`33f5001`). The goal's first impressions read is due 11-11.
 
 ## On hold pending data
 
-- None.
+- The first Search Console read, due 11-11, waits on `W-18` (the watch for that read), which in turn waits on card 901dddba. If David has not pressed Verify by then, the read is blocked on that card, not empty.
 
 ## State Appendix
+
+### Close
+
+ACTION: COMPLETED · item goals-reset-2026-11-05 (search-reach setup week) · P3 msg e46d10b4
+
+- The acceptance condition is met. No served `c/` title carries `$` or a backslash. `sitemap.xml` serves 200 with 121 URLs. CI page-check.yml and reverify.yml are green on `d81a1af`. The card went to David.
+- Since the P3 post: David sent the verification file (card `207bbc2c`). It is committed in `33f5001` and serves 200 with Google's token (17:31Z). Card 901dddba asks for Verify and the sitemap submission.
+- Ledger delta:
+  - `W-16` (watch on upstream issue 289) re-dated to 11-12. Its first read ran today: issue OPEN, no comments.
+  - `W-3` (the erdosproblems.com/36 acknowledgement watch) re-dated to 11-12. Both page legs read "page unchanged".
+  - `A-77` (who runs the filed-report check) has its caller DECIDED rather than a third bare re-date: `npm run upstream` now runs in the morning block of `docs/daily-config.md`, beside `npm run traffic`. The row is re-dated to 11-12 for its red-arm and its pull-request scope question.
+  - `W-18` (the watch for the first Search Console read) was minted for 11-11.
+- Due-gate verification: `check-due-gates-dispositioned.mjs` printed "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT (taken 2026-11-05).
+- Pending reads:
+  - `W-18`, 11-11, Search Console impressions, gated on card 901dddba.
+  - `A-50` (the import-is-inert selftest), due 11-06.
+  - `A-97` (overstated sentences about our tooling), due 11-06.
+  - `A-77` (the filed-report check's red-arm), `W-16` (issue 289 watch) and `W-3` (the erdosproblems.com/36 watch), all due 11-12.
 
 ### P1 selection packet
 
