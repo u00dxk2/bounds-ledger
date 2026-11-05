@@ -28,6 +28,58 @@ function runCheck(env = {}) {
   }
 }
 
+// FACTS THE LOADED DOCS STATE (2026-11-05). AGENTS.md and CLAUDE.md are what an agent acts on, and each
+// fact below would mislead it silently if it went stale. Read from the file that defines the value, never
+// retyped from the doc. Near the top so a stale fact names itself before the slower drift legs run.
+// CEILING: eight named facts, not a parser of the docs; a sentence not listed here is unguarded.
+{
+  const docFile = async (p) => (await readFile(join(ROOT, p), "utf8")).replace(/\r\n/g, "\n");
+  const noComments = (t) => t.replace(/^[ \t]*#.*$/gm, "");
+  const scripts = JSON.parse(await docFile("package.json")).scripts;
+  const agents = await docFile("AGENTS.md");
+  const claude = await docFile("CLAUDE.md");
+  const hook = await docFile(".githooks/pre-commit");
+  const reverifyWf = noComments(await docFile(".github/workflows/reverify.yml"));
+  const pageWf = noComments(await docFile(".github/workflows/page-check.yml"));
+  const npmLegs = (s) => s.split("&&").map((c) => c.trim()).filter((c) => c.startsWith("npm run ")).map((c) => c.slice("npm run ".length));
+
+  // 1. AGENTS.md § Commands: a green verify receipt covers every check leg except these two.
+  assert.deepEqual(npmLegs(scripts["verify:steps"]), npmLegs(scripts.check).filter((l) => l !== "check:entry-guard" && l !== "check:notation"), "doc fact 1: verify:steps must be every check leg except check:entry-guard and check:notation (AGENTS.md § Commands)");
+
+  // 2. AGENTS.md § Hard invariants: exactly these three outputs reach the public drift issue.
+  const findingWriters = reverifyWf.split("\n").filter((l) => /(?:\btee\b[^|]*|>>?\s*)finding\.txt/.test(l)).map((l) => l.trim());
+  assert.deepEqual(findingWriters, ["run: node scripts/reverify.mjs --check 2>&1 | tee -a finding.txt", "run: node scripts/check-claims.mjs 2>&1 | tee -a finding.txt", "run: node scripts/extract-ds1.mjs --check 2>&1 | tee -a finding.txt"], "doc fact 2: the steps writing finding.txt changed; that file is published verbatim (AGENTS.md § Hard invariants)");
+
+  // 3. AGENTS.md § Commands: the six resnap steps, in order.
+  assert.deepEqual(scripts.resnap.split("&&").map((c) => c.trim()), ["node scripts/reverify.mjs --snapshot", "node scripts/extract-pins.mjs", "node scripts/render-state-block.mjs", "node scripts/render-site.mjs", "node scripts/open-pulls.mjs --fetch", "node scripts/render-constant-pages.mjs"], "doc fact 3: the resnap steps differ from AGENTS.md § Commands");
+
+  // 4. AGENTS.md and CLAUDE.md: which claims are hand-edited.
+  const claimsDoc = JSON.parse(await docFile("ledger/claims.json"));
+  const handNumbers = (Array.isArray(claimsDoc) ? claimsDoc : claimsDoc.claims).filter((c) => !c.generated).map((c) => Number(c.id.match(/^C-(\d+)$/)?.[1]));
+  assert.ok(handNumbers.length > 0 && handNumbers.every(Number.isInteger), "doc fact 4: every hand claim must be numbered C-n");
+  for (const [name, text] of [["AGENTS.md", agents], ["CLAUDE.md", claude]]) {
+    assert.equal(Number(text.match(/C-1…C-(\d+)/)?.[1]), Math.max(...handNumbers), `doc fact 4: ${name}'s hand-claim range disagrees with ledger/claims.json`);
+  }
+
+  // 5. AGENTS.md § Hard invariants: npm install arms the committed hook, whose first leg is the secret scan.
+  assert.ok(agents.includes("git config core.hooksPath .githooks") && scripts.prepare.includes("git config core.hooksPath .githooks") && /^node scripts\/history-sweep\.mjs --staged/m.test(hook), "doc fact 5: the hook path or the hook's secret scan differs from AGENTS.md § Hard invariants");
+
+  // 6. AGENTS.md § Commands: the public-tree checks run in the pre-commit hook.
+  for (const c of ["check-orphan-shas.mjs", "check-quoted-replies.mjs --staged", "check-render-ids.mjs"]) {
+    assert.ok(hook.includes(`node scripts/${c}`), `doc fact 6: the pre-commit hook no longer runs ${c} (AGENTS.md § Commands)`);
+  }
+
+  // 7. AGENTS.md § What this is: what CI does and does not compare against the committed pages.
+  assert.ok(/^\s*run: node scripts\/render-site\.mjs --check\s*$/m.test(pageWf) && /fetch-depth: 0\b/.test(pageWf), "doc fact 7: page-check.yml must run render-site --check at fetch-depth 0 (AGENTS.md § What this is)");
+  assert.ok(/^\s*run: node scripts\/render-ramsey\.mjs --check\s*$/m.test(reverifyWf), "doc fact 7: reverify.yml must run render-ramsey --check (AGENTS.md § What this is)");
+  assert.ok(!`${pageWf}\n${reverifyWf}`.includes("render-constant-pages.mjs --check"), "doc fact 7: CI now runs render-constant-pages --check, so AGENTS.md § What this is is stale");
+
+  // 8. AGENTS.md § Hard invariants: a feature-branch push gets no run; a pull request into main does.
+  for (const [name, text] of [["reverify.yml", reverifyWf], ["page-check.yml", pageWf]]) {
+    assert.ok(/^\s*push:\s*\n(?:\s*\n)*\s*branches: \[main\]/m.test(text) && /^\s*pull_request:\s*\n(?:\s*\n)*\s*branches: \[main\]/m.test(text), `doc fact 8: ${name}'s push or pull_request trigger differs from AGENTS.md § Hard invariants`);
+  }
+}
+
 // The live side is a mirror-shaped copy: constants/ plus the mirrored root files.
 // manifest.json is deliberately NOT copied — it is ours, not upstream's.
 const freshLive = async () => {
