@@ -75,7 +75,7 @@ function runCheck(env = {}) {
   // 7. AGENTS.md § What this is: what CI does and does not compare against the committed pages.
   assert.ok(/^\s*run: node scripts\/render-site\.mjs --check\s*$/m.test(pageWf) && /fetch-depth: 0\b/.test(pageWf), "doc fact 7: page-check.yml must run render-site --check at fetch-depth 0 (AGENTS.md § What this is)");
   assert.ok(/^\s*run: node scripts\/render-ramsey\.mjs --check\s*$/m.test(reverifyWf), "doc fact 7: reverify.yml must run render-ramsey --check (AGENTS.md § What this is)");
-  assert.ok(!/render-constant-pages\.mjs --check|npm run check(?::pages)?(?![\w:-])/.test(`${pageWf}\n${reverifyWf}`), "doc fact 7: CI now runs render-constant-pages --check, so AGENTS.md § What this is is stale");
+  assert.ok(!/^\s*run: .*(?:render-constant-pages\.mjs --check|npm run check(?::pages)?(?![\w:-]))/m.test(`${pageWf}\n${reverifyWf}`), "doc fact 7: CI now runs render-constant-pages --check, so AGENTS.md § What this is is stale");
 
   // 8. AGENTS.md § Hard invariants: a feature-branch push gets no run; a pull request into main does.
   for (const [name, text] of [["reverify.yml", reverifyWf], ["page-check.yml", pageWf]]) {
