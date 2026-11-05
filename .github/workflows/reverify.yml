@@ -501,14 +501,13 @@ jobs:
           if [ "$code" -eq 0 ]; then exit 0; fi
           if [ "$code" -eq 3 ]; then
             # exit 3 = the response was not the brief. From CI that is EXPECTED and permanent:
-            # /t/* went behind a human sign-in wall on 2026-08-02, and CI holds no CC_PROMPTS_PIN,
-            # so an unauthenticated runner can never see this page. Filing an issue for it would
-            # create a permanently-open alarm that can never be closed by any action — which is
-            # this lane's founding defect wearing a different hat. Same shape as C-7: the check is
-            # simply not runnable from here, and the LOCAL `npm run check` is the authoritative
-            # read. Deliberately NOT solved by putting the PIN in repo secrets: this repo is
-            # heading for a public flip (A-13), and a portfolio-wide credential does not belong in
-            # a soon-to-be-public repo's CI for a check a local run already covers.
+            # /t/* has been sign-in-only since 2026-09-04 (Google session), and since 2026-10-05
+            # check-brief.mjs sends no credential at all, so no runner can see this page. Filing an
+            # issue for it would create a permanently-open alarm that can never be closed by any
+            # action — which is this lane's founding defect wearing a different hat. Same shape as
+            # C-7: the check is simply not runnable from here (advisory under A-41). Deliberately NOT
+            # solved by putting a credential in repo secrets: this repo has been public since
+            # 2026-08-08, and a portfolio-wide credential does not belong in a public repo's CI.
             echo "brief check is not runnable from CI (no machine credential; /t/* is gated) — local \`npm run check\` is authoritative. Not filing an issue."
             exit 0
           fi

@@ -41,17 +41,17 @@ and the day would have closed reporting no blockers. Read the `state` field: `wa
 ALREADY replied and the ball is with us. Needs `CC_PROMPTS_PIN`; if it is missing the command fails
 loudly, which is correct — an unread board is not an empty board.
 
-**Line 3 MUST print `0`.** Any other number means your HEAD is not the commit CI read, so line 5's
+**The `git rev-list --count` line MUST print `0`.** Any other number means your HEAD is not the commit CI read, so the `check-ci-status` line's
 verdict — green or red — describes a different tree. Both polarities demonstrated on 2026-08-27 at
 adoption (KP-78): with two unpushed commits it printed `2`; after the push, `0`.
 
-**Line 4 is the day's first GATE command and the reason this fence exists** (it was "the first real
-command" until line 1 went in above it on 2026-08-28) — `npm run verify` writes
+**The `npm run verify` line is the day's first GATE command and the reason this fence exists** (it was "the first real
+command" until other lines went in above it from 2026-08-28) — `npm run verify` writes
 `tmp/.verify-receipt.json` at the current HEAD, and `agent-status` refuses the day's first bus post
 without one. A bare `npm run check` leaves you refused later, at a worse moment. Its output goes to a
 file because piping it is refused by the pre-commit corruption guard, correctly.
 
-**Line 4 takes ≈3 minutes (~450 network requests; measured 2026-08-30, 15:04→15:07Z) — give the call a
+**`npm run verify` takes ≈3 minutes (~450 network requests; measured 2026-08-30, 15:04→15:07Z) — give the call a
 10-minute tool timeout.** That is longer than the common 120-second default, so a run left on the
 default can be cut off before it finishes. Do NOT background it instead: on this machine a
 backgrounded run's exit code is only knowable from a completion notification, and the presence of
@@ -74,7 +74,7 @@ node scripts/sky.mjs check-posted-unpushed.mjs --project bounds-ledger
 
 Exit 0 GREEN (a completed run's headSha matches YOUR HEAD) · **2 UNKNOWN (never a pass)** · 3 RED. The second finds task-completes citing commits absent from origin >3h (exit 3 = findings).
 
-⚠ Keep `--workflow reverify.yml`, but **know which guard is actually protecting this lane** — checked live 2026-08-16 rather than inherited from the dispatch. The fleet warning is about multi-workflow repos where a cron workflow's success masks a red `ci.yml`; we have exactly one workflow, so `--workflow` disambiguates nothing here. What protects us is the **event filter**, which is unconditional in `classifyCiRuns` and not gated on the flag: a `schedule` run can prove RED but never GREEN.
+⚠ Keep `--workflow reverify.yml`, but **know which guard is actually protecting this lane** — checked live 2026-08-16 rather than inherited from the dispatch. The fleet warning is about multi-workflow repos where a cron workflow's success masks a red `ci.yml`; this lane now has three workflows (`reverify.yml`, `page-check.yml`, `history-sweep.yml`; read `.github/workflows/`), so `--workflow` does name which one you mean, and the primer runs the read once per build-triggered workflow. What protects us is the **event filter**, which is unconditional in `classifyCiRuns` and not gated on the flag: a `schedule` run can prove RED but never GREEN.
 
 That filter is load-bearing here, because `reverify.yml` **is** the scheduled job (`cron: "17 9 * * *"`). Runs pile up at one sha: at `fd70f11` there were two — a `schedule` success at 09:25Z and a `push` success the previous 19:57Z — and the script counted `1 non-scheduled success`. On any quiet morning where HEAD has not moved since the cron, the overnight run is the **only** run at that sha, and an event-blind read would call that green while nothing had validated the commit. Do not "simplify" to a bare `gh run list --commit`.
 
@@ -84,15 +84,7 @@ Both scripts carry `--help` / `--selftest`. Read the exit code by redirect, neve
 
 ⚠ **A FAILED RUN IS NOT A FAILED CHECK — read the JOB layer before believing this script in either direction (added 2026-08-26).** `check-ci-status.mjs` reads the run-level `conclusion`, and during the GitHub Actions outage that field was wrong **both ways on this repo inside four minutes**: `8a35eaf` reported `completed/failure` with both jobs `queued` and **zero steps executed**, while `1cb3f65` reported `startup_failure` over a `check` job that was `completed/success` with **29 of 29 steps**, drift and claims legs included. Neither verdict was a verdict. Read `gh api repos/u00dxk2/bounds-ledger/actions/jobs/<id>` — positive control that the endpoint reports real conclusions is a settled run (`c25cecd` → `completed/success`, 29 and 7 steps). The script is not wrong, it is **insufficiently specific**, and the gap opens only when the platform is degraded, which is exactly when it is read most anxiously.
 
-⚠ **`check-ci-status.mjs` reads your LOCAL HEAD, so run it from a `main` checkout or its verdict is about a different commit.** Near-miss 2026-08-17: it printed *"GREEN — 1 completed non-scheduled success(es) for HEAD"* while I was checked out on a feature branch, so the green described that branch's PR run and said nothing about `main`, which was red at the time. The script names the sha it used on its first line (`local HEAD cf1e2786a4`) — read that line, not just the verdict. The prompt's standing rule already says to discriminate with `git rev-parse HEAD origin/main`, but it frames that as the response to an UNKNOWN; this failure produced a confident **GREEN**, which is the direction nobody double-checks. Make the rev-parse unconditional:
-
-```
-git rev-parse HEAD origin/main
-git rev-list --count origin/main...HEAD
-node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml
-```
-
-**Line 2 MUST print `0`.** Any other number means your HEAD is not the commit CI read, so line 3's verdict — green or red — is about a different tree. Demonstrated both ways on 2026-08-27 at adoption (KP-78): with two unpushed commits it printed `2`; after the push, `0`. This replaced a one-line `&&` chain containing a `$(...)` comparison, which was correct as shell and could not be auto-approved by the permission classifier, so it PARKED the pane at a silent prompt that reads as a hang. One command per line; each exit code is read directly, never through a pipe.
+⚠ **`check-ci-status.mjs` reads your LOCAL HEAD, so run it from a `main` checkout or its verdict is about a different commit.** Near-miss 2026-08-17: it printed *"GREEN — 1 completed non-scheduled success(es) for HEAD"* while I was checked out on a feature branch, so the green described that branch's PR run and said nothing about `main`, which was red at the time. The script names the sha it used on its first line (`local HEAD cf1e2786a4`) — read that line, not just the verdict. The prompt's standing rule already says to discriminate with `git rev-parse HEAD origin/main`, but it frames that as the response to an UNKNOWN; this failure produced a confident **GREEN**, which is the direction nobody double-checks. Make the rev-parse unconditional: the first-action block at the top of this file already runs `git rev-parse HEAD origin/main` and `git rev-list --count origin/main...HEAD` before `check-ci-status`, and the count MUST print `0` (stated under that block; single-sourced there since 2026-11-04, when a second copy of the same three lines was removed from here). That pair replaced a one-line `&&` chain containing a `$(...)` comparison, which was correct as shell and could not be auto-approved by the permission classifier, so it PARKED the pane at a silent prompt that reads as a hang. One command per line; each exit code is read directly, never through a pipe.
 
 **Both answers demonstrated at adoption, 2026-08-16** (KP-78 — ship no detector without showing it can fail): `--workflow reverify.yml` at HEAD `fd70f11` → exit 0, *"GREEN — 1 completed non-scheduled success(es) for HEAD"*; `--workflow nonexistent.yml` at the same HEAD → exit 2, *"UNKNOWN — CI read failed/unparseable — UNKNOWN, not green"*. It distinguishes; it does not blanket-pass.
 

@@ -8,13 +8,14 @@ Itches noticed but not done. The housekeeping pass reads this FIRST, then adds *
 
 ## Open
 
-- [ ] 2026-08-11 — the README's "Current state" block is hand-maintained and went stale on nearly every number in eight days (sha, file count, claim counts, self-test count, hand-claim count — all corrected tonight). A lane whose product is *noticing when numbers drift* should not be hand-copying its own. Candidate: have `npm run check` emit the block, or a linter that fails when README's figures disagree with live output. Not built tonight — it needs the W-4 both-sides demonstration, and half a detector is worse than none (noticed while fixing the stale figures)
 - [ ] 2026-07-29 — six dated docs still say `/daily-close` (cold-starts 07-24/25/26/27/29, daily 07-25). Correct as historical record — they describe what the rail was called then. Leave them; this line exists so the next agent doesn't "discover" them again and re-sweep (noticed during the 2026-07-29 rename sweep)
 - [ ] 2026-08-11 — the `tmp/` sweep needs a rule, not a habit. Tonight's pass used "dotfiles are live bus/loop state, everything else is a one-off artifact", which held for all 76 files — but it is a convention nothing enforces, so the first live file written without a leading dot gets deleted by the next agent applying it. Either document the rule at the top of the directory or have the scripts write one-offs to a `tmp/scratch/` subdirectory (noticed while doing the sweep)
 
 ## Done
 
 _(strike-throughs land here with the date closed)_
+
+- [x] 2026-08-11 → found done 2026-11-04 (housekeeping night) — ~~the README's "Current state" block is hand-maintained and goes stale~~. It is generated: `scripts/render-state-block.mjs` writes it, `npm run check` runs it as `check:state`, and CI runs that check as a `reverify.yml` step. The line had stayed open after the fix landed
 
 - [x] 2026-10-03 (round 4, /refactor-pass, `A-71`) — ~~`esc` defined three times and the repository URL three times across the three page renderers, the report-a-row issue link built by hand twice~~. Moved into `scripts/lib/html.mjs` (`4baa57d`, pure: every published page re-rendered byte-identical, and the three page `--check` legs were shown failing on a mutation of the shared `esc`), then given its own `--selftest` wired into `npm test` and CI (`0050204`, each of its six checks shown failing on its own mutation). Picked because the code real users touch most is the published pages and coverage there was already dense; an export sweep found no dead exports. Not done, on purpose: splitting render-site / render-constant-pages (1,300 to 1,900 lines each, changed in nearly every `A-47` slice), which needs its own planned session. Also found: `.claude/p7-*` was not gitignored in this public repo; now it is
 

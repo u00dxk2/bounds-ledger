@@ -9,10 +9,10 @@ caller is a gate that never fires, which is this repo's founding defect wearing 
 ```
 npm run close:primer     # 1. tomorrow's cold-start primer must exist
 git status --porcelain   # 2. must be EMPTY — see the warning below
-npm run verify           # 3. gates + a receipt at the CURRENT HEAD
+npm run verify > tmp/verify-out.txt 2>&1   # 3. gates + a receipt at the CURRENT HEAD (this exact shape: AGENTS.md § Commands)
 ```
 
-**1. `npm run close:primer`** — fails when `docs/cold-starts/<tomorrow-MT>.md` is missing.
+**1. `npm run close:primer`** — fails when `docs/cold-starts/<tomorrow-MT>.md` is missing (`AGENTS.md` § Commands; `A-94` tracks that the fleet now names primers by the date written).
 Deliberately **not** in `npm run check` or CI: tomorrow's primer legitimately does not exist for most
 of the day, so a cadence placement would be red from midnight until close ran, and a permanently-red
 alarm carries as much information as a permanently-green one. Its self-test *is* in the offline
@@ -26,7 +26,7 @@ untidiness, it is **data that disappears silently when the session ends**. Found
 by a close-readiness sweep rather than by anyone remembering. When it is dirty, check the diff is
 purely additive (`git diff --numstat`, 0 removed lines) before committing.
 
-**3. `npm run verify`, not `npm run check`** — writes a receipt at the current HEAD.
+**3. `npm run verify`, not `npm run check`** — writes a receipt at the current HEAD. (The receipt rules are single-sourced in `AGENTS.md` § Commands; this is the close-time summary.)
 `agent-status` refuses a post claiming gate results unless a receipt exists at the HEAD you actually
 have; a receipt for another commit says nothing about the code in hand. Run it **after** the last
 commit, or the receipt is stale before you post. Never reach for `--no-verify-receipt` or
