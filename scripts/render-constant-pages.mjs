@@ -35,6 +35,73 @@ const SITE = "https://u00dxk2.github.io/bounds-ledger/";
 const RUNS = `${REPO}/actions/workflows/reverify.yml`;
 
 /**
+ * PLAIN-TEXT TITLES (2026-11-05, the search-reach setup week). Upstream's titles carry LaTeX source
+ * (`Sphere packing density in $\mathbf{R}^4$`), and nothing on these pages renders math, so a search
+ * result, a browser tab and the page heading all showed the raw source. This converts the LaTeX
+ * inside `$…$` by a STATED RULE, not a growing matcher:
+ *   - font wrappers (\mathbf \mathbb \mathrm, braced or not) drop to their letters;
+ *   - the named symbols in SYMBOLS become their Unicode characters;
+ *   - `^x` / `_x` become Unicode super/subscripts when every character has one; a subscript that
+ *     cannot be written that way is put in parentheses (`\mu_{\mathbb{Z}^2}` → `μ(Z²)`);
+ *   - `\_` is an escaped underscore and reads as a subscript marker.
+ * ANYTHING LEFT OVER (a backslash, a brace, a `^`, a `_` or an unmatched `$`) is a REFUSAL: it
+ * throws, naming the title, so a new upstream title the rule does not cover fails the render rather
+ * than publishing a mangled title. Extend SYMBOLS deliberately when that happens.
+ * The mirrored bound cells are NOT touched; this is for the title, description and heading only.
+ */
+const SYMBOLS = { pi: "π", kappa: "κ", mu: "μ", Gamma: "Γ", infty: "∞" };
+const SUP = { 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹", n: "ⁿ" };
+const SUB = { 0: "₀", 1: "₁", 2: "₂", 3: "₃", 4: "₄", 5: "₅", 6: "₆", 7: "₇", 8: "₈", 9: "₉", n: "ₙ" };
+
+function scriptOf(body, table, fallback) {
+  const chars = [...body];
+  return chars.every((ch) => table[ch]) ? chars.map((ch) => table[ch]).join("") : fallback(body);
+}
+
+function plainMath(tex, title) {
+  let s = tex.replace(/\\_/g, "_");
+  s = s.replace(/\\(?:mathbf|mathbb|mathrm)\s*\{([^{}]*)\}/g, "$1").replace(/\\(?:mathbf|mathbb|mathrm)\s+([A-Za-z])/g, "$1");
+  s = s.replace(/\\([A-Za-z]+)/g, (m, name) => {
+    if (!(name in SYMBOLS)) throw new Error(`plainTitle: no rule for \\${name} in "${title}"`);
+    return SYMBOLS[name];
+  });
+  // Superscripts first, so a subscript that holds one (`_{Z^2}`) sees the finished `Z²`.
+  s = s.replace(/\^\{([^{}]*)\}|\^(.)/gu, (m, a, b) => scriptOf(a ?? b, SUP, (x) => (x === "∞" ? "^∞" : `^${x}`)));
+  s = s.replace(/_\{([^{}]*)\}|_(.)/gu, (m, a, b) => scriptOf(a ?? b, SUB, (x) => `(${x})`));
+  // `^∞` is the one superscript with no Unicode form; `L^∞` is how it is written in plain text.
+  if (/[\\{}_]|\^(?!∞)/.test(s)) throw new Error(`plainTitle: left over after conversion in "${title}": ${s}`);
+  return s;
+}
+
+export function plainTitle(title) {
+  const t = String(title);
+  const parts = t.split("$");
+  if (parts.length % 2 === 0) throw new Error(`plainTitle: unmatched $ in "${t}"`);
+  const out = parts.map((p, i) => (i % 2 ? plainMath(p, t) : p)).join("");
+  if (/[\\$]/.test(out)) throw new Error(`plainTitle: left over after conversion in "${t}": ${out}`);
+  return out;
+}
+
+// What a search result shows. Says what the page holds and nothing it cannot back: the rows are the
+// LAST-LISTED ones (DISCLAIMER), so never "best known" or "record".
+export function pageTitle(r) {
+  return `${plainTitle(r.title)}: upper and lower bounds (${r.id}) — Bounds Ledger`;
+}
+
+export function pageDescription(r) {
+  return `The upper and lower bounds listed for ${plainTitle(r.title)} in teorth/optimizationproblems, when each row last changed, the source to cite, and a daily re-check against upstream.`;
+}
+
+// Every page plus the index, for search engines. robots.txt cannot point at it: crawlers read
+// robots.txt only at the host root (RFC 9309 § 2.3), and this site lives under /bounds-ledger/.
+// It is submitted in Search Console instead.
+export function sitemapXml(ids) {
+  const urls = [SITE, ...[...ids].sort((a, b) => a.localeCompare(b, "en", { numeric: true })).map((id) => `${SITE}c/${id}.html`)];
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${esc(u)}</loc></url>`).join("\n")}\n</urlset>\n`;
+}
+const SITEMAP = join(ROOT, "sitemap.xml");
+
+/**
  * WHEN WE LAST LOOKED, said on the page a citer actually lands on (2026-09-22). The index has
  * said this since 2026-08-27; the constant pages never did. Those pages are what a search result
  * or a "Cite this row" link reaches, which makes them the page this lane's user reads just before
@@ -965,12 +1032,12 @@ export function renderPage(r, sha, audits = loadAudits(), newer = loadNewerStore
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${esc(r.title)} (${esc(r.id)}) — Bounds Ledger</title>
-<meta name="description" content="${esc(`What this ledger has pinned for ${r.title}, mirrored from teorth/optimizationproblems at ${String(sha).slice(0, 7)}.`)}">
+<title>${esc(pageTitle(r))}</title>
+<meta name="description" content="${esc(pageDescription(r))}">
 <link rel="canonical" href="${esc(`${SITE}c/${r.id}.html`)}">
 <style>${STYLE}</style>
 <a class="back" href="${esc(`${SITE}#c-${r.id}`)}">&larr; all constants</a>
-<h1>${esc(r.title)}</h1>
+<h1>${esc(plainTitle(r.title))}</h1>
 <div class="id">${esc(r.id)}</div>
 ${reportLinks(r)}
 <dl>
@@ -1038,6 +1105,37 @@ async function selftest() {
   for (const forbidden of [/\brecord\b(?!ed)/i, /strongest known/i, /best known bound/i]) {
     const body = html.replace(DISCLAIMER, "");
     assert.ok(!forbidden.test(body), `a constant page must not claim a record — matched ${forbidden}`);
+  }
+
+  // PLAIN-TEXT TITLES (2026-11-05). Meaning first: a LaTeX title reaches <title>, the description and
+  // the heading with no `$` or backslash left, and the title never claims a record. Then the refusal:
+  // a construct the rule does not cover throws instead of publishing. Exact conversions last.
+  {
+    const texRow = { ...row, id: "9t", title: "Sphere packing density in $\\mathbf{R}^4$" };
+    const texHtml = renderPage(texRow, "abc1234def");
+    const head = (texHtml.match(/<title>.*?<\/title>\s*<meta name="description" content="[^"]*">/s) || [""])[0];
+    const h1 = (texHtml.match(/<h1>.*?<\/h1>/s) || [""])[0];
+    assert.ok(head.includes("Sphere packing density") && h1.includes("Sphere packing density"), "positive control: the title, description and heading must render before anything is asserted absent in them");
+    assert.ok(!/[$\\]/.test(head + h1), `a LaTeX title must not reach the title, description or heading raw: ${head} ${h1}`);
+    assert.ok(!/\brecord\b|best known|strongest/i.test(head), `the search title and description must not claim a record: ${head}`);
+    assert.throws(() => plainTitle("Constant on $\\Sigma_3$"), /no rule for \\Sigma/, "an unknown command must refuse, not publish");
+    assert.throws(() => plainTitle("Constant on $X^{\\frac12}"), /unmatched \$/, "an unmatched $ must refuse");
+    assert.throws(() => plainTitle("Constant $\\mathbf{R}^{\\alpha}$"), /no rule/, "a nested unknown inside a script must refuse");
+    const sm = sitemapXml(["9z", "10a", "2a"]);
+    assert.ok(sm.includes(`<loc>${SITE}</loc>`) && sm.includes(`<loc>${SITE}c/9z.html</loc>`), "the sitemap must list the index and every page");
+    assert.ok(sm.indexOf("c/2a.html") < sm.indexOf("c/9z.html") && sm.indexOf("c/9z.html") < sm.indexOf("c/10a.html"), "the sitemap lists pages in numeric order, so a regenerated file diffs cleanly");
+    for (const [tex, plain] of [
+      ["Sphere packing density in $\\mathbf{R}^4$", "Sphere packing density in R⁴"],
+      ["Square-lattice self-avoiding walk connective constant $\\mu_{\\mathbb{Z}^2}$", "Square-lattice self-avoiding walk connective constant μ(Z²)"],
+      ["Asymptotic line-count constant for smooth degree-$d$ surfaces in $\\mathbb P^3$ in characteristic $0$", "Asymptotic line-count constant for smooth degree-d surfaces in P³ in characteristic 0"],
+      ["Restriction exponent for the 2-sphere (Stein's $L^\\infty$ extension problem)", "Restriction exponent for the 2-sphere (Stein's L^∞ extension problem)"],
+      ["Davenport constant for $C_n^3$", "Davenport constant for Cₙ³"],
+      ["$\\mathrm{GL}_2$ Ramanujan conjecture exponent", "GL₂ Ramanujan conjecture exponent"],
+      ["Ramsey multiplicity constant of $K\\_4$", "Ramsey multiplicity constant of K₄"],
+      ["The irrationality measure of $\\Gamma(1/4)$", "The irrationality measure of Γ(1/4)"],
+      ["The thin shell conjecture (variance of $|X|^2$)", "The thin shell conjecture (variance of |X|²)"],
+      ["Matrix multiplication exponent", "Matrix multiplication exponent"],
+    ]) assert.equal(plainTitle(tex), plain);
   }
 
   // The cite block names THIS PAGE, not the table anchor — the whole point of the page. Both
@@ -2176,6 +2274,15 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE, buildRows
   // A-53 (b): refuse before anything is composed or written. Nothing above writes.
   if (refuseDroppedAudits("render-constant-pages", { storePath, pageIds: new Set(rows.map((r) => r.id)) })) { process.exitCode = 1; return; }
   const pages =new Map(rows.map((r) => [`${r.id}.html`, renderPage(r, manifest.sha, undefined, newer, pulls)]));
+  const sitemap = sitemapXml(rows.map((r) => r.id));
+
+  // --titles: every converted title, for a human read (manager review, 2026-11-05: a check that only
+  // asks "no $ left?" passes a mangled title). Writes nothing.
+  if (process.argv.includes("--titles")) {
+    for (const r of rows) console.log(`${r.id}\t${r.title}\n\t→ ${pageTitle(r)}`);
+    console.log(`RESULT: PASS — ${rows.length} title(s) converted, ${rows.filter((r) => r.title.includes("$")).length} of them from LaTeX`);
+    return;
+  }
 
   if (check) {
     const onDisk = existsSync(OUTDIR) ? readdirSync(OUTDIR).filter((f) => f.endsWith(".html")) : [];
@@ -2197,6 +2304,11 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE, buildRows
       process.exitCode = 1;
       return;
     }
+    if (!existsSync(SITEMAP) || lf(readFileSync(SITEMAP, "utf8")) !== sitemap) {
+      console.log(`RESULT: FAIL — sitemap.xml is ${existsSync(SITEMAP) ? "stale" : "missing"}; run node scripts/render-constant-pages.mjs`);
+      process.exitCode = 1;
+      return;
+    }
     console.log(`RESULT: PASS — ${pages.size} constant page(s) match committed state (@ ${String(manifest.sha).slice(0, 7)})`);
     return;
   }
@@ -2206,7 +2318,8 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE, buildRows
   if (existsSync(OUTDIR)) rmSync(OUTDIR, { recursive: true, force: true });
   mkdirSync(OUTDIR, { recursive: true });
   for (const [name, html] of pages) writeFileSync(join(OUTDIR, name), html);
-  console.log(`wrote ${pages.size} constant page(s) to c/ @ ${String(manifest.sha).slice(0, 7)}`);
+  writeFileSync(SITEMAP, sitemap);
+  console.log(`wrote ${pages.size} constant page(s) to c/ and sitemap.xml @ ${String(manifest.sha).slice(0, 7)}`);
 }
 
 // THE ENTRY GUARD, added 2026-09-14 because render-site.mjs now imports badgeFor from this file.
