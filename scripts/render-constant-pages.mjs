@@ -37,56 +37,50 @@ const RUNS = `${REPO}/actions/workflows/reverify.yml`;
 /**
  * PLAIN-TEXT TITLES (2026-11-05, the search-reach setup week). Upstream's titles carry LaTeX source
  * (`Sphere packing density in $\mathbf{R}^4$`), and nothing on these pages renders math, so a search
- * result, a browser tab and the page heading all showed the raw source. This converts the LaTeX
- * inside `$…$` by a STATED RULE, not a growing matcher:
- *   - font wrappers (\mathbf \mathbb \mathrm, braced or not) drop to their letters;
- *   - the named symbols in SYMBOLS become their Unicode characters;
- *   - `^x` / `_x` become Unicode super/subscripts when every character has one; a subscript that
- *     cannot be written that way keeps the plain-text underscore (`\mu_{\mathbb{Z}^2}` → `μ_Z²`).
- *     NOT parentheses: `μ(Z²)` reads as a function applied to Z², a different relation (Codex r1,
- *     2026-11-05);
- *   - `\_` is an escaped underscore and reads as a subscript marker.
- * ANYTHING LEFT OVER (a backslash, a brace, a `^`, a `_` or an unmatched `$`) is a REFUSAL: it
- * throws, naming the title, so a new upstream title the rule does not cover fails the render rather
- * than publishing a mangled title. Extend SYMBOLS deliberately when that happens.
+ * result, a browser tab and the page heading all showed the raw source.
+ *
+ * A REVIEWED TABLE, NOT A CONVERTER (Codex r2, 2026-11-05). The first shape was a LaTeX-to-plain
+ * converter with a refusal on leftovers. Two review rounds each found a markup shape that slipped its
+ * refusal (`R^4` in the prose, then a bare trailing `_`), the second appearance of one defect class,
+ * so the converter is gone (portable rule 2: change the shape, claim less). A title with no markup
+ * character passes through unchanged; a title WITH one must appear in PLAIN_TITLES, written and read
+ * by a human, or the render REFUSES and names it. A new upstream title therefore costs one table line,
+ * and nothing mechanical can publish a mis-converted title.
+ * Two deliberate forms: `μ_Z²` keeps the underscore (NOT `μ(Z²)`, which reads as a function applied
+ * to Z², Codex r1), and `L^∞` keeps the caret (Unicode has no superscript infinity).
  * The mirrored bound cells are NOT touched; this is for the title, description and heading only.
  */
-const SYMBOLS = { pi: "π", kappa: "κ", mu: "μ", Gamma: "Γ", infty: "∞" };
-const SUP = { 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹", n: "ⁿ" };
-const SUB = { 0: "₀", 1: "₁", 2: "₂", 3: "₃", 4: "₄", 5: "₅", 6: "₆", 7: "₇", 8: "₈", 9: "₉", n: "ₙ" };
-
-function scriptOf(body, table, fallback) {
-  const chars = [...body];
-  return chars.every((ch) => table[ch]) ? chars.map((ch) => table[ch]).join("") : fallback(body);
-}
-
-function plainMath(tex, title) {
-  let s = tex.replace(/\\_/g, "_");
-  s = s.replace(/\\(?:mathbf|mathbb|mathrm)\s*\{([^{}]*)\}/g, "$1").replace(/\\(?:mathbf|mathbb|mathrm)\s+([A-Za-z])/g, "$1");
-  s = s.replace(/\\([A-Za-z]+)/g, (m, name) => {
-    if (!(name in SYMBOLS)) throw new Error(`plainTitle: no rule for \\${name} in "${title}"`);
-    return SYMBOLS[name];
-  });
-  // Superscripts first, so a subscript that holds one (`_{Z^2}`) sees the finished `Z²`.
-  s = s.replace(/\^\{([^{}]*)\}|\^(.)/gu, (m, a, b) => scriptOf(a ?? b, SUP, (x) => (x === "∞" ? "^∞" : `^${x}`)));
-  // Every raw `_` is consumed here, so an `_` left afterwards is only this fallback's own.
-  s = s.replace(/_\{([^{}]*)\}|_(.)/gu, (m, a, b) => scriptOf(a ?? b, SUB, (x) => `_${x}`));
-  // `^∞` is the one superscript with no Unicode form; `L^∞` is how it is written in plain text.
-  if (/[\\{}]|\^(?!∞)/.test(s)) throw new Error(`plainTitle: left over after conversion in "${title}": ${s}`);
-  return s;
-}
+const MARKUP = /[$\\^_{}]/;
+export const PLAIN_TITLES = new Map([
+  ["The irrationality measure of $\\pi$", "The irrationality measure of π"],
+  ["The irrationality measure of $\\Gamma(1/4)$", "The irrationality measure of Γ(1/4)"],
+  ["The $L^1$ Poincaré constant on the Hamming cube", "The L¹ Poincaré constant on the Hamming cube"],
+  ["Smallest $n$ for which the value of $BB(n)$ is undecidable", "Smallest n for which the value of BB(n) is undecidable"],
+  ["Asymptotic constant for the off-diagonal Ramsey numbers $R(3,k)$", "Asymptotic constant for the off-diagonal Ramsey numbers R(3,k)"],
+  ["The thin shell conjecture (variance of $|X|^2$)", "The thin shell conjecture (variance of |X|²)"],
+  ["Rate at which $\\kappa(n)$ approaches $1$", "Rate at which κ(n) approaches 1"],
+  ["Ihara constant over $\\mathbf{F}_2$", "Ihara constant over F₂"],
+  ["Falconer distance problem in $\\mathbf{R}^2$", "Falconer distance problem in R²"],
+  ["Sphere packing density in $\\mathbf{R}^4$", "Sphere packing density in R⁴"],
+  ["Square-lattice self-avoiding walk connective constant $\\mu_{\\mathbb{Z}^2}$", "Square-lattice self-avoiding walk connective constant μ_Z²"],
+  ["Hadwiger covering / illumination number in $\\mathbb{R}^3$", "Hadwiger covering / illumination number in R³"],
+  ["Maximal number of relevant variables in degree-$d$ Boolean functions", "Maximal number of relevant variables in degree-d Boolean functions"],
+  ["Restriction exponent for the 2-sphere (Stein's $L^\\infty$ extension problem)", "Restriction exponent for the 2-sphere (Stein's L^∞ extension problem)"],
+  ["Centered Hardy–Littlewood maximal constant in dimension $2$", "Centered Hardy–Littlewood maximal constant in dimension 2"],
+  ["Erdős–Szemerédi $3$-sunflower-free capacity", "Erdős–Szemerédi 3-sunflower-free capacity"],
+  ["Davenport constant for $C_n^3$", "Davenport constant for Cₙ³"],
+  ["$\\mathrm{GL}_2$ Ramanujan conjecture exponent", "GL₂ Ramanujan conjecture exponent"],
+  ["Burgess-quality subconvexity exponent for Dirichlet $L$-functions", "Burgess-quality subconvexity exponent for Dirichlet L-functions"],
+  ["10-point multi-point Seshadri constant on $\\mathbb{P}^2$", "10-point multi-point Seshadri constant on P²"],
+  ["Asymptotic line-count constant for smooth degree-$d$ surfaces in $\\mathbb P^3$ in characteristic $0$", "Asymptotic line-count constant for smooth degree-d surfaces in P³ in characteristic 0"],
+  ["Ramsey multiplicity constant of $K\\_4$", "Ramsey multiplicity constant of K₄"],
+]);
 
 export function plainTitle(title) {
   const t = String(title);
-  const parts = t.split("$");
-  if (parts.length % 2 === 0) throw new Error(`plainTitle: unmatched $ in "${t}"`);
-  // The refusal covers the prose too (Codex r1): `R^4` outside `$…$` would otherwise pass unconverted.
-  for (const p of parts.filter((_, i) => i % 2 === 0)) {
-    if (/[\\{}^_]/.test(p)) throw new Error(`plainTitle: TeX markup outside $…$ in "${t}"`);
-  }
-  const out = parts.map((p, i) => (i % 2 ? plainMath(p, t) : p)).join("");
-  if (/[\\$]/.test(out)) throw new Error(`plainTitle: left over after conversion in "${t}": ${out}`);
-  return out;
+  if (!MARKUP.test(t)) return t;
+  if (PLAIN_TITLES.has(t)) return PLAIN_TITLES.get(t);
+  throw new Error(`plainTitle: "${t}" carries markup and has no reviewed plain form; add one to PLAIN_TITLES`);
 }
 
 // What a search result shows. Says what the page holds and nothing it cannot back: the rows are the
@@ -95,12 +89,13 @@ export function pageTitle(r) {
   return `${plainTitle(r.title)}: upper and lower bounds (${r.id}) — Bounds Ledger`;
 }
 
-// Each clause names something the page body shows (Codex r1 claims pass, 2026-11-05): most rows say
-// "tracked since … no movement seen yet", so NOT "when each row last changed"; the page links the
-// upstream file and offers a copyable citation, so NOT "the source to cite"; the daily re-check is
-// the footer's own sentence.
+// ONLY the clauses two claims passes found true on every page (Codex r1 and r2, 2026-11-05). Dropped
+// after refutation: "when each row last changed" (most rows say "tracked since"), "the source to
+// cite" (the page links upstream's file, not the cited paper), "any change this ledger has seen" (the
+// page shows one published label, and an unresolved drift is not on it). The daily re-check stays in
+// the footer, which states it with its own caveat; a snippet cannot carry that caveat.
 export function pageDescription(r) {
-  return `The last-listed upper and lower bounds for ${plainTitle(r.title)} in teorth/optimizationproblems, with any change this ledger has seen since it began tracking, a link to the upstream source file, and a citation you can copy. Re-checked against upstream by a daily scheduled job.`;
+  return `The last-listed upper and lower bounds for ${plainTitle(r.title)} in teorth/optimizationproblems, with a link to the upstream source file and a citation you can copy.`;
 }
 
 // Every page plus the index, for search engines. robots.txt cannot point at it: crawlers read
@@ -1129,46 +1124,26 @@ async function selftest() {
     assert.ok(head.includes("Sphere packing density") && h1.includes("Sphere packing density"), "positive control: the title, description and heading must render before anything is asserted absent in them");
     assert.ok(!/[$\\]/.test(head + h1), `a LaTeX title must not reach the title, description or heading raw: ${head} ${h1}`);
     assert.ok(!/\brecord\b|best known|strongest/i.test(head), `the search title and description must not claim a record: ${head}`);
-    assert.throws(() => plainTitle("Constant on $\\Sigma_3$"), /no rule for \\Sigma/, "an unknown command must refuse, not publish");
-    assert.throws(() => plainTitle("Constant on $X^{\\frac12}"), /unmatched \$/, "an unmatched $ must refuse");
-    assert.throws(() => plainTitle("Constant $\\mathbf{R}^{\\alpha}$"), /no rule/, "a nested unknown inside a script must refuse");
-    assert.throws(() => plainTitle("Constant in R^4"), /outside \$/, "TeX markup in the prose, outside $…$, must refuse too");
-    assert.throws(() => plainTitle("Exponent $x^{d}$"), /left over/, "a superscript with no Unicode form must refuse, not publish a caret");
-    // The description names only what the page body shows (Codex r1 claims pass).
+    // The refusal: ANY markup character in a title with no reviewed plain form refuses, whatever the
+    // shape (each of these slipped, or would have slipped, the old converter: Codex r1 and r2).
+    for (const bad of ["Constant on $\\Sigma_3$", "Constant in R^4", "Constant $x_$", "Constant on $X^{\\frac12}", "C^*-algebra constant", "{0,1}-valued constant"]) {
+      assert.throws(() => plainTitle(bad), /no reviewed plain form/, `a title with markup and no reviewed plain form must refuse: ${bad}`);
+    }
+    assert.equal(plainTitle("Matrix multiplication exponent"), "Matrix multiplication exponent", "a title with no markup passes through unchanged");
+    // The reviewed table itself: every key carries markup (else it is dead), and every value is free of
+    // it except the two deliberate forms, `_Z²` and `^∞`.
+    assert.ok(PLAIN_TITLES.size >= 22, "positive control: the reviewed table must be populated before its values are judged");
+    for (const [tex, plain] of PLAIN_TITLES) {
+      assert.ok(MARKUP.test(tex), `a reviewed key with no markup is dead: ${tex}`);
+      assert.ok(!MARKUP.test(plain.replace("μ_Z²", "μZ²").replace("L^∞", "L∞")), `a reviewed plain form still carries markup: ${plain}`);
+    }
+    // The description carries only the clauses two claims passes found true on every page.
     const desc = (head.match(/content="([^"]*)"/) || [])[1] || "";
     assert.ok(desc.length > 50, "positive control: the description must exist before its clauses are judged");
-    assert.ok(!/last changed|source to cite/i.test(desc), `the description must not promise a change date or a cited source the page does not show: ${desc}`);
+    assert.ok(!/last changed|source to cite|any change|re-checked|daily/i.test(desc), `the description must not promise what the page cannot show: ${desc}`);
     const sm = sitemapXml(["9z", "10a", "2a"]);
     assert.ok(sm.includes(`<loc>${SITE}</loc>`) && sm.includes(`<loc>${SITE}c/9z.html</loc>`), "the sitemap must list the index and every page");
     assert.ok(sm.indexOf("c/2a.html") < sm.indexOf("c/9z.html") && sm.indexOf("c/9z.html") < sm.indexOf("c/10a.html"), "the sitemap lists pages in numeric order, so a regenerated file diffs cleanly");
-    // EVERY LaTeX title upstream had at 87b4ebb (an upstream sha; it does not exist in this repo), 22 of
-    // them, each read by a human and by Codex r1, plus one plain control. A changed SYMBOLS entry or
-    // script rule now fails here by name (r1: `kappa → π` passed the old ten). pragma: allowlist sha
-    for (const [tex, plain] of [
-      ["The irrationality measure of $\\pi$", "The irrationality measure of π"],
-      ["The irrationality measure of $\\Gamma(1/4)$", "The irrationality measure of Γ(1/4)"],
-      ["The $L^1$ Poincaré constant on the Hamming cube", "The L¹ Poincaré constant on the Hamming cube"],
-      ["Smallest $n$ for which the value of $BB(n)$ is undecidable", "Smallest n for which the value of BB(n) is undecidable"],
-      ["Asymptotic constant for the off-diagonal Ramsey numbers $R(3,k)$", "Asymptotic constant for the off-diagonal Ramsey numbers R(3,k)"],
-      ["The thin shell conjecture (variance of $|X|^2$)", "The thin shell conjecture (variance of |X|²)"],
-      ["Rate at which $\\kappa(n)$ approaches $1$", "Rate at which κ(n) approaches 1"],
-      ["Ihara constant over $\\mathbf{F}_2$", "Ihara constant over F₂"],
-      ["Falconer distance problem in $\\mathbf{R}^2$", "Falconer distance problem in R²"],
-      ["Sphere packing density in $\\mathbf{R}^4$", "Sphere packing density in R⁴"],
-      ["Square-lattice self-avoiding walk connective constant $\\mu_{\\mathbb{Z}^2}$", "Square-lattice self-avoiding walk connective constant μ_Z²"],
-      ["Hadwiger covering / illumination number in $\\mathbb{R}^3$", "Hadwiger covering / illumination number in R³"],
-      ["Maximal number of relevant variables in degree-$d$ Boolean functions", "Maximal number of relevant variables in degree-d Boolean functions"],
-      ["Restriction exponent for the 2-sphere (Stein's $L^\\infty$ extension problem)", "Restriction exponent for the 2-sphere (Stein's L^∞ extension problem)"],
-      ["Centered Hardy–Littlewood maximal constant in dimension $2$", "Centered Hardy–Littlewood maximal constant in dimension 2"],
-      ["Erdős–Szemerédi $3$-sunflower-free capacity", "Erdős–Szemerédi 3-sunflower-free capacity"],
-      ["Davenport constant for $C_n^3$", "Davenport constant for Cₙ³"],
-      ["$\\mathrm{GL}_2$ Ramanujan conjecture exponent", "GL₂ Ramanujan conjecture exponent"],
-      ["Burgess-quality subconvexity exponent for Dirichlet $L$-functions", "Burgess-quality subconvexity exponent for Dirichlet L-functions"],
-      ["10-point multi-point Seshadri constant on $\\mathbb{P}^2$", "10-point multi-point Seshadri constant on P²"],
-      ["Asymptotic line-count constant for smooth degree-$d$ surfaces in $\\mathbb P^3$ in characteristic $0$", "Asymptotic line-count constant for smooth degree-d surfaces in P³ in characteristic 0"],
-      ["Ramsey multiplicity constant of $K\\_4$", "Ramsey multiplicity constant of K₄"],
-      ["Matrix multiplication exponent", "Matrix multiplication exponent"],
-    ]) assert.equal(plainTitle(tex), plain);
   }
 
   // The cite block names THIS PAGE, not the table anchor — the whole point of the page. Both
