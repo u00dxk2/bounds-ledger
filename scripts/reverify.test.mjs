@@ -28,10 +28,11 @@ function runCheck(env = {}) {
   }
 }
 
-// FACTS THE LOADED DOCS STATE (2026-11-05). AGENTS.md and CLAUDE.md are what an agent acts on, and each
+// FACTS THE LOADED DOCS STATE (2026-11-04). AGENTS.md and CLAUDE.md are what an agent acts on, and each
 // fact below would mislead it silently if it went stale. Read from the file that defines the value, never
 // retyped from the doc. Near the top so a stale fact names itself before the slower drift legs run.
-// CEILING: eight named facts, not a parser of the docs; a sentence not listed here is unguarded.
+// CEILING: eight named facts, not a parser of the docs or of YAML. These catch a step dropped or mistyped,
+// not a deliberate rewrite (a comment or a block scalar can imitate a line), and a sentence not listed is unguarded.
 {
   const docFile = async (p) => (await readFile(join(ROOT, p), "utf8")).replace(/\r\n/g, "\n");
   const noComments = (t) => t.replace(/^[ \t]*#.*$/gm, "");
@@ -43,7 +44,8 @@ function runCheck(env = {}) {
   const pageWf = noComments(await docFile(".github/workflows/page-check.yml"));
   const npmLegs = (s) => s.split("&&").map((c) => c.trim()).filter((c) => c.startsWith("npm run ")).map((c) => c.slice("npm run ".length));
 
-  // 1. AGENTS.md § Commands: a green verify receipt covers every check leg except these two.
+  // 1. AGENTS.md § Commands: a green verify receipt covers npm test plus every check leg except these two.
+  assert.equal(scripts["verify:steps"].split("&&")[0].trim(), "npm test", "doc fact 1: verify:steps must start with npm test (AGENTS.md § Commands)");
   assert.deepEqual(npmLegs(scripts["verify:steps"]), npmLegs(scripts.check).filter((l) => l !== "check:entry-guard" && l !== "check:notation"), "doc fact 1: verify:steps must be every check leg except check:entry-guard and check:notation (AGENTS.md § Commands)");
 
   // 2. AGENTS.md § Hard invariants: exactly these three outputs reach the public drift issue.
@@ -57,11 +59,12 @@ function runCheck(env = {}) {
   const claimsDoc = JSON.parse(await docFile("ledger/claims.json"));
   const handNumbers = (Array.isArray(claimsDoc) ? claimsDoc : claimsDoc.claims).filter((c) => !c.generated).map((c) => Number(c.id.match(/^C-(\d+)$/)?.[1]));
   assert.ok(handNumbers.length > 0 && handNumbers.every(Number.isInteger), "doc fact 4: every hand claim must be numbered C-n");
+  assert.deepEqual([...handNumbers].sort((x, y) => x - y), handNumbers.map((_, i) => i + 1), "doc fact 4: hand claims must run C-1 to C-n with no gap");
   for (const [name, text] of [["AGENTS.md", agents], ["CLAUDE.md", claude]]) {
     assert.equal(Number(text.match(/C-1…C-(\d+)/)?.[1]), Math.max(...handNumbers), `doc fact 4: ${name}'s hand-claim range disagrees with ledger/claims.json`);
   }
 
-  // 5. AGENTS.md § Hard invariants: npm install arms the committed hook, whose first leg is the secret scan.
+  // 5. AGENTS.md § Hard invariants: npm install arms the committed hook, which runs the secret scan on staged content.
   assert.ok(agents.includes("git config core.hooksPath .githooks") && scripts.prepare.includes("git config core.hooksPath .githooks") && /^node scripts\/history-sweep\.mjs --staged/m.test(hook), "doc fact 5: the hook path or the hook's secret scan differs from AGENTS.md § Hard invariants");
 
   // 6. AGENTS.md § Commands: the public-tree checks run in the pre-commit hook.
@@ -72,7 +75,7 @@ function runCheck(env = {}) {
   // 7. AGENTS.md § What this is: what CI does and does not compare against the committed pages.
   assert.ok(/^\s*run: node scripts\/render-site\.mjs --check\s*$/m.test(pageWf) && /fetch-depth: 0\b/.test(pageWf), "doc fact 7: page-check.yml must run render-site --check at fetch-depth 0 (AGENTS.md § What this is)");
   assert.ok(/^\s*run: node scripts\/render-ramsey\.mjs --check\s*$/m.test(reverifyWf), "doc fact 7: reverify.yml must run render-ramsey --check (AGENTS.md § What this is)");
-  assert.ok(!`${pageWf}\n${reverifyWf}`.includes("render-constant-pages.mjs --check"), "doc fact 7: CI now runs render-constant-pages --check, so AGENTS.md § What this is is stale");
+  assert.ok(!/render-constant-pages\.mjs --check|npm run check(?::pages)?(?![\w:-])/.test(`${pageWf}\n${reverifyWf}`), "doc fact 7: CI now runs render-constant-pages --check, so AGENTS.md § What this is is stale");
 
   // 8. AGENTS.md § Hard invariants: a feature-branch push gets no run; a pull request into main does.
   for (const [name, text] of [["reverify.yml", reverifyWf], ["page-check.yml", pageWf]]) {
