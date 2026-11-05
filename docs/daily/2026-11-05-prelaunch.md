@@ -45,7 +45,7 @@ Every constant page now has a plain-text title a mathematician can search for, a
 
 ## On hold pending data
 
-- The first Search Console read, due 11-11, waits on `W-18` (the watch for that read), which in turn waits on card 901dddba. If David has not pressed Verify by then, the read is blocked on that card, not empty.
+- The first Search Console read, due 11-11, sits on `W-18` (the watch for that read). David answered card 901dddba at 18:00:55Z: the property is verified and `sitemap.xml` is submitted, so nothing blocks the read now.
 
 ## State Appendix
 
