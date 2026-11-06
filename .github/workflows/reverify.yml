@@ -260,7 +260,9 @@ jobs:
         run: node scripts/lib/html.mjs --selftest
       # A-50: importing one of our scripts must do nothing. The self-test proves each failure kind
       # fires on fixtures; the second step imports every script not on KNOWN_NOT_INERT (A-98) in its
-      # own child with fetch stubbed, and fails on any output, exit, or file change during the import.
+      # own child with fetch stubbed, and fails on captured output, an exit or nonzero status, a
+      # counted fetch call, or a regular file created, deleted, or changed in size or mtime. The
+      # checker's header names what it cannot see.
       - name: Self-test import-inert check (no network)
         run: node scripts/check-import-inert.mjs --selftest
       - name: Every script outside KNOWN_NOT_INERT is inert on import (no network)

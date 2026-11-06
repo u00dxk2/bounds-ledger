@@ -762,7 +762,7 @@ ${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)", hi
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='13'%3E%E2%88%91%3C/text%3E%3C/svg%3E">
 <title>Bounds Ledger — is the number you cited still current?</title>
-<meta name="description" content="A continuously re-verified ledger of mathematical records. Look up a constant and see the bounds rows we watch, a dated label on each saying when it last changed where we can tell, and a link to upstream's file for each constant.">
+<meta name="description" content="A continuously re-verified ledger of mathematical records. Look up a constant and see the bounds rows we watch, a label on each saying what we have seen of it, and a link to upstream's file for each constant.">
 <style>
 :root{--bg:#fff;--fg:#16181d;--muted:#5c6370;--line:#e3e6ea;--accent:#0b5fff;--code:#f6f7f9}
 @media(prefers-color-scheme:dark){:root{--bg:#14161a;--fg:#e8eaed;--muted:#9aa1ac;--line:#2b2f36;--accent:#7aa2ff;--code:#1c1f25}}

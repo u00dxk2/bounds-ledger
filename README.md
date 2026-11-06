@@ -27,7 +27,7 @@ That reconciliation is [`docs/reconciliations/2026-07-22-minimum-overlap.md`](do
 
 ## Is your number in here?
 
-**There is now a page for exactly this question: [u00dxk2.github.io/bounds-ledger](https://u00dxk2.github.io/bounds-ledger/).** All 120 tracked constants, filter as you type, and for each one the pinned upper and lower rows, **a dated label on each row: when it last changed and, where the ledger can tell, whether that change moved the bound or only the text around it** (a row can also read "bound cell edited", "tracked since", or "date unknown"), and beside each row a link to upstream's own file for that constant, where the bounds table cites its references. That link is one click from our row to theirs; checking a number against its paper is one more step, through the reference the table cites. No account, no clone, nothing fetched at runtime. It is a snapshot at the sha pinned below, and it says so on the page — for the live verdict, clone and run `npm run check`.
+**There is now a page for exactly this question: [u00dxk2.github.io/bounds-ledger](https://u00dxk2.github.io/bounds-ledger/).** All 120 tracked constants, filter as you type, and for each one the pinned upper and lower rows, **a short label on each row saying what the ledger has seen of it — for example "value changed" or "text edited — bound unchanged", with its date when the ledger has one**, and beside each row a link to upstream's own file for that constant, where the bounds table cites its references. That link is one click from our row to theirs; checking a number against its paper is one more step, through the reference the table cites. No account, no clone, nothing fetched at runtime. It is a snapshot at the sha pinned below, and it says so on the page — for the live verdict, clone and run `npm run check`.
 
 The short answer is "maybe, and you can check in one click". **120 named constants** are tracked. Twelve of them are below, chosen because you may recognise them — each link goes to this repo's mirrored copy, which GitHub renders as the bounds table itself, so you can read the current upper and lower rows **without cloning anything**.
 
@@ -128,7 +128,7 @@ It has also caught itself. [`docs/findings/`](docs/findings/) holds both kinds o
 Generated from committed state by `scripts/render-state-block.mjs`. For the **live** verdict —
 whether every claim still holds right now — run `npm run check` and read its exit code.
 
-- **121** mirrored files — 120 constant files plus upstream's repo-root `README.md` — identical, line endings aside, to upstream [`teorth/optimizationproblems`](https://github.com/teorth/optimizationproblems) at `87b4ebb` (an upstream sha; it does not exist in this repo). The README is in scope because it is where upstream declares which bounds it stands behind: a bound demoted to "verification at minimal levels" leaves every constants file unchanged.
+- **121** mirrored files — 120 constant files plus upstream's repo-root `README.md` — identical as text (CRLF folded to LF) to upstream [`teorth/optimizationproblems`](https://github.com/teorth/optimizationproblems) at `87b4ebb` (an upstream sha; it does not exist in this repo). The README is in scope because it is where upstream declares which bounds it stands behind: a bound demoted to "verification at minimal levels" leaves every constants file unchanged.
 - **254 pinned claims** — 240 generated (one per bounds table, asserting the last-listed row's **position**, never "the record") and 14 hand-written. 2 are `manual: true` and therefore report UNVERIFIED by design: their source blocks automated fetch from CI runners.
 - Checks run daily in CI (09:17 UTC), on push, and on demand
 
@@ -151,7 +151,7 @@ Indicators, which never gate a build and whose live reads never run in CI (CI ru
 
 Two complementary checks, because either alone has a blind spot.
 
-**1. Mirror diff** (`reverify.mjs`) — `ledger/teorth-optimizationproblems/` holds a copy of the adopted surface that is exact except for line endings (both sides are compared with CRLF folded to LF), with `manifest.json` pinning the upstream sha. A change to the text of any file it mirrors — every `constants/*.md` file plus upstream's root `README.md` — trips it; a change that only rewrites line endings does not. A change elsewhere in upstream's repository does not, and nothing outside that repository is seen at all.
+**1. Mirror diff** (`reverify.mjs`) — `ledger/teorth-optimizationproblems/` holds a copy of the adopted surface as text, with CRLF line endings folded to LF, and `manifest.json` pinning the upstream sha. A change to that text in any file it mirrors — every `constants/*.md` file plus upstream's root `README.md` — trips it. A change elsewhere in upstream's repository does not, and nothing outside that repository is seen at all.
 
 **2. Claim pins** (`check-claims.mjs`) — `ledger/claims.json` names, per claim, a source URL and the exact string that must still appear there, **on each source that file names**: the upstream repo at live HEAD, arXiv, Wikipedia, erdosproblems.com and the community metadata database behind it, and the two published copies of the *Small Ramsey Numbers* survey. Papers that the mirrored files cite on other hosts are not pinned. Cross-surface divergence produced this lane's founding finding; a same-repo mirror diff would never have seen it.
 
@@ -161,7 +161,7 @@ Coverage is every constant file in the mirror — an upper- and a lower-bound pi
 
 ## Four rules that are load-bearing
 
-**A red run is the alarm working, not a bug.** Records are *supposed* to move. Re-snapshotting to silence a red run is the one thing that would make this repo worthless. The discipline is: verify against primary sources → `--snapshot` → regenerate pins → commit deliberately. Editorial drift gets the same treatment as numeric drift; the mirror's contract is fidelity to every character (line endings aside), not just "the numbers still look right".
+**A red run is the alarm working, not a bug.** Records are *supposed* to move. Re-snapshotting to silence a red run is the one thing that would make this repo worthless. The discipline is: verify against primary sources → `--snapshot` → regenerate pins → commit deliberately. Editorial drift gets the same treatment as numeric drift; the mirror's contract is fidelity to the text, not just "the numbers still look right".
 
 *Rolling one back:* a `--snapshot` that blessed an upstream change you should not have accepted is reverted like any other commit — `git revert` it (mirror, `claims.json` and `manifest.json` move together in one commit), then re-run `scripts/extract-pins.mjs` and commit that too. Pins do not follow the mirror automatically in either direction, which is what makes both the forward and the backward step deliberate.
 

@@ -3651,7 +3651,7 @@
     },
     {
       "id": "A-99",
-      "title": "Link each index row to the paper its bound comes from, not only to upstream's file",
+      "title": "Link each displayed bound to the paper it comes from, where its reference resolves to one verified paper URL",
       "type": "action",
       "status": "open",
       "owner": "bounds-ledger",
@@ -3659,13 +3659,14 @@
       "created": "2026-11-06",
       "updated": "2026-11-06",
       "notes": "Minted 2026-11-06 at P3 from the manager review of A-97: the great version of the row's source link takes a reader to the paper, not to upstream's constants file. A-97 made the sentence honest instead (the link goes to upstream's file, whose table cites the reference). Not cheap today: a row's citation key must be resolved to its entry in that file's References section, and render-constant-pages.mjs's referenceEntryLine needed several review rounds to find one entry line safely (a bullet that cites a reference is not its entry). A first step is measuring how many of the 240 pinned rows resolve to exactly one reference entry with a URL.",
-      "onTrigger": "On 2026-11-20: measure how many pinned rows resolve to exactly one References entry carrying a URL (reuse referenceEntryLine). If most do, build the link for those and say on the page which rows lack one; if few do, record the count and close or re-scope.",
-      "closeWhen": "Either each index row whose reference resolves links to the paper (the rest named as unresolved on the page), shipped through the outward gate; or the measured count is recorded here with the reason the link is not worth building.",
+      "onTrigger": "On 2026-11-20: for each of the 240 displayed upper and lower bounds (two per index row, which can cite different works), measure whether its cited reference resolves to exactly one References entry (referenceEntryLine) whose URL is a paper, not code or an index. Record the counts: resolved to a paper, resolved to a non-paper, unresolved. If most resolve to a paper, build a per-bound link for those and label the others on the page; if few do, record the counts and close or re-scope.",
+      "closeWhen": "Either each displayed bound whose reference resolves to one verified paper URL links to that paper (unresolved and non-paper cases labelled separately on the page), shipped through the outward gate; or the three measured counts are recorded here with the reason the link is not worth building.",
       "readCommand": "git log --oneline --grep=A-99 -- scripts/",
       "links": [
         "scripts/render-site.mjs",
         "scripts/render-constant-pages.mjs"
-      ]
+      ],
+      "lastEvaluated": "2026-11-06"
     }
   ],
   "meta": {

@@ -236,7 +236,7 @@ function render(id, claims, manifest, root = ROOT) {
   }
   lines.push(`  snapshotted at upstream sha ${String(manifest.sha).slice(0, 7)} (an upstream sha; it does not exist in this repo)`);
   lines.push(`  These are LISTING POSITIONS, not a claim about which row is the record.`);
-  lines.push(`  Check us in one hop: the source above is the file we read the row from.`);
+  lines.push(`  Check us in one hop: the source above is the live upstream file this pinned row is checked against.`);
   return { lines, found: true };
 }
 
