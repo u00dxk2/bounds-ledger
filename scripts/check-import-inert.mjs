@@ -24,7 +24,9 @@
  * is a test runner and runs on import by design). The child is started with `node --input-type=module
  * -e`, so process.argv[1] is undefined and no module can mistake the importer for its own entry.
  *
- * BLIND TO, stated: side effects that land outside the repository root (os.tmpdir, the network
+ * BLIND TO, stated: a file change that leaves its size and mtime unchanged, or is undone before the
+ * import returns (a write then a restore); directories, symlinks and permission bits; listeners or
+ * timers that leave no end state; side effects that land outside the repository root (os.tmpdir, the network
  * through anything but global fetch, child processes that outlive the import); a module whose
  * top level does something only for some argv or env; files under tmp/ (other processes on this
  * machine write there constantly, so a change there would be noise); a concurrent writer inside
@@ -36,6 +38,7 @@
  *   node scripts/check-import-inert.mjs --selftest  # prove each failure kind fires on fixtures
  */
 import { spawnSync } from "node:child_process";
+import { randomBytes } from "node:crypto";
 import { mkdtempSync, readdirSync, rmSync, statSync, writeFileSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, relative, resolve, dirname } from "node:path";
@@ -50,7 +53,9 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // verify gate on a clean tree). They are NOT imported here, because importing them has exactly
 // those side effects. This list may only SHRINK: guard a module, delete its line, and this check
 // then holds it inert. A module added to this list is a visible diff for review to refuse; a
-// listed path that no longer exists fails the run, so the list cannot go stale. Tracked as A-98.
+// listed path that no longer exists fails the run. What the code does NOT catch (Codex r1,
+// 2026-11-06): a listed module that has since been fixed but left on the list stays skipped and
+// green. "May only shrink" is a review rule, and A-98's read is what finds a fixed module. Tracked as A-98.
 export const KNOWN_NOT_INERT = Object.freeze([
   "scripts/anthropic-formal-math.mjs",
   "scripts/catch-rate.mjs",
@@ -69,7 +74,8 @@ export const KNOWN_NOT_INERT = Object.freeze([
   "scripts/sky.mjs",
   "scripts/traffic-snapshot.mjs",
 ]);
-const SENTINEL = "IMPORT-INERT-SENTINEL-7f3a";
+// A per-run random marker, so a module cannot print the marker itself and then exit.
+const SENTINEL = `IMPORT-INERT-${randomBytes(8).toString("hex")}`;
 const SKIP_DIRS = new Set([".git", "node_modules", "tmp"]);
 
 /** Every module this check imports, as absolute paths, in a stable order. */
@@ -94,7 +100,7 @@ export function snapshot(root) {
       if (e.isDirectory()) { if (!SKIP_DIRS.has(e.name)) walk(join(dir, e.name)); continue; }
       if (!e.isFile()) continue;
       const p = join(dir, e.name);
-      try { map.set(relative(root, p), statSync(p).mtimeMs); } catch { /* vanished mid-walk */ }
+      try { const s = statSync(p); map.set(relative(root, p), `${s.mtimeMs}:${s.size}`); } catch { /* vanished mid-walk */ }
     }
   };
   walk(root);
@@ -111,14 +117,17 @@ export function diffSnapshots(before, after) {
   return changes;
 }
 
-const CHILD = `globalThis.fetch = () => { throw new Error("IMPORT-INERT: fetch called during import"); };
+// The fetch stub COUNTS calls as well as throwing, so a module that catches the throw
+// (`try { await fetch(u) } catch {}`) still fails: the count rides out on the marker line.
+const childSource = (sentinel) => `let fetchCalls = 0;
+globalThis.fetch = () => { fetchCalls++; throw new Error("IMPORT-INERT: fetch called during import"); };
 await import(process.env.IMPORT_INERT_TARGET);
-process.stdout.write(${JSON.stringify(SENTINEL)});`;
+process.stdout.write(${JSON.stringify(sentinel)} + ":" + fetchCalls);`;
 
 /** Import one module in a fresh child; return the list of reasons it was not inert ([] = inert). */
 export function checkModule(file, root) {
   const before = snapshot(root);
-  const r = spawnSync(process.execPath, ["--input-type=module", "-e", CHILD], {
+  const r = spawnSync(process.execPath, ["--input-type=module", "-e", childSource(SENTINEL)], {
     cwd: root,
     env: { ...process.env, IMPORT_INERT_TARGET: pathToFileURL(file).href },
     stdio: ["ignore", "pipe", "pipe"],
@@ -129,11 +138,16 @@ export function checkModule(file, root) {
   const reasons = [];
   if (r.error) reasons.push(`child did not run: ${r.error.code || r.error.message}`);
   const stdout = r.stdout ?? "";
-  const reached = stdout.endsWith(SENTINEL);
-  const printed = reached ? stdout.slice(0, -SENTINEL.length) : stdout;
-  if (printed.trim()) reasons.push(`printed to stdout on import: ${JSON.stringify(printed.trim().slice(0, 160))}`);
-  if ((r.stderr ?? "").trim()) reasons.push(`printed to stderr on import: ${JSON.stringify(r.stderr.trim().slice(0, 160))}`);
+  // Any byte counts, whitespace included: the property is "nothing printed", not "nothing visible".
+  const m = stdout.match(new RegExp(`${SENTINEL}:(\\d+)$`));
+  const reached = m !== null;
+  const printed = reached ? stdout.slice(0, m.index) : stdout;
+  if (printed.length) reasons.push(`printed to stdout on import: ${JSON.stringify(printed.slice(0, 160))}`);
+  if ((r.stderr ?? "").length) reasons.push(`printed to stderr on import: ${JSON.stringify(r.stderr.slice(0, 160))}`);
   if (!reached) reasons.push(`never reached the line after the import (exit ${r.status}${r.signal ? `, signal ${r.signal}` : ""}): it exited, threw, or hung on import`);
+  if (reached && Number(m[1]) > 0) reasons.push(`called fetch ${m[1]} time(s) during import (the throw was caught)`);
+  // A module can set process.exitCode and still let the marker print; the exit status is checked too.
+  if (reached && r.status !== 0) reasons.push(`exited ${r.status} after the import returned (process.exitCode set on import)`);
   for (const c of diffSnapshots(before, after)) reasons.push(`${c} during import`);
   return reasons;
 }
@@ -156,6 +170,11 @@ export function checkAll(scriptsDir, root, known = []) {
     results.push({ file: rel[i], reasons: checkModule(file, root) });
   });
   return { results, skipped, missingKnown };
+}
+
+/** The whole command: check, print, and return the exit code the CLI exits with. */
+export function run(scriptsDir, root, known) {
+  return report(checkAll(scriptsDir, root, known)) ? 1 : 0;
 }
 
 function report({ results, skipped, missingKnown }) {
@@ -185,6 +204,10 @@ async function selftest() {
     writeFileSync(join(scripts, "fetches.mjs"), `await fetch("https://example.invalid/");\n`);
     writeFileSync(join(scripts, "writes.mjs"), `import { writeFileSync } from "node:fs";\nwriteFileSync(new URL("../out.txt", import.meta.url), "x");\n`);
     writeFileSync(join(scripts, "touches.mjs"), `import { utimesSync } from "node:fs";\nconst t = new Date(Date.now() + 5000);\nutimesSync(new URL("./good.mjs", import.meta.url), t, t);\n`);
+    // Codex r1 (2026-11-06): three shapes the first version read as inert.
+    writeFileSync(join(scripts, "caughtfetch.mjs"), `try { await fetch("https://example.invalid/"); } catch {}\n`);
+    writeFileSync(join(scripts, "exitcode.mjs"), `process.exitCode = 1;\n`);
+    writeFileSync(join(scripts, "blank.mjs"), `console.log("");\n`);
     writeFileSync(join(scripts, "skipped.test.mjs"), `console.log("a test runner runs on import by design");\n`);
 
     const { results } = checkAll(scripts, fx);
@@ -207,6 +230,15 @@ async function selftest() {
     assert.ok(by["scripts/writes.mjs"].some((r) => r === "created out.txt during import"), "a file written on import must fail");
     assert.ok(by["scripts/touches.mjs"].some((r) => r.replace(/\\/g, "/") === "modified scripts/good.mjs during import"), "an mtime changed on import must fail");
 
+    assert.ok(by["scripts/caughtfetch.mjs"].some((r) => r.startsWith("called fetch 1 time(s)")), "a fetch whose throw is caught must still fail");
+    assert.ok(by["scripts/exitcode.mjs"].some((r) => r.startsWith("exited 1 after the import")), "process.exitCode set on import must fail");
+    assert.ok(by["scripts/blank.mjs"].some((r) => r.startsWith("printed to stdout")), "a blank line printed on import must fail");
+
+    // THE WHOLE COMMAND'S EXIT CODE, both answers (Codex r1: the reasons were tested, the exit was not).
+    const bad = ["caughtfetch", "exitcode", "blank", "prints", "warns", "exits", "fetches", "writes", "touches"].map((n) => `scripts/${n}.mjs`);
+    assert.equal(run(scripts, fx, bad.filter((p) => p !== "scripts/prints.mjs")), 1, "one non-inert unlisted module must make the command exit 1");
+    assert.equal(run(scripts, fx, bad), 0, "with every non-inert module listed the command must exit 0");
+
     // THE KNOWN LIST: a listed module is not imported (its side effect never runs), an unlisted one
     // still is, and a listed path that does not exist is reported so the list cannot go stale.
     const k = checkAll(scripts, fx, ["scripts/writes.mjs", "scripts/gone.mjs"]);
@@ -216,7 +248,7 @@ async function selftest() {
     assert.deepEqual(k.missingKnown, ["scripts/gone.mjs"], "a listed path that is not a module must be reported");
     for (const p of KNOWN_NOT_INERT) assert.match(p, /^scripts\/[^/]+\.mjs$/, `KNOWN_NOT_INERT entries are posix paths under scripts/: ${p}`);
 
-    console.log("check-import-inert selftest: PASS (an inert guarded module and a plain library read inert; stdout, stderr, process.exit, a fetch, a created file and a changed mtime on import each fail and name their own property; *.test.mjs is excluded and scripts/lib/ is included)");
+    console.log("check-import-inert selftest: PASS (an inert guarded module and a plain library read inert; stdout, stderr, process.exit, a fetch, a created file and a changed mtime on import each fail and name their own property, and so do a caught fetch, a process.exitCode and a blank line; the command exits 1 with one unlisted non-inert module and 0 with all of them listed; *.test.mjs is excluded and scripts/lib/ is included)");
   } finally {
     rmSync(fx, { recursive: true, force: true });
   }
@@ -229,7 +261,6 @@ if (isEntryModule(import.meta.url)) {
     console.error(`usage: node scripts/check-import-inert.mjs [--selftest]`);
     process.exit(2);
   } else {
-    const bad = report(checkAll(join(ROOT, "scripts"), ROOT, KNOWN_NOT_INERT));
-    process.exit(bad ? 1 : 0);
+    process.exit(run(join(ROOT, "scripts"), ROOT, KNOWN_NOT_INERT));
   }
 }

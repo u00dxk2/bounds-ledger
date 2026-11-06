@@ -173,7 +173,7 @@ export function renderBlock({ sha, fileCount, constants, claims, hand, generated
     "Generated from committed state by `scripts/render-state-block.mjs`. For the **live** verdict —",
     "whether every claim still holds right now — run `npm run check` and read its exit code.",
     "",
-    `- **${fileCount}** mirrored files — ${constants} constant files plus upstream's repo-root \`README.md\` — byte-identical to upstream [\`teorth/optimizationproblems\`](https://github.com/teorth/optimizationproblems) at \`${sha.slice(0, 7)}\` (an upstream sha; it does not exist in this repo). The README is in scope because it is where upstream declares which bounds it stands behind: a bound demoted to "verification at minimal levels" leaves every constants file unchanged.`,
+    `- **${fileCount}** mirrored files — ${constants} constant files plus upstream's repo-root \`README.md\` — identical, line endings aside, to upstream [\`teorth/optimizationproblems\`](https://github.com/teorth/optimizationproblems) at \`${sha.slice(0, 7)}\` (an upstream sha; it does not exist in this repo). The README is in scope because it is where upstream declares which bounds it stands behind: a bound demoted to "verification at minimal levels" leaves every constants file unchanged.`,
     `- **${claims} pinned claims** — ${generated} generated (one per bounds table, asserting the last-listed row's **position**, never "the record") and ${hand} hand-written. ${manual} are \`manual: true\` and therefore report UNVERIFIED by design: their source blocks automated fetch from CI runners.`,
     "- Checks run daily in CI (09:17 UTC), on push, and on demand",
     "",
