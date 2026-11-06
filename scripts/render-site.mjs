@@ -30,6 +30,7 @@ import { loadAudits, badgeFor, settledIds, attemptDate, refuseDroppedAudits, DEF
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { REPO, esc, issueUrl, copyCiteScript } from "./lib/html.mjs";
+import { plainTitle } from "./lib/plain-titles.mjs";
 import { loadMap, notesFor, badgeText, recordCheck } from "./openai-math.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -133,7 +134,7 @@ export function citation(r, sha) {
     return `${label} bound: ${boundCell(row).trim()}${when}`;
   };
   return [
-    `Bounds Ledger — ${r.title} (${r.id})`,
+    `Bounds Ledger — ${plainTitle(r.title)} (${r.id})`,
     side("upper", r.upper, r.upperChanged, r.upperKind),
     side("lower", r.lower, r.lowerChanged, r.lowerKind),
     `Mirrored from teorth/optimizationproblems@${String(sha).slice(0, 7)}. These are the last-listed rows of that constant's bounds table — a listing position, not a statement that this bound is the strongest or most recent. A snapshot at that sha, not a live read.`,
@@ -231,7 +232,7 @@ export function reportLabel(report) {
 export function reportLinks(r) {
   return (r.reports || []).map((rep) => {
     const label = reportLabel(rep);
-    return `<a class="ours" href="${esc(rep.url)}" aria-label="${esc(`${label} — filed upstream about ${r.title}`)}">${esc(label)}</a>`;
+    return `<a class="ours" href="${esc(rep.url)}" aria-label="${esc(`${label} — filed upstream about ${plainTitle(r.title)}`)}">${esc(label)}</a>`;
   }).join("");
 }
 
@@ -583,7 +584,10 @@ export function findKey(r) {
   const cells = [r.upper, r.lower, r.upperPrev, r.lowerPrev]
     .filter(Boolean)
     .map((s) => boundCell(s).trim());
-  const base = [r.title, r.id, ...cells, ...(r.tableValues || []), ...(r.aliases || [])]
+  // The raw title AND, when it differs, the reviewed plain one (2026-11-05): a reader may paste
+  // either upstream's LaTeX or the name as this page now prints it.
+  const plain = plainTitle(r.title);
+  const base = [r.title, ...(plain !== r.title ? [plain] : []), r.id, ...cells, ...(r.tableValues || []), ...(r.aliases || [])]
     .filter(Boolean).join(" ").toLowerCase();
   const typed = [...fractionAliases(base), ...radicalAliases(base), ...powerAliases(base)];
   const extra = [...new Set(typed)].filter((f) => !base.includes(f));
@@ -742,12 +746,13 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   // every search, so a mark is only ever drawn around text the reader can see.
   const sha = String(manifest.sha);
   const body = rows.map((r) => {
-    const badges = `${reportLinks(r)}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(r.title)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}${r.oai && r.oai.length ? `<a class="oai" href="c/${esc(r.id)}.html" aria-label="${esc(r.title)}: ${esc(badgeText(r.oai))}. Open its page for the claim, its Lean statement and what we checked">${esc(badgeText(r.oai))}</a>` : ""}`;
+    const name = plainTitle(r.title);
+    const badges = `${reportLinks(r)}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(name)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(name)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}${r.oai && r.oai.length ? `<a class="oai" href="c/${esc(r.id)}.html" aria-label="${esc(name)}: ${esc(badgeText(r.oai))}. Open its page for the claim, its Lean statement and what we checked">${esc(badgeText(r.oai))}</a>` : ""}`;
     return `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
-<th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md" data-mark>${esc(r.title)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(r.title)}" data-mark>${esc(r.id)}</a>${badges}</th>
+<th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md" data-mark>${esc(name)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(name)}" data-mark>${esc(r.id)}</a>${badges}</th>
 ${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)", historyUrl(r.url, sha))}
 ${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)", historyUrl(r.url, sha))}
-<td class="src">${badges ? `<div class="later">${badges}</div>` : ""}<a href="${esc(readable(r.url))}">source</a> · <a href="c/${esc(r.id)}.html" aria-label="The page for ${esc(r.title)}">page</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(r.title)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(r.title)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
+<td class="src">${badges ? `<div class="later">${badges}</div>` : ""}<a href="${esc(readable(r.url))}">source</a> · <a href="c/${esc(r.id)}.html" aria-label="The page for ${esc(name)}">page</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(name)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(name)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
 </tr>`;
   }).join("\n");
 
@@ -2546,6 +2551,31 @@ async function selftest() {
   assert.ok(lowShown.length === 2 && lowShown[1].includes("[Low1]") && !lowShown[1].includes("&lt;a href"),
     "a LOWER-bound cell must read a matching anchor as its link text too");
   assert.equal(shownCells[0], esc('| $10^{143}$ | [Bru2002] and [Bru2002-b] | x |'), "exact shown cell: the pin with each anchor replaced by its link text");
+
+  // --- PLAIN TITLES ON THE INDEX AND IN THE CITATION (2026-11-05, round 2). The constant pages got
+  // plain-text titles that morning, but the index row and the citation, the one text a reader pastes
+  // elsewhere, still printed upstream's LaTeX source: "Bounds Ledger — Sphere packing density in
+  // $\mathbf{R}^4$ (36a)". The pins above compare against citation() and findKey() themselves, so they
+  // stay green whatever the title becomes; these read the RENDERED row. Meaning first, the exact
+  // equality last, so each mutation names the property it broke.
+  const texTitle = "Sphere packing density in $\\mathbf{R}^4$";
+  const texRow = { ...anchorRow, id: "36a", title: texTitle };
+  const texTr = (renderHtml([texRow], manifest, "2026-11-05").match(/<tr id="c-36a"[\s\S]*?<\/tr>/) || [""])[0];
+  const texCite = (texTr.match(/<code>([^<]*)<\/code><\/details>/) || [, ""])[1];
+  const citeTitleLine = texCite.split("\n")[0];
+  assert.ok(citeTitleLine.includes("Sphere packing density") && citeTitleLine.includes("(36a)"),
+    "positive control: the cite block's title line must render before markup is asserted absent from it");
+  assert.ok(!/[$\\]/.test(citeTitleLine), `the citation's title line must carry no LaTeX source: ${citeTitleLine}`);
+  const heading = (texTr.match(/<th scope="row">([\s\S]*?)<\/th>/) || [, ""])[1];
+  const labels = [...texTr.matchAll(/aria-label="([^"]*)"/g)].map((m) => m[1]).filter((l) => l.includes("Sphere packing"));
+  assert.ok(heading.includes("Sphere packing density") && labels.length >= 4,
+    "positive control: the row heading and its four title-bearing labels must render before they are judged");
+  assert.ok(!/[$\\]/.test(heading.replace(/aria-label="[^"]*"/g, "")), `the row heading must show the plain title: ${heading}`);
+  for (const l of labels) assert.ok(!/[$\\]/.test(l), `an accessible label must name the plain title: ${l}`);
+  const texFind = (texTr.match(/data-find="([^"]*)"/) || [, ""])[1];
+  assert.ok(texFind.includes("sphere packing density in r⁴"), "the search haystack must hold the plain title, so a reader typing R⁴ finds the row");
+  assert.ok(texFind.includes(esc("$\\mathbf{r}^4$")), "the search haystack must still hold the raw title, so a pasted LaTeX title finds the row");
+  assert.equal(citeTitleLine, "Bounds Ledger — Sphere packing density in R⁴ (36a)", "exact citation title line");
 
   // --- Search by the SLASH form of a fraction, added 2026-09-07. Both KP-78 answers, and read
   // back out of the rendered attribute for the same reason the seam above exists.
