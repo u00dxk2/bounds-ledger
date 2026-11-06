@@ -1,6 +1,6 @@
 # read-output sidecar for A-50 — written by check-due-gates-dispositioned --run
 # readCommand: git log --oneline --grep=A-50 -- scripts/ .github/workflows/
-# ran: 2026-11-04T15:47:23.054Z · exit: 0
+# ran: 2026-11-06T15:56:30.183Z · exit: 0
 # lines: 2 · sha256: 36850ebe8ea2d44e (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
