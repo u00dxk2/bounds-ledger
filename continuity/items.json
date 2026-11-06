@@ -597,7 +597,14 @@
       "readCommand": "npm run traffic # SEPARATOR CONVERTED 2026-09-02 (bonus cycle), em dash to hash. appends a sample to continuity/traffic.json and prints the trailing 14-day window. Literal output 2026-08-26: '3 unique viewer(s), 195 unique cloner(s)', 31 days recorded. THE VIEWER COUNT IS THE ONLY FIGURE HERE THAT IS NOT MOSTLY OURS: the sampler deliberately does not deduct our own CI, which checks out daily and on every push and PR, so the clone figure is unattributed by design and must never be quoted as an audience. W-6 was re-pointed 2026-08-20 to the first unsolicited outside contact (n=1), so these figures are CONTEXT for that read and never a gate on it. POSITIVE CONTROL: the API forgets days older than 14, so 'days recorded' must EXCEED 14 — it can only do so because this file accumulated them; 14 or fewer means the accumulated history was lost and the gap is permanent.",
       "notes": "2026-09-13 WEEKLY FORCED-DECISION PASS — TIER B, date 2026-11-06 RE-CONFIRMED and deliberately unchanged (signalDateNote: re-dating a wait that cannot fill is forbidden). Today's read: npm run reports fetched 29 issues and accounted for all 29 as ours — \"OUTSIDE ARRIVALS: 0\", parts reconcile 29 + 0 + 0 = 29 — and npm run traffic reads 1 unique viewer in the trailing 14 days, 49 days recorded (above 14, so the accumulated history is intact). No unsolicited outside contact yet; that is \"no contact yet\", never \"nobody had anything to say\".",
       "updated": "2026-09-13",
-      "lastEvaluated": "2026-09-13"
+      "lastEvaluated": "2026-09-13",
+      "readCommandLastRun": "2026-11-06T16:16:27.636Z",
+      "readCommandLastExit": 0,
+      "readCommandLastDurationMs": 49183,
+      "readCommandLastOutputRef": {
+        "lines": 11,
+        "sha256": "93a597067e04a5db"
+      }
     },
     {
       "id": "W-5",
@@ -1455,9 +1462,9 @@
         "b7e6afb"
       ],
       "readCommandHistory": "node scripts/depth-audit.mjs # BUILT AND FIRST-RUN 2026-09-10; supersedes the check-claims placeholder kept at readCommandRetired2026_09_10, which correctly said no command answered this row while no audit store existed. LITERAL OUTPUT, pasted from the run rather than described: \"depth audit (A-47): 3 row(s) audited — 2 sound, 0 defective, 1 unresolved, 0 unreachable\" at exit 0. It prints the denominator and the SAMPLING RULE beside the count, and it REFUSES a bare zero: exit 2 when the store is missing or empty (a zero about the WORK, not about the records), exit 3 when the verdict counts do not sum to the row count. Both refusals red-armed 2026-09-10 with the mutations proven to land by sha256 and the restore verified against the original.\n\n — LITERAL OUTPUT RE-RECORDED 2026-09-11, because the line above is dated 2026-09-10 and a stale literal output is the defect this field exists to prevent: \"depth audit (A-47): 8 row(s) audited — 2 sound, 0 defective, 4 unresolved, 2 unreachable\" at exit 0. The verdict mix moved for two reasons on one day: slice 2 added five rows, and three earlier rows were downgraded to UNRESOLVED by adversarial review. A second command now answers the population half of this row: `node scripts/depth-audit.mjs --corpus`, which prints 770 bound rows across 115 constant files, 673 cited, 97 uncited, and refuses (exit 2) when either baseline cannot be established.",
-      "readCommandLastRun": "2026-11-03T14:56:45.356Z",
+      "readCommandLastRun": "2026-11-06T16:16:42.285Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 241,
+      "readCommandLastDurationMs": 3447,
       "readCommandLastOutputRef": {
         "lines": 267,
         "sha256": "bd0e70f9c96c465e"
@@ -3446,7 +3453,14 @@
       ],
       "gapClosed2026_10_31": "CLOSED 2026-10-31 MT. The gap recorded in gapScopeLimit2026_10_30 (2026-10-17 to 2026-10-27, never searched) is covered: arxiv-watch.mjs gained --from (pushed 2dc5fe9 after four Codex rounds) and one run searched 2026-09-26 to 2026-10-31. --check --area constants --from 2026-09-26 printed \"papers fetched: 15 · verdicts: 15 · every fetched id has exactly one verdict\", \"claims-a-better-bound: 0\", \"stated bounds EQUAL to a value we show: 0 · WEAKER than it: 83\", \"stated bounds on sides this script cannot rank (an unverified or symbolic row): 15 (to read by hand)\". The store gained perConstant (the line now says what the found papers mean for each constant; built dark, Codex code+claims rounds to \"CLAIMS VERDICT: SEND-READY\" and \"CODE VERDICT: SHIP\" at 81fb1e4), and David said yes on card f64e9a3b at 19:00Z (paraphrased: all 120 pages as written, including the 1d line naming the paper). Switched on at d4c0c0a: npm run served \"120 checked — 120 served, 0 in flight, 0 stale, 0 unreachable\" (not David's words); CI reverify.yml and page-check.yml green on d4c0c0a7. Store as live: windowFrom 2026-09-26, checkedThrough 2026-10-31, papersFound 15, perConstant 1a 3 none, 1b 3 none, 3a 1 none, 3d 1 none, 1d 1 reported-stronger (arXiv:2609.40340v1). OPEN, optional, not a claim: the 1d value 1.4564 is a best evaluator score in that paper's Table 9 (the lead read Appendix C.1 and Table 9); nobody here has checked it, it is not in any table, and the run's papers.json and verdicts.json stay in tmp/, never committed. Next weekly run from the last window end, with --from if a resnap moves the mirror's fetch date past it.",
       "lookup1d2026_11_01": "2026-11-01 (1d construction lookup): arXiv:2609.40340v1 reports 1.4564 for the 1d quantity only as the Best of \"Mean ± Std / Best\" in Table 9 (AC3 column, EvoDuet rows). Its v1 HTML full text (9,758,587 bytes, appendices A-K included; the paper calls Appendices I-K its supplementary materials) gives no function for it: \"1.4564\" occurs twice, both in Table 9; \"AC3\" occurs 5 times, none with heights, a grid size or a link; Appendix K's 11 best programs exclude AC3; none of the text's 20 distinct code-host URLs is named for AC3 (listed, not opened); the arXiv abstract page lists no ancillary files. Repository evidence, NOT on the page (three Codex rounds found any page clause about it claimed more than a file-name read supports): the project page's Code link is github.com/Open-Galapagos/EvoDuet; at its HEAD on 2026-11-01, 75c9ba36b5a17b53e6bfa74a4e63b633971a2fca (an EvoDuet commit; it does not exist in this repo), benchmarks/math/third_autocorr_ineq/ has no oracle/ directory while the first and second autocorrelation benchmarks each have an oracle best program, and best_programs/mathematics_discovery/ names five tasks, none an autocorrelation one (file names read, not contents). Shipped dark as perConstant.constructionLookup (ed87b8d, Codex r1-r4; r4 claims pass HOLDS on every clause); switch-on waits on David's card 59503849. pragma: allowlist sha",
-      "lookup1dSwitchedOn": "2026-11-01: live on David's yes on card 59503849 (16:53Z), commit d2eac5d; npm run served SERVED c/1d.html, live fetch shows the sentence once, EvoDuet absent; card dismissed as done."
+      "lookup1dSwitchedOn": "2026-11-01: live on David's yes on card 59503849 (16:53Z), commit d2eac5d; npm run served SERVED c/1d.html, live fetch shows the sentence once, EvoDuet absent; card dismissed as done.",
+      "readCommandLastRun": "2026-11-06T16:15:29.985Z",
+      "readCommandLastExit": 0,
+      "readCommandLastDurationMs": 89413,
+      "readCommandLastOutputRef": {
+        "lines": 99,
+        "sha256": "a4d90a76c4521d4a"
+      }
     },
     {
       "id": "A-92",
@@ -3499,7 +3513,14 @@
       "linkedCommits": [
         "3703ce3"
       ],
-      "lastEvaluated": "2026-10-30"
+      "lastEvaluated": "2026-10-30",
+      "readCommandLastRun": "2026-11-06T16:13:45.933Z",
+      "readCommandLastExit": 0,
+      "readCommandLastDurationMs": 4030,
+      "readCommandLastOutputRef": {
+        "lines": 2,
+        "sha256": "44d7ce8e3b896784"
+      }
     },
     {
       "id": "A-94",
@@ -3512,12 +3533,12 @@
       "readCommand": "npm run close:primer",
       "created": "2026-10-31",
       "updated": "2026-11-03",
-      "readCommandLastRun": "2026-11-03T14:56:50.162Z",
+      "readCommandLastRun": "2026-11-06T16:13:55.684Z",
       "readCommandLastExit": 1,
-      "readCommandLastDurationMs": 1416,
+      "readCommandLastDurationMs": 3941,
       "readCommandLastOutputRef": {
         "lines": 7,
-        "sha256": "98df7843ce04880b"
+        "sha256": "5c3be37437d332e1"
       },
       "lastEvaluated": "2026-11-03"
     },
@@ -3610,6 +3631,41 @@
       ],
       "created": "2026-11-05",
       "updated": "2026-11-05"
+    },
+    {
+      "id": "A-98",
+      "title": "Sixteen of our scripts act when imported; guard each and shrink KNOWN_NOT_INERT to empty",
+      "type": "action",
+      "status": "open",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-11-13",
+      "created": "2026-11-06",
+      "updated": "2026-11-06",
+      "notes": "Minted 2026-11-06 at P3, from A-50's first full run (scripts/check-import-inert.mjs). 16 of 48 modules under scripts/ and scripts/lib/ act on import: anthropic-formal-math, catch-rate (hung past 60 s), check-brief (called fetch), check-next-primer (exit 1), check-orphan-shas, check-resolvability, check-self-attribution (exit 2), citation-footprint, eth-openalex-frame (exit 2), extract-pins (rewrites ledger/claims.json), gap-table (rewrites docs/gap-table.json), gates (refused only because the tree was dirty; on a clean tree it would start the verify gate), history-sweep (hung past 60 s), render-state-block (rewrites README.md), sky (exit 2), traffic-snapshot (rewrites continuity/traffic.json). They are listed in KNOWN_NOT_INERT and are not imported by the check. Most dangerous first: gates, extract-pins, render-state-block, gap-table, traffic-snapshot. The fix per module is the scripts/lib/entry-module.mjs guard (isEntryModule) around the command-line top level, then deleting that module's line from KNOWN_NOT_INERT so the check holds it.",
+      "onTrigger": "On 2026-11-13: run the readCommand. Guard at least the five file-writing or gate-starting modules (gates, extract-pins, render-state-block, gap-table, traffic-snapshot) and delete their lines, or record what outranked it and re-date with that reason.",
+      "closeWhen": "KNOWN_NOT_INERT in scripts/check-import-inert.mjs is empty and the check exits 0 over all modules, its literal output pasted here.",
+      "readCommand": "node scripts/check-import-inert.mjs",
+      "links": [
+        "scripts/check-import-inert.mjs"
+      ]
+    },
+    {
+      "id": "A-99",
+      "title": "Link each index row to the paper its bound comes from, not only to upstream's file",
+      "type": "action",
+      "status": "open",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-11-20",
+      "created": "2026-11-06",
+      "updated": "2026-11-06",
+      "notes": "Minted 2026-11-06 at P3 from the manager review of A-97: the great version of the row's source link takes a reader to the paper, not to upstream's constants file. A-97 made the sentence honest instead (the link goes to upstream's file, whose table cites the reference). Not cheap today: a row's citation key must be resolved to its entry in that file's References section, and render-constant-pages.mjs's referenceEntryLine needed several review rounds to find one entry line safely (a bullet that cites a reference is not its entry). A first step is measuring how many of the 240 pinned rows resolve to exactly one reference entry with a URL.",
+      "onTrigger": "On 2026-11-20: measure how many pinned rows resolve to exactly one References entry carrying a URL (reuse referenceEntryLine). If most do, build the link for those and say on the page which rows lack one; if few do, record the count and close or re-scope.",
+      "closeWhen": "Either each index row whose reference resolves links to the paper (the rest named as unresolved on the page), shipped through the outward gate; or the measured count is recorded here with the reason the link is not worth building.",
+      "readCommand": "git log --oneline --grep=A-99 -- scripts/",
+      "links": [
+        "scripts/render-site.mjs",
+        "scripts/render-constant-pages.mjs"
+      ]
     }
   ],
   "meta": {

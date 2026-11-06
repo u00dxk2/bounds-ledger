@@ -1,0 +1,8 @@
+# read-output sidecar for A-93 — written by check-due-gates-dispositioned --run
+# readCommand: node scripts/anthropic-formal-math.mjs --upstream
+# ran: 2026-11-06T16:13:45.933Z · exit: 0
+# lines: 2 · sha256: 44d7ce8e3b896784 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+map holds at anthropics/formal-math@16a5ce41304fcdaea4e0be7c132e1c361dc26da5 (an upstream sha): 3 project(s), 30 comparator theorem(s), 7 pair(s): states 0, implies 0, bears-without-number 0, does-not-bear 7
+upstream at the pinned sha: the README's project folders equal the map's, every comparator configuration in the tree is mapped or excluded, and every mapped theorem list equals the map's
