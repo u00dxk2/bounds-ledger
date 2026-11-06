@@ -258,6 +258,13 @@ jobs:
       # The shared HTML helper (escape, unescape, issue link) the three public-page renderers import. Network-free.
       - name: Self-test shared HTML helper (no network)
         run: node scripts/lib/html.mjs --selftest
+      # A-50: importing one of our scripts must do nothing. The self-test proves each failure kind
+      # fires on fixtures; the second step imports every script not on KNOWN_NOT_INERT (A-98) in its
+      # own child with fetch stubbed, and fails on any output, exit, or file change during the import.
+      - name: Self-test import-inert check (no network)
+        run: node scripts/check-import-inert.mjs --selftest
+      - name: Every script outside KNOWN_NOT_INERT is inert on import (no network)
+        run: node scripts/check-import-inert.mjs
       # Guards A-33 leg 1's differ. The danger it exists to prevent is the one note4 names: a
       # check that fires on 'a filed report is CLOSED' fires every day once #150 closes, and an
       # alarm that cannot go quiet is this lane's founding defect. The self-test asserts it stays
