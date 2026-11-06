@@ -21,11 +21,14 @@ sentry_open_p2: null
 
 ## BLUF
 
-Today the public README and the page get six sentences narrowed, so each one says only what the code does. For example, "a link to the primary source beside every number" becomes a sentence that names what the link actually goes to. Beside that, the lane builds the test that catches a script running when it is only imported.
+The public README and the page now say only what the code does, and the change is live. For example, the page no longer says every row links to its primary source; it says the link goes to upstream's file for that constant, not to the paper. A new test also catches a script that runs when it is only imported, and its first run found 16 scripts that do.
 
 ## What changed
 
-- P1 chose the day's work (selection packet in the State Appendix). Nothing has shipped yet.
+- P1 chose the day's work (selection packet in the State Appendix).
+- **The README and the public page now say only what the code does** (`b0d2f6a`, then review fixes `04b9be2`, `e0f3495`, `842a216`; live after the Pages build at 18:04:21Z). For example, the page said "Every row links to its primary source". It now says the row's source link goes to upstream's own file for that constant, whose table cites the reference, and that it does not go to the paper itself. Six sentences from `A-97` (the row listing the overstated sentences) were narrowed, five unsourced superlatives were cut, and three Codex rounds found and narrowed five more. A fetch of the live page after the build no longer contained the old sentence; positive control: the same fetch returned the new source sentence and 120 rows.
+- **A test that importing one of our scripts does nothing** (`A-50`, the row for the import test; `63acb47`). It runs in `npm test` and as two CI steps, and both steps succeeded on `842a2167`. Its first full run found 16 of 48 scripts acting on import: four of them rewrite tracked files, and one would start the whole verify gate. Those 16 are listed and skipped, and `A-98` (the row for guarding them) is due 11-13. The proof that it can fail: a one-line mutation of `scripts/lookup.mjs` made it exit 1 and name four modules, and restoring the file made it exit 0.
+- `A-99` (the row for linking each bound to its paper) records the manager review's suggestion, with a first measurement due 11-20.
 
 ## Inputs (controllable)
 
