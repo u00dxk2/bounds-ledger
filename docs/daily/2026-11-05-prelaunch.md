@@ -94,3 +94,18 @@ Round 2 was approved on card d569a762. The packet as posted: `tmp/p1-packet-2026
 - Test: the new render-site selftest went red on the unrouted code ("the citation's title line must carry no LaTeX source") and green after.
 - Encounter: blind. The published pages carry no instrument: `A-59` (nothing can see an arrival on the public pages). The first readable signal is `W-18` (the first Search Console impressions read, due 11-11).
 - A stated limit: 26 index row headings still contain `$` or a backslash. All 26 come from audit badge text that quotes mirrored bound values, not from a title.
+
+### Close, round 2
+
+ACTION: COMPLETED · item round 2 of the search-reach setup week (plain names on the index rows and in citations) · P3 bus msg b5f2eab0
+
+- The acceptance condition is met, read live after the Pages build for `ad69c6a`. The manager review (00:40Z) re-read the site independently: no index or `c/` cite title line carries `$` or a backslash.
+- Gates: `npm test` passed locally before the commit; the full `npm run check` was not run locally. CI reverify.yml (both renderers' selftests) and page-check.yml (`render-site.mjs --check`) are green on `ad69c6a`, which stands in for it.
+- No state changed since the P3 post.
+- Ledger delta: `W-18` (the first Search Console impressions read) gained a note recording `ad69c6a` and the link to it. Nothing else changed.
+- Hygiene draft: 0 lines; check-wait-justification PASS, check-engineering-zero PASS (0 findings); READ-MUTATED none.
+- Due-gate verification: `check-due-gates-dispositioned.mjs` printed "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT (taken 2026-11-05).
+- Pending reads:
+  - `W-18` (the first Search Console impressions read), due 2026-11-11. Trigger: David reads Performance for the property in his account, or grants access. It is the first readable signal on this change and on the whole search-reach outcome. It is scheduled, not a result.
+  - `A-50` (the import-is-inert selftest) and `A-97` (overstated sentences about our tooling), due 11-06.
+- Lesson for the next acceptance condition: word "no markup" as applying to titles only, so the condition and any stated limit agree.
