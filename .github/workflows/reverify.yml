@@ -258,11 +258,11 @@ jobs:
       # The shared HTML helper (escape, unescape, issue link) the three public-page renderers import. Network-free.
       - name: Self-test shared HTML helper (no network)
         run: node scripts/lib/html.mjs --selftest
-      # A-50: importing one of our scripts must do nothing. The self-test proves each failure kind
-      # fires on fixtures; the second step imports every script not on KNOWN_NOT_INERT (A-98) in its
-      # own child with fetch stubbed, and fails on captured output, an exit or nonzero status, a
-      # counted fetch call, or a regular file created, deleted, or changed in size or mtime. The
-      # checker's header names what it cannot see.
+      # A-50: importing one of our scripts must do nothing. The self-test exercises representative
+      # failure fixtures; the second step imports every non-test scripts/*.mjs and scripts/lib/*.mjs
+      # module not on KNOWN_NOT_INERT (A-98) in its own child with global fetch stubbed, and checks
+      # captured output, early exit, nonzero status or signal, counted fetch calls, and regular-file
+      # create/delete/size/mtime changes. The checker's header states its exclusions and blind spots.
       - name: Self-test import-inert check (no network)
         run: node scripts/check-import-inert.mjs --selftest
       - name: Every script outside KNOWN_NOT_INERT is inert on import (no network)

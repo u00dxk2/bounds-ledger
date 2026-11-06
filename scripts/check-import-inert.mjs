@@ -148,7 +148,7 @@ export function checkModule(file, root) {
   if (!reached) reasons.push(`never reached the line after the import (exit ${r.status}${r.signal ? `, signal ${r.signal}` : ""}): it exited, threw, or hung on import`);
   if (reached && Number(m[1]) > 0) reasons.push(`called fetch ${m[1]} time(s) during import (the throw was caught)`);
   // A module can set process.exitCode and still let the marker print; the exit status is checked too.
-  if (reached && Number.isInteger(r.status) && r.status !== 0) reasons.push(`exited ${r.status} after the import returned (process.exitCode set on import)`);
+  if (reached && Number.isInteger(r.status) && r.status !== 0) reasons.push(`exited ${r.status} after the import returned (nonzero child status, e.g. process.exitCode or an exit handler set on import)`);
   if (reached && r.signal) reasons.push(`killed by ${r.signal} after the import returned (the probe did not finish cleanly)`);
   for (const c of diffSnapshots(before, after)) reasons.push(`${c} during import`);
   return reasons;
@@ -210,6 +210,10 @@ async function selftest() {
     writeFileSync(join(scripts, "caughtfetch.mjs"), `try { await fetch("https://example.invalid/"); } catch {}\n`);
     writeFileSync(join(scripts, "exitcode.mjs"), `process.exitCode = 1;\n`);
     writeFileSync(join(scripts, "blank.mjs"), `console.log("");\n`);
+    // Codex r3: a module that kills its own process after the import returns must not read inert.
+    // Whether the marker flushes before the kill is platform timing, so the assertion is only that
+    // it fails, and that it is never blamed on process.exitCode.
+    writeFileSync(join(scripts, "signals.mjs"), `setTimeout(() => process.kill(process.pid, "SIGTERM"), 0);\n`);
     // Codex r2: a module that makes the marker gain a trailing newline must not read inert.
     writeFileSync(join(scripts, "trails.mjs"), `const w = process.stdout.write.bind(process.stdout);\nprocess.stdout.write = (s, ...a) => w(String(s) + "\\n", ...a);\n`);
     writeFileSync(join(scripts, "skipped.test.mjs"), `console.log("a test runner runs on import by design");\n`);
@@ -238,9 +242,11 @@ async function selftest() {
     assert.ok(by["scripts/exitcode.mjs"].some((r) => r.startsWith("exited 1 after the import")), "process.exitCode set on import must fail");
     assert.ok(by["scripts/blank.mjs"].some((r) => r.startsWith("printed to stdout")), "a blank line printed on import must fail");
     assert.ok(by["scripts/trails.mjs"].some((r) => r.startsWith("never reached")), "a byte after the marker must fail");
+    assert.ok(by["scripts/signals.mjs"].length > 0, "a module that kills its own process must fail");
+    assert.ok(!by["scripts/signals.mjs"].some((r) => r.startsWith("exited null")), "a signal must never be reported as an exit status");
 
     // THE WHOLE COMMAND'S EXIT CODE, both answers (Codex r1: the reasons were tested, the exit was not).
-    const bad = ["caughtfetch", "exitcode", "blank", "trails", "prints", "warns", "exits", "fetches", "writes", "touches"].map((n) => `scripts/${n}.mjs`);
+    const bad = ["caughtfetch", "exitcode", "blank", "trails", "signals", "prints", "warns", "exits", "fetches", "writes", "touches"].map((n) => `scripts/${n}.mjs`);
     assert.equal(run(scripts, fx, bad.filter((p) => p !== "scripts/prints.mjs")), 1, "one non-inert unlisted module must make the command exit 1");
     assert.equal(run(scripts, fx, bad), 0, "with every non-inert module listed the command must exit 0");
 
