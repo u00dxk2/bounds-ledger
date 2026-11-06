@@ -231,12 +231,12 @@ function render(id, claims, manifest, root = ROOT) {
     // checkout", which was a false diagnosis on a full clone and made a code defect read as an
     // environment fact. A trusted-print instrument may say it does not know; it may not invent why.
     lines.push(`    pin last changed: ${when || "unknown"}`);
-    lines.push(`    primary source:   ${p.url}`);
+    lines.push(`    source:           ${p.url}`);
     lines.push("");
   }
   lines.push(`  snapshotted at upstream sha ${String(manifest.sha).slice(0, 7)} (an upstream sha; it does not exist in this repo)`);
   lines.push(`  These are LISTING POSITIONS, not a claim about which row is the record.`);
-  lines.push(`  Check us in one hop: the primary source above is the row we read.`);
+  lines.push(`  Check us in one hop: the source above is the file we read the row from.`);
   return { lines, found: true };
 }
 

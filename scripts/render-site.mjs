@@ -7,8 +7,8 @@
 // it and believes it. Two consequences are wired in rather than left to discipline.
 //
 //   1. It states, on the page, that it is a snapshot at a pinned sha and NOT a live read, with
-//      the date the MIRROR was fetched (not the render date) and a link to the primary source
-//      for every single row. A reader
+//      the date the MIRROR was fetched (not the render date) and, for every single row, a link to
+//      upstream's own file for that constant (not to the paper; the table there cites it). A reader
 //      who wants live truth is told exactly where to get it.
 //   2. It never says which row is "the record". Generated pins assert LISTING POSITION; numeric
 //      ranking is defeated by symbolic cells, negatives and O(-) asymptotics. A public page is
@@ -58,7 +58,7 @@ export function constantIds(claims) {
 // the page handed that same URL to the reader; our own mirror copy was served off Pages as
 // `text/markdown`, which browsers also do not render. Measured in a real browser: the bound tables
 // arrived as one run-on line of pipe characters and LaTeX source. That defeats the page's own
-// promise, "every row links to its primary source so you can check us in one hop" — you cannot
+// promise, that each row's source link lets you check our row against upstream's — you cannot
 // compare a row against a wall of text. `readable()` maps a raw URL to GitHub's blob view, which
 // renders the table, and leaves anything else untouched. It is display-only: the pin's `url` is
 // still what the checker fetches, and must stay raw.
@@ -150,7 +150,7 @@ export function citation(r, sha) {
  * never a verdict, because deciding that a change was CAUSED by our report is a judgment." The
  * selftest pins that by asserting the emitted markup carries no causal wording.
  *
- * Why a reader is owed it: the page's whole promise is check us in one hop. A row we have
+ * Why a reader is owed it: the page's whole promise is that a reader can check our row. A row we have
  * ourselves reported against is the one row where our own involvement is part of what a reader
  * needs in order to judge it, and until today the page was silent about that.
  */
@@ -762,7 +762,7 @@ ${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)", hi
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='13'%3E%E2%88%91%3C/text%3E%3C/svg%3E">
 <title>Bounds Ledger — is the number you cited still current?</title>
-<meta name="description" content="A continuously re-verified ledger of mathematical records. Look up a constant and see the bounds rows we watch, when each last changed and whether the bound moved, and the primary source.">
+<meta name="description" content="A continuously re-verified ledger of mathematical records. Look up a constant and see the bounds rows we watch, when each last changed and whether the bound moved, and a link to upstream's file for each constant.">
 <style>
 :root{--bg:#fff;--fg:#16181d;--muted:#5c6370;--line:#e3e6ea;--accent:#0b5fff;--code:#f6f7f9}
 @media(prefers-color-scheme:dark){:root{--bg:#14161a;--fg:#e8eaed;--muted:#9aa1ac;--line:#2b2f36;--accent:#7aa2ff;--code:#1c1f25}}
@@ -886,13 +886,13 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 
 <div class="empty" id="empty" hidden>
 <p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the ${rows.length} constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
-<p>Filtering matches the constant&rsquo;s name, its id, and <em>every value cell in the bound tables we mirror for it</em> &mdash; not only the two rows we pin, and including values this ledger pinned earlier and no longer does. A number sitting higher up a constant&rsquo;s table still finds it, which is where most numbers already in circulation sit. So you can paste a number you cited and land on its constant, then read the current table yourself. A partial number works, since matching is on substrings. Two things are <em>not</em> matched: the reference and comment cells beside a bound (an author tag or a bracketed citation key will find nothing), and a name we do not list the constant under. Both are worth a scan of the full list before concluding a constant is absent.</p>
+<p>Filtering matches the constant&rsquo;s name, its id, and <em>every value cell in the bound tables we mirror for it</em> &mdash; not only the two rows we pin, and including values this ledger pinned earlier and no longer does. A number sitting higher up a constant&rsquo;s table, such as an older bound you once cited, still finds it. So you can paste a number you cited and land on its constant, then read the current table yourself. A partial number works, since matching is on substrings. Two things are <em>not</em> matched: the reference and comment cells beside a bound (an author tag or a bracketed citation key will find nothing), and a name we do not list the constant under. Both are worth a scan of the full list before concluding a constant is absent.</p>
 <p><a id="emptyask" href="${esc(REPO)}/issues/new">Tell us what you were looking for &rarr;</a> — it arrives naming your search term, and a constant someone actually asked for is the best evidence we have about what to watch next.</p>
 </div>
 
 <div class="scroll">
 <table>
-<thead><tr><th scope="col">Constant</th><th scope="col">Upper-bound row (last listed)</th><th scope="col">Lower-bound row (last listed)</th><th scope="col">Primary</th></tr></thead>
+<thead><tr><th scope="col">Constant</th><th scope="col">Upper-bound row (last listed)</th><th scope="col">Lower-bound row (last listed)</th><th scope="col">Source</th></tr></thead>
 <tbody id="rows">
 ${body}
 </tbody>
@@ -905,7 +905,7 @@ ${body}
 <div class="note">
 <p><strong>Read this before you trust a number here.</strong> This page is a <em>snapshot</em>, not a live read. It shows our mirror of <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a> at upstream commit <code style="display:inline;padding:.1rem .3rem">${esc(sha.slice(0, 7))}</code>.</p>
 <p><strong>${esc(generatedOn)} is the date this mirror last CHANGED &mdash; not the last time it was checked.</strong> Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date does not mean nobody has looked. Nor does it prove nothing moved: the dates and values here change only after an upstream change has been verified and published.${quietSentence} To see the actual last check and its verdict, read the <a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a> &mdash; that is the live read, and this page is deliberately not.</p>
-<p>Every row links to its primary source so you can check us in one hop — and if a row disagrees with its source, that is a bug worth reporting. Use the <strong>looks wrong?</strong> link on that row: the report arrives already naming the constant and the exact mirror commit, so you never have to work out how to describe which of ${rows.length} rows you meant.</p>
+<p>Each row&rsquo;s <strong>source</strong> link goes to upstream&rsquo;s own file for that constant, where the bounds table cites its references, so you can check our row against theirs in one click. It does not go to the paper itself: to check a number against its paper, follow the reference that table cites. If a row disagrees with its source, that is a bug worth reporting. Use the <strong>looks wrong?</strong> link on that row: the report arrives already naming the constant and the exact mirror commit, so you never have to work out how to describe which of ${rows.length} rows you meant.</p>
 <p>Some rows carry one or more <strong>we reported this row</strong> links. Each means we ourselves filed a report upstream about that row; it names the report's number and what it asked, and goes to the report so you can read what we said and judge it. We show them because our own involvement in a row is part of what you need in order to weigh the row — and <strong>they are not a claim that anything upstream changed because of us</strong>. The state shown on each is that report's own; whether it caused anything is a separate question this page does not answer.</p>
 <p><strong>Every row has its own link.</strong> Click a row&rsquo;s short id — the grey code under the constant&rsquo;s name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred.</p>
 <p><strong>These are last-listed table rows, not a claim about which bound is “the record.”</strong> Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.</p>
@@ -1045,7 +1045,7 @@ ${copyCiteScript("details.cite")}
 
 // The note block's exact rendered text for the fixture below. Updated DELIBERATELY when the note
 // changes; that is the point of pinning it — an added sentence cannot slip in unreviewed.
-const NOTE_PIN = "Read this before you trust a number here. This page is a snapshot, not a live read. It shows our mirror of teorth/optimizationproblems at upstream commit e70b4a4. 2026-08-20 is the date this mirror last CHANGED -- not the last time it was checked. Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date does not mean nobody has looked. Nor does it prove nothing moved: the dates and values here change only after an upstream change has been verified and published. To see the actual last check and its verdict, read the run history -- that is the live read, and this page is deliberately not. Every row links to its primary source so you can check us in one hop — and if a row disagrees with its source, that is a bug worth reporting. Use the looks wrong? link on that row: the report arrives already naming the constant and the exact mirror commit, so you never have to work out how to describe which of 2 rows you meant. Some rows carry one or more we reported this row links. Each means we ourselves filed a report upstream about that row; it names the report's number and what it asked, and goes to the report so you can read what we said and judge it. We show them because our own involvement in a row is part of what you need in order to weigh the row — and they are not a claim that anything upstream changed because of us. The state shown on each is that report's own; whether it caused anything is a separate question this page does not answer. Every row has its own link. Click a row's short id — the grey code under the constant's name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred. These are last-listed table rows, not a claim about which bound is “the record.” Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.";
+const NOTE_PIN = "Read this before you trust a number here. This page is a snapshot, not a live read. It shows our mirror of teorth/optimizationproblems at upstream commit e70b4a4. 2026-08-20 is the date this mirror last CHANGED -- not the last time it was checked. Those are different dates and the difference matters here: a scheduled job re-verifies every pinned row on this page daily, and a day that finds nothing moved leaves this date untouched. So an old date does not mean nobody has looked. Nor does it prove nothing moved: the dates and values here change only after an upstream change has been verified and published. To see the actual last check and its verdict, read the run history -- that is the live read, and this page is deliberately not. Each row's source link goes to upstream's own file for that constant, where the bounds table cites its references, so you can check our row against theirs in one click. It does not go to the paper itself: to check a number against its paper, follow the reference that table cites. If a row disagrees with its source, that is a bug worth reporting. Use the looks wrong? link on that row: the report arrives already naming the constant and the exact mirror commit, so you never have to work out how to describe which of 2 rows you meant. Some rows carry one or more we reported this row links. Each means we ourselves filed a report upstream about that row; it names the report's number and what it asked, and goes to the report so you can read what we said and judge it. We show them because our own involvement in a row is part of what you need in order to weigh the row — and they are not a claim that anything upstream changed because of us. The state shown on each is that report's own; whether it caused anything is a separate question this page does not answer. Every row has its own link. Click a row's short id — the grey code under the constant's name — and your address bar holds a link to that row alone. Send that to a colleague and they land on the constant, not on a page of two hundred. These are last-listed table rows, not a claim about which bound is “the record.” Deciding that automatically is defeated by symbolic entries, negatives and asymptotic notation, so this ledger does not try; it reports position and leaves the judgement to you.";
 
 async function selftest() {
   const assert = (await import("node:assert/strict")).default;

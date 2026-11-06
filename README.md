@@ -21,15 +21,15 @@ If you had cited `6.5143…` the week before, nothing would have told you. That 
 
 ## The problem, concretely
 
-This repo opened on a real discrepancy: TTT-Discover ([arXiv:2601.16175](https://arxiv.org/abs/2601.16175)) reported the Erdős minimum-overlap constant as **0.380876**, while Tao's optimization-constants repository listed **0.380868**. Neither was wrong. They were *consecutive entries in a fast-moving record sequence*, and the surface that was actually stale was a third one — the widely-cited index page at erdosproblems.com/36.
+This repo opened on a real discrepancy: TTT-Discover ([arXiv:2601.16175](https://arxiv.org/abs/2601.16175)) reported the Erdős minimum-overlap constant as **0.380876**, while Tao's optimization-constants repository listed **0.380868**. Neither was wrong. They were *consecutive entries in a fast-moving record sequence*, and the surface that was actually stale was a third one — the index page at erdosproblems.com/36.
 
 That reconciliation is [`docs/reconciliations/2026-07-22-minimum-overlap.md`](docs/reconciliations/2026-07-22-minimum-overlap.md), and it is also this repo's method template: identify the surfaces, date each value, find which one stopped moving.
 
 ## Is your number in here?
 
-**There is now a page for exactly this question: [u00dxk2.github.io/bounds-ledger](https://u00dxk2.github.io/bounds-ledger/).** All 120 tracked constants, filter as you type, and for each one the pinned upper and lower rows, **the date each row last changed and whether that change moved the bound or only the text around it**, and a link to the primary source beside every number. No account, no clone, nothing fetched at runtime. It is a snapshot at the sha pinned below, and it says so on the page — for the live verdict, clone and run `npm run check`.
+**There is now a page for exactly this question: [u00dxk2.github.io/bounds-ledger](https://u00dxk2.github.io/bounds-ledger/).** All 120 tracked constants, filter as you type, and for each one the pinned upper and lower rows, **the date each row last changed and whether that change moved the bound or only the text around it**, and beside each row a link to upstream's own file for that constant, where the bounds table cites its references. That link is one click from our row to theirs; checking a number against its paper is one more step, through the reference the table cites. No account, no clone, nothing fetched at runtime. It is a snapshot at the sha pinned below, and it says so on the page — for the live verdict, clone and run `npm run check`.
 
-The short answer for most visitors is "maybe, and you can check in one click". **120 named constants** are tracked. Twelve of them are below, chosen because you may recognise them — each link goes to this repo's mirrored copy, which GitHub renders as the bounds table itself, so you can read the current upper and lower rows **without cloning anything**.
+The short answer is "maybe, and you can check in one click". **120 named constants** are tracked. Twelve of them are below, chosen because you may recognise them — each link goes to this repo's mirrored copy, which GitHub renders as the bounds table itself, so you can read the current upper and lower rows **without cloning anything**.
 
 | Constant | The bounds table we watch |
 |---|---|
@@ -109,7 +109,7 @@ node scripts/reverify.mjs --check          # 2b. exit 0, "No drift." — the hal
 git show da17be3 -- 'ledger/teorth-optimizationproblems/constants/*.md'   # 3. a real catch, verbatim
 ```
 
-Step 1 is the two checks that need nothing but a network connection, and it is the fastest read. `npm run check` runs those two plus nine more (an entry-point guard, the re-derivation of the small Ramsey numbers table from its pinned source, the README state block, the rendered index page, the per-constant pages, the Ramsey page, a notation-coverage check, the deferral gate, and a check on our own David-facing brief) — it needs no account either, and **its exit code means what it says**: 0 is green, non-zero is a real finding.
+Step 1 is the two checks that need nothing but a network connection, and it is the fastest read. `npm run check` runs those two plus ten more (an entry-point guard, the re-derivation of the small Ramsey numbers table from its pinned source, the README state block, the rendered index page, the per-constant pages, a check that each audited row is still on the line it was audited at, the Ramsey page, a notation-coverage check, the deferral gate, and a check on our own David-facing brief) — it needs no account either, and **its exit code means what it says**: 0 is green, non-zero is a real finding.
 
 One leg is reported but deliberately not counted. The brief check verifies a page on `skylarkcreations.com` that went Google-session-only on 2026-09-04, so it cannot be read by any script, ours included — it prints `BRIEF UNVERIFIABLE` on every run and says so. It is excluded from the exit code on the same rule as the two `manual: true` claims above: **reported every run, never green, never counted.** A brief that is genuinely *stale* still fails the gate — only unreachability is excused, and `scripts/check-brief-advisory.mjs --selftest` asserts both halves. Run `npm run check:brief:strict` for that leg's own unexcused verdict.
 
@@ -136,7 +136,7 @@ whether every claim still holds right now — run `npm run check` and read its e
 
 ## Run it
 
-No dependencies — Node stdlib and `fetch` only. `npm install` is a no-op.
+No dependencies — Node stdlib and `fetch` only. `npm install` installs nothing; its one effect is the `prepare` script, which points git at this repo's pre-commit hook (`git config core.hooksPath .githooks`).
 
 ```
 npm test         # network-free self-tests (the run prints the live count)
@@ -145,15 +145,15 @@ npm run check    # LIVE: re-fetch upstream, diff the mirror, re-verify every cla
 
 Individual checks: `scripts/reverify.mjs --check` (mirror diff), `scripts/check-claims.mjs` (cross-surface claims), `scripts/extract-pins.mjs` (regenerate generated pins).
 
-Indicators, which never gate a build and never run in CI — and which refuse rather than print a figure they cannot stand behind, because a zero from a dead probe is indistinguishable from a measured one: `npm run depth-audit` (what has been read against its own sources, above), `npm run catches` (record movements per week — a ceiling, and it cannot see the Ramsey area at all), `npm run reports` (outside reports arriving through the per-row links on the page).
+Indicators, which never gate a build and whose live reads never run in CI (CI runs only their offline self-tests) — and which refuse rather than print a figure they cannot stand behind, because a zero from a dead probe is indistinguishable from a measured one: `npm run depth-audit` (what has been read against its own sources, above), `npm run catches` (record movements per week — a ceiling, and it cannot see the Ramsey area at all), `npm run reports` (outside reports arriving through the per-row links on the page).
 
 ## How it works
 
 Two complementary checks, because either alone has a blind spot.
 
-**1. Mirror diff** (`reverify.mjs`) — `ledger/teorth-optimizationproblems/` holds a byte-level copy of the adopted surface, with `manifest.json` pinning the upstream sha. Any change upstream trips it. This catches everything *inside* one repo and nothing outside it.
+**1. Mirror diff** (`reverify.mjs`) — `ledger/teorth-optimizationproblems/` holds a byte-level copy of the adopted surface, with `manifest.json` pinning the upstream sha. A change to any file it mirrors — every `constants/*.md` file plus upstream's root `README.md` — trips it. A change elsewhere in upstream's repository does not, and nothing outside that repository is seen at all.
 
-**2. Claim pins** (`check-claims.mjs`) — `ledger/claims.json` names, per claim, a source URL and the exact string that must still appear there, **across every surface the ledger cites**: the upstream repo at live HEAD, arXiv abstracts, Wikipedia, the community metadata database behind erdosproblems.com. Cross-surface divergence produced this lane's founding finding; a same-repo mirror diff would never have seen it.
+**2. Claim pins** (`check-claims.mjs`) — `ledger/claims.json` names, per claim, a source URL and the exact string that must still appear there, **on each source that file names**: the upstream repo at live HEAD, arXiv, Wikipedia, erdosproblems.com and the community metadata database behind it, and the two published copies of the *Small Ramsey Numbers* survey. Papers that the mirrored files cite on other hosts are not pinned. Cross-surface divergence produced this lane's founding finding; a same-repo mirror diff would never have seen it.
 
 Coverage is every constant file in the mirror — an upper- and a lower-bound pin generated for each — plus the hand-written claims, which sit *beside* the generated pins rather than in place of them. The exact inventory is in **Current state** below, which is generated; this sentence deliberately carries no count, because the counts that used to sit here went stale twice and the claim built on them was wrong in a way no number would have revealed.
 
@@ -185,7 +185,7 @@ person is not named here, and the text of the message is not reproduced — both
 repository was made public. They were private correspondence with someone who never asked to be written
 about, and nothing in the mathematics depends on either.
 
-What remains is the finding itself, which is about a *page*, not a person: a widely-cited index listed an
+What remains is the finding itself, which is about a *page*, not a person: a public problem index listed an
 upper bound that later curated work had superseded. Where documents here discuss the wording of that
 message, they describe its substance and what review changed, which is the part with any methodological
 value.
@@ -200,7 +200,7 @@ support it, a record we have listed as current that has since moved, a check tha
 not — those are the reports worth the most here, and they are welcome without ceremony. Quote the claim
 id (`C-3`, `pin:15a:U`) or the file, and say what you expect instead.
 
-This project exists because widely-cited numbers go unchecked for months. A ledger that had no way to be
+This project exists because a cited number can go unchecked for months. A ledger that had no way to be
 told it was wrong would be making the same mistake it was built to catch — and unlike the surfaces it
 watches, this one is small enough that a single reader can check it.
 
