@@ -29,6 +29,7 @@ Every constant page now has a plain-text title a mathematician can search for, a
 - **`sitemap.xml`** lists the index and all 120 pages (121 URLs, served HTTP 200).
 - **Three Codex review rounds.** Round 1 found four defects, all confirmed and fixed: two overclaiming description clauses, one notation that changed meaning (`μ(Z²)` reads as a function applied to Z²), and one gap in the refusal. Round 2 found the same two classes again, so the converter was replaced by the reviewed table and the description was cut further. Round 3 returned SHIP. Positive control: the same round's claims pass found 240 of 240 rendered bound rows and 120 of 120 upstream links, so it read the pages it judged.
 - **A card for David** (card `207bbc2c`, bus msg `d44d230a`): verify the site in Search Console and submit the sitemap.
+- **Round 2: the index rows and every citation now use the plain-text name too** (`ad69c6a`, live since the Pages build at 00:26:31Z on 11-06). The citation is the one text a reader pastes elsewhere; on each of the 22 affected constant pages it had read `$\mathbf{R}^4$` under a heading reading "R⁴". The index row's title link and its screen-reader labels changed with it. The search box still finds a row by the LaTeX name and now also by the plain one. Deliberately unchanged: the prefilled "looks wrong?" issue keeps the LaTeX name, because whoever triages it matches against upstream's file. Bound values are untouched. One Codex review (round 1 on `ad69c6a`): no defects.
 - The traffic counter ran again (`npm run traffic`, 15:36:44Z): 7 unique repo viewers in the latest 14-day window. Visitors to the public pages are still not measured.
 
 ## Inputs (controllable)
@@ -76,3 +77,20 @@ The packet as posted to the bus at P1: `tmp/p1-packet-2026-11-05.md`, quoted in 
 - Next action: improve. Retitle the pages, rewrite the descriptions and add a generated `sitemap.xml`. File one card for Search Console verification.
 - USER-FACING: yes — `scripts/render-constant-pages.mjs`, `c/*.html`, `sitemap.xml`.
 - HYGIENE INPUTS: (a) `A-77` (who runs the filed-report check), `W-16` (watch upstream issue 289, never run), `W-3` (the erdosproblems.com/36 acknowledgement watch). (b) none. (c) none.
+
+### P1 selection packet, round 2
+
+Round 2 was approved on card d569a762. The packet as posted: `tmp/p1-packet-2026-11-05-r2.md`. Summary:
+
+- Outcome: a mathematician who copies a citation, or scans the index, sees each constant's name in plain text. The 22 titles that carry LaTeX still show it in the index rows and in every cite block, including the cite block on each constant page, whose own heading is already plain (`c/36a.html`).
+- Evidence: OBSERVED in `index.html` and `c/36a.html` at `3742fd9`; who copies a citation is MISSING (no instrument on the published pages).
+- Next action: improve. Route the index row heading, its labels and the citation's title line through the reviewed plain-title table; keep the raw title searchable.
+- USER-FACING: yes — `scripts/render-site.mjs`, `scripts/render-constant-pages.mjs`, `index.html`, `c/*.html`.
+- HYGIENE INPUTS: (a) none. (b) none. (c) none.
+
+### P3, round 2
+
+- Delivered: Pages build row for `ad69c6a` reads `built` at 00:26:31Z (11-06). A live fetch found 120 of 120 index cite title lines with no `$` or backslash, and 22 of 22 changed `c/` pages carrying a plain cite title line that names their own id. CI page-check.yml and reverify.yml are green on `ad69c6a`.
+- Test: the new render-site selftest went red on the unrouted code ("the citation's title line must carry no LaTeX source") and green after.
+- Encounter: blind. The published pages carry no instrument: `A-59` (nothing can see an arrival on the public pages). The first readable signal is `W-18` (the first Search Console impressions read, due 11-11).
+- A stated limit: 26 index row headings still contain `$` or a backslash. All 26 come from audit badge text that quotes mirrored bound values, not from a title.
