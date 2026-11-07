@@ -410,7 +410,11 @@ export function referenceEntry(file, citedRef, root = ROOT) {
  * trailing `.,;:` dropped, duplicates of one href shown once. A DOI written without a URL is not a link,
  * so its entry reads as giving none; the key's own link still goes to the entry, where the DOI is.
  */
-const CITATION_PATTERN = /\[([A-Za-z][A-Za-z0-9_.+-]*)\]/g;
+// A bracket followed by `(` and anything but `#` is a markdown LINK LABEL (`[certificate](https://…)`,
+// 16a; Codex r1 finding 2), never a key; `[[K](#K)]` keeps its inner `[K]` because its target is an anchor.
+const CITATION_PATTERN = /\[([A-Za-z][A-Za-z0-9_.+-]*)\](?!\((?!#))/g;
+// One level of balanced parentheses inside a URL (`…/S0012-365X(02)00833-6`, 28a HR2003; Codex r1 finding 4).
+const URL_BODY = String.raw`(?:[^\s()<>"'\]]|\([^\s()<>"'\]]*\))+`;
 export function citedKeys(row) {
   if (typeof row !== "string") return [];
   const cell = row.split(/(?<!\\)\|/)[2];
@@ -427,8 +431,8 @@ export function entryLinks(text) {
     const plainLabel = label.replace(/`/g, "").trim();
     out.push({ label: /[$\\]/.test(plainLabel) || plainLabel === "" ? href : plainLabel, href });
   };
-  const rest = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, href) => { add(label.trim(), href); return " "; });
-  for (const m of rest.matchAll(/https?:\/\/[^\s<>"'()\]]+/g)) {
+  const rest = text.replace(new RegExp(String.raw`\[([^\]]+)\]\((https?:\/\/${URL_BODY})\)`, "g"), (_, label, href) => { add(label.trim(), href); return " "; });
+  for (const m of rest.matchAll(new RegExp(String.raw`https?:\/\/${URL_BODY}`, "g"))) {
     const href = m[0].replace(/[.,;:]+$/, "");
     add(href, href);
   }
@@ -436,10 +440,12 @@ export function entryLinks(text) {
 }
 function citedHtml(file, row, root = ROOT) {
   const keys = citedKeys(row);
-  if (keys.length === 0) return `<span class="refs">This row names no reference key.</span>`;
+  if (keys.length === 0) return `<span class="refs">We read no reference key in this row&#39;s reference column.</span>`;
   const parts = keys.map((k) => {
     const e = referenceEntry(file, k, root);
-    if (!e) return `[${esc(k)}] has no single entry in upstream&#39;s reference list`;
+    // "could not match", not "has no entry" (Codex r1 finding 1): the entry rule reads two bullet forms,
+    // and 19a writes some entries as `* [Key]`, so a null here is a fact about our matching only.
+    if (!e) return `[${esc(k)}], which we could not match to exactly one entry in upstream&#39;s reference list`;
     const links = entryLinks(e.text);
     const keyLink = `<a href="${esc(mirrorLineHref(file, e.line))}">[${esc(k)}]</a>`;
     return links.length === 0
@@ -1576,8 +1582,14 @@ async function selftest() {
     assert.ok(twoCited.includes("whose entry in upstream&#39;s reference list links to"), "each web link must be attributed to upstream's entry");
     assert.ok(twoCited.includes(`href="${mirrorLineHref(CITE, 4)}">[AB1]</a>`), "a key must link to its own entry line in the mirrored file (line 4 here)");
     assert.ok(citedHtml(CITE, "| 1 | [NL3] | x |", dupRoot).includes("gives no web link"), "an entry whose DOI has no URL must say it gives no web link");
-    assert.ok(citedHtml(CITE, "| 1 | [ZZ9] | x |", dupRoot).includes("[ZZ9] has no single entry"), "a key with no entry must say so, unlinked");
-    assert.equal(citedHtml(CITE, "| 1 | Trivial | x |", dupRoot), `<span class="refs">This row names no reference key.</span>`, "a cell with no key must say so");
+    const noEntry = citedHtml(CITE, "| 1 | [ZZ9] | x |", dupRoot);
+    assert.ok(noEntry.includes("[ZZ9], which we could not match to exactly one entry") && !noEntry.includes("<a "), "a key we cannot match must say it is OUR matching that failed, unlinked (Codex r1 finding 1)");
+    assert.ok(!/has no (single )?entry/.test(noEntry), "never claim upstream lacks an entry: the rule reads only two bullet forms");
+    assert.equal(citedHtml(CITE, "| 1 | Trivial | x |", dupRoot), `<span class="refs">We read no reference key in this row&#39;s reference column.</span>`, "a cell with no key says what WE read, and only about the reference column (Codex r1 finding 3)");
+    assert.deepEqual(citedKeys("| a | [certificate](https://example.org/c.json) | n |"), [], "a markdown link label is not a key (16a, Codex r1 finding 2)");
+    assert.deepEqual(citedKeys("| a | [[CD2](#CD2)], [certificate](https://x.org/c) | n |"), ["CD2"], "the anchor form [[K](#K)] stays a key beside a real link label");
+    assert.deepEqual(entryLinks("DOI: [10.1016/S0012-365X(02)00833-6](https://doi.org/10.1016/S0012-365X(02)00833-6)"), [{ label: "10.1016/S0012-365X(02)00833-6", href: "https://doi.org/10.1016/S0012-365X(02)00833-6" }], "a URL with balanced parentheses is kept whole (28a HR2003, Codex r1 finding 4)");
+    assert.deepEqual(entryLinks("Available at https://doi.org/10.1016/S0(00)1-6."), [{ label: "https://doi.org/10.1016/S0(00)1-6", href: "https://doi.org/10.1016/S0(00)1-6" }], "a bare URL with balanced parentheses is kept whole and loses its trailing period");
     // Parsing shapes.
     assert.deepEqual(citedKeys("| a | <a href=\"#BDM2007\">[BDM2007]</a> <a href=\"#Leh1933\">[Leh1933]</a> | n |"), ["BDM2007", "Leh1933"], "the HTML-anchor form yields its keys");
     assert.deepEqual(citedKeys("| a | [arXiv:2011.13266](https://x) [K1] | n |"), ["K1"], "a markdown link label is not a key");
