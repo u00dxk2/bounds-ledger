@@ -3686,6 +3686,42 @@
       ],
       "lastEvaluated": "2026-11-07",
       "closedAt": "2026-11-07"
+    },
+    {
+      "id": "A-100",
+      "title": "Say why a pasted number matched when it is not in the rows shown (the older-row match)",
+      "type": "action",
+      "status": "open",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-11-14",
+      "created": "2026-11-07",
+      "updated": "2026-11-07",
+      "notes": "Minted 2026-11-07 from the first journey walk (docs/journey-walk-2026-11-07.md). OBSERVED on the live index, phone and desktop: pasting 0.380868 (an older 1b bound, the number the README's story is about) lands on 1b, and the count line reads '1 constant matching \"0.380868\" — nothing highlighted' beside a card whose upper row is 0.3808585504. Nothing at that moment connects the visitor's number to the one shown; the explanation is in the notes section below all 120 cards. The near-match case (A-80) already explains itself at the moment it happens; the older-row case, which answers the page's headline question, does not. Suggested wording, listing-position only, never 'superseded' or 'the record': '\"x\" appears in this constant's mirrored table, but not in the last-listed rows shown here. Read the table before citing it.' Outward-facing wording: goes through the usual cross-family review before shipping.",
+      "onTrigger": "On 2026-11-14: if not shipped, either ship it or record what outranked it and re-date with that reason.",
+      "closeWhen": "On the live index, pasting 0.380868 shows, on the count line or on the 1b card, a sentence saying the number appears in that constant's mirrored table but not in the shown last-listed rows; a render-site selftest case asserts that sentence for an older-row match and asserts it is absent for a match inside a shown row; a red-arm (sentence removed) turns that case red; read on the served page after the Pages build.",
+      "readCommand": "node scripts/render-site.mjs --selftest",
+      "links": [
+        "scripts/render-site.mjs",
+        "docs/journey-walk-2026-11-07.md"
+      ]
+    },
+    {
+      "id": "A-101",
+      "title": "Desktop index: the lower-bound column wraps a number mid-digit",
+      "type": "action",
+      "status": "open",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-11-14",
+      "created": "2026-11-07",
+      "updated": "2026-11-07",
+      "notes": "Minted 2026-11-07 from the first journey walk (docs/journey-walk-2026-11-07.md, screenshot docs/journey-walk-2026-11-07/bl-journey-08-paste-old-desktop.png). OBSERVED at 1366x900: on the 1b row the upper-bound row's long comment takes most of the table width and the lower-bound column is left narrow, so '$0.379005$' renders split across two lines as '$0.37900' / '5$'. On a page whose product is an exact number, a number broken mid-digit is a legibility defect. Phone layout (stacked cards) is not affected. Not checked: how many other rows wrap a number this way.",
+      "onTrigger": "On 2026-11-14: if not shipped, either ship it or record what outranked it and re-date with that reason.",
+      "closeWhen": "At 1366x900 on the live index, the 1b lower-bound value renders on one line, read from a screenshot or a DOM line-box measurement after the Pages build, and a count of rows whose shown bound value wraps mid-number at that width is recorded here (target 0).",
+      "readCommand": "git log --oneline --grep=A-101",
+      "links": [
+        "scripts/render-site.mjs",
+        "docs/journey-walk-2026-11-07.md"
+      ]
     }
   ],
   "meta": {

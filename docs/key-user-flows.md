@@ -580,3 +580,24 @@ across 2 recorded report(s)" after. Re-render diff: one line in `index.html` and
 `c/46a.html`; `git diff --numstat` showed no other page changed.
 
 **Reader reach is unknown,** as in rotations 8 to 10. Shipped on judgment.
+
+## Journey walk 1 (2026-11-07) — F-2 as a stranger's first visit, screen by screen
+
+Full write-up: `docs/journey-walk-2026-11-07.md`. The screens a cold visitor actually crosses, in
+order, so the rotation critiques the shipped flow and not only the step it last touched:
+
+1. **Index, above the fold**: headline question, filter (three example terms), Order control,
+   snapshot paragraph (mirror date, daily re-verify, "last-listed is not the record"), row count.
+2. **Count line**, three states: `N constants matching "x" — highlighted where it appears`,
+   `… — nothing highlighted`, and the mixed `…; k of them have nothing highlighted`.
+3. **Near-match message** (rounded number found by its first digits; A-80).
+4. **Older-row match**: a pasted number found only in a value outside the two shown rows. Today this
+   shows the `nothing highlighted` count line and no explanation at the card. **Weakest step of the
+   walk** (`A-100`).
+5. **Empty state** with the "not tracked" issue link.
+6. **Card**: two last-listed rows, change labels, audit line, `source · page · looks wrong? · cite`.
+7. **cite disclosure** with Copy citation.
+8. **"Also watched, on its own page"** link to the Ramsey page, then the notes section ("Read this
+   before you trust a number here"), which carries the only explanation of step 4.
+9. **Per-constant page `c/<id>.html`**: a second entry point (search lands here), with no filter of
+   its own.
