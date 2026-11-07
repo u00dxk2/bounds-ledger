@@ -21,11 +21,12 @@ sentry_open_p2: null
 
 ## BLUF
 
-Today's plan is to link each bound on the constant pages to the work it cites, so a reader can check the number at its source in one click. A first count found a usable link for 132 of the 240 bounds shown. Bounds without one will say so plainly.
+Each number on the constant pages now links to the reference it cites, for a one-click check at the source. 163 of the 240 shown have such a link.
 
 ## What changed
 
-- P1 chose the day's work (selection packet in the State Appendix). Nothing user-visible has shipped yet today.
+- P1 chose the day's work (selection packet in the State Appendix).
+- **Each bound on a constant page now lists what its row cites** (`A-99`, the row for linking each bound to its source; `43c8162`, then review fixes `e6e12f2`). Under every upper and lower bound a line reads "Cited in this row:", lists each reference key in the row, links each key to its own entry in the mirrored references, and repeats the web links that entry gives, called upstream's links and never "the paper". Before, the only source link went to upstream's whole constants file. On 4b, for example, `[Nas2026b]` now links to its entry line and to the three links that entry gives.
 - The morning block ran: `npm run upstream` printed "0 transition(s) across 3 recorded report(s)", and `npm run traffic` printed 7 unique repo viewers and 293 unique cloners in the latest 14-day window (page visitors are not counted).
 
 ## Inputs (controllable)
@@ -95,3 +96,19 @@ node C:/dev/skylark/bounds-ledger/scripts/render-constant-pages.mjs --check
 - (a) Due rows not bearing on the choice, 1 of 1 due: `W-6` (the report-an-error read window). Its read today: `npm run reports` printed "OUTSIDE ARRIVALS: 0" over 37 issues, reconciling 37 + 0 + 0 = 37. The primer's instruction is to close it on that reading.
 - (b) Owed child rows in the orchestrator's ledger: none, from the kickoff read over 798 rows.
 - (c) State reads marked as crossed: dated gates due today, 1 of 1 (listed in (a)). Board cards carrying David's word: 5, none new since the last read. Prior-day retro findings: 5 tagged, of which 3 are still on discipline and 2 are carried (one to `A-98`, the row for guarding the scripts that act on import, on 11-13).
+
+### P3 product work
+
+<!-- findings:begin -->
+- Correction to the P1 packet: its first count (132 of 240 bounds linked) read citation keys with a pattern that mis-read two of the three forms the mirror uses (`[[K](#K)]` and the HTML anchor form), and its six figures summed to 253 because "several keys" overlapped the other five (the manager review caught the sum). The committed rule reads all three forms. Census over the 240 displayed bounds at `e6e12f2`, from the exported functions: per bound, 30 with no key read, 197 with one key, 13 with several (sum 240), and 163 with at least one linked entry; per key, 225 keys, of which 174 have a linked entry, 47 have an entry with no web link, and 4 could not be matched to exactly one entry (sum 225).
+<!-- findings:end -->
+
+- Hygiene helper: dispatched at about 17:41Z; draft `tmp/hygiene-draft-bounds-ledger-2026-11-07.md` present, one line: close `W-6` (the report-an-error read window). Its checks: check-engineering-zero "0 findings, 0 unreadable"; check-wait-justification exit 0 with no warnings.
+- Round 0: a Sonnet helper listed what each new page sentence claims, against the code (10 lines). It verified every linked line on 4b and 28a lands on its key's own entry with all the entry's web links. Two of its lines narrowed sentences: the no-key line and the not-matched line.
+- Codex round 1 on `43c8162` (banner workdir matched this repo): five findings, all CONFIRMED and fixed in `e6e12f2`. (1) Keys whose entries are written as `* [Key]` (19a) were said to have no entry: the line now says we could not match the key, and the matcher was not widened. (2) `[certificate](https://…)` on 16a was read as a key: a bracket followed by a non-anchor link is no longer a key. (3) The no-key sentence spoke for the whole row: it now says "We read no reference key in this row's reference column." (4) URLs with parentheses were truncated (dormant on current pins): one balanced level is kept. (5) Grouped keys `[A, B]` (dormant): covered by the new no-key wording.
+- Codex round 2 on `e6e12f2`: no findings, after scanning every bounds-table reference column, the 15 entry lines with a parenthesis after a URL starts, the 34 rendered not-matched and no-key sentences, and the tests.
+- Red-arms (each restored byte-identical by file hash, selftest exit 0 after): `keys.slice(0, 1)` made the selftest exit 1 on "a cell citing two works must list BOTH keys"; removing the link-label lookahead made it exit 1 on "a markdown link label is not a key".
+- `A-99`'s title and closeWhen were re-scoped in `43c8162` to the form shipped (manager point 3).
+- Delivery: the Pages build for `e6e12f2` built at 18:34:33Z (builds API). Live fetches of `c/4b.html`, `c/16a.html` and `c/28a.html` each returned status 200, the page's own heading, and two "refs" lines, with neither retired phrase present; 4b's key links anchor at `#L56` and `#L57`, the entry lines in the mirror. CI reverify.yml and page-check.yml green on `e6e12f2`.
+- Encounter: blind. The page has no analytics, see `A-59` (the row saying nothing can see an arrival there). The 11-11 Search Console read on `W-18` (the watch for that read) can show impressions on constant pages, not clicks on these links. Outcome: open.
+- `A-99` (the row for linking each bound to its source) is closed. Files still naming it: `scripts/render-constant-pages.mjs` (three provenance comments), `docs/daily/2026-11-06-prelaunch.md` and `docs/cold-starts/2026-11-06.md` (historical), and this report.

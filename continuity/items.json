@@ -3670,12 +3670,12 @@
       "id": "A-99",
       "title": "Link each displayed bound to the reference entry its row cites, and to the web links that entry gives",
       "type": "action",
-      "status": "open",
+      "status": "closed",
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-11-20",
       "created": "2026-11-06",
       "updated": "2026-11-07",
-      "notes": "Minted 2026-11-06 at P3 from the manager review of A-97: the great version of the row's source link takes a reader to the paper, not to upstream's constants file. A-97 made the sentence honest instead (the link goes to upstream's file, whose table cites the reference). Not cheap today: a row's citation key must be resolved to its entry in that file's References section, and render-constant-pages.mjs's referenceEntryLine needed several review rounds to find one entry line safely (a bullet that cites a reference is not its entry). A first step is measuring how many of the 240 pinned rows resolve to exactly one reference entry with a URL.",
+      "notes": "Minted 2026-11-06 at P3 from the manager review of A-97: the great version of the row's source link takes a reader to the paper, not to upstream's constants file. A-97 made the sentence honest instead (the link goes to upstream's file, whose table cites the reference). Not cheap today: a row's citation key must be resolved to its entry in that file's References section, and render-constant-pages.mjs's referenceEntryLine needed several review rounds to find one entry line safely (a bullet that cites a reference is not its entry). A first step is measuring how many of the 240 pinned rows resolve to exactly one reference entry with a URL. | 2026-11-07 P3: CLOSED, acceptance met. Shipped in 43c8162 and e6e12f2 (Codex round 1: five findings, all CONFIRMED and fixed; round 2 on e6e12f2: no findings). Pages build for e6e12f2 built at 18:34:33Z. Live fetches of c/4b.html, c/16a.html and c/28a.html each returned status 200, their h1, two refs lines and none of the retired phrases; 4b's key links anchor at #L56 [OAI2026] and #L57 [Nas2026b], the entry lines in the mirror. CI reverify.yml and page-check.yml green on e6e12f2. Census at e6e12f2: bounds 30 no key read, 197 one key, 13 several (sum 240), 163 with a linked entry; keys 225 = 174 linked + 47 entry with no web link + 4 not matched to exactly one entry (19a and 25a write those entries as `* [Key]`; 1d carries two CERT2026 entries). Encounter blind: the page has no analytics (A-59); the 11-11 Search Console read (W-18) can show impressions on c/ pages, not clicks on these links. Not built, deliberately: a third bullet form in the entry matcher, and grouped keys `[A, B]`; both read honestly through the narrowed sentences.",
       "onTrigger": "On 2026-11-20: for each of the 240 displayed upper and lower bounds (two per index row, which can cite different works), measure whether its cited reference resolves to exactly one References entry (referenceEntryLine) whose URL is a paper, not code or an index. Record the counts: resolved to a paper, resolved to a non-paper, unresolved. If most resolve to a paper, build a per-bound link for those and label the others on the page; if few do, record the counts and close or re-scope.",
       "closeWhen": "Each displayed bound on the constant pages lists every key its reference cell cites; each key with exactly one entry in upstream's References section links to that entry's line in the mirrored file and repeats the web links that entry gives, labelled as upstream's links (never as \"the paper\"); a key with no single entry, an entry with no web link, and a cell with no key each say so in words. Shipped through the outward gate (a cross-family review of the exact diff), live after a Pages build for the push tip, and read on three changed c/ pages. RE-SCOPED 2026-11-07 at P3 on the manager review: the earlier condition (one verified paper URL, non-paper cases labelled separately) needed a URL classifier, which would be a parser over hosts; this form claims less and covers more bounds.",
       "readCommand": "git log --oneline --grep=A-99 -- scripts/",
@@ -3683,7 +3683,8 @@
         "scripts/render-site.mjs",
         "scripts/render-constant-pages.mjs"
       ],
-      "lastEvaluated": "2026-11-07"
+      "lastEvaluated": "2026-11-07",
+      "closedAt": "2026-11-07"
     }
   ],
   "meta": {
