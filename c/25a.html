@@ -15,6 +15,7 @@ dd{margin:.35rem 0 0}code{display:block;background:var(--code);padding:.6rem .7r
 .when{display:block;font-size:.8rem;color:var(--muted);margin-top:.3rem}
 .stale:not([hidden]){display:block;font-size:.8rem;font-weight:600;margin-top:.3rem}
 .pin{font-size:.8rem;color:var(--muted);margin-top:.3rem}
+.refs{display:block;font-size:.85rem;margin-top:.3rem;overflow-wrap:anywhere}
 .sel{color:var(--muted);font-size:.85rem}
 .none{color:var(--muted)}
 ul.audit{margin:.35rem 0 0;padding-left:1.1rem}ul.audit li{margin:.2rem 0}
@@ -34,8 +35,8 @@ footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:v
 <div class="id">25a</div>
 
 <dl>
-<dt>Upper bound, last-listed row</dt><dd><code>| $4$ | Trivial | For the cube $B_\infty^n=[-1,1]^n$ one has $\mathrm{Vol}(B_\infty^n)=2^n$ and $\mathrm{Vol}\big((B_\infty^n)^\circ\big)=2^n/n!$, hence $M(B_\infty^n)=4^n$ and $C_{25}\le 4$. Conjecturally, this is sharp (Mahler conjecture). |</code><span class="when">tracked since 2026-07-24 — no movement seen yet</span></dd>
-<dt>Lower bound, last-listed row</dt><dd><code>| $\pi \approx 3.1416$ | [K2008] | Best known explicit constant to date (Kuperberg). |</code><span class="when">tracked since 2026-07-24 — no movement seen yet</span></dd>
+<dt>Upper bound, last-listed row</dt><dd><code>| $4$ | Trivial | For the cube $B_\infty^n=[-1,1]^n$ one has $\mathrm{Vol}(B_\infty^n)=2^n$ and $\mathrm{Vol}\big((B_\infty^n)^\circ\big)=2^n/n!$, hence $M(B_\infty^n)=4^n$ and $C_{25}\le 4$. Conjecturally, this is sharp (Mahler conjecture). |</code><span class="refs">This row names no reference key.</span><span class="when">tracked since 2026-07-24 — no movement seen yet</span></dd>
+<dt>Lower bound, last-listed row</dt><dd><code>| $\pi \approx 3.1416$ | [K2008] | Best known explicit constant to date (Kuperberg). |</code><span class="refs">Cited in this row: [K2008] has no single entry in upstream&#39;s reference list.</span><span class="when">tracked since 2026-07-24 — no movement seen yet</span></dd>
 <dt>Outside the source table: a claim in OpenAI's math release</dt><dd><ul class="oai"><li><p><a href="https://github.com/openai/math/blob/4eaee87548250b2682affda7d05d947c05554bae/CONTENTS.md">Family 087</a>, “The Mahler conjectures, functional inequalities and polar-product symplectic width”, claims that every origin-symmetric convex body K in n dimensions has |K|·|K°| ≥ 4^n/n!.</p><p>Its Lean statement, <a href="https://github.com/openai/math/blob/4eaee87548250b2682affda7d05d947c05554bae/lean/ComparatorChallenges/MahlerConjecture.lean">MahlerConjecture.lean</a>:</p><code>theorem symmetric_mahler {n : ℕ} (hn : 1 ≤ n)
     {K : Set (Fin n → ℝ)} (hK : IsCompact K) (hconv : Convex ℝ K)
     (hsym : ∀ x ∈ K, -x ∈ K) (hint : (interior K).Nonempty) :

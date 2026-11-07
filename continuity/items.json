@@ -598,12 +598,12 @@
       "notes": "2026-09-13 WEEKLY FORCED-DECISION PASS — TIER B, date 2026-11-06 RE-CONFIRMED and deliberately unchanged (signalDateNote: re-dating a wait that cannot fill is forbidden). Today's read: npm run reports fetched 29 issues and accounted for all 29 as ours — \"OUTSIDE ARRIVALS: 0\", parts reconcile 29 + 0 + 0 = 29 — and npm run traffic reads 1 unique viewer in the trailing 14 days, 49 days recorded (above 14, so the accumulated history is intact). No unsolicited outside contact yet; that is \"no contact yet\", never \"nobody had anything to say\".",
       "updated": "2026-11-06",
       "lastEvaluated": "2026-11-06",
-      "readCommandLastRun": "2026-11-06T16:16:27.636Z",
+      "readCommandLastRun": "2026-11-07T17:42:48.260Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 49183,
+      "readCommandLastDurationMs": 9340,
       "readCommandLastOutputRef": {
         "lines": 11,
-        "sha256": "93a597067e04a5db"
+        "sha256": "635062f6eb87f59a"
       },
       "redate2026_11_06": "2026-11-06 P5: AMENDED from the hygiene draft (UNDECIDED). closeWhen needs 2026-11-06 to have passed with no outside contact, and today is that day. npm run reports: OUTSIDE ARRIVALS 0, 37 + 0 + 0 = 37 (all ours). The traffic sampling this row keeps already has a home: docs/daily-config.md first action has run npm run traffic since 2026-11-05. Close tomorrow on the reports read."
     },
@@ -3668,22 +3668,22 @@
     },
     {
       "id": "A-99",
-      "title": "Link each displayed bound to the paper it comes from, where its reference resolves to one verified paper URL",
+      "title": "Link each displayed bound to the reference entry its row cites, and to the web links that entry gives",
       "type": "action",
       "status": "open",
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-11-20",
       "created": "2026-11-06",
-      "updated": "2026-11-06",
+      "updated": "2026-11-07",
       "notes": "Minted 2026-11-06 at P3 from the manager review of A-97: the great version of the row's source link takes a reader to the paper, not to upstream's constants file. A-97 made the sentence honest instead (the link goes to upstream's file, whose table cites the reference). Not cheap today: a row's citation key must be resolved to its entry in that file's References section, and render-constant-pages.mjs's referenceEntryLine needed several review rounds to find one entry line safely (a bullet that cites a reference is not its entry). A first step is measuring how many of the 240 pinned rows resolve to exactly one reference entry with a URL.",
       "onTrigger": "On 2026-11-20: for each of the 240 displayed upper and lower bounds (two per index row, which can cite different works), measure whether its cited reference resolves to exactly one References entry (referenceEntryLine) whose URL is a paper, not code or an index. Record the counts: resolved to a paper, resolved to a non-paper, unresolved. If most resolve to a paper, build a per-bound link for those and label the others on the page; if few do, record the counts and close or re-scope.",
-      "closeWhen": "Either each displayed bound whose reference resolves to one verified paper URL links to that paper (unresolved and non-paper cases labelled separately on the page), shipped through the outward gate; or the three measured counts are recorded here with the reason the link is not worth building.",
+      "closeWhen": "Each displayed bound on the constant pages lists every key its reference cell cites; each key with exactly one entry in upstream's References section links to that entry's line in the mirrored file and repeats the web links that entry gives, labelled as upstream's links (never as \"the paper\"); a key with no single entry, an entry with no web link, and a cell with no key each say so in words. Shipped through the outward gate (a cross-family review of the exact diff), live after a Pages build for the push tip, and read on three changed c/ pages. RE-SCOPED 2026-11-07 at P3 on the manager review: the earlier condition (one verified paper URL, non-paper cases labelled separately) needed a URL classifier, which would be a parser over hosts; this form claims less and covers more bounds.",
       "readCommand": "git log --oneline --grep=A-99 -- scripts/",
       "links": [
         "scripts/render-site.mjs",
         "scripts/render-constant-pages.mjs"
       ],
-      "lastEvaluated": "2026-11-06"
+      "lastEvaluated": "2026-11-07"
     }
   ],
   "meta": {

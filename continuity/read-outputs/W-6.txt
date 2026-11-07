@@ -1,17 +1,17 @@
 # read-output sidecar for W-6 — written by check-due-gates-dispositioned --run
 # readCommand: npm run traffic
-# ran: 2026-11-06T16:16:27.636Z · exit: 0
-# lines: 11 · sha256: 93a597067e04a5db (first 16 hex of the output below)
+# ran: 2026-11-07T17:42:48.260Z · exit: 0
+# lines: 11 · sha256: 635062f6eb87f59a (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
 > bounds-ledger@0.0.0 traffic
 > node scripts/traffic-snapshot.mjs
 
-# Traffic sample — 2026-11-06T16:16:26.081Z
-75 day(s) recorded in continuity\traffic.json; latest 14-day window: 7 unique REPO viewer(s), 275 unique cloner(s). Visitors to the GitHub Pages site are NOT counted here — nothing measures them.
-Since the repo went public (2026-08-08, day 90): 16 unique REPO viewer-day(s), 1310 unique cloner-day(s).
+# Traffic sample — 2026-11-07T17:42:48.024Z
+76 day(s) recorded in continuity\traffic.json; latest 14-day window: 7 unique REPO viewer(s), 293 unique cloner(s). Visitors to the GitHub Pages site are NOT counted here — nothing measures them.
+Since the repo went public (2026-08-08, day 91): 16 unique REPO viewer-day(s), 1345 unique cloner-day(s).
 Viewer-days OVERCOUNT distinct people (no cross-day dedup beyond 14 days), so treat 16 as an upper bound, never an estimate.
 W-6 no longer has a visitor threshold — re-pointed 2026-08-20 to the first unsolicited outside contact (n=1). These figures are context for that read, not a gate on it.
 Not deducted: our own clones, CI checkouts, and GitHub's crawlers. Treat clone figures as unattributed.
-Return-rate proxy, 2026-10-23 to today: 7 viewer-day(s) over 7 distinct viewer(s) = 1.00 day(s) present per viewer. Exactly 1.00 means nobody came back twice.
+Return-rate proxy, 2026-10-24 to today: 7 viewer-day(s) over 7 distinct viewer(s) = 1.00 day(s) present per viewer. Exactly 1.00 means nobody came back twice.
 Scope: this ratio is REPO views on github.com. The published page has no analytics, so page readership stays unmeasured and no figure here is a proxy for it.

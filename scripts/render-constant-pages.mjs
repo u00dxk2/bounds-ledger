@@ -95,6 +95,7 @@ dd{margin:.35rem 0 0}code{display:block;background:var(--code);padding:.6rem .7r
 .when{display:block;font-size:.8rem;color:var(--muted);margin-top:.3rem}
 .stale:not([hidden]){display:block;font-size:.8rem;font-weight:600;margin-top:.3rem}
 .pin{font-size:.8rem;color:var(--muted);margin-top:.3rem}
+.refs{display:block;font-size:.85rem;margin-top:.3rem;overflow-wrap:anywhere}
 .sel{color:var(--muted);font-size:.85rem}
 .none{color:var(--muted)}
 ul.audit{margin:.35rem 0 0;padding-left:1.1rem}ul.audit li{margin:.2rem 0}
@@ -371,17 +372,81 @@ const referenceNoteOk = (a) => {
  * entry. Bold and plain hits are counted together, so a key whose entry is written twice finds none.
  */
 export function referenceEntryLine(file, citedRef, root = ROOT) {
+  return referenceEntry(file, citedRef, root)?.text ?? null;
+}
+/** The same rule as referenceEntryLine, returning the entry's text AND its 1-based line number (A-99). */
+export function referenceEntry(file, citedRef, root = ROOT) {
   if (typeof citedRef !== "string" || citedRef === "" || !mirrorFileExact(file, root)) return null;
   let lines;
   try { lines = readFileSync(join(root, file), "utf8").split(/\r?\n/); } catch { return null; }
   const heads = lines.flatMap((l, i) => (/^#+\s*(References|Bibliography)\s*$/.test(l) ? [i] : []));
   if (heads.length !== 1) return null;
   const next = lines.findIndex((l, i) => i > heads[0] && /^#/.test(l));
-  const section = lines.slice(heads[0] + 1, next < 0 ? lines.length : next);
+  const end = next < 0 ? lines.length : next;
   const bold = `**[${citedRef}]**`;
   const plain = `- [${citedRef}] `;
-  const hits = section.filter((l) => l.includes(bold) || l.trimStart().startsWith(plain));
-  return hits.length === 1 ? hits[0] : null;
+  const hits = [];
+  for (let i = heads[0] + 1; i < end; i++) {
+    if (lines[i].includes(bold) || lines[i].trimStart().startsWith(plain)) hits.push(i);
+  }
+  return hits.length === 1 ? { text: lines[hits[0]], line: hits[0] + 1 } : null;
+}
+
+/**
+ * WHAT A BOUND ROW CITES, AND WHERE A READER CAN GO FROM IT (A-99, 2026-11-07). Until now the only source
+ * link on a constant page went to upstream's whole file, and a reader had to find the cited key in its
+ * References section by hand. Each bound now lists every key its reference cell cites, links each key
+ * to its own entry line in the mirrored file, and repeats the web links that entry gives.
+ *
+ * What this deliberately does NOT claim: that a link is "the paper" (an entry may link a repository, an
+ * index or a preprint, and classifying URLs would be a parser over hosts), or which of several cited keys
+ * proves the bound (a cell citing two works lists both, under "cited in this row"). A key with no single
+ * entry, an entry with no web link, and a cell with no key each say so in words.
+ *
+ * Keys: the reference cell is the row's second column, split on unescaped pipes. A key is `[Key]` with a
+ * letter first and no space, bracket or colon inside; that one rule reads all three forms the mirror
+ * uses (`[K]`, `[[K](#K)]`, `<a href="#K">[K]</a>`) and never a markdown link label such as
+ * `[arXiv:2011.13266]`. Links: http(s) only, markdown `[label](url)` first and then bare URLs, a bare URL's
+ * trailing `.,;:` dropped, duplicates of one href shown once. A DOI written without a URL is not a link,
+ * so its entry reads as giving none; the key's own link still goes to the entry, where the DOI is.
+ */
+const CITATION_PATTERN = /\[([A-Za-z][A-Za-z0-9_.+-]*)\]/g;
+export function citedKeys(row) {
+  if (typeof row !== "string") return [];
+  const cell = row.split(/(?<!\\)\|/)[2];
+  if (cell === undefined) return [];
+  return [...new Set([...cell.matchAll(CITATION_PATTERN)].map((m) => m[1]))];
+}
+export function entryLinks(text) {
+  if (typeof text !== "string") return [];
+  const out = [];
+  const seen = new Set();
+  const add = (label, href) => {
+    if (seen.has(href)) return;
+    seen.add(href);
+    const plainLabel = label.replace(/`/g, "").trim();
+    out.push({ label: /[$\\]/.test(plainLabel) || plainLabel === "" ? href : plainLabel, href });
+  };
+  const rest = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, label, href) => { add(label.trim(), href); return " "; });
+  for (const m of rest.matchAll(/https?:\/\/[^\s<>"'()\]]+/g)) {
+    const href = m[0].replace(/[.,;:]+$/, "");
+    add(href, href);
+  }
+  return out;
+}
+function citedHtml(file, row, root = ROOT) {
+  const keys = citedKeys(row);
+  if (keys.length === 0) return `<span class="refs">This row names no reference key.</span>`;
+  const parts = keys.map((k) => {
+    const e = referenceEntry(file, k, root);
+    if (!e) return `[${esc(k)}] has no single entry in upstream&#39;s reference list`;
+    const links = entryLinks(e.text);
+    const keyLink = `<a href="${esc(mirrorLineHref(file, e.line))}">[${esc(k)}]</a>`;
+    return links.length === 0
+      ? `${keyLink}, whose entry in upstream&#39;s reference list gives no web link`
+      : `${keyLink}, whose entry in upstream&#39;s reference list links to ${links.map((l) => `<a href="${esc(l.href)}">${esc(l.label)}</a>`).join(", ")}`;
+  });
+  return `<span class="refs">Cited in this row: ${parts.join("; ")}.</span>`;
 }
 const referenceNoteShown = (a, root = ROOT) => {
   if (typeof a.referenceNote !== "string" || !referenceNoteOk(a)) return false;
@@ -960,15 +1025,16 @@ export const DISCLAIMER =
 // `hist` is upstream's history for this file at the mirrored sha (render-site historyUrl, F-2
 // rotation 9). whenHtml links only labels that record an observed change and passes esc() through,
 // so every other label renders exactly as before.
-function side(label, row, changed, kind, hist = null) {
+function side(label, row, changed, kind, hist = null, file = null, root = ROOT) {
   if (!row) return `<dt>${esc(label)} bound</dt><dd class="none">not pinned</dd>`;
+  const refs = file ? citedHtml(file, row, root) : "";
   const when = changed ? `<span class="when">${whenHtml(changed, kind, hist, esc)}</span>` : `<span class="when">date unknown</span>`;
   // The EXACT pinned row stays one tap away whenever the display differs from it (Codex review r5,
   // 2026-10-12): docs/evangelism-bar.md promises "the exact pinned string so you can check it
   // yourself", and this page is where a reader goes to check. Absent when the two are equal.
   const shown = displayCell(row);
   const exact = shown === row ? "" : `<details class="pin"><summary>exact pinned row</summary><code>${esc(row)}</code></details>`;
-  return `<dt>${esc(label)} bound, last-listed row</dt><dd><code>${esc(shown)}</code>${exact}${when}</dd>`;
+  return `<dt>${esc(label)} bound, last-listed row</dt><dd><code>${esc(shown)}</code>${exact}${refs}${when}</dd>`;
 }
 
 /**
@@ -1001,8 +1067,8 @@ export function renderPage(r, sha, audits = loadAudits(), newer = loadNewerStore
 <div class="id">${esc(r.id)}</div>
 ${reportLinks(r)}
 <dl>
-${side("Upper", r.upper, r.upperChanged, r.upperKind, historyUrl(r.url, sha))}
-${side("Lower", r.lower, r.lowerChanged, r.lowerKind, historyUrl(r.url, sha))}
+${side("Upper", r.upper, r.upperChanged, r.upperKind, historyUrl(r.url, sha), `${MIRROR_PREFIX}${r.id}.md`)}
+${side("Lower", r.lower, r.lowerChanged, r.lowerKind, historyUrl(r.url, sha), `${MIRROR_PREFIX}${r.id}.md`)}
 ${auditBlock(r.id, audits, [r.upper, r.lower])}${noteBlock(r.oai)}${newerBlock(newerFor(r.id, newer))}${searchLine(newer, r.id)}${pullsBlock(r.id, pulls)}
 </dl>
 <div class="actions">
@@ -1489,6 +1555,40 @@ async function selftest() {
     assert.equal(referenceEntryLine(PLAIN, "MIX1", dupRoot), null, "a key with one plain and one bold entry line is two lines, so no line");
     assert.equal(referenceEntryLine(PLAIN, "SOLO1", dupRoot), null, "a key that is only a PREFIX of exactly one longer key (SOLO1 of SOLO11) must find no line");
     assert.ok(referenceEntryLine(PLAIN, "PLN11", dupRoot)?.includes("Longer key"), "positive control: a longer key sharing a prefix finds its own line");
+    // A-99 (2026-11-07): what a bound row cites, and where the reader can go from it. MEANING FIRST —
+    // every cited key is listed (no first-key-only credit), each link is called upstream's, never "the
+    // paper", and the three no-link cases say so in words — then the parsing shapes, then one exact pin.
+    writeFileSync(join(dupRoot, MIRROR_PREFIX, "cite.md"), [
+      "## Bounds",
+      "| $x \\le 2$ | [AB1], [[CD2](#CD2)] | two works cited |",
+      "## References",
+      "- [AB1] A. Author, *Title*. [arXiv:2011.13266](https://arxiv.org/abs/2011.13266), DOI: [10.1/x](https://doi.org/10.1/x).",
+      "- [CD2] C. Dee, *Code*. Available at https://github.com/cd/repo. Also https://github.com/cd/repo",
+      "- [NL3] N. Link, *No link*. J. **3** (2000). DOI: 10.1007/BF0.",
+      "- [JS4] J. S., [click](javascript:alert(1)) and [$x$](https://example.org/tex).",
+      "",
+    ].join("\n"));
+    const CITE = `${MIRROR_PREFIX}cite.md`;
+    const twoCited = citedHtml(CITE, "| $x \\le 2$ | [AB1], [[CD2](#CD2)] | two works cited |", dupRoot);
+    assert.ok(twoCited.includes(">[AB1]</a>") && twoCited.includes(">[CD2]</a>"), "a cell citing two works must list BOTH keys, never credit the bound to the first");
+    assert.ok(twoCited.startsWith(`<span class="refs">Cited in this row: `), "the line must say these are what the row cites, not which work proves the bound");
+    assert.ok(!/paper/i.test(twoCited), "a link must never be called the paper: an entry can link code, an index or a preprint");
+    assert.ok(twoCited.includes("whose entry in upstream&#39;s reference list links to"), "each web link must be attributed to upstream's entry");
+    assert.ok(twoCited.includes(`href="${mirrorLineHref(CITE, 4)}">[AB1]</a>`), "a key must link to its own entry line in the mirrored file (line 4 here)");
+    assert.ok(citedHtml(CITE, "| 1 | [NL3] | x |", dupRoot).includes("gives no web link"), "an entry whose DOI has no URL must say it gives no web link");
+    assert.ok(citedHtml(CITE, "| 1 | [ZZ9] | x |", dupRoot).includes("[ZZ9] has no single entry"), "a key with no entry must say so, unlinked");
+    assert.equal(citedHtml(CITE, "| 1 | Trivial | x |", dupRoot), `<span class="refs">This row names no reference key.</span>`, "a cell with no key must say so");
+    // Parsing shapes.
+    assert.deepEqual(citedKeys("| a | <a href=\"#BDM2007\">[BDM2007]</a> <a href=\"#Leh1933\">[Leh1933]</a> | n |"), ["BDM2007", "Leh1933"], "the HTML-anchor form yields its keys");
+    assert.deepEqual(citedKeys("| a | [arXiv:2011.13266](https://x) [K1] | n |"), ["K1"], "a markdown link label is not a key");
+    assert.deepEqual(citedKeys("| $\\|f\\|$ | [K1] | n |"), ["K1"], "an escaped pipe in the value cell must not shift the reference column");
+    assert.deepEqual(citedKeys("| a | [K1], [K1] | n |"), ["K1"], "a key cited twice is listed once");
+    assert.deepEqual(entryLinks(referenceEntry(CITE, "CD2", dupRoot).text), [{ label: "https://github.com/cd/repo", href: "https://github.com/cd/repo" }], "a bare URL loses its trailing period, and a repeated href is shown once");
+    assert.deepEqual(entryLinks(referenceEntry(CITE, "JS4", dupRoot).text), [{ label: "https://example.org/tex", href: "https://example.org/tex" }], "a non-http link is dropped, and a label carrying TeX shows its href instead");
+    assert.ok(citedHtml(CITE, "| 1 | [JS4] | x |", dupRoot).indexOf("javascript:") < 0, "no javascript: href may reach the page");
+    assert.deepEqual(entryLinks("[PDF at commit `adc7f124`](https://x.org/a.pdf)"), [{ label: "PDF at commit adc7f124", href: "https://x.org/a.pdf" }], "markdown backticks in a label are dropped, so the page shows no stray code marks");
+    // Exact pin LAST.
+    assert.equal(citedHtml(CITE, "| 1 | [AB1] | x |", dupRoot), `<span class="refs">Cited in this row: <a href="${mirrorLineHref(CITE, 4)}">[AB1]</a>, whose entry in upstream&#39;s reference list links to <a href="https://arxiv.org/abs/2011.13266">arXiv:2011.13266</a>, <a href="https://doi.org/10.1/x">10.1/x</a>.</span>`, "exact emitted line for one linked key");
     writeFileSync(join(dupRoot, MIRROR_PREFIX, "nohead.md"), "- [NH1] An entry in a file with no References heading.\n");
     writeFileSync(join(dupRoot, MIRROR_PREFIX, "twohead.md"), "## References\n- [TH1] First.\n## References\n- [TH2] Second.\n");
     assert.equal(referenceEntryLine(`${MIRROR_PREFIX}nohead.md`, "NH1", dupRoot), null, "a file with no References heading finds no line");
