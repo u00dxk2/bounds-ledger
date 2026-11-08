@@ -1,6 +1,6 @@
 # read-output sidecar for A-91 — written by check-due-gates-dispositioned --run
 # readCommand: gh search prs --repo teorth/optimizationproblems 1509.00270 --json number,state
-# ran: 2026-11-01T16:09:33.221Z · exit: 0
+# ran: 2026-11-08T16:08:14.640Z · exit: 0
 # lines: 1 · sha256: 4f53cda18c2baa0c (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
