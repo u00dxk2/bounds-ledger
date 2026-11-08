@@ -594,6 +594,43 @@ export function findKey(r) {
   return extra.length ? `${base} ${extra.join(" ")}` : base;
 }
 
+// A-100 (2026-11-08): SAY WHY AN OLDER NUMBER MATCHED, AT THE MOMENT IT DOES.
+//
+// The page's headline move is pasting the number you once cited. When that number sits in an
+// earlier row of the mirrored table (0.380868 on 1b, two rows above the shown 0.3808585504), the
+// row matched through tableValues and the only word on screen was "nothing highlighted", beside a
+// different number. Found by the 2026-11-07 journey walk (docs/journey-walk-2026-11-07.md).
+//
+// The haystack has many sources (findKey above), and two review rounds on 2026-10-13 refuted
+// wording that GUESSED which one a no-highlight match came from. So this does not guess: the row
+// carries its own table values and its own shown rows, and the sentence fires only when the typed
+// text is IN one of the table values and in NEITHER shown row, the row drew no highlight, and the
+// search was the reader's own text rather than A-80's shortened form. Every other no-highlight
+// match keeps the count line alone. The wording is listing position only: it never says
+// superseded, older, newer or the record, because a table row above the last-listed one is not
+// thereby a superseded bound (see the note above cell()).
+//
+// data-table holds the raw first cells tableValuesFor reads (lowercased, as the filter already
+// searches them); data-shown holds the two shown rows whole, so a reference key typed from a shown
+// row also suppresses the sentence, which fails toward silence. A row with no table values carries neither attribute and no sentence.
+function olderAttrs(r) {
+  const table = r.tableValues || [];
+  if (!table.length) return "";
+  const shown = [r.upper, r.lower].filter(Boolean).map((s) => String(s).toLowerCase());
+  // The separator is written as &#10; so index.html stays one line per row; getAttribute decodes it.
+  const attr = (a) => esc(a.join("\n")).replace(/\n/g, "&#10;");
+  return ` data-table="${attr(table)}" data-shown="${attr(shown)}"`;
+}
+
+// Round 0 (2026-11-08) narrowed the wording to what tableValuesFor reads: the first cell of EVERY
+// table row in the constant's mirrored file, which can hold several tables and a header with a
+// digit. So "a table row of this constant's mirrored file", never "the table". The link goes to OUR
+// mirrored copy (the same file the name link opens), because upstream's live file can differ.
+function olderLine(r) {
+  if (!(r.tableValues || []).length) return "";
+  return `<p class="older" data-older hidden>“<span data-older-q></span>” appears in a table row of this constant's mirrored file, but not in the last-listed rows shown here. <a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md">Read the file</a> before citing it.</p>`;
+}
+
 // THE QUIET-STRETCH FIGURE IS DERIVED, NOT TYPED, AND IT SAYS WHAT IT EXCLUDES (2026-09-22).
 //
 // The note used to say "The longest such quiet stretch so far was nine days." Two separate defects,
@@ -748,11 +785,11 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   const body = rows.map((r) => {
     const name = plainTitle(r.title);
     const badges = `${reportLinks(r)}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(name)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(name)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}${r.oai && r.oai.length ? `<a class="oai" href="c/${esc(r.id)}.html" aria-label="${esc(name)}: ${esc(badgeText(r.oai))}. Open its page for the claim, its Lean statement and what we checked">${esc(badgeText(r.oai))}</a>` : ""}`;
-    return `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}" data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
+    return `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}"${olderAttrs(r)} data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
 <th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md" data-mark>${esc(name)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(name)}" data-mark>${esc(r.id)}</a>${badges}</th>
 ${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)", historyUrl(r.url, sha))}
 ${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)", historyUrl(r.url, sha))}
-<td class="src">${badges ? `<div class="later">${badges}</div>` : ""}<a href="${esc(readable(r.url))}">source</a> · <a href="c/${esc(r.id)}.html" aria-label="The page for ${esc(name)}">page</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(name)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(name)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
+<td class="src">${badges ? `<div class="later">${badges}</div>` : ""}${olderLine(r)}<a href="${esc(readable(r.url))}">source</a> · <a href="c/${esc(r.id)}.html" aria-label="The page for ${esc(name)}">page</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(name)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(name)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
 </tr>`;
   }).join("\n");
 
@@ -820,6 +857,9 @@ tr[hidden]{display:none}
 tr[hidden] *::before{content:none!important}
 .later>*::before{content:none}
 .later{display:none}
+.older{white-space:normal;margin:0 0 .45rem;font-size:.85rem;max-width:24rem}
+.older[hidden]{display:none}
+.src .older a{display:inline;padding:0;min-height:0}
 mark{background:#fff2a8;color:#16181d;border-radius:2px;padding:0 1px}
 @media(max-width:60rem){
 .scroll{overflow-x:visible;border:0;border-radius:0}
@@ -953,19 +993,45 @@ ${body}
     if(from<x.t.length)x.e.appendChild(document.createTextNode(x.t.slice(from)));
     return k;
   }
+  // A-100: each row's hidden older-row sentence, with the row's table values and shown rows, read
+  // once. A row without the sentence (no table values) gets null and is never touched.
+  var ol=null;
+  function olders(){
+    if(!ol)ol=trs.map(function(t){
+      var p=t.querySelectorAll('[data-older]')[0];
+      if(!p)return null;
+      var lines=function(a){return (t.getAttribute(a)||'').split('\\n').filter(function(x){return x;});};
+      return {e:p,q:p.querySelectorAll('[data-older-q]')[0],tv:lines('data-table'),sh:lines('data-shown')};
+    });
+    return ol;
+  }
+  // True only when v is inside one of the row's table values and inside neither shown row.
+  function older(x,v){
+    if(!x||!x.q)return false;
+    for(var j=0;j<x.sh.length;j++)if(x.sh[j].indexOf(v)>-1)return false;
+    for(j=0;j<x.tv.length;j++)if(x.tv[j].indexOf(v)>-1)return true;
+    return false;
+  }
   // Show the rows whose haystack contains v and mark v in them; returns [rows shown, shown rows with no mark].
-  function apply(v){
-    var n=0,u=0,T=targets();
+  // raw is the reader's own text, passed only for an exact search: the older-row sentence quotes it,
+  // so a shortened (A-80) search passes none and the sentence stays hidden.
+  function apply(v,raw){
+    var n=0,u=0,T=targets(),O=olders();
     for(var i=0;i<trs.length;i++){
       var hit=!v||trs[i].getAttribute('data-find').indexOf(v)>-1,k=0;
       trs[i].hidden=!hit; if(hit)n++;
       for(var j=0;j<T[i].length;j++)k+=mark(T[i][j],hit?v:'');
       if(hit&&v&&!k)u++;
+      if(O[i]&&O[i].q){
+        var say=!!(raw&&hit&&v&&!k&&older(O[i],v));
+        O[i].e.hidden=!say;
+        O[i].q.textContent=say?raw:'';
+      }
     }
     return [n,u];
   }
   function filter(){
-    var raw=q.value.trim(),v=raw.toLowerCase(),r=apply(v),w=v;
+    var raw=q.value.trim(),v=raw.toLowerCase(),r=apply(v,raw),w=v;
     // A-80: the number a reader is about to cite is often ROUNDED (1.5029 for 1.502862), and a rounded
     // number is not a substring of the row, so it used to land on "we are not watching it". When a
     // number with three or more decimals matches nothing, retry the TYPED STRING with trailing digits
@@ -1589,7 +1655,8 @@ async function selftest() {
     for (const t of trsHtml) {
       const th = t.match(/<th scope="row">[\s\S]*?<a class="id"[^>]*>[^<]*<\/a>([\s\S]*?)<\/th>/);
       assert.ok(th, "every row must carry a th with its id link");
-      const later = t.match(/<td class="src"><div class="later">([\s\S]*?)<\/div><a /);
+      // A-100's hidden older-row sentence may sit between the card copy and the links.
+      const later = t.match(/<td class="src"><div class="later">([\s\S]*?)<\/div>(?:<p class="older"[\s\S]*?<\/p>)?<a /);
       if (th[1]) { withBadges++; assert.ok(later, "a row with badges must carry their card-layout copy"); assert.equal(later[1], th[1], "the card-layout copy must equal the th's badges exactly"); }
       else assert.ok(!/class="later"/.test(t), "a row with no badges must carry no card-layout copy");
       // DOM ORDER (Codex r1): the card copy only reads after the bounds because td.src FOLLOWS both
@@ -2373,6 +2440,91 @@ async function selftest() {
   assert.equal(rcount.textContent, "1 constant matching “1.502” — highlighted where it appears");
   assert.equal(rnodes.nearmsg.textContent, "Nothing matches “1.5029” exactly, so this shows the constant matching its first digits, “1.502”. It is not necessarily the one you meant. A number you cite is often rounded, so its last digit can differ from the row: check the row before citing it.");
 
+  // --- A-100 (2026-11-08): a number that sits only in an earlier row of the mirrored table must say
+  // so on its card. The walk's case: 0.380868 is in 1b.md two rows above the shown 0.3808585504.
+  // Executed against the page's own script. Meaning guards first, wording last.
+  const olderRow = (id, find, texts, table, shown) => {
+    const q = fakeEl("span");
+    const p = { hidden: true, q, querySelectorAll: (sel) => (sel === "[data-older-q]" ? [q] : []) };
+    const targets = texts.map((t) => fakeEl("code", t));
+    const attrs = { "data-find": find, "data-table": table.join("\n"), "data-shown": shown.join("\n") };
+    return { id, hidden: false, targets, p, getAttribute: (k) => attrs[k] || "",
+      querySelectorAll: (sel) => (sel === "[data-mark]" ? targets : sel === "[data-older]" ? [p] : []) };
+  };
+  const o1b = olderRow("c-1b", "erdos minimum overlap 1b | $0.3808585504$ | [x] | $0.380868$ $0.380927$ $0.3808585504$",
+    ["Erdos minimum overlap", "1b", "| $0.3808585504$ | [x] |"],
+    ["$0.380868$", "$0.380927$", "$0.3808585504$"], ["| $0.3808585504$ | [x] |"]);
+  const o2b = olderRow("c-2b", "other 2b | $0.380868$ | [y] | $0.380868$",
+    ["Other", "2b", "| $0.380868$ | [y] |"], ["$0.380868$"], ["| $0.380868$ | [y] |"]);
+  const onone = markRow("c-3b", "plain 3b 0.380868", ["Plain", "3b", "| 0.4 |"]);
+  const oq = el({ value: "" }), ocount = el({ textContent: "" });
+  const onodes = { q: oq, sort: el({ value: "id" }), rows: el({ getElementsByTagName: () => [o1b, o2b, onone], appendChild() {} }),
+    count: ocount, empty: el({ hidden: true }), emptyq: el({ textContent: "" }), emptyask: el({ href: "" }), ...nearStub() };
+  const ocreated = [];
+  new Function("document", script)({ getElementById: (i) => onodes[i], createElement: (t) => { ocreated.push(t); return fakeEl(t); }, createTextNode: fakeText });
+  const osearch = (s) => { oq.value = s; oq.oninput(); };
+  // (1) FIRES on the card whose table holds the number and whose shown rows do not.
+  osearch("0.380868");
+  assert.equal(o1b.hidden, false, "positive control: the older number must still find 1b");
+  assert.equal(o1b.p.hidden, false, "a number found only in an earlier table row must say so on its card");
+  assert.equal(o1b.p.q.textContent, "0.380868", "the sentence must quote the reader's own text");
+  // (2) PER CARD: a card that shows the number in its last-listed row is marked and stays silent.
+  assert.equal(o2b.hidden, false, "positive control: the card that shows the number is found too");
+  assert.deepEqual(marksIn(o2b.targets[2]), ["0.380868"], "and marked where it shows it");
+  assert.equal(o2b.p.hidden, true, "a card whose shown row holds the number must not say it is only in the table");
+  // (3) A no-highlight match that is NOT in the row's table keeps silent (no sentence exists there).
+  assert.equal(onone.hidden, false, "positive control: a row matching on text it does not show is found");
+  // (4) SILENT on a value in the shown row, even though the table holds it too.
+  osearch("0.3808585504");
+  assert.equal(o1b.p.hidden, true, "a value in the last-listed row shown must not get the sentence");
+  assert.deepEqual(marksIn(o1b.targets[2]), ["0.3808585504"], "positive control: it is marked instead");
+  // (5) SILENT on a no-highlight match through other text: name and id typed together.
+  osearch("overlap 1b");
+  assert.equal(o1b.hidden, false, "positive control: name and id together still find 1b");
+  assert.equal(o1b.p.hidden, true, "a match through name and id must not claim a table row");
+  // (6) SILENT on A-80's shortened form: the matched term is not the reader's number.
+  osearch("0.3808689");
+  assert.equal(onodes.near.hidden, false, "positive control: this search took the shortened path");
+  assert.equal(o1b.hidden, false, "positive control: the shortened form found 1b");
+  assert.equal(o1b.p.hidden, true, "a shortened match must not quote the reader's number as found in the table");
+  // (6b) SILENT when the shown row holds the number but no mark was drawn there (a highlight can
+  // fail, e.g. on a text whose lowercase form changes length): the shown rows are checked directly.
+  const o3c = olderRow("c-3c", "third 3c 0.555", ["Third", "3c", "| İ0.9 |"], ["$0.555$"], ["| $0.555$ | [z] |"]);
+  const o3nodes = { ...onodes, q: el({ value: "" }), count: el({ textContent: "" }), ...nearStub(),
+    rows: el({ getElementsByTagName: () => [o3c], appendChild() {} }) };
+  new Function("document", script)({ getElementById: (i) => o3nodes[i], createElement: (t) => fakeEl(t), createTextNode: fakeText });
+  o3nodes.q.value = "0.555"; o3nodes.q.oninput();
+  assert.equal(o3c.hidden, false, "positive control: the row is found with nothing highlighted");
+  assert.equal(o3c.p.hidden, true, "a number in a shown row must not be called absent from it, highlight or not");
+  // (7) Clearing resets, and the quote is set as text only: the script creates no element for it.
+  osearch("0.380868");
+  osearch("");
+  assert.equal(o1b.p.hidden, true, "clearing the box must hide the sentence");
+  assert.equal(o1b.p.q.textContent, "", "and empty its quote");
+  assert.deepEqual([...new Set(ocreated)].filter((t) => t !== "mark"), [], "the sentence must create no element");
+  // (8) The rendered row carries the sentence and both attributes; a row with no table carries none.
+  const olderBase = { id: "1b", title: "Erdos minimum overlap", url: "https://example.invalid/1b.md",
+    upper: "| $0.3808585504$ | [x] |", lower: null, upperPrev: null, lowerPrev: null,
+    upperChanged: "2026-08-02", lowerChanged: null, upperKind: "value", lowerKind: null, changed: "2026-08-02" };
+  const olderPage = renderHtml([{ ...olderBase, tableValues: ["$0.380868$", "$0.3808585504$"] }], manifest, "2026-11-08");
+  const olderTr = (olderPage.match(/<tr id="c-1b"[\s\S]*?<\/tr>/) || [""])[0];
+  assert.ok(olderTr.length > 0, "positive control: the 1b row must render");
+  assert.match(olderTr, / data-table="\$0\.380868\$&#10;\$0\.3808585504\$"/, "the row must carry its table values, &#10;-separated");
+  assert.match(olderTr, / data-shown="\| \$0\.3808585504\$ \| \[x\] \|"/, "and its shown rows");
+  assert.ok(!/\n/.test(olderTr.match(/<tr [^>]*>/)[0]), "the row's opening tag must stay on one line");
+  assert.match(olderTr, /<p class="older" data-older hidden>/, "and a sentence hidden until a search fires it");
+  const plainPage = renderHtml([{ ...olderBase, tableValues: [] }], manifest, "2026-11-08");
+  const plainTr = (plainPage.match(/<tr id="c-1b"[\s\S]*?<\/tr>/) || [""])[0];
+  assert.ok(plainTr.length > 0, "positive control: the table-less row must render");
+  assert.doesNotMatch(plainTr, /data-older|data-table=|data-shown=/, "a row with no table values must carry no sentence and no attribute");
+  // Wording, last: listing position only.
+  assert.ok(olderTr.includes("” appears in a table row of this constant's mirrored file, but not in the last-listed rows shown here. <a href=\"https://github.com/u00dxk2/bounds-ledger/blob/main/ledger/teorth-optimizationproblems/constants/1b.md\">Read the file</a> before citing it."),
+    "the sentence's wording, and its link to our mirrored copy");
+  const olderText = ((olderTr.match(/<p class="older"[^>]*>([\s\S]*?)<\/p>/) || [, ""])[1]).replace(/<[^>]*>/g, "");
+  assert.ok(olderText.includes("Read the file before citing it."), "positive control: the sentence's own text was read");
+  assert.doesNotMatch(olderText, /supersed|older|newer|record|previous|current/i,
+    "the visible sentence must make no movement or record claim");
+
   // --- Search by the number you cited, added 2026-09-01. Both KP-78 answers.
   // The page's headline asks "is the number you cited still current?" and until today the filter
   // matched only the constant's name and its id — so the one reader who arrives holding a STALE
@@ -2657,7 +2809,8 @@ async function selftest() {
 
   // AND IT MUST NOT BE VISIBLE, for the same reason a previously-pinned value must not be: it is
   // a row in upstream's table, not a record we assert anything about. Searchable, never displayed.
-  const tableVisible = tablePage.replace(/ data-find="[^"]*"/g, "");
+  // A-100 added data-table and data-shown beside data-find: attributes the filter reads, never text.
+  const tableVisible = tablePage.replace(/ data-(?:find|table|shown)="[^"]*"/g, "");
   assert.ok(!tableVisible.includes("9.991234"),
     "a table value must never be rendered as text — the haystack asserts nothing, the page would");
 
@@ -2666,7 +2819,7 @@ async function selftest() {
   // Brun's constant before 3145ed9 was pushed: both values are still in upstream's table and are
   // explicitly not comparable. Strip the attribute before looking, or this assertion trivially
   // fails on the haystack it is not talking about.
-  const visible = wasPage.replace(/ data-find="[^"]*"/g, "");
+  const visible = wasPage.replace(/ data-(?:find|table|shown)="[^"]*"/g, "");
   assert.ok(visible.includes("6.521845710923046575"), "positive control: the CURRENT value is visible on the page");
   assert.ok(!visible.includes("6.514326913930565372"),
     "a previously-pinned value must never be rendered as text — searchable, never displayed");
