@@ -21,13 +21,11 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { mtToday } from "./lib/mt-date.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-export function mtToday(now = new Date()) {
-  // en-CA renders YYYY-MM-DD; the timeZone option is what makes it Mountain rather than host-local.
-  return now.toLocaleDateString("en-CA", { timeZone: "America/Denver" });
-}
+export { mtToday };
 
 export function nextDay(dateStr) {
   const [y, m, d] = dateStr.split("-").map(Number);

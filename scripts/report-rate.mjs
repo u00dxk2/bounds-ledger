@@ -32,6 +32,7 @@
 import { execFileSync } from "node:child_process";
 import { realpathSync } from "node:fs";
 import { pathToFileURL } from "node:url";
+import { mtToday } from "./lib/mt-date.mjs";
 
 export const OWNER = "u00dxk2";
 export const REPO = "u00dxk2/bounds-ledger";
@@ -85,10 +86,6 @@ export function daysSince(dateStr, today) {
   const [y, m, d] = dateStr.split("-").map(Number);
   const [Y, M, D] = today.split("-").map(Number);
   return Math.round((Date.UTC(Y, M - 1, D) - Date.UTC(y, m - 1, d)) / 86400000);
-}
-
-function mtToday(now = new Date()) {
-  return now.toLocaleDateString("en-CA", { timeZone: "America/Denver" });
 }
 
 function fetchIssues() {

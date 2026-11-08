@@ -30,13 +30,11 @@
 import { readFileSync, existsSync, realpathSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { mtToday } from "./lib/mt-date.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-export function mtToday(now = new Date()) {
-  // en-CA renders YYYY-MM-DD; timeZone is what makes it Mountain rather than host-local UTC.
-  return now.toLocaleDateString("en-CA", { timeZone: "America/Denver" });
-}
+export { mtToday };
 
 // A deferral DECLARES itself. Scanning every open item would make the check fire on existence
 // (see the note above), so the marker is explicit and opt-in.
