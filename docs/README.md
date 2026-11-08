@@ -31,6 +31,7 @@ Every document in this folder, with one line on what it is for. Agents start at 
 - `agents-md-archive.md` — passages cut from `AGENTS.md` in past compressions (provenance only).
 - `claude-md-archive.md` — passages cut from `CLAUDE.md` in past compressions (provenance only).
 - `gap-table.json` — output of `scripts/gap-table.mjs` (the G-2 ranker); data, not prose.
+- `journey-walk-2026-11-07.md` — the first cold first-run walk of the live page (phone and desktop), the seams it found, and the rows it minted (`A-100`, `A-101`); its screenshots are in `journey-walk-2026-11-07/`.
 
 ## Folders
 
