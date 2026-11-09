@@ -11,6 +11,6 @@ foreach ($size in @(@(1366, 900), @(1024, 768), @(961, 768), @(1920, 1080))) {
   $json = "$line" | ConvertFrom-Json
   [IO.File]::WriteAllText((Join-Path $dir "$Label-$($size[0]).json"), $json + "`n")
   $o = $json | ConvertFrom-Json
-  "{0}: all old {1} single {2} table {3}/{4} sideways {5} | one old {6} single {7} widths {8} sideways {9} citeOver {10} citeDoc {11} | 1b lower lines {12}" -f $size[0], $o.all.oldBroken, $o.all.singleBroken, $o.all.tableWidth, $o.boxWidth, $o.all.sideways, $o.one.oldBroken, $o.one.singleBroken, $o.one.distinctColumnWidths, $o.one.rowsSideways, $o.one.citeOpenOverflowing, $o.one.citeOpenDocumentSideways, $o.one.row1b.lowerValueLines
+  "{0}: all old {1} single {2} table {3}/{4} sideways {5} cellsOver {13} | one old {6} single {7} widths {8} sideways {9} citeOver {10} citeDoc {11} | 1b lower lines {12} | search rows {14} marks {15} single {16} 1b lines {17}" -f $size[0], $o.all.oldBroken, $o.all.singleBroken, $o.all.tableWidth, $o.boxWidth, $o.all.sideways, $o.one.oldBroken, $o.one.singleBroken, $o.one.distinctColumnWidths, $o.one.rowsSideways, $o.one.citeOpenOverflowing, $o.one.citeOpenDocumentSideways, $o.one.row1b.lowerValueLines, $o.all.cellsOverflowing.Count, ($o.search.rowsShown -join ','), $o.search.marksIn1b, $o.search.singleBroken.Count, $o.search.lowerValueLines
 }
 playwright-cli close *> $null

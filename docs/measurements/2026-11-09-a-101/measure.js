@@ -8,36 +8,50 @@
 // Two definitions, both counted, because the review of 2026-11-09 asked for both:
 //   OLD    a run of digit, then digits or dots or commas, then a digit. A comma-joined list
 //          such as 1971,2016,2100 counts as one run.
-//   SINGLE a single number. A comma ends a number unless it is a thousands group, so the list
-//          above is three numbers and 12,345,678 is one. A bare 123,456 reads as one number, a
+//   SINGLE a single number. A comma ends a number unless it is a thousands group: exactly three
+//          digits after each comma, with no digit after them. So the list above is three numbers,
+//          12,345,678 is one, and [0,26972] is two (corrected 2026-11-09 after Codex review; the
+//          first version read it as 0,269 and 72). A bare 123,456 still reads as one number, a
 //          known limit of any rule that cannot see the meaning.
 // A run is BROKEN when its Range has client rects on more than one line. One digit cannot break.
 //
-// Two views: ALL rows shown (the default page), and ONE row shown at a time (a filtered page),
-// since the layout differed between them before this change.
+// Three views: ALL rows shown (the default page); ONE row shown at a time, by hiding the others,
+// since the layout differed between them before this change; and SEARCH, the page's own filter
+// with 0.379005 typed into it, which is the journey walk's case and what a reader sees (it adds
+// a <mark>, which splits the cell's text, so every text node in a cell is walked).
 //
 // Sideways scroll is read four ways: all rows, one row, each row with its cite block open, and
 // the whole document.
 () => {
   const rows = [...document.querySelectorAll('tbody tr[id^=c-]')];
   const OLD = /\d[\d.,]*\d/g;
-  const SINGLE = /\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?/g;
-  const linesOf = (node, a, b) => {
+  const SINGLE = /\d{1,3}(?:,\d{3}(?!\d))+(?:\.\d+)?|\d+(?:\.\d+)?/g;
+  // Map a character offset in an element's whole text to (text node, offset), across marks.
+  const at = (el, i) => {
+    const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    let n, seen = 0, last = null;
+    while ((n = w.nextNode())) {
+      last = n;
+      if (i <= seen + n.length) return [n, i - seen];
+      seen += n.length;
+    }
+    return [last, last ? last.length : 0];
+  };
+  const linesOf = (el, a, b) => {
     const r = document.createRange();
-    r.setStart(node, a);
-    r.setEnd(node, b);
+    r.setStart(...at(el, a));
+    r.setEnd(...at(el, b));
     return new Set([...r.getClientRects()].filter((x) => x.width > 0).map((x) => Math.round(x.top))).size;
   };
   const scan = (tr) => {
     const out = { old: [], single: [] };
     tr.querySelectorAll('td code[data-mark]').forEach((code) => {
-      const node = code.firstChild;
-      if (!node || node.nodeType !== 3) return;
-      const t = node.textContent;
+      const t = code.textContent;
+      if (!t) return;
       const width = Math.round(code.getBoundingClientRect().width);
       const run = (re, into) => {
         for (const m of t.matchAll(re)) {
-          if (m[0].length > 1 && linesOf(node, m.index, m.index + m[0].length) > 1) {
+          if (m[0].length > 1 && linesOf(code, m.index, m.index + m[0].length) > 1) {
             into.push({ id: tr.id.slice(2), len: m[0].length, codeWidth: width, head: m[0].slice(0, 24) });
           }
         }
@@ -65,6 +79,8 @@
       tableWidth: Math.round(table.getBoundingClientRect().width),
       sideways: sideways(),
       documentSideways: docSideways(),
+      // Any cell whose content is wider than the cell (spills into its neighbour or is clipped).
+      cellsOverflowing: rows.flatMap((tr) => [...tr.children].filter((c) => c.scrollWidth > c.clientWidth + 1).map((c) => tr.id.slice(2) + ':' + c.tagName + ':' + (c.scrollWidth - c.clientWidth))),
     },
   };
 
@@ -85,7 +101,7 @@
         widths: [...tr.children].map((x) => Math.round(x.getBoundingClientRect().width)),
         upper: c[0] && c[0].textContent,
         lower: c[1] && c[1].textContent,
-        lowerValueLines: c[1] ? linesOf(c[1].firstChild, c[1].firstChild.textContent.indexOf('$0.379005$'), c[1].firstChild.textContent.indexOf('$0.379005$') + 10) : null,
+        lowerValueLines: c[1] ? linesOf(c[1], c[1].textContent.indexOf('$0.379005$'), c[1].textContent.indexOf('$0.379005$') + 10) : null,
       };
     }
     const d = tr.querySelector('details.cite');
@@ -112,5 +128,25 @@
     citeOpenDocumentSideways: citeDocSideways,
     row1b: b1,
   };
+
+  // SEARCH: the page's own filter, typed as a reader would.
+  const q = document.getElementById('q');
+  const before = q.value;
+  q.value = '0.379005';
+  q.dispatchEvent(new Event('input', { bubbles: true }));
+  const shown = rows.filter((r) => !r.hidden);
+  const lower = document.querySelectorAll('#c-1b td code[data-mark]')[1];
+  const k = lower ? lower.textContent.indexOf('$0.379005$') : -1;
+  res.search = {
+    term: q.value,
+    rowsShown: shown.map((r) => r.id.slice(2)),
+    marksIn1b: document.querySelectorAll('#c-1b mark').length,
+    singleBroken: shown.flatMap((r) => scan(r).single),
+    lowerValueLines: lower && k > -1 ? linesOf(lower, k, k + 10) : null,
+    widths1b: [...document.querySelector('#c-1b').children].map((x) => Math.round(x.getBoundingClientRect().width)),
+    sideways: sideways(),
+  };
+  q.value = before;
+  q.dispatchEvent(new Event('input', { bubbles: true }));
   return JSON.stringify(res);
 }

@@ -66,12 +66,12 @@ tr[hidden] *::before{content:none!important}
 .older[hidden]{display:none}
 .src .older a{display:inline;padding:0;min-height:0}
 mark{background:#fff2a8;color:#16181d;border-radius:2px;padding:0 1px}
-@media(min-width:60.0625rem){
+@media not all and (max-width:60rem){
 .wrap{max-width:82.5rem}
 table{table-layout:fixed}
 thead th:nth-child(1){width:13rem}
 thead th:nth-child(4){width:16.5rem}
-.ours,.read,.tried,.oai{max-width:100%}
+.ours,.read,.tried,.oai{max-width:100%;overflow-wrap:break-word}
 .cite[open]{display:block;margin-top:.4rem}
 }
 @media(max-width:60rem){
