@@ -126,3 +126,23 @@ Cells overflowing: 0 before and after. Distinct column-width sets across the 120
 - Correction to the first measurement, from Codex round 1: the single-number pattern read `[0,26972]` as "0,269" and "72", and the one-row view never ran the page's own search. Both are fixed, and the figures above come from the fixed script.
 - A defect of our own, caught during the round 1 review: the narrower fixed name column made 57a's badge, which quotes a long LaTeX run, spill 101 px into the next cell. It was in `67bb730` only and never published; `23a5830` fixed it before the push.
 <!-- findings:end -->
+
+### Close
+
+ACTION: COMPLETED · item `A-101` (the row for numbers wrapping mid-digit on desktop) · P3 c485d119. The manager review read the replacement acceptance as met: the eight exceptions are listed with length and column width, and the row stays open. The 0-at-1366 target itself is still unmet, and that is what `A-101` carries.
+
+**Who decides the eight, and when.** This lane decides: it is a layout choice on our own page and changes no claim. The next read is 11-14, the row's date, recorded as `decisionOwner2026_11_09` on `A-101`. Either a third way to show an over-long token is measured on the live page, or the eight are accepted as the floor at that width and the row closes on that.
+
+**Hygiene draft, 7 lines: 4 accepted, 3 amended, 0 rejected.** Accepted: `A-2` (the drift-resolution log) to 11-10; `A-78` (the map of OpenAI's math release), `G-4` (the goal of an outside party acting unprompted) and `W-17` (the dated newer-papers line) to 11-16. Amended: `A-47` (the depth audit) to 11-12, not 11-10, because a re-date to tomorrow comes due with no new slice behind it. `A-92` (results that rest on ETH) to 11-12: its undecided line resolved as a re-date, since the slicing read was not done today. `A-94` (the close check wanting a tomorrow-named primer) to 11-10, with its failing close check also carried into the primer banner as the review asked. The draft's checks: no read-mutated lines; `check-wait-justification` printed "RESULT: PASS", 2 of 122 rows carry a wait; `check-engineering-zero --project bounds-ledger` printed "RESULT: PASS", 0 findings for this lane.
+
+**Due-gate verify:** `check-due-gates-dispositioned.mjs` printed "snapshot CURRENT: taken today (2026-11-09)" and "RESULT: PASS (exit 0)".
+
+**Ledger delta:** seven re-dates above; `A-101` gains `measured2026_11_09`, `liveRead2026_11_09` and `decisionOwner2026_11_09`, and its `readCommand` names the stored result and the re-measure command.
+
+**Receipt:** unchanged from P3; the encounter stays blind (`A-59`).
+
+**Pending reads:** `A-2` and `A-94` 11-10; `A-59` (the row saying nothing can see an arrival) and `W-18` (the watch for the Search Console read) 11-11; `A-47` and `A-92` 11-12; `A-101` 11-14; `A-78`, `G-4` and `W-17` 11-16.
+
+**W-7 — `measure.js`, the browser instrument written today.** Its claim was "a single number broken across two lines". Codex round 1 showed it could not say otherwise for `[0,26972]` (read as 0,269 and 72) and never saw text after a search highlight. Both are fixed, and its search view now goes red on the live page before the change (1 broken) and green after (0).
+
+- Classification of today's findings, one sentence of human judgment: every finding today was instrument-facing (our own page's layout, our own measurement script and our own selftest), no catch was counted, numeric or byte-only (`A-2`'s read: "No drift."), and the running count of consecutive instrument-facing days is at least 8 if 11-08 counts, counted by hand; the 11-08 report carried no classification line, and the 11-07 report said at least 7. The standing prediction was neither tested nor falsified today: no citation was read against its source.
