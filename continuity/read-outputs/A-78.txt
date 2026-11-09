@@ -1,6 +1,6 @@
 # read-output sidecar for A-78 — written by check-due-gates-dispositioned --run
 # readCommand: node C:/dev/skylark/bounds-ledger/scripts/openai-math.mjs
-# ran: 2026-11-02T15:02:45.535Z · exit: 0
+# ran: 2026-11-09T16:31:32.547Z · exit: 0
 # lines: 2 · sha256: c3f9fc00f8eaa694 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--

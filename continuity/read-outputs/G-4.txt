@@ -1,13 +1,13 @@
 # read-output sidecar for G-4 — written by check-due-gates-dispositioned --run
 # readCommand: npm run reports
-# ran: 2026-11-02T15:03:01.737Z · exit: 0
-# lines: 16 · sha256: cc5a89d961b45e4e (first 16 hex of the output below)
+# ran: 2026-11-09T16:31:38.659Z · exit: 0
+# lines: 16 · sha256: 48e995533fab6c82 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
 > bounds-ledger@0.0.0 reports
 > node scripts/report-rate.mjs
 
-# Report arrivals — 2026-11-02 MT · 86 day(s) since the public flip
+# Report arrivals — 2026-11-09 MT · 93 day(s) since the public flip
 raw issues fetched: 37 (pull requests excluded by construction — gh issue list, not the REST issues endpoint)
   ours (CI bot + owner), excluded: 37
   outside, not an arrival:        0

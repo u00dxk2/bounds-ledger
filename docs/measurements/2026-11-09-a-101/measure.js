@@ -106,6 +106,7 @@
     }
     const d = tr.querySelector('details.cite');
     if (d) {
+      const wasOpen = d.open;
       d.open = true;
       const code = d.querySelector('code');
       const cr = code.getBoundingClientRect();
@@ -113,7 +114,7 @@
       const over = cr.right > tdr.right + 1 || sideways();
       if (over) { citeSideways++; if (citeList.length < 5) citeList.push(tr.id.slice(2) + ':' + Math.round(cr.right - tdr.right)); }
       if (docSideways()) citeDocSideways++;
-      d.open = false;
+      d.open = wasOpen;
     }
   });
   rows.forEach((r, i) => { r.hidden = prev[i]; });
