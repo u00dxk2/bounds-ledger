@@ -861,6 +861,14 @@ tr[hidden] *::before{content:none!important}
 .older[hidden]{display:none}
 .src .older a{display:inline;padding:0;min-height:0}
 mark{background:#fff2a8;color:#16181d;border-radius:2px;padding:0 1px}
+@media(min-width:60.0625rem){
+.wrap{max-width:82.5rem}
+table{table-layout:fixed}
+thead th:nth-child(1){width:13rem}
+thead th:nth-child(4){width:16.5rem}
+.ours,.read,.tried,.oai{max-width:100%}
+.cite[open]{display:block;margin-top:.4rem}
+}
 @media(max-width:60rem){
 .scroll{overflow-x:visible;border:0;border-radius:0}
 table{min-width:0;display:block}
@@ -1226,6 +1234,23 @@ async function selftest() {
   // before the value they pasted. Same limit as the A-67 block above: this reads the stylesheet's
   // SOURCE TEXT, never layout; whether a phone shows the value above the fold is A-68's browser read.
   // Meaning first, the exact pin last.
+  // THE DESKTOP COLUMNS (A-101, 2026-11-09). Automatic table layout let a bound cell collapse to
+  // about 97px whenever a neighbouring cell held a long comment, and the value then broke mid-digit
+  // (1b's 0.379005 at 1366px). Fixed layout with set widths for the name and links columns gives the
+  // two bound columns equal, steady widths. Same limit as the blocks below: this reads the
+  // stylesheet's SOURCE TEXT, never layout; the browser measurement lives in
+  // docs/measurements/2026-11-09-a-101/. It must sit only above the card breakpoint, so the
+  // phone layout is unchanged. Meaning first, the exact pin last.
+  const deskStart = html.indexOf("@media(min-width:60.0625rem){");
+  assert.ok(deskStart > -1, "positive control: the desktop-columns block must exist");
+  const desk = html.slice(deskStart, html.indexOf("\n}\n", deskStart) + 1);
+  assert.ok(desk.includes("\ntable{table-layout:fixed}\n"), "the desktop table must use fixed layout, or a bound column can collapse beside a long comment");
+  assert.ok(/\nthead th:nth-child\(1\)\{width:[\d.]+rem\}\n/.test(desk) && /\nthead th:nth-child\(4\)\{width:[\d.]+rem\}\n/.test(desk),
+    "fixed layout must size the name and links columns, so the two bound columns share what is left equally");
+  assert.ok(desk.includes("\n.cite[open]{display:block;margin-top:.4rem}\n"), "an opened cite block must take the links cell's width, never spill past it");
+  assert.equal(html.indexOf("table-layout"), html.indexOf("table{table-layout:fixed}") + 6, "fixed layout must appear only inside the desktop block");
+  assert.ok(desk.startsWith("@media(min-width:60.0625rem){\n.wrap{max-width:82.5rem}\ntable{table-layout:fixed}\nthead th:nth-child(1){width:13rem}\nthead th:nth-child(4){width:16.5rem}\n.ours,.read,.tried,.oai{max-width:100%}\n.cite[open]{display:block;margin-top:.4rem}"),
+    "the A-101 desktop rules are pinned exactly, in this order");
   const cardStart = html.indexOf("@media(max-width:60rem){");
   assert.ok(cardStart > -1, "positive control: the card-layout block must exist");
   const card = html.slice(cardStart, html.indexOf("\n}\n", cardStart));
