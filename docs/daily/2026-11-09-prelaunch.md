@@ -21,11 +21,12 @@ sentry_open_p2: null
 
 ## BLUF
 
-Today's work is to stop exact numbers on the desktop index breaking across two lines. Measured this morning at 1366 px, 14 numbers break when one row is shown, including 1b's lower bound.
+On a desktop screen, the index now breaks far fewer exact numbers across two lines. At 1366 px the count fell from 40 to 8, and the number on the 1b row that started this now reads whole. Eight long numbers still break, so `A-101` (the row for numbers wrapping mid-digit on desktop) stays open.
 
 ## What changed
 
-- P1 chose the day's work (selection packet in the State Appendix). Nothing has shipped yet.
+- P1 chose the day's work (selection packet in the State Appendix).
+- **The desktop table now gives the two bound columns equal, fixed widths** (`A-101`, the row for numbers wrapping mid-digit on desktop; `67bb730`, review fixes `23a5830`, ledger record `020b56d`). Measured on the live page after the 16:58:36Z Pages build with `docs/measurements/2026-11-09-a-101/measure.js`, broken single numbers, all rows shown: 1366 px 40 to 8, 1024 px 97 to 27, 961 px 127 to 32. Searching 0.379005 now shows 1b's value on one line (screenshot `docs/measurements/2026-11-09-a-101/live-1b-1366.png`). The column widths no longer change with the search, and an opened citation stays inside its cell. The phone layout is unchanged.
 - The morning block ran. `npm run upstream` printed "0 transition(s) across 3 recorded report(s)". `npm run traffic` printed 7 unique repo viewers and 285 unique cloners in the latest 14-day window (page visitors are not counted).
 
 ## Inputs (controllable)
@@ -39,7 +40,7 @@ Today's work is to stop exact numbers on the desktop index breaking across two l
 
 ## Recommendation
 
-- [A — user-visible] Ship `A-101` (the row for numbers wrapping mid-digit on desktop) in P3, on the acceptance condition in the packet below.
+- [A — user-visible] `A-101` (the row for numbers wrapping mid-digit on desktop) stays open on eight breaks at 1366 px, all in tokens with no spaces that no column at that width holds. The next step is a design question rather than a width: whether a long bound may scroll inside its own cell. That was measured today and rejected, because it would hide part of a value in 15 cells.
 
 ## On hold pending data
 
@@ -99,3 +100,29 @@ node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --selftest
 - (a) Due rows not bearing on the choice, 7 of 7 due: `A-2` (the drift-resolution log), `A-47` (the depth audit), `A-78` (the map of OpenAI's math release), `A-92` (results that rest on ETH), `A-94` (the close check wanting a tomorrow-named primer), `G-4` (the goal of an outside party acting unprompted), `W-17` (the dated newer-papers line). Three were read this morning through `check-due-gates-dispositioned.mjs --run`. `A-47` printed "106 row(s) audited — 64 sound, 1 defective, 28 unresolved, 13 unreachable". `A-94` printed "RESULT: FAIL — no cold-start primer for tomorrow (2026-11-10 MT)", exit 1, as the primer's banner expected, so it still has to be fixed for today's close to pass. `G-4` printed "parts reconcile: 37 + 0 + 0 = 37".
 - (b) Owed child rows in the orchestrator's ledger: none, from the kickoff read over 805 rows.
 - (c) State reads marked as crossed: none carries the word. Those printing a threshold clause: dated gates due today, 7 of 7 (listed in (a)). Board cards carrying David's word: 1, `9174731b`, not this lane's. Prior-day retro findings: 4 tagged, all 4 still on discipline. `missingLinkedCommits`: NOTHING SWEPT, 0 of 0. Key numbers: no list yet (`Test-Path docs/key-metrics.json` printed False). positive control: `Test-Path docs/daily-config.md` printed True from the same directory.
+
+### P3 product work
+
+The manager review redirected the acceptance condition: 0 broken single numbers at 1366 px in both views, any exception listed with its length and column width, and the old-definition counts falling at 1366 and 1024 px.
+
+**What shipped.** Above the card breakpoint the table uses fixed layout. The name and links columns are set at 13rem and 16.5rem, and the two bound columns share the rest equally. The page container widens to 82.5rem. An opened citation takes its cell's width, and the badges under a name wrap their own long words. The change is CSS only, so each bound cell is still one text node and copied text is unchanged.
+
+**Live, after the Pages build of `020b56d`** (`live-<width>.json` beside the measure script):
+
+| width | all rows, before → after | one row, before → after | old definition, all rows |
+|---|---|---|---|
+| 1366 | 40 → 8 | 13 → 8 | 39 → 9 |
+| 1024 | 97 → 27 | 33 → 27 | 94 → 26 |
+| 961 | 127 → 32 | 54 → 32 | 120 → 32 |
+
+Cells overflowing: 0 before and after. Distinct column-width sets across the 120 one-row views at 1366 px: 113 → 1. Rows whose opened citation spills past its cell: 120 → 0. No sideways scroll at any width. The 390 px card layout matches the pre-change page.
+
+**Not met: 0 at 1366 px.** Eight remain, each in a 379 px column: 1c (27 and 5 digits), 44a (29), 57c (18, 18 and 19 characters) and 89a (38 and 39). All sit in tokens with no spaces that no column at this width holds. `A-101` stays open with them listed (`measured2026_11_09` and `liveRead2026_11_09` on the row).
+
+**Review.** Codex round 1 on `67bb730` raised four findings, all confirmed and fixed in `23a5830`. Round 2 on `23a5830` raised two, both confirmed and fixed in `020b56d`. The fixes from round 2 are a measurement script and a ledger note, which no reader receives, so they had no third round. Selftest red-arms: removing fixed layout, the name-column width, the open-citation rule or the badge rule, reverting the media query, or adding a second table-layout declaration each fails on the assertion that names that property.
+
+<!-- findings:begin -->
+- Correction to the P1 packet, from the manager review: 57c's 75-character run is four numbers joined by commas, not one number. The longest single number on the page is 43 digits (1d). The packet's counts used the old definition, which joins comma lists. Today's table uses both definitions.
+- Correction to the first measurement, from Codex round 1: the single-number pattern read `[0,26972]` as "0,269" and "72", and the one-row view never ran the page's own search. Both are fixed, and the figures above come from the fixed script.
+- A defect of our own, caught during the round 1 review: the narrower fixed name column made 57a's badge, which quotes a long LaTeX run, spill 101 px into the next cell. It was in `67bb730` only and never published; `23a5830` fixed it before the push.
+<!-- findings:end -->
