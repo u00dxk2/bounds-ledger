@@ -29,7 +29,7 @@
 // repo's date discipline exists to prevent. Calendar arithmetic is done on the MT date string
 // via Date.UTC, so it is immune to DST rather than merely usually right.
 
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { mtToday } from "./lib/mt-date.mjs";
@@ -170,6 +170,9 @@ async function selftest() {
   // The command itself, through runGate (Codex review of adad52d, F2): its exit code on each answer,
   // and that the --short leg reads the file the gate OWES, which here is the later-dated one.
   const gate = await mkdtemp(join(tmpdir(), "primer-gate-cli-"));
+  // A failed assertion throws past the rm() calls below; this removes both fixture directories on any
+  // exit (Codex round 2 on f2794b1, finding 4).
+  process.once("exit", () => { for (const d of [gate, tmp]) rmSync(d, { recursive: true, force: true }); });
   await mkdir(join(gate, "docs", "cold-starts"), { recursive: true });
   await writeFile(primerPath("2026-08-20", gate), "# yesterday\n");
   const stale = runGate("2026-08-21", gate);
@@ -242,5 +245,7 @@ if (process.argv.includes("--selftest")) {
   const r = runGate(mtToday());
   for (const l of r.err) console.error(l);
   for (const l of r.out) console.log(l);
-  process.exit(r.code);
+  // exitCode, not exit(): lets queued output flush to a pipe, and does not end a process that imported
+  // this module (Codex round 2 on f2794b1, findings 2 and 3).
+  process.exitCode = r.code;
 }

@@ -55,7 +55,7 @@ and should not be read as a gap.
 
 ## The next session's primer — GENERATED first, prose second (added 2026-08-26)
 
-At close, BEFORE writing a word of the next session's primer, run both — the first WRITES the mechanical sections, the second GRADES them. `<MT-date>` is TODAY's Mountain-Time date, the day the primer is WRITTEN (fleet rule since 2026-09-30; the generator reads the `--out` filename as its target date, and `npm run close:primer` owes that same file). It read "tomorrow's date, the day the primer is READ" until 2026-11-10, which contradicted § 1 above and would have created a tomorrow-named file that the gate then accepts as later-dated (Codex review of `A-94`, finding 1):
+At close, BEFORE writing a word of the next session's primer, run both — the first WRITES the mechanical sections, the second GRADES them. `<MT-date>` is TODAY's Mountain-Time date, the day the primer is WRITTEN (fleet rule since 2026-09-30; the generator reads the `--out` filename as its target date, and `npm run close:primer` owes that same file). It read "tomorrow's date, the day the primer is READ" until 2026-11-10, which contradicted § 1 above and would have created a tomorrow-named file that the gate then accepts as later-dated (Codex review of `A-94`, finding 1). **Exception: if a primer dated LATER than today already exists in `docs/cold-starts/`, use that file's date instead.** It is the one the next session reads and the one `npm run close:primer` checks, so a close that updated today's file would pass the gate while the primer actually read stayed stale (fleet rule `choosePrimerTarget`, append-later-dated; Codex round 2):
 
 ```bash
 node scripts/sky.mjs gen-primer-first-action.mjs --repo . --target-date <MT-date> --out docs/cold-starts/<MT-date>.md
