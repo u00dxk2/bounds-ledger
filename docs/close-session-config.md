@@ -53,9 +53,9 @@ No `carry-forward.md`, no `current-state.md`, no `report-caches.json`. The cold-
 `continuity/items.json` carry that role, which is the documented layout — their absence is by design
 and should not be read as a gap.
 
-## Tomorrow's primer — GENERATED first, prose second (added 2026-08-26)
+## The next session's primer — GENERATED first, prose second (added 2026-08-26)
 
-At close, BEFORE writing a word of tomorrow's primer, run both — the first WRITES the mechanical sections, the second GRADES them. `<MT-date>` is tomorrow's Mountain-Time date, the day the primer is READ:
+At close, BEFORE writing a word of the next session's primer, run both — the first WRITES the mechanical sections, the second GRADES them. `<MT-date>` is TODAY's Mountain-Time date, the day the primer is WRITTEN (fleet rule since 2026-09-30; the generator reads the `--out` filename as its target date, and `npm run close:primer` owes that same file). It read "tomorrow's date, the day the primer is READ" until 2026-11-10, which contradicted § 1 above and would have created a tomorrow-named file that the gate then accepts as later-dated (Codex review of `A-94`, finding 1):
 
 ```bash
 node scripts/sky.mjs gen-primer-first-action.mjs --repo . --target-date <MT-date> --out docs/cold-starts/<MT-date>.md
@@ -70,7 +70,7 @@ Re-homed for the three-stage day (P1 → P3 → P5) on 2026-09-25 by the orchest
 
 1. Apply the hygiene draft (`tmp/hygiene-draft-bounds-ledger-<MT-date>.md`: ACCEPT / AMEND / REJECT each line), then run the no-flag due-gate verify.
 2. Run the ledger gate battery, `node scripts/sky.mjs continuity-check.mjs` (`docs/daily-config.md` § Ledger gate battery; it ran inside P2 until 2026-09-25), and read its own RESULT line.
-3. Generate tomorrow's primer (the section above). It ran first thing at P2 from 2026-08-27 to 2026-09-25; P2 no longer exists, so the close's run is the only one.
+3. Generate the next session's primer, named for today (the section above). It ran first thing at P2 from 2026-08-27 to 2026-09-25; P2 no longer exists, so the close's run is the only one.
 
 ## Tomorrow's primer was generated at P2, not at close (approved 2026-08-27; history — P2 no longer runs, see § P5 close order)
 

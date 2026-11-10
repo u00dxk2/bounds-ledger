@@ -110,6 +110,35 @@ export function brokenFirstAction(text) {
   return findings;
 }
 
+// The whole gate as a function, so the selftest (and CI) exercise the command's own exit code and
+// the file its content leg reads, not only the helper (Codex review of adad52d, finding 2).
+export function runGate(today, root = ROOT) {
+  const owed = owedPrimer(today, root);
+  if (!owed) {
+    return { code: 1, out: [], err: [
+      `RESULT: FAIL — no cold-start primer written today (${today} MT).`,
+      `  expected: docs/cold-starts/${today}.md (primers are named for the MT day they are written)`,
+      `  Write it before closing: the next session opens cold without it,`,
+      `  and the miss leaves no other trace (2026-08-20 opened this way).`,
+    ] };
+  }
+  // Content leg: the primer exists, so now check the ONE thing that has actually gone wrong
+  // five times. This is deliberately not a general content check — that belongs to the fleet
+  // generator (skylark-site gen-primer-first-action.mjs), not to a closed row on this ledger.
+  const broken = brokenFirstAction(readFileSync(primerPath(owed, root), "utf8"));
+  if (broken.length) {
+    const err = [`RESULT: FAIL — the next session's primer (docs/cold-starts/${owed}.md) carries a first action that cannot run.`];
+    for (const b of broken) {
+      err.push(`  line ${b.line}: ${b.text}`,
+        `    \`git rev-parse --short\` takes ONE revision; this passes ${b.revs.length} (${b.revs.join(", ")}).`,
+        `    It exits 128 with "fatal: Needed a single revision" — and in a leading && position`,
+        `    that silently skips the whole cadence behind it. Drop --short.`);
+    }
+    return { code: 1, out: [], err };
+  }
+  return { code: 0, out: [`RESULT: PASS — the next session's primer exists and its first action runs (docs/cold-starts/${owed}.md)`], err: [] };
+}
+
 async function selftest() {
   const { mkdtemp, mkdir, writeFile, rm } = await import("node:fs/promises");
   const { tmpdir } = await import("node:os");
@@ -137,6 +166,24 @@ async function selftest() {
   assert.equal(writtenPrimer(["2026-08-22.md", "2026-08-25.md", "2026-08-23.md"], "2026-08-21"), "2026-08-25", "newest later-dated file wins");
   assert.equal(writtenPrimer(["README.md", "2026-08-21-notes.md", "2026-8-21.md"], "2026-08-21"), null, "only YYYY-MM-DD.md names count");
   assert.equal(owedPrimer("2026-08-21", join(tmp, "nowhere")), null, "a missing cold-starts directory reads as no primer, never a crash");
+
+  // The command itself, through runGate (Codex review of adad52d, F2): its exit code on each answer,
+  // and that the --short leg reads the file the gate OWES, which here is the later-dated one.
+  const gate = await mkdtemp(join(tmpdir(), "primer-gate-cli-"));
+  await mkdir(join(gate, "docs", "cold-starts"), { recursive: true });
+  await writeFile(primerPath("2026-08-20", gate), "# yesterday\n");
+  const stale = runGate("2026-08-21", gate);
+  assert.equal(stale.code, 1, "FIRES: the command exits 1 when only yesterday's primer exists");
+  assert.match(stale.err[0], /no cold-start primer written today \(2026-08-21 MT\)/, "and says which day it wanted");
+  await writeFile(primerPath("2026-08-21", gate), "# today\n\n```bash\ngit rev-parse HEAD origin/main\n```\n");
+  const ok = runGate("2026-08-21", gate);
+  assert.equal(ok.code, 0, "SILENT: the command exits 0 once today's primer exists with a runnable first action");
+  assert.match(ok.out[0], /docs\/cold-starts\/2026-08-21\.md/, "and names the file it accepted");
+  await writeFile(primerPath("2026-08-22", gate), "# later-dated\n\n```bash\ngit rev-parse --short HEAD origin/main\n```\n");
+  const later = runGate("2026-08-21", gate);
+  assert.equal(later.code, 1, "the --short leg must read the later-dated primer the gate owes, not today's clean one");
+  assert.match(later.err[0], /2026-08-22\.md/, "and name that file");
+  await rm(gate, { recursive: true, force: true });
   // A UTC-clock close at 20:00 MT is 02:00 UTC the NEXT day; MT must still read the MT date.
   assert.equal(mtToday(new Date("2026-08-21T02:00:00Z")), "2026-08-20", "evening MT close must not roll to the UTC date");
 
@@ -192,28 +239,8 @@ async function selftest() {
 if (process.argv.includes("--selftest")) {
   await selftest();
 } else {
-  const today = mtToday();
-  const owed = owedPrimer(today);
-  if (!owed) {
-    console.error(`RESULT: FAIL — no cold-start primer written today (${today} MT).`);
-    console.error(`  expected: docs/cold-starts/${today}.md (primers are named for the MT day they are written)`);
-    console.error(`  Write it before closing: the next session opens cold without it,`);
-    console.error(`  and the miss leaves no other trace (2026-08-20 opened this way).`);
-    process.exit(1);
-  }
-  // Content leg: the primer exists, so now check the ONE thing that has actually gone wrong
-  // five times. This is deliberately not a general content check — that belongs to the fleet
-  // generator (skylark-site gen-primer-first-action.mjs), not to a closed row on this ledger.
-  const broken = brokenFirstAction(readFileSync(primerPath(owed), "utf8"));
-  if (broken.length) {
-    console.error(`RESULT: FAIL — the next session's primer (docs/cold-starts/${owed}.md) carries a first action that cannot run.`);
-    for (const b of broken) {
-      console.error(`  line ${b.line}: ${b.text}`);
-      console.error(`    \`git rev-parse --short\` takes ONE revision; this passes ${b.revs.length} (${b.revs.join(", ")}).`);
-      console.error(`    It exits 128 with "fatal: Needed a single revision" — and in a leading && position`);
-      console.error(`    that silently skips the whole cadence behind it. Drop --short.`);
-    }
-    process.exit(1);
-  }
-  console.log(`RESULT: PASS — the next session's primer exists and its first action runs (docs/cold-starts/${owed}.md)`);
+  const r = runGate(mtToday());
+  for (const l of r.err) console.error(l);
+  for (const l of r.out) console.log(l);
+  process.exit(r.code);
 }
