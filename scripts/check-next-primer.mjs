@@ -1,5 +1,16 @@
 #!/usr/bin/env node
-// Close-boundary gate: the NEXT day's cold-start primer must exist before a session closes.
+// Close-boundary gate: the cold-start primer for the NEXT session must exist before a session closes.
+//
+// WHICH FILE (A-94, 2026-11-10). Since 2026-09-30 the fleet names a primer by the MT date it is
+// WRITTEN, and the next session reads the newest one; tonight's close writes docs/cold-starts/<today>.md.
+// Until 2026-11-10 this gate still demanded a file named for TOMORROW, so it exited 1 at every close
+// from 2026-09-30 on (or a close wrote a file under the wrong name to satisfy it). It now owes the
+// written-date file, chosen by the same rule as skylark-site's scripts/lib/primer-written-date.mjs
+// choosePrimerTarget: a primer dated LATER than today (an old-convention tomorrow-named file, the
+// switch-day hazard that rule names) is the one the next session reads, newest first; otherwise
+// today's. Reimplemented, not imported: this repo is public, this script's selftest runs in CI, and
+// the sibling checkout does not exist there. Yesterday's primer never satisfies it: the next session
+// would open on a file that says nothing about today.
 //
 // Why this exists: 2026-08-20 opened with no `docs/cold-starts/2026-08-20.md` — 8/19's close
 // never wrote it — so the session began by reconstructing state from the kickoff and the
@@ -18,7 +29,7 @@
 // repo's date discipline exists to prevent. Calendar arithmetic is done on the MT date string
 // via Date.UTC, so it is immune to DST rather than merely usually right.
 
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { mtToday } from "./lib/mt-date.mjs";
@@ -27,22 +38,28 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 export { mtToday };
 
-export function nextDay(dateStr) {
-  const [y, m, d] = dateStr.split("-").map(Number);
-  // Date.UTC normalises month/day overflow (Aug 32 -> Sep 1), so no month-length table is needed.
-  return new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
-}
-
 export function primerPath(dateStr, root = ROOT) {
   return join(root, "docs", "cold-starts", `${dateStr}.md`);
 }
 
-// ponytail: existence only, no content check. A primer that exists but is empty is a different
-// defect and this gate deliberately does not claim to catch it. The content leg is NOT tracked
-// here any more: A-18 held it and closed 2026-09-01, killed because skylark-site's
+const DATED = /^(\d{4}-\d{2}-\d{2})\.md$/;
+
+// The primer the close owes, as a date, or null when none exists. A later-dated file wins (newest
+// first), then today's; nothing earlier counts. Pure: the caller lists the directory.
+export function writtenPrimer(names, today) {
+  const dates = (names ?? []).map((n) => DATED.exec(String(n))?.[1]).filter(Boolean);
+  const later = dates.filter((d) => d > today).sort().reverse();
+  if (later.length) return later[0];
+  return dates.includes(today) ? today : null;
+}
+
+// ponytail: existence only, no content check beyond the --short trap below. A primer that exists but
+// is empty is a different defect and this gate deliberately does not claim to catch it. The content
+// leg is NOT tracked here any more: A-18 held it and closed 2026-09-01, killed because skylark-site's
 // gen-primer-first-action.mjs already generates the block from the fleet side.
-export function missingPrimer(dateStr, root = ROOT) {
-  return !existsSync(primerPath(dateStr, root));
+export function owedPrimer(today, root = ROOT) {
+  const dir = join(root, "docs", "cold-starts");
+  return writtenPrimer(existsSync(dir) ? readdirSync(dir) : [], today);
 }
 
 // The `--short` trap, mechanised after FIVE sessions hit it — including the one that wrote the
@@ -101,21 +118,25 @@ async function selftest() {
   const tmp = await mkdtemp(join(tmpdir(), "primer-gate-"));
   await mkdir(join(tmp, "docs", "cold-starts"), { recursive: true });
 
-  // KP-78, both answers. The silent half is asserted only AFTER the file is proven to exist,
-  // so a broken existsSync cannot masquerade as "condition absent" (2026-08-17: an assertion
-  // that something is not present passes on an empty string from a spawn that never ran).
-  assert.equal(missingPrimer("2026-08-21", tmp), true, "FIRES: absent primer must report missing");
+  // KP-78, both answers, on the real directory listing. The silent half is asserted only AFTER the
+  // file is proven to exist, so a broken listing cannot masquerade as "condition absent" (2026-08-17:
+  // an assertion that something is not present passes on an empty string from a spawn that never ran).
+  // A-94 (2026-11-10): the owed file is the one named for the day it is WRITTEN.
+  await writeFile(primerPath("2026-08-20", tmp), "# yesterday's primer\n");
+  assert.equal(owedPrimer("2026-08-21", tmp), null, "FIRES: only yesterday's primer exists, so tonight's is missing");
 
   const p = primerPath("2026-08-21", tmp);
   await writeFile(p, "# primer\n");
   assert.equal(existsSync(p), true, "positive control: the fixture file must exist before absence is asserted");
-  assert.equal(missingPrimer("2026-08-21", tmp), false, "SILENT: present primer must report present");
+  assert.equal(owedPrimer("2026-08-21", tmp), "2026-08-21", "SILENT: a primer named for the day written satisfies the close");
 
-  // The date arithmetic is the part most likely to be quietly wrong, so it is asserted, not trusted.
-  assert.equal(nextDay("2026-08-20"), "2026-08-21", "same-month rollover");
-  assert.equal(nextDay("2026-08-31"), "2026-09-01", "month-end rollover");
-  assert.equal(nextDay("2026-12-31"), "2027-01-01", "year-end rollover");
-  assert.equal(nextDay("2028-02-28"), "2028-02-29", "leap-year rollover");
+  // The switch-day hazard: a later-dated (old-convention tomorrow-named) file is the one the next
+  // session reads, so it is the one owed, and the newest of several wins.
+  await writeFile(primerPath("2026-08-22", tmp), "# tomorrow-named primer\n");
+  assert.equal(owedPrimer("2026-08-21", tmp), "2026-08-22", "a later-dated primer is the one the next session reads");
+  assert.equal(writtenPrimer(["2026-08-22.md", "2026-08-25.md", "2026-08-23.md"], "2026-08-21"), "2026-08-25", "newest later-dated file wins");
+  assert.equal(writtenPrimer(["README.md", "2026-08-21-notes.md", "2026-8-21.md"], "2026-08-21"), null, "only YYYY-MM-DD.md names count");
+  assert.equal(owedPrimer("2026-08-21", join(tmp, "nowhere")), null, "a missing cold-starts directory reads as no primer, never a crash");
   // A UTC-clock close at 20:00 MT is 02:00 UTC the NEXT day; MT must still read the MT date.
   assert.equal(mtToday(new Date("2026-08-21T02:00:00Z")), "2026-08-20", "evening MT close must not roll to the UTC date");
 
@@ -165,27 +186,27 @@ async function selftest() {
   assert.deepEqual(brokenFirstAction(fenced("git rev-parse --short HEAD")), [], "fence rule is not masking the arity rule");
 
   await rm(tmp, { recursive: true, force: true });
-  console.log("check-next-primer selftest: PASS (fires on an absent primer, silent on a present one after proving the fixture exists; month-end, year-end and leap rollovers correct; 20:00 MT close reads the MT date, not the UTC one; --short guard fires on two revisions naming line and revs, silent on the documented correct form, on a legal one-revision --short, on --short=N with one revision, on prose, and on words belonging to a later command)");
+  console.log("check-next-primer selftest: PASS (fires when only yesterday's primer exists, silent once one is named for the day written after proving the fixture exists; a later-dated primer is the one owed, newest first; only YYYY-MM-DD.md names count; a missing directory reads as no primer; 20:00 MT close reads the MT date, not the UTC one; --short guard fires on two revisions naming line and revs, silent on the documented correct form, on a legal one-revision --short, on --short=N with one revision, on prose, and on words belonging to a later command)");
 }
 
 if (process.argv.includes("--selftest")) {
   await selftest();
 } else {
   const today = mtToday();
-  const tomorrow = nextDay(today);
-  if (missingPrimer(tomorrow)) {
-    console.error(`RESULT: FAIL — no cold-start primer for tomorrow (${tomorrow} MT).`);
-    console.error(`  expected: docs/cold-starts/${tomorrow}.md`);
-    console.error(`  Today is ${today} MT. Write it before closing: the next session opens cold without it,`);
+  const owed = owedPrimer(today);
+  if (!owed) {
+    console.error(`RESULT: FAIL — no cold-start primer written today (${today} MT).`);
+    console.error(`  expected: docs/cold-starts/${today}.md (primers are named for the MT day they are written)`);
+    console.error(`  Write it before closing: the next session opens cold without it,`);
     console.error(`  and the miss leaves no other trace (2026-08-20 opened this way).`);
     process.exit(1);
   }
   // Content leg: the primer exists, so now check the ONE thing that has actually gone wrong
   // five times. This is deliberately not a general content check — that belongs to the fleet
   // generator (skylark-site gen-primer-first-action.mjs), not to a closed row on this ledger.
-  const broken = brokenFirstAction(readFileSync(primerPath(tomorrow), "utf8"));
+  const broken = brokenFirstAction(readFileSync(primerPath(owed), "utf8"));
   if (broken.length) {
-    console.error(`RESULT: FAIL — tomorrow's primer (${tomorrow} MT) carries a first action that cannot run.`);
+    console.error(`RESULT: FAIL — the next session's primer (docs/cold-starts/${owed}.md) carries a first action that cannot run.`);
     for (const b of broken) {
       console.error(`  line ${b.line}: ${b.text}`);
       console.error(`    \`git rev-parse --short\` takes ONE revision; this passes ${b.revs.length} (${b.revs.join(", ")}).`);
@@ -194,5 +215,5 @@ if (process.argv.includes("--selftest")) {
     }
     process.exit(1);
   }
-  console.log(`RESULT: PASS — tomorrow's primer exists and its first action runs (docs/cold-starts/${tomorrow}.md)`);
+  console.log(`RESULT: PASS — the next session's primer exists and its first action runs (docs/cold-starts/${owed}.md)`);
 }

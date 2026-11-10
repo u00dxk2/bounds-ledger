@@ -7,17 +7,18 @@ caller is a gate that never fires, which is this repo's founding defect wearing 
 ## The close battery, in order
 
 ```
-npm run close:primer     # 1. tomorrow's cold-start primer must exist
+npm run close:primer     # 1. the next session's primer, named for the day it is written, must exist
 git status --porcelain   # 2. must be EMPTY — see the warning below
 npm run verify > tmp/verify-out.txt 2>&1   # 3. gates + a receipt at the CURRENT HEAD (this exact shape: AGENTS.md § Commands)
 ```
 
-**1. `npm run close:primer`** — fails when `docs/cold-starts/<tomorrow-MT>.md` is missing (`AGENTS.md` § Commands; `A-94` tracks that the fleet now names primers by the date written).
-Deliberately **not** in `npm run check` or CI: tomorrow's primer legitimately does not exist for most
+**1. `npm run close:primer`** — fails unless `docs/cold-starts/<today-MT>.md` exists: a primer is named for the MT day it is WRITTEN (fleet rule since 2026-09-30), and a later-dated file, if one exists, is the one owed instead (`AGENTS.md` § Commands). Until 2026-11-10 it demanded a tomorrow-named file and so exited 1 at every close from 2026-09-30; `A-94` fixed it.
+Deliberately **not** in `npm run check` or CI: tonight's primer legitimately does not exist for most
 of the day, so a cadence placement would be red from midnight until close ran, and a permanently-red
 alarm carries as much information as a permanently-green one. Its self-test *is* in the offline
-battery and in CI. Both answers demonstrated live on 2026-08-20 — exit 1 that morning, exit 0 that
-evening.
+battery and in CI. Both answers demonstrated live on 2026-08-20 (exit 1 that morning, exit 0 that
+evening) and again under the written-date rule on 2026-11-10 (exit 1 with only 2026-11-09.md present,
+exit 0 with a temporary 2026-11-10.md, removed in the same call).
 
 **2. `git status --porcelain` must be empty — this is a real gate here, not tidiness.**
 `continuity/traffic.json` is a **write-once record**: the GitHub API forgets days older than 14, so
