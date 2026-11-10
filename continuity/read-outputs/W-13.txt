@@ -1,15 +1,15 @@
 # read-output sidecar for W-13 — written by check-due-gates-dispositioned --run
 # readCommand: npm run served
-# ran: 2026-11-03T15:02:25.557Z · exit: 0
-# lines: 10 · sha256: 5d73818f2b960509 (first 16 hex of the output below)
+# ran: 2026-11-10T15:44:43.203Z · exit: 0
+# lines: 10 · sha256: 8fd54bd859ac3d6f (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
 > bounds-ledger@0.0.0 served
 > node scripts/check-served.mjs
 
-# Served vs HEAD — 2026-11-03T15:02:23.284Z
-anchor fa000676ab (2026-11-02T10:34:19-07:00), the last commit to touch a published page; 1 file(s) it changed, of 123 published
-SERVED      ramsey.html  141230 bytes
+# Served vs HEAD — 2026-11-10T15:44:41.370Z
+anchor 23a583088e (2026-11-09T09:54:08-07:00), the last commit to touch a published page; 1 file(s) it changed, of 124 published
+SERVED      index.html  540663 bytes
 
 1 checked — 1 served, 0 in flight, 0 stale, 0 unreachable.
 This is an INDICATOR: it never gates a build and never runs in CI. A page can also be stale for a reader behind a cache this read does not share.

@@ -1,13 +1,13 @@
 # read-output sidecar for A-94 — written by check-due-gates-dispositioned --run
 # readCommand: npm run close:primer
-# ran: 2026-11-09T16:31:35.600Z · exit: 1
-# lines: 7 · sha256: f22cbf76b9784bae (first 16 hex of the output below)
+# ran: 2026-11-10T15:44:27.287Z · exit: 1
+# lines: 7 · sha256: ab19e674ac21df91 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
 > bounds-ledger@0.0.0 close:primer
 > node scripts/check-next-primer.mjs
 
-RESULT: FAIL — no cold-start primer for tomorrow (2026-11-10 MT).
-  expected: docs/cold-starts/2026-11-10.md
-  Today is 2026-11-09 MT. Write it before closing: the next session opens cold without it,
+RESULT: FAIL — no cold-start primer for tomorrow (2026-11-11 MT).
+  expected: docs/cold-starts/2026-11-11.md
+  Today is 2026-11-10 MT. Write it before closing: the next session opens cold without it,
   and the miss leaves no other trace (2026-08-20 opened this way).
