@@ -465,8 +465,29 @@ function cell(row, changed, kind, label, hist = null) {
   const when = changed
     ? `<span class="when ${kind === "text" ? "text-only" : ""}">${whenHtml(changed, kind, hist)}</span>`
     : `<span class="when">date unknown</span>`;
-  return `<td data-label="${esc(label)}"><code data-mark>${esc(displayCell(row))}</code>${when}</td>`;
+  return `<td data-label="${esc(label)}"><code data-mark>${breakable(esc(displayCell(row)))}</code>${when}</td>`;
 }
+
+// A-101 (2026-11-10): a line may end after a / or a comma, never inside a number. Upstream writes an
+// exact fraction or a tuple with no spaces ($1126…467/3738…200$, $(0.0299…,2.789…)$), so the cell's
+// break-word rule split such a token wherever the column ended, mid-digit. A <wbr> after each / and ,
+// gives the browser a place to break between two numbers first. It adds no character, so copied text
+// and textContent (the search's haystack) stay the mirror text byte for byte. The page's search
+// rebuilds a cell from text when it marks one, so its put() inserts the same <wbr> at the same places;
+// the two must agree. Applied to escaped HTML: esc() emits neither character, so none lands in an entity.
+// A token with no / or , and wider than its column (1c's 64-character SHA-256 hash) still breaks
+// anywhere: it is a hash, not a number, and nothing short of a wider column fits it.
+// A comma INSIDE a number is not a separator: one with a digit before it and exactly three digits after
+// it is a thousands group (65a's 4,196,879), the same rule the A-101 measure script reads a number by,
+// and it gets no break. The first draft broke after every comma and split 65a, which had read whole.
+const isDigit = (ch) => ch >= "0" && ch <= "9";
+export const breaksAfter = (t, i) => t[i] === "/" || (t[i] === "," &&
+  !(isDigit(t[i - 1] || "") && isDigit(t[i + 1] || "") && isDigit(t[i + 2] || "") && isDigit(t[i + 3] || "") && !isDigit(t[i + 4] || "")));
+export const breakable = (h) => {
+  let out = "";
+  for (let i = 0; i < h.length; i++) out += breaksAfter(h, i) ? `${h[i]}<wbr>` : h[i]; // code units, as the page's cuts() reads them
+  return out;
+};
 
 // Every value cell in the constant's mirrored bound tables — not only the two rows we pin.
 //
@@ -984,21 +1005,42 @@ ${body}
     });
     return tg;
   }
+  // A-101: append text with an empty wbr element after each / and comma, the same places breakable()
+  // in render-site.mjs puts them in the shipped page, so a long fraction still breaks between its
+  // numbers after a search has rewritten the cell. A wbr adds no character to the text.
+  // The places are decided on the WHOLE shipped text, never on a piece between two marks, so a comma's
+  // neighbours are always read. A comma with a digit before it and exactly three digits after it is a
+  // thousands group (4,196,879) and gets no break, matching breaksAfter() in render-site.mjs.
+  function dg(ch){return ch>='0'&&ch<='9';}
+  function cuts(t){
+    var c=[];
+    for(var i=0;i<t.length;i++){
+      var ch=t.charAt(i);
+      c.push(ch==='/'||(ch===','&&!(dg(t.charAt(i-1))&&dg(t.charAt(i+1))&&dg(t.charAt(i+2))&&dg(t.charAt(i+3))&&!dg(t.charAt(i+4)))));
+    }
+    return c;
+  }
+  function put(e,t,a,b,c){
+    var from=a;
+    for(var i=a;i<b;i++){
+      if(c[i]){e.appendChild(document.createTextNode(t.slice(from,i+1)));e.appendChild(document.createElement('wbr'));from=i+1;}
+    }
+    if(from<b)e.appendChild(document.createTextNode(t.slice(from,b)));
+  }
   // Restore the shipped text, then mark each place it contains the term, ignoring case. Built from
   // text nodes and textContent only: the term is visitor input and never becomes markup. A text whose
   // lowercase form changes length is left unmarked, because its indices would no longer line up.
   function mark(x,v){
-    x.e.textContent=x.t;
-    if(!v)return 0;
-    var low=x.t.toLowerCase(),at=low.indexOf(v),from=0,k=0;
-    if(at<0||low.length!==x.t.length)return 0;
+    var c=x.c||(x.c=cuts(x.t));
     x.e.textContent='';
+    var low=x.t.toLowerCase(),at=v?low.indexOf(v):-1,from=0,k=0;
+    if(at<0||low.length!==x.t.length){put(x.e,x.t,0,x.t.length,c);return 0;}
     while(at>-1){
-      if(at>from)x.e.appendChild(document.createTextNode(x.t.slice(from,at)));
-      var m=document.createElement('mark');m.textContent=x.t.slice(at,at+v.length);x.e.appendChild(m);k++;
+      if(at>from)put(x.e,x.t,from,at,c);
+      var m=document.createElement('mark');put(m,x.t,at,at+v.length,c);x.e.appendChild(m);k++;
       from=at+v.length;at=low.indexOf(v,from);
     }
-    if(from<x.t.length)x.e.appendChild(document.createTextNode(x.t.slice(from)));
+    if(from<x.t.length)put(x.e,x.t,from,x.t.length,c);
     return k;
   }
   // A-100: each row's hidden older-row sentence, with the row's table values and shown rows, read
@@ -2384,13 +2426,41 @@ async function selftest() {
   // (4) The term is visitor input: markup in it is text inside a mark, never an element.
   search("<b>x</b>");
   assert.deepEqual(marksIn(plain.targets[2]), ["<b>x</b>"], "markup in the term must be marked as text");
-  assert.deepEqual([...new Set(created)], ["mark"], "the script may create mark elements and nothing else");
+  assert.deepEqual([...new Set(created)].filter((t) => t !== "mark" && t !== "wbr"), [], "the script may create mark and wbr elements and nothing else");
   // (5) Clearing the box restores every shipped text with no marks left.
   search("");
   for (const r of [knot, frac, plain]) for (const t of r.targets) {
     assert.deepEqual(marksIn(t), [], "an empty search must leave no mark anywhere");
-    assert.equal(t.kids.length, 1, "an empty search must restore the single shipped text node");
+    assert.ok(t.kids.every((k) => k.nodeType === 3 || k.tag === "wbr"), "an empty search must restore only text and break points");
   }
+  // --- A-101 (2026-11-10): long fractions and lists break between numbers, never inside one. The
+  // search rebuilds a cell from text, so a <wbr> the page ships would die on the first search unless
+  // the script puts it back. Meaning guards first; the exact node pin last.
+  const isBreakAfter = (kids, i) => kids[i] && kids[i].nodeType === 3 && /[/,]$/.test(kids[i].textContent) && kids[i + 1] && kids[i + 1].tag === "wbr";
+  const breaksIn = (e) => e.kids.filter((k, i) => isBreakAfter(e.kids, i)).length;
+  search("");
+  assert.equal(breaksIn(plain.targets[2]), 2, "after a search is cleared, the cell must break after both of its slashes (117/370 and </b>)");
+  assert.equal(breaksIn(knot.targets[2]), 0, "positive control: a cell with no / or , gets no break point");
+  search("117/370");
+  const marked = plain.targets[2].kids.find((k) => k.tag === "mark");
+  assert.ok(marked && breaksIn(marked) === 1, "a mark that spans a slash must keep the break point inside it");
+  assert.equal(plain.targets[2].textContent, "| 117/370 <b>x</b> |", "break points must not change the text a reader copies");
+  search("");
+  assert.deepEqual(plain.targets[2].kids.map((k) => k.tag || k.textContent), ["| 117/", "wbr", "370 <b>x</", "wbr", "b> |"],
+    "exact restored nodes for a cell with two separators");
+  // A thousands group is part of one number, and a mark must not hide a comma's neighbours: marking
+  // "196" leaves "4," as its own piece, and the break decision still sees the digits beside the comma.
+  const grp = markRow("c-65z", "group 65z 4,196,879 (0,1)", ["Group", "65z", "| 4,196,879 (0,1) |"]);
+  const gq = el({ value: "" });
+  const gnodes = { q: gq, sort: el({ value: "id" }), rows: el({ getElementsByTagName: () => [grp], appendChild() {} }),
+    count: el({ textContent: "" }), empty: el({ hidden: true }), emptyq: el({ textContent: "" }), emptyask: el({ href: "" }), ...nearStub() };
+  new Function("document", script)({ getElementById: (i) => gnodes[i], createElement: (t) => fakeEl(t), createTextNode: fakeText });
+  const wbrAfter = (e) => e.kids.map((k, i) => (k.tag === "wbr" ? e.kids[i - 1].textContent.slice(-2) : null)).filter(Boolean);
+  gq.value = "196"; gq.oninput();
+  assert.equal(grp.hidden, false, "positive control: the row matches before its break points are asserted");
+  assert.deepEqual(wbrAfter(grp.targets[2]), ["0,"], "a thousands group must not break even when a mark splits the number; the tuple comma still breaks");
+  gq.value = ""; gq.oninput();
+  assert.deepEqual(wbrAfter(grp.targets[2]), ["0,"], "and the same after the search is cleared");
   // (6) The count line, last: it must say when a match has nothing to highlight.
   search("10.02");
   assert.equal(mcount.textContent, "1 constant matching “10.02” — highlighted where it appears");
@@ -2711,7 +2781,8 @@ async function selftest() {
   };
   const anchorPage = renderHtml([anchorRow], manifest, "2026-10-12");
   const anchorTr = (anchorPage.match(/<tr id="c-79a"[\s\S]*?<\/tr>/) || [""])[0];
-  const shownCells = [...anchorTr.matchAll(/<td data-label="[^"]*"><code data-mark>([\s\S]*?)<\/code>/g)].map((m) => m[1]);
+  // A-101 adds <wbr> after each / and , in a shown cell; these pins compare the text, so drop them.
+  const shownCells = [...anchorTr.matchAll(/<td data-label="[^"]*"><code data-mark>([\s\S]*?)<\/code>/g)].map((m) => m[1].replaceAll("<wbr>", ""));
   assert.equal(shownCells.length, 2, "positive control: both shown bound cells must render before their contents are asserted");
   assert.ok(!shownCells[0].includes("&lt;a href"), "a shown bound cell must not print an upstream citation anchor as markup");
   assert.ok(shownCells[0].includes("[Bru2002]") && shownCells[0].includes("[Bru2002-b]"),
@@ -2727,10 +2798,26 @@ async function selftest() {
   assert.ok(anchorPage.includes(`<code>${esc(citation(anchorRow, manifest.sha))}</code>`), "the plain-text citation must equal citation() of the raw row");
   // Codex review r5 (d): a MATCHING anchor on the LOWER side too.
   const lowAnchorTr = (renderHtml([{ ...anchorRow, lower: '| $1$ | <a href="#Low1">[Low1]</a> |' }], manifest, "2026-10-12").match(/<tr id="c-79a"[\s\S]*?<\/tr>/) || [""])[0];
-  const lowShown = [...lowAnchorTr.matchAll(/<td data-label="[^"]*"><code data-mark>([\s\S]*?)<\/code>/g)].map((m) => m[1]);
+  const lowShown = [...lowAnchorTr.matchAll(/<td data-label="[^"]*"><code data-mark>([\s\S]*?)<\/code>/g)].map((m) => m[1].replaceAll("<wbr>", ""));
   assert.ok(lowShown.length === 2 && lowShown[1].includes("[Low1]") && !lowShown[1].includes("&lt;a href"),
     "a LOWER-bound cell must read a matching anchor as its link text too");
   assert.equal(shownCells[0], esc('| $10^{143}$ | [Bru2002] and [Bru2002-b] | x |'), "exact shown cell: the pin with each anchor replaced by its link text");
+
+  // --- A-101 (2026-11-10): the shipped page carries a break point after each / and , in a bound
+  // cell, so a long exact fraction or tuple breaks between numbers. Meaning first, the exact pin last.
+  const a101Row = { ...anchorRow, upper: "| $1126728298914655736634696330762614467/37384537381450758925419573570384691200$ | [X] |",
+    lower: "| $(0.029930188727091613,2.789342409403121)$ | [Y] |" };
+  const a101Tr = (renderHtml([a101Row], manifest, "2026-10-12").match(/<tr id="c-79a"[\s\S]*?<\/tr>/) || [""])[0];
+  const a101Cells = [...a101Tr.matchAll(/<td data-label="[^"]*"><code data-mark>([\s\S]*?)<\/code>/g)].map((m) => m[1]);
+  assert.equal(a101Cells.length, 2, "positive control: both bound cells render before their break points are asserted");
+  assert.ok(a101Cells[0].includes("4467/<wbr>3738"), "a fraction must be breakable at its slash, between numerator and denominator");
+  assert.ok(a101Cells[1].includes("613,<wbr>2.78"), "a tuple must be breakable after each comma");
+  assert.ok(!/\d<wbr>\d/.test(a101Cells.join("")), "no break point may fall between two digits");
+  assert.equal(a101Cells[0].replaceAll("<wbr>", ""), esc(displayCell(a101Row.upper)), "break points add nothing to the shown text");
+  assert.ok(!breakable("| $4,196,879$ |").includes("<wbr>"), "a thousands-grouped number must not break at its commas (65a)");
+  assert.ok(breakable("$(0,1)$ and 12,3456").includes("0,<wbr>1") && breakable("12,3456").includes(",<wbr>"),
+    "positive control: a comma that is not a three-digit group still breaks");
+  assert.equal(breakable("a/b,c&amp;d"), "a/<wbr>b,<wbr>c&amp;d", "exact: one wbr after each / and comma, none inside an entity");
 
   // --- PLAIN TITLES ON THE INDEX AND IN THE CITATION (2026-11-05, round 2). The constant pages got
   // plain-text titles that morning, but the index row and the citation, the one text a reader pastes
