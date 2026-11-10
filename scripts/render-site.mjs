@@ -2445,6 +2445,17 @@ async function selftest() {
   const marked = plain.targets[2].kids.find((k) => k.tag === "mark");
   assert.ok(marked && breaksIn(marked) === 1, "a mark that spans a slash must keep the break point inside it");
   assert.equal(plain.targets[2].textContent, "| 117/370 <b>x</b> |", "break points must not change the text a reader copies");
+  // Codex r1 (F2): a mark that ENDS or BEGINS on a separator. Ending: the break goes inside the mark,
+  // after its slash. Beginning: the mark's own slash still carries the break, and the piece before it
+  // gets none.
+  search("117/");
+  const endMark = plain.targets[2].kids.find((k) => k.tag === "mark");
+  assert.ok(endMark && endMark.kids.length === 2 && endMark.kids[1].tag === "wbr", "a mark ending on / must end with its break point");
+  search("/370");
+  const startMark = plain.targets[2].kids.find((k) => k.tag === "mark");
+  assert.ok(startMark && startMark.kids[0].textContent === "/" && startMark.kids[1] && startMark.kids[1].tag === "wbr",
+    "a mark beginning with / must carry the break point right after that slash");
+  assert.equal(breaksIn(plain.targets[2]) + breaksIn(startMark), 2, "and the cell still has exactly its two break points");
   search("");
   assert.deepEqual(plain.targets[2].kids.map((k) => k.tag || k.textContent), ["| 117/", "wbr", "370 <b>x</", "wbr", "b> |"],
     "exact restored nodes for a cell with two separators");
