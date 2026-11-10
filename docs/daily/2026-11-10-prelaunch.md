@@ -129,3 +129,40 @@ The one left at 1366 and 1920 px is 1c's SHA-256 hash, left on purpose: `measure
 - Correction to the P1 packet's acceptance condition: it named `docs/measurements/2026-11-09-a-101/run.ps1`. The live run used a copy in `docs/measurements/2026-11-10-a-101/`, with `measure.js` byte-identical, so today's files sit beside today's checks.
 - A measurement limit: the browser tool would not open a `file://` page, so the local render was measured through a localhost server started and stopped by its own PID.
 <!-- findings:end -->
+
+### Close
+
+ACTION: COMPLETED · item `A-101` (the row for numbers wrapping mid-digit on desktop) · P3 msgId `09b3cd1e`. The manager review (bus `be10c235`) read it COMPLETED against the P1 review's acceptance condition.
+
+**Since the P3 post.** No change to the page. `W-4` (prove each new detector both ways) was re-run on a quiet tree: exit 0 in 103,511 ms against its 300,000 ms cap, last line "reverify.test: PASS (synthetic drift in 10a.md detected; …". The helper's 15:45Z run had timed out under load from the P3 work. `W-13` (the call of the served-bytes check) was re-run after the page change: anchor `f01a0c6`, "1 checked — 1 served, 0 in flight, 0 stale, 0 unreachable."
+
+**The narrow widths are deliberately untracked.** At 1024 and 961 px, 16 and 18 single numbers still break, each a digit run wider than its column. Recorded on the closed `A-101` row (field `narrowWidthUntracked2026_11_10`). Trigger to mint a row: the first reader seen on a desktop window narrower than about 1100 px.
+
+**Hygiene draft:** 8 lines: 2 accepted · 5 amended · 1 rejected.
+
+- `A-2` (the drift-resolution log): AMEND. Re-dated with `--set` on both of its clocks rather than the drafted `--extend`, which appends to `closeWhen`. Now 11-11.
+- `A-94` (the close check wanting a tomorrow-named primer): REJECT. Fixed and closed today.
+- `W-13` (the call of the served-bytes check): AMEND. Re-run after the page change, then both clocks set to 11-17.
+- `W-8` (an amended outward artifact back to David): AMEND. `--set expectedSignalBy` 11-17, for the reason given under `A-2`.
+- `W-4` (prove each new detector both ways): AMEND. Re-run, then `nextCheckDate` 11-17.
+- Owed child rows: ACCEPT (none).
+- stale-actionable and missingLinkedCommits, not fetched: ACCEPT (no read crossed).
+
+READ-MUTATED: three lines (`A-94`, `W-13`, `W-4`), all `scripts/render-site.mjs`, our own P3 edit (status d20bd7d5). Draft checks: check-wait-justification "RESULT: PASS — 2 of 122 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)"; check-engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable".
+
+**Verify:** `check-due-gates-dispositioned.mjs` (no flag) printed "snapshot: tmp\due-gates-snapshot.json — CURRENT (taken 2026-11-10)" and "verdict: CLEAR — every gate due at Phase 0 was dispositioned.", exit 0. Its first run read ROLLOVER on `A-2` and `W-13`, whose `nextCheckDate` still read 11-10 after the first re-date; both were then set.
+
+**Ledger delta:** `A-101` closed, with `liveRead2026_11_10`, `narrowWidthUntracked2026_11_10` and `linkedCommits` added. `A-94` closed, with `outputs2026_11_10` and `linkedCommits`. `A-2`, `W-4`, `W-8` and `W-13` re-dated, each with a `redate2026_11_10` reason. `continuity-check.mjs` exit 0, status WARN: UNTRACKED_COMMITS fell from 17 to 8 once today's commits were linked (the 8 are earlier days' close and report commits), and STANDING_PATTERN_CONTRADICTION on `A-81` (the Small Ramsey Numbers newer-result watcher), which predates today.
+
+**Close gates:** `npm run close:primer` printed "RESULT: PASS — the next session's primer exists and its first action runs (docs/cold-starts/2026-11-10.md)", exit 0, its first pass at a real close since 2026-09-30. `gen-primer-first-action.mjs --check` printed "RESULT: PASS — checked candidate + target PASS, 0 owed gate(s), 11 shipped row(s)".
+
+**Receipt:** P3's still holds (bus msgId `09b3cd1e`). Nothing has changed in any bracket.
+
+**Pending reads** (open rows, earliest of each row's two clocks, read from `continuity/items.json` at 16:55Z):
+
+- 11-11: `A-2` (the drift-resolution log), `A-59` (nothing can see an arrival on the page), `A-70` (its own scheduled read), `A-96` (refreshing the open-pull-requests list without a human), `W-14` (the watch on upstream issue 218), `W-18` (the first Search Console read).
+- 11-12: `A-47` (the depth audit), `A-77` (the filed-report check's caller), `A-92` (results that rest on ETH), `W-3` (the erdosproblems.com/36 watch), `W-16` (the watch on upstream issue 289).
+- 11-13: `A-93` (Anthropic's formal-math repository mapped onto watched constants), `A-98` (the sixteen scripts that act when imported).
+- 11-15: `A-45` (the leading indicator), `A-91` (upstream's 67a citation, held at the outward gate), `W-11` (search before calling a claim decision-ready).
+- 11-16: `A-78` (OpenAI's math release mapped onto watched constants), `A-81` (the Small Ramsey Numbers newer-result watcher), `G-4` (the goal of an outside party acting unprompted), `W-17` (the dated newer-papers line on each constant page).
+- 11-17: `W-4` (prove each new detector both ways), `W-8` (an amended outward artifact back to David), `W-13` (the call of the served-bytes check).
