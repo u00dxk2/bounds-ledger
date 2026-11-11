@@ -1,0 +1,9 @@
+# read-output sidecar for W-18 — written by check-due-gates-dispositioned --run
+# readCommand: node C:/dev/skylark/skylark-site/scripts/answered-cards.mjs --project bounds-ledger
+# ran: 2026-11-11T16:04:27.140Z · exit: 0
+# lines: 3 · sha256: 5005c0c7da227bcf (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+answered-cards: NO waiting/answered/pending-verify cards for bounds-ledger — no unread David-word on the board.
+  This means "nothing of David's is unread" — it does NOT mean your card failed to land. A card you just filed is state=open and never appears here; confirm a filing with the writer's own receipt (update-david-board's posted line) or GET /api/cc/david-board.
+  window: open/todo-sent/waiting/pending-verify always; terminal cards only while updated since 2026-11-09T16:04:24.875Z (2d) · 3391 terminal card(s) hidden by it · row cap 200. Absent here ≠ nonexistent — look a specific card up with --id <prefix>.
