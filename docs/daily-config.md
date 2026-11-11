@@ -16,32 +16,47 @@ npm run verify > tmp/verify-out.txt 2>&1
 node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml
 npm run upstream
 npm run traffic
+git status --porcelain
+node scripts/render-constant-pages.mjs --check
 node scripts/open-pulls.mjs --fetch
 node scripts/render-constant-pages.mjs
+node scripts/render-constant-pages.mjs --check
 ```
 
-**The last two lines joined on 2026-11-11 (`A-96`, option (b)): they refresh the open pull request
+**The last five lines joined on 2026-11-11 (`A-96`, option (b)): they refresh the open pull request
 list on every constant page, every rail day.** Before they joined, the list refreshed only at a resnap
 or by hand. On 11-11 it was a week old and showed 60 open pull requests against 89 upstream (30
 opened since, 1 closed), and each page was about to say its list was out of date. Upstream opens about
-four a day, so a daily read keeps the list a day or two behind at most. Commit
-`ledger/open-pull-requests.json` and the changed `c/*.html` pages when the list moved; when it did
-not, `--fetch` still rewrites `readAt`, so the pages change only in their read date. That is still
-worth committing, because the read date is what tells a reader how fresh the list is.
+four a day, so on a day the refresh runs and succeeds, the list is at most a few hours old when it is
+published. Nothing enforces that: on a day with no session, or a day `--fetch` refuses, the list ages,
+and the page's own out-of-date sentence (shown after seven days, by the reader's clock, and only with
+scripts on) is the fallback. Commit `ledger/open-pull-requests.json` and the changed `c/*.html` pages
+when the list moved; when it did not, `--fetch` still rewrites `readAt`, so the pages change only in
+their read date. That is still worth committing, because the read date is what tells a reader how
+fresh the list is. Each `render-constant-pages.mjs --check` takes several minutes: run it in the
+background and wait for its exit.
 
 **The review this daily refresh gets (the outward gate, `AGENTS.md` § Hard invariants).** The block's
-format was reviewed when it shipped (`A-83`, `A-90`); a daily run changes only its data. So the review
-of a refresh commit is these three, recorded in the commit body, and no Codex round:
+format was reviewed when it shipped (`A-83`, `A-90`); a daily run changes only its data, and only when
+the run starts from a known state. The renderer reads far more than the pull request list (the mirror,
+`ledger/claims.json`, `continuity/depth-audit.json`, other ledger stores, git history), and its
+`--check` compares against the WORKING TREE, so naming the staged files proves nothing about why a
+page changed (Codex round 1 on `9f26785`, finding 1). So a refresh counts as data-only, with these
+checks as its whole review and no Codex round, only when all four hold, recorded in the commit body:
 
-1. `node scripts/open-pulls.mjs --fetch` exited 0. It refuses an empty list, a list of 200 or more,
-   and any row outside its stated rule, and then writes nothing.
-2. `node scripts/render-constant-pages.mjs --check` exits 0 after the render (slow: several minutes;
-   run it in the background).
-3. `git diff --cached --name-only` lists only `ledger/open-pull-requests.json` and `c/*.html`. The
-   renderer is deterministic, and the pull request list is the only input that changed, so the page
-   changes come from the list and nothing else.
+1. `git status --porcelain`, run before the fetch, prints nothing except `continuity/traffic.json`
+   (written by `npm run traffic` just above). Any other changed path means the render would read
+   inputs nobody has reviewed: stop, and do the refresh after that work is committed.
+2. The first `render-constant-pages.mjs --check`, also before the fetch, exits 0. The committed pages
+   then already equal what the committed inputs render, git history included.
+3. `node scripts/open-pulls.mjs --fetch` exits 0. It refuses an empty list, a list of 200 or more and
+   any row outside its stated rule, and then writes nothing.
+4. The second `--check` exits 0 after the render, and `git diff --name-only` lists only
+   `ledger/open-pull-requests.json`, `c/*.html` and `continuity/traffic.json`; stage the first two.
 
-A refresh commit that touches any other path is not a data-only refresh: it gets the normal review.
+With 1 and 2 holding, the pull request list is the only input that changed between the two checks, so
+every page change comes from it. If any check fails, it is not a data-only refresh: leave it
+uncommitted and give it the normal review.
 **The 200 ceiling:** `--fetch` refuses at 200 open pull requests (`scripts/open-pulls.mjs`, the
 `--limit` guard). On 11-11 there were 89, rising about four a day, so it could arrive around early
 December unless upstream merges faster. When it refuses, the pages keep their last good list and show
