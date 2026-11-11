@@ -16,7 +16,37 @@ npm run verify > tmp/verify-out.txt 2>&1
 node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml
 npm run upstream
 npm run traffic
+node scripts/open-pulls.mjs --fetch
+node scripts/render-constant-pages.mjs
 ```
+
+**The last two lines joined on 2026-11-11 (`A-96`, option (b)): they refresh the open pull request
+list on every constant page, every rail day.** Before they joined, the list refreshed only at a resnap
+or by hand. On 11-11 it was a week old and showed 60 open pull requests against 89 upstream (30
+opened since, 1 closed), and each page was about to say its list was out of date. Upstream opens about
+four a day, so a daily read keeps the list a day or two behind at most. Commit
+`ledger/open-pull-requests.json` and the changed `c/*.html` pages when the list moved; when it did
+not, `--fetch` still rewrites `readAt`, so the pages change only in their read date. That is still
+worth committing, because the read date is what tells a reader how fresh the list is.
+
+**The review this daily refresh gets (the outward gate, `AGENTS.md` § Hard invariants).** The block's
+format was reviewed when it shipped (`A-83`, `A-90`); a daily run changes only its data. So the review
+of a refresh commit is these three, recorded in the commit body, and no Codex round:
+
+1. `node scripts/open-pulls.mjs --fetch` exited 0. It refuses an empty list, a list of 200 or more,
+   and any row outside its stated rule, and then writes nothing.
+2. `node scripts/render-constant-pages.mjs --check` exits 0 after the render (slow: several minutes;
+   run it in the background).
+3. `git diff --cached --name-only` lists only `ledger/open-pull-requests.json` and `c/*.html`. The
+   renderer is deterministic, and the pull request list is the only input that changed, so the page
+   changes come from the list and nothing else.
+
+A refresh commit that touches any other path is not a data-only refresh: it gets the normal review.
+**The 200 ceiling:** `--fetch` refuses at 200 open pull requests (`scripts/open-pulls.mjs`, the
+`--limit` guard). On 11-11 there were 89, rising about four a day, so it could arrive around early
+December unless upstream merges faster. When it refuses, the pages keep their last good list and show
+the out-of-date sentence after seven days; fix the fetch then (paginate), never by raising the limit
+blindly. Recorded on `A-96`.
 
 **`npm run upstream` and `npm run traffic` joined the first action on 2026-11-05.** `npm run upstream` is
 `A-77`'s caller, decided that day as option (a) of its onTrigger: the filed-report check runs in this
