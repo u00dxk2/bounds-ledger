@@ -32,24 +32,24 @@ list ages, and the page's own out-of-date sentence (shown once the list is more 
 by the reader's clock, and only with scripts on) is the fallback. `render-constant-pages.mjs --check`
 takes several minutes: run it in the background and wait for its exit.
 
-**The review each refresh commit gets before it is pushed (the outward gate, `AGENTS.md` § Hard
-invariants): a read-only Codex round from the fixed prompt in `docs/open-pulls-refresh-review.md`.**
-Commit `ledger/open-pull-requests.json` and the changed `c/*.html` pages ALONE, in their own commit
-(when the list did not move, `--fetch` still rewrites `readAt`, so the pages change only in their read
-date, which is still worth publishing). Push it only when the round's first line reads
-`REFRESH-ONLY: yes`. That round compares each changed page with its parent outside the pull request
-block, byte for byte, and checks each block against the committed list. It replaces a list of
-preconditions, which two Codex rounds on 2026-11-11 showed cannot be complete: the renderer reads the
-mirror, `ledger/claims.json`, `continuity/depth-audit.json`, other stores (one of them settable by an
-environment variable to a file outside git) and git history, and its `--check` compares against the
-working tree, so a passing `--check` and the right file names can still publish other changed prose.
-A `--fetch` that refuses (exit 2) writes nothing; then there is nothing to commit.
+**The review a refresh commit gets: the normal one, nothing special (the outward gate, `AGENTS.md`
+§ Hard invariants).** Run the render lines only after `--fetch` exits 0. Put what the render changed
+in a commit of its own, made on top of `origin/main` with nothing else unpushed, and give that commit
+the same read-only Codex round any other public commit here gets
+(`~/.claude/skills/_shared/codex-review.md`), asking what a reader would see differently. Then push
+exactly that commit by its sha, `git push origin <full sha>:main`. Three Codex rounds on 2026-11-11
+each broke a lighter procedure meant to stand in for that review (staged file names, a list of
+preconditions, a fixed comparison prompt): the renderer reads many inputs besides the list (the
+mirror, `ledger/claims.json`, `continuity/depth-audit.json`, other stores, one of them settable by an
+environment variable to a file outside git, and git history), and its `--check` compares against the
+working tree. So no lighter procedure is claimed here.
 
-**The 200 ceiling:** `--fetch` refuses at 200 open pull requests (`scripts/open-pulls.mjs`, the
-`--limit` guard). On 11-11 there were 89, rising about four a day, so it could arrive around early
-December unless upstream merges faster. When it refuses, the pages keep their last good list and show
-the out-of-date sentence after seven days; fix the fetch then (paginate), never by raising the limit
-blindly. Recorded on `A-96`.
+**The 200 ceiling:** `--fetch` refuses at 200 open pull requests (`scripts/open-pulls.mjs:76`). On
+11-11 there were 89, and about 30 opened in the week before, so at that rate it could arrive around
+early December unless upstream merges faster. When it refuses it writes nothing, so the pages keep
+their last good list and read date, and the out-of-date sentence shows once that list is more than
+seven days old. Fix the fetch then (paginate); never just raise the limit. Recorded on `A-96`
+(field `ceiling2026_11_11`).
 
 **`npm run upstream` and `npm run traffic` joined the first action on 2026-11-05.** `npm run upstream` is
 `A-77`'s caller, decided that day as option (a) of its onTrigger: the filed-report check runs in this
