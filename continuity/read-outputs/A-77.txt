@@ -1,10 +1,10 @@
 # read-output sidecar for A-77 — written by check-due-gates-dispositioned --run
 # readCommand: node C:/dev/skylark/bounds-ledger/scripts/check-upstream-reports.mjs
-# ran: 2026-11-05T15:56:13.665Z · exit: 0
-# lines: 5 · sha256: 725f1479d77a5c07 (first 16 hex of the output below)
+# ran: 2026-11-12T16:09:27.871Z · exit: 0
+# lines: 5 · sha256: b245af26068955d3 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
-# upstream report states — 2026-11-05T15:56:13.343Z
+# upstream report states — 2026-11-12T16:09:27.721Z
 3 recorded report(s) in teorth/optimizationproblems; 3 live row(s) read.
 
 No state transitions. Every recorded report still reads as it did when the baseline was taken.

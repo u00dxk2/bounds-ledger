@@ -1,6 +1,6 @@
 # read-output sidecar for W-16 — written by check-due-gates-dispositioned --run
 # readCommand: gh issue view 289 -R teorth/optimizationproblems --json state,updatedAt,closedAt
-# ran: 2026-11-05T15:56:44.153Z · exit: 0
+# ran: 2026-11-12T16:10:42.345Z · exit: 0
 # lines: 1 · sha256: 28c713e97389960a (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--

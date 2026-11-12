@@ -1,6 +1,6 @@
 # read-output sidecar for A-2 — written by check-due-gates-dispositioned --run
 # readCommand: node scripts/reverify.mjs --check
-# ran: 2026-11-11T15:58:05.836Z · exit: 0
+# ran: 2026-11-12T16:09:10.348Z · exit: 0
 # lines: 1 · sha256: 8eb85b0589e6cb6c (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
