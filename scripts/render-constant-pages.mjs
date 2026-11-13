@@ -323,7 +323,13 @@ const unreachableText = (a, v) => {
 // passes; only a braced group or a backslash command is refused.
 const TEX_MARKUP = /\^\{|_\{|\\[A-Za-z]/;
 const claimMarkupFree = (a) => [a.claimReader, a.claimResult, a.claimNotCovered].every((v) => typeof v !== "string" || !TEX_MARKUP.test(v));
-const claimText = (v) => v === undefined || (typeof v === "string" && v.trim() !== "" && !/[.;:]\s*$/.test(v) && !TEX_MARKUP.test(v));
+// `!`, `?` and `…` joined on 2026-11-13 (A-102, Codex review r1): "the issue!" printed "the issue!.".
+// Measured then: 0 of 111 stored entries carry a claim field ending in any of them.
+const claimText = (v) => v === undefined || (typeof v === "string" && v.trim() !== "" && !/[.;:!?…]\s*$/.test(v) && !TEX_MARKUP.test(v));
+// A SOURCE IS ONE URL (A-102, Codex review r1, 2026-11-13). A-47-0081 stored prose and a second URL in
+// `source`; safeUrl accepted the whole string and the page emitted it as one malformed link. Prose
+// belongs in sourceRead or notes. Measured then: 1 of 111 stored sources carried whitespace (corrected).
+const sourceSingleUrl = (a) => typeof a.source !== "string" || !/\s/.test(a.source.trim());
 // A result or an exclusion with no claim to attach to would print beside the generic text and read
 // as if it answered "the claim we checked"; refused, like any other malformed entry. So is a claim on
 // an entry with no recognised leg: such an entry is never judged stale (isStale reads the leg), so a
@@ -541,6 +547,7 @@ export function usableAudit(a) {
     && referenceNoteOk(a)
     && sourceHeadingOk(a)
     && sourceLineFree(a)
+    && sourceSingleUrl(a)
     && safeUrl(a.source) !== null;
 }
 
@@ -591,6 +598,7 @@ const UNUSABLE_CHECKS = [
   ["referenceNote / referenceNoteEntryText malformed (a partial pair, a sentence that does not contain the entry text, a note on an entry whose source was not read, or a rowFile that is not this constant's own mirror file)", referenceNoteOk],
   ["sourceFile / sourceHeading / sourceHeadingReader malformed (a partial set, a reader heading with markup, or a heading that is not exactly one line of the mirrored file)", sourceHeadingOk],
   ["source carries a fragment (#…), which nothing verifies; point at a line with sourceFile and sourceHeading instead", sourceLineFree],
+  ["source carries whitespace, so it is not one URL; put prose in sourceRead or notes", sourceSingleUrl],
   ["source is not an http(s) URL", (a) => safeUrl(a.source) !== null],
 ];
 
@@ -1566,11 +1574,21 @@ async function selftest() {
   assert.ok(usableAudit(unreachStore.audits[1]), "positive control: a well-formed settleReader on UNREACHABLE passes");
   for (const [bad, why] of [[{ settleReader: 5 }, "a non-string settleReader"], [{ settleReader: "  " }, "a blank settleReader"],
     [{ settleReader: "the issue." }, "a settleReader ending in a full stop"], [{ settleReader: "pages \\sqrt{2}" }, "a settleReader carrying TeX"],
+    [{ settleReader: "the issue!" }, "a settleReader ending in !"], [{ settleReader: "the issue?" }, "a settleReader ending in ?"], [{ settleReader: "the issue…" }, "a settleReader ending in an ellipsis"],
     [{ verdict: "UNRESOLVED" }, "a settleReader on an entry whose source was read"]]) {
     const entry = { ...unreachStore.audits[1], ...bad };
     assert.ok(!usableAudit(entry), `${why} must be refused, not rendered`);
     const dropped = droppedAudits({ audits: [entry] });
     assert.ok(dropped.length === 1 && dropped[0].at === "T-UR2" && /settleReader malformed/.test(dropped[0].why), `${why} must be NAMED as settleReader malformed: ${JSON.stringify(dropped)}`);
+  }
+  // A SOURCE IS ONE URL (Codex review r1): prose or a second URL in `source` is refused and NAMED,
+  // never emitted as one malformed href. Positive control: a clean URL passes.
+  assert.ok(usableAudit({ ...unreachStore.audits[1], source: "https://example.invalid/clean" }), "positive control: a single-URL source passes");
+  for (const src of ["https://example.invalid/a (the entry's link); also read at https://example.invalid/b", "https://example.invalid/a b"]) {
+    const entry = { ...unreachStore.audits[1], source: src };
+    assert.ok(!usableAudit(entry), `a source carrying whitespace must be refused, not rendered: ${src}`);
+    const dropped = droppedAudits({ audits: [entry] });
+    assert.ok(dropped.length === 1 && /source carries whitespace/.test(dropped[0].why), `a source carrying whitespace must be NAMED as such: ${JSON.stringify(dropped)}`);
   }
   // Exact pin last.
   assert.ok(ur1.includes("the cited source could not be read at all (tried 2026-11-12). The claim we meant to check: that RU1 gives the bound 7.25. Not settled: no passage was reached. What would settle it: pages 14 to 15 of the RU1 issue. <a"), `exact UNREACHABLE line: ${ur1}`);
