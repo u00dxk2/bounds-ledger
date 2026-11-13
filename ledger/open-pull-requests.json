@@ -1,9 +1,17 @@
 {
   "purpose": "Open pull requests on teorth/optimizationproblems and the constant files each changes (A-83), read by scripts/open-pulls.mjs --fetch and shown on each constant's c/ page. Numbers, dates and file names only: no titles and no author names.",
   "repository": "teorth/optimizationproblems",
-  "readAt": "2026-11-12T15:54:58Z",
-  "count": 93,
+  "readAt": "2026-11-13T16:53:38Z",
+  "count": 94,
   "pulls": [
+    {
+      "number": 366,
+      "createdOn": "2026-11-13",
+      "constants": [
+        "1c"
+      ],
+      "byThisLedger": false
+    },
     {
       "number": 365,
       "createdOn": "2026-11-11",
