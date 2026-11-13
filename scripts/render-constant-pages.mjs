@@ -289,6 +289,31 @@ const CLAIM_RESULT = {
   UNRESOLVED: "What we read could not settle it",
 };
 const UNNAMED_CLAIM = (what) => `This page does not yet say which part of the ${what} that reading checked`;
+
+/**
+ * AN UNREACHABLE ENTRY SAYS WHAT IT LEFT OPEN (A-102, 2026-11-13). Until today the line for a source we
+ * could not read said only "the cited source could not be read at all (tried <date>)", while seven such
+ * entries carried a claim named before the attempt (`claimReader`) and its stated result, and some
+ * carried, in their notes only, the reading that would settle it. A reader who holds the login we lack
+ * is exactly the person that sentence should reach, so the page now gives them both.
+ *
+ * WORDING: "the claim we meant to check", never "the claim we checked": nothing was checked, and the read
+ * verdicts' phrase would be false here (manager review, 2026-11-13). The result is the entry's own
+ * `claimResult` or UNREACHABLE_RESULT. `claimNotCovered` is NOT rendered on this verdict: with no source
+ * read, every part of the claim is uncovered, and the stored exclusions all say so.
+ *
+ * `settleReader` is the reading that would settle it, written for a reader (no terminal punctuation, no
+ * TeX). It is allowed ONLY on an UNREACHABLE entry: on a read verdict the sentence would sit beside a
+ * reading and could be taken to qualify it. Each rule is refused by name in UNUSABLE_CHECKS.
+ */
+const UNREACHABLE_RESULT = "Not settled: the cited source was not reached";
+const unreachableText = (a, v) => {
+  const tried = attemptDate(a.fetchedAt);
+  let s = tried ? `${v.text} (tried ${tried})` : v.text;
+  if (a.claimReader) s += `. The claim we meant to check: ${a.claimReader}. ${a.claimResult || UNREACHABLE_RESULT}`;
+  if (a.settleReader) s += `. What would settle it: ${a.settleReader}`;
+  return s;
+};
 // Each claim field, when present, is non-blank text with no terminal punctuation of its own: the
 // renderer supplies the full stops, so "that X." would print "that X.." and "  " an empty clause
 // (code review r2, 2026-10-05).
@@ -325,6 +350,9 @@ const sourceHeadingOk = (a) => {
     && !TEX_MARKUP.test(a.sourceHeadingReader) && !a.sourceHeadingReader.includes("$")
     && headingLine(a.sourceFile, a.sourceHeading) !== null;
 };
+// A-102: settleReader is reader text under the claim fields' own rules, and only on UNREACHABLE.
+const settleReaderOk = (a) => a.settleReader === undefined
+  || (typeof a.settleReader === "string" && claimText(a.settleReader) && a.verdict === "UNREACHABLE");
 const claimFieldsOk = (a) => claimText(a.claimReader) && claimText(a.claimResult) && claimText(a.claimNotCovered)
   && (a.claimReader !== undefined || (a.claimResult === undefined && a.claimNotCovered === undefined))
   && (a.claimReader === undefined || Object.prototype.hasOwnProperty.call(LEG_LABEL, a.leg));
@@ -509,6 +537,7 @@ export function usableAudit(a) {
     && (a.sourceRead === undefined || typeof a.sourceRead === "string")
     && (a.settles === undefined || typeof a.settles === "string")
     && claimFieldsOk(a)
+    && settleReaderOk(a)
     && referenceNoteOk(a)
     && sourceHeadingOk(a)
     && sourceLineFree(a)
@@ -558,6 +587,7 @@ const UNUSABLE_CHECKS = [
   ["settles is not a string", (a) => a.settles === undefined || typeof a.settles === "string"],
   ["a claim field carries TeX-style markup (^{, _{ or a backslash command), which no page renders", claimMarkupFree],
   ["claimReader / claimResult / claimNotCovered malformed (a non-string, an empty claimReader, or a result or exclusion with no claimReader)", claimFieldsOk],
+  ["settleReader malformed (a non-string or blank value, terminal punctuation, TeX-style markup, or a settleReader on an entry whose source was read)", settleReaderOk],
   ["referenceNote / referenceNoteEntryText malformed (a partial pair, a sentence that does not contain the entry text, a note on an entry whose source was not read, or a rowFile that is not this constant's own mirror file)", referenceNoteOk],
   ["sourceFile / sourceHeading / sourceHeadingReader malformed (a partial set, a reader heading with markup, or a heading that is not exactly one line of the mirrored file)", sourceHeadingOk],
   ["source carries a fragment (#…), which nothing verifies; point at a line with sourceFile and sourceHeading instead", sourceLineFree],
@@ -913,7 +943,7 @@ export function auditBlock(id, store, shown = []) {
     const atHeading = srcLine ? `, at the heading &ldquo;${esc(a.sourceHeadingReader)}&rdquo;` : "";
     const verdictText = stale
       ? (READ_VERDICTS.has(a.verdict) ? "this row was checked against material for its cited source on an earlier version of the table, and the row at that line has since changed or cannot be matched, so this verdict says nothing about the row there now" : "a check of this row was attempted on an earlier version of the table and the cited source could not be read; the row at that line has since changed or cannot be matched, so nothing is said about the row there now")
-      : a.verdict === "UNREACHABLE" && attemptDate(a.fetchedAt) ? `${v.text} (tried ${attemptDate(a.fetchedAt)})`
+      : a.verdict === "UNREACHABLE" ? unreachableText(a, v)
         // Which claim was checked (A-63): named where it was named before the reading, said to be
         // unnamed where it was not. UNREACHABLE never reaches this branch (it read nothing).
         : READ_VERDICTS.has(a.verdict) && a.claimReader
@@ -1497,6 +1527,53 @@ async function selftest() {
   const droppedSettles = droppedAudits({ audits: [badSettles] });
   assert.ok(droppedSettles.length === 1 && /settles is not a string/.test(droppedSettles[0].why),
     `a non-string settles must be NAMED by the render-side refusal: ${JSON.stringify(droppedSettles)}`);
+
+  // (b2u) AN UNREACHABLE ENTRY SAYS WHAT IT LEFT OPEN (A-102, 2026-11-13). MEANING FIRST, the exact
+  //       pin LAST, so each mutation names the property it broke (CLAUDE.md, KP-78 assertion order).
+  const unreachStore = {
+    audits: [
+      { id: "T-UR1", constant: "9z", citedRef: "RU1", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/ur1", selection: "systematic", fetchedAt: "2026-11-12",
+        claimReader: "that RU1 gives the bound 7.25", claimResult: "Not settled: no passage was reached", claimNotCovered: "every part of the claim",
+        settleReader: "pages 14 to 15 of the RU1 issue", ...pinId("| $7.25$ | [RU1] | x |") },
+      { id: "T-UR2", constant: "9z", citedRef: "RU2", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/ur2", selection: "systematic",
+        settleReader: "the RU2 article in an ordinary browser", ...pinId("| $7.5$ | [RU2] | x |") },
+      { id: "T-UR3", constant: "9z", citedRef: "RU3", leg: "value-vs-source", verdict: "UNREACHABLE", source: "https://example.invalid/ur3", selection: "systematic",
+        claimReader: "that RU3 gives 7.75", ...pinId("| $7.75$ | [RU3] | x |") },
+    ],
+    corpus: { citedRows: 999 },
+  };
+  const urLis = [...renderPage(row, "abc1234def", unreachStore).matchAll(/<li>[\s\S]*?<\/li>/g)].map((m) => m[0]);
+  const urLi = (n) => urLis.filter((l) => l.includes(`[RU${n}]`));
+  for (let n = 1; n <= 3; n++) assert.equal(urLi(n).length, 1, `positive control: UNREACHABLE fixture RU${n} renders as exactly one line`);
+  const [ur1, ur2, ur3] = [urLi(1)[0], urLi(2)[0], urLi(3)[0]];
+  // Nothing was checked, so the read verdicts' phrase must never appear (manager review, 2026-11-13).
+  // Case-insensitive: the red-arm on 2026-11-13 showed a sentence-initial "The claim we checked" slipped
+  // past a case-sensitive includes() and was caught only by the exact-wording assertion after it.
+  for (const l of [ur1, ur2, ur3]) assert.ok(!/the claim we checked/i.test(l), `an UNREACHABLE line must never say "the claim we checked": ${l}`);
+  // The stored claim and its result reach the page; the reading that would settle it follows them.
+  assert.ok(ur1.includes(`The claim we meant to check: ${esc(unreachStore.audits[0].claimReader)}. ${esc(unreachStore.audits[0].claimResult)}.`), "an UNREACHABLE entry with claimReader must name the claim it meant to check, then its own result");
+  assert.ok(ur1.includes(`What would settle it: ${esc(unreachStore.audits[0].settleReader)}.`), "an UNREACHABLE entry with settleReader must say what would settle it");
+  assert.ok(ur1.indexOf("The claim we meant to check") < ur1.indexOf("What would settle it") && ur1.indexOf("What would settle it") < ur1.indexOf("the source we could not read"), "claim, then settle line, then the source link");
+  assert.ok(!ur1.includes(esc(unreachStore.audits[0].claimNotCovered)), "claimNotCovered is not rendered on UNREACHABLE (with nothing read, every part is uncovered)");
+  // A settle line needs no claim, and a claim with no stored result takes the UNREACHABLE default.
+  assert.ok(ur2.includes(`What would settle it: ${esc(unreachStore.audits[1].settleReader)}.`) && !ur2.includes("meant to check"), "settleReader renders without a claim, and no claim sentence is invented");
+  assert.ok(ur3.includes(`The claim we meant to check: that RU3 gives 7.75. ${UNREACHABLE_RESULT}.`) && !ur3.includes("What would settle it"), "a claim with no claimResult takes the UNREACHABLE default, and no settle line is invented");
+  // A hostile settleReader is escaped, with a positive control that it rendered at all.
+  const hostileSettle = renderPage(row, "abc1234def", { audits: [{ ...unreachStore.audits[1], settleReader: "<img src=x onerror=alert(1)>" }], corpus: { citedRows: 999 } });
+  assert.ok(hostileSettle.includes("What would settle it: &lt;img"), "positive control: the hostile settleReader rendered, escaped");
+  assert.ok(!hostileSettle.includes("<img src=x"), "a hostile settleReader reached the page as markup");
+  // Malformed settleReader values are refused and NAMED; a positive control first.
+  assert.ok(usableAudit(unreachStore.audits[1]), "positive control: a well-formed settleReader on UNREACHABLE passes");
+  for (const [bad, why] of [[{ settleReader: 5 }, "a non-string settleReader"], [{ settleReader: "  " }, "a blank settleReader"],
+    [{ settleReader: "the issue." }, "a settleReader ending in a full stop"], [{ settleReader: "pages \\sqrt{2}" }, "a settleReader carrying TeX"],
+    [{ verdict: "UNRESOLVED" }, "a settleReader on an entry whose source was read"]]) {
+    const entry = { ...unreachStore.audits[1], ...bad };
+    assert.ok(!usableAudit(entry), `${why} must be refused, not rendered`);
+    const dropped = droppedAudits({ audits: [entry] });
+    assert.ok(dropped.length === 1 && dropped[0].at === "T-UR2" && /settleReader malformed/.test(dropped[0].why), `${why} must be NAMED as settleReader malformed: ${JSON.stringify(dropped)}`);
+  }
+  // Exact pin last.
+  assert.ok(ur1.includes("the cited source could not be read at all (tried 2026-11-12). The claim we meant to check: that RU1 gives the bound 7.25. Not settled: no passage was reached. What would settle it: pages 14 to 15 of the RU1 issue. <a"), `exact UNREACHABLE line: ${ur1}`);
 
   // (b3) WHAT THE PAPER PRINTS ABOUT ITS OWN CITATION (A-74, 2026-10-10). MEANING FIRST: a sentence is
   //      printed only when its quoted text stands on its OWN reference line; it is withheld when that text
