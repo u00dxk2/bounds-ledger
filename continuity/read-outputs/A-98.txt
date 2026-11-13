@@ -1,0 +1,7 @@
+# read-output sidecar for A-98 — written by check-due-gates-dispositioned --run
+# readCommand: node scripts/check-import-inert.mjs
+# ran: 2026-11-13T17:27:40.995Z · exit: 0
+# lines: 1 · sha256: 37c961a85eb78823 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+33 of 33 checked module(s) under scripts/ and scripts/lib/ are inert on import; 16 known-not-inert module(s) were not imported (KNOWN_NOT_INERT, A-98).

@@ -3523,7 +3523,7 @@
       "status": "open",
       "title": "Anthropic's formal-math repository mapped onto every watched constant (a second release map, beside A-78)",
       "owner": "bounds-ledger",
-      "nextCheckDate": "2026-11-13",
+      "nextCheckDate": "2026-11-20",
       "links": [
         "A-78",
         "A-92"
@@ -3532,20 +3532,21 @@
       "closeWhen": "Closes when a re-check finds a pair that bears on a watched constant (that pair then becomes a note decision on its own row, A-78's shape) or when David retires this second release map. Until then, re-check on each nextCheckDate with the readCommand: a new project folder, an unmapped comparator configuration or a changed theorem list exits 1 and is mapped before the pin moves.",
       "note": "Opened 2026-10-30 MT, cycle 3 (David-started; job 1 of the cycle brief). ledger/anthropic-formal-math-map.json pins anthropics/formal-math at 16a5ce4 (an upstream sha; it does not exist in this repo) and covers all 30 theorems the three projects' comparator configurations name (eth 2, 3sum-apsp 5 from EndStatement.lean, zeta23 17 + 6). Seven pairs, each read against the constant's mirrored definition: eth vs 52a, 3sum-apsp vs 15a and 15b, zeta23 vs 8a, 21a, 62a, 62b. All seven are does-not-bear, so nothing renders and no card is owed. 3sum-apsp's PaperStatements.lean is not mapped theorem by theorem; it was searched for the matrix multiplication exponents, and its Corollary_40_fail holds for every omega >= 2. A sibling store rather than an extension of A-78's validator: A-78's is keyed to OpenAI's family numbers and feeds the renderer of live notes, while this store renders nothing. scripts/anthropic-formal-math.mjs validates offline (selftest in npm test and CI, red-armed 2026-10-30: deleting the render refusal turned it red) and --upstream compares the README's project list and every comparator theorem list at the pinned sha (red-armed: one theorem removed from the map exited 1).\n\n | 2026-10-30 MT, after a Codex claims pass (tmp/codex-c3-claims-out.txt, local; reviewer model gpt-daybreak-blue-latest): every non-bearing verdict held and no pair was missed among the 30 theorems. Five sentences were narrowed (52a is a conjectured threshold; the ETH subject's k >= 1 and no-repeated-clause conditions; how 62b was found; the real-valued versions; \"withdrawn\"). One finding changed the code: --upstream compared only the configurations the map named, so it could not see one the map left out. It now reads the repository tree and refuses a comparator configuration that is neither mapped nor named in excludedConfigs (red-armed: removing the paperstatements exclusion exited 1).\n\n pragma: allowlist sha",
       "created": "2026-10-30",
-      "updated": "2026-11-06",
+      "updated": "2026-11-13",
       "linkedCommits": [
         "3703ce3"
       ],
-      "lastEvaluated": "2026-11-06",
-      "readCommandLastRun": "2026-11-06T16:13:45.933Z",
+      "lastEvaluated": "2026-11-13",
+      "readCommandLastRun": "2026-11-13T17:27:28.465Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 4030,
+      "readCommandLastDurationMs": 1700,
       "readCommandLastOutputRef": {
         "lines": 2,
         "sha256": "44d7ce8e3b896784"
       },
-      "expectedSignalBy": "2026-11-13",
-      "redate2026_11_06": "2026-11-06 P5: anthropic-formal-math --upstream exit 0, the map holds at the pinned upstream sha (3 projects, 30 theorems, 7 pairs). Weekly look."
+      "expectedSignalBy": "2026-11-20",
+      "redate2026_11_06": "2026-11-06 P5: anthropic-formal-math --upstream exit 0, the map holds at the pinned upstream sha (3 projects, 30 theorems, 7 pairs). Weekly look.",
+      "notes": " | 2026-11-13 P5: re-dated to 2026-11-20 (hygiene draft ACCEPTED). --run A-93 exit 0; its output, in continuity/read-outputs/A-93.txt, says the map holds at the pinned upstream commit: 3 project(s), 30 comparator theorem(s), 7 pair(s), all does-not-bear. closeWhen needs a bearing pair or David's retirement; neither present. Weekly look."
     },
     {
       "id": "A-94",
@@ -3697,16 +3698,25 @@
       "type": "action",
       "status": "open",
       "owner": "bounds-ledger",
-      "nextCheckDate": "2026-11-13",
+      "nextCheckDate": "2026-11-20",
       "created": "2026-11-06",
-      "updated": "2026-11-06",
-      "notes": "Minted 2026-11-06 at P3, from A-50's first full run (scripts/check-import-inert.mjs). 16 of 48 modules under scripts/ and scripts/lib/ act on import: anthropic-formal-math, catch-rate (hung past 60 s), check-brief (called fetch), check-next-primer (exit 1), check-orphan-shas, check-resolvability, check-self-attribution (exit 2), citation-footprint, eth-openalex-frame (exit 2), extract-pins (rewrites ledger/claims.json), gap-table (rewrites docs/gap-table.json), gates (refused only because the tree was dirty; on a clean tree it would start the verify gate), history-sweep (hung past 60 s), render-state-block (rewrites README.md), sky (exit 2), traffic-snapshot (rewrites continuity/traffic.json). They are listed in KNOWN_NOT_INERT and are not imported by the check. Most dangerous first: gates, extract-pins, render-state-block, gap-table, traffic-snapshot. The fix per module is the scripts/lib/entry-module.mjs guard (isEntryModule) around the command-line top level, then deleting that module's line from KNOWN_NOT_INERT so the check holds it.",
+      "updated": "2026-11-13",
+      "notes": "Minted 2026-11-06 at P3, from A-50's first full run (scripts/check-import-inert.mjs). 16 of 48 modules under scripts/ and scripts/lib/ act on import: anthropic-formal-math, catch-rate (hung past 60 s), check-brief (called fetch), check-next-primer (exit 1), check-orphan-shas, check-resolvability, check-self-attribution (exit 2), citation-footprint, eth-openalex-frame (exit 2), extract-pins (rewrites ledger/claims.json), gap-table (rewrites docs/gap-table.json), gates (refused only because the tree was dirty; on a clean tree it would start the verify gate), history-sweep (hung past 60 s), render-state-block (rewrites README.md), sky (exit 2), traffic-snapshot (rewrites continuity/traffic.json). They are listed in KNOWN_NOT_INERT and are not imported by the check. Most dangerous first: gates, extract-pins, render-state-block, gap-table, traffic-snapshot. The fix per module is the scripts/lib/entry-module.mjs guard (isEntryModule) around the command-line top level, then deleting that module's line from KNOWN_NOT_INERT so the check holds it.\n\n | 2026-11-13 P5: re-dated to 2026-11-20 (hygiene draft ACCEPTED), per this row's onTrigger (\"record what outranked it and re-date\"). Outranked by A-102, the day's product change (shipped fec3787 and 92fd997). First --run A-98 exit 0: \"33 of 33 checked module(s) under scripts/ and scripts/lib/ are inert on import; 16 known-not-inert module(s) were not imported (KNOWN_NOT_INERT, A-98).\" Still 16, as at minting; none of gates, extract-pins, render-state-block, gap-table, traffic-snapshot is guarded yet. Exit 0 is not closeable: closeWhen needs KNOWN_NOT_INERT empty.",
       "onTrigger": "On 2026-11-13: run the readCommand. Guard at least the five file-writing or gate-starting modules (gates, extract-pins, render-state-block, gap-table, traffic-snapshot) and delete their lines, or record what outranked it and re-date with that reason.",
       "closeWhen": "KNOWN_NOT_INERT in scripts/check-import-inert.mjs is empty and the check exits 0 over all modules, its literal output pasted here.",
       "readCommand": "node scripts/check-import-inert.mjs",
       "links": [
         "scripts/check-import-inert.mjs"
-      ]
+      ],
+      "readCommandLastRun": "2026-11-13T17:27:40.995Z",
+      "readCommandLastExit": 0,
+      "readCommandLastDurationMs": 10170,
+      "readCommandLastOutputRef": {
+        "lines": 1,
+        "sha256": "37c961a85eb78823"
+      },
+      "expectedSignalBy": "2026-11-20",
+      "lastEvaluated": "2026-11-13"
     },
     {
       "id": "A-99",
@@ -3821,19 +3831,20 @@
       "id": "A-102",
       "title": "An UNREACHABLE audit entry has nowhere on its page to say what would settle it",
       "type": "action",
-      "status": "open",
+      "status": "monitoring",
       "owner": "bounds-ledger",
-      "nextCheckDate": "2026-11-19",
+      "nextCheckDate": "2026-11-20",
       "created": "2026-11-12",
-      "updated": "2026-11-12",
-      "notes": "Minted 2026-11-12 at P5, from A-47 slice 24 (manager review of P3 fb99534e named it a defect; the lane named it first). For an UNREACHABLE entry, scripts/render-constant-pages.mjs renders only the generic line and the date it was tried (the verdictText branch for UNREACHABLE never reads claimReader, claimResult or claimNotCovered), so a reader of c/27b.html is not told what reading would settle the claim. For 27b [G1980] (A-47-0108) the answer exists and sits only in the store's notes: pages 14 to 21 of Scientific American vol. 242 no. 2 (February 1980). UNRESOLVED entries already say it through claimResult (33a, 3b, done today). Fix shape: an optional reader-facing field on an UNREACHABLE entry (e.g. settleReader), refused by name in UNUSABLE_CHECKS when malformed, rendered after the tried date, with a selftest in both polarities; then fill it for A-47-0108 and any other UNREACHABLE entry whose notes carry one. A public-surface change: adversarial review before push.",
-      "onTrigger": "On 2026-11-19: run the readCommand. If it exits 1, build the field (or record what outranked it) and re-date with that reason.",
-      "closeWhen": "The live c/27b.html shows a line saying what would let us read the 27b source, the renderer selftest proves the field renders and that a malformed one is refused, and the readCommand's literal output is pasted here.",
-      "readCommand": "git grep -c \"would settle\" -- c/27b.html",
+      "updated": "2026-11-13",
+      "notes": "Minted 2026-11-12 at P5, from A-47 slice 24 (manager review of P3 fb99534e named it a defect; the lane named it first). For an UNREACHABLE entry, scripts/render-constant-pages.mjs renders only the generic line and the date it was tried (the verdictText branch for UNREACHABLE never reads claimReader, claimResult or claimNotCovered), so a reader of c/27b.html is not told what reading would settle the claim. For 27b [G1980] (A-47-0108) the answer exists and sits only in the store's notes: pages 14 to 21 of Scientific American vol. 242 no. 2 (February 1980). UNRESOLVED entries already say it through claimResult (33a, 3b, done today). Fix shape: an optional reader-facing field on an UNREACHABLE entry (e.g. settleReader), refused by name in UNUSABLE_CHECKS when malformed, rendered after the tried date, with a selftest in both polarities; then fill it for A-47-0108 and any other UNREACHABLE entry whose notes carry one. A public-surface change: adversarial review before push.\n\n | 2026-11-13 SHIPPED, acceptance met: fec3787 (renderer branch, optional settleReader field, four store values) and 92fd997 (Codex round 1 fixes: one URL per source, wider punctuation refusal), pushed 17:41Z; CI reverify.yml and page-check.yml green on 92fd997; Pages build row for 92fd997 built 17:41:53Z. readCommand at the pushed sha, literal output: `git grep -c \"would settle\" 92fd9972a4ac1f55c7584e03ac29e013d3e1224b -- c/27b.html` printed \"92fd9972a4ac1f55c7584e03ac29e013d3e1224b:c/27b.html:1\". Live fetch of c/17b, c/27b, c/29a, c/33a, c/3e, c/57b, c/80a after the build (each HTTP 200, its cited ref token present): 7 \"The claim we meant to check\", 4 \"What would settle it\", 0 unread-source lines saying \"the claim we checked\"; 33a href now the clean Gallica URL. Selftest block (b2u) red-armed by six mutations, each restored hash-identical. Codex: round 1 on fec3787 two defects, both fixed in 92fd997; round 2 on 92fd997 no defects. NAMED LIMIT (round 2, not matched): sourceSingleUrl cannot see two URLs joined with no whitespace; census 0 of 111 stored sources on 2026-11-13. Manager review of P3 (260e2e57): COMPLETED. MOVED TO monitoring, not closed: the build is done, the outcome read is not. Encounter is blind (A-59); the outcome's only readable event is the first outside report filed through one of these seven rows' links (N = 1), counted by `npm run reports` (2026-11-13: 37 raw, 37 ours, 0 outside arrivals). readCommand re-pointed from the acceptance grep to that read; re-read 2026-11-20.",
+      "onTrigger": "On 2026-11-20: run the readCommand. An OUTSIDE ARRIVAL filed through one of the seven rows (17b, 27b, 29a, 33a, 3e, 57b, 80a) is the outcome read: read it and close with it. Zero outside arrivals: re-date a week, or close with the outcome recorded as unread if A-59 still has no instrument.",
+      "closeWhen": "The build closed 2026-11-13 (acceptance met, see notes). The row closes when the outcome is read: the first outside report filed through one of the seven rows, or a dated decision that the outcome stays unread while encounter is blind (A-59).",
+      "readCommand": "npm run reports",
       "links": [
         "scripts/render-constant-pages.mjs",
         "continuity/depth-audit.json"
-      ]
+      ],
+      "lastEvaluated": "2026-11-13"
     }
   ],
   "meta": {
