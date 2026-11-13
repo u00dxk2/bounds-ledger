@@ -6,7 +6,7 @@ north_star_classification: expected-zero
 product: bounds-ledger
 date: 2026-11-13
 lifecycle_stage: launched
-last_deploy: 92fd997 (as of about 17:42Z on 2026-11-13, CI GREEN on reverify.yml and page-check.yml and the Pages build row built; GitHub Pages; no Render service)
+last_deploy: "92fd997 (as of about 17:42Z on 2026-11-13, A-102's ship note recorded CI green and a built Pages row for 92fd997; release: node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml, then --workflow page-check.yml, and gh api repos/u00dxk2/bounds-ledger/pages/builds; GitHub Pages; no Render service)"
 on_hold_items: 0
 top_action_today: on each constant page where we tried and failed to open a cited source, say which claim we meant to check and what reading would settle it
 # The four keys below have NO instrument in this lane and are left null rather than filled with a
@@ -38,7 +38,7 @@ Where we could not read a cited paper, six constant pages now say which claim we
 <!-- findings:begin -->
 - **The 33a page had linked readers to a malformed address since 2026-10-16.** `A-47-0081`'s stored source held a sentence and a second URL, and the page emitted the whole string as one link. Codex round 1 found it because today's new line pointed readers at that link. Fixed by rule, not by case: a stored source with whitespace inside it (after its ends are trimmed) is now refused (1 of 111 had it). The limit that rule cannot see, two URLs joined with no space, is recorded, not matched (0 of 111).
 - **A guard of mine was weaker than it read.** The selftest's "never say 'the claim we checked'" guard was case-sensitive, so a sentence-initial "The claim we checked" passed it and was caught only by the exact pin after it. The red-arm found it; the guard is now case-insensitive and trips first.
-- Classification (one sentence of judgment, never a counter): today's findings are instrument-facing, a malformed link in our own audit store and a weak guard in our own selftest; none of today's findings is record-facing, and `npm run catches` was not run (the drift job, `reverify.yml`, was green on `92fd997`). Running count of consecutive instrument-facing days: 1, since yesterday's 3b DOI was record-facing.
+- Classification (one sentence of judgment, never a counter): today's recorded findings concern our malformed stored source link and our case-sensitive selftest guard, so both are instrument-facing and neither is record-facing; `npm run catches` was not run. Running count of consecutive instrument-facing days: 1, since yesterday's 3b DOI was record-facing.
 <!-- findings:end -->
 
 ## Outputs (lagging)
