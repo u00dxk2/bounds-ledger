@@ -6,7 +6,7 @@ north_star_classification: expected-zero
 product: bounds-ledger
 date: 2026-11-13
 lifecycle_stage: launched
-last_deploy: 576d430 (CI GREEN on reverify.yml and page-check.yml; GitHub Pages; no Render service)
+last_deploy: 92fd997 (as of about 17:42Z on 2026-11-13, CI GREEN on reverify.yml and page-check.yml and the Pages build row built; GitHub Pages; no Render service)
 on_hold_items: 0
 top_action_today: on each constant page where we tried and failed to open a cited source, say which claim we meant to check and what reading would settle it
 # The four keys below have NO instrument in this lane and are left null rather than filled with a
@@ -21,24 +21,24 @@ sentry_open_p2: null
 
 ## BLUF
 
-Where we tried to read a cited paper and could not, seven constant pages now say which claim we meant to check, and four say what reading would settle it. Before today they said only that the source could not be read.
+Where we could not read a cited paper, six constant pages now say which claim we meant to check. Four pages also say what reading would settle it. Before today they said only that the source could not be read.
 
 ## What changed
 
 - P1 chose the day's work: `A-102` (an UNREACHABLE audit entry has nowhere on its page to say what would settle it). The selection packet is in the State Appendix.
 - **`A-102` shipped** (`fec3787`, review fixes `92fd997`, pushed 17:41Z; CI `reverify.yml` and `page-check.yml` green on `92fd997`; Pages build row for `92fd997` built). Where we tried to read a cited source and could not, the constant page now names the claim we meant to check and its result (7 entries, on 17b, 27b twice, 29a, 33a, 3e, 57b) and, where the entry's own record names one, what reading would settle it (4 entries: 17b, 27b, 33a, 80a). Live fetch of c/17b, c/27b, c/29a, c/33a, c/3e, c/57b and c/80a after the build: 7 claim sentences, 4 settle sentences, 0 lines on an unread source saying "the claim we checked". The row's read command at the pushed sha printed `92fd9972a4ac1f55c7584e03ac29e013d3e1224b:c/27b.html:1`.
 - The 27b settle line names only the column "that begins on page 14": the record gives the end page as 21 (Crossref, OpenAlex) and 23 (the mirrored entry), unreconciled, so neither is printed.
-- Codex round 1 on `fec3787` found the 33a source link was a malformed address (prose and a second URL in one link, there since 10-16) that the new settle line pointed readers to, and a punctuation gap. Both fixed in `92fd997` by rule: a stored source carrying whitespace is now refused (1 of 111 did; corrected), and claim text ending in `!`, `?` or an ellipsis is refused (0 of 111 did). Round 2 on `92fd997`: no defects; it named what the source rule still cannot see (two URLs joined with no space) and found 0 such among the 111 stored sources.
-- Morning refresh of the open pull request lists: 94 open upstream (93 yesterday). On 1c the list gains pull request 366; on 58 other pages only the read date moves. Pushed alone by sha as `7040534` after a read-only Codex round (all 59 pages identical to HEAD outside that section; its one finding, 11 pull requests on constants with no page here, is by design: we do not mirror 89b, 89c, 91a or 31b).
+- Codex round 1 on `fec3787` found the 33a source link was a malformed address (prose and a second URL in one link, there since 10-16) that the new settle line pointed readers to, and a punctuation gap. Both fixed in `92fd997` by rule: a stored source with whitespace inside it (after its ends are trimmed) is now refused (1 of 111 had it; corrected), and claim text ending in `!`, `?` or an ellipsis is refused (0 of 111 did). Round 2 on `92fd997`: no defects; it named what the source rule still cannot see (two URLs joined with no space) and found 0 such among the 111 stored sources.
+- Morning refresh of the open pull request lists: `open-pulls.mjs --fetch` read 94 open upstream at 16:53:38Z (93 at yesterday's read). On 1c the list gains pull request 366; on 58 other pages only the read date moves. Pushed alone by sha as `7040534` after a read-only Codex round (all 59 pages identical to HEAD outside that section; its one finding, 11 pull-request-to-constant pairs on constants with no page here, is by design: we do not mirror 89b, 89c, 91a or 31b).
 
 ## Inputs (controllable)
 
 - One renderer change and four stored audit values (`A-102`), a selftest block with six red-arm mutations, three read-only Codex rounds (one on the morning refresh, two on `A-102`), one round-0 fact list by a Sonnet helper, and the hygiene helper's draft (two re-dates).
 
 <!-- findings:begin -->
-- **The 33a page had linked readers to a malformed address since 2026-10-16.** `A-47-0081`'s stored source held a sentence and a second URL, and the page emitted the whole string as one link. Codex round 1 found it because today's new line pointed readers at that link. Fixed by rule, not by case: a stored source carrying whitespace is now refused (1 of 111 did). The limit that rule cannot see, two URLs joined with no space, is recorded, not matched (0 of 111).
+- **The 33a page had linked readers to a malformed address since 2026-10-16.** `A-47-0081`'s stored source held a sentence and a second URL, and the page emitted the whole string as one link. Codex round 1 found it because today's new line pointed readers at that link. Fixed by rule, not by case: a stored source with whitespace inside it (after its ends are trimmed) is now refused (1 of 111 had it). The limit that rule cannot see, two URLs joined with no space, is recorded, not matched (0 of 111).
 - **A guard of mine was weaker than it read.** The selftest's "never say 'the claim we checked'" guard was case-sensitive, so a sentence-initial "The claim we checked" passed it and was caught only by the exact pin after it. The red-arm found it; the guard is now case-insensitive and trips first.
-- Classification (one sentence of judgment, never a counter): today's findings are instrument-facing, a malformed link in our own audit store and a weak guard in our own selftest; nothing record-facing, and `npm run catches` was not run (no drift today). Running count of consecutive instrument-facing days: 1, since yesterday's 3b DOI was record-facing.
+- Classification (one sentence of judgment, never a counter): today's findings are instrument-facing, a malformed link in our own audit store and a weak guard in our own selftest; none of today's findings is record-facing, and `npm run catches` was not run (the drift job, `reverify.yml`, was green on `92fd997`). Running count of consecutive instrument-facing days: 1, since yesterday's 3b DOI was record-facing.
 <!-- findings:end -->
 
 ## Outputs (lagging)
@@ -48,7 +48,7 @@ Where we tried to read a cited paper and could not, seven constant pages now say
 ## Recommendation
 
 - [A — user-visible] On 11-19 continue `A-47` (the depth audit) at slice 25; any new UNREACHABLE entry whose record names a route now gets a `settleReader` line.
-- [B — instrument] On 11-20, `A-98` (scripts that act when imported) cannot be re-dated on "outranked" twice: guard the five file-writing modules or show what outranked it.
+- [B — instrument] On 11-20, `A-98` (scripts that act when imported) cannot be re-dated on "outranked" twice: guard the five file-writing or gate-starting modules or show what outranked it.
 - [C — outward, gated, carried] The 3b DOI correction from 11-12 is still unsent: adversarial review and David's word first.
 
 ## On hold pending data
@@ -90,21 +90,21 @@ Where we tried to read a cited paper and could not, seven constant pages now say
 - **USER-FACING: yes.** Paths: `scripts/render-constant-pages.mjs`, `continuity/depth-audit.json`, `continuity/items.json`, and the rendered pages for the affected constants (expected `c/27b.html`, `c/33a.html`, `c/29a.html`, `c/3e.html`, `c/57b.html`, `c/17b.html`, plus any constant whose entry gains a settling line).
 - **Standing obligation beside it, not the choice:** the morning open pull request refresh (94 open). Committed and pushed alone by its sha (`7040534`) after its read-only Codex round, before any `A-102` commit.
 - **HYGIENE INPUTS:**
-  - (a) due rows not bearing on the choice, 2: `A-93` (Anthropic's formal-math repository mapped onto every watched constant; readCommand `node scripts/anthropic-formal-math.mjs --upstream`, last run 2026-11-06 exit 0) and `A-98` (sixteen scripts act when imported; readCommand `node scripts/check-import-inert.mjs`, never run). Read: `check-due-gates-dispositioned.mjs --snapshot`, "2 gate(s) due on/before 2026-11-13".
+  - (a) due rows not bearing on the choice, 2: `A-93` (Anthropic's formal-math repository mapped onto every watched constant; readCommand `node scripts/anthropic-formal-math.mjs --upstream`, last run 2026-11-06 exit 0) and `A-98` (sixteen scripts act when imported; readCommand `node scripts/check-import-inert.mjs`, no prior `--run` stamp on the row; the script itself first ran 2026-11-06). Read: `check-due-gates-dispositioned.mjs --snapshot`, "2 gate(s) due on/before 2026-11-13".
   - (b) owed child rows: none. Read: the kickoff's "rows owed to you in skylark-site's ledger" (0 of 822).
   - (c) state reads marked CROSSED: none. Read: the kickoff's state reads (stale-actionable 0 of 27; missingLinkedCommits NOTHING SWEPT, 0 of 0).
 - **Key number:** the plan's number is the count of UNREACHABLE entries whose page names the claim we meant to check: 0 of 14 today, measured this round by the count above and the renderer branch at `:916`. The target is 7 of 14 plus every settling line our notes support. It measures what the page says, not whether anyone reads it.
-- **A prior-day retro finding that bears on the choice:** Q0 on 11-12, "one claim keeps failing review rounds" (3b took three Codex rounds). This change adds public sentences about claims we did not settle, which is that same exposure, so each new line repeats a stored sentence rather than rewording one.
+- **A prior-day retro finding that bears on the choice:** Q0 on 11-12, "one claim keeps failing review rounds" (3b took three Codex rounds). This change adds public sentences about claims we did not settle, which is that same exposure, so the claim and result lines repeat stored sentences unchanged; the four new settle sentences are composed from each entry's stored fields and checked against them (round 0) before review.
 
 ### Close
 
 - ACTION: COMPLETED · item `A-102` · P3 `260e2e57`. The acceptance in force (the P1 packet's, approved by the manager) was met: live `c/27b.html` names the claim and what would settle it; the read command at the pushed sha printed `92fd9972a4ac1f55c7584e03ac29e013d3e1224b:c/27b.html:1`; the selftest renders the field and refuses a malformed one, red-armed; all seven changed pages were live-fetched after the Pages build of `92fd997`. Manager review of P3: COMPLETED.
-- State changed since the P3 post: none on the public pages. Ledger only.
+- Changed since the P3 post: no constant page. The close changes the ledger, the two read sidecars, `continuity/traffic.json`, this report and the primer.
 - Ledger delta (`continuity-edit.mjs`): `A-102` open → monitoring (the build is done; the outcome read is open), its read command re-pointed to `npm run reports`, next check 2026-11-20, onTrigger and closeWhen rewritten for the outcome read, ship note with the literal read output. `A-93` and `A-98` re-dated 2026-11-20, each with a note (hygiene draft: 2 lines, 2 accepted). Plus the helper's two read stamps and the new sidecar `continuity/read-outputs/A-98.txt`.
 - Due gates: `check-due-gates-dispositioned.mjs` printed "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT (taken 2026-11-13). Wait-justification and engineering-zero, both run by the hygiene helper: PASS (2 of 125 rows carry a wait, 0 warnings; 0 findings, 0 unreadable).
 - Pending reads, by date:
   - 11-18: `A-59` (encounter is blind on the public pages) and `W-19` (the second Search Console read).
   - 11-19: `A-47` (the depth audit), slice 25, and others.
   - 11-20: `A-93` (the Anthropic formal-math map), `A-98` (scripts that act when imported) and `A-102` (today's outcome read: the first outside report filed through one of the seven rows, N = 1).
-- W-7 — `node scripts/check-import-inert.mjs` (`A-98`'s read, first run today by the hygiene helper) claims modules under `scripts/` are inert on import. It printed exit 0 with "33 of 33 checked module(s) … are inert on import; 16 known-not-inert module(s) were not imported". Its pass covers only the 33 it imports; for the 16 on its own exclusion list it cannot say otherwise, so its exit 0 is silent on exactly the modules the row exists for.
+- W-7 — `node scripts/check-import-inert.mjs` (`A-98`'s read, run today through the hygiene helper's `--run`) claims that the modules it checks are inert on import, and names its exclusions. It printed exit 0 with "33 of 33 checked module(s) … are inert on import; 16 known-not-inert module(s) were not imported". Its pass covers only the 33 it imports; for the 16 on its own exclusion list it cannot say otherwise, so its exit 0 is silent on exactly the modules the row exists for.
 - Standing prediction (quoted from `CLAUDE.md`): the next record-facing catch will be a citation-quality defect in a mirrored upstream entry, found by a human reading the cited source in the depth audit. Today held no record-facing catch, so it was neither confirmed nor falsified.
