@@ -25,6 +25,8 @@ Itches noticed but not done. The housekeeping pass reads this FIRST, then adds *
 
 _(strike-throughs land here with the date closed)_
 
+- [x] 2026-11-13 (refactor night, P-1) — ~~`render-ramsey.mjs` was 1,142 lines~~. It is now 736: the page guards moved to `render-ramsey-guards.mjs` and their shared vocabulary to `render-ramsey-vocabulary.mjs` (`3669d25`). The move was scripted line ranges: `--check` and `--selftest` stdout are byte-identical to base, and a one-character change to a moved guard message makes the selftest exit 1. It was the largest source file that no dated read named. render-site and render-constant-pages are larger and remain (see Open)
+
 - [x] 2026-11-13 (refactor night) — ~~`mtToday` has one direct assertion, which a fixed UTC−6 or UTC−7 offset passes~~. Winter MST, summer local-midnight, no-argument-default and re-export-identity cases were added to `check-next-primer --selftest` (`a0eb0d1`). Each one exits 1 under its own lib mutation (fixed UTC−6, fixed UTC−7, default `new Date(0)`)
 - [x] 2026-11-13 (refactor night) — ~~`docs/README.md` did not name `docs/measurements/`~~ (`2e9b436`). ~~Three CLAUDE.md sentences were false today~~: the `<today-MT>` primer, `npm run check` as the cadence's first command, and "Five ways" over a list of six (`42cd6e1`). ~~`&&node` in the npm test list~~ (`96a2ffa`). The README sentences the same read found false are in `A-103`, not here, because README is the public page
 
