@@ -115,6 +115,12 @@ jobs:
         run: node scripts/check-render-ids.mjs --selftest
       - name: Check no tracked file carries a Render resource id (no network)
         run: node scripts/check-render-ids.mjs
+      # A-103: the first leg of `npm run check` skips the fleet entry guard, saying so, when
+      # the skylark-site checkout is not beside the clone (a visitor's clone, and this runner).
+      # The selftest proves the skip, the forwarded exit code when the guard is present, and
+      # the unchanged refusal when the checkout is found without the guard.
+      - name: Self-test the entry-guard leg (no network)
+        run: node scripts/check-entry-guard-leg.mjs --selftest
       # Guards the G-2 gap-table value parser: numeric cells must parse (rightmost
       # literal), symbolic/exponent cells must stay null, and an inverted gap must
       # flag parseSuspect (instrument error, never a mathematical claim).
