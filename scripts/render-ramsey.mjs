@@ -35,9 +35,15 @@ import { fileURLToPath } from "node:url";
 import { isEntryModule } from "./lib/entry-module.mjs";
 import { LEDGER } from "./extract-ds1.mjs";
 import { arrivalKind } from "./report-rate.mjs";
-import { frameOf, sameBound, readStore, STORE } from "./ds1-depth.mjs";
-import { REPO, esc, unesc, issueUrl } from "./lib/html.mjs";
+import { frameOf, readStore, STORE } from "./ds1-depth.mjs";
+import { REPO, esc, issueUrl } from "./lib/html.mjs";
 import { QUERY as WATCH_QUERY } from "./arxiv-watch.mjs";
+import { PUBLISHED_ON, OUTCOMES, numbersIn, STYLE, key, entriesOf, R, STORE_URL, shownReading, readingConflicts, SOURCED, SURVEY_ONLY, stateOf, ibNote, keepsSurveyEntry, HOW_LINK, NOT_YET, NOTHING, boundsFor, searchHtml, longDate } from "./render-ramsey-vocabulary.mjs";
+import { guardPage, guardCopying } from "./render-ramsey-guards.mjs";
+// Moved to sibling modules on 2026-11-13 (refactor night); re-exported so every name this file
+// exported before is still exported from here.
+export { OUTCOMES, numbersIn, entriesOf, shownReading, readingConflicts, SOURCED, SURVEY_ONLY, keepsSurveyEntry, searchHtml } from "./render-ramsey-vocabulary.mjs";
+export { guardPage, guardCopying } from "./render-ramsey-guards.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 export const OUT = join(ROOT, "ramsey.html");
@@ -45,11 +51,6 @@ export const OUT = join(ROOT, "ramsey.html");
 // it states are the committed table's own — a hand-typed "72 values" is a number that drifts away
 // from the file it describes, which is the shape this whole ledger exists to catch.
 export const OUT_COPYING = join(ROOT, "copying.html");
-// The day ramsey.html first served the table publicly (commit 0ad3615). The disclosure is a DATED
-// ACCOUNT OF A PUBLISHED PAGE, not a clearance obtained beforehand: the scope doc said the pass
-// would ask the copyright question "before anything is published" and that is simply not what
-// happened, so the page says when it went up and this constant is that date.
-const PUBLISHED_ON = "2026-09-17";
 // The day the disclosure below was written. Stated on the page beside PUBLISHED_ON precisely
 // because the gap between them is the honest part.
 const WRITTEN_ON = "2026-09-20";
@@ -58,72 +59,6 @@ const CENSUS_DONE = "2026-10-15";
 const SITE = "https://u00dxk2.github.io/bounds-ledger/";
 const AUTHOR_PAGE = "https://www.cs.rit.edu/~spr/ElJC/eline.html";
 const RUNS = `${REPO}/actions/workflows/reverify.yml`;
-const ALLOWED_HOSTS = new Set(["github.com", "u00dxk2.github.io", "www.combinatorics.org", "www.cs.rit.edu"]);
-
-// The depth audit's four outcomes, in its own vocabulary (continuity/depth-audit.json meta.verdicts).
-// The selftest asserts this list equals that file's, so the page cannot quietly invent a fifth or
-// merge two. "not yet read" is not an outcome: it is the absence of a reading, and it is shown as one.
-// Neither is "nothing to read it against", which is a bound the survey credits to no paper.
-//
-// A READ STATE BELONGS TO ONE CREDITED BOUND, NOT TO AN ENTRY (A-54 phase 4, scripts/ds1-depth.mjs).
-// R(3, 10)'s lower bound is credited to [Ex5] and its upper bound to [Ang1]; reading one says nothing
-// about the other, so each entry lists its bounds and each bound carries its own state.
-// Each phrase is a WHOLE clause about the reading, not a tail glued after "the credited source
-// was". Two rewrites on 2026-09-18, both found by rendering the real readings rather than the
-// fixtures: "could not be read" produced "the credited source was could not be read", and for a
-// bound whose credited paper was never opened while its method was read elsewhere, the old
-// unresolved wording claimed a reading of the source that did not happen.
-export const OUTCOMES = [
-  ["SOUND", "sound", "the credited source was read, and it supports this bound"],
-  ["DEFECTIVE", "defective", "the credited source was read, and it does not support this bound"],
-  ["UNRESOLVED", "unresolved", "what could be read did not settle this bound"],
-  ["UNREACHABLE", "unreachable", "the credited source could not be read at all"],
-];
-
-// The never-claim-a-record wordings. Shared so the disclosure page is held to the SAME rule as the
-// table it describes: a new rendering path does not inherit the guards that already exist, and the
-// blind one is always the guard written to prevent exactly what the new surface can now do
-// (2026-09-10, docs/findings). This list is the one place to add a wording.
-const RECORD_RES = [/\brecord\b(?!ed)/i, /\bbest[- ]known\b/i, /\bstrongest known\b/i, /\bstate of the art\b/i, /\bthe true value\b/i, /\bcurrent(ly)? best\b/i];
-
-// How many NUMBERS a set of table rows prints. An entry is not a number: 52 of Table Ia's 72
-// entries print a lower AND an upper bound, so "72 values" understates what is reproduced by 52
-// (adversarial review, 2026-09-20 — on the page whose whole job is to state that amount exactly).
-// The disclosure states both units and its guard recomputes them from the committed table.
-export const numbersIn = (rows) => rows.reduce((a, r) => a + ["exact", "lower", "upper"].filter((k) => r[k] !== undefined).length, 0);
-
-const STYLE = `:root{--ink:#111;--muted:#666;--line:#ddd;--code:#f6f6f6;--accent:#0b5fff;--soft:#fafafa}
-*{box-sizing:border-box}body{margin:0;padding:1.5rem 1.25rem 3rem;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);max-width:52rem;margin-inline:auto}
-a{color:var(--accent)}h1{font-size:1.4rem;line-height:1.3;margin:.2rem 0 .4rem}
-h2{font-size:1.05rem;margin:0}h2 a{color:inherit;text-decoration:none}
-.back{font-size:.85rem;display:inline-block;margin-bottom:1.2rem}
-.lede{margin:.2rem 0 1rem}
-.note{background:var(--soft);border:1px solid var(--line);padding:.2rem 1rem;margin:1rem 0;font-size:.93rem}
-code{font:13px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--code);padding:.05rem .3rem;word-break:break-all}
-.jump{margin:1.4rem 0;font-size:.9rem}.jump div{margin:.25rem 0}.jump .k{display:inline-block;min-width:3.6rem;color:var(--muted)}
-.jump a{display:inline-block;min-width:1.9rem;padding:.1rem .15rem;text-align:center}
-.group{margin-top:1.8rem;padding-top:.4rem;border-top:2px solid var(--ink);font-size:.9rem;color:var(--muted)}
-.entry{border-bottom:1px solid var(--line);padding:.9rem 0}
-dl{margin:.4rem 0 0;padding:0}dt{font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:.5rem}
-dd{margin:.1rem 0 0}.v{font-size:1.05rem}.refs{display:block;font-size:.85rem;color:var(--muted)}
-.none{color:var(--muted)}.flag{display:inline-block;margin-top:.5rem;font-size:.85rem}
-footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}`;
-
-const key = (k, l) => `${k},${l}`;
-
-// Every (k, l) either table prints, in k-then-l order.
-export function entriesOf(doc) {
-  const map = new Map();
-  for (const c of doc.tableIa) map.set(key(c.k, c.l), { k: c.k, l: c.l, ia: c });
-  for (const c of doc.tableIb) {
-    const e = map.get(key(c.k, c.l)) ?? { k: c.k, l: c.l };
-    e.ib = c;
-    map.set(key(c.k, c.l), e);
-  }
-  return [...map.values()].sort((a, b) => a.k - b.k || a.l - b.l);
-}
-
-const R = (k, l) => `R(${k}, ${l})`;
 
 // A reference exactly as the survey prints it. "2.3.h" is an item of the survey's own Section 2.3,
 // not a paper, so it is named as one rather than bracketed like a citation key.
@@ -152,60 +87,6 @@ function iaText(e) {
 
 const ibText = (e) => (e.ib ? `${R(e.k, e.l)} ≤ ${e.ib.upper}` : "no entry in Table Ib");
 
-const STORE_URL = `${REPO}/blob/main/continuity/depth-audit-ds1.json`;
-
-// THE REBUILD (A-54, David's rulings of 2026-09-20): the page is our own arrangement, the survey
-// stays credited, and every value is marked one of two ways — independently sourced, or credited
-// to the survey and not independently checked. The census (A-54 rebuildScope2026_09_21) read every
-// bound Table Ia credits to a paper, so census readings render here. The freeze filter that held
-// them off the page (`pageRows`, 2026-09-25 to the rebuild) was removed in the commit that lands it.
-//
-// ONE READING IS SHOWN PER BOUND. Five bounds were read twice, once in the drawn slice of 2026-09-18
-// and once in the census; the census reading is the one shown, and the readings of one bound must
-// carry the same verdict or the store is refused (readingConflicts), because showing either would
-// hide the other's disagreement.
-export function shownReading(rows, b) {
-  const all = rows.filter((r) => sameBound(r, b));
-  return all.find((r) => r.selection === "census") ?? all[0];
-}
-export function readingConflicts(rows) {
-  const by = new Map();
-  for (const r of rows) {
-    const k = `${r.k},${r.l},${r.bound},${r.value},${r.ref}`;
-    if (!by.has(k)) by.set(k, []);
-    by.get(k).push(r);
-  }
-  return [...by.values()].filter((rs) => new Set(rs.map((r) => r.verdict)).size > 1)
-    .map((rs) => `${R(rs[0].k, rs[0].l)} ${rs[0].bound} ${rs[0].value} [${rs[0].ref}] is read ${rs.map((r) => `${r.verdict} by ${r.id ?? "an unnamed row"}`).join(" and ")}`);
-}
-
-// David's two states (davidRuling2026_09_20_partialTable), close to his words. SOUND is the only
-// verdict that sources a value independently; DEFECTIVE is neither, because either label would
-// misstate a value its credited source contradicts (rebuildScope2026_09_21, DECISION 3).
-export const SOURCED = "independently sourced";
-export const SURVEY_ONLY = "credited to the survey and not independently checked";
-const stateOf = (verdict) => (verdict === "SOUND" ? SOURCED : verdict === "DEFECTIVE" ? null : SURVEY_ONLY);
-// Table Ib's marking, decided at the render (A-54 OPEN question, 2026-10-15). The census read Table
-// Ia only, so no Table Ib value was read against a source, and every one is marked credited to the
-// survey. The reason is said per value from the survey's own caption (revision #18, p. 7): "All of
-// them were obtained by Angeltveit and McKay in 2019 [AnM2] and 2023-2024 [AnM3, AnM4], except
-// R (4, 5) [MR4]" — a group credit for every value but one, which is why the frame left Table Ib out.
-// The one value the caption credits to a single paper can still be sourced: when Table Ia prints the
-// SAME upper bound credited to the SAME paper and its census reading is SOUND, that reading sources
-// this value too (Codex claims pass r1b, 2026-10-15: R(4, 5) <= 25 [MR4] is DS1-0033, SOUND). Derived
-// from the stored reading every render, never typed.
-const IB_OWN_CREDIT = { "4,5": "MR4" };
-const ibNote = (e, rows = []) => {
-  const own = IB_OWN_CREDIT[key(e.k, e.l)];
-  if (!own) return `${SURVEY_ONLY}: the census read Table Ia only; the survey credits Table Ib's values as a group to [AnM2], [AnM3] and [AnM4], not each to one paper`;
-  const twin = shownReading(rows, { k: e.k, l: e.l, bound: "upper", value: e.ib.upper, ref: own });
-  // DEFECTIVE takes NEITHER state (DECISION 3), here as in Table Ia (Codex r2, 2026-10-15).
-  if (twin?.verdict === "DEFECTIVE") return `marked neither way: the same bound, credited to [${own}] in Table Ia, was read there and its source does not support it (see the reading below)`;
-  return twin?.verdict === "SOUND"
-    ? `${SOURCED}: the survey credits this value to [${own}], and the same bound, credited to [${own}] in Table Ia, was found there (see the reading below)`
-    : `${SURVEY_ONLY}: the census read Table Ia only; the survey credits this Table Ib value to [${own}]`;
-};
-
 // WHAT THE REPOSITORY KEEPS OF THE SURVEY'S BIBLIOGRAPHY (A-54 disclosureUndercount2026_10_15). A row
 // keeps an entry when `surveyRefEntry` holds it, or when `surveyEntryQuoted` names the field whose
 // text quotes it. The count reads those two FIELDS and never parses free text: the live page counted
@@ -216,7 +97,6 @@ const ibNote = (e, rows = []) => {
 // an alias listed here). Nothing here would see either.
 const KEY_ALIASES = { "HW+": ["HW+", "HWSYZH"] };
 const KEY_QUOTE = /['"‘“]\s?\[([^\]\s]{1,12})\]/g;
-export const keepsSurveyEntry = (r) => Boolean(String(r.surveyRefEntry ?? "").trim() || String(r.surveyEntryQuoted ?? "").trim());
 export function quotedEntryViolations(rows) {
   const v = [];
   for (const r of rows) {
@@ -236,19 +116,6 @@ export function quotedEntryViolations(rows) {
     }
   }
   return v;
-}
-// The ONE piece of markup a read state carries. Named here because the renderer writes it and leg 7b
-// strips exactly this and then requires everything left to be plain text.
-const HOW_LINK = `<a href="${esc(STORE_URL)}">How it was read</a>`;
-const NOT_YET = "not yet read";
-const NOTHING = "nothing to read it against";
-const BOUND_ORDER = { exact: 0, lower: 1, upper: 2 };
-
-// Every value Table Ia prints for an entry, each with what it is credited to, in a fixed order.
-function boundsFor(e, frame, left) {
-  const mine = (b) => b.k === e.k && b.l === e.l;
-  return [...frame.filter(mine).map((b) => ({ ...b, inFrame: true })), ...left.filter(mine).map((b) => ({ ...b, inFrame: false }))]
-    .sort((a, b) => BOUND_ORDER[a.bound] - BOUND_ORDER[b.bound]);
 }
 
 function boundLabel(b) {
@@ -396,7 +263,6 @@ export function rowsFromStore(parsed) {
 // searched. The store keeps the day arXiv was read (listedOn) and the newest submission date in the
 // fetch (newestSubmitted), and the page states both.
 export const SEARCH = join(ROOT, "ledger", "ejc-ds1", "arxiv-search.json");
-const BRIEF_URL = `${REPO}/blob/main/docs/arxiv-watch-reader-brief.md`;
 // THE PAGE SAYS "SCREENED EACH ONE", so the store must carry that run's completeness, not only its
 // found count (Codex r1 BLOCKER on 586770d): papersScreened equal to papersFound, no reading marked
 // incomplete, and the check's own RESULT word. They are copied from `arxiv-watch.mjs --check`'s
@@ -439,232 +305,6 @@ export function searchGate(exists, parsed, doc) {
   return { search: parsed };
 }
 
-export function searchHtml(s) {
-  return `<p id="arxiv-search"><strong>Newer papers on arXiv.</strong> We searched arXiv for papers listed under combinatorics (math.CO) with &ldquo;Ramsey&rdquo; in the abstract and submitted on or after ${esc(longDate(s.windowFrom))}, the date of revision #${esc(s.revision)}, as arXiv listed them on ${esc(longDate(s.listedOn))}: ${esc(s.papersFound)} papers, the newest submitted on ${esc(longDate(s.newestSubmitted))}. Language-model readers screened each one for an explicit value or bound on a two-colour classical R(k, l), with instructions to read the full text where the title or abstract suggested one, and a script compared what they recorded with the values on this page. As screened, none of the ${esc(s.papersFound)} states a bound that improves on, or contradicts, what this page shows for the same R(k, l). The screen can misread a paper, and the search cannot see a paper outside that listing, one whose abstract does not say &ldquo;Ramsey&rdquo;, or a result announced anywhere but arXiv, so a newer result could exist without appearing here. <a href="${esc(BRIEF_URL)}">How the papers were screened</a>.</p>`;
-}
-
-function longDate(iso) {
-  const [y, m, d] = iso.split("-").map(Number);
-  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  return `${d} ${months[m - 1]} ${y}`;
-}
-
-// The page's own guard. Returns the violations found; an empty list is a pass. Run on a fixture in
-// the selftest AND on the committed file by --check.
-export function guardPage(page, doc, rows = [], search = null) {
-  // CRLF FIRST, before any assertion reads a newline. The entry-shape rule below matches `\n<dl>\n`,
-  // and this checkout is core.autocrlf=true with no .gitattributes — so a fresh Windows clone would
-  // hand this function CRLF and fail all 72 entries on a page whose content never changed. main()
-  // normalises for its equality compare only AFTER calling this, which is too late. The lane already
-  // documents this trap for test mutations (KP-78, "files are CRLF, so a \n pattern silently
-  // no-ops"); here it was the guard itself (adversarial review round 5, 2026-09-19).
-  const html = String(page).replace(/\r\n/g, "\n");
-  const v = [];
-  const { frame, left } = frameOf(doc);
-  const shownReads = [];
-  const text = html.replace(/<[^>]+>/g, " ");
-  // 1. It never claims which bound is the record.
-  for (const re of RECORD_RES) {
-    if (re.test(text)) v.push(`claims a record: ${re}`);
-  }
-  // 2. It loads nothing from anywhere.
-  if (/<script\b/i.test(html)) v.push("carries a <script>");
-  if (/<(img|iframe|video|audio|source|embed|object)\b/i.test(html)) v.push("embeds media");
-  if (/<link\b(?![^>]*rel="canonical")/i.test(html)) v.push("carries a <link> other than canonical");
-  if (/\ssrc=/i.test(html) || /url\(/i.test(html) || /@import/i.test(html)) v.push("loads an external asset");
-  // 3. Every absolute link goes to a host it has a reason to name.
-  for (const m of html.matchAll(/href="(https?:\/\/[^"/]+)/g)) {
-    const host = m[1].replace(/^https?:\/\//, "");
-    if (!ALLOWED_HOSTS.has(host)) v.push(`links an unexpected host: ${host}`);
-  }
-  // 4. Every value the store holds is on the page, in its own entry — the store-vs-page gap (A-53)
-  //    is asserted here rather than left to a hand count.
-  const entries = entriesOf(doc);
-  const sections = [...html.matchAll(/<section class="entry" id="r-(\d+)-(\d+)">([\s\S]*?)<\/section>/g)];
-  if (sections.length !== entries.length) v.push(`renders ${sections.length} entries, the table holds ${entries.length}`);
-  const ids = sections.map((m) => `${m[1]},${m[2]}`);
-  if (new Set(ids).size !== ids.length) v.push("an entry id repeats");
-  for (const e of entries) {
-    const s = sections.find((m) => `${m[1]},${m[2]}` === key(e.k, e.l));
-    if (!s) { v.push(`${R(e.k, e.l)} is missing from the page`); continue; }
-    const body = s[3];
-    for (const n of [e.ia?.exact, e.ia?.lower, e.ia?.upper].filter((x) => x !== undefined)) {
-      if (!new RegExp(`(^|[^0-9])${n}([^0-9]|$)`).test(body.split("Table Ib prints")[0])) v.push(`${R(e.k, e.l)}: Table Ia value ${n} is not shown`);
-    }
-    if (e.ib && !new RegExp(`≤ ${e.ib.upper}<`).test(body.split("Table Ib prints")[1] ?? "")) v.push(`${R(e.k, e.l)}: Table Ib value ${e.ib.upper} is not shown`);
-    // Every Table Ib value carries its mark too, in the same dd as the value: a Table Ib number with
-    // no mark beside it would read as checked by default.
-    if (e.ib && !((body.split("Table Ib prints</dt>")[1] ?? "").split("</dd>")[0] ?? "").includes(esc(ibNote(e, rows)))) v.push(`${R(e.k, e.l)}: Table Ib value ${e.ib.upper} does not carry its mark ("${ibNote(e, rows)}")`);
-    // One read state per value Table Ia prints for the entry, and the machine state and the words
-    // a reader sees must say the same thing.
-    const auditPart = (body.split("Read against its credited source</dt>")[1] ?? "").split("</dl>")[0];
-    const dds = [...auditPart.matchAll(/<dd([^>]*)>([\s\S]*?)<\/dd>/g)];
-    const want = Math.max(1, boundsFor(e, frame, left).length);
-    if (dds.length !== want) v.push(`${R(e.k, e.l)}: lists ${dds.length} read state(s), Table Ia prints ${want} value(s) for it`);
-    for (const [, attrs, inner] of dds) {
-      const ds = attrs.match(/data-state="([^"]+)"/)?.[1];
-      const words = inner.replace(/<[^>]+>/g, "");
-      const o = OUTCOMES.find(([, label]) => label === ds);
-      // The verdict AND David's state it maps to, in the one form the renderer emits: a sound reading
-      // marked credited-to-the-survey, or an unresolved one marked independently sourced, is refused.
-      const st = o && stateOf(o[0]);
-      const ok = o ? words.includes(`: ${st ? `${st} — ` : ""}${o[1]}: ${o[2]}.`)
-        : ds === "not-yet-read" ? words.endsWith(`: ${SURVEY_ONLY} — ${NOT_YET}`)
-        : ds === "nothing-to-read" ? words.endsWith(`: ${SURVEY_ONLY} — ${NOTHING}`) || words === `Table Ia prints nothing here: ${NOTHING}`
-        : false;
-      if (!ok) v.push(`${R(e.k, e.l)}: read state ${JSON.stringify(ds)} with the words "${words}" is not one of the four outcomes, "${NOT_YET}" or "${NOTHING}"`);
-      if (!o) continue;
-      // WHICH bound the reading is attached to, read off the page's own words. Counting readings is
-      // not enough: a verdict moved from one bound of an entry to another keeps every count equal
-      // (adversarial review round 2, 2026-09-18).
-      const m = words.match(/the (exact value|lower bound|upper bound) (\d+), credited to \[([^\]]+)\]/);
-      if (!m) v.push(`${R(e.k, e.l)}: a reading's words do not name the bound they belong to: "${words}"`);
-      else shownReads.push({ k: e.k, l: e.l, bound: m[1] === "exact value" ? "exact" : m[1].split(" ")[0], value: Number(m[2]), ref: unesc(m[3]), verdict: o[0], words: unesc(words), raw: inner, attrs });
-    }
-    // THE ENTRY'S SHAPE, not just the reading's. Round 4 of the 2026-09-19 review hid readings by
-    // wrapping the <dd> in an HTML comment, a <template> and a hidden <div>, and by putting `hidden`
-    // on the enclosing <dl>: leg 7b reads the dd itself and could see none of it. A guard that
-    // inspects an element and not its ancestors is the same defect three drafts running, so this
-    // asserts the whole section is what the renderer emits — an h2, a <dl> of <dt>/<dd> pairs, the
-    // looks-wrong link, and nothing else. Unknown markup is refused whether or not it hides anything.
-    const dl = body.match(/\n<dl>\n([\s\S]*?)\n<\/dl>\n/);
-    if (!dl) v.push(`${R(e.k, e.l)}: its readings are not inside the plain <dl> the renderer emits`);
-    else {
-      // `<dt>[\s\S]*?</dt>` would delete a WRAPPER along with its contents: round 6 hid a whole
-      // reading in `<dt><template>…</template></dt>`, and stripping the dt subtree removed every
-      // trace of it while the reading scan still counted the dd nested inside. A dt the renderer
-      // emits holds plain text, so only plain-text dts are discarded and anything else stays behind
-      // as stray markup.
-      const strayInDl = dl[1].replace(/<dt>[^<]*<\/dt>/g, "").replace(/<dd[^>]*>[\s\S]*?<\/dd>/g, "").trim();
-      if (strayInDl) v.push(`${R(e.k, e.l)}: its <dl> carries markup the renderer does not emit: ${JSON.stringify(strayInDl.slice(0, 60))}`);
-      const strayInEntry = body.replace(/\n<dl>\n[\s\S]*?\n<\/dl>\n/, "").replace(/<h2>[\s\S]*?<\/h2>/, "").replace(/<a class="flag"[\s\S]*?<\/a>/, "").trim();
-      if (strayInEntry) v.push(`${R(e.k, e.l)}: its entry carries markup the renderer does not emit: ${JSON.stringify(strayInEntry.slice(0, 60))}`);
-    }
-    const flag = body.match(/<a class="flag" href="([^"]+)">/);
-    const title = flag ? decodeURIComponent(flag[1].replace(/&amp;/g, "&").match(/[?&]title=([^&]*)/)?.[1] ?? "") : "";
-    if (title !== `Row looks wrong: Small Ramsey Numbers ${R(e.k, e.l)}`) v.push(`${R(e.k, e.l)}: its looks-wrong link has title "${title}"`);
-  }
-  // 5. The jump links go exactly to the entries.
-  const jumps = [...html.matchAll(/<nav class="jump"[\s\S]*?<\/nav>/g)][0]?.[0] ?? "";
-  const targets = [...jumps.matchAll(/href="#r-(\d+)-(\d+)"/g)].map((m) => `${m[1]},${m[2]}`);
-  if (targets.length !== ids.length || targets.some((t) => !ids.includes(t))) v.push("the jump links do not match the entries");
-  // 6. It says what is covered and what has been read, and the counts add up.
-  if (!html.includes(`revision #${doc.source.revision}`)) v.push("does not name the revision");
-  if (!/<strong>Not covered<\/strong>/.test(html)) v.push("does not say what is not covered");
-  // 6b. The arXiv search (A-81). MEANING FIRST, the exact-match pin LAST (KP-78, 2026-09-06: a pin
-  //     placed first trips on every mutation and leaves the guards that carry the meaning dead).
-  const searchParas = [...html.matchAll(/<p id="arxiv-search">[\s\S]*?<\/p>/g)].map((m) => m[0]);
-  const searchMentions = (html.match(/arxiv-search|Newer papers on arXiv|apart from the arXiv screen/g) ?? []).length;
-  if (search?.render) {
-    if (searchParas.length !== 1) v.push(`states the arXiv search ${searchParas.length} time(s), not once`);
-    const p = searchParas[0] ?? "";
-    const words = unesc(p.replace(/<[^>]+>/g, ""));
-    for (const [need, what] of [
-      [`${search.papersFound} papers`, "how many papers the search found"],
-      [longDate(search.windowFrom), "the date the search starts"],
-      [`as arXiv listed them on ${longDate(search.listedOn)}`, "the day arXiv was read"],
-      [`the newest submitted on ${longDate(search.newestSubmitted)}`, "the newest submission it saw, so the listing date does not read as coverage"],
-      ["math.CO", "the listing it searched"],
-      ["&ldquo;Ramsey&rdquo; in the abstract", "the term it searched for"],
-      ["Language-model readers screened", "that the papers were screened by a model, not read by a person"],
-      ["a newer result could exist without appearing here", "that a newer result can exist without appearing here"],
-    ]) if (!words.includes(need)) v.push(`the arXiv search does not state ${what}`);
-    if (/\b(no|nothing) (newer|better|stronger)\b[^.]*\b(exists?|has been (found|published))\b/i.test(words) || /\bthere (is|are) no (newer|better|stronger)\b/i.test(words)) v.push("the arXiv search says no newer result exists");
-    if (!p.includes(`href="${esc(BRIEF_URL)}"`)) v.push("the arXiv search does not link how the papers were screened");
-    if (!html.includes(`after revision #${doc.source.revision}, apart from the arXiv screen described below.`)) v.push("the not-covered sentence does not point to the arXiv search, so the two read as contradicting");
-    // Where it sits, as a reader would meet it: straight after What is watched and before What has been
-    // checked, with nothing between. A paragraph wrapped in a comment or a hidden container still
-    // counts once and still equals the pin below, so position is asserted on its own.
-    if (searchParas.length === 1 && !html.includes(`this page is not.</p>\n${p}\n<p><strong>What has been checked against its source.</strong>`)) v.push("the arXiv search is not where the renderer puts it, between What is watched and What has been checked");
-    // Hidden by an ANCESTOR or by CSS (Codex r1 SHOULD on 586770d): the position pin above cannot see
-    // a stylesheet rule or a wrapper around all three paragraphs. So the stylesheet must be the
-    // renderer's own and the only one, and the note box must open directly after the jump links with
-    // its exact tag and hold nothing but one plain paragraph per line. Shape, not a list of ways to hide.
-    if ((html.match(/<style\b/gi) ?? []).length !== 1 || !html.includes(`<style>${STYLE}</style>`)) v.push("the arXiv search page carries a stylesheet that is not the renderer's own");
-    const box = html.match(/<\/nav>\n\n<div class="note">\n([\s\S]*?)\n<\/div>\n/);
-    if (!box || !box[1].includes(p) || !box[1].split("\n").every((l) => /^<p(?: id="arxiv-search")?>[\s\S]*<\/p>$/.test(l) && !/<(?:div|template|details|style|script)\b/i.test(l))) v.push("the arXiv search is not in the plain note box, one plain paragraph per line, straight after the jump links");
-    if (searchParas.length === 1 && p !== searchHtml(search)) v.push("the arXiv search paragraph differs from what the store renders");
-  } else if (searchMentions) {
-    v.push(`mentions the arXiv search ${searchMentions} time(s) while the store does not render it`);
-  }
-  // A STATED RULE, not a list of phrasings (Codex r2 BLOCKER on 8fe8abd: other prose in the note box
-  // could claim an arXiv screen the gated store does not state, and the checks above read only the
-  // canonical paragraph). Inside the note box, "arXiv" may appear ONLY in the gated paragraph, and not
-  // at all while the store is dark. Its failure mode is a refusal. What it does NOT see, deliberately
-  // (r2's SHOULD, the second round to find a hiding route outside what a check reads, so the shape
-  // stops growing here): arXiv prose OUTSIDE the note box (entry notes legitimately cite arXiv
-  // preprints), and a renderer LAYOUT change that wraps the page before the jump links. Both are
-  // changes to this file's code, and a code change reaches the page only through review; the guard's
-  // job is the committed page against the store under the layout this renderer emits.
-  const noteBox = html.match(/<\/nav>\n\n<div class="note">\n([\s\S]*?)\n<\/div>\n/)?.[1];
-  if (noteBox !== undefined) {
-    // The two sanctioned places, both pinned above when the store renders: the paragraph itself and
-    // the not-covered sentence's exact pointer to it.
-    const outside = search?.render && searchParas.length === 1 ? noteBox.replace(searchParas[0], "").replace(", apart from the arXiv screen described below.", ".") : noteBox;
-    if (/arxiv/i.test(outside)) v.push("the note box mentions arXiv outside the gated arXiv-search paragraph");
-  }
-  const so = html.match(/So far, of the (\d+) bounds Table Ia prints \([^)]*\): ([^<]*)\./);
-  if (!so) v.push("does not state what has been checked");
-  else {
-    const nums = [...so[2].matchAll(/(sound|defective|unresolved|unreachable|not yet read|nothing to read it against) (\d+)/g)];
-    if (nums.length !== 6) v.push(`the checked-so-far line names ${nums.length} states, expected the four outcomes, "${NOT_YET}" and "${NOTHING}"`);
-    const sum = nums.reduce((a, m) => a + Number(m[2]), 0);
-    const expected = entries.reduce((a, e) => a + Math.max(1, boundsFor(e, frame, left).length), 0);
-    if (sum !== expected || Number(so[1]) !== expected) v.push(`the checked-so-far counts sum to ${sum} and the sentence names ${so[1]}, but Table Ia prints ${expected} values`);
-  }
-  // 7. Every stored reading is on the page, ON ITS OWN BOUND, with its own verdict. A reading the
-  //    store holds and the page does not show is the store-vs-page gap (A-53) in the new area's
-  //    first week, so it is refused, not tolerated.
-  for (const c of readingConflicts(rows)) v.push(`two readings of one bound disagree: ${c}`);
-  for (const r of rows) {
-    const name = `${r.id ?? `${R(r.k, r.l)} ${r.bound}`} (${r.verdict} on the ${r.bound} bound ${r.value}, credited to [${r.ref}])`;
-    const shown = shownReads.find((s) => sameBound(s, r) && s.verdict === r.verdict);
-    if (!shown) { v.push(`the stored reading ${name} is not shown on the page`); continue; }
-    // A second reading of a bound already shown agrees with it (readingConflicts above) and is kept
-    // in the notes; the page shows the census reading, so only that one owes its pageNote ON the page.
-    if (shownReading(rows, r) !== r) continue;
-    // 7b. A reading that did NOT reach its credited source owes the reader its own sentence. The four
-    //     outcome phrases alone say the reading fell short and nothing about WHY, which on 2026-09-19
-    //     read as an errand still open for two bounds whose value the survey credits to a personal
-    //     communication — uncheckable by anyone, not waiting on us. So UNRESOLVED and UNREACHABLE
-    //     require a pageNote, and require it ON THE PAGE rather than merely present in the store.
-    if (r.verdict === "UNRESOLVED" || r.verdict === "UNREACHABLE") {
-      const note = String(r.pageNote ?? "").trim();
-      if (!note) v.push(`the stored reading ${name} carries no pageNote, so the page says only that the reading fell short`);
-      else if (!shown.words.includes(note)) v.push(`the pageNote of the stored reading ${name} is not on the page`);
-      // A note the reader cannot SEE is not disclosed — the shape of the 2026-09-06 label that hid
-      // in an aria-label where an equality check could not see it. This guard does NOT try to judge
-      // visibility: the first attempt at that was a regex, and round 2 of the 2026-09-19 adversarial
-      // review broke it in both directions (blind to `<dd hidden>` and to `display : none`, and it
-      // refused a harmless aria-hidden="false"). A guard over a format is a parser, so this one
-      // asserts the SHAPE the renderer actually emits instead: the note is plain text in a <dd>
-      // whose only markup is the "How it was read" link, and whose only attributes are the ones
-      // rendered here. Unknown markup is refused whether or not it hides anything, because the
-      // renderer has no reason to add any and this guard cannot tell the two apart.
-      // NOT COVERED, deliberately and by name: a STYLE rule that hides the dd without touching it.
-      // Nothing here reads the stylesheet.
-      else {
-        // Round 3 broke the whitelist: exempting the anchor by TAG NAME exempted `<a hidden>` around
-        // the whole note, and a scan for tags never saw an HTML comment. So this asserts the exact
-        // string the renderer emits instead of enumerating what may appear: strip the one trailing
-        // "How it was read" anchor, and the remainder must be plain escaped text — no `<` or `>` can
-        // survive esc(), so any markup at all, comments and second anchors included, is refused.
-        const body = shown.raw.trim();
-        const rest = body.endsWith(HOW_LINK) ? body.slice(0, -HOW_LINK.length) : null;
-        // Bare attributes count: the first draft matched only `name=`, so `<dd hidden data-state=…>`
-        // — the plainest way to hide the whole reading — walked straight past it (review round 2).
-        const extra = [...shown.attrs.matchAll(/([a-z-]+)(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?/gi)].map((m) => m[1].toLowerCase()).filter((a) => a !== "class" && a !== "data-state");
-        if (rest === null) v.push(`the read state of ${name} does not end with the single "How it was read" link the renderer emits`);
-        else if (/[<>]/.test(rest)) v.push(`the read state of ${name} carries markup around its words, so the page cannot be read as disclosing the pageNote to a reader`);
-        else if (extra.length) v.push(`the pageNote of the stored reading ${name} sits in a <dd> carrying ${extra.join(", ")}, which the renderer never adds`);
-      }
-    }
-  }
-  const boundsRead = new Set(rows.map((r) => `${r.k},${r.l},${r.bound},${r.value},${r.ref}`)).size;
-  if (shownReads.length !== boundsRead) v.push(`the page shows ${shownReads.length} reading(s) and the store holds readings of ${boundsRead} bound(s)`);
-  return v;
-}
-
 // copying.html — the written disclosure pass (A-54 phase 2). ONE linked page, so the table's own
 // note box does not grow an eighth paragraph about rights above the first number.
 export function renderCopying(doc, rows = []) {
@@ -705,53 +345,6 @@ export function renderCopying(doc, rows = []) {
 </footer>
 </html>
 `;
-}
-
-// The disclosure page's OWN guard. The table's guard reads entries and readings and would pass this
-// page while saying nothing about it. Assertions carry MEANING FIRST and the revision pin LAST, so a
-// mutation names the property it broke rather than only reporting that a string differs
-// (the 2026-09-06 assertion-order rule).
-export function guardCopying(page, doc, rows = []) {
-  const html = String(page).replace(/\r\n/g, "\n");
-  const text = html.replace(/<[^>]+>/g, " ");
-  const v = [];
-  for (const re of RECORD_RES) if (re.test(text)) v.push(`claims a record: ${re}`);
-  if (!/<strong>What is not copied\.<\/strong>/.test(html)) v.push("does not say what is NOT copied");
-  // The repository holds more of the survey than the table shows, and the disclosure must say so
-  // with a number that matches the store. A disclosure that UNDER-states what we keep is the one
-  // failure this page cannot have.
-  if (!/<strong>What else the repository keeps\.<\/strong>/.test(html)) {
-    v.push("does not disclose the survey material kept OUTSIDE the table (the bibliography entries in the audit notes)");
-  }
-  // The amount reproduced, in NUMBERS, recomputed from the committed table. A disclosure that
-  // states an entry count as though it were a value count understates the material it exists to
-  // disclose, and both validation commands accepted exactly that until it was caught.
-  const wantNums = numbersIn(doc.tableIa);
-  const saidNums = Number(html.match(/<strong>(\d+) numbers<\/strong>/)?.[1] ?? NaN);
-  if (!Number.isFinite(saidNums)) v.push("does not state how many NUMBERS of Table Ia it reproduces");
-  else if (saidNums !== wantNums) v.push(`says it reproduces ${saidNums} numbers from Table Ia, the committed table prints ${wantNums}`);
-  const want = rows.filter(keepsSurveyEntry).length;
-  const said = text.match(/&mdash;\s*(\d+)\s*of them so far|—\s*(\d+)\s*of them so far/);
-  const saidN = said ? Number(said[1] ?? said[2]) : null;
-  if (saidN === null) v.push("does not state how many of the survey's bibliography entries the repository keeps");
-  else if (saidN !== want) v.push(`says the repository keeps ${saidN} bibliography entr(y/ies) from the survey, the audit store holds ${want}`);
-  if (!/carries no licence permitting republication/.test(text)) v.push("does not say the survey carries no licence to republish");
-  // The trap this page exists to avoid: describing a clearance that was never obtained.
-  if (!text.includes(longDate(PUBLISHED_ON))) v.push("does not name the date the table was published");
-  if (!/account of a page already public rather than a clearance obtained beforehand/.test(text)) {
-    v.push("does not disclose that it was written AFTER publication — a disclosure that reads as prior clearance is a false account");
-  }
-  if (!/acted on, not argued with/.test(text)) v.push("does not promise to act on a change-or-removal request");
-  if (!/issues\/new/.test(html)) v.push("carries no route for asking for a change or removal");
-  if (/<script\b/i.test(html)) v.push("carries a <script>");
-  if (/<(img|iframe|video|audio|source|embed|object)\b/i.test(html)) v.push("embeds media");
-  if (/\ssrc=/i.test(html) || /url\(/i.test(html) || /@import/i.test(html)) v.push("loads an external asset");
-  for (const m of html.matchAll(/href="(https?:\/\/[^"/]+)/g)) {
-    const host = m[1].replace(/^https?:\/\//, "");
-    if (!ALLOWED_HOSTS.has(host)) v.push(`links an unexpected host: ${host}`);
-  }
-  if (!html.includes(`revision #${doc.source.revision}`)) v.push("does not name the revision");
-  return v;
 }
 
 function selftest() {
