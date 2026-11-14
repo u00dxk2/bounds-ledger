@@ -3845,6 +3845,19 @@
         "continuity/depth-audit.json"
       ],
       "lastEvaluated": "2026-11-13"
+    },
+    {
+      "id": "A-103",
+      "title": "README tells visitors `npm run check`, whose first leg exits 2 in any clone without skylark-site beside it",
+      "type": "action",
+      "status": "open",
+      "owner": "bounds-ledger lane",
+      "nextCheckDate": "2026-11-16",
+      "notes": "Found on refactor night 2026-11-13 by a read-only helper reading README.md against source; REPRODUCED by the lane. In a fresh `git clone` of 96a2ffa into a scratch directory with no skylark-site sibling, `node scripts/sky.mjs check-entry-guard.mjs --root .` (the first leg of package.json `check`) exited 2 with `sky: NOT RUNNABLE — the skylark-site checkout could not be resolved`, so `npm run check` stops before any ledger leg runs. README.md:112 says of `npm run check` that it needs no account and `its exit code means what it says: 0 is green, non-zero is a real finding`; README.md:30 and :143 send visitors to the same command. The credential-free visitor check CLAUDE.md names (`node scripts/reverify.mjs --check && node scripts/check-claims.mjs`) is unaffected. Not fixed on refactor night: README is the public page, and copy changes were Tier 3 that night. Two other README sentences the same read found false, also left for a day session: README.md:55 says the Ramsey table rebuild has not landed (it landed 2026-10-15, b167f64), and README.md:87 calls `--draw 375 425 475 525 575` the most recent depth-audit slice (slice 24 drew `209 259 309 359 409` on 2026-11-12). A fourth, README.md:176's correction count of 2, may omit the 2026-10-26 merge of our 13a title and DOI fix; whether that one counts is a ruling, not a fact, so it is not asserted here.",
+      "closeWhen": "README no longer sends a visitor to a command that cannot run in a plain clone (either the sentence and its two pointers say which legs a plain clone can run, or `npm run check` runs its ledger legs without skylark-site), verified by running the README's command in a fresh clone with no skylark-site sibling and pasting the literal output and exit code. The outward gate applies: README is public, so the change gets an adversarial review before push.",
+      "readCommand": "git grep -n \"its exit code means what it says\" -- README.md",
+      "created": "2026-11-13",
+      "updated": "2026-11-13"
     }
   ],
   "meta": {
