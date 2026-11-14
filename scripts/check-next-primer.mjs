@@ -189,6 +189,22 @@ async function selftest() {
   await rm(gate, { recursive: true, force: true });
   // A UTC-clock close at 20:00 MT is 02:00 UTC the NEXT day; MT must still read the MT date.
   assert.equal(mtToday(new Date("2026-08-21T02:00:00Z")), "2026-08-20", "evening MT close must not roll to the UTC date");
+  // Characterization of scripts/lib/mt-date.mjs (refactor night 2026-11-13, the gap the 11-07 Codex
+  // round named). The assertion above passes under a fixed UTC-6 or a fixed UTC-7 offset alike; each
+  // of the next two fails under one of them, so together they pin the DST-aware zone.
+  assert.equal(mtToday(new Date("2026-01-15T06:30:00Z")), "2026-01-14", "winter: 23:30 MST is still the previous MT day (a fixed UTC-6 offset reads 00:30 on the 15th)");
+  assert.equal(mtToday(new Date("2026-07-01T06:30:00Z")), "2026-07-01", "summer: 00:30 MDT is already the new MT day (a fixed UTC-7 offset reads 23:30 on the 30th)");
+  // The no-argument default reads the current instant: it must equal a reading taken on either side of it.
+  const beforeCall = mtToday(new Date());
+  const bare = mtToday();
+  const afterCall = mtToday(new Date());
+  assert.match(bare, /^\d{4}-\d{2}-\d{2}$/, "the no-argument default returns YYYY-MM-DD");
+  assert.ok(bare === beforeCall || bare === afterCall, "the no-argument default reads the current MT date");
+  // The compatibility re-exports are the lib's function itself, not a copy.
+  const lib = await import("./lib/mt-date.mjs");
+  const deferrals = await import("./check-deferrals.mjs");
+  assert.equal(mtToday, lib.mtToday, "check-next-primer re-exports the lib's mtToday");
+  assert.equal(deferrals.mtToday, lib.mtToday, "check-deferrals re-exports the lib's mtToday");
 
   // --- the --short trap, both answers ---
   // Fixtures are the two forms VERBATIM as this repo writes them, not retyped approximations:
@@ -236,7 +252,7 @@ async function selftest() {
   assert.deepEqual(brokenFirstAction(fenced("git rev-parse --short HEAD")), [], "fence rule is not masking the arity rule");
 
   await rm(tmp, { recursive: true, force: true });
-  console.log("check-next-primer selftest: PASS (fires when only yesterday's primer exists, silent once one is named for the day written after proving the fixture exists; a later-dated primer is the one owed, newest first; only YYYY-MM-DD.md names count; a missing directory reads as no primer; 20:00 MT close reads the MT date, not the UTC one; --short guard fires on two revisions naming line and revs, silent on the documented correct form, on a legal one-revision --short, on --short=N with one revision, on prose, and on words belonging to a later command)");
+  console.log("check-next-primer selftest: PASS (fires when only yesterday's primer exists, silent once one is named for the day written after proving the fixture exists; a later-dated primer is the one owed, newest first; only YYYY-MM-DD.md names count; a missing directory reads as no primer; 20:00 MT close reads the MT date, not the UTC one; a winter 23:30 MST and a summer 00:30 MDT each read their own MT day, the no-argument default reads now, and both re-exports are the lib's function; --short guard fires on two revisions naming line and revs, silent on the documented correct form, on a legal one-revision --short, on --short=N with one revision, on prose, and on words belonging to a later command)");
 }
 
 if (process.argv.includes("--selftest")) {
