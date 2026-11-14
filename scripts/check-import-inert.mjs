@@ -196,9 +196,11 @@ async function selftest() {
   try {
     const scripts = join(fx, "scripts");
     mkdirSync(join(scripts, "lib"), { recursive: true });
-    // An inert module with a real main guard, written the way this repo's scripts are.
+    // An inert module whose top level only runs behind a guard that is false on import. Not the
+    // realpath-against-typed-path comparison: the fleet entry guard (check:entry-guard) reds that
+    // shape even inside a string, because a fixture is text a reader copies (A-103, 2026-11-14).
     writeFileSync(join(scripts, "good.mjs"),
-      `import { pathToFileURL } from "node:url";\nexport const x = 1;\nif (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) console.log("ran");\n`);
+      `export const x = 1;\nif (process.argv.includes("--run-good-fixture")) console.log("ran");\n`);
     writeFileSync(join(scripts, "lib", "goodlib.mjs"), `export const y = 2;\n`);
     writeFileSync(join(scripts, "prints.mjs"), `console.log("summary: 3 rows");\n`);
     writeFileSync(join(scripts, "warns.mjs"), `console.error("warning");\n`);
