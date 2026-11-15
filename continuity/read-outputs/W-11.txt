@@ -1,6 +1,6 @@
 # read-output sidecar for W-11 — written by check-due-gates-dispositioned --run
 # readCommand: git grep -n -F 0.380926 -- ledger/claims.json docs/findings/
-# ran: 2026-10-15T20:42:12.860Z · exit: 0
+# ran: 2026-11-15T17:28:47.711Z · exit: 0
 # lines: 24 · sha256: 59de7463ee3cfc20 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
