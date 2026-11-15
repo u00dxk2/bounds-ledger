@@ -6,7 +6,7 @@ north_star_classification: expected-zero
 product: bounds-ledger
 date: 2026-11-14
 lifecycle_stage: launched
-last_deploy: "b8f69cf (as of about 17:23Z on 2026-11-14, check-ci-status read reverify.yml and page-check.yml green on b8f69cf; release: node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml, then --workflow page-check.yml; GitHub Pages; no Render service)"
+last_deploy: "57ca289 (as of about 04:25Z on 2026-11-15, check-ci-status read reverify.yml and page-check.yml green on 57ca289 and its Pages build row read built; release: node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml, then --workflow page-check.yml; GitHub Pages; no Render service)"
 on_hold_items: 0
 top_action_today: make the README's live-check instruction work for a visitor who clones the repo with nothing else beside it
 # The four keys below have NO instrument in this lane and are left null rather than filled with a
@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-A visitor who clones this repo and runs the README's live check now gets every ledger check, not an error. One maintainer check is skipped there, and the README says so.
+A visitor who clones this repo and runs the README's live check now gets every ledger check, not an error. One maintainer check is skipped there, and the README says so. In the evening, a phone reader who looks a constant up by a word in its name now sees, right under the search box, the labels of its two listed rows: when each last changed, or since when it has been tracked.
 
 ## What changed
 
@@ -31,6 +31,7 @@ A visitor who clones this repo and runs the README's live check now gets every l
 - Acceptance read, after the push: a fresh `git clone` of `0e2937a` into a scratch directory with no skylark-site beside it and `CC_PROMPTS_PIN`, `GITHUB_TOKEN` and `GITHUB_PERSONAL_ACCESS_TOKEN` cleared; `npm run check` exited 0, reached all twelve legs, and printed the skip line once. Before (fresh clone of `b8f69cf`): exit 2 at the first leg, no ledger leg run.
 - Live reads after the Pages build: the index page footer still names `npm run check` (now runnable in a bare clone); the README at `0e2937a` carries the skip line, the census line and the dated slice, and no longer says "is the most recent slice".
 - Review: three read-only Codex rounds on `A-103`. Round 1 found four defects; three were fixed and one is disclosed and not fixed (below). Round 2 found two prose claims still too strong; both were narrowed to its wording. Round 3 (claims only) found the README, repo-layout and comment sentences hold, and two leftovers in the commit body, corrected by an amend that changed the body only (tree identical to the reviewed commit).
+- **Round 3 (evening, product only): `A-104` shipped** (`57ca289`, pushed 8fb0682..57ca289; Pages build for `57ca289` built 04:21:46Z on 2026-11-15; CI `reverify.yml` and `page-check.yml` green on `57ca289`). On the public index, a line under the search controls lists, for one to three matches of an unshortened search, a constant whose name the typed text highlights when that text has a letter and no digit ("Moving Sofa Constant (41a), matched in its name — " then its two last-listed-row labels), or one whose card shows the older-row sentence (the entry carries that sentence instead). Other matches get no entry; their cards remain below. Live read at 390x664 after the build: typing "sofa" puts both entries at 378px to 579px, each equal to its card; before, 41a's date labels sat at 708px and 800px. Six read-only Codex rounds; the first five each found a new route for one defect class (below), and the sixth, run under a stop rule the orchestrator set beforehand (consult `3c919717`), found none. The five reviewed shas `a97e2ee`, `f803484`, `2ece3b2`, `07a7451` and `db38c8e` were pre-push drafts: sibling commits of `57ca289`, outside its ancestry and outside the published `main` history.
 - **Deviation from the review's acceptance condition:** "runs every check it names" does not hold for the entry guard in a bare clone. The guard lives in skylark-site and imports six of its library files directly, so running it there needs that code supplied or a standalone guard written; neither is in this ship. README.md:112 states the exception.
 
 ## Inputs (controllable)
@@ -41,7 +42,8 @@ A visitor who clones this repo and runs the README's live check now gets every l
 - **The maintainers' full `npm run check` had stopped at its first leg since 2026-11-06.** The fleet entry guard reds a realpath-against-typed-path comparison even inside a string, and `scripts/check-import-inert.mjs`'s selftest (added in `63acb47`) wrote its fixture with exactly that line: `[NAIVE-ENTRY-GUARD] scripts/check-import-inert.mjs:201`, exit 3. Neither `npm run verify` (which omits that leg) nor CI ran the guard, so the defect sat outside both. Fixed in `b7dd96f`; the guard now reads "0 naive comparisons over 54 file(s)".
 - **My first version of the skip was too broad.** It skipped on any unresolved verdict, so a maintainer whose git subprocess was blocked would have read a skip; Codex round 1 reproduced it. The fix claims less: skip only when git answered and nothing exists where the resolver looked. A red-arm restoring the broad version fails 6 of 21 assertions.
 - **The README's exit-code sentence was refuted twice**, so it was cut back to the reviewer's narrower wording rather than patched a third time.
-- Classification (one sentence of judgment, never a counter): today's findings concern our own check chain and our own README prose, so all are instrument-facing and none is record-facing; `npm run catches` was not run. Running count of consecutive instrument-facing days: 2 (counting 11-13; the 11-13 refactor night recorded no findings window of its own).
+- **Round 3: one defect class, five routes, in my own new line.** Each review round found the line pairing something the visitor typed that names a number with dates of rows that do not hold it: an alias the card does not show (177/560 on 74a), a comment about an earlier bound (55/174 on 74a, 2.625622 on 38a), a number in a name (1324 on 30a), the same with a word added ("pattern 1324"), and a number word or symbol in a name ("six" on 10c, "π" on 7a). The narrowing rules tried in rounds 1 to 5 each left another route. After the fifth I stopped and consulted; the answer was to make each entry state how it matched rather than narrow again, and the sixth round found no route. None of the five reviewed versions is in the published `main` history.
+- Classification (one sentence of judgment, never a counter): today's findings concern our own check chain, our own README prose and our own new page line, so all are instrument-facing and none is record-facing; `npm run catches` was not run. Running count of consecutive instrument-facing days: 2 (counting 11-13; the 11-13 refactor night recorded no findings window of its own).
 <!-- findings:end -->
 
 ## Outputs (lagging)
@@ -103,6 +105,33 @@ A visitor who clones this repo and runs the README's live check now gets every l
 - **Key number:** the plan's number is how many of the README's three pointers to `npm run check` (README.md:30, :112, :143) send a visitor with no sibling checkout to a command that runs: 0 of 3 today, measured this round by the fresh-clone run above. The target is 3 of 3, either because the pointer names a command that runs or because it says what the command needs. It measures what the README tells a visitor to do, not whether anyone does it. A Glob for `docs/{key-metrics.json,evangelism-bar.md}` returned only `docs\evangelism-bar.md` (positive control: the same Glob found that file), so this lane has no key-metrics list yet and no hub number applies.
 - **A prior-day retro finding that bears on the choice:** Q2 on 11-13, "Round 0 should have covered the report and primer, not only the four settle sentences." Today's change is a set of public factual sentences, so round 0 lists every changed README sentence AND this report's and the primer's claims about it before review.
 
+### P1 selection packet, round 3 (evening, product only)
+
+- **Outcome (as planned at P1; what shipped is narrower, see "Close, round 3"):** `A-104`, a phone visitor's filter answer on the first screen. A visitor who types a constant's name or number on a phone sees, under the search box, the labels of each matching constant's last-listed rows, without scrolling.
+- **The user problem, in the user's words** (`docs/evangelism-bar.md`): "is the number I already have still true, and how would I find out without redoing the literature search I did last year?" The page holds part of the answer: each card's label says when its last-listed row last changed, or since when we have tracked it (value changed, text edited, bound cell edited, tracked since, each dated). On a phone, while the keyboard is up, that label sits below the screen.
+- **What is already built toward F-2** (`docs/key-user-flows.md`, rotations 2 to 10, and the 11-07 walk): the filter by name, id or value; ordering by most recent movement; a dated label per shown row (a change, or since when it has been tracked), linked to upstream's history when it records a change; the cite block with its copy button; per-constant pages at `c/<id>.html`; the near-match message (`A-80`); the older-row sentence (`A-100`, shipped 11-08); the desktop column fix (`A-101`, closed 11-10). The 11-07 walk's step 2 is the seam it left open: matches start below the fold on a phone.
+- **Evidence:**
+  - OBSERVED · live index, Playwright at 390x664 (390 wide, with roughly a phone keyboard's height removed from 844) · 2026-11-15T02:41Z · after typing `sofa`: input top 278px, count line 511px, first card (41a) 558px, second (41b) 927px. Screenshot read, not committed. Between the box and the results sit the order control and the freshness paragraph.
+  - OBSERVED · `scripts/render-site.mjs:1241` pins the first-screen order (filter, freshness line, count, table) under `A-67`, decided with review on 2026-10-02. The change keeps that order and the freshness paragraph's caveat; it adds one element after the search controls and updates the pin on purpose.
+  - OBSERVED · 11-07 walk, step 2: "the matches start below the fold, so on a phone the visitor types and sees no change on screen until they scroll."
+  - HYPOTHESIS · 664px is my stand-in for the space a keyboard leaves; real keyboards vary. The acceptance uses it as a fixed read.
+  - MISSING · whether any real reader filtered on a phone. The page has no analytics (`A-59`).
+- **Permission:** `A-104` is a lane row (minted tonight, open, owner bounds-ledger, no park, no card). Layout and copy on our own page, inside the lane's authority. Public, so the outward gate applies: a cross-family (Codex) review and a claims pass on the new sentence before push.
+- **Next action (as planned at P1; what shipped is narrower, see "Close, round 3"):** improve. Add a short answer line under the search box. When 1 to 3 constants match, it names each and repeats its shown rows' labels exactly as the card prints them (the row's own label, which says "last listed", plus its dated change text), each linking to its card. Hidden for an empty box, for 0 matches and for more than 3. It copies the card and computes nothing. First, write the failing selftest case. First command:
+
+  ```
+  node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --selftest
+  ```
+
+- **Acceptance condition:** on the live index at 390x664, after typing `sofa`, each matched constant's change labels sit inside the viewport on the answer line, and their text equals the labels in the matching cards. The line is hidden for an empty box, for 0 matches and for more than 3 matches. `render-site --selftest` asserts those cases, and a red-arm (the line never filled) turns them red. Read on the served page after the Pages build.
+- **Delivery and encounter checks:** delivery is the Pages build row for the pushed sha plus a Playwright read of the live page at 390x664 and 1366x900. Encounter is blind (`A-59`). The arrivals that can show up are outside issues, started through a row's "looks wrong?" link, the empty state or the near-match notice, counted by `npm run reports`, readable at N = 1.
+- **USER-FACING: yes.** Paths: `scripts/render-site.mjs` (markup, client script, selftest), `index.html` (regenerated), `continuity/items.json` (`A-104`), `docs/key-user-flows.md` (a rotation note).
+- **HYGIENE INPUTS:**
+  - (a) due rows not bearing on the choice: none. Read: `check-due-gates-dispositioned.mjs --snapshot`, "0 gate(s) due on/before 2026-11-14" (re-snapshot identical, nothing dropped).
+  - (b) owed child rows: none. Read: the round-3 kickoff's "rows owed to you in skylark-site's ledger" (0 of 823).
+  - (c) state reads marked CROSSED: none. Read: the round-3 kickoff's state reads (stale-actionable 0 of 28; missingLinkedCommits NOTHING SWEPT, 0 of 0).
+- **A prior-day retro finding that bears on the choice:** Q2 on 11-13, Round 0 covers the report and primer too. The new answer line is public copy, so round 0 lists it and every sentence this report and the primer write about it before review.
+
 ### Close
 
 - ACTION: COMPLETED · item `A-103` · P3 `0d34186c`. The acceptance in force (the manager's REDIRECT) was met: in a fresh clone of `0e2937a` with no skylark-site beside it and credential variables cleared, `npm run check` exited 0 and reached all twelve legs, printing the entry-guard skip once; the manager reproduced it in an independent clone. Manager review of P3: COMPLETED, key number 5 of 5 by each pointer's own words (none of the five promises the entry guard; every claim leg runs).
@@ -120,3 +149,12 @@ A visitor who clones this repo and runs the README's live check now gets every l
 - Overnight refactor: changed nothing in today's work. Instance: the two legs whose modules were split on 11-13, `check:ds1` and `check:ramsey`, printed "IN SYNC — revision #18" and "RESULT: PASS" in both fresh-clone runs, and no file edited today was one of the split files.
 - W-7 — `npm run check:entry-guard` (the fleet entry guard) claims to refuse any script line comparing a realpath with the path as typed. Run on this machine it printed exit 3 on a selftest fixture string, a finding present since 2026-11-06 that no instrument surfaced, because `npm run verify` omits that leg and CI never runs it. Its output could say otherwise; nothing read it.
 - Standing prediction (quoted from `CLAUDE.md`): the next record-facing catch will be a citation-quality defect in a mirrored upstream entry, found by a human reading the cited source in the depth audit. Today held no record-facing catch, so it was neither confirmed nor falsified.
+
+### Close, round 3 (evening)
+
+- ACTION: COMPLETED · item `A-104` · P3 `f5bf544c`. The acceptance in force (the P1 packet's, approved by the manager) was met. On the live index at 390x664 after the Pages build of `57ca289`, typing "sofa" shows both matched constants' labels on the answer line between 378px and 579px, each equal to its card's labels. The line is hidden for no match, an empty box and 70 matches ("constant"). `render-site --selftest` asserts the shown and hidden cases and the line's text on stub fixtures, and ten mutations each turned it red; the pixel placement is the browser read, not the selftest. Manager review of P3: COMPLETED.
+- Changed since the P3 post: no shipped file. The close changes the ledger, this report, `docs/key-user-flows.md` (rotation 12) and the primer.
+- Ledger delta (`continuity-edit.mjs`): `A-104` minted at P1 (open), then set to monitoring with readCommand `npm run reports`, next check 2026-11-21, and closeWhen rewritten for the outcome read with a 2026-12-14 end. Ship note and literal live read on the row, linkedCommits `57ca289`. Hygiene draft: 0 lines (0 accepted, 0 amended, 0 rejected); its checks: wait-justification PASS (2 of 127 rows carry a wait), engineering-zero PASS for this lane; no READ-MUTATED lines.
+- Due gates: `check-due-gates-dispositioned.mjs` printed "verdict: CLEAR — every gate due at Phase 0 was dispositioned", snapshot CURRENT (taken 2026-11-14).
+- Receipt: unchanged from the P3 post (`f5bf544c`). Encounter blind (`A-59`). `npm run reports` read 0 outside arrivals of 37 raw issues tonight.
+- Pending reads added by round 3: 11-21 `A-104` (the phone answer line), outcome read by `npm run reports`, beside `A-103`'s. The earlier list above stands.

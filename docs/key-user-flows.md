@@ -601,3 +601,32 @@ order, so the rotation critiques the shipped flow and not only the step it last 
    before you trust a number here"), which carries the only explanation of step 4.
 9. **Per-constant page `c/<id>.html`**: a second entry point (search lands here), with no filter of
    its own.
+
+## Rotation 12 (2026-11-14) — F-2, the date out of sight while the keyboard is up
+
+**The step that was worst.** The 11-07 walk's step 2: on a phone, a visitor who types a constant's
+name sees no change on screen until they scroll. Measured on the live index at 390x664 (a phone
+screen with about a keyboard's height removed), after typing "sofa": the first card started at
+558px and its two date labels at 708px and 800px, below the screen.
+
+**Shipped (`57ca289`, `A-104`).** A line under the search controls, above the snapshot paragraph.
+When the search matches one to three constants, it lists a constant in two cases only, and each
+entry says which: the typed text has a letter and no digit and is highlighted in the constant's
+name ("Moving Sofa Constant (41a), matched in its name — " and then its two last-listed-row date
+labels), or the card's older-row sentence from `A-100` is showing (the entry then carries that
+sentence). Any other match gets no entry; its card remains below.
+
+**Why the line names its match.** Five read-only Codex rounds each found a new route for one defect
+class: the line pairing something the visitor typed that names a number with dates of rows that
+do not hold it (an alias, a comment about an earlier bound, a number in a name, the same with a
+word added, a number word or symbol such as "six" or "π"). The narrowing rules tried in those
+rounds each left another route, so
+the orchestrator ruled that each entry state how it matched, under a stop rule set before the
+sixth round. That round found no instance. The commits those rounds reviewed were pre-push
+drafts, sibling commits of `57ca289` outside the published `main` history.
+
+**After, on the live page at 390x664:** typing "sofa" shows both entries between 378px and 579px,
+each equal to its card's labels (a recorded browser read); "constant" (70 matches), no match and an
+empty box show no line.
+
+**Reader reach is unknown** (`A-59`). The outcome read is `npm run reports` from 2026-11-21.
