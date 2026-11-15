@@ -3859,6 +3859,23 @@
       "created": "2026-11-13",
       "updated": "2026-11-14",
       "lastEvaluated": "2026-11-14"
+    },
+    {
+      "id": "A-104",
+      "title": "Phone: a filter's change dates sit below the fold; show them under the search box",
+      "type": "action",
+      "status": "open",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-11-15",
+      "notes": "Minted 2026-11-14 (round 3, product only) from the 2026-11-07 journey walk, step 2 (docs/journey-walk-2026-11-07.md): on a phone the matches start below the fold, so a visitor types and sees no change until they scroll. Re-measured on the live index 2026-11-15T02:41Z at 390x664 (a 390-wide phone with roughly an on-screen keyboard's height removed): after typing sofa, input top 278px, count line 511px, first match card (41a) 558px, second (41b) 927px; between the box and the results sit the order control and the freshness paragraph (A-67's deliberate first-screen block). The change labels a visitor came for (value changed / text edited / bound cell edited / tracked since, each with its date) are inside the cards. Change: a short answer line directly under the search box that, when 1 to 3 constants match, names each and repeats its two shown rows' labels exactly as the card prints them (the row's data-label, which says last listed, plus the .when text) with a link to the card. It copies the card; it computes nothing and claims nothing the card does not. Outward wording: cross-family claims pass before push.",
+      "closeWhen": "On the live index at 390x664, after typing sofa, each matched constant's change labels are inside the viewport (top < 664px) on the answer line, and their text equals the labels in the matching cards; for 0 matches, for more than 3, and for an empty box the line is hidden; render-site --selftest asserts those cases and a red-arm (the line never filled) turns them red; read after the Pages build.",
+      "readCommand": "node scripts/render-site.mjs --selftest",
+      "links": [
+        "scripts/render-site.mjs",
+        "docs/journey-walk-2026-11-07.md"
+      ],
+      "created": "2026-11-14",
+      "updated": "2026-11-14"
     }
   ],
   "meta": {

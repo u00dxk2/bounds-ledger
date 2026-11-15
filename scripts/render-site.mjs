@@ -431,6 +431,24 @@ export function whenHtml(changed, kind, hist, wrap = (s) => s) {
   return `<a href="${esc(hist)}" title="upstream's history of this file, at the commit this ledger mirrors">${text}</a>`;
 }
 
+// A-104 (2026-11-14). On a phone, after a reader types in the filter, the matching cards start
+// below the screen, so the dated label they came for is out of sight while the keyboard is up
+// (measured 390x664, typing "sofa": first card at 558px). The page now repeats each matching row's
+// labels in a short line under the search box. That line COPIES; it computes nothing: each side is
+// the cell's own label ("Upper-bound row (last listed)", which says listing position, never "the
+// record") and the exact text the cell's date line shows, built here from the same calls cell() makes.
+// whenLabel() returns HTML-escaped text, and the cell renders it as HTML, so the reader sees it
+// unescaped; unesc() undoes esc() once so the attribute carries the text the reader sees.
+const unesc = (s) => String(s).replace(/&(amp|lt|gt|quot|#39);/g, (m, k) => ({ amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'" }[k]));
+export function sideWhen(row, changed, kind, label) {
+  return `${label}: ${!row ? "not pinned" : changed ? unesc(whenLabel(changed, kind)) : "date unknown"}`;
+}
+export const UPPER_LABEL = "Upper-bound row (last listed)";
+export const LOWER_LABEL = "Lower-bound row (last listed)";
+export function whenLine(r) {
+  return `${sideWhen(r.upper, r.upperChanged, r.upperKind, UPPER_LABEL)} · ${sideWhen(r.lower, r.lowerChanged, r.lowerKind, LOWER_LABEL)}`;
+}
+
 // `label` is rendered as a data-label attribute and surfaced by CSS ::before ONLY below the
 // card-stacking breakpoint, where <thead> is hidden. Without it a phone reader meets two code
 // blocks with no way to tell the upper bound from the lower one — the column header is the only
@@ -806,10 +824,10 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   const body = rows.map((r) => {
     const name = plainTitle(r.title);
     const badges = `${reportLinks(r)}${r.audit?.kind === "tried" ? `<a class="tried" href="c/${esc(r.id)}.html" aria-label="${esc(name)}: ${esc(r.audit.text)}. We have no reading we can match today to what is named here or to the rows shown here, so none of those numbers is checked. Open its page for the row and what we tried">${esc(r.audit.text)}</a>` : r.audit ? `<a class="read read-${esc(r.audit.verdict.toLowerCase())}" href="c/${esc(r.id)}.html" aria-label="A bound row of ${esc(name)}: ${esc(r.audit.text)}. Open its page for which row and what was read">${esc(r.audit.text)}</a>` : ""}${r.oai && r.oai.length ? `<a class="oai" href="c/${esc(r.id)}.html" aria-label="${esc(name)}: ${esc(badgeText(r.oai))}. Open its page for the claim, its Lean statement and what we checked">${esc(badgeText(r.oai))}</a>` : ""}`;
-    return `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}"${olderAttrs(r)} data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}">
+    return `<tr id="c-${esc(r.id)}" data-find="${esc(findKey(r))}"${olderAttrs(r)} data-changed="${esc(r.changed || "")}" data-moved="${r.moved ? "1" : "0"}" data-moved-date="${esc(r.movedDate || "")}" data-when="${esc(whenLine(r))}">
 <th scope="row"><a href="${esc(REPO)}/blob/main/ledger/teorth-optimizationproblems/constants/${esc(r.id)}.md" data-mark>${esc(name)}</a><a class="id" href="#c-${esc(r.id)}" aria-label="Permalink to ${esc(name)}" data-mark>${esc(r.id)}</a>${badges}</th>
-${cell(r.upper, r.upperChanged, r.upperKind, "Upper-bound row (last listed)", historyUrl(r.url, sha))}
-${cell(r.lower, r.lowerChanged, r.lowerKind, "Lower-bound row (last listed)", historyUrl(r.url, sha))}
+${cell(r.upper, r.upperChanged, r.upperKind, UPPER_LABEL, historyUrl(r.url, sha))}
+${cell(r.lower, r.lowerChanged, r.lowerKind, LOWER_LABEL, historyUrl(r.url, sha))}
 <td class="src">${badges ? `<div class="later">${badges}</div>` : ""}${olderLine(r)}<a href="${esc(readable(r.url))}">source</a> · <a href="c/${esc(r.id)}.html" aria-label="The page for ${esc(name)}">page</a> · <a href="${esc(flagUrl(r, sha))}" aria-label="Report a problem with ${esc(name)}">looks wrong?</a> · <details class="cite"><summary aria-label="How to cite ${esc(name)}">cite</summary><code>${esc(citation(r, sha))}</code></details></td>
 </tr>`;
   }).join("\n");
@@ -848,6 +866,9 @@ input,select{width:100%;padding:.6rem .7rem;font-size:1rem;border:1px solid var(
 .near{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:6px;padding:.6rem 1rem;margin:0 0 1rem;font-size:.92rem;max-width:78ch}
 .near p{margin:.35rem 0}
 .near[hidden]{display:none}
+.answer{font-size:.88rem;margin:.7rem 0 0;max-width:78ch}
+.answer p{margin:.3rem 0}
+.answer[hidden]{display:none}
 .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
 table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:56rem}
 th,td{text-align:left;vertical-align:top;padding:.6rem .75rem;border-bottom:1px solid var(--line)}
@@ -946,6 +967,7 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 </select>
 </div>
 </div>
+<div class="answer" id="answer" aria-live="polite" hidden></div>
 <p class="fresh">Snapshot: this mirror last changed on <strong>${esc(generatedOn)}</strong>, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Each bound row shown is the last-listed row of its table, not a claim about which bound is &ldquo;the record.&rdquo; Read <a href="#notes">the notes below the table</a> before citing a number.</p>
 <p class="count" id="count">${rows.length} constants</p>
 <div class="near" id="near" hidden>
@@ -996,7 +1018,8 @@ ${body}
       rows=document.getElementById('rows'),count=document.getElementById('count'),
       empty=document.getElementById('empty'),emptyq=document.getElementById('emptyq'),
       ask=document.getElementById('emptyask'),near=document.getElementById('near'),
-      nearmsg=document.getElementById('nearmsg'),nearask=document.getElementById('nearask');
+      nearmsg=document.getElementById('nearmsg'),nearask=document.getElementById('nearask'),
+      answer=document.getElementById('answer');
   var trs=[].slice.call(rows.getElementsByTagName('tr')),tg=null;
   // Every element the filter may mark, with the text it shipped with, read once on the first search.
   function targets(){
@@ -1065,12 +1088,15 @@ ${body}
   // Show the rows whose haystack contains v and mark v in them; returns [rows shown, shown rows with no mark].
   // raw is the reader's own text, passed only for an exact search: the older-row sentence quotes it,
   // so a shortened (A-80) search passes none and the sentence stays hidden.
+  var marked=[];
   function apply(v,raw){
     var n=0,u=0,T=targets(),O=olders();
     for(var i=0;i<trs.length;i++){
       var hit=!v||trs[i].getAttribute('data-find').indexOf(v)>-1,k=0;
       trs[i].hidden=!hit; if(hit)n++;
-      for(var j=0;j<T[i].length;j++)k+=mark(T[i][j],hit?v:'');
+      // nm counts marks in the NAME only (target 0, the th's first data-mark link).
+      for(var j=0,nm=0,c;j<T[i].length;j++){c=mark(T[i][j],hit?v:'');k+=c;if(j<1)nm+=c;}
+      marked[i]=nm>0;
       if(hit&&v&&!k)u++;
       if(O[i]&&O[i].q){
         var say=!!(raw&&hit&&v&&!k&&older(O[i],v));
@@ -1118,6 +1144,39 @@ ${body}
       emptyq.textContent='“'+raw+'”';
       ask.href=askHref(raw,'');
     }
+    answerLine(v,w,n);
+  }
+  // A-104: on a phone the matching cards start below the screen, so for one to three matches the
+  // line under the search box repeats a row's labels (data-when, built by the cell's own code) and,
+  // when the card shows it, the older-row sentence. Which rows qualify is stated below.
+  // Only for an exact search: a shortened (A-80) match keeps its own notice and gets no line. Built
+  // from text nodes and textContent only; it adds no words of its own beyond the name and id.
+  // A ROW JOINS THE LINE IN TWO CASES ONLY, AND EACH ENTRY SAYS WHICH: (a) the typed text has a letter
+  // and no digit of any script and is highlighted in the constant's NAME; the entry then says
+  // "matched in its name", so the dates read as the constant's own, never as the typed text's. (b) The
+  // card's older-row sentence is showing; the entry carries that sentence, which says the typed text
+  // is not in the rows shown. Any other match gets no line and the card answers below.
+  // Five review rounds found one defect class, the line pairing something the visitor typed that
+  // names a number with dates of rows that do not hold it: an alias (r1: 177/560 on 74a), a comment
+  // about an earlier bound (r2: 55/174, 2.625622), a number in a name (r3: 1324 on 30a), the same with
+  // a word added (r4: "pattern 1324"), and a number word in a name (r5: "six" on 10c, "π" on 7a).
+  // Narrowing the matcher could not close it (any word can name a number), so the line now STATES the
+  // match instead of implying it. The digit and name-only rules stay as the narrower claim.
+  function answerLine(v,w,n){
+    if(!answer)return;
+    answer.textContent='';
+    var show=!!v&&w===v&&n>0&&n<=3,T=targets(),O=olders(),k=0,word=/\\p{L}/u.test(v)&&!/\\p{N}/u.test(v);
+    for(var i=0;show&&i<trs.length;i++){
+      var o=O[i],ol=!!(o&&o.e&&!o.e.hidden);
+      if(trs[i].hidden||!((word&&marked[i])||ol))continue;
+      var p=document.createElement('p'),a=document.createElement('a');
+      a.href='#'+trs[i].id;
+      a.textContent=T[i][0].t+' ('+T[i][1].t+')';
+      p.appendChild(a);
+      p.appendChild(document.createTextNode((ol?'':', matched in its name')+' — '+(trs[i].getAttribute('data-when')||'')+(ol?' '+o.e.textContent:'')));
+      answer.appendChild(p);k++;
+    }
+    answer.hidden=!k;
   }
   // Both ask links file the same title, so report-rate.mjs counts either as an empty-state arrival.
   function askHref(raw,note){
@@ -1238,7 +1297,9 @@ async function selftest() {
   assert.doesNotMatch(fresh.replace(/<[^>]+>/g, ""), /\b(held|holds|steady|current|up to date|unchanged|guaranteed|certified)\b/i, "the freshness line must not promise the numbers held");
   // ORDER: filter, freshness line, count, table, then the notes holding the snapshot note and hints.
   const at = (needle) => { const i = html.indexOf(needle); assert.ok(i > -1, `positive control: ${needle} must be on the page`); return i; };
-  const pageOrder = ['<input id="q"', '<p class="fresh">', '<p class="count"', '<div class="scroll">', "</table>", '<section id="notes"', '<div class="note">', '<p class="hint">'];
+  // A-104: the answer line sits between the search box and the freshness line, so a phone reader
+  // sees it while typing. It ships EMPTY and hidden; only the script fills it.
+  const pageOrder = ['<input id="q"', '<div class="answer" id="answer"', '<p class="fresh">', '<p class="count"', '<div class="scroll">', "</table>", '<section id="notes"', '<div class="note">', '<p class="hint">'];
   for (let i = 1; i < pageOrder.length; i++) assert.ok(at(pageOrder[i - 1]) < at(pageOrder[i]), `${pageOrder[i - 1]} must come before ${pageOrder[i]}`);
   // The notes sit OUTSIDE the table's scroll box: only whitespace between the box's close and the section.
   assert.match(html.slice(at("</table>"), at('<section id="notes"')), /^<\/table>\s*<\/div>\s*$/, "the notes must follow the closed scroll box, not sit inside it");
@@ -1268,6 +1329,7 @@ async function selftest() {
     "</select>",
     "</div>",
     "</div>",
+    '<div class="answer" id="answer" aria-live="polite" hidden></div>',
     '<p class="fresh">Snapshot: this mirror last changed on <strong>2026-08-20</strong>, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Each bound row shown is the last-listed row of its table, not a claim about which bound is &ldquo;the record.&rdquo; Read <a href="#notes">the notes below the table</a> before citing a number.</p>',
     '<p class="count" id="count">2 constants</p>',
   ].join("\n"), "the first-screen block (lede, controls, freshness line, count) is pinned exactly");
@@ -2629,6 +2691,186 @@ async function selftest() {
   // Wording, last: listing position only.
   assert.ok(olderTr.includes("” appears in a table row of this constant's mirrored file, but not in the last-listed rows shown here. <a href=\"https://github.com/u00dxk2/bounds-ledger/blob/main/ledger/teorth-optimizationproblems/constants/1b.md\">Read the file</a> before citing it."),
     "the sentence's wording, and its link to our mirrored copy");
+
+  // --- A-104 (2026-11-14): the answer line under the search box. Executed against the page's own
+  // script. Meaning guards first (what the line may and may not say, when it shows), exact text last.
+  const OLDER_TAIL = "” appears in a table row of this constant's mirrored file, but not in the last-listed rows shown here. Read the file before citing it.";
+  const ansRow = (id, name, idText, when, find, older = null, cells = []) => {
+    const targets = [fakeEl("a", name), fakeEl("a", idText), ...cells.map((c) => fakeEl("code", c))];
+    const attrs = { "data-find": find, "data-when": when };
+    let p = null;
+    if (older) {
+      const q = fakeEl("span");
+      p = { hidden: true, q, querySelectorAll: (sel) => (sel === "[data-older-q]" ? [q] : []) };
+      Object.defineProperty(p, "textContent", { get() { return "“" + this.q.textContent + OLDER_TAIL; } });
+      attrs["data-table"] = older.table.join("\n");
+      attrs["data-shown"] = older.shown.join("\n");
+    }
+    return { id, hidden: false, targets, p, getAttribute: (k) => attrs[k] || "",
+      querySelectorAll: (sel) => (sel === "[data-mark]" ? targets : sel === "[data-older]" && p ? [p] : []) };
+  };
+  const W_SOFA = `${UPPER_LABEL}: value changed 2026-10-28 · ${LOWER_LABEL}: tracked since 2026-07-24 — no movement seen yet`;
+  const W_SOFA2 = `${UPPER_LABEL}: tracked since 2026-09-03 — no movement seen yet · ${LOWER_LABEL}: not pinned`;
+  const W_1B = `${UPPER_LABEL}: tracked since 2026-07-24 — no movement seen yet · ${LOWER_LABEL}: tracked since 2026-07-24 — no movement seen yet`;
+  const HOSTILE = '<img src=x onerror="alert(1)">Evil & co';
+  const W_HOSTILE_LABEL = `${UPPER_LABEL}: value changed <b onclick="x()">2026</b> & "q" · ${LOWER_LABEL}: not pinned`;
+  const aRows = [
+    ansRow("c-41a", "Moving sofa", "41a", W_SOFA, "moving sofa 41a | $2.2195$ |"),
+    ansRow("c-41b", "Ambidextrous sofa", "41b", W_SOFA2, "ambidextrous sofa 41b"),
+    ansRow("c-5k", "Knot trio one", "5k", W_SOFA2, "knot trio one 5k"),
+    ansRow("c-6k", "Knot trio two", "6k", W_SOFA2, "knot trio two 6k"),
+    ansRow("c-7k", "Knot trio three", "7k", W_SOFA2, "knot trio three 7k"),
+    ansRow("c-8k", "Knot four", "8k", W_SOFA2, "knot four 8k"),
+    ansRow("c-9q", HOSTILE, "9q", W_HOSTILE_LABEL, "evil & co 9q"),
+    ansRow("c-1b", "Erdos minimum overlap", "1b", W_1B, "erdos minimum overlap 1b | $0.3808585504$ | [x] | $0.380868$ $0.3808585504$",
+      { table: ["$0.380868$", "$0.3808585504$"], shown: ["| $0.3808585504$ | [x] |"] }, ["| $0.3808585504$ | [x] |"]),
+    // Codex r1: a fraction typed in slash form matches through data-find only. The card shows neither
+    // a highlight nor the older-row sentence (that guard reads the LaTeX form), so the line must stay silent.
+    ansRow("c-74a", "Seshadri", "74a", W_1B, "seshadri 74a | $\\frac{117}{370}$ | 117/370 177/560",
+      { table: ["$\\frac{177}{560}$", "$\\frac{117}{370}$"], shown: ["| $\\frac{117}{370}$ |"] }, ["| $\\frac{117}{370}$ |"]),
+    // The shortened form 1.502 is highlighted in the NAME here. Since r3 the letter rule hides this too:
+    // A-80 fires only on a typed number with no letter, so the w===v guard is kept but is subsumed.
+    ansRow("c-1a", "Rounded 1.502862", "1a", W_SOFA2, "rounded 1.502862 1a | 1.502862 |", null, ["| 1.502862 |"]),
+    // Codex r3: a number inside a constant's NAME (30a, "... pattern 1324"), shown rows holding neither.
+    ansRow("c-30a", "Stanley-Wilf limit for the pattern 1324", "30a", W_SOFA2, "stanley-wilf limit for the pattern 1324 30a | 13.5 | | 10.27 |",
+      null, ["| 13.5 |", "| 10.27 |"]),
+    ansRow("c-10c", "Six standard deviations suffice", "10c", W_SOFA, "six standard deviations suffice 10c | 4.1 |", null, ["| 4.1 |"]),
+    // A name carrying Arabic-Indic digits, so the any-script digit rule has a row to refuse.
+    ansRow("c-31a", "Pattern ١٣ case", "31a", W_SOFA2, "pattern ١٣ case 31a", null, ["| 1 |"]),
+    // Codex r2: the typed number sits only in a comment about an earlier bound, inside a shown cell.
+    ansRow("c-38a", "Comment case", "38a", W_SOFA, "comment case 38a | 2.6273856 | [x] | improves the earlier 2.625622 bound |",
+      null, ["| 2.6273856 | [x] | improves the earlier 2.625622 bound |"]),
+  ];
+  const ansEl = fakeEl("div"); ansEl.hidden = true;
+  const aq = el({ value: "" });
+  const anodes = { q: aq, sort: el({ value: "id" }), rows: el({ getElementsByTagName: () => aRows, appendChild() {} }),
+    count: el({ textContent: "" }), empty: el({ hidden: true }), emptyq: el({ textContent: "" }), emptyask: el({ href: "" }), answer: ansEl, ...nearStub() };
+  const acreated = [];
+  new Function("document", script)({ getElementById: (i) => anodes[i], createElement: (t) => { acreated.push(t); return fakeEl(t); }, createTextNode: fakeText });
+  const asearch = (s) => { aq.value = s; aq.oninput(); };
+  const lines = () => ansEl.kids.map((p) => p.textContent);
+  // (1) FIRES for one to three matches, one line per shown row, in row order.
+  asearch("sofa");
+  assert.equal(ansEl.hidden, false, "two matches must show the answer line");
+  assert.equal(ansEl.kids.length, 2, "one line per matching constant");
+  // (2) THE LISTING-POSITION WORDING: every line carries both sides' "(last listed)" labels, so it can
+  // never read as "this is the current value" (manager review, round 3).
+  for (const l of lines()) assert.equal((l.match(/\(last listed\):/g) || []).length, 2, "each line must label both sides as last listed");
+  // (3) ITS ONLY OWN WORDS SAY HOW IT MATCHED: name, id in brackets, "matched in its name", a dash,
+  // then the row's own labels (orchestrator answer to the r5 consult: state the match, never imply it).
+  assert.equal(lines()[0], "Moving sofa (41a), matched in its name — " + W_SOFA, "the line must be the name, the id, how it matched, and the row's own labels, nothing else");
+  // (4) The banned promise words (the freshness line's check above) on the line's OWN words: only the
+  // framing is checked, because the copied card labels legitimately include "bound unchanged".
+  for (const l of lines()) {
+    const own = l.replace(W_SOFA, "").replace(W_SOFA2, "");
+    assert.doesNotMatch(own, /\b(held|holds|steady|current|up to date|unchanged|guaranteed|certified)\b/i, "the answer line's own words must not promise the numbers held");
+  }
+  // (5) Each name links to its own card.
+  assert.equal(ansEl.kids[0].kids[0].tag, "a", "the line must open with a link");
+  assert.equal(ansEl.kids[0].kids[0].href, "#c-41a", "the link must go to the matching card");
+  // (6) THREE is the most it shows; SILENT for more than three matches, for none, and for an empty box.
+  asearch("trio");
+  assert.equal(ansEl.hidden, false, "exactly three matches must still show the line");
+  assert.equal(ansEl.kids.length, 3, "one line for each of the three");
+  asearch("knot");
+  assert.equal(aRows.filter((r) => !r.hidden).length, 4, "positive control: four constants match");
+  assert.equal(ansEl.hidden, true, "more than three matches must hide the line");
+  assert.equal(ansEl.kids.length, 0, "and leave it empty");
+  asearch("zzzz");
+  assert.equal(ansEl.hidden, true, "no match must hide the line");
+  asearch("sofa"); asearch("");
+  assert.equal(ansEl.hidden, true, "an empty box must hide the line");
+  assert.equal(ansEl.kids.length, 0, "and clear it");
+  // (7) A HOSTILE NAME is text: the link's text is the name exactly and no element beyond the
+  // script's own is ever created.
+  asearch("evil");
+  assert.equal(ansEl.kids[0].kids[0].textContent, HOSTILE + " (9q)", "a name carrying markup must stay text");
+  assert.equal(ansEl.kids[0].kids[1].nodeType, 3, "a label carrying markup must arrive as one text node");
+  assert.equal(ansEl.kids[0].kids[1].textContent, ", matched in its name — " + W_HOSTILE_LABEL, "and read exactly as written");
+  assert.deepEqual([...new Set(acreated)].filter((t) => !["mark", "wbr", "p", "a"].includes(t)), [], "the line may create p and a elements and nothing else");
+  // (8) AN OLDER NUMBER never reads as the shown row: the card's older-row sentence rides on the line.
+  asearch("0.380868");
+  assert.equal(ansEl.hidden, false, "positive control: the older number finds 1b and shows the line");
+  assert.equal(lines()[0], "Erdos minimum overlap (1b) — " + W_1B + " “0.380868" + OLDER_TAIL, "an older-row match must carry the card's older-row sentence");
+  assert.ok(!lines()[0].includes("matched in its name"), "an older-row entry must not claim a name match");
+  // (8g) Codex r5: a number WORD in a name ("six" on 10c) gets an entry, and the entry says the match
+  // was in the name, so its dates read as the constant's, not as the typed word's.
+  asearch("six");
+  assert.equal(lines()[0], "Six standard deviations suffice (10c), matched in its name — " + W_SOFA, "a name match must say it matched in the name");
+  // (8d) Codex r3, placed first so a mutation dropping the letter rule trips THIS guard: a typed number
+  // highlighted in a constant's NAME must get no line; the same constant looked up by a word does.
+  asearch("1324");
+  assert.ok(marksIn(aRows.find((r) => r.id === "c-30a").targets[0]).length > 0, "positive control: the number is highlighted in the name");
+  assert.equal(ansEl.hidden, true, "a typed number highlighted in a name must not admit the row's dates");
+  asearch("wilf");
+  assert.equal(ansEl.kids.length, 1, "positive control: the same constant looked up by a word gets its line");
+  // (8f) Codex r4: letters added to the number ("pattern 1324") must not reopen the route; nor does an
+  // id lookup carrying a digit ("30a"). Any digit, of any script, keeps the line to the older-row path.
+  asearch("pattern 1324");
+  assert.ok(marksIn(aRows.find((r) => r.id === "c-30a").targets[0]).length > 0, "positive control: the mixed query is highlighted in the name");
+  assert.equal(ansEl.hidden, true, "a query carrying a digit must not admit a row through its name, letters or not");
+  asearch("30a");
+  assert.equal(aRows.find((r) => r.id === "c-30a").hidden, false, "positive control: the id finds 30a");
+  assert.equal(ansEl.hidden, true, "an id lookup carries a digit and gets no line; the card answers it");
+  asearch("pattern ١٣");
+  assert.equal(aRows.find((r) => r.id === "c-31a").hidden, false, "positive control: the other-script digits find their row");
+  assert.ok(marksIn(aRows.find((r) => r.id === "c-31a").targets[0]).length > 0, "positive control: and are highlighted in its name");
+  assert.equal(ansEl.hidden, true, "a digit from another script counts as a digit");
+  // (8e) A WORD highlighted only inside a cell (a reference or a comment) admits nothing either: only a
+  // name or id highlight counts as a lookup. Placed here so a mutation counting every highlight trips it.
+  asearch("improves");
+  assert.ok(marksIn(aRows.find((r) => r.id === "c-38a").targets[2]).length > 0, "positive control: the word is highlighted in a cell");
+  assert.equal(ansEl.hidden, true, "a word highlighted only in a cell must not admit the row's dates");
+  // (8c) Codex r2, placed first so a mutation admitting any highlight trips THIS guard: a number
+  // highlighted only in a comment about an earlier bound must get no line.
+  asearch("2.625622");
+  assert.ok(marksIn(aRows.find((r) => r.id === "c-38a").targets[2]).length > 0, "positive control: the comment carries the highlight");
+  assert.equal(ansEl.hidden, true, "a highlight inside a cell's comment must not admit the row's dates");
+  asearch("0.3808585504");
+  assert.equal(aRows.find((r) => r.id === "c-1b").hidden, false, "positive control: the shown-row number finds 1b");
+  assert.ok(marksIn(aRows.find((r) => r.id === "c-1b").targets[2]).length > 0, "positive control: it is highlighted in the shown cell");
+  assert.equal(ansEl.hidden, true, "a number highlighted in a bound cell gets no line; the card answers it");
+  // (8b) Codex r1: a row found only through text its card does not show gets no line, because the line
+  // could not say whether the typed number is a shown row.
+  asearch("177/560");
+  assert.equal(aRows.find((r) => r.id === "c-74a").hidden, false, "positive control: the slash-form fraction finds 74a");
+  assert.equal(ansEl.hidden, true, "a match through text the card does not show must not get a dated line");
+  asearch("overlap 1b");
+  assert.equal(aRows.find((r) => r.id === "c-1b").hidden, false, "positive control: name and id typed together find 1b");
+  assert.equal(ansEl.hidden, true, "nor must a match with nothing highlighted on the card");
+  // (9) A shortened (A-80) match keeps its own notice and gets no line, EVEN WHEN the shortened form is
+  // highlighted in a shown row (1.5029 typed, 1.502 marked in 1.502862): the row may not be the one meant.
+  asearch("1.5029");
+  assert.equal(anodes.near.hidden, false, "positive control: this search took the shortened path");
+  assert.ok(marksIn(aRows.find((r) => r.id === "c-1a").targets[2]).length > 0, "positive control: the shortened form is highlighted in the shown row");
+  assert.equal(ansEl.hidden, true, "a shortened match must not show the answer line");
+  // (10) THE ATTRIBUTE EQUALS THE CARD: each side's text after the label is exactly the date line the
+  // cell shows, for every kind the page prints.
+  const whenOf = (tr, nth) => {
+    const spans = [...tr.matchAll(/<span class="when[^"]*">(?:<a [^>]*>)?([^<]*)(?:<\/a>)?<\/span>/g)].map((m) => m[1]);
+    return spans[nth];
+  };
+  for (const [kind, changed] of [["value", "2026-08-02"], ["text", "2026-08-03"], ["expression", "2026-08-04"], ["first", "2026-07-24"], [null, "2026-07-25"]]) {
+    const pg = renderHtml([{ ...olderBase, tableValues: [], lower: "| $0.37$ | [y] |", lowerChanged: null, lowerKind: null,
+      upperKind: kind, upperChanged: changed }], manifest, "2026-11-14");
+    const tr = (pg.match(/<tr id="c-1b"[\s\S]*?<\/tr>/) || [""])[0];
+    const attr = (tr.match(/ data-when="([^"]*)"/) || [])[1];
+    assert.ok(attr, `the row must carry data-when (kind ${kind})`);
+    const decoded = attr.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+    assert.equal(decoded, `${UPPER_LABEL}: ${whenOf(tr, 0)} · ${LOWER_LABEL}: ${whenOf(tr, 1)}`, `data-when must repeat the cells' own date lines (kind ${kind})`);
+  }
+  // (11) The banned promise words over the WHOLE line as the real label code writes it, for every kind
+  // (Codex r1: checking only the framing would let a promise added to whenLabel() pass). The one exempt
+  // phrase is the card's own "— bound unchanged", which says the bound held across a text edit.
+  for (const kind of ["value", "text", "expression", "first", null]) {
+    const wl = whenLine({ upper: "x", lower: "y", upperChanged: "2026-08-02", lowerChanged: null, upperKind: kind, lowerKind: null });
+    const full = "Name (1a), matched in its name — " + wl + " “0.1" + OLDER_TAIL;
+    assert.doesNotMatch(full.replace(/— bound unchanged/g, ""), /\b(held|holds|steady|current|up to date|unchanged|guaranteed|certified)\b/i,
+      `the answer line, built from the real labels, must not promise the numbers held (kind ${kind})`);
+  }
+  const unpinned = renderHtml([{ ...olderBase, tableValues: [] }], manifest, "2026-11-14");
+  assert.match(unpinned, / data-when="Upper-bound row \(last listed\): value changed 2026-08-02 · Lower-bound row \(last listed\): not pinned"/,
+    "a side with no pinned row must say not pinned, as its cell does");
   const olderText = ((olderTr.match(/<p class="older"[^>]*>([\s\S]*?)<\/p>/) || [, ""])[1]).replace(/<[^>]*>/g, "");
   assert.ok(olderText.includes("Read the file before citing it."), "positive control: the sentence's own text was read");
   assert.doesNotMatch(olderText, /supersed|older|newer|record|previous|current/i,
