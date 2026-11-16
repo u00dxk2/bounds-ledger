@@ -240,3 +240,67 @@ the pass` (exit 3), and P3 was the pass.
 Re-read this whenever coverage changes materially, when an arrival instrument first produces a
 readable number, or at the next forced-decision pass — whichever comes first. If the loop
 archetype above turns out to be wrong, most of the metric section is wrong with it.
+
+## Cold audit 2026-11-15
+
+Rotation pass, 41 days after the 2026-10-05 audit, asked for by David. **The auditor was a sub-agent
+that read only this file, `docs/key-user-flows.md` (this lane has no `docs/evangelism-evidence.md`)
+and the live site by plain HTTP fetch**: the index, `c/1a.html`, `c/41a.html` and `ramsey.html`,
+all 200, `Last-Modified` 2026-11-15 19:35 UTC, fetched ~18:30 MT. It read no retro, status post,
+report or commit.
+
+**Verdict: distance to the moment UNKNOWN on the evidence; no observed movement.
+`evangelismMovement` null**, because the bar's own proving metric is NOT MEASURABLE by design (no
+page analytics, no Pages request log; § Reader reach) and no real-user evidence ledger exists. A
+null is the honest output here. Nothing tonight shows a stranger reaching the moment, and nothing
+could.
+
+**What a stranger sees, cold.** The page asks the right question in its title. Its honesty is real,
+and it is the rarest thing about it: every number carries its listing position, its sha and a
+caveat that travels inside the citation. What it costs the reader:
+- **The shown "bound" is a raw table row, not a number.** 1a's upper bound reads
+  `| $1.5027434868$ | [A2026] | Atris. Step function with 65,536 equal steps ...` and runs about 70
+  words, with LaTeX shown as `$...$` source. A mathematician who came to check one number has to dig
+  it out of a pipe-delimited string. The exact pin is the right thing to keep; it is the wrong thing
+  to lead with.
+- **The intro and notes run to several hundred words of caveats before and after the table**
+  (snapshot vs check date, last-listed vs record, the read-verdict grammar, italic-line rules). Each
+  sentence holds up. Together they make the reader do the work of trusting the page.
+- **The change labels on the live page are not the three this bar names.** Census of the index:
+  175 `tracked since … no movement seen yet`, 50 `value changed`, 8 `text edited`, 7 `bound cell
+  edited` (240 labels over 120 rows). `bound cell edited` is not explained in the notes section
+  read tonight, and it sits on 1b's upper row, whose shown value (0.3808585504) is not the 0.380868
+  in the README's founding story. A reader cannot tell from the page whether that is a moved bound.
+- **There is a lot to see.** 35 `value changed` labels are dated October (14 on 10-18, 20 on 10-26,
+  1 on 10-28). The material the moment needs exists; the reader who would be told about it does not
+  come back to look, and the page has no way to reach them.
+
+**Does the written bar still describe the product?** The core problem and the loop archetype hold.
+The moment section is stale in two places: its three labels are not the live vocabulary, and it
+leaves out what the product has become since David's 09-09 depth ruling, which is a second answer
+per row: whether someone has read the cited row against its source. Refresh below.
+
+**PROPOSAL (not David's words; his taste call)** — Job 1 shape, the moment section only; core
+problem, metric and loop archetype unchanged:
+
+> ## The would-tell-a-friend moment
+> A researcher about to cite a constant looks it up and learns two things about their own citation
+> that they could not have known without redoing the literature search: **whether the number has
+> moved since we began watching it** (`value changed <date>`, or a dated `tracked since … no
+> movement seen yet`), and **whether anyone has read that row against the source it cites**, with
+> what was read and what it said. Then they cite it with that provenance in hand.
+> The sentence we are trying to earn: *"there's a ledger that tells you if the bound you're citing
+> moved, and whether anyone actually checked the paper."*
+> The share channel is the cite block and the row permalink; neither is the moment.
+
+**The ONE change that would most move it: let the reader be told, instead of having to come back.**
+This bar's own friend sentence is "a thing that ... **tells you** when a number you cited moved".
+The product does not tell anyone anything. It waits to be revisited, on a loop this file says runs
+weeks to months, so the October movement was announced to nobody. A static per-constant feed
+(`c/<id>.xml`, Atom, written by the renderer beside `c/<id>.html`, one entry per `value changed`)
+plus a "watch this constant" link on each page and each cite block keeps the no-runtime-fetch
+invariant intact: a link to a feed is not an asset the page loads. It turns the citation check from
+a visit into a subscription, and it is the moment as the bar words it. (Feed subscriptions cannot be
+counted here either, so it would ship on judgment, like every pass above.) A cheaper second choice is
+to lead each row with the bare number and its key and fold the raw pinned row into a disclosure, as
+Rotation 10 already does for anchors on constant pages.
