@@ -505,6 +505,18 @@
       "viewUniques": 0,
       "clones": 70,
       "cloneUniques": 17
+    },
+    "2026-11-15": {
+      "views": 0,
+      "viewUniques": 0,
+      "clones": 31,
+      "cloneUniques": 5
+    },
+    "2026-11-16": {
+      "views": 0,
+      "viewUniques": 0,
+      "clones": 86,
+      "cloneUniques": 39
     }
   },
   "rollups": {
@@ -772,6 +784,11 @@
       "window": "14d",
       "viewUniques": 5,
       "cloneUniques": 267
+    },
+    "2026-11-17": {
+      "window": "14d",
+      "viewUniques": 3,
+      "cloneUniques": 226
     }
   }
 }

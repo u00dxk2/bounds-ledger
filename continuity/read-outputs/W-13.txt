@@ -1,16 +1,74 @@
 # read-output sidecar for W-13 — written by check-due-gates-dispositioned --run
 # readCommand: npm run served
-# ran: 2026-11-10T16:45:10.534Z · exit: 0
-# lines: 10 · sha256: 72a8ce20816dbfc1 (first 16 hex of the output below)
+# ran: 2026-11-17T17:27:07.846Z · exit: 0
+# lines: 68 · sha256: 626e3c9c960292d0 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
 > bounds-ledger@0.0.0 served
 > node scripts/check-served.mjs
 
-# Served vs HEAD — 2026-11-10T16:45:09.069Z
-anchor f01a0c6a4e (2026-11-10T09:04:00-07:00), the last commit to touch a published page; 1 file(s) it changed, of 124 published
-SERVED      index.html  545325 bytes
+# Served vs HEAD — 2026-11-17T17:26:15.977Z
+anchor 3a79d96ef1 (2026-11-17T10:25:51-07:00), the last commit to touch a published page; 59 file(s) it changed, of 124 published
+IN-FLIGHT   c/10a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/10b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/11a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/13a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/13b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/15b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/16a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/17a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/19a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/1a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/1b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/1c.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/1d.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/20a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/20c.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/21a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/22a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/22b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/26a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/30a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/31a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/35a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/36a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/37a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/38a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/3a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/3b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/3e.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/41b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/42a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/44a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/45a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/46a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/47a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/49a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/51a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/57a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/57b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/57c.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/59a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/5a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/60a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/62b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/63a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/64a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/68a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/69a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/70a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/78a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/82a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/83a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/84a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/84b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/86a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/87a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/88a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/89a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/8a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+IN-FLIGHT   c/9a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
 
-1 checked — 1 served, 0 in flight, 0 stale, 0 unreachable.
+59 checked — 0 served, 59 in flight, 0 stale, 0 unreachable.
 This is an INDICATOR: it never gates a build and never runs in CI. A page can also be stale for a reader behind a cache this read does not share.
 RESULT: PASS — every file the last page-changing commit touched is being served as committed (exit 0)
