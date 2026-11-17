@@ -122,3 +122,42 @@ ACTION: COMPLETED · item W-17 (the newer-papers line on every constant page) ·
 - **Receipt:** unchanged from P3 (`bus ad8113e8`): `89812469`, encounter blind (`A-59`, encounter on the public pages is blind).
 - **Pending reads:** `A-103` (the README's visitor command), `A-104` (phone search answer line) 2026-11-21; `A-45` (stale-value resolvability), `A-91` (67a's withdrawn preprint) 2026-11-22; `A-108` 2026-11-23; `W-4`, `W-8`, `W-13`, `W-17` 2026-11-24; `A-78` (OpenAI's math release), `G-4` (an outside party acts on a watched record) 2026-11-30; `A-81` 2026-12-01.
 - **Committed with this close:** this report, the primer `docs/cold-starts/2026-11-17.md`, `continuity/items.json`, `continuity/traffic.json` and the read-output stamps (`W-4`, `W-8`, `W-13`).
+
+### Round 2 selection packet (design and copy pass)
+
+A second kickoff arrived at 21:56Z (bus `16560d24`), after the close above: a design and copy pass across the lanes. Its first phase replaces the usual work list. It ships nothing a visitor sees.
+
+- **Outcome:** no ledger item. The pass's bar: a blind reader shown before and after frames picks "after" as the professionally designed one, and after five seconds on the first screen can say what the product is and why they would use it. This phase delivers before frames, a product brief, a design brief and draft copy.
+- **The user problem, in the user's words** (`docs/evangelism-bar.md`): "I cited a number. I have no idea if it's still the current one." The cold audit of 2026-11-15 in that file is the evidence this pass acts on: the shown bound is a raw table row about 70 words long, and several hundred words of caveats sit around the table.
+- **Evidence:**
+  - OBSERVED · the six before frames, live site, logged out, captured 2026-11-17 at 1440x900 and 390x844 · `docs/design-pass-2026-11-17/before/capture-log.json` records status 200, 120 rows, and for the search "sofa" 2 visible rows, for "qqqq" 0 rows with the empty panel shown.
+  - OBSERVED · on the 1440 first screen the first entry's upper-bound cell fills the column with a pipe-delimited row and raw LaTeX (`first-screen-1440.png`). On the 390 empty state the panel's first two paragraphs fill the screen below the controls (`flow-empty-390.png`).
+  - HYPOTHESIS · that a calmer first screen makes a stranger understand the page faster. No reader has been observed.
+  - MISSING · any real reader's account; the page has no analytics (`A-59`, the row saying nothing can see an arrival there).
+- **Permission:** the lead says David approved the pass in chat at about 12:00 MT. That lead carries no source row, so I could not re-read his words; I proceeded because this phase changes nothing a visitor sees. The round's rule holds: nothing on the page changes without his pick.
+- **Delivered in this phase:**
+  - Before frames, six PNGs under `docs/design-pass-2026-11-17/before/`: `first-screen-1440.png`, `first-screen-390.png`, `flow-match-1440.png`, `flow-match-390.png`, `flow-empty-1440.png`, `flow-empty-390.png`, with `capture-log.json`. One heavy-job admit, "admitted after 35m48s in queue".
+  - `docs/PRODUCT.md` and `docs/DESIGN.md`.
+  - `docs/design-pass-2026-11-17/copy.md`: five headlines with three kept, a two-sentence subhead, the call to action, one empty state and one error state rewritten.
+  - Registry row, posted on the bus (`f7c7ade0`): a printed handbook of mathematical tables with errata slips; Palatino from the reader's device; 2px radius.
+- **Review:** three read-only Codex rounds (banner workdir checked each time) on the three written files. All three returned "VERDICT: FIX FIRST". Round 1 refuted nine of the thirteen visitor sentences: the draft turned a lookup in a published snapshot into a verdict on a number. Round 2 held seven and refuted three, for promising a change date on rows that carry only the date tracking began. Round 3 held eleven and refuted two headlines, for promising a date where the page can show "date unknown"; it found no disclosure and no refuted sentence in `docs/DESIGN.md`. I adopted the reviewer's narrower wording each time and stopped there: the last edits are unreviewed, the copy file says so, and **the commit is local, not pushed**, because this repository is public and no round returned a ship verdict. The same fault class came back three rounds running (a short sentence about the page leaves out a state the code has), so the build phase should take visitor sentences from the reviewer's wording, not write new ones.
+- **Three things this lane does differently from the brief, each needing the orchestrator's eye:**
+  - No font file. The index page's self-test rejects any `url(` or `@import` in its stylesheet ("the index stylesheet must load nothing"), so a self-hosted face would fail it. The design uses device faces. Changing that guard is not mine to decide.
+  - The "flag" is a renderer mode that writes variants to a scratch folder, never a switch in the published page, because every push to main publishes. That mode does not exist yet and has to fail closed: Codex read that an unrecognised renderer argument can fall through to writing `index.html`.
+  - A third type family survives as an exception: the system monospace face, for exact pinned strings only.
+- **A fault on the live page, found by the review, not caused by this pass:** the empty state's issue draft is pre-titled "Constant not tracked", which a search that found nothing cannot support. Not fixed here; a hygiene input.
+- **Next action (the build phase, after the manager's review):** improve. Build the fail-closed scratch render mode first, then three first-screen variants from three composition families. First command:
+
+  ```
+  node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --selftest
+  ```
+
+- **Acceptance condition for this phase:** six before frames committed; every product fact in the copy on the Known list of `docs/PRODUCT.md`; the world and display face absent from the live registry; scope held to the first screen and the search flow; `index.html` unchanged (`git status --porcelain` lists no tracked file).
+- **Delivery and encounter checks:** none in this phase. Nothing is delivered to a visitor.
+- **USER-FACING: no.** Paths: `docs/PRODUCT.md`, `docs/DESIGN.md`, `docs/design-pass-2026-11-17/` and this report. No page, script or ledger file.
+- **HYGIENE INPUTS:**
+  - (a) due rows not bearing on the choice: none — read `check-due-gates-dispositioned.mjs --print`, "0 gate(s) due on/before 2026-11-17".
+  - (b) owed child rows: none — read the kickoff's "rows owed to you in skylark-site's ledger" (0 of 850).
+  - (c) state reads marked CROSSED: none — read the kickoff's state reads (stale-actionable 0 of 30; missingLinkedCommits NOTHING SWEPT).
+  - Added by this phase: the "Constant not tracked" issue title above.
+- **Machine notes for the round:** `scripts/heavy-gate.mjs` does not exist in skylark-site; the queue tool is `C:/dev/manager/shared-tools/heavy-gate/heavy-gate.mjs`. The registry file was absent from the shared checkout at 15:00 MT and readable from `origin/main` by 15:30 MT.

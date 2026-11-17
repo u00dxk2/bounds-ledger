@@ -1,0 +1,72 @@
+{
+  "baseUrl": "https://u00dxk2.github.io/bounds-ledger/",
+  "at": "2026-11-17T22:37:31.611Z",
+  "frames": [
+    {
+      "file": "first-screen-1440.png",
+      "viewport": "1440x900",
+      "status": 200,
+      "lastModified": "Tue, 17 Nov 2026 18:39:02 GMT",
+      "title": "Bounds Ledger — is the number you cited still current?",
+      "rows": 120,
+      "query": null,
+      "visibleRows": 120,
+      "emptyShown": 0
+    },
+    {
+      "file": "flow-match-1440.png",
+      "viewport": "1440x900",
+      "status": 200,
+      "lastModified": "Tue, 17 Nov 2026 18:39:02 GMT",
+      "title": "Bounds Ledger — is the number you cited still current?",
+      "rows": 120,
+      "query": "sofa",
+      "visibleRows": 2,
+      "emptyShown": 0
+    },
+    {
+      "file": "flow-empty-1440.png",
+      "viewport": "1440x900",
+      "status": 200,
+      "lastModified": "Tue, 17 Nov 2026 18:39:02 GMT",
+      "title": "Bounds Ledger — is the number you cited still current?",
+      "rows": 120,
+      "query": "qqqq",
+      "visibleRows": 0,
+      "emptyShown": 1
+    },
+    {
+      "file": "first-screen-390.png",
+      "viewport": "390x844",
+      "status": 200,
+      "lastModified": "Tue, 17 Nov 2026 18:39:02 GMT",
+      "title": "Bounds Ledger — is the number you cited still current?",
+      "rows": 120,
+      "query": null,
+      "visibleRows": 120,
+      "emptyShown": 0
+    },
+    {
+      "file": "flow-match-390.png",
+      "viewport": "390x844",
+      "status": 200,
+      "lastModified": "Tue, 17 Nov 2026 18:39:02 GMT",
+      "title": "Bounds Ledger — is the number you cited still current?",
+      "rows": 120,
+      "query": "sofa",
+      "visibleRows": 2,
+      "emptyShown": 0
+    },
+    {
+      "file": "flow-empty-390.png",
+      "viewport": "390x844",
+      "status": 200,
+      "lastModified": "Tue, 17 Nov 2026 18:39:02 GMT",
+      "title": "Bounds Ledger — is the number you cited still current?",
+      "rows": 120,
+      "query": "qqqq",
+      "visibleRows": 0,
+      "emptyShown": 1
+    }
+  ]
+}
