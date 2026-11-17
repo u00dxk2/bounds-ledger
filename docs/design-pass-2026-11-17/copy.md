@@ -6,7 +6,7 @@ Known list in `docs/PRODUCT.md`.
 
 ## Review status, stated plainly
 
-Two read-only review rounds by a reviewer from another model family both returned FIX FIRST.
+Three read-only review rounds by a reviewer from another model family each returned FIX FIRST.
 Round 1 refuted nine of the thirteen visitor sentences: the draft had turned a lookup in a published
 snapshot into a verdict on a number. Round 2 held seven of thirteen and refuted three for one
 remaining fault: promising a change date on rows that carry only the date tracking began. Round 3
