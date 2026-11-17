@@ -160,4 +160,5 @@ A second kickoff arrived at 21:56Z (bus `16560d24`), after the close above: a de
   - (b) owed child rows: none — read the kickoff's "rows owed to you in skylark-site's ledger" (0 of 850).
   - (c) state reads marked CROSSED: none — read the kickoff's state reads (stale-actionable 0 of 30; missingLinkedCommits NOTHING SWEPT).
   - Added by this phase: the "Constant not tracked" issue title above.
+- **Build phase, same day:** three variants were built behind a scratch-only generator, the blind pick chose variant c (the table set as a handbook page; all six swapped verdicts agreed), and its after frames and a like-for-like before set are committed. The record, with the frames, checks, claims pass and known gaps, is `docs/design-pass-2026-11-17/selection.md`. `index.html` is unchanged and no visitor sees a change; the variant goes live only on David's pick.
 - **Machine notes for the round:** `scripts/heavy-gate.mjs` does not exist in skylark-site; the queue tool is `C:/dev/manager/shared-tools/heavy-gate/heavy-gate.mjs`. The registry file was absent from the shared checkout at 15:00 MT and readable from `origin/main` by 15:30 MT.

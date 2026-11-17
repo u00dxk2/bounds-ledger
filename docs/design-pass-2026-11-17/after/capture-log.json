@@ -1,0 +1,127 @@
+{
+  "variant": "c",
+  "at": "2026-11-17T23:52:14.698Z",
+  "source": "the selected variant, served from a scratch file on this machine; not the live site",
+  "frames": [
+    {
+      "file": "first-screen-1440.png",
+      "viewport": "1440x900",
+      "rows": 120,
+      "query": null,
+      "visibleRows": 120,
+      "emptyShown": 0
+    },
+    {
+      "file": "flow-match-1440.png",
+      "viewport": "1440x900",
+      "rows": 120,
+      "query": "sofa",
+      "visibleRows": 2,
+      "emptyShown": 0
+    },
+    {
+      "file": "flow-empty-1440.png",
+      "viewport": "1440x900",
+      "rows": 120,
+      "query": "qqqq",
+      "visibleRows": 0,
+      "emptyShown": 1
+    },
+    {
+      "file": "first-screen-390.png",
+      "viewport": "390x844",
+      "rows": 120,
+      "query": null,
+      "visibleRows": 120,
+      "emptyShown": 0
+    },
+    {
+      "file": "flow-match-390.png",
+      "viewport": "390x844",
+      "rows": 120,
+      "query": "sofa",
+      "visibleRows": 2,
+      "emptyShown": 0
+    },
+    {
+      "file": "flow-empty-390.png",
+      "viewport": "390x844",
+      "rows": 120,
+      "query": "qqqq",
+      "visibleRows": 0,
+      "emptyShown": 1
+    }
+  ],
+  "renderedFaces": {
+    "390": {
+      "h1": [
+        "Palatino Linotype (122 glyphs)"
+      ],
+      "tbody th > a:first-child": [
+        "Palatino Linotype (48 glyphs)"
+      ],
+      "p.fresh": [
+        "Segoe UI (307 glyphs)",
+        "Segoe UI (10 glyphs)"
+      ]
+    },
+    "1440": {
+      "h1": [
+        "Palatino Linotype (124 glyphs)"
+      ],
+      "tbody th > a:first-child": [
+        "Palatino Linotype (47 glyphs)"
+      ],
+      "p.fresh": [
+        "Segoe UI (308 glyphs)",
+        "Segoe UI (10 glyphs)"
+      ]
+    }
+  },
+  "reducedMotion": {
+    "animationNameUnderReduce": "none",
+    "animationNameWithNoPreference": "settle"
+  },
+  "perf": {
+    "before": {
+      "lcpMs": [
+        228,
+        200,
+        148
+      ],
+      "clsScore": [
+        0,
+        0,
+        0
+      ],
+      "worstEventMs": [
+        56,
+        112,
+        56
+      ],
+      "medianLcpMs": 200,
+      "medianCls": 0,
+      "medianWorstEventMs": 56
+    },
+    "after": {
+      "lcpMs": [
+        236,
+        140,
+        172
+      ],
+      "clsScore": [
+        0,
+        0,
+        0
+      ],
+      "worstEventMs": [
+        64,
+        80,
+        72
+      ],
+      "medianLcpMs": 172,
+      "medianCls": 0,
+      "medianWorstEventMs": 72
+    }
+  }
+}
