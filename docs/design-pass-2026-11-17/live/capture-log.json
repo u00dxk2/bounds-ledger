@@ -1,0 +1,36 @@
+{
+  "at": "2026-11-18T07:16:33.907Z",
+  "url": "https://u00dxk2.github.io/bounds-ledger/",
+  "note": "signed out (the site has no sign-in), fresh browser context, light scheme",
+  "frames": [
+    {
+      "file": "first-screen-1440.png",
+      "viewport": "1440x900",
+      "status": 200,
+      "mast": true,
+      "h1": "120 mathematical constants with last-listed bounds rows and, where available, dates for pin changes or the start of tracking.",
+      "browseVisible": true,
+      "rows": 120,
+      "fieldBorder": "rgb(11, 95, 255)",
+      "accent": "rgb(11, 95, 255)",
+      "labelTransform": "none",
+      "scrollWidth": 1440,
+      "pageErrors": []
+    },
+    {
+      "file": "first-screen-390.png",
+      "viewport": "390x844",
+      "status": 200,
+      "mast": true,
+      "h1": "120 mathematical constants with last-listed bounds rows and, where available, dates for pin changes or the start of tracking.",
+      "browseVisible": true,
+      "rows": 120,
+      "fieldBorder": "rgb(11, 95, 255)",
+      "accent": "rgb(11, 95, 255)",
+      "labelTransform": "none",
+      "scrollWidth": 390,
+      "pageErrors": []
+    }
+  ],
+  "failures": []
+}

@@ -15,7 +15,7 @@ served file, not the date any one state changed.
 
 | Surface or state | Who sees it | Defined in | File last changed | Status |
 |---|---|---|---|---|
-| `index.html`: first screen (headline, search, order control, freshness line, table) | any visitor | `renderHtml()` in `scripts/render-site.mjs`; the handbook first screen adds a masthead and a Browse control | 2026-11-14, commit `57ca289` | NEXT 2026-11-17: handbook staged behind `FIRST_SCREEN`; DONE after a signed-out GET of the regenerated, published page |
+| `index.html`: first screen (headline, search, order control, freshness line, table) | any visitor | `renderHtml()` in `scripts/render-site.mjs` (handbook mode: masthead and Browse control added) | 2026-11-17 (rail day), commit `3e1f947` | DONE: `FIRST_SCREEN = "handbook"`; a signed-out GET of the published page after the Pages build of `3e1f947` showed the masthead, "Browse all 120 constants" and 120 rows; live frames in `docs/design-pass-2026-11-17/live/` |
 | `index.html`: search results and the answer line under the box (`A-104`) | any visitor | the page's filter script in `scripts/render-site.mjs` | as above | as above |
 | `index.html`: empty-search panel | any visitor | `renderHtml()` and the filter script | as above | as above; the issue draft it opens is HOLD (below) |
 | `index.html`: near-miss panel | any visitor | `renderHtml()` and the filter script | as above | as above (restyled; wording unchanged) |
@@ -32,4 +32,4 @@ served file, not the date any one state changed.
 | `sitemap.xml`, `google45610b69cae7202a.html` | crawlers | the files themselves | 2026-11-05, commits `2373a50` and `33f5001` | not a screen |
 | Other tracked files (`docs/**`, `ledger/**`, `continuity/**`, `scripts/**`) | anyone with the path | tracked under the configured Pages source | n/a | not a designed screen |
 
-DONE, NEXT and HOLD totals are pending; the rollout plan calls for recording them at close.
+Totals after the turn-on (rail day 2026-11-17): DONE 5 (the five `index.html` rows), NEXT 5 (constant pages, `ramsey.html`, `copying.html`, a 404 page, `README.md`, each dated 2026-11-24), HOLD 4 (the two issue-draft families, CI findings, `SECURITY.md`), not a screen 2.
