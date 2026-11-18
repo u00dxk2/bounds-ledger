@@ -800,7 +800,9 @@ const HANDBOOK_EMPTY = (askHref) => `<div class="empty" id="empty" hidden>
 <p><a id="emptyask" href="${askHref}">Tell us what you were looking for</a> (opens a GitHub issue draft carrying your search term; submitted issues are public).</p>
 </div>`;
 
-const HANDBOOK_BROWSE_SCRIPT = `<script>(function(){var b=document.getElementById('browse'),q=document.getElementById('q');if(!b||!q)return;b.addEventListener('click',function(){q.value='';q.dispatchEvent(new Event('input',{bubbles:true}));});})();</script>`;
+// The control ships hidden and the script that wires it reveals it, so a reader without scripts never
+// meets a button that does nothing (the copy-citation control's rule; review r1 on 6e82d48, finding 6).
+export const HANDBOOK_BROWSE_SCRIPT = `<script>(function(){var b=document.getElementById('browse'),w=document.getElementById('browsewrap'),q=document.getElementById('q');if(!b||!w||!q)return;b.addEventListener('click',function(){q.value='';q.dispatchEvent(new Event('input',{bubbles:true}));});w.hidden=false;})();</script>`;
 
 // Replace exactly one occurrence, or throw: a transform that silently no-ops would publish a half-applied page.
 function replaceOnce(html, pattern, replacement, what) {
@@ -823,8 +825,14 @@ export function applyFirstScreen(base, mode) {
 <h1>${n} mathematical constants with last-listed bounds rows and, where available, dates for pin changes or the start of tracking.</h1>`, "headline and lede");
   h = replaceOnce(h, /<label for="q">[\s\S]*?<\/label>/, '<label for="q">Look up a bound you are about to cite</label>', "field label");
   h = replaceOnce(h, 'placeholder="Type to filter&hellip;"', 'placeholder="Type a name, an id, or a bound value"', "placeholder");
-  h = replaceOnce(h, '<div class="answer" id="answer"', `<p class="browse"><button type="button" id="browse">Browse all ${n} constants</button></p>\n<div class="answer" id="answer"`, "browse control");
-  const ask = h.match(/<a id="emptyask" href="([^"]*)"/);
+  h = replaceOnce(h, '<div class="answer" id="answer"', `<p class="browse" id="browsewrap" hidden><button type="button" id="browse">Browse all ${n} constants</button></p>\n<div class="answer" id="answer"`, "browse control");
+  // The empty-state block is replaced whole, so it must be the flat block it is today: one report
+  // link on the page, and no nested <div> that a lazy match would stop at, leaving classic copy and a
+  // duplicate id behind (review r1 on 6e82d48, finding 3). Either shape refuses the render.
+  const emptyBlock = (h.match(/<div class="empty" id="empty" hidden>[\s\S]*?<\/div>/) || [""])[0];
+  if ((h.match(/id="emptyask"/g) || []).length !== 1) throw new Error("first screen: expected exactly one empty-state report link on the page");
+  if ((emptyBlock.match(/<div\b/g) || []).length !== 1 || !emptyBlock.includes('id="emptyask"')) throw new Error("first screen: the empty state is not the flat block this transform replaces");
+  const ask = emptyBlock.match(/<a id="emptyask" href="([^"]*)"/);
   if (!ask) throw new Error("first screen: the empty state's report link was not found");
   h = replaceOnce(h, /<div class="empty" id="empty" hidden>[\s\S]*?<\/div>/, HANDBOOK_EMPTY(ask[1]), "empty state");
   h = replaceOnce(h, "</footer>", `</footer>\n${HANDBOOK_BROWSE_SCRIPT}`, "browse script");
@@ -1569,7 +1577,44 @@ async function selftest() {
     "the headline counts the rendered rows (2 in this fixture)");
   assert.ok(hb.includes('<label for="q">Look up a bound you are about to cite</label>'), "the claims-passed field label");
   assert.ok(hb.includes('placeholder="Type a name, an id, or a bound value"'), "the claims-passed placeholder");
-  assert.ok(hb.includes('<button type="button" id="browse">Browse all 2 constants</button>'), "the browse control counts the rendered rows");
+  assert.ok(hb.includes('<p class="browse" id="browsewrap" hidden><button type="button" id="browse">Browse all 2 constants</button></p>'),
+    "the browse control counts the rendered rows and ships hidden until its script wires it");
+  // Review r1 on 6e82d48, finding 5: the handbook adds no resource-loading markup and no comment of
+  // any kind. Judged as a DIFFERENCE from the classic page, so the classic page's own scripts (which
+  // carry comments today) are not re-litigated here and any new src, href-to-a-resource or comment is.
+  const countOf = (s, re) => (s.match(re) || []).length;
+  for (const [what, re] of [["src= attribute", /\bsrc\s*=/gi], ["<img|iframe|link|object|embed|video|audio|source> tag", /<(img|iframe|link|object|embed|video|audio|source)\b/gi], ["HTML comment", /<!--/g], ["CSS or JS block comment", /\/\*/g], ["srcset/poster/background attribute", /\b(srcset|poster|background)\s*=/gi]]) {
+    assert.equal(countOf(hb, re), countOf(html, re), `the handbook must add no ${what}`);
+  }
+  // Refusals on an ambiguous empty state (finding 3): a nested <div> and a second report link.
+  assert.throws(() => applyFirstScreen(html.replace('<p><a id="emptyask"', '<div class="x"></div><p><a id="emptyask"'), "handbook"), /not the flat block/,
+    "a nested div inside the empty state must stop the render");
+  assert.throws(() => applyFirstScreen(html.replace("</footer>", '<a id="emptyask" href="x">x</a></footer>'), "handbook"), /exactly one empty-state report link/,
+    "a second report link on the page must stop the render");
+  assert.throws(() => applyFirstScreen(html.replace("</style>", "</style><style></style>"), "handbook"), /matched 2 time/,
+    "a duplicated transform anchor must stop the render");
+  // Finding 4: Browse, EXECUTED against a stub DOM from a filtered state. The control is revealed only
+  // by its script, and a click empties the field and fires the same input event the filter listens to.
+  {
+    const browseScript = hbScripts.find((s) => s.includes("getElementById('browse')"));
+    const fired = [];
+    const listeners = {};
+    const els = {
+      browse: { addEventListener: (t, f) => { listeners[t] = f; } },
+      browsewrap: { hidden: true },
+      q: { value: "sofa", dispatchEvent: (e) => { fired.push(e.type + ":" + e.bubbles); return true; } },
+    };
+    class StubEvent { constructor(type, o = {}) { this.type = type; this.bubbles = !!o.bubbles; } }
+    new Function("document", "Event", browseScript)({ getElementById: (id) => els[id] || null }, StubEvent);
+    assert.equal(els.browsewrap.hidden, false, "the script must reveal the browse control it wires");
+    assert.ok(typeof listeners.click === "function", "the script must wire a click handler");
+    listeners.click();
+    assert.equal(els.q.value, "", "Browse all must empty the search field");
+    assert.deepEqual(fired, ["input:true"], "Browse all must fire one bubbling input event, the one the filter listens to");
+    const noWrap = { browse: els.browse, q: els.q };
+    assert.doesNotThrow(() => new Function("document", "Event", browseScript)({ getElementById: (id) => noWrap[id] || null }, StubEvent),
+      "a page missing the wrapper must leave the control alone, not throw");
+  }
   // The expected text is a LITERAL, so a script that altered the block itself before copying cannot
   // move the expectation with it (review round 2).
   const CITE_FIXTURE = "Bounds Ledger — Grothendieck (10a)\nupper bound: $1.7822$ (tracked since 2026-07-24)\n" +
@@ -1741,6 +1786,15 @@ async function selftest() {
       "buildIndexHtml must derive the figure from the repo it is given, not from a constant");
     assert.doesNotMatch(built.html, /2026-08-14 to 2026-08-23/,
       "a figure from THIS repo's history reaching a render of ANOTHER repo means the call site is hard-coded");
+    // The flag through the PRODUCTION path (review r1 on 6e82d48, finding 4): buildIndexHtml is what
+    // cli() runs, so a call site that skipped applyFirstScreen would pass every helper assertion above.
+    const builtHb = buildIndexHtml(tmp, { firstScreen: "handbook" });
+    assert.ok(builtHb.html.includes('<div class="wrap v-c">') && builtHb.html.includes('<p class="mast">Bounds Ledger</p>'),
+      "buildIndexHtml must apply the handbook first screen when asked");
+    assert.equal(built.html, buildIndexHtml(tmp, { firstScreen: FIRST_SCREEN }).html,
+      "the default render must be the render of the committed flag's mode");
+    assert.notEqual(builtHb.html, buildIndexHtml(tmp, { firstScreen: "classic" }).html, "the two modes must render different pages");
+    assert.throws(() => buildIndexHtml(tmp, { firstScreen: "nope" }), /unknown mode/, "buildIndexHtml must refuse an unknown mode");
   } finally {
     rmSync(tmp, { recursive: true, force: true });
   }

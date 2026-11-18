@@ -19,35 +19,24 @@ here.
 
 ## The flag, and how to roll back
 
-There is no switch inside the published page, because every push to this repository's main branch
-publishes. The variants are produced by `docs/design-pass-2026-11-17/tools/design-variants.mjs`,
-which uses the default HTML builder to make transformed copies at fixed pathnames under the
-git-ignored `tmp/design-pass/variants/`. Before each write it resolves the real directory and
-refuses one that falls outside the real `tmp` folder, or a target that is a link. With that
-folder replaced by a junction pointing elsewhere, a run printed "REFUSED — the output for variant
-c does not resolve inside the repository's tmp folder, or is a link. Not written." and exited 2,
-and nothing was written at the junction's target.
+**Now (round 3):** the flag is `FIRST_SCREEN` in `scripts/render-site.mjs`, a committed build-time
+value ("classic" or "handbook"). Turning it on or off is editing that line, re-rendering
+`index.html` and pushing both; rollback is the same edit back. There is no switch inside the
+published page, because every push to this repository's main branch publishes.
 
-- Build: `node docs/design-pass-2026-11-17/tools/design-variants.mjs --variant c` (or `a`, `b`, `all`).
-- Off is the default: no workflow or script in this repository runs it.
-- Rollback: before a pick, the product needs none, though this folder's files would have to be
-  removed if they should not stay public. After a pick is published, rollback is a revert of that
-  commit, provided the commit holds only the page change.
-- Its self-check, `--selfcheck`, printed on 2026-11-17:
-  `{"refusedUnknown":true,"refusedEmpty":true,"refusedMiss":true,"buildsAll":true,"indexUnchanged":true}`.
-  An unrecognised argument printed "REFUSED — unrecognised arguments ["--bogus"]. Nothing was
-  written." and exited 2.
-- The variant pages themselves are deliberately not committed. This repository is served whole, so
-  a committed variant page would be a page a visitor could open.
+**Before the pick:** a scratch-only generator built the three candidates into git-ignored `tmp/`
+and refused any write outside it. It was retired at the rollout and is in this repository's
+history.
 
 ## The three variants
 
-Each came from a different composition family, with the same tokens.
+Each came from a different composition family, with the same tokens. The two that were not picked
+are named by family only; their copy was removed at the rollout.
 
 | Variant | Family | Headline |
 |---|---|---|
-| a | One dominant object: a large headline and search field lead the first screen | "Search for a bound to find matching entries." |
-| b | An editorial column: a narrow measure, entries stacked beneath | "A ledger of 120 mathematical constants showing the last-listed bounds rows and, where available, when their pins changed or tracking began." |
+| a | One dominant object: a large headline and search field lead the first screen | not picked; copy removed |
+| b | An editorial column: a narrow measure, entries stacked beneath | not picked; copy removed |
 | c | A working demonstration: the table set as a handbook page, high on the screen | "120 mathematical constants with last-listed bounds rows and, where available, dates for pin changes or the start of tracking." |
 
 ## The blind pick
