@@ -93,7 +93,10 @@ field label, placeholder, "Browse all" and six empty-state sentences. Fixed with
 wording: the sentence on what search covers. Restored after the reviewer found them dropped: that
 the page lists the constants mirrored from teorth/optimizationproblems, and that a match can come
 from a row higher in a table or a value pinned earlier. Changed: "Browse all" no longer scrolls
-past the snapshot notice. **The wording after those fixes has not been reviewed again.**
+past the snapshot notice. A second, narrow read-only Codex round on the wording after those fixes held all four sentences of
+the empty state's search paragraph and the "Browse all" behaviour, and returned SHIP. It did not
+run the page in a browser. Every visitor sentence in variant c has now had a claims pass after its
+last edit; a later edit to any of them reopens that.
 
 ## Known gaps
 
