@@ -1,5 +1,13 @@
 # Selection — design pass, 2026-11-17 (MT)
 
+**Update, round 3 (overnight 2026-11-17, MT): the owner picked variant c.** The rollout ports it
+into `scripts/render-site.mjs` behind a committed build-time flag, `FIRST_SCREEN` ("classic" or
+"handbook"), and retires the scratch generator this record describes
+(`tools/design-variants.mjs`, deleted with the port, so variants a and b are no longer built
+anywhere). The port adds two turn-on fixes this record lists under Known gaps: the search field
+carries the brand blue at rest, and the phone cell labels are sentence case. Everything below is the
+record as it stood before the pick.
+
 **Every `after/` frame in this folder shows an unpublished candidate, not the live page.** The
 committed `index.html` is unchanged and the published page has no variant switch. Variant c is the
 blind judge's pick among three candidates. It is not a decision: the owner has not picked.

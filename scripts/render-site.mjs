@@ -735,13 +735,100 @@ export function quietForRender(root = ROOT) {
  * literal swapped in for the derived call passed every gate, because every test called renderHtml
  * directly and nothing tested the CALL SITE. `main` now does no composing of its own.
  */
-export function buildIndexHtml(root = ROOT) {
+export function buildIndexHtml(root = ROOT, { firstScreen = FIRST_SCREEN } = {}) {
   const claims = JSON.parse(readFileSync(join(root, "ledger", "claims.json"), "utf8"));
   const manifest = JSON.parse(readFileSync(join(root, "ledger", "teorth-optimizationproblems", "manifest.json"), "utf8"));
   // The date shown is the MIRROR's fetch date, not "now" — see the note in the entry point below.
   const on = String(manifest.fetchedAt || "").slice(0, 10) || "an unrecorded date";
   const manualCount = (claims.claims || claims).filter((c) => c.manual === true).length;
-  return { html: renderHtml(buildRows(claims), manifest, on, manualCount, quietForRender(root)), claims, manifest };
+  const base = renderHtml(buildRows(claims), manifest, on, manualCount, quietForRender(root));
+  return { html: applyFirstScreen(base, firstScreen), claims, manifest };
+}
+
+// THE FIRST-SCREEN FLAG (design rollout, 2026-11-17 MT; A-110). Every push to main publishes, so the
+// switch is a COMMITTED BUILD-TIME VALUE, never a query string, cookie or client script: "classic" is
+// the page as it was before the design pass, byte for byte; "handbook" is variant c of the design pass
+// (the table set as a handbook page), which David picked on the blind review page. Turning it on or off
+// is editing this one line, re-rendering index.html and pushing both; rollback is the same edit back.
+// The transforms below were ported from the design pass's scratch generator
+// (docs/design-pass-2026-11-17/tools/design-variants.mjs, retired with this port), with two of the
+// turn-on fixes A-110 recorded: the search field carries the brand accent at rest, and the phone
+// layout's cell labels are sentence case, not uppercase and tracked. Visitor sentences are the
+// claims-passed wording from that pass, unchanged.
+export const FIRST_SCREEN = "classic";
+export const FIRST_SCREENS = ["classic", "handbook"];
+
+const HANDBOOK_CSS = `
+:root{--display:"Palatino Linotype",Palatino,"Iowan Old Style","Book Antiqua",Georgia,serif}
+@media(prefers-color-scheme:light){:root{--bg:#fbfcfe;--fg:#14181f;--muted:#566072;--line:#dde2ea;--code:#f2f5fa;--accent:#0b5fff}}
+h1,.mast{font-family:var(--display)}
+h1{font-weight:700;letter-spacing:-.01em}
+.mast{font-size:1.25rem;font-weight:700;margin:0 0 1.5rem;padding-bottom:.5rem;border-bottom:3px double var(--fg)}
+a{color:var(--fg);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.15em}
+tbody th>a:first-child{font-family:var(--display);font-size:1.125rem;font-weight:700;text-decoration:none}
+tbody th>a:first-child:hover,tbody th>a:first-child:focus{text-decoration:underline}
+thead th{text-transform:none;letter-spacing:0;font-size:.875rem;font-weight:600;color:var(--fg);border-bottom:3px double var(--fg)}
+.scroll,tr,input,select,.note,.empty,.near,code,.copy{border-radius:2px}
+input[type=search]{border:1px solid var(--accent);box-shadow:0 1px 2px rgb(20 30 60 / .08)}
+input[type=search]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+td>code{background:none;border-left:1px solid var(--line);border-radius:0;padding:.1rem 0 .1rem .6rem}
+.id{font:inherit;font-size:.8125rem}
+.when{display:inline-block;margin-top:.5rem;font-size:.8125rem;color:var(--muted)}
+.when:has(a){color:var(--fg);background:var(--bg);border:1px solid var(--fg);padding:.1rem .5rem}
+.when a{color:inherit;text-decoration:none}
+.when a:hover,.when a:focus{text-decoration:underline}
+.empty,.near,.note{border:0;border-left:1px solid var(--fg);border-radius:0}
+.cite summary,.copy{color:var(--fg)}
+.browse{margin:.75rem 0 0;font-size:.875rem}
+.browse button{font:inherit;color:var(--fg);background:none;border:0;padding:0;text-decoration:underline;text-underline-offset:.15em;cursor:pointer;min-height:24px}
+@keyframes settle{from{opacity:0;transform:translateY(4px)}}
+@media(prefers-reduced-motion:no-preference){.answer:not([hidden]),.empty:not([hidden]),.near:not([hidden]){animation:settle .16s ease-out}}
+.v-c .mast{margin:0 0 .75rem}
+.v-c h1{font-size:1.375rem;line-height:1.3;font-weight:400;max-width:62ch;margin:0 0 1rem}
+.v-c .fresh{font-size:.875rem}
+.v-c .scroll{border:0;border-top:1px solid var(--fg);border-radius:0;margin-top:.5rem}
+.v-c th,.v-c td{padding:.75rem}
+@media not all and (max-width:60rem){.v-c.wrap{padding-top:1.5rem}.v-c .controls{align-items:flex-end}}
+@media(max-width:60rem){td[data-label]::before{font-size:.875rem;font-weight:600;letter-spacing:0;text-transform:none;color:var(--fg)}}
+`;
+
+const HANDBOOK_EMPTY = (askHref) => `<div class="empty" id="empty" hidden>
+<p><strong>No entries match this search.</strong><span id="emptyq" hidden></span></p>
+<p>This page lists the constants mirrored from <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. Search matches listed names, ids, pinned value text, and digit-bearing value text extracted from the mirror, so a match can come from a row higher in a constant&rsquo;s table or from a value pinned earlier, and part of a number is enough. Some alternate spellings also match. The index search does not index reference or comment columns.</p>
+<p>Try the constant&rsquo;s listed name or id, or clear the search to see every entry. No match tells you only that the search found no entry.</p>
+<p>Small Ramsey numbers are on <a href="ramsey.html">their own page</a>.</p>
+<p><a id="emptyask" href="${askHref}">Tell us what you were looking for</a> (opens a GitHub issue draft carrying your search term; submitted issues are public).</p>
+</div>`;
+
+const HANDBOOK_BROWSE_SCRIPT = `<script>(function(){var b=document.getElementById('browse'),q=document.getElementById('q');if(!b||!q)return;b.addEventListener('click',function(){q.value='';q.dispatchEvent(new Event('input',{bubbles:true}));});})();</script>`;
+
+// Replace exactly one occurrence, or throw: a transform that silently no-ops would publish a half-applied page.
+function replaceOnce(html, pattern, replacement, what) {
+  const re = typeof pattern === "string" ? null : new RegExp(pattern.source, pattern.flags.replace("g", "") + "g");
+  const count = re ? (html.match(re) || []).length : html.split(pattern).length - 1;
+  if (count !== 1) throw new Error(`first screen: transform "${what}" matched ${count} time(s); expected exactly 1`);
+  return re ? html.replace(new RegExp(pattern.source, pattern.flags.replace("g", "")), () => replacement) : html.replace(pattern, () => replacement);
+}
+
+// Fail closed: an unknown mode throws, so a typo in the flag stops the render instead of shipping a default.
+export function applyFirstScreen(base, mode) {
+  if (!FIRST_SCREENS.includes(mode)) throw new Error(`first screen: unknown mode ${JSON.stringify(mode)}; expected one of ${FIRST_SCREENS.join(", ")}`);
+  if (mode === "classic") return base;
+  const n = (base.match(/<tr id="c-/g) || []).length;
+  if (n === 0) throw new Error("first screen: the render has no entries; refusing to restyle an empty page");
+  let h = base;
+  h = replaceOnce(h, "</style>", `${HANDBOOK_CSS}</style>`, "append css");
+  h = replaceOnce(h, '<div class="wrap">', '<div class="wrap v-c">', "variant hook");
+  h = replaceOnce(h, /<h1>[\s\S]*?<\/h1>\s*<p class="lede">[\s\S]*?<\/p>/, `<p class="mast">Bounds Ledger</p>
+<h1>${n} mathematical constants with last-listed bounds rows and, where available, dates for pin changes or the start of tracking.</h1>`, "headline and lede");
+  h = replaceOnce(h, /<label for="q">[\s\S]*?<\/label>/, '<label for="q">Look up a bound you are about to cite</label>', "field label");
+  h = replaceOnce(h, 'placeholder="Type to filter&hellip;"', 'placeholder="Type a name, an id, or a bound value"', "placeholder");
+  h = replaceOnce(h, '<div class="answer" id="answer"', `<p class="browse"><button type="button" id="browse">Browse all ${n} constants</button></p>\n<div class="answer" id="answer"`, "browse control");
+  const ask = h.match(/<a id="emptyask" href="([^"]*)"/);
+  if (!ask) throw new Error("first screen: the empty state's report link was not found");
+  h = replaceOnce(h, /<div class="empty" id="empty" hidden>[\s\S]*?<\/div>/, HANDBOOK_EMPTY(ask[1]), "empty state");
+  h = replaceOnce(h, "</footer>", `</footer>\n${HANDBOOK_BROWSE_SCRIPT}`, "browse script");
+  return h;
 }
 
 // manualCount is DERIVED and passed in, never hard-coded — review finding F5. The footer used to
@@ -1446,6 +1533,43 @@ async function selftest() {
   const indexCss = (html.match(/<style>([\s\S]*?)<\/style>/) || [, ""])[1];
   assert.ok(indexCss.length > 500, "positive control: the index stylesheet must be read before it is judged");
   assert.ok(!/url\(/i.test(indexCss) && !/@import/i.test(indexCss), "the index stylesheet must load nothing (no url(), no @import)");
+  // THE FIRST-SCREEN FLAG (A-110, 2026-11-17). Both answers: "classic" is the identity, so the page
+  // before the design pass is reproducible byte for byte (the rollback); "handbook" applies variant c.
+  // An unknown mode, an empty page and a transform that misses all refuse rather than ship a default.
+  // The semantic guards come first and the exact strings last, so each mutation names what it broke.
+  assert.ok(FIRST_SCREENS.includes(FIRST_SCREEN), `the committed flag must be a known mode (got ${JSON.stringify(FIRST_SCREEN)})`);
+  assert.equal(applyFirstScreen(html, "classic"), html, "classic must be the page before the design pass, byte for byte");
+  assert.throws(() => applyFirstScreen(html, "handbok"), /unknown mode/, "a mistyped flag must stop the render, never fall back");
+  assert.throws(() => applyFirstScreen("<style></style><div class=\"wrap\">", "handbook"), /no entries/, "an empty render must not be restyled");
+  assert.throws(() => applyFirstScreen(html.replace("<h1>", "<h2>"), "handbook"), /matched 0 time/, "a transform that misses must refuse");
+  const hb = applyFirstScreen(html, "handbook");
+  const hbCss = (hb.match(/<style>([\s\S]*?)<\/style>/) || [, ""])[1];
+  const hbScripts = [...hb.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+  assert.ok(hbCss.length > indexCss.length, "positive control: the handbook stylesheet must be read before it is judged");
+  assert.ok(!/url\(/i.test(hbCss) && !/@import/i.test(hbCss), "the handbook stylesheet must load nothing (no url(), no @import)");
+  assert.ok(!/\/\*/.test(hbCss.slice(indexCss.length)), "the handbook CSS must ship no comments to visitors");
+  assert.deepEqual(hb.match(/<style\b[^>]*>/gi), ["<style>"], "the handbook page carries exactly one bare stylesheet");
+  assert.ok((hb.match(/<script\b[^>]*>/gi) || []).every((t) => t === "<script>"), "every handbook script tag is bare");
+  for (const s of hbScripts) {
+    assert.ok(!/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket|EventSource|importScripts|Image|Audio|Worker|SharedWorker)\b|\bimport\s*\(|\.src\s*=/.test(s),
+      "no inline script on the handbook page may make a network request by any listed route");
+  }
+  assert.ok(hbScripts.some((s) => s.includes("addEventListener('input'")), "the handbook page keeps the filter script");
+  assert.ok(hbScripts.some((s) => s.includes("getElementById('browse')")), "the handbook page carries the browse script");
+  for (const id of ['id="q"', 'id="answer"', 'id="count"', 'id="near"', 'id="empty"', 'id="emptyq"', 'id="emptyask"', 'id="rows"', 'id="sort"']) {
+    assert.ok(hb.includes(id), `the handbook page must keep ${id}, which the filter script reads`);
+  }
+  assert.equal((hb.match(/<a id="emptyask" href="([^"]*)"/) || [])[1], (html.match(/<a id="emptyask" href="([^"]*)"/) || [])[1],
+    "the empty state's report link must be the classic page's, unchanged (A-109: the arrival counter reads its title)");
+  assert.match(hbCss, /input\[type=search\]\{border:1px solid var\(--accent\)/, "turn-on fix (a): the search field carries the brand accent at rest");
+  assert.match(hbCss, /@media\(max-width:60rem\)\{td\[data-label\]::before\{[^}]*text-transform:none/, "turn-on fix (c): phone cell labels are not uppercase");
+  assert.doesNotMatch(hb, /<p class="lede">/, "the handbook first screen has no lede");
+  assert.ok(hb.includes('<div class="wrap v-c">'), "the handbook page carries the variant hook");
+  assert.ok(hb.includes('<p class="mast">Bounds Ledger</p>\n<h1>2 mathematical constants with last-listed bounds rows and, where available, dates for pin changes or the start of tracking.</h1>'),
+    "the headline counts the rendered rows (2 in this fixture)");
+  assert.ok(hb.includes('<label for="q">Look up a bound you are about to cite</label>'), "the claims-passed field label");
+  assert.ok(hb.includes('placeholder="Type a name, an id, or a bound value"'), "the claims-passed placeholder");
+  assert.ok(hb.includes('<button type="button" id="browse">Browse all 2 constants</button>'), "the browse control counts the rendered rows");
   // The expected text is a LITERAL, so a script that altered the block itself before copying cannot
   // move the expectation with it (review round 2).
   const CITE_FIXTURE = "Bounds Ledger — Grothendieck (10a)\nupper bound: $1.7822$ (tracked since 2026-07-24)\n" +
