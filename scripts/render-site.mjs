@@ -741,8 +741,7 @@ export function buildIndexHtml(root = ROOT, { firstScreen = FIRST_SCREEN } = {})
   // The date shown is the MIRROR's fetch date, not "now" — see the note in the entry point below.
   const on = String(manifest.fetchedAt || "").slice(0, 10) || "an unrecorded date";
   const manualCount = (claims.claims || claims).filter((c) => c.manual === true).length;
-  const base = renderHtml(buildRows(claims), manifest, on, manualCount, quietForRender(root));
-  return { html: applyFirstScreen(base, firstScreen), claims, manifest };
+  return { html: renderHtml(buildRows(claims), manifest, on, manualCount, quietForRender(root), firstScreen), claims, manifest };
 }
 
 // THE FIRST-SCREEN FLAG (design rollout, 2026-11-17 MT; A-110). Every push to main publishes, so the
@@ -750,9 +749,10 @@ export function buildIndexHtml(root = ROOT, { firstScreen = FIRST_SCREEN } = {})
 // the page as it was before the design pass, byte for byte; "handbook" is variant c of the design pass
 // (the table set as a handbook page), which David picked on the blind review page. Turning it on or off
 // is editing this one line, re-rendering index.html and pushing both; rollback is the same edit back.
-// The transforms below were ported from the design pass's scratch generator
-// (docs/design-pass-2026-11-17/tools/design-variants.mjs, retired with this port), with two of the
-// turn-on fixes A-110 recorded: the search field carries the brand accent at rest, and the phone
+// renderHtml() chooses each handbook piece in its template (the stylesheet addition, the masthead and
+// headline, the label and placeholder, the Browse control, the empty state and the Browse script). The
+// pieces were ported from the design pass's scratch generator (retired with this port), with two of
+// the turn-on fixes A-110 recorded: the search field carries the brand accent at rest, and the phone
 // layout's cell labels are sentence case, not uppercase and tracked. Visitor sentences are the
 // claims-passed wording from that pass, unchanged.
 export const FIRST_SCREEN = "classic";
@@ -780,6 +780,7 @@ td>code{background:none;border-left:1px solid var(--line);border-radius:0;paddin
 .empty,.near,.note{border:0;border-left:1px solid var(--fg);border-radius:0}
 .cite summary,.copy{color:var(--fg)}
 .browse{margin:.75rem 0 0;font-size:.875rem}
+.browse[hidden]{display:none}
 .browse button{font:inherit;color:var(--fg);background:none;border:0;padding:0;text-decoration:underline;text-underline-offset:.15em;cursor:pointer;min-height:24px}
 @keyframes settle{from{opacity:0;transform:translateY(4px)}}
 @media(prefers-reduced-motion:no-preference){.answer:not([hidden]),.empty:not([hidden]),.near:not([hidden]){animation:settle .16s ease-out}}
@@ -804,47 +805,18 @@ const HANDBOOK_EMPTY = (askHref) => `<div class="empty" id="empty" hidden>
 // meets a button that does nothing (the copy-citation control's rule; review r1 on 6e82d48, finding 6).
 export const HANDBOOK_BROWSE_SCRIPT = `<script>(function(){var b=document.getElementById('browse'),w=document.getElementById('browsewrap'),q=document.getElementById('q');if(!b||!w||!q)return;b.addEventListener('click',function(){q.value='';q.dispatchEvent(new Event('input',{bubbles:true}));});w.hidden=false;})();</script>`;
 
-// Replace exactly one occurrence, or throw: a transform that silently no-ops would publish a half-applied page.
-function replaceOnce(html, pattern, replacement, what) {
-  const re = typeof pattern === "string" ? null : new RegExp(pattern.source, pattern.flags.replace("g", "") + "g");
-  const count = re ? (html.match(re) || []).length : html.split(pattern).length - 1;
-  if (count !== 1) throw new Error(`first screen: transform "${what}" matched ${count} time(s); expected exactly 1`);
-  return re ? html.replace(new RegExp(pattern.source, pattern.flags.replace("g", "")), () => replacement) : html.replace(pattern, () => replacement);
-}
-
-// Fail closed: an unknown mode throws, so a typo in the flag stops the render instead of shipping a default.
-export function applyFirstScreen(base, mode) {
-  if (!FIRST_SCREENS.includes(mode)) throw new Error(`first screen: unknown mode ${JSON.stringify(mode)}; expected one of ${FIRST_SCREENS.join(", ")}`);
-  if (mode === "classic") return base;
-  const n = (base.match(/<tr id="c-/g) || []).length;
-  if (n === 0) throw new Error("first screen: the render has no entries; refusing to restyle an empty page");
-  let h = base;
-  h = replaceOnce(h, "</style>", `${HANDBOOK_CSS}</style>`, "append css");
-  h = replaceOnce(h, '<div class="wrap">', '<div class="wrap v-c">', "variant hook");
-  h = replaceOnce(h, /<h1>[\s\S]*?<\/h1>\s*<p class="lede">[\s\S]*?<\/p>/, `<p class="mast">Bounds Ledger</p>
-<h1>${n} mathematical constants with last-listed bounds rows and, where available, dates for pin changes or the start of tracking.</h1>`, "headline and lede");
-  h = replaceOnce(h, /<label for="q">[\s\S]*?<\/label>/, '<label for="q">Look up a bound you are about to cite</label>', "field label");
-  h = replaceOnce(h, 'placeholder="Type to filter&hellip;"', 'placeholder="Type a name, an id, or a bound value"', "placeholder");
-  h = replaceOnce(h, '<div class="answer" id="answer"', `<p class="browse" id="browsewrap" hidden><button type="button" id="browse">Browse all ${n} constants</button></p>\n<div class="answer" id="answer"`, "browse control");
-  // The empty-state block is replaced whole, so it must be the flat block it is today: one report
-  // link on the page, and no nested <div> that a lazy match would stop at, leaving classic copy and a
-  // duplicate id behind (review r1 on 6e82d48, finding 3). Either shape refuses the render.
-  const emptyBlock = (h.match(/<div class="empty" id="empty" hidden>[\s\S]*?<\/div>/) || [""])[0];
-  if ((h.match(/id="emptyask"/g) || []).length !== 1) throw new Error("first screen: expected exactly one empty-state report link on the page");
-  if ((emptyBlock.match(/<div\b/g) || []).length !== 1 || !emptyBlock.includes('id="emptyask"')) throw new Error("first screen: the empty state is not the flat block this transform replaces");
-  const ask = emptyBlock.match(/<a id="emptyask" href="([^"]*)"/);
-  if (!ask) throw new Error("first screen: the empty state's report link was not found");
-  h = replaceOnce(h, /<div class="empty" id="empty" hidden>[\s\S]*?<\/div>/, HANDBOOK_EMPTY(ask[1]), "empty state");
-  h = replaceOnce(h, "</footer>", `</footer>\n${HANDBOOK_BROWSE_SCRIPT}`, "browse script");
-  return h;
-}
 
 // manualCount is DERIVED and passed in, never hard-coded — review finding F5. The footer used to
 // say "Two claims", a roster count baked into a generated page, which drifts silently the day a
 // third manual claim joins. Same class as the README state block this repo already generates
 // rather than types. Defaults to null so an omitted count prints a countless sentence instead of
 // a wrong number.
-export function renderHtml(rows, manifest, generatedOn, manualCount = null, quiet = null) {
+export function renderHtml(rows, manifest, generatedOn, manualCount = null, quiet = null, screen = "classic") {
+  // The first-screen flag is applied HERE, in the template, never by parsing rendered HTML: two review
+  // rounds (r1 and r2 on 6e82d48 / 57f233e) each found a new HTML shape that slipped past a matcher
+  // over the rendered page, so the matcher was replaced by choosing the markup where it is written.
+  if (!FIRST_SCREENS.includes(screen)) throw new Error(`first screen: unknown mode ${JSON.stringify(screen)}; expected one of ${FIRST_SCREENS.join(", ")}`);
+  const hb = screen === "handbook";
   const quietSentence = quiet
     ? ` The longest COMPLETED stretch between two changes so far was ${esc(String(quiet.days))} days (${esc(quiet.from)} to ${esc(quiet.to)}); the stretch running from the date above is still open and is not counted here.`
     : "";
@@ -1044,15 +1016,17 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 .ctl:not(.grow) label{margin:0;white-space:nowrap}
 .ctl:not(.grow) select{width:auto;flex:1 1 auto;min-width:0}
 }
-</style>
-<div class="wrap">
-<h1>Is the number you cited still current?</h1>
-<p class="lede">Best-known bounds move, and the papers and index pages citing them do not all move at the same time. This is every mathematical constant this ledger watches, with the exact table rows it has pinned.</p>
+${hb ? HANDBOOK_CSS : ""}</style>
+<div class="wrap${hb ? " v-c" : ""}">
+${hb ? `<p class="mast">Bounds Ledger</p>
+<h1>${rows.length} mathematical constants with last-listed bounds rows and, where available, dates for pin changes or the start of tracking.</h1>` : `<h1>Is the number you cited still current?</h1>
+<p class="lede">Best-known bounds move, and the papers and index pages citing them do not all move at the same time. This is every mathematical constant this ledger watches, with the exact table rows it has pinned.</p>`}
 
 <div class="controls">
 <div class="ctl grow">
-<label for="q">Filter by name, id, or a bound value — paste a number you are about to cite, or try “sofa”, “Grothendieck”, “27b”</label>
-<input id="q" type="search" autocomplete="off" placeholder="Type to filter&hellip;">
+${hb ? `<label for="q">Look up a bound you are about to cite</label>
+<input id="q" type="search" autocomplete="off" placeholder="Type a name, an id, or a bound value">` : `<label for="q">Filter by name, id, or a bound value — paste a number you are about to cite, or try “sofa”, “Grothendieck”, “27b”</label>
+<input id="q" type="search" autocomplete="off" placeholder="Type to filter&hellip;">`}
 </div>
 <div class="ctl">
 <label for="sort">Order</label>
@@ -1062,7 +1036,8 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 </select>
 </div>
 </div>
-<div class="answer" id="answer" aria-live="polite" hidden></div>
+${hb ? `<p class="browse" id="browsewrap" hidden><button type="button" id="browse">Browse all ${rows.length} constants</button></p>
+` : ""}<div class="answer" id="answer" aria-live="polite" hidden></div>
 <p class="fresh">Snapshot: this mirror last changed on <strong>${esc(generatedOn)}</strong>, which is not the last time it was checked. A job re-verifies every pinned row on this page daily (<a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>). Each bound row shown is the last-listed row of its table, not a claim about which bound is &ldquo;the record.&rdquo; Read <a href="#notes">the notes below the table</a> before citing a number.</p>
 <p class="count" id="count">${rows.length} constants</p>
 <div class="near" id="near" hidden>
@@ -1070,11 +1045,11 @@ td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;l
 <p><a id="nearask" href="${esc(REPO)}/issues/new">Not the one you meant? Tell us what you were looking for &rarr;</a></p>
 </div>
 
-<div class="empty" id="empty" hidden>
+${hb ? HANDBOOK_EMPTY(`${esc(REPO)}/issues/new`) : `<div class="empty" id="empty" hidden>
 <p><strong>Nothing here matches <span id="emptyq"></span>.</strong> That is an answer, but not a useful one on its own, so: this ledger mirrors the ${rows.length} constants in <a href="https://github.com/teorth/optimizationproblems">teorth/optimizationproblems</a>. If yours is not among them, we are not watching it — it is not that the number is unavailable, it is that this ledger has never looked.</p>
 <p>Filtering matches the constant&rsquo;s name, its id, and <em>every value cell in the bound tables we mirror for it</em> &mdash; not only the two rows we pin, and including values this ledger pinned earlier and no longer does. A number sitting higher up a constant&rsquo;s table, such as an older bound you once cited, still finds it. So you can paste a number you cited and land on its constant, then read the current table yourself. A partial number works, since matching is on substrings. Two things are <em>not</em> matched: the reference and comment cells beside a bound (an author tag or a bracketed citation key will find nothing), and a name we do not list the constant under. Both are worth a scan of the full list before concluding a constant is absent.</p>
 <p><a id="emptyask" href="${esc(REPO)}/issues/new">Tell us what you were looking for &rarr;</a> — it arrives naming your search term, and a constant someone actually asked for is the best evidence we have about what to watch next.</p>
-</div>
+</div>`}
 
 <div class="scroll">
 <table>
@@ -1105,7 +1080,7 @@ ${body}
 <p>Generated from <code style="display:inline;padding:.1rem .3rem">ledger/claims.json</code> by <code style="display:inline;padding:.1rem .3rem">scripts/render-site.mjs</code>. For the live verdict — whether every claim still holds right now — clone the repo and run <code style="display:inline;padding:.1rem .3rem">npm run check</code>.</p>
 <p>${manualPhrase} a page that refuses automated requests from data-centre addresses, so they report UNVERIFIED permanently and never count toward a pass. That is the ledger declining to launder an unverifiable fact into a green.</p>
 <p><a href="https://github.com/u00dxk2/bounds-ledger">Source, method and every catch it has made &rarr;</a></p>
-</footer>
+</footer>${hb ? `\n${HANDBOOK_BROWSE_SCRIPT}` : ""}
 </div>
 <script>
 (function(){
@@ -1541,36 +1516,53 @@ async function selftest() {
   const indexCss = (html.match(/<style>([\s\S]*?)<\/style>/) || [, ""])[1];
   assert.ok(indexCss.length > 500, "positive control: the index stylesheet must be read before it is judged");
   assert.ok(!/url\(/i.test(indexCss) && !/@import/i.test(indexCss), "the index stylesheet must load nothing (no url(), no @import)");
-  // THE FIRST-SCREEN FLAG (A-110, 2026-11-17). Both answers: "classic" is the identity, so the page
-  // before the design pass is reproducible byte for byte (the rollback); "handbook" applies variant c.
-  // An unknown mode, an empty page and a transform that misses all refuse rather than ship a default.
+  // THE FIRST-SCREEN FLAG (A-110, 2026-11-17). renderHtml() chooses each handbook piece in its own
+  // template, so nothing here parses rendered HTML (two review rounds found shapes that slipped past a
+  // matcher over the page; the matcher was removed rather than extended). Both answers: the default is
+  // "classic", the page before the design pass; "handbook" is variant c; an unknown mode refuses.
   // The semantic guards come first and the exact strings last, so each mutation names what it broke.
   assert.ok(FIRST_SCREENS.includes(FIRST_SCREEN), `the committed flag must be a known mode (got ${JSON.stringify(FIRST_SCREEN)})`);
-  assert.equal(applyFirstScreen(html, "classic"), html, "classic must be the page before the design pass, byte for byte");
-  assert.throws(() => applyFirstScreen(html, "handbok"), /unknown mode/, "a mistyped flag must stop the render, never fall back");
-  assert.throws(() => applyFirstScreen("<style></style><div class=\"wrap\">", "handbook"), /no entries/, "an empty render must not be restyled");
-  assert.throws(() => applyFirstScreen(html.replace("<h1>", "<h2>"), "handbook"), /matched 0 time/, "a transform that misses must refuse");
-  const hb = applyFirstScreen(html, "handbook");
+  assert.equal(renderHtml(rows, manifest, "2026-08-20", null, null, "classic"), html, "classic must be the page before the design pass, byte for byte");
+  assert.throws(() => renderHtml(rows, manifest, "2026-08-20", null, null, "handbok"), /unknown mode/, "a mistyped flag must stop the render, never fall back");
+  assert.ok(/buildIndexHtml\(\)/.test(cli.toString()) && !/buildIndexHtml\([^)]/.test(cli.toString()),
+    "cli() must build with the committed flag, passing no mode of its own (review r2: a hard-coded mode at the CLI would survive every builder test)");
+  const hb = renderHtml(rows, manifest, "2026-08-20", null, null, "handbook");
   const hbCss = (hb.match(/<style>([\s\S]*?)<\/style>/) || [, ""])[1];
   const hbScripts = [...hb.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
-  assert.ok(hbCss.length > indexCss.length, "positive control: the handbook stylesheet must be read before it is judged");
+  assert.ok(hbCss.length > indexCss.length && hbCss.startsWith(indexCss), "positive control: the handbook stylesheet is the classic one plus an addition, read before it is judged");
+  const hbCssAdded = hbCss.slice(indexCss.length);
   assert.ok(!/url\(/i.test(hbCss) && !/@import/i.test(hbCss), "the handbook stylesheet must load nothing (no url(), no @import)");
-  assert.ok(!/\/\*/.test(hbCss.slice(indexCss.length)), "the handbook CSS must ship no comments to visitors");
+  assert.ok(!/\/\*/.test(hbCssAdded), "the handbook CSS must ship no comments to visitors");
   assert.deepEqual(hb.match(/<style\b[^>]*>/gi), ["<style>"], "the handbook page carries exactly one bare stylesheet");
   assert.ok((hb.match(/<script\b[^>]*>/gi) || []).every((t) => t === "<script>"), "every handbook script tag is bare");
   for (const s of hbScripts) {
     assert.ok(!/\b(fetch|XMLHttpRequest|sendBeacon|WebSocket|EventSource|importScripts|Image|Audio|Worker|SharedWorker)\b|\bimport\s*\(|\.src\s*=/.test(s),
       "no inline script on the handbook page may make a network request by any listed route");
   }
-  assert.ok(hbScripts.some((s) => s.includes("addEventListener('input'")), "the handbook page keeps the filter script");
-  assert.ok(hbScripts.some((s) => s.includes("getElementById('browse')")), "the handbook page carries the browse script");
+  const newScripts = hbScripts.filter((s) => !html.includes(`<script>${s}</script>`));
+  assert.deepEqual(newScripts.length, 1, "the handbook adds exactly one script, the Browse wiring");
+  assert.ok(!/\/\/|\/\*/.test(newScripts[0]), "the handbook's added script ships no comment of either kind");
+  // No resource-loading markup and no comment (review r1 finding 5, r2's SVG case): an ALLOWLIST, not a
+  // list of bad tags. Every tag name and attribute name on the handbook page must already be on the
+  // classic page, except the one button element; an <svg>, <image>, <img> or any new attribute fails.
+  const tagNames = (s) => new Set([...s.matchAll(/<([a-zA-Z][a-zA-Z0-9-]*)\b/g)].map((m) => m[1].toLowerCase()));
+  const attrNames = (s) => new Set([...s.matchAll(/<[a-zA-Z](?:"[^"]*"|'[^']*'|[^>"'])*>/g)].flatMap((m) => [...m[0].replace(/"[^"]*"|'[^']*'/g, "").matchAll(/\s([a-zA-Z_:][-a-zA-Z0-9_:.]*)(?=[\s=>\/])/g)].map((a) => a[1].toLowerCase())));
+  const classicTags = tagNames(html), classicAttrs = attrNames(html);
+  assert.ok(classicTags.has("a") && classicAttrs.has("href"), "positive control: the classic page's tag and attribute sets are read before they are judged");
+  const extraTags = [...tagNames(hb)].filter((t) => !classicTags.has(t));
+  const extraAttrs = [...attrNames(hb)].filter((a) => !classicAttrs.has(a));
+  assert.deepEqual(extraTags, ["button"], `the handbook may add only a button element (added: ${extraTags.join(", ")})`);
+  assert.deepEqual(extraAttrs, [], `the handbook may add no attribute name the classic page lacks (added: ${extraAttrs.join(", ")})`);
+  assert.equal((hb.match(/<!--/g) || []).length, (html.match(/<!--/g) || []).length, "the handbook adds no HTML comment");
   for (const id of ['id="q"', 'id="answer"', 'id="count"', 'id="near"', 'id="empty"', 'id="emptyq"', 'id="emptyask"', 'id="rows"', 'id="sort"']) {
-    assert.ok(hb.includes(id), `the handbook page must keep ${id}, which the filter script reads`);
+    assert.equal(hb.split(id).length - 1, 1, `the handbook page must carry ${id} exactly once, which the filter script reads`);
   }
   assert.equal((hb.match(/<a id="emptyask" href="([^"]*)"/) || [])[1], (html.match(/<a id="emptyask" href="([^"]*)"/) || [])[1],
     "the empty state's report link must be the classic page's, unchanged (A-109: the arrival counter reads its title)");
-  assert.match(hbCss, /input\[type=search\]\{border:1px solid var\(--accent\)/, "turn-on fix (a): the search field carries the brand accent at rest");
-  assert.match(hbCss, /@media\(max-width:60rem\)\{td\[data-label\]::before\{[^}]*text-transform:none/, "turn-on fix (c): phone cell labels are not uppercase");
+  assert.match(hbCssAdded, /input\[type=search\]\{border:1px solid var\(--accent\)/, "turn-on fix (a): the search field carries the brand accent at rest");
+  assert.match(hbCssAdded, /@media\(max-width:60rem\)\{td\[data-label\]::before\{[^}]*text-transform:none/, "turn-on fix (c): phone cell labels are not uppercase");
+  assert.ok(hbCssAdded.includes(".browse[hidden]{display:none}") && !/\.browse(?!\[hidden\])[^{]*\{[^}]*display/.test(hbCss),
+    "the Browse control stays hidden until its script reveals it: no rule may give .browse a display while hidden");
   assert.doesNotMatch(hb, /<p class="lede">/, "the handbook first screen has no lede");
   assert.ok(hb.includes('<div class="wrap v-c">'), "the handbook page carries the variant hook");
   assert.ok(hb.includes('<p class="mast">Bounds Ledger</p>\n<h1>2 mathematical constants with last-listed bounds rows and, where available, dates for pin changes or the start of tracking.</h1>'),
@@ -1579,43 +1571,28 @@ async function selftest() {
   assert.ok(hb.includes('placeholder="Type a name, an id, or a bound value"'), "the claims-passed placeholder");
   assert.ok(hb.includes('<p class="browse" id="browsewrap" hidden><button type="button" id="browse">Browse all 2 constants</button></p>'),
     "the browse control counts the rendered rows and ships hidden until its script wires it");
-  // Review r1 on 6e82d48, finding 5: the handbook adds no resource-loading markup and no comment of
-  // any kind. Judged as a DIFFERENCE from the classic page, so the classic page's own scripts (which
-  // carry comments today) are not re-litigated here and any new src, href-to-a-resource or comment is.
-  const countOf = (s, re) => (s.match(re) || []).length;
-  for (const [what, re] of [["src= attribute", /\bsrc\s*=/gi], ["<img|iframe|link|object|embed|video|audio|source> tag", /<(img|iframe|link|object|embed|video|audio|source)\b/gi], ["HTML comment", /<!--/g], ["CSS or JS block comment", /\/\*/g], ["srcset/poster/background attribute", /\b(srcset|poster|background)\s*=/gi]]) {
-    assert.equal(countOf(hb, re), countOf(html, re), `the handbook must add no ${what}`);
-  }
-  // Refusals on an ambiguous empty state (finding 3): a nested <div> and a second report link.
-  assert.throws(() => applyFirstScreen(html.replace('<p><a id="emptyask"', '<div class="x"></div><p><a id="emptyask"'), "handbook"), /not the flat block/,
-    "a nested div inside the empty state must stop the render");
-  assert.throws(() => applyFirstScreen(html.replace("</footer>", '<a id="emptyask" href="x">x</a></footer>'), "handbook"), /exactly one empty-state report link/,
-    "a second report link on the page must stop the render");
-  assert.throws(() => applyFirstScreen(html.replace("</style>", "</style><style></style>"), "handbook"), /matched 2 time/,
-    "a duplicated transform anchor must stop the render");
-  // Finding 4: Browse, EXECUTED against a stub DOM from a filtered state. The control is revealed only
-  // by its script, and a click empties the field and fires the same input event the filter listens to.
+  // Browse, EXECUTED against a stub DOM from a filtered state (r1 finding 4; r2: the field must already
+  // be empty WHEN the input event fires, because the real filter reads q.value synchronously).
   {
-    const browseScript = hbScripts.find((s) => s.includes("getElementById('browse')"));
+    const browseScript = newScripts[0];
     const fired = [];
     const listeners = {};
     const els = {
       browse: { addEventListener: (t, f) => { listeners[t] = f; } },
       browsewrap: { hidden: true },
-      q: { value: "sofa", dispatchEvent: (e) => { fired.push(e.type + ":" + e.bubbles); return true; } },
+      q: { value: "sofa", dispatchEvent(e) { fired.push(`${e.type}:${e.bubbles}:value=${JSON.stringify(this.value)}`); return true; } },
     };
     class StubEvent { constructor(type, o = {}) { this.type = type; this.bubbles = !!o.bubbles; } }
     new Function("document", "Event", browseScript)({ getElementById: (id) => els[id] || null }, StubEvent);
-    assert.equal(els.browsewrap.hidden, false, "the script must reveal the browse control it wires");
     assert.ok(typeof listeners.click === "function", "the script must wire a click handler");
+    assert.equal(els.browsewrap.hidden, false, "the script must reveal the browse control it wires");
     listeners.click();
-    assert.equal(els.q.value, "", "Browse all must empty the search field");
-    assert.deepEqual(fired, ["input:true"], "Browse all must fire one bubbling input event, the one the filter listens to");
-    const noWrap = { browse: els.browse, q: els.q };
-    assert.doesNotThrow(() => new Function("document", "Event", browseScript)({ getElementById: (id) => noWrap[id] || null }, StubEvent),
-      "a page missing the wrapper must leave the control alone, not throw");
-  }
-  // The expected text is a LITERAL, so a script that altered the block itself before copying cannot
+    assert.deepEqual(fired, ['input:true:value=""'], "Browse all must empty the field BEFORE firing one bubbling input event, the one the filter listens to");
+    const noWrapListeners = {};
+    const noWrap = { browse: { addEventListener: (t, f) => { noWrapListeners[t] = f; } }, q: els.q };
+    new Function("document", "Event", browseScript)({ getElementById: (id) => noWrap[id] || null }, StubEvent);
+    assert.deepEqual(Object.keys(noWrapListeners), [], "a page missing the wrapper must leave the control unwired and hidden");
+  }  // The expected text is a LITERAL, so a script that altered the block itself before copying cannot
   // move the expectation with it (review round 2).
   const CITE_FIXTURE = "Bounds Ledger — Grothendieck (10a)\nupper bound: $1.7822$ (tracked since 2026-07-24)\n" +
     "a listing position, not a statement that this bound is the strongest or most recent\n" +
@@ -1787,7 +1764,7 @@ async function selftest() {
     assert.doesNotMatch(built.html, /2026-08-14 to 2026-08-23/,
       "a figure from THIS repo's history reaching a render of ANOTHER repo means the call site is hard-coded");
     // The flag through the PRODUCTION path (review r1 on 6e82d48, finding 4): buildIndexHtml is what
-    // cli() runs, so a call site that skipped applyFirstScreen would pass every helper assertion above.
+    // cli() runs, so a call site that dropped the mode would pass every renderHtml assertion above.
     const builtHb = buildIndexHtml(tmp, { firstScreen: "handbook" });
     assert.ok(builtHb.html.includes('<div class="wrap v-c">') && builtHb.html.includes('<p class="mast">Bounds Ledger</p>'),
       "buildIndexHtml must apply the handbook first screen when asked");

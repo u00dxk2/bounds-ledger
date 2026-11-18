@@ -85,7 +85,11 @@ Figures carry an as-of date. Read the source again before printing one.
   tracking began. It is not the day a result was proved or published.
 - Search filters as the reader types, with no submit button. It matches a constant's name, its id
   and its bound text; some older values and alternate spellings also match. It does not index the
-  reference or comment columns. One typed value can match many entries.
+  reference or comment columns. One typed value can match many entries. In detail: a match is a
+  case-insensitive substring of the entry's indexed text, which holds its listed names and id, its
+  pinned value text, digit-bearing value text extracted from its mirrored tables (so a row higher in
+  the table can match), and values pinned earlier; part of a number is enough (`findKey` and the
+  page's filter script in `scripts/render-site.mjs`).
 - When nothing matches, the page shows an empty state with a link that opens a GitHub issue draft
   carrying the search term. A submitted issue is public. Clearing the search shows every entry
   again. `27b` is one id that matches exactly one entry.

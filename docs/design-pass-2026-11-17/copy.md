@@ -13,8 +13,10 @@ earlier version is in this repository's history.
 ## Review status
 
 The design pass's claims rounds (read-only, from another model family) returned SHIP on these
-sentences after their last edit, and the rollout's own claims pass re-checked each one against the
-current code before the page change.
+sentences after their last edit (`selection.md`). The rollout's claims pass (Codex, read-only, on
+commit `6e82d48`) returned HOLDS on each of them against the code; that round is recorded in
+`docs/daily/2026-11-17-prelaunch.md`. The search detail in the empty state is on the Known list in
+`docs/PRODUCT.md` since the same rollout.
 
 ## The sentences a visitor reads
 
