@@ -39,7 +39,9 @@ export const numbersIn = (rows) => rows.reduce((a, r) => a + ["exact", "lower", 
 
 // The handbook look (design rollout, 2026-11-18 MT; A-110's SCREENS.md NEXT rows for ramsey.html and
 // copying.html, which both render with this one stylesheet): docs/DESIGN.md's cool tinted neutrals,
-// the book serif for the headline and the entry names from faces already on the device (no font file),
+// the book serif for the headline and the entry names from faces already on the device (no font file;
+// not on .v, which only Table Ia's value carries, so both tables' values keep one face: review r2),
+// the note at body size (16px; review r2),
 // ink-and-underline links, sentence-case field labels (the <dt> strings are already written that way;
 // only the uppercase transform is dropped), a double rule over each group as under a printed table
 // head, hairlines between entries, and the one 2px radius. Styling only: no markup or sentence changes.
@@ -51,14 +53,14 @@ h1{font-family:var(--display);font-weight:700;letter-spacing:-.01em;font-size:1.
 h2{font-family:var(--display);font-size:1.25rem;font-weight:700;margin:0}h2 a{color:inherit;text-decoration:none}h2 a:hover,h2 a:focus{text-decoration:underline}
 .back{font-size:.875rem;display:inline-block;margin-bottom:1.5rem}
 .lede{margin:.25rem 0 1rem}
-.note{background:var(--code);border:0;border-left:1px solid var(--ink);border-radius:0;padding:.25rem 1rem;margin:1rem 0;font-size:.875rem}
+.note{background:var(--code);border:0;border-left:1px solid var(--ink);border-radius:0;padding:.25rem 1rem;margin:1rem 0;font-size:1rem}
 code{font:.875rem ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--code);border-radius:2px;padding:0 .25rem;word-break:break-all}
 .jump{margin:1.5rem 0;font-size:.875rem}.jump div{margin:.25rem 0}.jump .k{display:inline-block;min-width:3.5rem;color:var(--muted)}
 .jump a{display:inline-block;min-width:2rem;padding:.25rem;text-align:center}
 .group{margin-top:2rem;padding-top:.5rem;border-top:3px double var(--ink);font-size:.875rem;color:var(--muted)}
 .entry{border-bottom:1px solid var(--line);padding:1rem 0}
 dl{margin:.5rem 0 0;padding:0}dt{font-weight:600;font-size:.875rem;color:var(--ink);margin-top:.5rem}
-dd{margin:.125rem 0 0}.v{font-family:var(--display);font-size:1.125rem}.refs{display:block;font-size:.875rem;color:var(--muted)}
+dd{margin:.125rem 0 0}.v{font-size:1.125rem}.refs{display:block;font-size:.875rem;color:var(--muted)}
 .none{color:var(--muted)}.flag{display:inline-block;margin-top:.5rem;font-size:.875rem}
 footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.875rem}`;
 
