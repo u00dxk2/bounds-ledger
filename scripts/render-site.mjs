@@ -755,7 +755,7 @@ export function buildIndexHtml(root = ROOT, { firstScreen = FIRST_SCREEN } = {})
 // the turn-on fixes A-110 recorded: the search field carries the brand accent at rest, and the phone
 // layout's cell labels are sentence case, not uppercase and tracked. Visitor sentences are the
 // claims-passed wording from that pass, unchanged.
-export const FIRST_SCREEN = "classic";
+export const FIRST_SCREEN = "handbook";
 export const FIRST_SCREENS = ["classic", "handbook"];
 
 const HANDBOOK_CSS = `

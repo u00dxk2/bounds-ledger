@@ -111,8 +111,10 @@ Figures carry an as-of date. Read the source again before printing one.
   third-party asset or fetching at runtime (`node scripts/render-site.mjs --selftest`); those are
   guards, not a proof against every route.
 - The repository is public, and its core checks can be run from a clone (`README.md`).
-- The page's main heading today is the question "Is the number you cited still current?", and its
-  browser title carries that question after the product name.
+- Since the design rollout (2026-11-17, `FIRST_SCREEN = "handbook"` in `scripts/render-site.mjs`)
+  the page's main heading counts the constants it lists, under a "Bounds Ledger" masthead. The
+  browser title still carries the question "Is the number you cited still current?" after the
+  product name.
 
 ## Unknown — do not invent
 
