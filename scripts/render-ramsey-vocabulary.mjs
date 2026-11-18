@@ -37,22 +37,30 @@ export const OUTCOMES = [
 // The disclosure states both units and its guard recomputes them from the committed table.
 export const numbersIn = (rows) => rows.reduce((a, r) => a + ["exact", "lower", "upper"].filter((k) => r[k] !== undefined).length, 0);
 
-export const STYLE = `:root{--ink:#111;--muted:#666;--line:#ddd;--code:#f6f6f6;--accent:#0b5fff;--soft:#fafafa}
-*{box-sizing:border-box}body{margin:0;padding:1.5rem 1.25rem 3rem;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);max-width:52rem;margin-inline:auto}
-a{color:var(--accent)}h1{font-size:1.4rem;line-height:1.3;margin:.2rem 0 .4rem}
-h2{font-size:1.05rem;margin:0}h2 a{color:inherit;text-decoration:none}
-.back{font-size:.85rem;display:inline-block;margin-bottom:1.2rem}
-.lede{margin:.2rem 0 1rem}
-.note{background:var(--soft);border:1px solid var(--line);padding:.2rem 1rem;margin:1rem 0;font-size:.93rem}
-code{font:13px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--code);padding:.05rem .3rem;word-break:break-all}
-.jump{margin:1.4rem 0;font-size:.9rem}.jump div{margin:.25rem 0}.jump .k{display:inline-block;min-width:3.6rem;color:var(--muted)}
-.jump a{display:inline-block;min-width:1.9rem;padding:.1rem .15rem;text-align:center}
-.group{margin-top:1.8rem;padding-top:.4rem;border-top:2px solid var(--ink);font-size:.9rem;color:var(--muted)}
-.entry{border-bottom:1px solid var(--line);padding:.9rem 0}
-dl{margin:.4rem 0 0;padding:0}dt{font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-top:.5rem}
-dd{margin:.1rem 0 0}.v{font-size:1.05rem}.refs{display:block;font-size:.85rem;color:var(--muted)}
-.none{color:var(--muted)}.flag{display:inline-block;margin-top:.5rem;font-size:.85rem}
-footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.82rem}`;
+// The handbook look (design rollout, 2026-11-18 MT; A-110's SCREENS.md NEXT rows for ramsey.html and
+// copying.html, which both render with this one stylesheet): docs/DESIGN.md's cool tinted neutrals,
+// the book serif for the headline and the entry names from faces already on the device (no font file),
+// ink-and-underline links, sentence-case field labels (the <dt> strings are already written that way;
+// only the uppercase transform is dropped), a double rule over each group as under a printed table
+// head, hairlines between entries, and the one 2px radius. Styling only: no markup or sentence changes.
+// The light values are the index's handbook values; like before, these pages set no dark scheme.
+export const STYLE = `:root{--ink:#14181f;--muted:#566072;--line:#dde2ea;--code:#f2f5fa;--paper:#fbfcfe;--display:"Palatino Linotype",Palatino,"Iowan Old Style","Book Antiqua",Georgia,serif}
+*{box-sizing:border-box}body{margin:0;padding:1.5rem 1.25rem 3rem;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--paper);max-width:52rem;margin-inline:auto}
+a{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.15em}
+h1{font-family:var(--display);font-weight:700;letter-spacing:-.01em;font-size:1.625rem;line-height:1.3;margin:.25rem 0 .5rem}
+h2{font-family:var(--display);font-size:1.25rem;font-weight:700;margin:0}h2 a{color:inherit;text-decoration:none}h2 a:hover,h2 a:focus{text-decoration:underline}
+.back{font-size:.875rem;display:inline-block;margin-bottom:1.5rem}
+.lede{margin:.25rem 0 1rem}
+.note{background:var(--code);border:0;border-left:1px solid var(--ink);border-radius:0;padding:.25rem 1rem;margin:1rem 0;font-size:.875rem}
+code{font:.875rem ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--code);border-radius:2px;padding:0 .25rem;word-break:break-all}
+.jump{margin:1.5rem 0;font-size:.875rem}.jump div{margin:.25rem 0}.jump .k{display:inline-block;min-width:3.5rem;color:var(--muted)}
+.jump a{display:inline-block;min-width:2rem;padding:.25rem;text-align:center}
+.group{margin-top:2rem;padding-top:.5rem;border-top:3px double var(--ink);font-size:.875rem;color:var(--muted)}
+.entry{border-bottom:1px solid var(--line);padding:1rem 0}
+dl{margin:.5rem 0 0;padding:0}dt{font-weight:600;font-size:.875rem;color:var(--ink);margin-top:.5rem}
+dd{margin:.125rem 0 0}.v{font-family:var(--display);font-size:1.125rem}.refs{display:block;font-size:.875rem;color:var(--muted)}
+.none{color:var(--muted)}.flag{display:inline-block;margin-top:.5rem;font-size:.875rem}
+footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.875rem}`;
 
 export const key = (k, l) => `${k},${l}`;
 
