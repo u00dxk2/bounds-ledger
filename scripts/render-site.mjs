@@ -817,6 +817,9 @@ export function renderHtml(rows, manifest, generatedOn, manualCount = null, quie
   // over the rendered page, so the matcher was replaced by choosing the markup where it is written.
   if (!FIRST_SCREENS.includes(screen)) throw new Error(`first screen: unknown mode ${JSON.stringify(screen)}; expected one of ${FIRST_SCREENS.join(", ")}`);
   const hb = screen === "handbook";
+  // The handbook headline and Browse control state a count; an empty render would publish "0
+  // mathematical constants", so it refuses, as the retired transform did (review r3 on da45cba).
+  if (hb && rows.length === 0) throw new Error("first screen: the render has no entries; refusing a handbook page that counts zero constants");
   const quietSentence = quiet
     ? ` The longest COMPLETED stretch between two changes so far was ${esc(String(quiet.days))} days (${esc(quiet.from)} to ${esc(quiet.to)}); the stretch running from the date above is still open and is not counted here.`
     : "";
@@ -1524,6 +1527,8 @@ async function selftest() {
   assert.ok(FIRST_SCREENS.includes(FIRST_SCREEN), `the committed flag must be a known mode (got ${JSON.stringify(FIRST_SCREEN)})`);
   assert.equal(renderHtml(rows, manifest, "2026-08-20", null, null, "classic"), html, "classic must be the page before the design pass, byte for byte");
   assert.throws(() => renderHtml(rows, manifest, "2026-08-20", null, null, "handbok"), /unknown mode/, "a mistyped flag must stop the render, never fall back");
+  assert.throws(() => renderHtml([], manifest, "2026-08-20", null, null, "handbook"), /no entries/, "a handbook page that would count zero constants must refuse");
+  assert.doesNotThrow(() => renderHtml([], manifest, "2026-08-20"), "the classic page keeps its old behaviour on an empty render");
   assert.ok(/buildIndexHtml\(\)/.test(cli.toString()) && !/buildIndexHtml\([^)]/.test(cli.toString()),
     "cli() must build with the committed flag, passing no mode of its own (review r2: a hard-coded mode at the CLI would survive every builder test)");
   const hb = renderHtml(rows, manifest, "2026-08-20", null, null, "handbook");

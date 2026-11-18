@@ -172,3 +172,76 @@ A second kickoff arrived at 21:56Z (bus `16560d24`), after the close above: a de
   - **For the design-pass notes.** About 126 lane-minutes from the kickoff's arrival (about 15:00 MT) to the build-phase post (17:06 MT). Heavy-job queue waits, quoted from its own lines: "admitted after 35m48s in queue", "29m42s", "4m56s", "9m36s"; about 80 minutes in all, most of the round. What cost time: the queue, and four claims rounds that each found one more state the short copy left out. What I would cut: write visitor sentences from a helper's list of what the code does before the first review, and give a public lane its frame-publishing rule at kickoff.
   - **Pending reads:** `A-110` 2026-11-19; the morning close's list is unchanged, plus `A-109` 2026-11-24.
 - **Machine notes for the round:** `scripts/heavy-gate.mjs` does not exist in skylark-site; the queue tool is `C:/dev/manager/shared-tools/heavy-gate/heavy-gate.mjs`. The registry file was absent from the shared checkout at 15:00 MT and readable from `origin/main` by 15:30 MT.
+
+### Round 3 selection packet (design rollout)
+
+A third kickoff arrived at 04:42Z on 11-18 (bus `bcea28cd`, round 3): the design rollout on David's pick. Its P1 replaces the usual work list.
+
+Round 3 (overnight design rollout), rail day 2026-11-17. P1 covers brief steps 1 and 2, plus the plan for steps 3 to 6. Nothing is committed, pushed or rendered into index.html in this phase.
+
+- **Outcome:** A-110 (the design-pass first-screen candidate, variant c: the table set as a handbook page). By morning a visitor to https://u00dxk2.github.io/bounds-ledger/ sees variant c, with the four turn-on defects fixed. Every other user-facing surface is either in the same system or listed in docs/SCREENS.md as DONE, NEXT or HOLD.
+- **The user problem, in the user's words** (docs/evangelism-bar.md): "I cited a number. I have no idea if it's still the current one." The 2026-11-15 cold audit found the first screen buries that answer under raw table rows and several hundred words of caveats.
+- **Evidence:**
+  - SUPPLIED · David's pick: the rollout brief (skylark-site docs/specs/design-rollout-brief-2026-11-17.md) says 23 of 23 pairs went to the redesign, read back 21:21 MT, and quotes his 21:30 MT go. That file is the orchestrator's record. It names no board card and I have not re-read his words myself. The kickoff lead carries no source row.
+  - OBSERVED · docs/design-pass-2026-11-17/selection.md: variant c won six of six swapped blind runs; 0 findings from the design detectors; layout shift 0. A second narrow claims round after the last edit returned SHIP.
+  - OBSERVED · four defects recorded as turn-on conditions on A-110: (1) no brand blue on the search field at rest. The variant gives it an ink border (design-variants.mjs:34), while DESIGN.md "Colour" puts the accent on the search field. (2) The Android serif fallback is unmeasured. (3) The phone cell labels are still uppercase and tracked (render-site.mjs:937, `td[data-label]::before`; the table head at :875 is overridden by the variant's CSS). (4) A claims pass is owed again if any visitor sentence is edited after the SHIP.
+  - OBSERVED · the variant does not exist in the renderer. design-variants.mjs transforms buildIndexHtml()'s string into git-ignored tmp/. `npm run check` runs `render-site --check`, so a hand-edited index.html would go red. Shipping means porting the transform into scripts/render-site.mjs.
+  - OBSERVED · git: 5 local commits past origin/main commit `87618fd` (`9ebb7a4`, `1b966ee`, `86be013`, `7aed72c`, `2afb255`). The lead names four; commit `2afb255` is the primer, doc-only. CI on commit `87618fd` is GREEN per the kickoff (3 successes, 0 failures).
+  - MISSING · any real reader's account. The page has no analytics (A-59).
+- **Step 2, dated reads: one disagreement with the lead.** The lead says none of my dated rows watches the first screen. A-104 does: it is the phone answer line directly under the search box, 2026-11-21, and its readCommand is `npm run reports`. Taken early, read early at 21:54 MT because the variant goes live tonight; the window was 2026-11-15 (A-104's ship, commit `57ca289`) to now. Output: "raw issues fetched: 37 … OUTSIDE ARRIVALS: 0 … parts reconcile: 37 + 0 + 0 = 37", exit 0. A-104 is readable at N = 1 and n = 0, so this is UNREADABLE-EARLY, n=0. P3 writes this into the row, and from tonight the next read is the variant's own baseline. A-103 (the README's visitor command) is not on a screen this rollout changes, because the README stays as it is (see the plan). A-109 (11-24): the "Constant not tracked" issue title is not renamed, because the arrival counter reads its prefix. A-108 (11-23): unaffected.
+- **Permission:** A-110 is an open lane row whose closeWhen is "David picks and the page change ships". Per the kickoff, the orchestrator has lifted its no-push ruling (bus d36b6487) on David's pick. The outward gate binds: a claims pass, cross-family review and CI before anything is published. No auth, payment or account screens exist (static page, no sign-in).
+- **Next action: deliver built value.** Plan for P3, in the brief's order:
+  1. **Fixes first** (a), (b) and (c), applied in the port, not in the tmp generator:
+     - (a) the search field's at-rest border becomes the accent `var(--accent)`, with focus kept as a 2px ring. Checked for AA contrast in both schemes.
+     - (b) an emulated Android render at 390: the named faces stripped so the stack falls to generic `serif`, as Android does, where that resolves to Noto Serif. The frame is committed, with the face that rendered as read back by the browser. An emulation, labelled as one.
+     - (c) the phone labels lose uppercase and tracking: sentence case, text face at 600.
+     - (d) a claims pass only if any visitor sentence changes. None is planned, since (a) to (c) are CSS.
+  2. **Port with a build-time flag:** a committed constant in scripts/render-site.mjs, `FIRST_SCREEN = "classic" | "handbook"`, with no query string, cookie or client script. Selftest both answers: classic reproduces today's index.html byte for byte; handbook carries the variant markers. The flag is read on the renderer's existing guards (no url(), no @import).
+  3. **Gates:** a Codex claims pass on every visitor sentence of the handbook render, then a cross-family Codex review of the diff (read-only, banner workdir checked, each finding dispositioned), then CI green on a PR branch into main (pull_request runs reverify.yml and page-check.yml).
+  4. **Two pushes:**
+     - PUSH 1 carries the 5 held commits, the port with the flag OFF and the fixes. index.html stays byte-identical, and a signed-out GET shows today's page.
+     - PUSH 2 sets the flag ON and regenerates index.html. A signed-out GET shows the variant, and frames of the live first screen at 1440 and 390 are committed.
+     - Rollback, tested once: the flag set back to classic, re-render, push, a GET shows the old page, then back on.
+     - The orchestrator's eye is needed here. The lead says the held commits go "in ONE push" with the page change, but brief step 3 orders merge-OFF before flip-ON, which is two pushes. Since David has picked, the frames going public a few minutes before the page is harmless, so I default to the brief's two pushes. Nothing unrelated rides either push. Overrule at review if one push is meant.
+  5. **Dead weight:** delete tools/design-variants.mjs, which holds variants a and b and is the preview path. selection.md gains a one-line note that the generator was retired into the renderer at <sha>. No unrendered CSS stays in index.html, because the port carries only the shared CSS and c's.
+  6. **docs/SCREENS.md**, built from the renderers and the tree, then walked. Proposed status after tonight:
+     - index.html first screen and search flow (match, empty, near-miss, the A-104 answer line): DONE in push 2.
+     - Batch 1, ramsey.html (scripts/render-ramsey.mjs): tokens and type only, no copy change. DONE tonight if it clears its own review.
+     - Batch 2, c/*.html ×120 (render-constant-pages.mjs): tokens and type only, no copy change. DONE tonight if review clears, otherwise NEXT 11-24.
+     - Batch 3, copying.html: tokens only.
+     - README.md (GitHub-rendered, so voice only): NEXT 11-24, because it is claims-heavy and A-103's outcome read is open to 12-14.
+     - The empty-search and "looks wrong?" issue drafts: HOLD on A-109 (11-24).
+     - CI-filed drift issues: HOLD, because the alarm's stdout is a public surface and a wording change is a separate review.
+     - The GitHub Pages 404: UNREACHED-ours (GitHub's default page; the repo has none).
+     - docs/** served whole: listed, not a designed screen.
+     - No email, sign-in, payment, settings or share image exists. Confirmed in P3 by a grep for og:image and mailto in the renderers.
+
+  First command:
+
+  ```
+  node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --selftest
+  ```
+
+- **Acceptance condition:** after push 2's Pages build, a signed-out GET of https://u00dxk2.github.io/bounds-ledger/ contains `<p class="mast">Bounds Ledger</p>` and "Browse all", and the search input's computed at-rest border colour is the accent. On the 390 frame the cell labels are not uppercase. `render-site --check` and `npm test` pass after the commit, and CI on main is green. Rollback was proven once. docs/SCREENS.md exists with DONE / NEXT / HOLD counts.
+- **Delivery and encounter checks:** delivery means the Pages build row for each push tip, `npm run served`, and a live fetch of index.html plus each restyled page. Encounter is blind (A-59). The only visible arrival is an outside issue counted by `npm run reports`, readable at N = 1; the variant's baseline is the early read above (0 of 37).
+- **USER-FACING: yes.** Paths: scripts/render-site.mjs, index.html, scripts/render-ramsey.mjs, ramsey.html, scripts/render-constant-pages.mjs, c/*.html, copying.html (and its renderer if it has one), docs/SCREENS.md, docs/design-pass-2026-11-17/ (frames and the tool's deletion), continuity/items.json (A-110, A-104).
+- **Inputs that reach the output, each with its origin** (from the 11-16 Q5 retro finding):
+  - The headline count `n`: ours, counted from rendered rows.
+  - The masthead, headline, label, placeholder, "Browse all" and empty-state sentences: ours, claims-passed.
+  - The empty state's issue href: ours, already on the live page.
+  - The ramsey and constant page text: unchanged.
+  - Upstream text reaches only through the existing pins and cells, which this rollout does not touch.
+- **HYGIENE INPUTS:**
+  - (a) due rows not bearing on the choice: none. Read check-due-gates-dispositioned.mjs (verify leg): "5 gate(s) were due at Phase 0 … verdict: CLEAR"; all 5 (A-81 (the Ramsey-area watcher), W-13 (call the served-bytes check), W-17 (the newer-papers line), W-4 (prove every new detector both ways), W-8 (does an amended outward artifact go back to David)) were already re-dated at today's first close. A re-snapshot was refused with exit 2, as designed.
+  - (b) owed child rows: none. Read: the kickoff's "rows owed to you in skylark-site's ledger" (0 of 850).
+  - (c) state reads marked CROSSED: none. Read: the kickoff's state reads (stale-actionable 0 of 30; missingLinkedCommits NOTHING SWEPT, 0 of 0).
+- **A prior-day retro finding that bears on the choice:** 11-16 Q0, "a renderer change to the public page died at Codex round 3 on one class, upstream-controlled text reaches what we publish". Hence the inputs line above. The port adds no new input path.
+- Codex calls in P1: 0 (a reading phase; the kickoff carries a GREEN probe).
+
+### Round 3 review log
+
+Every round below is Codex, read-only, foreground pipe, banner `workdir: C:\dev\skylark\bounds-ledger` checked before reading, model `gpt-6.2-sol`. Each was pinned to its head commit by sha.
+
+- **Round 1, commit `6e82d48`** (the port, flag OFF): claims table marked HOLDS on the masthead, headline, label, placeholder, "Browse all", and each empty-state sentence. Diff verdict FIX FIRST, six findings, all CONFIRMED and fixed in commit `57f233e`: unpicked copy left in `copy.md` and `selection.md`; `SCREENS.md` wording; a nested block could half-replace the empty state; the selftest did not drive `buildIndexHtml` or click Browse; resource markup and non-CSS comments unguarded; Browse visible without scripts.
+- **Round 2, commit `57f233e`**: FIX FIRST. The same class came back (HTML shapes slipping past a matcher over the rendered page), so the matcher was deleted and `renderHtml()` now chooses the handbook markup in its template (commit `da45cba`). The other findings were fixed: the Browse event order, the wrapper check, an allowlist resource guard, `.browse[hidden]`, the `cli()` wiring, doc wording.
+- **Round 3, commit `da45cba`**: every round-2 code item FIXED; the classic branch reproduces the pre-rollout template; the handbook branch matches the retired transform. Open items: one Low (an empty handbook render printed "0 constants"), guard-limit notes it called unreachable from today's code, and doc wording. Inventory prose had now been refuted three rounds running, so `SCREENS.md` was cut back to naming each state and pointing at the code that defines it. The Low and the `PRODUCT.md` and `copy.md` sentences were fixed in the next commit.

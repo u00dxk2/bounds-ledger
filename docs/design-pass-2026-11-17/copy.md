@@ -12,11 +12,12 @@ earlier version is in this repository's history.
 
 ## Review status
 
-The design pass's claims rounds (read-only, from another model family) returned SHIP on these
-sentences after their last edit (`selection.md`). The rollout's claims pass (Codex, read-only, on
-commit `6e82d48`) returned HOLDS on each of them against the code; that round is recorded in
-`docs/daily/2026-11-17-prelaunch.md`. The search detail in the empty state is on the Known list in
-`docs/PRODUCT.md` since the same rollout.
+In the design pass, the first claims round on the variant returned FIX FIRST, and a narrow
+follow-up round on the edited search paragraph and the Browse behaviour returned SHIP
+(`selection.md`). At the rollout, Codex's first read-only round (on commit `6e82d48`) marked each of
+the sentences below HOLDS against the code, in its claims table; the rollout's review rounds are
+logged in `docs/daily/2026-11-17-prelaunch.md` under "Round 3 review log". The search detail in the
+empty state was added to the Known list in `docs/PRODUCT.md` at the rollout.
 
 ## The sentences a visitor reads
 
