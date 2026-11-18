@@ -15,7 +15,7 @@ served file, not the date any one state changed.
 
 | Surface or state | Who sees it | Defined in | File last changed | Status |
 |---|---|---|---|---|
-| `index.html`: first screen (headline, search, order control, freshness line, table) | any visitor | `renderHtml()` in `scripts/render-site.mjs` (handbook mode: masthead and Browse control added) | 2026-11-17 (rail day), commit `3e1f947` | DONE: `FIRST_SCREEN = "handbook"`; a signed-out GET of the published page after the Pages build of `3e1f947` showed the masthead, "Browse all 120 constants" and 120 rows; live frames in `docs/design-pass-2026-11-17/live/` |
+| `index.html`: first screen (headline, search, order control, freshness line, table) | any visitor | `renderHtml()` in `scripts/render-site.mjs` (handbook mode: masthead and Browse control added) | 2026-11-17 (rail day), commit `3e1f947` | DONE: `FIRST_SCREEN = "handbook"`; a signed-out GET of the published page after the Pages build of `3e1f947` showed the masthead, "Browse all 120 constants" and 120 rows; live frames in `docs/design-pass-2026-11-17/live/`. The serif face on Android is UNMEASURED-ON-ANDROID (the only frame is a Windows emulation that asked for Noto Serif by `local()`); NEXT 2026-11-24: a frame from a real Android phone naming the face that rendered |
 | `index.html`: search results and the answer line under the box (`A-104`) | any visitor | the page's filter script in `scripts/render-site.mjs` | as above | as above |
 | `index.html`: empty-search panel | any visitor | `renderHtml()` and the filter script | as above | as above; the issue draft it opens is HOLD (below) |
 | `index.html`: near-miss panel | any visitor | `renderHtml()` and the filter script | as above | as above (restyled; wording unchanged) |
@@ -30,6 +30,6 @@ served file, not the date any one state changed.
 | `README.md` (GitHub repository page) | visitors to the repository | the file itself | 2026-11-14, commit `0e2937a` | NEXT 2026-11-24: voice only (GitHub renders it); `A-103`'s outcome read is open to 2026-12-14 |
 | `SECURITY.md` | security reporters | the file itself | 2026-10-05, commit `c169b5b` | HOLD: policy text, not a designed screen |
 | `sitemap.xml`, `google45610b69cae7202a.html` | crawlers | the files themselves | 2026-11-05, commits `2373a50` and `33f5001` | not a screen |
-| Other tracked files (`docs/**`, `ledger/**`, `continuity/**`, `scripts/**`) | anyone with the path | tracked under the configured Pages source | n/a | not a designed screen |
+| Other tracked files, every other tracked top-level directory (`continuity/**`, `docs/**`, `ledger/**`, `scripts/**`, `search/**`, plus the dot folders `.githooks/**` and `.github/**`, whose serving is not read here; from `git ls-tree -d --name-only HEAD`) | anyone with the path | tracked under the configured Pages source | n/a | not a designed screen |
 
 Totals after the turn-on (rail day 2026-11-17): DONE 5 (the five `index.html` rows), NEXT 5 (constant pages, `ramsey.html`, `copying.html`, a 404 page, `README.md`, each dated 2026-11-24), HOLD 4 (the two issue-draft families, CI findings, `SECURITY.md`), not a screen 2.

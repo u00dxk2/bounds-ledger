@@ -263,3 +263,35 @@ Each saved Codex banner reports model `gpt-6.2-sol`, a read-only sandbox and `wo
 - **Inventory:** `docs/SCREENS.md`: DONE 5, NEXT 5 (constant pages, `ramsey.html`, `copying.html`, a 404 page and the README, each dated 2026-11-24), HOLD 4.
 - **Not done tonight, and why:** carrying the system to the constant pages and the Ramsey pages. Each is its own renderer with its own stylesheet guards, so each needs its own review rounds. The index alone took four. They are NEXT 2026-11-24, not HOLD.
 - **Manager conditions:** (1) the Android frame names the face that rendered, see (b). (2) The generator's Pages URL should 404 now that it is deleted, which is read at the P3 post. (3) The 404 page is listed as NEXT with a date. (4) The suggestion to sample three routes is left to the close.
+
+### Close (round 3, design rollout)
+
+ACTION: COMPLETED · item A-110 (the design-pass first-screen candidate) · P3 bus `c132552e`
+
+- **What a visitor now sees, in plain words:** the index page opens on a "Bounds Ledger" masthead. Below it, a headline counts the 120 constants, the lookup box is outlined in the brand blue, a "Browse all 120 constants" control clears a search, and a search that finds nothing gives a shorter explanation. On a phone the labels inside each card are in sentence case, not capitals. The table, its rows and every pin are unchanged.
+- **State since the P3 post:** the manager's review (bus `c8d11485`) read the live page signed out and called the action COMPLETED. The same handbook bytes came back with `?variant=a`, `?variant=b`, `?v=a`, `?look=classic` and `?first=classic`, so the served page reads no query string or cookie. CI page-check, reverify and the Pages build are green on commit `3e1f947` and on the records commit `db4ac84`, whose Pages build row was built at 07:20:19Z (the review's read).
+- **Review items closed here:**
+  - (1) The Android serif face is recorded as UNMEASURED-ON-ANDROID, with NEXT 2026-11-24: a frame from a real Android phone naming the face that rendered. The only frame is a Windows emulation that asked for Noto Serif by `local()`.
+  - (2) `docs/SCREENS.md`'s "other tracked files" row now names every tracked top-level directory from `git ls-tree -d --name-only HEAD`, `search/**` included.
+- **Stated plainly:** the retired generator and the candidates' build commits (`9ebb7a4`, `1b966ee`) are in this public repository's git history, pushed under the one-push permission. They are not served: the generator's Pages URL returns 404, and the live index carries no v-a or v-b hook.
+- **Records:**
+  - `docs/SCREENS.md` counts DONE 5, NEXT 5, HOLD 4, and 2 not a screen.
+  - Live frames: `docs/design-pass-2026-11-17/live/first-screen-1440.png`, `first-screen-390.png` and `capture-log.json`.
+  - Rollback: set `FIRST_SCREEN` to "classic" in `scripts/render-site.mjs`, run `node scripts/render-site.mjs`, and push both. It was tested once, byte for byte against commit `a587fa9`'s `index.html`.
+- **Ledger delta** (`continuity-edit.mjs`, each write exit 0):
+  - `A-104` (the phone answer line): its early read was appended (UNREADABLE-EARLY, n=0); it rode the flip commit.
+  - `A-110`: ship note and close note appended. Status open → monitoring, nextCheckDate 2026-11-19 → 2026-11-24, readCommand → `npm run reports`. Not closed, because the Android frame and the encounter and outcome reads are still owed.
+- **Hygiene draft:** 0 lines, 0 accepted, 0 amended, 0 rejected. READ-MUTATED, quoted: "none — 0 reads guarded". Checks, quoted: "RESULT: PASS — 2 of 133 row(s) carry `waitJustification`; 0 warn / 0 info (exit 0)" and "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable (exit 0)".
+- **Due-gate verification:** `check-due-gates-dispositioned.mjs` printed "verdict: CLEAR — every gate due at Phase 0 was dispositioned." It labels the snapshot STALE, because the MT clock passed midnight: the snapshot is the rail day's (taken 2026-11-17, 5 rows), and the verdict covers that day's due set. It was not re-snapshotted at close.
+- **Receipt:** unchanged from P3 (bus `c132552e`); no bracket moved.
+- **Pending reads:**
+  - `A-103` (the README's visitor command) and `A-104`: 2026-11-21.
+  - `A-45` (stale-value resolvability) and `A-91` (67a's withdrawn preprint): 2026-11-22.
+  - `A-108` (the narrower feed): 2026-11-23.
+  - `A-110` (Android frame, encounter), `A-109` (the empty-search issue title), `W-4` (prove every new detector both ways), `W-8` (does an amended outward artifact go back to David), `W-13` (call the served-bytes check) and `W-17` (the newer-papers line): 2026-11-24. Also on 2026-11-24, the `SCREENS.md` NEXT batch: constant pages, the Ramsey pages, a 404 page and the README.
+  - `A-78` (OpenAI's math release) and `G-4` (an outside party acts on a watched record): 2026-11-30.
+  - `A-81` (the Ramsey-area watcher): 2026-12-01.
+- **For the skill notes:**
+  - About 160 lane-minutes from the kickoff's arrival (04:42Z) to the P3 post (07:22Z). Heavy-gate waits, quoted from their own lines: "admitted after 11m13s in queue" and "admitted after 22m17s in queue".
+  - What cost the most was four Codex rounds on the index alone. Two went to a matcher over rendered HTML that each round found a new way past, and three went to inventory prose that re-described code behaviour.
+  - What would cut it: write the variant into the template from the start, never as a transform of the rendered page. And keep an inventory to names and pointers from its first draft.
