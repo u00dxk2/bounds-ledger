@@ -3956,6 +3956,41 @@
       ],
       "created": "2026-11-16",
       "updated": "2026-11-17"
+    },
+    {
+      "id": "A-109",
+      "title": "Empty-search and near-match issue drafts are pre-titled 'Constant not tracked', which a search cannot support",
+      "type": "action",
+      "status": "open",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-11-24",
+      "notes": "Minted 2026-11-17 at the round-2 close, from the hygiene helper's round-2 draft (amended: the helper drafted no command). Found by the Codex claims passes on the design pass (rounds 2 and the variant pass): a search that found nothing cannot support the title 'Constant not tracked'. The helper read the coupling that makes a one-line retitle unsafe: scripts/render-site.mjs askHref builds the title for BOTH ask links (#emptyask and #nearask); scripts/report-rate.mjs classifies an arrival as empty-state by the prefix /^Constant not tracked:/, and npm run reports is G-4's primary indicator, so retitling the link alone silently drops new arrivals to outsideOther while the sum check still reconciles; issues already filed keep the old title, so the classifier must accept both prefixes; G-4's own text names the title. The design-pass candidate (A-110) deliberately leaves the title as it is.",
+      "closeWhen": "All four: (i) both links file a title that states the search and claims nothing about coverage, the wording reviewed as public copy; (ii) arrivalKind matches the new prefix AND still matches the old one, with a fixture for each; (iii) red arm recorded through the wiring: a retitled link with the classifier unchanged makes the arrival count fall, shown before the fix and gone after; (iv) G-4's text names the new title, and the served page is live-fetched for both links after the push.",
+      "readCommand": "node scripts/report-rate.mjs --selftest",
+      "links": [
+        "scripts/render-site.mjs",
+        "scripts/report-rate.mjs"
+      ],
+      "created": "2026-11-17",
+      "updated": "2026-11-17"
+    },
+    {
+      "id": "A-110",
+      "title": "Design pass: first-screen candidate (variant c, the table set as a handbook page) is built and off, waiting on David's pick",
+      "type": "action",
+      "status": "open",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-11-19",
+      "notes": "Minted 2026-11-17 at the round-2 close. The portfolio design and copy pass (orchestrator kickoff bus 16560d24; the lead says David approved it in chat, with no source row to re-read). Delivered: docs/PRODUCT.md, docs/DESIGN.md, docs/design-pass-2026-11-17/ (copy.md, live-site before frames, selection.md, the blind judge prompt, a like-for-like before set and the after frames of variant c, and the generator tools/design-variants.mjs). The blind pick (Codex, six runs, sides swapped) chose variant c; all six verdicts agreed. PUSH STATE at the close: 7b0743e and 87618fd are on origin/main; 9ebb7a4, 1b966ee and the close commit are LOCAL ONLY. They are held because this repository is public and served whole: a Codex review of 9ebb7a4 rated HIGH that pushing puts the after frames at public addresses before David has picked. The orchestrator's push ruling had not arrived at the close (its review, bus a6df145d, says the ruling is its own to make). The variant stays off until David picks: there is no switch in the published page; index.html and scripts/ are byte-identical. Before the page change ships: every sentence a visitor reads needs a claims pass after its last edit (the empty-state wording was edited after its pass); the search field should carry the brand blue at rest (the after first screen shows none, which DESIGN.md does not intend); phone cell labels are still uppercase; Android font fallback is unmeasured. The issue-title fault is A-109. Do not commit a variant page: Pages would serve it.",
+      "closeWhen": "Either David picks and the page change ships (its own review, claims pass, served-bytes read and a receipt), or he declines and the local commits are pushed or dropped by the orchestrator's ruling, said plainly.",
+      "readCommand": "git rev-list --count origin/main..HEAD",
+      "links": [
+        "docs/design-pass-2026-11-17/selection.md",
+        "docs/DESIGN.md",
+        "docs/PRODUCT.md"
+      ],
+      "created": "2026-11-17",
+      "updated": "2026-11-17"
     }
   ],
   "meta": {
