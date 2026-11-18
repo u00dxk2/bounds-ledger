@@ -9,8 +9,8 @@
 //   - the output root is fixed (tmp/design-pass/variants) and re-checked to sit under <repo>/tmp;
 //   - index.html's bytes are hashed before and after, and a difference is exit 1.
 import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
+import { lstatSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildIndexHtml } from "../../../scripts/render-site.mjs";
 
@@ -140,6 +140,11 @@ export function buildVariant(base, key) {
 
 function main(argv) {
   const usage = "usage: node design-variants.mjs --variant a|b|c|all   |   --selfcheck";
+  const okArgs = (argv.length === 1 && argv[0] === "--selfcheck") || (argv.length === 2 && argv[0] === "--variant" && ["a", "b", "c", "all"].includes(argv[1]));
+  if (!okArgs) {
+    console.error(`design-variants: REFUSED — unrecognised arguments ${JSON.stringify(argv)}. Nothing was written.\n${usage}`);
+    return 2;
+  }
   const before = sha(INDEX);
   if (argv.length === 1 && argv[0] === "--selfcheck") {
     // Both answers for the fail-closed claims, with nothing written.
@@ -167,10 +172,23 @@ function main(argv) {
   const keys = argv[1] === "all" ? ["a", "b", "c"] : [argv[1]];
   const base = buildIndexHtml().html;
   const built = keys.map((k) => [k, buildVariant(base, k)]); // every transform proven before any write
+  // The path check above is lexical. A junction or link under tmp/ could still point the write
+  // somewhere else (the repository root, for one), so resolve the REAL directory and refuse unless
+  // it sits inside the real tmp folder, and refuse a target that is a link.
+  const realTmp = realpathSync(join(ROOT, "tmp"));
   for (const [k, html] of built) {
     const dir = join(OUT_ROOT, k);
     mkdirSync(dir, { recursive: true });
-    writeFileSync(join(dir, "index.html"), html);
+    const realDir = realpathSync(dir);
+    const inside = relative(realTmp, realDir);
+    const target = join(dir, "index.html");
+    let isLink = false;
+    try { isLink = lstatSync(target).isSymbolicLink(); } catch { /* absent is fine */ }
+    if (inside === "" || inside.startsWith("..") || isAbsolute(inside) || isLink) {
+      console.error(`design-variants: REFUSED — the output for variant ${k} does not resolve inside the repository's tmp folder, or is a link. Not written.`);
+      return 2;
+    }
+    writeFileSync(target, html);
     console.log(`wrote tmp/design-pass/variants/${k}/index.html (${html.length} chars)`);
   }
   if (sha(INDEX) !== before) {
