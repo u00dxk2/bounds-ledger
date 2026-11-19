@@ -21,7 +21,7 @@ sentry_open_p2: null
 
 ## BLUF
 
-A reader who follows a bad link to the site now gets a page in the site's own look that sends them back to the index. Before, the host showed its own error page, sometimes a 503 that reads as if the whole site were down, and neither of its pages linked back.
+A reader who follows a bad link to the site now gets a page in the site's own look with a link to the index. Before, the host showed its own error page, sometimes a 503 that reads as if the whole site were down, and neither of its pages linked back.
 
 ## What changed
 
@@ -91,6 +91,20 @@ node C:/dev/skylark/bounds-ledger/scripts/render-site.mjs --check
 - **Delivery and encounter checks:** delivery: the Pages builds API row for the commit, then the two GETs above. Encounter: blind (`A-59`); the event that would show a reader used it is none we can see, so this is reported as unmeasured.
 - **USER-FACING: yes.** Paths: `404.html` (new), `docs/SCREENS.md`, `continuity/items.json`; possibly a renderer under `scripts/` if the page is generated rather than hand-written, decided at P3.
 - **HYGIENE INPUTS**
-  - (a) due rows not bearing on the choice, 7 of 7: `A-2`, `A-47`, `A-77`, `A-92` (waived), `G-2`, `W-16`, `W-3`.
+  - (a) due rows not bearing on the choice, 7 of 7: `A-2`, `A-47`, `A-77`, `A-92` (waived), `G-2`, `W-16` (the watch on upstream issue 289), `W-3` (the watch for acknowledgement of the erdosproblems.com/36 correction).
   - (b) owed child rows in the orchestrator's ledger: none, read "0 of 850 considered".
   - (c) state reads past their threshold: dated gates due 7 (7 unread of 7); board cards carrying David's word 7 (all skylark-site riders, 0 new); key numbers: no list yet (`docs/key-metrics.json` absent); stale-actionable 1 of 32.
+
+### Close
+
+- ACTION: COMPLETED · item `A-110` · P3 `051ffa17`. The acceptance in force (the manager's P1 review: at least three bad addresses, one nested two deep, each fetched twice, returning this page's title and a working link to `/bounds-ledger/`) was met: 6 of 6 of our fetches, 8 of 8 of the manager's (review `13dd35f4`).
+- Changed since the P3 post: none for users. The doc commits `891e21e` (`docs/SCREENS.md`, this report) and `4616712` (traffic sample) ride the close push; `docs/SCREENS.md` counts as DONE 9 / NEXT 1 / HOLD 4 / not a screen 2 / UNREACHED 0 once that push is on main. The row moved today: the missing-address page, NEXT to DONE.
+- Hygiene draft (`tmp/hygiene-draft-bounds-ledger-2026-11-19.md`): 7 lines — 5 accepted (`A-2`, `A-47`, `A-77` re-dated to 2026-11-26; `W-3` (the watch for acknowledgement of the erdosproblems.com/36 correction) to 2026-12-03; `A-92` held to 2026-12-17) · 1 amended (`G-2` (the lane's own record-search goal): option A, the park-or-keep question went to David as decision msg `3e38e944`, board card `0c232c6c`, and the row is held to 2026-12-19) · 1 rejected (`G-2`'s park line, superseded by option A). READ-MUTATED: none (5 reads guarded). Checks: wait-justification "RESULT: PASS — 2 of 133 row(s) carry `waitJustification`; 0 warn / 0 info" (not David's words); engineering-zero "RESULT: PASS — lane bounds-ledger: 0 findings, 0 unreadable" (not David's words).
+- Not drafted: `W-16` (the watch on upstream issue 289) is UNREAD today. The classifier refused the helper's `--run W-16` twice; not rerouted. Re-dated to 2026-11-26 with that recorded on the row.
+- `A-110`: note appended (item 2 done; items 1, 3, 4, 5 dated 2026-11-24). Status stays monitoring.
+- positive control: "no movement seen yet" returned 809 hits across 110 files over the same `index.html` and `c/*.html` glob that returned 0 for "date unknown"; the real page `c/46a.html` returned 200 in the same minute the bad addresses failed; "Each constant on the index has" returned `404.html:1` over the same glob as the 0-hit sibling sweep; the hygiene helper's W-3 read printed both advisory lines, and `check-engineering-zero` and the round-1 Codex review on `644b87c` each returned findings on other inputs (frolic's Sentry issue; the refuted sentence), so neither is a dead instrument.
+- `A-47` (the depth audit): the audited count is 111, unchanged since 2026-11-12. Its closeWhen calls that the finding; the next slice is owed by 2026-11-26.
+- Due-gate verification: `check-due-gates-dispositioned` printed "verdict: CLEAR — every gate due at Phase 0 was dispositioned." against the snapshot "CURRENT (taken 2026-11-19)".
+- Heavy-gate waits: none. No local verify was queued; CI was green at every pushed sha.
+- What cost the most time: the two read-only Codex rounds on the 404 page, which was worth it, because round 1 refuted the one sentence that said more than its source.
+- Pending reads: `A-108` 2026-11-23; `A-110` and `A-109` 2026-11-24; `W-16`, `A-2`, `A-47`, `A-77` 2026-11-26; `W-3` 2026-12-03; `A-92` hold to 2026-12-17; `G-2` hold to 2026-12-19 (David's card).
