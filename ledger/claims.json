@@ -4,7 +4,7 @@
     "statement": "Current best known upper bound on the Erdős minimum-overlap constant is 0.380868 (SimpleTES, Apr 2026)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1b.md",
     "expect": "0.380868",
-    "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md"
+    "asserts": "git history only: docs/reconciliations/2026-07-22-minimum-overlap.md, removed from the tree 2026-11-20 on the owner's decision (board card e656ca2c)"
   },
   {
     "id": "C-2",
@@ -23,7 +23,7 @@
     "statement": "Best known lower bound is 0.379005 (White 2022)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1b.md",
     "expect": "0.379005",
-    "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md"
+    "asserts": "git history only: docs/reconciliations/2026-07-22-minimum-overlap.md, removed from the tree 2026-11-20 on the owner's decision (board card e656ca2c)"
   },
   {
     "id": "C-4",
@@ -53,7 +53,7 @@
     "expect": "0.380876",
     "note": "Site 403s automated fetch from DATACENTER IPs only (CI runners); a residential IP gets 200 — which is why the advisory line below is real information locally and never is in CI. DO NOT re-automate this claim on the strength of a local 200: tried 2026-07-25, CI went red in four minutes. Only a green CI run is evidence. Full account: docs/findings/2026-07-25-the-403-that-wasnt.md. Last hand-verified 2026-07-25, three agreeing reads (David, Node fetch, Playwright): 0.379005 < c < 0.380876, 0.380868 absent, last edited 23 January 2026.",
     "lastHandVerify": "2026-07-25",
-    "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md",
+    "asserts": "git history only: docs/reconciliations/2026-07-22-minimum-overlap.md, removed from the tree 2026-11-20 on the owner's decision (board card e656ca2c)",
     "manual": true
   },
   {
@@ -63,7 +63,7 @@
     "expect": "- number: \"36\"\n  prize: \"no\"\n  informal_status:\n    state: \"open\"",
     "note": "FIRST CLAIM ON THE SECOND STEWARDED SURFACE (A-6, adopted 2026-07-25, David greenlit). The community metadata database behind erdosproblems.com — CI-reachable via raw.githubusercontent (unlike the site, which 403s datacenter IPs). Entry-level pin, deliberately NOT a byte-level mirror: the repo is pushed near-daily, so a whole-file drift alarm would be permanently red, and an always-red alarm carries no information. The pin spans number → prize → informal_status.state and stops BEFORE last_update (churns on any upstream edit). A BREAK means problem 36's entry changed (solved? prize added? entry restructured?) — re-verify against the repo and re-pin deliberately. ID NOTE: an unrelated, reverted claim briefly used the C-8 ID earlier on 2026-07-25 (site last-edited-date pin; see docs/findings/2026-07-25-the-403-that-wasnt.md) — this claim is not it.",
     "lastHandVerify": "2026-07-25",
-    "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md"
+    "asserts": "git history only: docs/reconciliations/2026-07-22-minimum-overlap.md, removed from the tree 2026-11-20 on the owner's decision (board card e656ca2c)"
   },
   {
     "id": "C-9",
@@ -72,7 +72,7 @@
     "expect": "This page was last edited 23 January 2026.",
     "note": "Same site block as C-7. C-7 pins the bound (catches the correction landing as a value change); this pins the edit date (catches the maintainer touching the page at all — ack-adjacent evidence C-7 cannot see). `manual: true` is what makes an edit-date pin safe: the 2026-07-25 version of this pin was FETCHABLE, so CI reported UNREACHABLE and went red (docs/findings/2026-07-25-the-403-that-wasnt.md). Two manual claims = two requests per local run to a personal site that dislikes bots; don't grow this pattern.",
     "lastHandVerify": "2026-07-26",
-    "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md",
+    "asserts": "git history only: docs/reconciliations/2026-07-22-minimum-overlap.md, removed from the tree 2026-11-20 on the owner's decision (board card e656ca2c)",
     "manual": true
   },
   {
@@ -83,7 +83,7 @@
     "nothingAfter": "\n|}",
     "note": "PIN-A-NEGATIVE (A-11 leg b). C-6 pins a value that is PRESENT; this pins the ABSENCE of a row below it, by requiring the last record row to be immediately followed by the wikitext table terminator. Closes the blind class on this source: a presence test can only see a pin DISAPPEAR, so a new record ADDED underneath — this lane's north-star event — would have left C-6 green forever. A break here means a row was inserted: verify against primary sources, then re-pin deliberately. Do NOT read the pinned row as an assertion that 0.380868 is the true record; it asserts LISTING POSITION on this surface, the same discipline the generated pins follow.",
     "lastHandVerify": "2026-08-11",
-    "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md"
+    "asserts": "git history only: docs/reconciliations/2026-07-22-minimum-overlap.md, removed from the tree 2026-11-20 on the owner's decision (board card e656ca2c)"
   },
   {
     "id": "C-11",
@@ -93,7 +93,7 @@
     "nothingAfter": "\n\n- number: \"37\"",
     "note": "PIN-A-NEGATIVE (A-11 leg b), the C-8 half. C-8 pins the head of problem 36's entry (number → prize → informal_status.state) and stops before last_update, so a field APPENDED to the entry — a solved marker, a prize, a new sub-key — is invisible to it. This pins the entry's TAIL: the comments+tags span must be immediately followed by the start of problem 37. Anchored on comments (distinctive to problem 36) rather than tags alone, so deleting entry 36 outright cannot be masked by a neighbour carrying the same tags. Deliberately skips every last_update field, so ordinary bookkeeping edits stay silent — the A-6 rule that an always-red alarm carries no information.",
     "lastHandVerify": "2026-08-11",
-    "asserts": "docs/reconciliations/2026-07-22-minimum-overlap.md"
+    "asserts": "git history only: docs/reconciliations/2026-07-22-minimum-overlap.md, removed from the tree 2026-11-20 on the owner's decision (board card e656ca2c)"
   },
   {
     "id": "C-12",
