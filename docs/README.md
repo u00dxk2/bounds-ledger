@@ -39,7 +39,6 @@ Every document in this folder, with one line on what it is for. Agents start at 
 - `daily/` — daily reports, `<date>-prelaunch.md`.
 - `findings/` — verified catches and instrument findings, dated.
 - `decisions/` — filed decisions and reviews, dated.
-- `reconciliations/` — reconciliation write-ups (#1, the method template).
 - `evidence/` — screenshots cited by the daily reports of 2026-10-10 and 2026-10-11.
 - `housekeeping/` — housekeeping-night inventories.
 - `measurements/` — raw measurements behind a dated change, one folder per run: `2026-11-09-a-101/` and `2026-11-10-a-101/` hold the `A-101` table-width reads (before, after and live, at four viewport widths), with the scripts that took them.

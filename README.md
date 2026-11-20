@@ -76,7 +76,7 @@ If you had cited `6.5143…` the week before, you could have missed the update. 
 
 The ledger grew out of comparing reported upper bounds for the Erdős minimum-overlap constant. The curated table lists **0.380876**, **0.380871** and **0.380868** in that order.
 
-The comparison is written up in [`docs/reconciliations/2026-07-22-minimum-overlap.md`](docs/reconciliations/2026-07-22-minimum-overlap.md). It is also this repository's method template: cross-check the sources, date the reported values, and keep the history.
+The method that comparison used is this repository's template: cross-check the sources, date the reported values, and keep the history.
 
 ## What it has actually caught
 

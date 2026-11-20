@@ -244,4 +244,4 @@ Tracked as **W-3** until one of those arrives or we decide the watch has run its
 
 ---
 
-*Full detail in-repo: `docs/decisions/2026-07-24-A3-adversarial-review.md` (the review), `docs/decisions/2026-07-23-A3-erdosproblems-report.md` (the original decision), `docs/reconciliations/2026-07-22-minimum-overlap.md` (how the record sequence was established).*
+*Full detail in-repo: `docs/decisions/2026-07-24-A3-adversarial-review.md` (the review), `docs/decisions/2026-07-23-A3-erdosproblems-report.md` (the original decision).*
