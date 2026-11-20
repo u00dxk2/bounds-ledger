@@ -2,31 +2,31 @@
 
 **A continuously re-verified ledger of mathematical records, which alarms when a cited record drifts.**
 
-Best-known bounds, constants and certificates move. The papers, repositories and index pages that cite them do not all move at the same time, so a number you looked up last month may already be stale, and nothing tells you. This repository is the thing that tells you.
+Best-known bounds, constants and certificates move. The papers, repositories and index pages that cite them do not all move at the same time, so a number you looked up last month may already have been superseded. This repository tells you when the sources it watches change.
 
-It does not search for better bounds, and it does not check the mathematics behind them. It watches records that already exist, re-checks them on a schedule, and goes red when one moves.
+It is not a record-search engine. It keeps a copy of the records it watches, re-checks that copy and a set of pinned claims against their sources on a schedule, and goes red when the text it checks no longer matches.
 
 ## Is your number in here?
 
 **Look it up on the index: [u00dxk2.github.io/bounds-ledger](https://u00dxk2.github.io/bounds-ledger/).** All 120 tracked constants are on that one page, filtered as you type. For each constant it shows:
 
-- the pinned upper and lower rows, as upstream's bounds table lists them;
+- the last-listed upper and lower rows of its bounds table, from our copy, with citation keys simplified for display;
 - a short label on each row saying what the ledger has seen of it, for example "value changed" or "text edited — bound unchanged", with its date when the ledger has one;
 - a link to upstream's own file for that constant, where the bounds table cites its references.
 
-That link is one click from our row to theirs. Checking a number against its paper is one more step, through the reference the table cites. The page needs no account and no clone, and it fetches nothing at runtime. It is a snapshot at the sha pinned under **Current state** below, and it says so on the page.
+That link opens the constant's file on upstream's `main` branch, which can be ahead of our copy. Where a row credits a source, the table's references say what it is, and checking the number means reading that source. The page needs no account and no clone, and it fetches nothing at runtime. It is a snapshot at the sha pinned under **Current state** below, and it says so on the page.
 
 **Small Ramsey numbers R(k, l) have their own page: [ramsey.html](https://u00dxk2.github.io/bounds-ledger/ramsey.html).** It is described below.
 
-**For the live verdict, clone the repository and run the two checks that need only Node and a network connection:**
+**To run the checks yourself, clone the repository and, with Node and a network connection (no account, nothing to install), run:**
 
 ```
 node scripts/reverify.mjs --check && node scripts/check-claims.mjs
 ```
 
-What each step does, and what its exit code means, is under **Check any of that yourself, in about a minute** below. `npm run check` runs those two and more.
+The first command compares our copy with upstream. If that passes, the second re-checks the pinned claims, and its output names any claim it reports as UNVERIFIED. How to read the result is under **Check any of that yourself, in about a minute** below. `npm run check` runs those two and more.
 
-The short answer to "is my number in here?" is "maybe, and you can check in one click". **120 named constants** are tracked. Twelve of them are below, chosen because you may recognise them. Each link goes to this repository's mirrored copy, which GitHub renders as the bounds table itself, so you can read the current upper and lower rows without cloning anything.
+The short answer to "is my number in here?" is "maybe, and you can check in one click". **120 named constants** are tracked. Twelve of them are below, chosen because you may recognise them. Each link goes to this repository's mirrored copy, which GitHub renders as the bounds table itself, so you can read the upper and lower rows in this snapshot without cloning anything.
 
 | Constant | The bounds table we watch |
 |---|---|
@@ -43,38 +43,38 @@ The short answer to "is my number in here?" is "maybe, and you can check in one 
 | Bloch's constant | [`57a.md`](ledger/teorth-optimizationproblems/constants/57a.md) |
 | Erdős unit distance exponent | [`84a.md`](ledger/teorth-optimizationproblems/constants/84a.md) |
 
-The full set is [`ledger/teorth-optimizationproblems/constants/`](ledger/teorth-optimizationproblems/constants/), one file per constant, plus upstream's own README at [`ledger/teorth-optimizationproblems/README.md`](ledger/teorth-optimizationproblems/README.md). That README is where upstream declares which rows it stands behind.
+The full set is [`ledger/teorth-optimizationproblems/constants/`](ledger/teorth-optimizationproblems/constants/), one file per constant, plus upstream's own README at [`ledger/teorth-optimizationproblems/README.md`](ledger/teorth-optimizationproblems/README.md). That README is where upstream explains its verification labels and marks the bounds whose available verification is minimal.
 
-**What you are looking at when you click.** Not a live read. It is a byte-identical copy of upstream at the sha pinned in [`manifest.json`](ledger/teorth-optimizationproblems/manifest.json), which is what makes it checkable: if upstream's file and ours ever differ, the alarm goes red and one of us is out of date. The **last-listed row of each table is pinned verbatim**, so a newly appended record trips the mirror diff. What this cannot tell you is which row is "the record". That judgement is deliberately not automated, for the reason set out under the four load-bearing rules below.
+**What you are looking at when you click.** Not a live read. It is a copy of upstream's text at the sha pinned in [`manifest.json`](ledger/teorth-optimizationproblems/manifest.json), with line endings folded to LF, which is what makes it checkable: when the live comparison finds a difference, the alarm goes red. The **last-listed row of each table is pinned verbatim**, and a newly appended row trips the mirror diff. What this cannot tell you is which row is "the record". That judgement is deliberately not automated, for the reason set out under the four load-bearing rules below.
 
 **If your number is not in the table above, it may still be tracked:** the twelve are a sample, not the set. And if it is not tracked at all, that is worth an issue. The surfaces this project watches are chosen, not exhaustive.
 
 ### The second area: small Ramsey numbers
 
-**[ramsey.html](https://u00dxk2.github.io/bounds-ledger/ramsey.html)** holds what Radziszowski's dynamic survey *Small Ramsey Numbers* prints for the two-colour classical Ramsey numbers of its Section 2.1. Each value carries the reference the survey credits for it, and the page says for each entry whether anyone has read it against the paper it credits.
+**[ramsey.html](https://u00dxk2.github.io/bounds-ledger/ramsey.html)** holds what Radziszowski's dynamic survey *Small Ramsey Numbers* prints for the two-colour classical Ramsey numbers of its Section 2.1. It shows the credits the survey gives for each value, and for each bound in Table Ia whether anyone has read it against its credited source. Some bounds credit no outside source, and a source is not always a paper.
 
 **What it covers is narrower than the range it names, and the survey is why.** That range, the 76 pairs R(k, l) with 3 ≤ k ≤ 10 and k ≤ l ≤ 15, is wider than what Table Ia prints, which is 72 of them. The survey gives no value at R(9, 14), R(9, 15), R(10, 13) or R(10, 14). Table Ib adds 50 further upper bounds, every one of them for a pair Table Ia already covers, so it closes none of those four gaps.
 
 Every one of the 122 credited bounds in Table Ia has been attempted against the source the survey credits for it (42 reference keys), and each carries a recorded verdict: 53 sound, 0 defective, 49 unresolved, 20 unreachable. Unreachable means the credited source could not be opened, not that it was read and disagreed (`node scripts/ds1-depth.mjs`, its census line, as of 2026-11-20). That census was finished, and the page rebuilt to show its verdicts, on 2026-10-15 ([`b167f64`](../../commit/b167f64)). Before it, an initial sample of five bounds drawn by position recorded 2 sound, 2 unresolved and 1 unreachable. The page's coverage sentence said "every" until 2026-09-22, when that one sentence was corrected on the owner's approval.
 
-The values are derived from the journal's PDF by [`scripts/extract-ds1.mjs`](scripts/extract-ds1.mjs). It places each number by the ruled grid the survey itself draws, and it refuses a layout it cannot place rather than emitting a partial table, so a cell absent here is a cell the survey leaves blank, not one this reader dropped. The table is stored in [`ledger/ejc-ds1/section-2-1.json`](ledger/ejc-ds1/section-2-1.json). The survey itself is not copied into this repository: it grants no licence to republish it, so what is stored here is values, reference keys and the PDF's fingerprint.
+The values are derived from the journal's PDF by [`scripts/extract-ds1.mjs`](scripts/extract-ds1.mjs). It places each number it recognises against the ruled grid the survey itself draws, and it refuses a layout where it detects a placement error rather than emitting a partial table. The table is stored in [`ledger/ejc-ds1/section-2-1.json`](ledger/ejc-ds1/section-2-1.json). The survey's PDF is not in this repository: it grants no licence to republish it. What is stored is extracted values, reference keys, source details and the PDF's fingerprint, and the audit notes keep short quotations, as the [copying page](https://u00dxk2.github.io/bounds-ledger/copying.html) explains.
 
 ## One catch, verbatim
 
-On **2026-08-02** the alarm went red on the [Fourier Entropy-Influence constant](ledger/teorth-optimizationproblems/constants/71a.md). Upstream had replaced its record: a certificate on 17 variables superseded by one on 18. This is the actual diff our mirror produced, copied out of the commit rather than retyped, so the spacing marks inside it are upstream's own LaTeX:
+On **2026-08-02** the alarm went red on the [Fourier Entropy-Influence constant](ledger/teorth-optimizationproblems/constants/71a.md). Upstream had added a stronger reported lower bound, backed by a certificate on 18 variables, after the row on 17. These lines match the diff our mirror produced, and the spacing marks inside them are upstream's own LaTeX:
 
 ```diff
 -C_{71}\ >\ 6.514326913930565372,
 +C_{71}\ >\ 6.521845710923046575,
 ```
 
-It comes from [`da17be3`](../../commit/da17be3), the first drift here that was purely records moving. Two other constants moved in the same cycle. Each was verified against the primary source **before** the mirror was updated, because a red alarm is the signal working, not a bug to be silenced.
+They come from [`da17be3`](../../commit/da17be3), the first drift here that was purely records moving. Two other constants moved in the same cycle. Each was checked **before** the mirror was updated, because a red alarm is the signal working, not a bug to be silenced; what was and was not verified is in [the write-up](docs/findings/2026-08-02-fourth-drift-first-pure-record-movement.md).
 
-If you had cited `6.5143…` the week before, nothing would have told you. That is the whole product, and everything below is detail.
+If you had cited `6.5143…` the week before, you could have missed the update. The ledger reported it on 2 August. That is the whole product, and everything below is detail.
 
 ## The problem, concretely
 
-This repository opened on a real discrepancy. TTT-Discover ([arXiv:2601.16175](https://arxiv.org/abs/2601.16175)) reported the Erdős minimum-overlap constant as **0.380876**, while Tao's optimization-constants repository listed **0.380868**. Neither was wrong. They were *consecutive entries in a fast-moving record sequence*, and the surface that was actually stale was a third one: the index page at erdosproblems.com/36.
+This repository opened on a real discrepancy. TTT-Discover ([arXiv:2601.16175](https://arxiv.org/abs/2601.16175)) reported the Erdős minimum-overlap constant as **0.380876**, while Tao's optimization-constants repository listed **0.380868**. They were reported upper bounds from different points in a fast-moving sequence (the curated table also lists **0.380871** between them). In the July 2026 reconciliation, a third surface, the index page at erdosproblems.com/36, still displayed 0.380876.
 
 That reconciliation is [`docs/reconciliations/2026-07-22-minimum-overlap.md`](docs/reconciliations/2026-07-22-minimum-overlap.md). It is also this repository's method template: identify the surfaces, date each value, find which one stopped moving.
 
@@ -110,7 +110,7 @@ Since the alarm was armed on 2026-07-24, 20 upstream drifts, the most recent on 
 
 Everything above catches upstream **changing**. All of it is structurally blind to upstream being wrong and *staying* wrong: a row that never moves fires nothing, ever. So since 2026-09-10 cited bound rows are read against the source each one cites. The reads that count toward coverage are **drawn by position**, in slices of five since 2026-09-11, at positions `node scripts/depth-audit.mjs --draw <position…>` re-prints for anyone (slice 24, drawn on 2026-11-12, was `--draw 209 259 309 359 409`); rows read because something already looked wrong are labelled as such and counted apart. What the stored fingerprints prove is which row a verdict belongs to. That the positions were fixed before the sources were opened is this repository's own account of the order, which nothing in the artifact independently establishes — the audit says so itself, in the sampling note it prints above its own result.
 
-`node scripts/depth-audit.mjs`, as of 2026-11-20: **111 rows audited: 66 sound, 1 defective, 30 unresolved, 14 unreachable.** 102 were drawn by position from the cited bound rows that `node scripts/depth-audit.mjs --corpus` enumerates and defines, which today are 798 of the 901 bound rows across the 120 constant files. That frame has grown as upstream added rows, so earlier slices were drawn from smaller ones, and the audit records which frame each slice used. The other nine were chosen because something already looked wrong, and are counted apart from the coverage figure for exactly that reason. **Neither figure is a rate, and neither is projected onto the corpus.** 111 rows settle nothing about the rest, and the audit prints what it is blind to beside its own result.
+`node scripts/depth-audit.mjs`, as of 2026-11-20: **111 audit entries: 66 sound, 1 defective, 30 unresolved, 14 unreachable.** An entry is one reading of a row, and a row read twice, once by position and once on suspicion, has two. 102 entries were drawn by position from the cited bound rows that `node scripts/depth-audit.mjs --corpus` enumerates and defines. Those draws span several mirror revisions: the frame has grown as upstream added rows, earlier slices were drawn from smaller frames, and the audit records which frame each slice used. Today the frame is 798 cited rows of the 901 bound rows across the 120 constant files. The other nine entries were chosen because something already looked wrong, and are counted apart from the coverage figure for exactly that reason. **Neither figure is a rate, and neither is projected onto the corpus.** 111 entries settle nothing about the rest, and the audit prints what it is blind to beside its own result.
 
 The verdicts mean what they say, and the cited source is not always a paper — two of the sound rows were settled against a code repository, and one by recomputing a certificate printed in the constant's own file. *Sound*: the source was read and it supports the row. *Unresolved*: the source was read and does not settle the row — the whole content of that verdict is that it is still open. *Defective*: the source was read and it does not support the row. *Unreachable*: the source could not be read at all, and the eight of those recorded by 2026-09-26 were their own small finding about how checkable this literature is — four publisher bot-walls, a publisher serving a redirect page instead of the paper, a DOI resolver returning 502, a host that refused the connection, and one citation URL that served a "Site not found" page when we read it on 2026-09-05. Upstream replaced that link with the arXiv copy on 2026-09-26, through [`teorth/optimizationproblems#194`](https://github.com/teorth/optimizationproblems/pull/194), and that day the old URL was serving the paper again, so it was down and then up rather than permanently dead.
 
@@ -179,9 +179,9 @@ Two complementary checks, because either alone has a blind spot.
 
 **2. Claim pins** (`check-claims.mjs`) — `ledger/claims.json` names, per claim, a source URL and the exact string that must still appear there, **on each source that file names**: the upstream repo at live HEAD, arXiv, Wikipedia, erdosproblems.com and the community metadata database behind it, and the two published copies of the *Small Ramsey Numbers* survey. Papers that the mirrored files cite on other hosts are not pinned. Cross-surface divergence produced this lane's founding finding; a same-repo mirror diff would never have seen it.
 
-Coverage is every constant file in the mirror — an upper- and a lower-bound pin generated for each — plus the hand-written claims, which sit *beside* the generated pins rather than in place of them. The exact inventory is in **Current state** below, which is generated; this sentence deliberately carries no count, because the counts that used to sit here went stale twice and the claim built on them was wrong in a way no number would have revealed.
+Coverage is every constant file in the mirror — an upper- and a lower-bound pin generated for each — plus the hand-written claims, which sit *beside* the generated pins rather than in place of them. The exact inventory is in **Current state** above, which is generated; this sentence deliberately carries no count, because the counts that used to sit here went stale twice and the claim built on them was wrong in a way no number would have revealed.
 
-*What it used to say, kept because the mistake is the instructive part:* "220 pins … for each of 110 constant files. The 111th, `1b.md`, is deliberately excluded from generation and hand-pinned as C-1/C-3 instead, **so ledger coverage is complete**." Ledger coverage *was* complete. **Page** coverage was not: the published page builds its rows from generated pins alone, so excluding a file from generation removed it from the page entirely — and the excluded file was `1b`, the Erdős minimum overlap constant this repo opened on, the one in the opening paragraph above. Corrected 2026-09-03: nothing is excluded from generation.
+*What it used to say, kept because the mistake is the instructive part:* "220 pins … for each of 110 constant files. The 111th, `1b.md`, is deliberately excluded from generation and hand-pinned as C-1/C-3 instead, **so ledger coverage is complete**." Ledger coverage *was* complete. **Page** coverage was not: the published page builds its rows from generated pins alone, so excluding a file from generation removed it from the page entirely — and the excluded file was `1b`, the Erdős minimum overlap constant this repo opened on, the one in **The problem, concretely** above. Corrected 2026-09-03: nothing is excluded from generation.
 
 ## Four rules that are load-bearing
 
@@ -197,7 +197,7 @@ Coverage is every constant file in the mirror — an upper- and a lower-bound pi
 
 ## Status and limits, stated plainly
 
-- **The metric this project judges itself by — externally-acknowledged corrections — is 2.** The first: five citation keys, submitted as a pull request and merged by the maintainer of the adopted repository on 2026-08-11. The second: a reference cited in two constants' tables, whose URL served a "Site not found" page on 2026-09-05 and 2026-09-21, opened upstream as [`teorth/optimizationproblems#194`](https://github.com/teorth/optimizationproblems/pull/194) on 2026-09-21 and merged by the maintainer on 2026-09-26. **The maintainer corrected our premise when merging:** the old URL was serving the paper again that day, so it had been down and then up, and the change was accepted because a project page that goes up and down is not a stable thing to cite, not because the link was dead. A third correction, sent by email to a different site on 2026-07-24 after an adversarial review that cut one claim, is **still unanswered**; the channels are separate and neither merge says anything about the email.
+- **The metric this project judges itself by — externally-acknowledged corrections — is 3, as of 2026-11-20.** The first: five citation keys, submitted as a pull request and merged by the maintainer of the adopted repository on 2026-08-11. The second: a reference cited in two constants' tables, whose URL served a "Site not found" page on 2026-09-05 and 2026-09-21, opened upstream as [`teorth/optimizationproblems#194`](https://github.com/teorth/optimizationproblems/pull/194) on 2026-09-21 and merged by the maintainer on 2026-09-26. **The maintainer corrected our premise when merging:** the old URL was serving the paper again that day, so it had been down and then up, and the change was accepted because a project page that goes up and down is not a stable thing to cite, not because the link was dead. The third: the title and DOI of one reference in `constants/13a.md`, opened upstream as [`teorth/optimizationproblems#244`](https://github.com/teorth/optimizationproblems/pull/244) on 2026-10-20 and merged by the maintainer on 2026-10-26 (UTC), among the pull requests merged that day. A further correction, sent by email to a different site on 2026-07-24 after an adversarial review that cut one claim, is **still unanswered**; the channels are separate and none of the merges says anything about the email.
 - **Two adopted surfaces.** This is not a survey of mathematical records; it is a deep watch on a small, named set.
 - **Known limit:** this ledger checks that a cited record still says what it said, and that the surfaces citing it agree. It does not verify the mathematics behind any record — the depth audit above reads a sampled row against the source it cites, which is a different and much weaker thing than checking a proof. Where a bound is supported by a claimed proof that has not been refereed, the ledger tracks the row and upstream's own hedging — it does not adjudicate the proof.
 - Bounds do not live in the metadata repository, so a bound correction can never be filed there. Its PR channel covers metadata only.
