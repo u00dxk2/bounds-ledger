@@ -4,7 +4,7 @@
 
 Best-known bounds, constants and certificates move. The papers, repositories and index pages that cite them do not all move at the same time, so a number you looked up last month may already have been superseded. This repository reports the changes its checks detect in the files it mirrors and the claims it pins.
 
-It is not a record-search engine. On a schedule, it compares its copy of one upstream repository with the live files and checks pinned claims against their sources. A difference in the copy, or a failure on an automated claim, turns those checks red. Claims that cannot be checked automatically are reported separately.
+It is not a record-search engine. On a schedule, it compares its mirror with the live files in scope and checks pinned claims against their sources. A mirror difference or an automated claim failure fails the run. Claims marked manual are reported as UNVERIFIED.
 
 ## Is your number in here?
 
@@ -76,7 +76,7 @@ If you had cited `6.5143…` the week before, you could have missed the update. 
 
 The ledger grew out of comparing reported upper bounds for the Erdős minimum-overlap constant. The curated table lists **0.380876**, **0.380871** and **0.380868** in that order.
 
-The comparison is written up in [`docs/reconciliations/2026-07-22-minimum-overlap.md`](docs/reconciliations/2026-07-22-minimum-overlap.md). It is also this repository's method template: identify the surfaces, date each value, find which one stopped moving.
+The comparison is written up in [`docs/reconciliations/2026-07-22-minimum-overlap.md`](docs/reconciliations/2026-07-22-minimum-overlap.md). It is also this repository's method template: cross-check the sources, date the reported values, and keep the history.
 
 ## What it has actually caught
 
