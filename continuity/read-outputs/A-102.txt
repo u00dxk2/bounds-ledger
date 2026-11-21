@@ -1,13 +1,14 @@
 # read-output sidecar for A-102 — written by check-due-gates-dispositioned --run
 # readCommand: npm run reports
-# ran: 2026-11-20T15:18:17.043Z · exit: 0
-# lines: 16 · sha256: 4862cacfab952185 (first 16 hex of the output below)
+# ran: 2026-11-21T17:07:08.959Z · exit: 0
+# lines: 16 · sha256: f97bac9cb27909d0 (first 16 hex of the output below)
 # truncated: false
+# stampedVia: A-103 (one execution, shared byte-identical readCommand — this row was not spawned)
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
 > bounds-ledger@0.0.0 reports
 > node scripts/report-rate.mjs
 
-# Report arrivals — 2026-11-20 MT · 104 day(s) since the public flip
+# Report arrivals — 2026-11-21 MT · 105 day(s) since the public flip
 raw issues fetched: 37 (pull requests excluded by construction — gh issue list, not the REST issues endpoint)
   ours (CI bot + owner), excluded: 37
   outside, not an arrival:        0

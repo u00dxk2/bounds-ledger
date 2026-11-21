@@ -2502,12 +2502,12 @@
       "owner": "bounds-ledger",
       "created": "2026-09-28",
       "updated": "2026-11-18",
-      "readCommandLastRun": "2026-11-20T15:18:17.043Z",
+      "readCommandLastRun": "2026-11-21T17:07:08.959Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 71096,
+      "readCommandLastDurationMs": 94341,
       "readCommandLastOutputRef": {
         "lines": 16,
-        "sha256": "4862cacfab952185"
+        "sha256": "f97bac9cb27909d0"
       },
       "lastEvaluated": "2026-11-18",
       "redate2026_10_28": "Read 2026-10-28: npm run reports, 37 raw issues, 37 ours, 0 outside arrivals, parts reconcile 37+0+0=37. Encounter on the pages stays blind; light day, no build.",
@@ -3825,9 +3825,9 @@
       "readCommand": "node C:/dev/skylark/skylark-site/scripts/answered-cards.mjs --project bounds-ledger — reads whether David has answered a card carrying a fresh Search Console export. The agent-side reader, GET https://skylarkcreations.com/api/cc/gsc-performance?project=bounds-ledger&startDate=2026-11-04&endDate=2026-11-17&dimensions=page with the PIN header, returned HTTP 400 on 2026-11-11 because bounds-ledger is not in skylark-site's GSC_PROPERTIES registry; once it is registered, that request replaces this command.",
       "onTrigger": "On 2026-11-18: first try the agent-side reader above. If it answers, record impressions and clicks by page for 2026-11-04 to the latest day it has, and say so on this row. If it still returns 'no GSC property registered', ask David on a card for a fresh export (Performance, last 28 days, the Pages tab) and record it when he answers. Report the c/ pages separately from the index. A zero on c/ pages is reported as nothing yet, with the date of the last day the data covers, never as no readers.",
       "closeWhen": "A Search Console read covering at least 2026-11-04..2026-11-15 is recorded here with its window, the c/ pages counted separately from the index; or David decides the Search Console measure is dropped.",
-      "notes": "Minted 2026-11-11 MT at P5 from W-18's close (the manager's P3 review asked that the next read sit on an open row). The agent-side reader was tested that day: configured, but bounds-ledger is not registered (HTTP 400). Registering it is skylark-site's change, asked for in that day's Hygiene pass post. David granted the property to hello@skylarkcreations.com on 11-11 (his card reply, paraphrased); whether that account is the one the reader signs in as is UNTESTED.\n\n | 2026-11-18 P5: the agent-side reader still returned HTTP 400 \"no GSC property registered for project bounds-ledger\" (not David's words), so impressions and clicks are UNREAD, never 0; answered-cards printed 0 bounds-ledger cards, 0 new. Hygiene draft amended: instead of a card asking David for an export, the registration was relayed to skylark-site the same day (David granted the property on 11-11; registering it is skylark-site's change). Re-dated one week.\n\n | 2026-11-18 P5 correction to the line above: agent-status refused --relay-to skylark-site (\"not a roster lane\" (not David's words)), so the registration ask is carried in this day's Hygiene pass post, addressed to the orchestrator, whose repo skylark-site is. Nothing was relayed.",
+      "notes": "Minted 2026-11-11 MT at P5 from W-18's close (the manager's P3 review asked that the next read sit on an open row). The agent-side reader was tested that day: configured, but bounds-ledger is not registered (HTTP 400). Registering it is skylark-site's change, asked for in that day's Hygiene pass post. David granted the property to hello@skylarkcreations.com on 11-11 (his card reply, paraphrased); whether that account is the one the reader signs in as is UNTESTED.\n\n | 2026-11-18 P5: the agent-side reader still returned HTTP 400 \"no GSC property registered for project bounds-ledger\" (not David's words), so impressions and clicks are UNREAD, never 0; answered-cards printed 0 bounds-ledger cards, 0 new. Hygiene draft amended: instead of a card asking David for an export, the registration was relayed to skylark-site the same day (David granted the property on 11-11; registering it is skylark-site's change). Re-dated one week.\n\n | 2026-11-18 P5 correction to the line above: agent-status refused --relay-to skylark-site (\"not a roster lane\" (not David's words)), so the registration ask is carried in this day's Hygiene pass post, addressed to the orchestrator, whose repo skylark-site is. Nothing was relayed.\n\n\n\n | 2026-11-21 P5, baseline row for the 60-day search reading (about 2027-01-20). Non-brand clicks per week: UNREAD. This lane has no Search Console reader; the agent reader GET /api/cc/gsc-performance?project=bounds-ledger returned HTTP 400 \"no GSC property registered\" (not David's words), read 2026-11-21. Sitemap URLs: 121 live (live GET 2026-11-21), 123 held on local branch a111-search-floor. New pages built today: 0; 122 pages regenerated, held. Pages proven live: 0. Stage of each entry page: index earning impressions in the only window read (W-18, 11-04..11-09); c/ pages discovered via the submitted sitemap, later stages UNREAD; ramsey.html discovered by link only until the held sitemap ships. Waiting on David: the Search Console reader registration and a Bing property (the orchestrator's batch), and his ruling on whether held work may ship before Codex returns.",
       "created": "2026-11-11",
-      "updated": "2026-11-18",
+      "updated": "2026-11-21",
       "readCommandLastRun": "2026-11-18T16:50:53.002Z",
       "readCommandLastExit": 0,
       "readCommandLastDurationMs": 3145,
@@ -3873,12 +3873,12 @@
         "continuity/depth-audit.json"
       ],
       "lastEvaluated": "2026-11-20",
-      "readCommandLastRun": "2026-11-20T15:18:17.043Z",
+      "readCommandLastRun": "2026-11-21T17:07:08.959Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 71096,
+      "readCommandLastDurationMs": 94341,
       "readCommandLastOutputRef": {
         "lines": 16,
-        "sha256": "4862cacfab952185"
+        "sha256": "f97bac9cb27909d0"
       },
       "expectedSignalBy": "2026-11-27"
     },
@@ -3888,20 +3888,21 @@
       "type": "action",
       "status": "monitoring",
       "owner": "bounds-ledger lane",
-      "nextCheckDate": "2026-11-21",
+      "nextCheckDate": "2026-11-28",
       "notes": "Found on refactor night 2026-11-13 by a read-only helper reading README.md against source; REPRODUCED by the lane. In a fresh `git clone` of 96a2ffa into a scratch directory with no skylark-site sibling, `node scripts/sky.mjs check-entry-guard.mjs --root .` (the first leg of package.json `check`) exited 2 with `sky: NOT RUNNABLE — the skylark-site checkout could not be resolved`, so `npm run check` stops before any ledger leg runs. README.md:112 says of `npm run check` that it needs no account and `its exit code means what it says: 0 is green, non-zero is a real finding`; README.md:30 and :143 send visitors to the same command. The credential-free visitor check CLAUDE.md names (`node scripts/reverify.mjs --check && node scripts/check-claims.mjs`) is unaffected. Not fixed on refactor night: README is public-facing documentation, and the fix means choosing which command a visitor is told to run, which is a product decision. Codex round 1 on the refactor batch corrected an earlier draft that called README the public page; the Pages entry page is index.html. Two other README sentences the same read found false, also left for a day session: README.md:55 says the Ramsey table rebuild has not landed (it landed 2026-10-15, b167f64), and README.md:87 calls `--draw 375 425 475 525 575` the most recent depth-audit slice (slice 24 drew `209 259 309 359 409` on 2026-11-12). A fourth, README.md:176's correction count of 2, may omit the 2026-10-26 merge of our 13a title and DOI fix; whether that one counts is a ruling, not a fact, so it is not asserted here.\n\n2026-11-14 SHIPPED, manager review COMPLETED (bus 29aa2c7d), key number 5 of 5 by each pointer's own words (the manager's reading; the lane had scored the literal wording 0 of 5 because the entry guard does not run in a bare clone, and the manager read README.md:30, :112, :129, :143 and the index footer as promising the live verdict and the claim re-verification, which every claim leg delivers). Commits b7dd96fe0208b4aab699e538c44cc205a83a8ca3 (corrective: check-import-inert selftest fixture tripped the fleet entry guard since 63acb47, 2026-11-06) and 0e2937a795af40a66f673ab270a1a59e638ffa8e (scripts/check-entry-guard-leg.mjs as the first check leg; README.md:55, :87, :112; docs/repo-layout.md), pushed b4bd1c8..0e2937a. CI reverify.yml and page-check.yml green on 0e2937a; Pages build for 0e2937a built. Acceptance read, literal: fresh git clone of 0e2937a into a scratch directory with no skylark-site beside it, CC_PROMPTS_PIN, GITHUB_TOKEN and GITHUB_PERSONAL_ACCESS_TOKEN cleared, `npm run check` printed CHECK_EXIT=0, reached all twelve legs, and printed \"ENTRY GUARD NOT RUN — it is a maintainer check\" once; the manager reproduced the same in an independent clone (254 claims, 252 hold, 2 manual UNVERIFIED; brief UNVERIFIABLE, not counted). Before, a fresh clone of b8f69cf: exit 2 at the first leg, no ledger leg run. Review: three read-only Codex rounds (round 1 four defects, three fixed and one disclosed; round 2 two prose claims narrowed; round 3 two commit-body leftovers corrected before push). readCommand re-pointed: the old one grepped \"its exit code means what it says\", a README phrase this ship removed, so it could no longer read this row. Status monitoring, not closed: the change is built and delivered and its outcome read is open (encounter blind, A-59; the one visible arrival is an outside issue counted by npm run reports at N = 1). The manager's review said close; the P5 rule keeps a shipped change still owed an outcome read at monitoring, as A-102 was on 2026-11-13. Not pursued: a standalone entry guard in this repo, which the manager called optional.",
       "closeWhen": "The build is done and delivered (0e2937a). Close when the outcome read exists: an outside issue or report showing a visitor ran npm run check or the README's live check from a clone (npm run reports, readable at N = 1). If none has arrived by 2026-12-14, close as built with the outcome unread and say so (encounter blind, A-59).",
       "readCommand": "npm run reports",
       "created": "2026-11-13",
       "updated": "2026-11-14",
-      "lastEvaluated": "2026-11-14",
-      "readCommandLastRun": "2026-11-20T15:18:17.043Z",
+      "lastEvaluated": "2026-11-21",
+      "readCommandLastRun": "2026-11-21T17:07:08.959Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 71096,
+      "readCommandLastDurationMs": 94341,
       "readCommandLastOutputRef": {
         "lines": 16,
-        "sha256": "4862cacfab952185"
-      }
+        "sha256": "f97bac9cb27909d0"
+      },
+      "expectedSignalBy": "2026-11-28"
     },
     {
       "id": "A-104",
@@ -3909,7 +3910,7 @@
       "type": "action",
       "status": "monitoring",
       "owner": "bounds-ledger",
-      "nextCheckDate": "2026-11-21",
+      "nextCheckDate": "2026-11-28",
       "notes": "Minted 2026-11-14 (round 3, product only) from the 2026-11-07 journey walk, step 2 (docs/journey-walk-2026-11-07.md): on a phone the matches start below the fold, so a visitor types and sees no change until they scroll. Re-measured on the live index 2026-11-15T02:41Z at 390x664 (a 390-wide phone with roughly an on-screen keyboard's height removed): after typing sofa, input top 278px, count line 511px, first match card (41a) 558px, second (41b) 927px; between the box and the results sit the order control and the freshness paragraph (A-67's deliberate first-screen block). The change labels a visitor came for (value changed / text edited / bound cell edited / tracked since, each with its date) are inside the cards. Change: a short answer line directly under the search box that, when 1 to 3 constants match, names each and repeats its two shown rows' labels exactly as the card prints them (the row's data-label, which says last listed, plus the .when text) with a link to the card. It copies the card; it computes nothing and claims nothing the card does not. Outward wording: cross-family claims pass before push.\n\n | 2026-11-14 P3 (round 3 night) SHIPPED 57ca289, pushed before 04:21:25Z 2026-11-15 (when the Pages build row for 57ca289 was created); ls-remote main = 57ca289. Design changed across six Codex rounds (read-only, banner workdir checked each time): r1 a97e2ee to r5 db38c8e each found one route of one class (the line pairing something the visitor typed that names a number with dates of rows that do not hold it: 177/560 alias, 55/174 and 2.625622 comment, 1324 in a name, \"pattern 1324\", \"six\" and \"π\"). After r5 the orchestrator ruled option A with a pre-registered stop rule (consult 3c919717): each entry states how it matched (\"matched in its name\", or the A-100 older-row sentence). r6 on 57ca289: class verdict NO, no other-class defect, no commit-body sentence refuted. npm test exit 0 on 57ca289 before push. Pages build row for 57ca289: built (created 04:21:25Z, updated 04:21:46Z). CI reverify.yml and page-check.yml GREEN on 57ca289. Live read (Playwright, 390x664, https://u00dxk2.github.io/bounds-ledger/): typing sofa shows two entries at top 378-466px and 470-579px, each \"matched in its name\", text equal to the cards' labels (matchesCard true); zzzz (0 matches) hidden; empty box hidden; \"constant\" (70 matches) hidden; 1324, pattern 1324, 55/174, 2.625622, 177/560, 0.3808585504, 1.5029 hidden; 0.380868 shows 1b with the older-row sentence; six and π show name-match entries. Before (same page at 8fb0682): 41a's date labels at 708px and 800px. Encounter blind: the page has no analytics (A-59).\n\n | 2026-11-17 round 3 (design rollout), read early at 21:54 MT because the variant goes live tonight; window was 2026-11-15 (this row's ship, commit 57ca289) to 2026-11-17 21:54 MT. readCommand `npm run reports`, exit 0: \"raw issues fetched: 37 ... OUTSIDE ARRIVALS: 0 ... parts reconcile: 37 + 0 + 0 = 37\". Readable at N = 1; n = 0, so UNREADABLE-EARLY, n=0, not a result. From the flag turn-on (A-110) the next read is the handbook first screen's own baseline: the answer line keeps its markup and script, with a Browse control added above it.",
       "closeWhen": "The build is done and delivered (57ca289; Pages build built; acceptance read on the live index at 390x664, recorded in notes). Close when the outcome read exists: an outside \"looks wrong?\" report (or other outside issue) on a constant a reader would reach by a name lookup, counted by npm run reports and readable at N = 1, read weekly from 2026-11-21. If none has arrived by 2026-12-14, close as built with the outcome unread and say so (encounter blind, A-59).",
       "readCommand": "npm run reports",
@@ -3922,14 +3923,15 @@
       "linkedCommits": [
         "57ca289"
       ],
-      "lastEvaluated": "2026-11-14",
-      "readCommandLastRun": "2026-11-20T15:18:17.043Z",
+      "lastEvaluated": "2026-11-21",
+      "readCommandLastRun": "2026-11-21T17:07:08.959Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 71096,
+      "readCommandLastDurationMs": 94341,
       "readCommandLastOutputRef": {
         "lines": 16,
-        "sha256": "4862cacfab952185"
-      }
+        "sha256": "f97bac9cb27909d0"
+      },
+      "expectedSignalBy": "2026-11-28"
     },
     {
       "id": "A-105",
@@ -4039,12 +4041,12 @@
       "created": "2026-11-17",
       "updated": "2026-11-20",
       "lastEvaluated": "2026-11-18",
-      "readCommandLastRun": "2026-11-20T15:18:17.043Z",
+      "readCommandLastRun": "2026-11-21T17:07:08.959Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 71096,
+      "readCommandLastDurationMs": 94341,
       "readCommandLastOutputRef": {
         "lines": 16,
-        "sha256": "4862cacfab952185"
+        "sha256": "f97bac9cb27909d0"
       }
     },
     {
@@ -4066,6 +4068,28 @@
       "readCommand": "node scripts/openai-math.mjs --selftest",
       "created": "2026-11-19",
       "updated": "2026-11-19"
+    },
+    {
+      "id": "A-111",
+      "type": "action",
+      "status": "open",
+      "owner": "bounds-ledger",
+      "title": "Search basics on the published pages (index canonical, sitemap entries for ramsey.html and copying.html, link-preview tags, README example entry, CONTRIBUTING.md), built 2026-11-21 and held for the cross-family review",
+      "nextCheckDate": "2026-11-23",
+      "links": [
+        "W-19",
+        "scripts/lib/html.mjs",
+        "scripts/render-site.mjs",
+        "scripts/render-constant-pages.mjs",
+        "scripts/render-ramsey.mjs",
+        "CONTRIBUTING.md"
+      ],
+      "readCommand": "git -C C:/dev/skylark/bounds-ledger log --oneline origin/main..a111-search-floor",
+      "onTrigger": "When Codex is back (its usage limit reads 'try again at Nov 22nd, 2026 9:39 PM', Codex's words): run the saved prompt tmp/codex-review-3e65ffe.md read-only, with the banner workdir checked; disposition each finding; push; read CI on reverify.yml and page-check.yml at the pushed sha; fetch index.html, c/10a.html, ramsey.html, copying.html and sitemap.xml live with no JavaScript; then set the repository homepage link to https://u00dxk2.github.io/bounds-ledger/. If 748b519 is released alone first, record which verdict cleared it. If David rules before that a class may ship on a same-family review, follow his ruling and record it here.",
+      "closeWhen": "Both commits (or their reviewed successors) are pushed, CI is green on both workflows at the pushed sha, the live GETs show the canonical, 123 sitemap URLs and the og tags, and the repository homepage link is set. Then close as built; the encounter read stays on W-19.",
+      "notes": "Minted 2026-11-21 P5 (MT). P1 msg 28ff3068, manager review APPROVE aed7fae1, P3 msg f1eaf972, P3 review DEFERRED ee82669b. Held local commits: 748b519787a93f37fe58231f7e48fd850a008e4b (the floor: canonical, sitemap, og tags repeating each page's own title, description and canonical; no new visible words) and 3e65ffe43610e615ca6aea5ea106ba9056a9e868 (README example entry and CONTRIBUTING.md: new public sentences). Codex run once and stopped at its usage limit with no findings; the orchestrator's rule e090edc7 holds new public words until the cross-family pass. Named gap (manager review ee82669b, a suggestion): og:description repeats the page description and carries none of the page's own data. The next step is a description that differs between neighbouring pages by usable data (plain-text bound values where the cell is plain, or the reference keys), never a change-date clause, which goes through the same Codex claims pass. The data-sufficiency rule for c/ pages is written at the top of pageTitle in scripts/render-constant-pages.mjs (240 of 240 sides pinned, 0 not pinned, measured 2026-11-21).\n\n\n\n | 2026-11-21 P5: the held commits now sit on the LOCAL branch a111-search-floor (748b519, 3e65ffe, then 10186ab8b4dda46e30e430358a6ba2211e394d2a, the data-sufficiency rule comment), so main can carry the close records without publishing them. Local main went back to 8200d35 and then takes the close commits. Never push that branch: the repository is public. Release path: run the review against the branch, then bring it onto main (cherry-pick 748b519 alone if David releases the floor first). readCommand changed the same day to list the branch's commits not yet on origin.",
+      "created": "2026-11-21",
+      "updated": "2026-11-21"
     }
   ],
   "meta": {
