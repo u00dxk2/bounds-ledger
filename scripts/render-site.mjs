@@ -29,7 +29,7 @@ import { pinsFor, lastChanged, changeFor, changeKind, boundCell } from "./lookup
 import { loadAudits, badgeFor, settledIds, attemptDate, refuseDroppedAudits, DEFAULT_AUDIT_STORE } from "./render-constant-pages.mjs";
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { REPO, esc, issueUrl, copyCiteScript } from "./lib/html.mjs";
+import { REPO, esc, issueUrl, copyCiteScript, ogMeta } from "./lib/html.mjs";
 import { plainTitle } from "./lib/plain-titles.mjs";
 import { loadMap, notesFor, badgeText, recordCheck } from "./openai-math.mjs";
 
@@ -98,6 +98,9 @@ export function flagUrl(r, sha) {
 }
 
 const SITE = "https://u00dxk2.github.io/bounds-ledger/";
+// The index's title and description, named once so the link-preview tags repeat them exactly (2026-11-21).
+const INDEX_TITLE = "Bounds Ledger — is the number you cited still current?";
+const INDEX_DESCRIPTION = "A continuously re-verified ledger of mathematical records. Look up a constant and see the bounds rows we watch, a label on each saying what we have seen of it, and a link to upstream's file for each constant.";
 
 // The page is TITLED "Is the number you cited still current?" and, until this shipped, gave the
 // reader nothing to cite with. The visitor this lane is built for is someone who QUOTES a record —
@@ -907,8 +910,10 @@ ${cell(r.lower, r.lowerChanged, r.lowerKind, LOWER_LABEL, historyUrl(r.url, sha)
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='13'%3E%E2%88%91%3C/text%3E%3C/svg%3E">
-<title>Bounds Ledger — is the number you cited still current?</title>
-<meta name="description" content="A continuously re-verified ledger of mathematical records. Look up a constant and see the bounds rows we watch, a label on each saying what we have seen of it, and a link to upstream's file for each constant.">
+<title>${esc(INDEX_TITLE)}</title>
+<meta name="description" content="${esc(INDEX_DESCRIPTION)}">
+<link rel="canonical" href="${esc(SITE)}">
+${ogMeta(INDEX_TITLE, INDEX_DESCRIPTION, SITE)}
 <style>
 :root{--bg:#fff;--fg:#16181d;--muted:#5c6370;--line:#e3e6ea;--accent:#0b5fff;--code:#f6f7f9}
 @media(prefers-color-scheme:dark){:root{--bg:#14161a;--fg:#e8eaed;--muted:#9aa1ac;--line:#2b2f36;--accent:#7aa2ff;--code:#1c1f25}}
@@ -1316,6 +1321,18 @@ async function selftest() {
   const rows = buildRows(claims, { withDates: false, audits: { audits: [] } });
   assert.equal(rows.length, 2);
   const html = renderHtml(rows, manifest, "2026-08-20");
+
+  // THE INDEX NAMES ITS OWN ADDRESS, AND ITS LINK PREVIEW REPEATS IT (2026-11-21, search day). Meaning
+  // first: og:title, og:description and og:url equal the page's own title, description and canonical.
+  {
+    const metaOf = (re) => (html.match(re) || [])[1];
+    const canon = metaOf(/<link rel="canonical" href="([^"]*)">/);
+    assert.equal(canon, SITE, "the index must declare its canonical address");
+    assert.ok(metaOf(/<meta property="og:title" content="([^"]*)">/) === metaOf(/<title>([^<]*)<\/title>/)
+      && metaOf(/<meta property="og:description" content="([^"]*)">/) === metaOf(/<meta name="description" content="([^"]*)">/)
+      && metaOf(/<meta property="og:url" content="([^"]*)">/) === canon,
+      "the index's og tags must repeat its own title, description and canonical");
+  }
 
   // FIRES: the page carries the content it is supposed to carry.
   assert.match(html, /The real Grothendieck constant/, "must render the constant name");
@@ -3482,7 +3499,11 @@ async function selftest() {
   }
 
   // Self-contained: no third-party asset can be fetched at render time.
-  const externals = html.match(/(?:src|href)="https?:\/\/[^"]+"/g) || [];
+  // The page's own canonical <link> (2026-11-21) names an address and loads nothing, so exactly that one
+  // tag is set aside; every other absolute src/href is still judged.
+  const canonTag = `<link rel="canonical" href="${SITE}">`;
+  assert.equal(html.split(canonTag).length, 2, "positive control: the canonical tag being set aside must occur exactly once");
+  const externals = html.replace(canonTag, "").match(/(?:src|href)="https?:\/\/[^"]+"/g) || [];
   const badHost = externals.filter((h) => !/github\.com|example\.invalid/.test(h));
   assert.deepEqual(badHost, [], `page must fetch nothing at runtime; found ${badHost.join(", ")}`);
 

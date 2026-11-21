@@ -36,7 +36,7 @@ import { isEntryModule } from "./lib/entry-module.mjs";
 import { LEDGER } from "./extract-ds1.mjs";
 import { arrivalKind } from "./report-rate.mjs";
 import { frameOf, readStore, STORE } from "./ds1-depth.mjs";
-import { REPO, esc, issueUrl } from "./lib/html.mjs";
+import { REPO, esc, issueUrl, ogMeta } from "./lib/html.mjs";
 import { QUERY as WATCH_QUERY } from "./arxiv-watch.mjs";
 import { PUBLISHED_ON, OUTCOMES, numbersIn, STYLE, key, entriesOf, R, STORE_URL, shownReading, readingConflicts, SOURCED, SURVEY_ONLY, stateOf, ibNote, keepsSurveyEntry, HOW_LINK, NOT_YET, NOTHING, boundsFor, searchHtml, longDate } from "./render-ramsey-vocabulary.mjs";
 import { guardPage, guardCopying } from "./render-ramsey-guards.mjs";
@@ -192,13 +192,16 @@ ${dds.map((d) => d.html).join("\n")}
   const total = Object.values(counts).reduce((a, n) => a + n, 0);
   const countLine = [...OUTCOMES.map(([n, label, what]) => `${label} ${counts[n]} (${what})`), `${NOT_YET} ${counts["not-yet-read"]}`, `${NOTHING} ${counts["nothing-to-read"]}`].join(" · ");
 
+  const pageTitle = "Small Ramsey numbers R(k, l) — Bounds Ledger";
+  const pageDesc = `What the survey Small Ramsey Numbers, revision #${src.revision}, prints for R(k, l) with k ≤ 10 and l ≤ 15, with the reference it credits for each, and what this ledger has checked.`;
   return `<!doctype html>
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Small Ramsey numbers R(k, l) — Bounds Ledger</title>
-<meta name="description" content="${esc(`What the survey Small Ramsey Numbers, revision #${src.revision}, prints for R(k, l) with k ≤ 10 and l ≤ 15, with the reference it credits for each, and what this ledger has checked.`)}">
+<title>${esc(pageTitle)}</title>
+<meta name="description" content="${esc(pageDesc)}">
 <link rel="canonical" href="${esc(`${SITE}ramsey.html`)}">
+${ogMeta(pageTitle, pageDesc, `${SITE}ramsey.html`)}
 <style>${STYLE}</style>
 <a class="back" href="./">&larr; all constants</a>
 <h1>Small Ramsey numbers R(k, l)</h1>
@@ -318,13 +321,16 @@ export function renderCopying(doc, rows = []) {
   // publication, 2026-09-20 — in the sentence describing our own position, which is where this
   // lane's defects land. The count is COMPUTED so it cannot drift from the store.
   const refEntries = rows.filter(keepsSurveyEntry).length;
+  const pageTitle = "What this site copies from Small Ramsey Numbers — Bounds Ledger";
+  const pageDesc = "Exactly what the Bounds Ledger reproduces from the dynamic survey Small Ramsey Numbers, what it does not, and how the author or the journal can ask for a change or removal.";
   return `<!doctype html>
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>What this site copies from Small Ramsey Numbers — Bounds Ledger</title>
-<meta name="description" content="${esc(`Exactly what the Bounds Ledger reproduces from the dynamic survey Small Ramsey Numbers, what it does not, and how the author or the journal can ask for a change or removal.`)}">
+<title>${esc(pageTitle)}</title>
+<meta name="description" content="${esc(pageDesc)}">
 <link rel="canonical" href="${esc(`${SITE}copying.html`)}">
+${ogMeta(pageTitle, pageDesc, `${SITE}copying.html`)}
 <style>${STYLE}</style>
 <a class="back" href="ramsey.html">&larr; small Ramsey numbers</a>
 <h1>What this site copies from <em>Small Ramsey Numbers</em></h1>
@@ -363,6 +369,18 @@ function selftest() {
   };
   const html = renderRamsey(doc);
   const guard = (h) => guardPage(h, doc);
+
+  // LINK PREVIEWS REPEAT THE PAGE (2026-11-21): on both pages og:title, og:description and og:url equal
+  // the page's own title, description and canonical, so a preview can say nothing the page does not.
+  for (const [name, h] of [["ramsey.html", html], ["copying.html", renderCopying(doc)]]) {
+    const metaOf = (re) => (h.match(re) || [])[1];
+    const canon = metaOf(/<link rel="canonical" href="([^"]*)">/);
+    if (!canon || metaOf(/<meta property="og:url" content="([^"]*)">/) !== canon
+      || metaOf(/<meta property="og:title" content="([^"]*)">/) !== metaOf(/<title>([^<]*)<\/title>/)
+      || metaOf(/<meta property="og:description" content="([^"]*)">/) !== metaOf(/<meta name="description" content="([^"]*)">/)) {
+      return fail(`${name}'s og tags do not repeat its own title, description and canonical`);
+    }
+  }
 
   // Each guard FIRES on a page carrying its condition. Meaning first.
   const fires = [

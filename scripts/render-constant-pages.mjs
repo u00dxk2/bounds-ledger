@@ -24,7 +24,7 @@ import assert from "node:assert/strict";
 import { buildRows, flagUrl, citation, reportLinks, whenLabel, whenHtml, historyUrl, displayCell, readable } from "./render-site.mjs";
 import { boundCell } from "./lookup.mjs";
 import crypto from "node:crypto";
-import { REPO, esc, copyCiteScript } from "./lib/html.mjs";
+import { REPO, esc, copyCiteScript, ogMeta } from "./lib/html.mjs";
 import { noteBlock } from "./openai-math.mjs";
 import { newerBlock, newerFor, searchLine, loadStore as loadNewerStore, validateStore as validateNewerStore, STORE as NEWER_STORE } from "./newer-results.mjs";
 import { pullsBlock, staleListScript, loadStore as loadPullsStore, validateStore as validatePullsStore, STORE as PULLS_STORE } from "./open-pulls.mjs";
@@ -56,7 +56,7 @@ export function pageDescription(r) {
 // robots.txt only at the host root (RFC 9309 § 2.3), and this site lives under /bounds-ledger/.
 // It is submitted in Search Console instead.
 export function sitemapXml(ids) {
-  const urls = [SITE, ...[...ids].sort((a, b) => a.localeCompare(b, "en", { numeric: true })).map((id) => `${SITE}c/${id}.html`)];
+  const urls = [SITE, `${SITE}ramsey.html`, `${SITE}copying.html`, ...[...ids].sort((a, b) => a.localeCompare(b, "en", { numeric: true })).map((id) => `${SITE}c/${id}.html`)];
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${esc(u)}</loc></url>`).join("\n")}\n</urlset>\n`;
 }
 const SITEMAP = join(ROOT, "sitemap.xml");
@@ -1115,6 +1115,7 @@ export function renderPage(r, sha, audits = loadAudits(), newer = loadNewerStore
 <title>${esc(pageTitle(r))}</title>
 <meta name="description" content="${esc(pageDescription(r))}">
 <link rel="canonical" href="${esc(`${SITE}c/${r.id}.html`)}">
+${ogMeta(pageTitle(r), pageDescription(r), `${SITE}c/${r.id}.html`)}
 <style>${STYLE}</style>
 <a class="back" href="${esc(`${SITE}#c-${r.id}`)}">&larr; all constants</a>
 <h1>${esc(plainTitle(r.title))}</h1>
@@ -1218,6 +1219,11 @@ async function selftest() {
     const sm = sitemapXml(["9z", "10a", "2a"]);
     assert.ok(sm.includes(`<loc>${SITE}</loc>`) && sm.includes(`<loc>${SITE}c/9z.html</loc>`), "the sitemap must list the index and every page");
     assert.ok(sm.indexOf("c/2a.html") < sm.indexOf("c/9z.html") && sm.indexOf("c/9z.html") < sm.indexOf("c/10a.html"), "the sitemap lists pages in numeric order, so a regenerated file diffs cleanly");
+    // The two Ramsey-area pages are indexable pages of this site too (2026-11-21, search day): left
+    // out, they were reachable by link only. No <lastmod>: no page here has a change date that is the
+    // page's own, so none is claimed (the sitemaps protocol makes it optional).
+    for (const p of ["ramsey.html", "copying.html"]) assert.ok(sm.includes(`<loc>${SITE}${p}</loc>`), `the sitemap must list ${p}`);
+    assert.ok(!/<lastmod>/.test(sm), "the sitemap must claim no lastmod");
   }
 
   // The cite block names THIS PAGE, not the table anchor — the whole point of the page. Both
@@ -1276,6 +1282,14 @@ async function selftest() {
   assert.ok(!/<(img|iframe|object|embed|video|audio|source|picture)\b/i.test(html), "a constant page must embed nothing that loads");
   const links = [...html.matchAll(/<link\b[^>]*>/gi)].map((m) => m[0]);
   assert.ok(links.length === 1 && /rel="canonical"/.test(links[0]), "the only <link> a constant page carries is its canonical address");
+  // LINK PREVIEWS REPEAT THE PAGE, they add no claim (2026-11-21). og:title, og:description and og:url
+  // must equal the page's own <title>, description and canonical, byte for byte, so a preview can never
+  // say more than the page. Meaning first, then presence.
+  const metaOf = (re) => (html.match(re) || [])[1];
+  const ogT = metaOf(/<meta property="og:title" content="([^"]*)">/), ogD = metaOf(/<meta property="og:description" content="([^"]*)">/), ogU = metaOf(/<meta property="og:url" content="([^"]*)">/);
+  assert.ok(ogT === metaOf(/<title>([^<]*)<\/title>/) && ogD === metaOf(/<meta name="description" content="([^"]*)">/) && ogU === metaOf(/<link rel="canonical" href="([^"]*)">/),
+    "og:title, og:description and og:url must repeat the page's own title, description and canonical");
+  assert.ok(ogT && ogD && ogU && /<meta property="og:type" content="website">/.test(html), "a constant page must carry its link-preview tags");
   // (3) THE WIRING (memory: test the wiring, not the helper). The selector is read OUT of the page's own
   // script and must match an element the page actually renders, holding the citation's <code>. A script
   // left querying 'details.cite' (the index's markup) would insert nothing here and fail this line.

@@ -11,6 +11,20 @@ export const esc = (s) => String(s).replace(/[&<>"']/g, (c) =>
 // The guard reads reference keys back off the page, so it must undo what esc did to them.
 export const unesc = (s) => String(s).replace(/&(amp|lt|gt|quot|#39);/g, (_, e) => ({ amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'" }[e]));
 
+// LINK-PREVIEW TAGS (2026-11-21, search day), one source for every page. They REPEAT the page's own
+// <title>, description and canonical, passed in raw and escaped here exactly as the page escapes
+// them, so a preview can never say more than the page it previews. No og:image: an image is a load,
+// and these pages load nothing.
+export function ogMeta(title, description, url) {
+  return [
+    `<meta property="og:type" content="website">`,
+    `<meta property="og:site_name" content="Bounds Ledger">`,
+    `<meta property="og:title" content="${esc(title)}">`,
+    `<meta property="og:description" content="${esc(description)}">`,
+    `<meta property="og:url" content="${esc(url)}">`,
+  ].join("\n");
+}
+
 // Returns a raw URL; callers esc() it when embedding in HTML.
 export function issueUrl(title, body) {
   return `${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
