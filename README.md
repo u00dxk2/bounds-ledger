@@ -16,6 +16,8 @@ It is not a record-search engine. On a schedule, it compares its mirror with the
 
 That link opens the constant's file on upstream's `main` branch, which can be ahead of our copy. Use the row's references and comments to identify its sources, then check what the available material supports. The page needs no account and no clone, and it fetches nothing at runtime. It is a snapshot at the sha pinned under **Current state** below, and it says so on the page.
 
+**One entry, as the page shows it.** As of 2026-11-21, the page for [the real Grothendieck constant](https://u00dxk2.github.io/bounds-ledger/c/10a.html) shows the last-listed upper row `$1.7813^\*$`, labelled "value changed 2026-10-18", and the last-listed lower row `$\dfrac{6\pi}{11}\approx 1.71360$`, labelled "value changed 2026-08-12". Each row also names the reference it cites.
+
 **Small Ramsey numbers R(k, l) have their own page: [ramsey.html](https://u00dxk2.github.io/bounds-ledger/ramsey.html).** It is described below.
 
 **To run the checks yourself, clone the repository and, with Node and a network connection (no account, nothing to install), run:**
