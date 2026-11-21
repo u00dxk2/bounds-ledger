@@ -24,7 +24,7 @@ import assert from "node:assert/strict";
 import { buildRows, flagUrl, citation, reportLinks, whenLabel, whenHtml, historyUrl, displayCell, readable } from "./render-site.mjs";
 import { boundCell } from "./lookup.mjs";
 import crypto from "node:crypto";
-import { REPO, esc, copyCiteScript, ogMeta } from "./lib/html.mjs";
+import { REPO, esc, copyCiteScript, ogMeta, ogMismatch } from "./lib/html.mjs";
 import { noteBlock } from "./openai-math.mjs";
 import { newerBlock, newerFor, searchLine, loadStore as loadNewerStore, validateStore as validateNewerStore, STORE as NEWER_STORE } from "./newer-results.mjs";
 import { pullsBlock, staleListScript, loadStore as loadPullsStore, validateStore as validatePullsStore, STORE as PULLS_STORE } from "./open-pulls.mjs";
@@ -37,10 +37,10 @@ const RUNS = `${REPO}/actions/workflows/reverify.yml`;
 import { MARKUP, PLAIN_TITLES, plainTitle } from "./lib/plain-titles.mjs";
 export { MARKUP, PLAIN_TITLES, plainTitle };
 
-// DATA-SUFFICIENCY RULE for c/<id>.html (written 2026-11-21, search day). A constant gets a page because
-// it has its OWN record here: at least one pinned last-listed row from its own mirrored file, with that
-// row's references and change label. A page is never generated from a name alone, and two pages may
-// never differ only in wording. Measured that day over the 120 committed pages: 240 of 240 sides
+// DATA-SUFFICIENCY RULE for c/<id>.html (written 2026-11-21, search day; narrowed on Codex's review the
+// same day). Each constant page is generated from at least one pinned last-listed row in that constant's
+// mirrored file. It shows the pinned row, a date label, and any reference keys the renderer can read.
+// A page is never generated from a name alone, and two pages may never differ only in wording. Measured that day over the 120 committed pages: 240 of 240 sides
 // render a pinned row ("bound, last-listed row"), and 0 render "not pinned". Any new page template is
 // judged against this rule before it ships.
 //
@@ -1230,7 +1230,7 @@ async function selftest() {
     // out, they were reachable by link only. No <lastmod>: no page here has a change date that is the
     // page's own, so none is claimed (the sitemaps protocol makes it optional).
     for (const p of ["ramsey.html", "copying.html"]) assert.ok(sm.includes(`<loc>${SITE}${p}</loc>`), `the sitemap must list ${p}`);
-    assert.ok(!/<lastmod>/.test(sm), "the sitemap must claim no lastmod");
+    assert.ok(!/<lastmod\b/i.test(sm), "the sitemap must claim no lastmod");
   }
 
   // The cite block names THIS PAGE, not the table anchor — the whole point of the page. Both
@@ -1291,12 +1291,8 @@ async function selftest() {
   assert.ok(links.length === 1 && /rel="canonical"/.test(links[0]), "the only <link> a constant page carries is its canonical address");
   // LINK PREVIEWS REPEAT THE PAGE, they add no claim (2026-11-21). og:title, og:description and og:url
   // must equal the page's own <title>, description and canonical, byte for byte, so a preview can never
-  // say more than the page. Meaning first, then presence.
-  const metaOf = (re) => (html.match(re) || [])[1];
-  const ogT = metaOf(/<meta property="og:title" content="([^"]*)">/), ogD = metaOf(/<meta property="og:description" content="([^"]*)">/), ogU = metaOf(/<meta property="og:url" content="([^"]*)">/);
-  assert.ok(ogT === metaOf(/<title>([^<]*)<\/title>/) && ogD === metaOf(/<meta name="description" content="([^"]*)">/) && ogU === metaOf(/<link rel="canonical" href="([^"]*)">/),
-    "og:title, og:description and og:url must repeat the page's own title, description and canonical");
-  assert.ok(ogT && ogD && ogU && /<meta property="og:type" content="website">/.test(html), "a constant page must carry its link-preview tags");
+  // say more than the page. One shared check (ogMismatch): every field present, then equal.
+  { const bad = ogMismatch(html); assert.equal(bad, null, `a constant page's link-preview tags: ${bad}`); }
   // (3) THE WIRING (memory: test the wiring, not the helper). The selector is read OUT of the page's own
   // script and must match an element the page actually renders, holding the citation's <code>. A script
   // left querying 'details.cite' (the index's markup) would insert nothing here and fail this line.

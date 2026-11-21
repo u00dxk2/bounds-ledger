@@ -36,7 +36,7 @@ import { isEntryModule } from "./lib/entry-module.mjs";
 import { LEDGER } from "./extract-ds1.mjs";
 import { arrivalKind } from "./report-rate.mjs";
 import { frameOf, readStore, STORE } from "./ds1-depth.mjs";
-import { REPO, esc, issueUrl, ogMeta } from "./lib/html.mjs";
+import { REPO, esc, issueUrl, ogMeta, ogMismatch } from "./lib/html.mjs";
 import { QUERY as WATCH_QUERY } from "./arxiv-watch.mjs";
 import { PUBLISHED_ON, OUTCOMES, numbersIn, STYLE, key, entriesOf, R, STORE_URL, shownReading, readingConflicts, SOURCED, SURVEY_ONLY, stateOf, ibNote, keepsSurveyEntry, HOW_LINK, NOT_YET, NOTHING, boundsFor, searchHtml, longDate } from "./render-ramsey-vocabulary.mjs";
 import { guardPage, guardCopying } from "./render-ramsey-guards.mjs";
@@ -373,14 +373,18 @@ function selftest() {
   // LINK PREVIEWS REPEAT THE PAGE (2026-11-21): on both pages og:title, og:description and og:url equal
   // the page's own title, description and canonical, so a preview can say nothing the page does not.
   for (const [name, h] of [["ramsey.html", html], ["copying.html", renderCopying(doc)]]) {
-    const metaOf = (re) => (h.match(re) || [])[1];
-    const canon = metaOf(/<link rel="canonical" href="([^"]*)">/);
-    if (!canon || metaOf(/<meta property="og:url" content="([^"]*)">/) !== canon
-      || metaOf(/<meta property="og:title" content="([^"]*)">/) !== metaOf(/<title>([^<]*)<\/title>/)
-      || metaOf(/<meta property="og:description" content="([^"]*)">/) !== metaOf(/<meta name="description" content="([^"]*)">/)) {
-      return fail(`${name}'s og tags do not repeat its own title, description and canonical`);
-    }
+    const bad = ogMismatch(h);
+    if (bad) return fail(`${name}'s link-preview tags: ${bad}`);
   }
+  // The shared check itself fires on each way the review found the old one blind (Codex on 10186ab):
+  // a title and og:title deleted together, a description and og:description deleted together, and a
+  // missing og:site_name. Positive control first: the real page passes.
+  if (ogMismatch(html) !== null) return fail("positive control: the real ramsey.html must pass ogMismatch");
+  for (const [what, mutant] of [
+    ["title+og:title deleted", html.replace(/<title>[^<]*<\/title>/, "").replace(/<meta property="og:title" content="[^"]*">/, "")],
+    ["description+og:description deleted", html.replace(/<meta name="description" content="[^"]*">/, "").replace(/<meta property="og:description" content="[^"]*">/, "")],
+    ["og:site_name deleted", html.replace(/<meta property="og:site_name" content="[^"]*">/, "")],
+  ]) if (ogMismatch(mutant) === null) return fail(`ogMismatch passed a page with ${what}`);
 
   // Each guard FIRES on a page carrying its condition. Meaning first.
   const fires = [

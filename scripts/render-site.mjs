@@ -29,7 +29,7 @@ import { pinsFor, lastChanged, changeFor, changeKind, boundCell } from "./lookup
 import { loadAudits, badgeFor, settledIds, attemptDate, refuseDroppedAudits, DEFAULT_AUDIT_STORE } from "./render-constant-pages.mjs";
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { REPO, esc, issueUrl, copyCiteScript, ogMeta } from "./lib/html.mjs";
+import { REPO, esc, issueUrl, copyCiteScript, ogMeta, ogMismatch } from "./lib/html.mjs";
 import { plainTitle } from "./lib/plain-titles.mjs";
 import { loadMap, notesFor, badgeText, recordCheck } from "./openai-math.mjs";
 
@@ -1328,10 +1328,8 @@ async function selftest() {
     const metaOf = (re) => (html.match(re) || [])[1];
     const canon = metaOf(/<link rel="canonical" href="([^"]*)">/);
     assert.equal(canon, SITE, "the index must declare its canonical address");
-    assert.ok(metaOf(/<meta property="og:title" content="([^"]*)">/) === metaOf(/<title>([^<]*)<\/title>/)
-      && metaOf(/<meta property="og:description" content="([^"]*)">/) === metaOf(/<meta name="description" content="([^"]*)">/)
-      && metaOf(/<meta property="og:url" content="([^"]*)">/) === canon,
-      "the index's og tags must repeat its own title, description and canonical");
+    const bad = ogMismatch(html);
+    assert.equal(bad, null, `the index's link-preview tags: ${bad}`);
   }
 
   // FIRES: the page carries the content it is supposed to carry.

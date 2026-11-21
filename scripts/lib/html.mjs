@@ -25,6 +25,31 @@ export function ogMeta(title, description, url) {
   ].join("\n");
 }
 
+// The ONE self-test check for the tags above, shared by the three renderers (Codex review of 10186ab,
+// 2026-11-21: three hand-written copies compared captures that could both be missing, so a page with
+// its title and og:title both deleted passed). Every field must be PRESENT first; only then are the
+// og values compared with the page's own. Returns null when sound, else the first failure, in words.
+export function ogMismatch(html) {
+  const one = (re) => { const m = [...String(html).matchAll(re)]; return m.length === 1 ? m[0][1] : null; };
+  const f = {
+    title: one(/<title>([^<]*)<\/title>/g),
+    description: one(/<meta name="description" content="([^"]*)">/g),
+    canonical: one(/<link rel="canonical" href="([^"]*)">/g),
+    "og:type": one(/<meta property="og:type" content="([^"]*)">/g),
+    "og:site_name": one(/<meta property="og:site_name" content="([^"]*)">/g),
+    "og:title": one(/<meta property="og:title" content="([^"]*)">/g),
+    "og:description": one(/<meta property="og:description" content="([^"]*)">/g),
+    "og:url": one(/<meta property="og:url" content="([^"]*)">/g),
+  };
+  for (const [k, v] of Object.entries(f)) if (!v) return `${k} is missing, empty or repeated`;
+  if (f["og:type"] !== "website") return `og:type is ${f["og:type"]}, not website`;
+  if (f["og:site_name"] !== "Bounds Ledger") return `og:site_name is ${f["og:site_name"]}, not Bounds Ledger`;
+  if (f["og:title"] !== f.title) return "og:title does not repeat the page's title";
+  if (f["og:description"] !== f.description) return "og:description does not repeat the page's description";
+  if (f["og:url"] !== f.canonical) return "og:url does not repeat the page's canonical";
+  return null;
+}
+
 // Returns a raw URL; callers esc() it when embedding in HTML.
 export function issueUrl(title, body) {
   return `${REPO}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
