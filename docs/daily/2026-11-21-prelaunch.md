@@ -6,8 +6,8 @@ north_star_classification: expected-zero
 product: bounds-ledger
 date: 2026-11-21
 lifecycle_stage: launched
-last_deploy: "8200d35 (as of the P5 close on 2026-11-21, the published main; the day's product work is held on a local branch; GitHub Pages; no Render service)"
-on_hold_items: 1
+last_deploy: "49f9e0a (as of the release after the P5 close on 2026-11-21, CI green on reverify.yml and page-check.yml; release: node scripts/sky.mjs check-ci-status.mjs --workflow reverify.yml; GitHub Pages; no Render service)"
+on_hold_items: 0
 top_action_today: search basics on the published pages (canonical, sitemap, link previews, contribution path), built and held for the cross-family review
 # The four keys below have NO instrument in this lane and are left null rather than filled with a
 # zero nobody measured: pre-revenue, no billing, no analytics on the published page, no Sentry project.
@@ -133,3 +133,22 @@ ACTION: DEFERRED — built and held for the cross-family review; Codex's usage l
   - Pages: 0 new, 122 regenerated and held, 0 proven live.
   - Entry-page stages: UNREAD until `W-19`.
   - Waits on David: the Search Console reader and Bing registration batch, and his ruling on whether held work may ship.
+
+### Release (after the close; supersedes its DEFERRED)
+
+ACTION: COMPLETED · item `A-111` (search basics on the published pages) · P3 msg f1eaf972, follow-up msg 29d03265
+
+Codex came back after David bought credits (orchestrator note b6f9f1d5), so the hold above ended the same day.
+
+- **Codex round 1**, on `748b519` + `3e65ffe` + `10186ab`: model gpt-6.2-sol, effort xhigh, 99,528 tokens. Verdict: "VERDICT: FIX FIRST — Require the promised metadata in the self-tests, describe both links as opening issue drafts, and narrow the last-listed, upstream-history, and data-sufficiency claims."
+  - Fixed in `22b98da`: one shared check (`ogMismatch` in `scripts/lib/html.mjs`) requires every tag before comparing; red-armed with its presence loop disabled.
+  - Also fixed in `22b98da`: the reviewer's narrower sentences, taken as given.
+- **Codex round 2**, on the fix only: same model and effort, 69,851 tokens. Verdict: "VERDICT: SHIP".
+- **Pushed** as `49f9e0a0afe4b80166ab37c9e134ce902e67d86c`. CI on `reverify.yml` and `page-check.yml` read GREEN at that sha (`check-ci-status --sha --wait`). The Pages build row for it reads "built" at 18:42:29Z.
+- **Live GETs**, as OAI-SearchBot with no JavaScript:
+  - The index, `c/10a.html`, `c/62b.html`, `ramsey.html` and `copying.html` all returned 200, each with its canonical equal to its og:url.
+  - `sitemap.xml`: 123 URLs, 0 lastmod.
+  - The repository homepage link is set.
+  - Signed out, `CONTRIBUTING.md` and the README carry the new text.
+- **Ledger:** `A-111` closed as built. The local held branch is deleted.
+- **Still open:** og:description with per-page data (the named gap); `W-19` (the second Search Console read) on 2026-11-25.
