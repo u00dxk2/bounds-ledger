@@ -37,6 +37,13 @@ const RUNS = `${REPO}/actions/workflows/reverify.yml`;
 import { MARKUP, PLAIN_TITLES, plainTitle } from "./lib/plain-titles.mjs";
 export { MARKUP, PLAIN_TITLES, plainTitle };
 
+// DATA-SUFFICIENCY RULE for c/<id>.html (written 2026-11-21, search day). A constant gets a page because
+// it has its OWN record here: at least one pinned last-listed row from its own mirrored file, with that
+// row's references and change label. A page is never generated from a name alone, and two pages may
+// never differ only in wording. Measured that day over the 120 committed pages: 240 of 240 sides
+// render a pinned row ("bound, last-listed row"), and 0 render "not pinned". Any new page template is
+// judged against this rule before it ships.
+//
 // What a search result shows. Says what the page holds and nothing it cannot back: the rows are the
 // LAST-LISTED ones (DISCLAIMER), so never "best known" or "record".
 export function pageTitle(r) {
