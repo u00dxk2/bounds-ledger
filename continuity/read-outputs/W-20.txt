@@ -1,0 +1,7 @@
+# read-output sidecar for W-20 — written by check-due-gates-dispositioned --run
+# readCommand: gh pr list -R teorth/optimizationproblems --state open --limit 200 --json number --jq length
+# ran: 2026-11-25T20:01:47.269Z · exit: 0
+# lines: 1 · sha256: d029fa3a95e174a1 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+61

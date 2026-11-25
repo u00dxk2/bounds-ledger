@@ -1,0 +1,28 @@
+# read-output sidecar for G-5 — written by check-due-gates-dispositioned --run
+# readCommand: node scripts/openai-math.mjs --selftest
+# ran: 2026-11-25T19:53:46.164Z · exit: 1
+# lines: 22 · sha256: d042a5a9202fbbae (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+AssertionError [ERR_ASSERTION]: the committed map is invalid:
+family 003 → 8a: the mirrored page for 8a changed since this note was read against it; re-read the note's claim and match against the page, then set sourceSha256 to the page's new hash (node scripts/openai-math.mjs --source-hash 8a)
+family 003 → 8a: the mirrored source page for 8a now cites the release (github.com/openai/math), so a note saying the claim is not in the source table would be false; record the pair as "read-no-note" with that reason
+family 079 → 46a: the mirrored page for 46a changed since this note was read against it; re-read the note's claim and match against the page, then set sourceSha256 to the page's new hash (node scripts/openai-math.mjs --source-hash 46a)
+family 107 → 15b: the mirrored page for 15b changed since this note was read against it; re-read the note's claim and match against the page, then set sourceSha256 to the page's new hash (node scripts/openai-math.mjs --source-hash 15b)
+family 107 → 15b: the mirrored source page for 15b now cites the release (github.com/openai/math), so a note saying the claim is not in the source table would be false; record the pair as "read-no-note" with that reason
++ actual - expected
+
++ [
++   "family 003 → 8a: the mirrored page for 8a changed since this note was read against it; re-read the note's claim and match against the page, then set sourceSha256 to the page's new hash (node scripts/openai-math.mjs --source-hash 8a)",
++   'family 003 → 8a: the mirrored source page for 8a now cites the release (github.com/openai/math), so a note saying the claim is not in the source table would be false; record the pair as "read-no-note" with that reason',
++   "family 079 → 46a: the mirrored page for 46a changed since this note was read against it; re-read the note's claim and match against the page, then set sourceSha256 to the page's new hash (node scripts/openai-math.mjs --source-hash 46a)",
++   "family 107 → 15b: the mirrored page for 15b changed since this note was read against it; re-read the note's claim and match against the page, then set sourceSha256 to the page's new hash (node scripts/openai-math.mjs --source-hash 15b)",
++   'family 107 → 15b: the mirrored source page for 15b now cites the release (github.com/openai/math), so a note saying the claim is not in the source table would be false; record the pair as "read-no-note" with that reason'
++ ]
+- []
+
+    at selftest (file:///C:/dev/skylark/bounds-ledger/scripts/openai-math.mjs:431:12)
+    at file:///C:/dev/skylark/bounds-ledger/scripts/openai-math.mjs:484:44
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)

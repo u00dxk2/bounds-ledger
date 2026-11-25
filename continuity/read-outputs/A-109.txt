@@ -1,0 +1,7 @@
+# read-output sidecar for A-109 — written by check-due-gates-dispositioned --run
+# readCommand: node scripts/report-rate.mjs --selftest
+# ran: 2026-11-25T19:52:58.403Z · exit: 0
+# lines: 1 · sha256: dc9f7ab1d0f72836 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+report-rate selftest: PASS (recognises the prefilled row title, a RETITLED report via its body marker, and the empty-state prefill; silent on an unrelated outside issue; excludes the CI bot and the owner by author; parts sum to the raw count; a measured zero still reports its denominator and reconciles; an empty fetch is distinguishable from a measured zero)

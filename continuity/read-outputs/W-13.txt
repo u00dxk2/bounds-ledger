@@ -1,74 +1,138 @@
 # read-output sidecar for W-13 — written by check-due-gates-dispositioned --run
 # readCommand: npm run served
-# ran: 2026-11-17T17:27:07.846Z · exit: 0
-# lines: 68 · sha256: 626e3c9c960292d0 (first 16 hex of the output below)
+# ran: 2026-11-25T19:55:01.751Z · exit: 0
+# lines: 132 · sha256: afa1d714fe0d9c59 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
 > bounds-ledger@0.0.0 served
 > node scripts/check-served.mjs
 
-# Served vs HEAD — 2026-11-17T17:26:15.977Z
-anchor 3a79d96ef1 (2026-11-17T10:25:51-07:00), the last commit to touch a published page; 59 file(s) it changed, of 124 published
-IN-FLIGHT   c/10a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/10b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/11a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/13a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/13b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/15b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/16a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/17a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/19a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/1a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/1b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/1c.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/1d.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/20a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/20c.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/21a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/22a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/22b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/26a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/30a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/31a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/35a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/36a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/37a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/38a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/3a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/3b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/3e.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/41b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/42a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/44a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/45a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/46a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/47a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/49a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/51a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/57a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/57b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/57c.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/59a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/5a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/60a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/62b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/63a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/64a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/68a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/69a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/70a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/78a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/82a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/83a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/84a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/84b.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/86a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/87a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/88a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/89a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/8a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
-IN-FLIGHT   c/9a.html  served Last-Modified Mon, 16 Nov 2026 19:19:55 GMT — which build is being served
+# Served vs HEAD — 2026-11-25T19:53:52.342Z
+anchor 7941b07cb2 (2026-11-21T11:38:04-07:00), the last commit to touch a published page; 123 file(s) it changed, of 125 published
+SERVED      c/10a.html  18321 bytes
+SERVED      c/10b.html  9310 bytes
+SERVED      c/10c.html  13189 bytes
+SERVED      c/11a.html  9985 bytes
+SERVED      c/11b.html  11003 bytes
+SERVED      c/12a.html  9890 bytes
+SERVED      c/13a.html  13448 bytes
+SERVED      c/13b.html  14341 bytes
+SERVED      c/14a.html  10989 bytes
+SERVED      c/15a.html  14091 bytes
+SERVED      c/15b.html  14251 bytes
+SERVED      c/16a.html  10401 bytes
+SERVED      c/17a.html  11565 bytes
+SERVED      c/17b.html  11109 bytes
+SERVED      c/18a.html  9055 bytes
+SERVED      c/19a.html  12558 bytes
+SERVED      c/1a.html  13910 bytes
+SERVED      c/1b.html  21623 bytes
+SERVED      c/1c.html  11671 bytes
+SERVED      c/1d.html  11156 bytes
+SERVED      c/20a.html  13476 bytes
+SERVED      c/20b.html  10766 bytes
+SERVED      c/20c.html  12643 bytes
+SERVED      c/21a.html  14812 bytes
+SERVED      c/22a.html  11317 bytes
+SERVED      c/22b.html  10640 bytes
+SERVED      c/23a.html  8834 bytes
+SERVED      c/23b.html  10165 bytes
+SERVED      c/23c.html  10913 bytes
+SERVED      c/24a.html  12022 bytes
+SERVED      c/25a.html  10308 bytes
+SERVED      c/26a.html  11570 bytes
+SERVED      c/26b.html  8963 bytes
+SERVED      c/27a.html  10558 bytes
+SERVED      c/27b.html  12582 bytes
+SERVED      c/28a.html  13356 bytes
+SERVED      c/29a.html  13235 bytes
+SERVED      c/2a.html  10497 bytes
+SERVED      c/30a.html  10674 bytes
+SERVED      c/31a.html  13943 bytes
+SERVED      c/32a.html  10771 bytes
+SERVED      c/33a.html  14644 bytes
+SERVED      c/34a.html  11631 bytes
+SERVED      c/35a.html  12994 bytes
+SERVED      c/36a.html  11657 bytes
+SERVED      c/37a.html  11328 bytes
+SERVED      c/38a.html  12096 bytes
+SERVED      c/39a.html  9515 bytes
+SERVED      c/3a.html  15789 bytes
+SERVED      c/3b.html  14411 bytes
+SERVED      c/3c.html  11576 bytes
+SERVED      c/3d.html  9063 bytes
+SERVED      c/3e.html  13675 bytes
+SERVED      c/40a.html  10312 bytes
+SERVED      c/40b.html  9155 bytes
+SERVED      c/41a.html  10729 bytes
+SERVED      c/41b.html  9251 bytes
+SERVED      c/42a.html  11397 bytes
+SERVED      c/43a.html  14024 bytes
+SERVED      c/44a.html  12198 bytes
+SERVED      c/45a.html  11264 bytes
+SERVED      c/46a.html  17800 bytes
+SERVED      c/47a.html  12604 bytes
+SERVED      c/48a.html  10319 bytes
+SERVED      c/49a.html  11986 bytes
+SERVED      c/4a.html  12237 bytes
+SERVED      c/4b.html  12525 bytes
+SERVED      c/50a.html  12392 bytes
+SERVED      c/51a.html  9472 bytes
+SERVED      c/52a.html  11723 bytes
+SERVED      c/53a.html  10557 bytes
+SERVED      c/54a.html  12496 bytes
+SERVED      c/55a.html  11303 bytes
+SERVED      c/56a.html  9304 bytes
+SERVED      c/57a.html  12822 bytes
+SERVED      c/57b.html  12725 bytes
+SERVED      c/57c.html  11733 bytes
+SERVED      c/58a.html  9269 bytes
+SERVED      c/59a.html  11744 bytes
+SERVED      c/5a.html  9685 bytes
+SERVED      c/5b.html  10604 bytes
+SERVED      c/60a.html  11074 bytes
+SERVED      c/61a.html  9307 bytes
+SERVED      c/62a.html  9418 bytes
+SERVED      c/62b.html  10058 bytes
+SERVED      c/63a.html  10576 bytes
+SERVED      c/64a.html  9734 bytes
+SERVED      c/65a.html  13978 bytes
+SERVED      c/66a.html  9167 bytes
+SERVED      c/67a.html  14191 bytes
+SERVED      c/68a.html  11936 bytes
+SERVED      c/69a.html  10131 bytes
+SERVED      c/6a.html  8551 bytes
+SERVED      c/70a.html  11571 bytes
+SERVED      c/71a.html  12955 bytes
+SERVED      c/72a.html  9245 bytes
+SERVED      c/73a.html  9871 bytes
+SERVED      c/74a.html  12913 bytes
+SERVED      c/75a.html  12300 bytes
+SERVED      c/76a.html  10760 bytes
+SERVED      c/77a.html  15962 bytes
+SERVED      c/78a.html  12869 bytes
+SERVED      c/79a.html  13636 bytes
+SERVED      c/7a.html  10727 bytes
+SERVED      c/7b.html  9550 bytes
+SERVED      c/80a.html  12881 bytes
+SERVED      c/81a.html  9474 bytes
+SERVED      c/82a.html  10484 bytes
+SERVED      c/83a.html  11394 bytes
+SERVED      c/84a.html  18402 bytes
+SERVED      c/84b.html  12719 bytes
+SERVED      c/85a.html  11469 bytes
+SERVED      c/86a.html  12458 bytes
+SERVED      c/87a.html  14394 bytes
+SERVED      c/88a.html  14567 bytes
+SERVED      c/88b.html  8996 bytes
+SERVED      c/89a.html  10734 bytes
+SERVED      c/8a.html  14360 bytes
+SERVED      c/90a.html  10081 bytes
+SERVED      c/9a.html  11862 bytes
+SERVED      copying.html  6427 bytes
+SERVED      index.html  570932 bytes
+SERVED      ramsey.html  142060 bytes
 
-59 checked — 0 served, 59 in flight, 0 stale, 0 unreachable.
+123 checked — 123 served, 0 in flight, 0 stale, 0 unreachable.
 This is an INDICATOR: it never gates a build and never runs in CI. A page can also be stale for a reader behind a cache this read does not share.
 RESULT: PASS — every file the last page-changing commit touched is being served as committed (exit 0)

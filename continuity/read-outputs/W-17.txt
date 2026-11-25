@@ -1,7 +1,7 @@
 # read-output sidecar for W-17 — written by check-due-gates-dispositioned --run
 # readCommand: node -e "const j=JSON.parse(require('fs').readFileSync('ledger/newer-results.json','utf8'));console.log('checkedThrough',j.checkedThrough,'windowFrom',j.windowFrom,'papersFound',j.papersFound)"
-# ran: 2026-11-16T15:58:27.621Z · exit: 0
-# lines: 1 · sha256: 9ee84a10bda1d90c (first 16 hex of the output below)
+# ran: 2026-11-25T19:55:09.301Z · exit: 0
+# lines: 1 · sha256: 49f82cdbab694ee1 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
-checkedThrough 2026-10-31 windowFrom 2026-09-26 papersFound 15
+checkedThrough 2026-11-17 windowFrom 2026-09-26 papersFound 19

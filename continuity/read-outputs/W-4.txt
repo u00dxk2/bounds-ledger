@@ -1,14 +1,14 @@
 # read-output sidecar for W-4 — written by check-due-gates-dispositioned --run
 # readCommand: node scripts/reverify.test.mjs
-# ran: 2026-11-17T18:15:18.773Z · exit: 0
-# lines: 77 · sha256: da764dde66d0df0e (first 16 hex of the output below)
+# ran: 2026-11-25T19:59:37.446Z · exit: 0
+# lines: 77 · sha256: 0d8087e6fe3ab1b5 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
 Retrying https://example.invalid/a20-transient: attempt 2/3 after HTTP 502
 A-20 transient recovery assertion: PASS (injected HTTP 502, read completed on attempt 2, retry logged)
 Retrying https://example.invalid/a20-persistent: attempt 2/3 after HTTP 503
 Retrying https://example.invalid/a20-persistent: attempt 3/3 after HTTP 503
-# Claim check — 2026-11-17T18:14:49.598Z
+# Claim check — 2026-11-25T19:55:14.168Z
 UNREACHABLE A-20-test  persistent transport failure
             https://example.invalid/a20-persistent — HTTP 503
 
@@ -27,26 +27,26 @@ Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; 
 Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8000ms, Retry-After: not-a-date)
 Retrying https://example.invalid/a39-exhausted: attempt 2/3 after HTTP 429 (rate limited; waiting 2000ms)
 Retrying https://example.invalid/a39-exhausted: attempt 3/3 after HTTP 429 (rate limited; waiting 8000ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2371ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8001ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2203ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8652ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2076ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8759ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2230ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9599ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2097ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9947ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2300ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8389ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2369ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9932ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2247ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9691ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2090ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9598ms)
-Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2037ms)
-Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9764ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2243ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8433ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2265ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8536ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2146ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9005ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2043ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9835ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2333ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9810ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2446ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9703ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2463ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9423ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2195ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8736ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2409ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9050ms)
+Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2414ms)
+Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 8706ms)
 Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2250ms)
 Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9000ms)
 Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; waiting 2250ms)
@@ -69,8 +69,8 @@ Retrying https://example.invalid/a39: attempt 2/3 after HTTP 429 (rate limited; 
 Retrying https://example.invalid/a39: attempt 3/3 after HTTP 429 (rate limited; waiting 9000ms)
 A-39 rate-limit assertion: PASS (429 on its own ladder; Retry-After honoured at 5s and capped at 30s; unparseable header falls back; exhausted 429 still returned RED; ten jittered delays spread, and the constant-rng control lands on one value)
 A-20 F1 junction assertion: PASS (through a junction reverify reaches main and exits 2 with usage; check-claims --selftest runs and prints its PASS line)
-# Drift report — teorth/optimizationproblems (constants/ + README.md) — 2026-11-17T18:14:51.967Z
-Snapshot: 87b4ebbd426ff8db597a2004cc45da17903bdcf2 · Live: (local)
+# Drift report — teorth/optimizationproblems (constants/ + README.md) — 2026-11-25T19:56:46.057Z
+Snapshot: 83e93c372e2e4889b12e5ada3a7c3422521e7baf · Live: (local)
 
 (A-33 leg 2 DID NOT RUN: ledger/upstream-reports.json could not be read or failed validation — ENOENT: no such file or directory, open 'C:\dev\skylark\bounds-ledger\tmp\reverify-test-live\no-such-report-map.json'.
  No file below has been checked against the reports we have filed, so silence here means nothing.)

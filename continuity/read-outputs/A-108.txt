@@ -1,0 +1,7 @@
+# read-output sidecar for A-108 — written by check-due-gates-dispositioned --run
+# readCommand: gh api repos/u00dxk2/bounds-ledger/traffic/popular/paths
+# ran: 2026-11-25T19:52:54.920Z · exit: 0
+# lines: 1 · sha256: 677e25982a04f1b6 (first 16 hex of the output below)
+# truncated: false
+--8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
+[{"path":"/u00dxk2/bounds-ledger/blob/main/docs/reconciliations/2026-07-22-minimum-overlap.md","title":"/blob/main/docs/reconciliations/2026-07-22-minimum-overlap.md","count":6,"uniques":6},{"path":"/u00dxk2/bounds-ledger/blob/main/c/46a.html","title":"/blob/main/c/46a.html","count":1,"uniques":1},{"path":"/u00dxk2/bounds-ledger/blob/main/ledger/teorth-optimizationproblems/constants/39a.md","title":"/blob/main/ledger/teorth-optimizationproblems/constants/39a.md","count":1,"uniques":1},{"path":"/u00dxk2/bounds-ledger/commit/7d9b5b14d331710cecd4be991b26c702ce78cdc0","title":"/commit/7d9b5b14d331710cecd4be991b26c702ce78cdc0","count":1,"uniques":1}]
