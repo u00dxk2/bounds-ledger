@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ramsey multiplicity constant of K₆: upper and lower bounds (89c) — Bounds Ledger</title>
+<meta name="description" content="The last-listed upper and lower bounds for Ramsey multiplicity constant of K₆ in teorth/optimizationproblems, with a link to the upstream source file and a citation you can copy.">
+<link rel="canonical" href="https://u00dxk2.github.io/bounds-ledger/c/89c.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bounds Ledger">
+<meta property="og:title" content="Ramsey multiplicity constant of K₆: upper and lower bounds (89c) — Bounds Ledger">
+<meta property="og:description" content="The last-listed upper and lower bounds for Ramsey multiplicity constant of K₆ in teorth/optimizationproblems, with a link to the upstream source file and a citation you can copy.">
+<meta property="og:url" content="https://u00dxk2.github.io/bounds-ledger/c/89c.html">
+<style>:root{--ink:#14181f;--muted:#566072;--line:#dde2ea;--code:#f2f5fa;--paper:#fbfcfe;--display:"Palatino Linotype",Palatino,"Iowan Old Style","Book Antiqua",Georgia,serif}
+*{box-sizing:border-box}body{margin:0;padding:1.5rem 1.25rem 3rem;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--paper);max-width:52rem;margin-inline:auto}
+a{color:var(--ink);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.15em}
+h1{font-family:var(--display);font-weight:700;letter-spacing:-.01em;font-size:1.625rem;line-height:1.3;margin:.2rem 0 .1rem}
+.id{font-size:.875rem;color:var(--muted)}
+.back{font-size:.875rem;display:inline-block;margin-bottom:1.5rem}
+dl{margin:1.5rem 0;padding:.25rem 0 0;border-top:3px double var(--ink)}dt{font-weight:600;font-size:.875rem;color:var(--ink);margin-top:1rem;padding-top:1rem;border-top:1px solid var(--line)}dt:first-child{border-top:0}
+dd{margin:.375rem 0 0}code{display:block;background:var(--code);border-radius:2px;padding:.5rem .75rem;font-size:.875rem;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
+.when{display:block;font-size:.875rem;color:var(--muted);margin-top:.375rem}
+.when:has(a){display:block;width:max-content;max-width:100%;color:var(--ink);background:var(--paper);border:1px solid var(--ink);border-radius:2px;padding:.25rem .5rem}
+.stale:not([hidden]){display:block;font-size:.875rem;font-weight:600;margin-top:.375rem}
+.pin{font-size:.875rem;color:var(--muted);margin-top:.375rem}
+.refs{display:block;font-size:.875rem;margin-top:.375rem;overflow-wrap:anywhere}
+.sel{color:var(--muted);font-size:.875rem}
+.none{color:var(--muted)}
+ul.audit{margin:.375rem 0 0;padding-left:1rem}ul.audit li{margin:.25rem 0}
+ul.oai{margin:.375rem 0 0;padding-left:1rem}ul.oai li{margin:.25rem 0 .75rem}ul.oai p{margin:.375rem 0}ul.oai .tag{color:var(--muted);font-size:.875rem}
+.ours{display:block;width:max-content;max-width:100%;margin-top:.5rem;font-size:.875rem}
+.ours+.ours{margin-top:.25rem}
+.actions{margin:1.5rem 0;padding-top:1rem;border-top:1px solid var(--line);font-size:.875rem}
+.cite code{user-select:all;margin-top:.5rem}
+.copy{margin-left:.5rem;font:inherit;font-size:.875rem;color:var(--ink);background:var(--paper);border:1px solid var(--ink);border-radius:2px;padding:.25rem .5rem;cursor:pointer}.copied{margin-left:.5rem;color:var(--muted);font-size:.875rem}
+footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.875rem}
+@media(max-width:60rem){
+.actions a{display:inline-block;min-height:44px;padding:.7rem .3rem}
+.copy{min-height:44px}
+}</style>
+<a class="back" href="https://u00dxk2.github.io/bounds-ledger/#c-89c">&larr; all constants</a>
+<h1>Ramsey multiplicity constant of K₆</h1>
+<div class="id">89c</div>
+
+<dl>
+<dt>Upper bound, last-listed row</dt><dd><code>| $0.7422042116 \cdot 2^{-14}$* | [SCIEL2026] | Exact value $67432845284234356713012367110897548622422530589772294031336898680659579871445572986246952507783885816983659288359622409120016266716137/1488565707357402911845015158554633286356257506687627387456491927921949262056238946972039271861787782268441644249633132407878864135402815488 = 4.530055002002\ldots \times 10^{-5} = 0.742204211528\ldots \cdot 2^{-14}$. A step graphon on the same $1024$ blocks in which the red density between blocks $x, y$ is $n\_w / 2^{32}$ with $w = \lvert x \triangle y \rvert$, $(n\_0, \ldots, n\_{10}) = (2^{32}, 1917548695, 0, 2^{32}, 2^{32}, 0, 81376308, 2^{32}, 2^{32}, 0, 0)$: weights $3, 4, 7, 8$ are red, $2, 5, 9, 10$ blue, and $1$ and $6$ fractional. Found by [SCiEL](https://sciel-rsi-cpil.github.io/), a recursive self-improvement (RSI) system built on cultural transmission, running an open language model (Qwen3.8-27B) that writes and refines search programs scored by the exact density; two independent runs reached the same construction. The density was computed exactly by the task&#39;s evaluator and by a separately written program (multisets of column types, integer numerator modulo $61$-bit primes, CRT with a check prime), which also reproduces the [SK2026] fraction exactly. Asterisked: self-hosted. |</code><span class="refs">Cited in this row: <a href="https://github.com/u00dxk2/bounds-ledger/blob/main/ledger/teorth-optimizationproblems/constants/89c.md?plain=1#L47">[SCIEL2026]</a>, whose entry in upstream&#39;s reference list links to <a href="https://doi.org/10.5281/zenodo.23974391">certificate</a>, <a href="https://sciel-rsi-cpil.github.io/">SCiEL blog post</a>.</span><span class="when">date unknown</span></dd>
+<dt>Lower bound, last-listed row</dt><dd><code>| $8280981029/250000000000000 = 0.000033123924116$* | [Pin2026r3] | Candidate and unrefereed. An ambient-eight flag-algebra certificate with ordered roots and all type families $(t,m)=(0,4),(2,3),(4,2),(6,1)$; $340$ integer-square PSD blocks. Separately written exact checkers pass all $12346$ classes, with exhaustive labelled coverage and random-colouring normalization. |</code><span class="refs">Cited in this row: [Pin2026r3], which we could not match to exactly one entry in upstream&#39;s reference list.</span><span class="when">date unknown</span></dd>
+<dt>Newer papers</dt><dd>On 2026-11-17 we ran one search for all the constants on this site's main list, not this one alone: arXiv papers submitted from 2026-09-26 to 2026-11-17 that matched an abstract search for AlphaEvolve, ThetaEvolve, TTT-Discover or OpenEvolve. It found 19 papers, and we read each one. None of them reports a value for this constant. We searched no source other than arXiv, and papers matching none of these names were outside the search.</dd><dt>Open pull request that changes this constant's file upstream</dt><dd data-read-at="2026-11-25T19:59:02Z"><ul class="oai"><li><a href="https://github.com/teorth/optimizationproblems/pull/389">pull request 389</a>, opened 2026-11-24</li></ul><span class="when">It was open and not merged when we read the source repository's list on 2026-11-25. This list does not say what it proposes. The rows above come from the source table's merged version.</span><span class="stale" hidden>This list was last checked on 2026-11-25, more than a week ago, so it may be missing newer pull requests and may still show ones that have since closed.</span></dd>
+</dl>
+<div class="actions">
+<a href="https://github.com/u00dxk2/bounds-ledger/blob/main/ledger/teorth-optimizationproblems/constants/89c.md">the mirrored file</a> &middot;
+<a href="https://github.com/teorth/optimizationproblems/blob/main/constants/89c.md">upstream source</a> &middot;
+<a href="https://github.com/u00dxk2/bounds-ledger/issues/new?title=Row%20looks%20wrong%3A%20Ramsey%20multiplicity%20constant%20of%20%24K%5C_6%24%20(89c)&amp;body=Constant%3A%20Ramsey%20multiplicity%20constant%20of%20%24K%5C_6%24%20(89c)%0ALedger%20mirror%3A%20upstream%2083e93c3%0A%0AWhat%20the%20source%20says%3A%0A%0AWhere%20you%20saw%20it%20(link%20or%20citation)%3A">looks wrong?</a>
+</div>
+<div class="cite"><strong>Cite this row</strong><code>Bounds Ledger — Ramsey multiplicity constant of K₆ (89c)
+upper bound: $0.7422042116 \cdot 2^{-14}$*
+lower bound: $8280981029/250000000000000 = 0.000033123924116$*
+Mirrored from teorth/optimizationproblems@83e93c3. These are the last-listed rows of that constant&#39;s bounds table — a listing position, not a statement that this bound is the strongest or most recent. A snapshot at that sha, not a live read.
+https://u00dxk2.github.io/bounds-ledger/c/89c.html</code></div>
+<footer><p>These are the LAST-LISTED rows of this constant&#39;s bounds table upstream — a listing position, not a statement that either bound is the strongest or most recent known. Upstream keeps superseded and inferior rows because the tables are histories. Read the source file before citing.</p>
+<p>Mirrored from <code style="display:inline;padding:.1rem .3rem">teorth/optimizationproblems@83e93c3</code> — a snapshot at that commit, not a live read.</p>
+<p>This row is re-checked against upstream every day by a scheduled job, so an old date above does not mean nobody has looked. The dates and values above change only after an upstream change has been verified and published here, so an old date does not prove nothing has moved upstream either. The latest check and its verdict: <a href="https://github.com/u00dxk2/bounds-ledger/actions/workflows/reverify.yml">run history</a>.</p></footer>
+<script>
+(function(){
+  var cites=document.querySelectorAll('div.cite');
+  for(var i=0;i<cites.length;i++)add(cites[i]);
+  function add(d){
+    var code=d.querySelector('code');
+    if(!code)return;
+    var b=document.createElement('button'),st=document.createElement('span');
+    b.type='button';b.className='copy';b.textContent='Copy citation';
+    st.className='copied';st.setAttribute('role','status');
+    d.insertBefore(b,code);d.insertBefore(st,code);
+    var last=0;
+    b.addEventListener('click',function(){
+      var text=code.textContent,me=++last;
+      st.textContent='';
+      function pick(){
+        if(me!==last)return;
+        var r=document.createRange();r.selectNodeContents(code);
+        var sel=window.getSelection();sel.removeAllRanges();sel.addRange(r);
+        st.textContent='Selected. Use your Copy command.';
+      }
+      try{navigator.clipboard.writeText(text).then(function(){if(me===last)st.textContent='Copied';},pick);}
+      catch(e){pick();}
+    });
+  }
+})();
+(function(){
+  var ls=document.querySelectorAll('dd[data-read-at]');
+  for(var i=0;i<ls.length;i++){
+    var t=Date.parse(ls[i].getAttribute('data-read-at'));
+    if(!(t>0))continue;
+    if(Date.now()-t>604800000){var s=ls[i].querySelector('.stale');if(s)s.hidden=false;}
+  }
+})();
+</script>
+</html>

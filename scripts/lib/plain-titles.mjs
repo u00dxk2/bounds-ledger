@@ -43,6 +43,8 @@ export const PLAIN_TITLES = new Map([
   ["10-point multi-point Seshadri constant on $\\mathbb{P}^2$", "10-point multi-point Seshadri constant on P²"],
   ["Asymptotic line-count constant for smooth degree-$d$ surfaces in $\\mathbb P^3$ in characteristic $0$", "Asymptotic line-count constant for smooth degree-d surfaces in P³ in characteristic 0"],
   ["Ramsey multiplicity constant of $K\\_4$", "Ramsey multiplicity constant of K₄"],
+  ["Ramsey multiplicity constant of $K\\_5$", "Ramsey multiplicity constant of K₅"],
+  ["Ramsey multiplicity constant of $K\\_6$", "Ramsey multiplicity constant of K₆"],
 ]);
 
 export function plainTitle(title) {

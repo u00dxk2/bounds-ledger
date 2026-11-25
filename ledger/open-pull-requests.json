@@ -1,22 +1,161 @@
 {
   "purpose": "Open pull requests on teorth/optimizationproblems and the constant files each changes (A-83), read by scripts/open-pulls.mjs --fetch and shown on each constant's c/ page. Numbers, dates and file names only: no titles and no author names.",
   "repository": "teorth/optimizationproblems",
-  "readAt": "2026-11-20T16:19:29Z",
-  "count": 103,
+  "readAt": "2026-11-25T19:59:02Z",
+  "count": 61,
   "pulls": [
     {
-      "number": 378,
-      "createdOn": "2026-11-20",
+      "number": 404,
+      "createdOn": "2026-11-25",
       "constants": [
-        "4a"
+        "91a"
       ],
       "byThisLedger": false
     },
     {
-      "number": 377,
-      "createdOn": "2026-11-20",
+      "number": 403,
+      "createdOn": "2026-11-25",
       "constants": [
-        "65a"
+        "59a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 402,
+      "createdOn": "2026-11-25",
+      "constants": [
+        "89a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 401,
+      "createdOn": "2026-11-25",
+      "constants": [
+        "47a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 400,
+      "createdOn": "2026-11-25",
+      "constants": [
+        "92a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 399,
+      "createdOn": "2026-11-25",
+      "constants": [
+        "15a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 398,
+      "createdOn": "2026-11-25",
+      "constants": [
+        "9a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 397,
+      "createdOn": "2026-11-24",
+      "constants": [
+        "89a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 396,
+      "createdOn": "2026-11-24",
+      "constants": [
+        "17b"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 395,
+      "createdOn": "2026-11-24",
+      "constants": [
+        "28a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 393,
+      "createdOn": "2026-11-24",
+      "constants": [
+        "42a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 392,
+      "createdOn": "2026-11-24",
+      "constants": [
+        "47a",
+        "49a",
+        "9a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 389,
+      "createdOn": "2026-11-24",
+      "constants": [
+        "89b",
+        "89c"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 388,
+      "createdOn": "2026-11-23",
+      "constants": [
+        "3e"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 386,
+      "createdOn": "2026-11-23",
+      "constants": [
+        "1a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 385,
+      "createdOn": "2026-11-23",
+      "constants": [
+        "84a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 382,
+      "createdOn": "2026-11-22",
+      "constants": [
+        "45a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 381,
+      "createdOn": "2026-11-22",
+      "constants": [
+        "21a"
+      ],
+      "byThisLedger": false
+    },
+    {
+      "number": 380,
+      "createdOn": "2026-11-21",
+      "constants": [
+        "89a"
       ],
       "byThisLedger": false
     },
@@ -33,38 +172,6 @@
       "createdOn": "2026-11-18",
       "constants": [
         "21a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 374,
-      "createdOn": "2026-11-17",
-      "constants": [
-        "1d"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 373,
-      "createdOn": "2026-11-16",
-      "constants": [
-        "8a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 372,
-      "createdOn": "2026-11-15",
-      "constants": [
-        "1d"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 371,
-      "createdOn": "2026-11-15",
-      "constants": [
-        "1d"
       ],
       "byThisLedger": false
     },
@@ -93,47 +200,9 @@
       "byThisLedger": false
     },
     {
-      "number": 366,
-      "createdOn": "2026-11-13",
-      "constants": [
-        "1c"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 365,
-      "createdOn": "2026-11-11",
-      "constants": [],
-      "byThisLedger": false
-    },
-    {
       "number": 364,
       "createdOn": "2026-11-11",
       "constants": [],
-      "byThisLedger": false
-    },
-    {
-      "number": 363,
-      "createdOn": "2026-11-11",
-      "constants": [
-        "47a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 362,
-      "createdOn": "2026-11-11",
-      "constants": [
-        "1d"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 360,
-      "createdOn": "2026-11-11",
-      "constants": [
-        "88a"
-      ],
       "byThisLedger": false
     },
     {
@@ -141,57 +210,6 @@
       "createdOn": "2026-11-10",
       "constants": [
         "1b"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 358,
-      "createdOn": "2026-11-10",
-      "constants": [
-        "41b"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 357,
-      "createdOn": "2026-11-10",
-      "constants": [
-        "16a",
-        "1d",
-        "49a",
-        "70a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 356,
-      "createdOn": "2026-11-09",
-      "constants": [
-        "22a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 355,
-      "createdOn": "2026-11-09",
-      "constants": [
-        "8a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 354,
-      "createdOn": "2026-11-09",
-      "constants": [
-        "1c"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 351,
-      "createdOn": "2026-11-09",
-      "constants": [
-        "83a"
       ],
       "byThisLedger": false
     },
@@ -220,28 +238,6 @@
       "byThisLedger": false
     },
     {
-      "number": 345,
-      "createdOn": "2026-11-08",
-      "constants": [
-        "1d"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 344,
-      "createdOn": "2026-11-08",
-      "constants": [
-        "1c"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 343,
-      "createdOn": "2026-11-08",
-      "constants": [],
-      "byThisLedger": false
-    },
-    {
       "number": 342,
       "createdOn": "2026-11-07",
       "constants": [
@@ -258,83 +254,10 @@
       "byThisLedger": false
     },
     {
-      "number": 340,
-      "createdOn": "2026-11-06",
-      "constants": [
-        "3a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 339,
-      "createdOn": "2026-11-06",
-      "constants": [
-        "3e"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 338,
-      "createdOn": "2026-11-05",
-      "constants": [
-        "11a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 337,
-      "createdOn": "2026-11-05",
-      "constants": [
-        "15b"
-      ],
-      "byThisLedger": false
-    },
-    {
       "number": 336,
       "createdOn": "2026-11-05",
       "constants": [
         "84a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 335,
-      "createdOn": "2026-11-05",
-      "constants": [
-        "5a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 334,
-      "createdOn": "2026-11-05",
-      "constants": [
-        "69a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 333,
-      "createdOn": "2026-11-05",
-      "constants": [
-        "46a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 332,
-      "createdOn": "2026-11-05",
-      "constants": [
-        "87a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 331,
-      "createdOn": "2026-11-05",
-      "constants": [
-        "89b",
-        "89c"
       ],
       "byThisLedger": false
     },
@@ -363,33 +286,6 @@
       "byThisLedger": false
     },
     {
-      "number": 327,
-      "createdOn": "2026-11-04",
-      "constants": [
-        "42a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 326,
-      "createdOn": "2026-11-04",
-      "constants": [
-        "16a",
-        "1d",
-        "49a",
-        "70a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 324,
-      "createdOn": "2026-11-04",
-      "constants": [
-        "22b"
-      ],
-      "byThisLedger": false
-    },
-    {
       "number": 322,
       "createdOn": "2026-11-04",
       "constants": [
@@ -406,26 +302,10 @@
       "byThisLedger": false
     },
     {
-      "number": 320,
-      "createdOn": "2026-11-03",
-      "constants": [
-        "78a"
-      ],
-      "byThisLedger": false
-    },
-    {
       "number": 319,
       "createdOn": "2026-11-03",
       "constants": [
         "16a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 318,
-      "createdOn": "2026-11-03",
-      "constants": [
-        "1c"
       ],
       "byThisLedger": false
     },
@@ -444,29 +324,12 @@
       "byThisLedger": false
     },
     {
-      "number": 316,
-      "createdOn": "2026-11-03",
-      "constants": [
-        "35a"
-      ],
-      "byThisLedger": false
-    },
-    {
       "number": 315,
       "createdOn": "2026-11-03",
       "constants": [
         "64a",
         "84a",
         "86a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 314,
-      "createdOn": "2026-11-03",
-      "constants": [
-        "13a",
-        "13b"
       ],
       "byThisLedger": false
     },
@@ -484,76 +347,10 @@
       "byThisLedger": false
     },
     {
-      "number": 312,
-      "createdOn": "2026-11-03",
-      "constants": [
-        "1d"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 311,
-      "createdOn": "2026-11-03",
-      "constants": [
-        "57c"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 310,
-      "createdOn": "2026-11-02",
-      "constants": [
-        "42a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 308,
-      "createdOn": "2026-11-01",
-      "constants": [
-        "89b",
-        "89c"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 307,
-      "createdOn": "2026-11-01",
-      "constants": [
-        "89b"
-      ],
-      "byThisLedger": false
-    },
-    {
       "number": 306,
       "createdOn": "2026-11-01",
       "constants": [
         "91a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 303,
-      "createdOn": "2026-10-31",
-      "constants": [
-        "20a",
-        "20c"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 302,
-      "createdOn": "2026-10-31",
-      "constants": [
-        "42a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 300,
-      "createdOn": "2026-10-30",
-      "constants": [
-        "10a"
       ],
       "byThisLedger": false
     },
@@ -574,35 +371,10 @@
       "byThisLedger": false
     },
     {
-      "number": 297,
-      "createdOn": "2026-10-30",
-      "constants": [
-        "59a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 296,
-      "createdOn": "2026-10-30",
-      "constants": [
-        "9a"
-      ],
-      "byThisLedger": false
-    },
-    {
       "number": 294,
       "createdOn": "2026-10-30",
       "constants": [
         "44a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 292,
-      "createdOn": "2026-10-30",
-      "constants": [
-        "1c",
-        "86a"
       ],
       "byThisLedger": false
     },
@@ -632,42 +404,10 @@
       "byThisLedger": false
     },
     {
-      "number": 287,
-      "createdOn": "2026-10-27",
-      "constants": [
-        "19a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 286,
-      "createdOn": "2026-10-27",
-      "constants": [
-        "1d"
-      ],
-      "byThisLedger": false
-    },
-    {
       "number": 285,
       "createdOn": "2026-10-27",
       "constants": [
         "44a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 284,
-      "createdOn": "2026-10-27",
-      "constants": [
-        "26a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 283,
-      "createdOn": "2026-10-27",
-      "constants": [
-        "37a"
       ],
       "byThisLedger": false
     },
@@ -696,31 +436,6 @@
       "byThisLedger": false
     },
     {
-      "number": 279,
-      "createdOn": "2026-10-27",
-      "constants": [
-        "89b",
-        "89c"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 277,
-      "createdOn": "2026-10-26",
-      "constants": [
-        "89b"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 276,
-      "createdOn": "2026-10-26",
-      "constants": [
-        "89a"
-      ],
-      "byThisLedger": false
-    },
-    {
       "number": 275,
       "createdOn": "2026-10-26",
       "constants": [
@@ -745,22 +460,6 @@
       "byThisLedger": false
     },
     {
-      "number": 272,
-      "createdOn": "2026-10-26",
-      "constants": [
-        "31b"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 271,
-      "createdOn": "2026-10-26",
-      "constants": [
-        "1d"
-      ],
-      "byThisLedger": false
-    },
-    {
       "number": 270,
       "createdOn": "2026-10-26",
       "constants": [
@@ -770,39 +469,6 @@
         "1d",
         "86a",
         "89a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 269,
-      "createdOn": "2026-10-26",
-      "constants": [
-        "1d"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 249,
-      "createdOn": "2026-10-22",
-      "constants": [
-        "31a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 242,
-      "createdOn": "2026-10-20",
-      "constants": [
-        "82a",
-        "86a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 235,
-      "createdOn": "2026-10-18",
-      "constants": [
-        "49a"
       ],
       "byThisLedger": false
     },
@@ -835,15 +501,6 @@
       "createdOn": "2026-09-23",
       "constants": [
         "60a"
-      ],
-      "byThisLedger": false
-    },
-    {
-      "number": 184,
-      "createdOn": "2026-09-09",
-      "constants": [
-        "42a",
-        "51a"
       ],
       "byThisLedger": false
     },

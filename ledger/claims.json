@@ -127,7 +127,7 @@
     "id": "pin:10a:U",
     "statement": "Last-listed upper-bound table row for The real Grothendieck constant (10a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10a.md",
-    "expect": "| $1.7813^\\*$ | [P2026] | Computer-assisted bound; Theorem 1.1. Explicit degree-11 Hermite threshold and degree-51 signed correlation polynomial. The author supplies Arb interval certificates; no independent replay is recorded here. |",
+    "expect": "| $< 1.77987164^\\*$ | [Peng2026b] | Bo Peng, Theorem 1.1, using Junyu Ren's five-variable construction with degree-81 preprocessing. Degree-403 head, 768 positive Fourier nodes, 295,296 triangular products and a 2,048-panel whole-circle tail. Published source replayed on 30 Oct 2026, with a separate exact check of the final inequality. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/10a.md",
     "generated": true
   },
@@ -135,7 +135,7 @@
     "id": "pin:10a:L",
     "statement": "Last-listed lower-bound table row for The real Grothendieck constant (10a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/10a.md",
-    "expect": "| $\\dfrac{6\\pi}{11}\\approx 1.71360$ | [SLXCKKM26] | Major jump over the Davie–Reeds anchor $\\approx 1.67696$; proved by establishing asymptotic limitations of Krivine schemes rather than by constructing explicit gap instances (as all prior lower bounds did).  Together with the upper bound above, this determines the tenths digit of $K_G^{\\mathbb R}$ to be $7$. |",
+    "expect": "| $1.773^\\*$ | [HJM2026] | Heilman, Jones and Malavolta, Theorem 4.1. Degree-21 Hermite projection game and a dimension-uniform one-variable reduction. All 35 fibre certificates replayed from the authors' source on 30 Oct 2026, with the final rational assembly checked by separate code. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/10a.md",
     "generated": true
   },
@@ -175,7 +175,7 @@
     "id": "pin:11a:U",
     "statement": "Last-listed upper-bound table row for The $L^1$ Poincaré constant on the Hamming cube (11a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/11a.md",
-    "expect": "| $\\pi/2-\\delta$ with $\\delta\\approx 0.00013$ | [IS2024] | Provides an explicit integral expression for $\\delta$ and evaluates it numerically (about $1.3\\times 10^{-4}$). |",
+    "expect": "| $\\sqrt{\\pi/2} \\approx 1.25331$* | [Tom2026] | Claims $C\\_{11a}=\\sqrt{\\pi/2}$, matching the lower bound. Both bounds are formalized in Lean 4 with Mathlib ([code](https://github.com/tejasvi/hamming-cube-poincare/tree/3acfd50db9c0bde9f3f80f08f254236f07416782), commit `3acfd50`). An earlier version of the paper proved $C\\_{11a}\\le 71/50$ by a computer-assisted moment argument. Self-archived preprint. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/11a.md",
     "generated": true
   },
@@ -223,7 +223,7 @@
     "id": "pin:13a:U",
     "statement": "Last-listed upper-bound table row for Moser's convex worm cover constant (13a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/13a.md",
-    "expect": "| $\\frac{\\pi}{12}=0.2617993878\\dots$ | [PW2021] | 30° circular sector of radius 1 (“Wetzel’s sector”). Builds upon [MW2017] |",
+    "expect": "| $\\frac{7170601298323360123534337}{29109471743520000000000000} = 0.2463322372\\ldots^\\*$ | [K2026] | Theorem 1.1 (a quadrilateral; the abstract gives $0.24633\\ldots$). Same paper and the same formalization status as the $0.239^\\*$ lower bound below. The paper's covers contain a congruent copy, reflections allowed, of every unit arc; the reflection of a unit arc is a unit arc, so the same set also contains a rotation-and-translation copy of every unit arc. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/13a.md",
     "generated": true
   },
@@ -247,7 +247,7 @@
     "id": "pin:13b:L",
     "statement": "Last-listed lower-bound table row for Lebesgue universal covering constant (13b.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/13b.md",
-    "expect": "| $0.832$ | [BS2005] | Rigorous computer-aided search using a circle, equilateral triangle, and regular pentagon |",
+    "expect": "| $0.8344$* | [M2026] | Abstract: \"every convex universal cover has area at least 0.8344\". arXiv preprint v2 (v1 31 August 2026). |",
     "asserts": "ledger/teorth-optimizationproblems/constants/13b.md",
     "generated": true
   },
@@ -295,7 +295,7 @@
     "id": "pin:15b:L",
     "statement": "Last-listed lower-bound table row for Dual matrix multiplication exponent (15b.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/15b.md",
-    "expect": "| $0.321334$ | [[WXXZ2024](#WXXZ2024)] | Current best published lower bound. <a href=\"#WXXZ2024-alpha-0321334\">[WXXZ2024-alpha-0321334]</a> |",
+    "expect": "| $0.46652506$* | [[Var2026](#Var2026)] | Characteristic zero. Same construction and recurrence as [[OAI2026](#OAI2026)] (Lemma 12.1, equations (12.6)–(12.9)), with a longer 15-step completion script on 147456 base factors. Exact interval evaluation gives $2D/\\log 2 = 0.4665250614\\ldots$. [Script and checker](https://github.com/ArseniyVarlamov/dual-alpha-witness/tree/d2868faf31d83e27198868125e2b739637af7004), commit `d2868fa`. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/15b.md",
     "generated": true
   },
@@ -311,7 +311,7 @@
     "id": "pin:16a:L",
     "statement": "Last-listed lower-bound table row for Brezis–Gallouet–Wainger remainder constant on the 2D torus (16a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/16a.md",
-    "expect": "| $2.1562247706^\\*$ | [certificate](https://github.com/maximusrufus/c16-bgw-certificates) | Explicit trial function $u=\\sum_{0<\\lvert k\\rvert\\le 4000} e^{ik\\cdot x}/(\\lvert k\\rvert^2(1+\\mu\\lvert k\\rvert^2))$, $\\mu=0.1221$; lattice sums enclosed with outward rounding; refines $2.156224$ from [#226](https://github.com/teorth/optimizationproblems/pull/226) |",
+    "expect": "| $2.1562247706^\\*$ | [certificate](https://github.com/maximusrufus/c16-bgw-certificates) | Explicit trial function $u=\\sum_{0<\\lvert k\\rvert\\le 4000} e^{ik\\cdot x}/(\\lvert k\\rvert^2(1+\\mu\\lvert k\\rvert^2))$, $\\mu=0.1221$; lattice sums enclosed with outward rounding; refines $2.156224$ from [#226](https://github.com/teorth/optimizationproblems/pull/226). Independently replayed [RPL2026], asterisk kept pending a second party: the trial function's value is enclosed in $2.15622477064423579\\ldots$ by Arb and, separately, by binary64 sums with a proven error bound, above $2.1562247706$; this holds for $L$ as defined by the \"Equivalently\" formula (the maximum over $\\delta \\geq 1$, as in [BDZ2013], Theorem 3.8), whereas under a literal reading of \"sufficiently large frequency ratio\" above, the admissible constants have infimum $\\frac{\\beta+\\pi}{\\pi}\\approx 1.82283$ and the bound would be false. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/16a.md",
     "generated": true
   },
@@ -367,7 +367,7 @@
     "id": "pin:19a:U",
     "statement": "Last-listed upper-bound table row for The Berry–Esseen constant (19a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/19a.md",
-    "expect": "| $0.423^*$ | [Lin2026] | Unverified. GitHub repository with a Lean 4 formalization (`berryEsseenConstant ≤ 0.423`); its finite certificates are checked with `native_decide`. Builds on the analytic framework of [XL2026]; does not use [She2013]. |",
+    "expect": "| $c\\_{E} := \\dfrac{\\sqrt{10}+3}{6\\sqrt{2\\pi}} \\approx 0.4097321837^\\*$ | [KR2026] | Unverified. Computer-assisted proof closing the upper bound to Esseen's constant $c\\_{E}$ for all $n \\ge 1$: exact rational cubic-dual and Bernstein certificates for $n=1$ (150 cells, 1,128 intervals), two-route interval certificates for $n=2$ (70 cells), 111 C++ sub-cubes and 95,904 grid identities for $n=3$, two-pass 260-class certificates for $n=4$, finite branch-and-bound `COUNT` forests and collectors for $5 \\le n \\le 48$, and uniform Fourier/Prawitz tail certificates (`full_pass` upper-proof SHA-256 `5acc0196...`). Reproducible via a single Docker command. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/19a.md",
     "generated": true
   },
@@ -423,7 +423,7 @@
     "id": "pin:1c:L",
     "statement": "Last-listed lower-bound table row for Barnard–Steinerberger autocorrelation constant (1c.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1c.md",
-    "expect": "| $0.4103333$* | [Kos2026] | **Construction:** a step function $f = \\sum\\_i w\\_i 1\\_{[i/K,(i+1)/K)}$ with $K = 24576$ and $24592$ non-negative integer weights, the last 8 of them zero (support $[0, 3073/3072)$), scored by the same exact rule as [R2026]. **Exact value:** $134648548624804778248790016/328144294688458468928334649 = 0.41033335274\\dots$, the minimum attained at $k = 21264$. Found by splitting each cell of the [R2026] certificate in four (in two steps) and re-optimizing the weights numerically; the result keeps the shape of [R2026], including about 22% of the mass in the interval $[1/6144, 2/6144)$, next to the left end. **Certificate:** in [Kos2026], commit `a4ee94ef29ff`, SHA-256 of `K24576_0.4103333.json`: `963cb7273062e7360fdfa460bb19c1cf37729364b8f708b09580b6655b783c9e`. A standard-library verifier there computes every lag exactly; the value was also reproduced by an independent verifier written from the definition alone. |",
+    "expect": "| $0.4103735$* | [Esc2026] | **Construction:** a step function $f = \\sum\\_i w\\_i 1\\_{[i/K,(i+1)/K)}$ with $K = 98304$ and $98368$ non-negative integer weights (support $[0, 98368/98304)$), scored by the same exact rule as [R2026]. **Exact value:** $1376728953781146098572851250003968/3354819039892156766926073767410361 = 0.41037353651\\dots$, the minimum attained at $k = 15880$. Found from the [Kos2026] certificate by summing cells in pairs to $K = 12288$, re-optimizing with a slow soft-min (log-sum-exp) continuation ($\\beta$ raised from $10^3$ to $10^9$ by a factor $1.02$–$1.035$ per stage), and then refining two-fold three times ($K = 24576, 49152, 98304$), re-optimizing after each refinement; the intermediate values are $0.4103588$, $0.4103672$, $0.4103714$, and the gain per doubling roughly halves. **Certificate:** in [Esc2026], commit `c0bcdfb`, SHA-256 of `K98304_0.4103735.json`: `ff375289fc0eb47d9032d9ebc1307d8c92ba5d18c8be651df3894d70e14e9ead`. A standard-library verifier there obtains every lag from one carry-free big-integer product and re-sums sampled lags term by term; the value was also reproduced by a second exact computation (16-bit limbs, exact float64 FFT products). **Independent replay:** arhancanli (14 Nov 2026) recomputed the same fraction and minimizing lag $k = 15880$ with two separately written exact programs, without running the verifier above ([replay](https://github.com/arhancanli/quantavane-replays/tree/10d24d122c44d537782a0ab7026aaba45fb4c3cc)). |",
     "asserts": "ledger/teorth-optimizationproblems/constants/1c.md",
     "generated": true
   },
@@ -431,7 +431,7 @@
     "id": "pin:1d:U",
     "statement": "Last-listed upper-bound table row for The signed third autocorrelation constant (1d.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/1d.md",
-    "expect": "| $1.4630715826075594$ | [CERT2026] | Step function with $300$ equal cells on $[-1/4,1/4]$ and signed cell values $v_0,\\dots,v_{299}$. Exact value of $\\max_t \\lvert f\\*f\\rvert / (\\int f)^2$ is the rational number $2039224160683882663565441886346340189798400 / 1393796574908163689489385839036226787118881$, which is $1.4630715826075593\\dots$. Self-archived artifact. Independently replayed [T2026]: the same fraction in two implementations; it is $1.46307158260755932746\\ldots$, above $1.463071582607559$ (the bound first printed here), so the bound is printed rounded up. |",
+    "expect": "| $1.4513061918499$* | [Can2026b] | Step function with $102400$ equal cells on $[-1/4,1/4]$, integer cell values $v\\_i$ with $\\max\\_i \\lvert v\\_i\\rvert = 2^{56}$. Exact value of $\\max\\_t \\lvert f\\*f\\rvert / (\\int f)^2$ is $5136552493465657446805004533831259136 / 3539261750767002528079406787843004249 = 1.45130619184989692\\dots$, with the knot formula below with $h = 1/204800$ (a single knot, $m = 28802$, attains the maximum). This is $2.088 \\cdot 10^{-7}$ below the certificate of the open pull request #374 (C. Weill, $1.4513064006879361$*), from which it is refined (its published values only) by the $p$-norm continuation ($\\log \\lVert v\\*v\\rVert\\_p - 2 \\log S$, $p$ doubled from $3 \\cdot 10^7$, L-BFGS); it supersedes this row's 10 Nov value $1.4546733414$, which remains a valid bound. **Certificate:** in [Can2026b], SHA-256 of `c1d_upper_n102400_20261121.json`: `3c668a4f5158499b498c84bf955894d05100f01f709e3c5dde149631766ecc9f`. Checked by two exact checkers of ours that share no code: `check.py` (every knot from Kronecker-substituted big-integer products, the sequence confirmed modulo $2^{61}-1$, the deciding knot summed again) and `ntt_check_conv.py` (number-theoretic transforms modulo six primes, Garner's reconstruction with the signed residue range, the maximum taken over exact integers). Self-archived artifact; see the note on the asterisk below. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/1d.md",
     "generated": true
   },
@@ -447,7 +447,7 @@
     "id": "pin:20a:U",
     "statement": "Last-listed upper-bound table row for The thin shell conjecture (variance of $|X|^2$) (20a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/20a.md",
-    "expect": "| $\\sigma_n \\le O(1)$ (and in fact $\\mathrm{Var}(\\lvert X\\rvert^2)\\le C n$) | [KL2025] | **Affirmative resolution** of the thin shell conjecture. The universal constant is not optimized (and is not made explicit). |",
+    "expect": "| $8$ | [CK2026] | Theorem 1.1 of [CK2026]. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/20a.md",
     "generated": true
   },
@@ -479,7 +479,7 @@
     "id": "pin:20c:U",
     "statement": "Last-listed upper-bound table row for The KLS (Kannan–Lovász–Simonovits) constant for log-concave measures (20c.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/20c.md",
-    "expect": "| $\\psi_n \\le C\\sqrt{\\log n}$ | [K2023] | Current best general bound (Theorem 1.2 of [K2023]). |",
+    "expect": "| $C\\_{20c} < \\infty$ | [BKL2026], [SZ2026] | Proof of the conjecture. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/20c.md",
     "generated": true
   },
@@ -511,7 +511,7 @@
     "id": "pin:22a:U",
     "statement": "Last-listed upper-bound table row for Tight knot constant (22a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/22a.md",
-    "expect": "| 10.02| [Klotz2026] | $T(24,19)$ knot |",
+    "expect": "| 10.02*| [Klotz2026] | $T(24,19)$ knot |",
     "asserts": "ledger/teorth-optimizationproblems/constants/22a.md",
     "generated": true
   },
@@ -519,7 +519,7 @@
     "id": "pin:22a:L",
     "statement": "Last-listed lower-bound table row for Tight knot constant (22a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/22a.md",
-    "expect": "| $\\left(\\frac{4\\pi}{11}\\right)^{3/4}\\approx 1.105$ | [BS1999] | Argument based on an \"electromagnetic\" knot energy. The 11 in the denominator can be replaced by 10.67, bringing the bound to 1.13, but it is always reported as 11. |",
+    "expect": "| $2.124$* | [V2026] | For all knots and links, thickness measured as a radius. The average crossing number is bounded by the Gauss integral, using two consequences of thickness: at distance $r$ the integrand is at most $\\min\\\\{1/4,1/r^2\\\\}$, and only a limited length of the link fits in a ball. The two bounds are integrated exactly, which reduces the theorem to an inequality in one variable, checked in exact rational arithmetic. The constant is $(256\\pi^3/(3k^3))^{1/4}$ with $k=50657/10000$, which exceeds $531/250=2.124$. The larger values $2.135$ quoted in [DE2004] and $2.205$ in lecture slides have no proof that we could find; see Section 7 of [V2026]. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/22a.md",
     "generated": true
   },
@@ -751,7 +751,7 @@
     "id": "pin:31a:U",
     "statement": "Last-listed upper-bound table row for Chvátal–Sankoff constant for a binary alphabet (31a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/31a.md",
-    "expect": "| $0.824120$* | [J2026] | Same method with $h=10$: 400,253,317 accepting states, $z=0.3376$, certified $\\lambda(z)\\le 0.385532705434511$. |",
+    "expect": "| $0.824120$ | [J2026] | Same method with $h=10$: 400,253,317 accepting states, $z=0.3376$, certified $\\lambda(z)\\le 0.385532705434511$. Independently replayed [T2026]: 400,253,317 states and $\\lambda(z) \\le 0.385532597279844$, hence $\\gamma_2 \\le 0.8241195407$. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/31a.md",
     "generated": true
   },
@@ -759,8 +759,24 @@
     "id": "pin:31a:L",
     "statement": "Last-listed lower-bound table row for Chvátal–Sankoff constant for a binary alphabet (31a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/31a.md",
-    "expect": "| $0.79970$ | [AA2026] | AI and computer assisted (unverified). Monte Carlo with a Hoeffding margin: the mean length of a width-100 beam-search common subsequence over $10^6$ random pairs of binary strings of length $1000$ is $0.803417$, minus $0.003717$ from Hoeffding's inequality with $\\delta = 10^{-12}$. So the statement holds with probability $1 - 10^{-12}$ over the sampled strings. It is not a deterministic lower bound. |",
+    "expect": "| $0.79970$* | [AA2026] | AI and computer assisted (unverified). Monte Carlo with a Hoeffding margin: the mean length of a width-100 beam-search common subsequence over $10^6$ random pairs of binary strings of length $1000$ is $0.803417$, minus $0.003717$ from Hoeffding's inequality with $\\delta = 10^{-12}$. So the statement holds with probability $1 - 10^{-12}$ over the sampled strings. It is not a deterministic lower bound. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/31a.md",
+    "generated": true
+  },
+  {
+    "id": "pin:31b:U",
+    "statement": "Last-listed upper-bound table row for Chvátal–Sankoff constant for a four-letter alphabet (31b.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/31b.md",
+    "expect": "| $0.679701$* | [J2026a] | Same method with $h=6$ (8,502,177 states, $z=0.1570$); the transition table is built and read from disk. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/31b.md",
+    "generated": true
+  },
+  {
+    "id": "pin:31b:L",
+    "statement": "Last-listed lower-bound table row for Chvátal–Sankoff constant for a four-letter alphabet (31b.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/31b.md",
+    "expect": "| $0.617356$* | [J2026b] | Computer assisted. Lueker's lower-bound method [L2009, Section 2] with $h=9$, storing one value per class of string pairs under alphabet permutations and swapping (1,431,743,147 classes); fixed-point certificate with every division rounded down, checked by an independently written checker. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/31b.md",
     "generated": true
   },
   {
@@ -815,7 +831,7 @@
     "id": "pin:35a:U",
     "statement": "Last-listed upper-bound table row for Gradient Descent Exponent (35a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/35a.md",
-    "expect": "| 2 | Folklore | See, e.g., [N2014] |",
+    "expect": "| $\\log_2(1+\\sqrt{2}) \\approx 1.2716$ | [YL2026] | Abstract, with $p\\_{\\mathrm{sil}}=\\log\\_2(1+\\sqrt{2})$: \"$\\Omega\\left(n^{-p\\_{\\mathrm{sil}}-O(\\sqrt{\\log\\log n/\\log n})}\\right)$ non-anytime lower bound\". This bounds the error after $n$ steps of any schedule designed for horizon $n$; a prefix of a single infinite schedule is such a schedule. The same abstract has a separate anytime statement: \"every infinite schedule has infinitely many horizons with error $\\Omega\\left(n^{-\\frac{2p\\_{\\mathrm{sil}}}{1+p\\_{\\mathrm{sil}}}-O(\\sqrt{\\log\\log n/\\log n})}\\right)$\". Whether this page's definition (one infinite schedule) corresponds to the fixed-horizon or the anytime setting is an open question in the pull request. arXiv preprint v2 (v1 8 September 2026). |",
     "asserts": "ledger/teorth-optimizationproblems/constants/35a.md",
     "generated": true
   },
@@ -967,7 +983,7 @@
     "id": "pin:3e:L",
     "statement": "Last-listed lower-bound table row for Unnormalized single-set sum-difference exponent (3e.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/3e.md",
-    "expect": "| $\\approx 1.21$ | [GGSWT2025] | AlphaEvolve, given no human hints, did not recover the simplex construction within a few hours and reached only about $1.21$ — one of the cases [GGSWT2025] records as *not* matching the literature. Inferior to [HRY1999]. |",
+    "expect": "| $1.27255802$ | [M2026b] | Explicit finite carry-free projection to $\\mathbb{Z}$ (in base $Q = 2B + 1$) of the two-temperature masked-digit simplex $\\mathcal{V}\\_N = \\\\{a \\in M^N : \\sum\\_{i=0}^{N-1} a\\_i \\le L\\\\}$ of [O2026] on the numerical-semigroup alphabet $M = \\langle 4, 5 \\rangle \\cap [0, B] = (\\mathbb{N}\\_0 \\setminus \\\\{1, 2, 3, 6, 7, 11\\\\}) \\cap [0, B]$. At $B = 160$, $Q = 321$, $N = 10^{15}$ ($\\lvert M\\rvert = 155$, $\\lvert M+M\\rvert = 315$, $\\lvert M-M\\rvert = 321$), symmetric floored counts $n\\_d = \\lfloor N x^{\\kappa(d)}/Z(x)\\rfloor$ at difference tilt $x = 814897/1000000$ ($n\\_0 = 191770127525052$, $L = 3821702190893496$, smallest count $n\\_{158} = 1$) and sum tilt $y = 851418/1000000$ certify $\\log\\lvert A\\_N - A\\_N\\rvert \\ge \\log D\\_N > 3216013485006550.3794$ and $\\log\\lvert A\\_N + A\\_N\\rvert \\le \\log S\\_N(y) < 2527203816196844.6644$, giving $C\\_{3e} \\ge \\log\\lvert A\\_N - A\\_N\\rvert / \\log\\lvert A\\_N + A\\_N\\rvert > 1.27255802020996$. At [O2026]'s exact parameter tuple ($B = 80$, $Q = 161$, $N = 10^{13}$, $x = 8149/10000$, $y = 42571/50000$, $n\\_0 = 1917647564302$, $L = 38217661572815$), the same carry-free projection certifies $\\log D\\_N > 32160395410643.4067$ and $\\log S\\_N(y) < 25272243943117.8189$, giving $C\\_{3e} > 1.27255796845801$. The limiting ratio as $N, B \\to \\infty$ is $\\rho/\\sigma = 1.2725580515\\dots$*. [Certificates and dual-engine verifier](https://github.com/mizopl/ghr-c3a-odd-base-finite-bound/tree/763fd85126b69b72a8f94fdfceae7b6a36e5b1da/c3e_finite_certificate) (`c3e_finite_certificate_160_321.json` sha256 `c011cca3555411ee1878371424637857f17b8937d390c143e6f3c04e30addd4e`; `c3e_finite_certificate_80_161.json` sha256 `21a1203cff2a8cb040794e6149fdbd4a9db6e5b13be8fbfd37d505b551eb1a84`). Independently replayed from Theorems C1–C3 of the folder's README alone (with no code shared) by Arhan Canli [Can2026b]: both certificates reproduce $n\\_0$, $L$, and the 20-digit bounds $1.27255802020996480086$ and $1.27255796845801701855$ in 90-digit Python standard-library decimal interval arithmetic. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/3e.md",
     "generated": true
   },
@@ -1023,7 +1039,7 @@
     "id": "pin:41b:U",
     "statement": "Last-listed upper-bound table row for Ambidextrous Moving Sofa Constant (41b.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/41b.md",
-    "expect": "| 2.2195 | [Baek2024] | Naive bound from $C\\_{41a}$ |",
+    "expect": "| $2\\sqrt{2}-1 \\approx 1.8284271$* | [Pat2026] | Hammersley-type argument using both turns. At the moment each turn has rotated by $45^\\circ$, the sofa lies in the strip and in the left and right corridors turned by $45^\\circ$. In coordinates $s=x-y$, $t=x+y$ the strip becomes the band $0\\le t-s\\le 2$ and the two corridors become axis-aligned L-shapes of arm width $\\sqrt2$ opening in opposite directions. A four-case analysis (two $\\sqrt2$-squares, plus a column or row whose width trades off against the squares) bounds the triple intersection by $2\\sqrt2-1$; a turn of less than $45^\\circ$ leaves area below $\\sqrt2$. Uses the standard formulation (monotone rotation by at most $90^\\circ$ in each turn, as in Kallus–Romik). The bound is the exact value of this one-angle relaxation, attained by two hexagons. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/41b.md",
     "generated": true
   },
@@ -1039,7 +1055,7 @@
     "id": "pin:42a:U",
     "statement": "Last-listed upper-bound table row for Turan's pure power sum constant (42a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/42a.md",
-    "expect": "| 0.6873358063* | Koshta [Kos2026] | Exact $6873358063/10000000000$. The coefficient-cancellation construction of [Gri26] (with the step profiles of [Röhrig](https://github.com/teorth/optimizationproblems/pull/184), Plata and [PR #251](https://github.com/teorth/optimizationproblems/pull/251)), but with the first-block cut-off lowered from $\\tau=1/3$ to $\\tau=41/200$. Then up to four corrections reach $b\\_n$, and the limiting quantity gains the terms $-\\frac16\\sum\\_{i,j,k}\\delta\\_i\\delta\\_j\\delta\\_k T\\_3+\\frac1{24}\\sum\\_{i,j,k,l}\\delta\\_i\\delta\\_j\\delta\\_k\\delta\\_l T\\_4$, where $T\\_d(u)=\\int\\_{x\\_i\\ge u\\_i,\\ \\sum x\\_i\\le 1}(1-\\sum x\\_i)^{\\alpha-1}/\\prod x\\_i\\,dx$; the criterion of [PR #251](https://github.com/teorth/optimizationproblems/pull/251) holds verbatim for every $\\tau\\in(0,1/2)$ with the corresponding $d$-fold terms ($d<1/\\tau$). 64 uniform middle blocks on $[41/200,159/200]$, $\\alpha=0.6928404180017845+0.6148849499318954i$. Rational profile SHA-256 `be0c406fb2bf58f18a3ecb070daab97b662ec63318d9a83606c2117b8e16cbef`. $T\\_4$ and most $T\\_3$ are evaluated by exact-rational Dirichlet series with explicit tail bounds, the remaining $T\\_3$ by a validated 1-D integral; Arb (384 and 640 bits) gives $\\lvert Y\\rvert/D<0.68733580619$, and an independently written checker agrees. Unrefereed analytic asymptotic reduction; no explicit finite threshold, optimality or formal verification claimed. |",
+    "expect": "| 0.686360751 | Vatopoulos [Vat26] | Exact $686360751/10^9$. Harcos's linearization with a phase that varies from the start, and the limit theorem (Theorem A) of V. Bakeas ([turan-c42-bound v1.1.0](https://github.com/Bakeas/turan-c42-bound/tree/dc9c491ccb0a9ee8de753739eb082fa84c25c091), [PR #302](https://github.com/teorth/optimizationproblems/pull/302)), in the arbitrary-knot form of R. Pinho ([c42-certificate](https://github.com/rpinho/c42-certificate/tree/009120a811abd6840a9417e9f1c02cd490c5f608/volterra-quadratic-knots), [PR #305](https://github.com/teorth/optimizationproblems/pull/305)), with a new 33-piece phase profile and a new a posteriori certifier. For $n\\ge2$ take $K=\\lfloor n/2\\rfloor$ and $s\\_k=Te^{i\\varphi(k/n)}$ for $k\\le K$, with $T=0.686360751$ and $\\varphi$ piecewise linear on $[0,1/2]$ with knots $u\\_0,\\dots,u\\_{33}$ = 0, 1/18432, 1/9216, 1/4608, 1/2304, 1/1152, 1/768, 1/576, 1/288, 13/2304, 1/128, 25/2304, 1/72, 41/2304, 25/1152, 1/32, 49/1152, 1/18, 9/128, 25/288, 121/1152, 1/8, 169/1152, 49/288, 25/128, 2/9, 289/1152, 9/32, 361/1152, 25/72, 49/128, 121/288, 529/1152, 1/2 (the quadratic knots $j^2/1152$, six dyadic knots near $0$ and four greedy insertions) and values $\\psi\\_0,\\dots,\\psi\\_{33}$ = -1.422143609677031, -1.388783825383378, -1.381084544438781, -1.368351615437954, -1.354497472120591, -1.33879324681703, -1.32889661088203, -1.319911449156991, -1.297988460091246, -1.28028980383792, -1.266590112297936, -1.251202931199948, -1.238411064787167, -1.224388301760243, -1.211779864148879, -1.186173465289945, -1.161121902414134, -1.136007953927681, -1.110646152046127, -1.084806526597323, -1.058306952419107, -1.030970091538424, -1.002621341389417, -0.9730792935981849, -0.9421494103796814, -0.9096171352870314, -0.8752405215067437, -0.8387413359444171, -0.7997941834415409, -0.7580116838145782, -0.7129266622002852, -0.6639595265100425, -0.610401510709484, -0.5512784196680292. The remaining power sums get equal modulus $F\\_n$ and aligned phases so that $1$ is a root, which gives $R\\_n\\le\\max(T,F\\_n)$. Theorem A gives $F\\_n\\to F=\\lvert p(1)\\rvert/\\int\\_0^{1/2}\\lvert p(t)\\rvert dt/(1-t)$, where $p(t)=t^{-\\gamma}+\\int\\_0^t(t-v)^{-\\gamma}\\rho(v) dv$, $\\gamma=Te^{i\\psi\\_0}$, and $\\rho$ is the bounded solution of $t\\rho(t)=d(t)+\\int\\_0^t d(u)\\rho(t-u) du$, with $d=\\gamma-Te^{i\\varphi}$ on $(0,1/2]$ and $d=\\gamma$ on $(1/2,1]$. Its hypotheses hold: $a=\\mathrm{Re} \\gamma=T\\cos\\psi\\_0=0.1016540\\ldots>0$, and $\\sup\\lvert d\\rvert=T<1$, since $\\lvert d\\rvert\\le2T\\sin(E/2)<0.5791$ on $(0,1/2]$ with $E=\\max\\_j\\lvert\\psi\\_j-\\psi\\_0\\rvert=0.871$. New certifier: the trial function $\\tilde\\rho$ is a discontinuous piecewise polynomial of degree $P$ on $N$ uniform cells aligned with all knots; the residual of the equation for $\\rho$ is computed exactly on every cell from an identity for convolutions of piecewise polynomials, and Bakeas's a posteriori lemma, in Pinho's integrated form, bounds $\\rho-\\tilde\\rho$. Two independently written Arb checkers give $F\\le0.6863607494291$ ($N=73728$, $P=10$; the same run gives $F\\ge0.6863607494206$) and $F\\le0.6863607494249$ ($N=73728$, $P=12$), so $C\\_{42}\\le T=0.686360751$. In floating point the fixed point $T=F$ of this profile is about $0.6863607503$. Profile SHA-256 `d015a8295d809fa26c9f18888ece53d77c9fea71712420313e75911065855652`. Unrefereed; no explicit finite threshold claimed. **Independently replayed** by [Can2026b], whose own standard-library evaluator — written from Bakeas's Theorem A, Lemma 3 and (8) and from this certificate alone, with none of the repository's checkers or search code read or run — gives $F\\le0.6863607495095$, so $C-F\\ge1.49\\times10^{-9}$. The asterisk is removed on that basis. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/42a.md",
     "generated": true
   },
@@ -1047,7 +1063,7 @@
     "id": "pin:42a:L",
     "statement": "Last-listed lower-bound table row for Turan's pure power sum constant (42a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/42a.md",
-    "expect": "| >1/2 | Biró [Bir00b] | Biró's proof delivers some computable constant $1/2<c<1/\\sqrt{2}$, but it is not computed there exactly which. |",
+    "expect": "| $1/2+2^{-4096}$* | Pinho [Pin26c] | An explicit value for the constant of [Bir00b], by Biró's own method (first escape, summed Newton identities, attractive fixed point) with every estimate made explicit. The gain over $1/2$ is about $10^{-1233}$. Written proof and an exact-rational checker of its numerical hypotheses, both by one AI agent; two blind AI reviews; unrefereed. **Partially replayed** by [Can2026c]: all 39 numerical steps of the parameter chain decided exactly in $\\mathbb{Q}(\\sqrt2)$, the four polynomial identities expanded exactly, and nine red controls refused as expected. The geometric and analytic steps were read, not computed, so the asterisk stays. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/42a.md",
     "generated": true
   },
@@ -1159,7 +1175,7 @@
     "id": "pin:49a:L",
     "statement": "Last-listed lower-bound table row for Erdős–Szemerédi $3$-sunflower-free capacity (49a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/49a.md",
-    "expect": "| $\\ge 1.5678599$* | [Kos2026] | Same chain construction and exact transfer-matrix count as [IRSI2026], with a 28-point base family built from the two families $F$ (75 sets on the edges of $K\\_5$) and $H$ (121 sets on $\\mathbb{Z}\\_{11}$) of [Cla2026], extending the augmentation proposed in [PR #237](https://github.com/teorth/optimizationproblems/pull/237) to two pendants. Glue a copy of $H$ (at $0$) to $F$ at the edge $(0,3)$ and another at the edge $(0,4)$ by [DEGKM1997], Lemma 4.4 (250659 sets on 28 points). Then, at each pendant, add 15 sets whose part in that pendant is empty, and add 20 sets lying inside the first copy of $H$ and one set made of three $K\\_5$ edges and all of the second copy (all listed at [Kos2026]). The resulting family has 252292 sets and is Sperner and 3-sunflower-free by an exhaustive check. Chaining copies at the edges $(0,1)\\to(0,2)$ gives port counts $N\\_{00}=33969$, $N\\_{01}=N\\_{10}=64728$, $N\\_{11}=88867$, i.e. the transfer matrix with rows $(64728,88867)$ and $(33969,64728)$, with Perron root $64728+\\sqrt{3018723123}$, and each copy adds 26 points: the chain families have at least $c\\rho^k$ members on $26k+2$ points, so $\\mu^{\\mathrm S}\\_3\\ge(64728+\\sqrt{3018723123})^{1/26} = 1.5678599\\ldots$. Certificate (SHA-256 10ee18f9...4838), a C checker for the exhaustive check, and a standard-library Python script that rebuilds the family from this description and recomputes $\\rho$ are at [Kos2026]; the family was also checked exhaustively by an independent checker written from the certificate format alone. Found by an AI agent; see the disclosure there. |",
+    "expect": "| $\\ge 1.567866388204975$\\* | [Til2026] | Glue two copies of the 252271-member block of [Kos2026] by [DEGKM1997] at opposite ports. The ordinary join has 30312280440 members. Add two disjoint families across the join, each formed by pairing 150 single-pendant choices on one side with 42412 lifted core choices on the other. The resulting 54-point family has port counts $(b,a,a,c)=(4397311488,7211663100,7211663100,11504366352)$ in order $00,01,10,11$. Starting with the column $(b+a,a+c)^T$, multiply for each additional block by the matrix $M$ with rows $(a,b)$ and $(c,a)$. The chain of $k$ blocks uses $52k+2$ points and has exact rate $(a+\\sqrt{bc})^{1/52}=1.56786638820497592522\\ldots$. The recorded rational $q=1.567866388204975$ also has a finite certificate. For $k=2^{43}+1$, floor the entries of $10^{80}M/q^{52}$, then square and divide by $10^{80}$ with downward rounding 43 times. Applying the result to the initial column gives a chain size exceeding $(9/8)q^{52k+2}$ after restoring the scale. Its tensor powers certify the decimal. [Til2026] gives the construction, the finite integer check and a Lean proof of the exact radical lower bound for the unrestricted capacity. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/49a.md",
     "generated": true
   },
@@ -1223,7 +1239,7 @@
     "id": "pin:51a:L",
     "statement": "Last-listed lower-bound table row for Erdős maximum-term constant (51a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/51a.md",
-    "expect": "| $0.5850788$ | [S2026] | Used GPT 5.2.  Discussed [here](https://www.erdosproblems.com/forum/thread/513#post-4532) |",
+    "expect": "| $0.5850788196744$ | [R2026b] | Exact parameters $K=3.5681854310698435$, $\\alpha=3.9615431126097391$, $\\varepsilon=e^{i\\alpha}$ in the family of [HT2026], Theorem 2.8. Truncation through $n=9$ reduces the squared modulus to a degree-19 polynomial in $x=\\cos^2\\theta$. Rational Bernstein subdivision covers $[0,1]$ with 19 leaves (37 nodes, depth 18); adding the uniform infinite-series tail gives $\\max\\_\\theta\\lvert P(\\theta)\\rvert\\le1.709171425067816128872617735945$. Its reciprocal exceeds the recorded bound. The full [S2026] paper bound is $0.585078819653$; the gain over a certified upper bound for that paper's actual specified function is greater than $2.1047\\times10^{-11}$. [Proof and verification, pinned commit](https://github.com/AndreRoehrig/optimization-constants-certificates/blob/ed6387399cf6de02eaa4cf10c43787633496619a/notes/maximum_term.md). **Independently replayed** by [Can2026d], by a different method — truncation at $N=12$ with an exact rational tail, a cubic-remainder cell bound and $1050$ cells after bisection — giving $1/\\max\\_\\theta\\lvert P(\\theta)\\rvert \\ge 0.585078819674513477028433803123$, and concurrently by [carlostoledo1891](https://github.com/teorth/optimizationproblems/pull/184). The asterisk is removed on that basis. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/51a.md",
     "generated": true
   },
@@ -1343,7 +1359,7 @@
     "id": "pin:57c:U",
     "statement": "Last-listed upper-bound table row for Univalent Bloch constant (57c.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/57c.md",
-    "expect": "| $0.65628589^\\*$ | <a href=\"#vS2026\">[vS2026]</a> | Disc of radius $R=5.001117628756668$ minus 24 slits $z=\\exp w$, $w=\\log R+s+i(\\theta+b\\_1s^2+b\\_2s^4)$, $\\log(t/R)\\le s\\le 0$, with $(\\theta,t,b\\_1,b\\_2)$ equal to $(0,1,0,0)$, $(\\pi/3,1.9999999974092333,0,0)$, $(0.029930188727091613,2.789342409403121,0.9026921410641155,-0.3301459494660587)$, $(1.0157094972537686,3.473381248030611,-1.2656124700253997,0.9794269477754911)$, $(0.5757776442359243,4.342874184977691,0.03225521024585182,2.9360081049550737)$, and their images under rotation by $2\\pi/3$ and complex conjugation. Computer-assisted proof: inradius $\\le 1+10^{-9}$ (exact covering), conformal radius $\\ge 1.523726208329$ (comparison function, Arb ball arithmetic). Floating-point value of the ratio $0.656285866$. |",
+    "expect": "| $0.6562681$ | <a href=\"#W2026\">[W2026]</a> | Frank Wikström, Theorems 1.3 and 7.3: strict upper bound for the same univalent Bloch–Landau constant. The explicit domain has inradius divided by conformal radius less than $0.656268014$; exact curve data, an Arb capacity estimate and an inradius covering certificate. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/57c.md",
     "generated": true
   },
@@ -1351,7 +1367,7 @@
     "id": "pin:57c:L",
     "statement": "Last-listed lower-bound table row for Univalent Bloch constant (57c.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/57c.md",
-    "expect": "| $0.5708858$ | <a href=\"#Skin2009\">[Skin2009]</a> | Best recorded lower bound (as summarized in <a href=\"#BS2023\">[BS2023]</a>). <a href=\"#BS2023-latest-Bu-lb\">[BS2023-latest-Bu-lb]</a> |",
+    "expect": "| $\\dfrac{6123}{10000}=0.61230^\\*$ | <a href=\"#P2026\">[P2026]</a> | Candidate, unrefereed; AI agents under Ricardo Pinho's direction, extending Wikström's framework, center (9) and phase congruence (12). A localized sixth-coefficient center term, higher Grunsky forms, area and Bloch constraints give a 489,994-leaf dyadic certificate in 12 parts; Arb at 192 bits. Exact gain $29/500000=0.000058$ over Wikström. Separately written checker by the same agent; no human referee. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/57c.md",
     "generated": true
   },
@@ -1375,7 +1391,7 @@
     "id": "pin:59a:U",
     "statement": "Last-listed upper-bound table row for Bohr radius for the bidisc (59a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/59a.md",
-    "expect": "| $0.302825279492$ | <a href=\"#P2026\">[P2026]</a> | Set $U=(1+z)(1-w)$, $V=1+zw$, $P=LU+iTV$, $Q=LV+iTU$, and $f=(SQ-P)/(SQ+P)$, with $L=2500000000$, $T=3067398171$, and $S=10^{15}$. Two independent exact computations of the 841 coefficients with $0\\le j,k\\le N=28$ give a finite majorant greater than $1+10^{-26}$ at $r=302825279492/10^{12}$. [Proof package v1.0.0, DOI: 10.5281/zenodo.22341928](https://doi.org/10.5281/zenodo.22341928); archived `bidisc-bohr-certificate-v1.0.0.zip` SHA-256: `afc77b42cdd9de9b82e3d4c6a973dc32bf82b2c19960df58507b9a5cf333928b`. <a href=\"#P2026-ub-K2-0-302825279492\">[P2026-ub-K2-0-302825279492]</a> |",
+    "expect": "| $0.302825279490988$* | <a href=\"#T2026\">[T2026]</a> | $f(z,w)=A+B\\Delta(I-D\\Delta)^{-1}C$ with $\\Delta=\\mathrm{diag}(z,w)$, the transfer function of an exactly unitary $3\\times 3$ colligation with blocks $A,B,C,D$ and Gaussian-rational entries over a common 149-digit denominator, so $f$ is a Schur function on the bidisc. Exact integer computation of the 1681 coefficients with $0\\le j,k\\le N=40$ gives a finite majorant $\\sum\\_{j,k\\le 40}\\lvert f\\_{jk}\\rvert r^{j+k}\\ge 1+2.2\\cdot 10^{-42}$ at $r=3028252794909880/10^{16}$. Improves P2026 by about $1.0\\cdot 10^{-12}$. [Certificate and stdlib-Python exact checker, pinned commit](https://github.com/gomyway/c59-bohr-bidisc-certificate/tree/a014dc9455815c2875507017ebcd303b8da27b63); `c59_cert.json` SHA-256: `6d2e39e8741fb5e73593d4db007c68831243d32fe4ae298bc4fe750033ebedab`; `t7428_c59.py` SHA-256: `f78b73aad627ec446af3af00252631c00f482b9eb827109d99a783dc0cac7db4`. <a href=\"#T2026-ub-K2-0-302825279490988\">[T2026-ub-K2-0-302825279490988]</a> |",
     "asserts": "ledger/teorth-optimizationproblems/constants/59a.md",
     "generated": true
   },
@@ -1583,7 +1599,7 @@
     "id": "pin:69a:U",
     "statement": "Last-listed upper-bound table row for Sendov radius constant (69a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/69a.md",
-    "expect": "| $2$ |  | Trivial geometric bound since all zeroes of $f$ and $f'$ lie in the closed unit disk. |",
+    "expect": "| $1$ | L. Mazur; [[Tao2026](#Tao2026)] | Proof of Sendov's conjecture for all $n\\ge 2$ (in fact of the stronger Phelps–Rodriguez conjecture). Formalized in Lean: theorem `Sendov.sendov` in [[SendovLean](#SendovLean)], depending only on `propext`, `Classical.choice`, `Quot.sound`. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/69a.md",
     "generated": true
   },
@@ -1623,7 +1639,7 @@
     "id": "pin:70a:L",
     "statement": "Last-listed lower-bound table row for Reverse Brunn-Minkowski constant (70a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/70a.md",
-    "expect": "| $1.20194336$* | [Pin2026] | Optimization of Patankar's cube-and-ball construction. Retain the Steiner term with $n=10^{12}$, $k=367879441172$, $t=k/n$ and $a/\\kappa\\_n^{1/n}=(n-k)/k=632120558828/367879441172$; its normalized root is enclosed near $1.20194336844315056699>1.20194336$. Arb and exact-rational logarithm/Stirling checkers, both written by the same AI agent, pass. The paper proves the single-term limit $\\exp(1/(2e))>1.20194336847$ as even $n\\to\\infty$ and $k/n\\to1/e$; this analytic limit is separate from the finite certificate. Unrefereed, not formally verified, without independent human review or an optimality claim. |",
+    "expect": "| $1.20194336$* | [Pin2026] | Optimization of Patankar's cube-and-ball construction. Retain the Steiner term with $n=10^{12}$, $k=367879441172$, $t=k/n$ and $a/\\kappa\\_n^{1/n}=(n-k)/k=632120558828/367879441172$; its normalized root is enclosed near $1.20194336844315056699>1.20194336$. Arb and exact-rational logarithm/Stirling checkers, both written by the same AI agent, pass. The paper proves the single-term limit $\\exp(1/(2e))>1.20194336847$ as even $n\\to\\infty$ and $k/n\\to1/e$; this analytic limit is separate from the finite certificate. Unrefereed, not formally verified, without independent human review or an optimality claim. Independently replayed [RPL2026], asterisk kept pending a second party: the retained term is enclosed in $1.2019433684431505669948027797\\ldots$ by Arb and, separately, by mpmath intervals with Robbins' factorial bounds, so the finite bound holds given Patankar's cube–ball criterion, whose proof the replay re-derives; the limit $\\exp(1/(2e))$ was not replayed. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/70a.md",
     "generated": true
   },
@@ -1743,7 +1759,7 @@
     "id": "pin:78a:U",
     "statement": "Last-listed upper-bound table row for Conway thrackle constant (78a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/78a.md",
-    "expect": "| $1.393$ | <a href=\"#KSTZ2025\">[KSTZ2025]</a> | Current best upper bound: Xu's $m\\le 1.393(n-1)$ bound, as recorded in recent literature, gives $C_{78}\\le 1.393$. <a href=\"#KSTZ2025-current-best-special\">[KSTZ2025-current-best-special]</a> |",
+    "expect": "| $\\frac{4}{3}$ | <a href=\"#Sim2026\">[Sim2026]</a> | Every thrackle on $n\\ge 4$ vertices has at most $\\lfloor 4(n-1)/3\\rfloor$ edges, and $t(n)\\le n$ for $n\\le 3$, hence $C_{78}\\le \\frac{4}{3}$. The argument uses Pammer's computer-assisted verification of the conjecture for thrackles on at most twelve vertices. <a href=\"#Sim2026-ub\">[Sim2026-ub]</a> The same bound is stated in Tomar's contemporaneous independent preprint. <a href=\"#Tom2026\">[Tom2026]</a> |",
     "asserts": "ledger/teorth-optimizationproblems/constants/78a.md",
     "generated": true
   },
@@ -1807,7 +1823,7 @@
     "id": "pin:80a:U",
     "statement": "Last-listed upper-bound table row for Ising perceptron capacity threshold (80a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/80a.md",
-    "expect": "| $\\alpha_{\\star} \\approx 0.833$ | [H2024] | Conditional on an explicit numerical maximization hypothesis for a two-variable function $\\mathscr{S}_{\\star}(\\lambda_1,\\lambda_2)$. |",
+    "expect": "| $\\alpha_{\\star} \\approx 0.833$* | [H2024] | Conditional on an explicit numerical maximization hypothesis for a two-variable function $\\mathscr{S}_{\\star}(\\lambda_1,\\lambda_2)$. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/80a.md",
     "generated": true
   },
@@ -1815,7 +1831,7 @@
     "id": "pin:80a:L",
     "statement": "Last-listed lower-bound table row for Ising perceptron capacity threshold (80a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/80a.md",
-    "expect": "| $\\alpha_{\\star} \\approx 0.833$ | [DS2025], [NS2023] | Conditional on an explicit numerical maximization hypothesis for a one-variable function $\\mathscr{S}\\_{\\star}(\\lambda)$; Ding–Sun prove the lower bound with positive probability, and the sharp-threshold theory of Nakajima–Sun upgrades this to with high probability for every $\\alpha < \\alpha_{\\star}$. |",
+    "expect": "| $\\alpha_{\\star} \\approx 0.833$* | [DS2025], [NS2023] | Conditional on an explicit numerical maximization hypothesis for a one-variable function $\\mathscr{S}\\_{\\star}(\\lambda)$; Ding–Sun prove the lower bound with positive probability, and the sharp-threshold theory of Nakajima–Sun upgrades this to with high probability for every $\\alpha < \\alpha_{\\star}$. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/80a.md",
     "generated": true
   },
@@ -1839,7 +1855,7 @@
     "id": "pin:82a:U",
     "statement": "Last-listed upper-bound table row for Essential minimum of the Zhang-Zagier height (82a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/82a.md",
-    "expect": "| 0.2534449\\* | [Pin26] | Doche's limit-point construction [Doc01b] on the factor library of [Gri26] and [Epi26], adding $P\\_7$ to the denominator and 25 new numerator factors found by LP-dual-weighted lattice reduction (LLL), with all multiplicities and exponents re-optimised by a linear program ($\\deg Q = 999999992$). Certified upper bound $0.2534446873\\ldots$ by two independently written Arb checkers; the repository includes a self-contained proof that the construction yields infinitely many distinct algebraic numbers with $h\\_Z \\le B$. Certificate SHA-256 `b33626f367b6f52922746c0fee7bb008449cd0bb18efcb983ab20ff073350fce`, repository commit `69d8964`. Asterisked: a self-archived computer-assisted certificate, not yet independently replayed. |",
+    "expect": "| 0.2534449 | [Pin26] | Doche's limit-point construction [Doc01b] on the factor library of [Gri26] and [Epi26], adding $P\\_7$ to the denominator and 25 new numerator factors found by LP-dual-weighted lattice reduction (LLL), with all multiplicities and exponents re-optimised by a linear program ($\\deg Q = 999999992$). Certified upper bound $0.2534446873\\ldots$ by two independently written Arb checkers; the repository includes a self-contained proof that the construction yields infinitely many distinct algebraic numbers with $h\\_Z \\le B$. Certificate SHA-256 `b33626f367b6f52922746c0fee7bb008449cd0bb18efcb983ab20ff073350fce`, repository commit `69d8964`. Independently replayed [T2026c]: $B \\in [0.253444687248, 0.253444687515]$, decided from the certificate's bytes by two implementations sharing no code with its checkers. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/82a.md",
     "generated": true
   },
@@ -1855,7 +1871,7 @@
     "id": "pin:83a:U",
     "statement": "Last-listed upper-bound table row for The Wirsing Constant (83a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/83a.md",
-    "expect": "| $0.30366300289873265859\\!\\ldots\\!6424297 + 10^{-175}$ | [GKW2026] | Certified spectral enclosure for the infinite-dimensional GKW operator; 175 digits |",
+    "expect": "| $0.30366300289873265859\\!\\ldots\\!4764297 + 10^{-175}$ | [GKW2026] | Certified spectral enclosure for the infinite-dimensional GKW operator; 175 digits |",
     "asserts": "ledger/teorth-optimizationproblems/constants/83a.md",
     "generated": true
   },
@@ -1863,7 +1879,7 @@
     "id": "pin:83a:L",
     "statement": "Last-listed lower-bound table row for The Wirsing Constant (83a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/83a.md",
-    "expect": "| $0.30366300289873265859\\!\\ldots\\!6424297 - 10^{-175}$ | [GKW2026] | Certified spectral enclosure for the infinite-dimensional GKW operator; 175 digits |",
+    "expect": "| $0.30366300289873265859\\!\\ldots\\!4764297 - 10^{-175}$ | [GKW2026] | Certified spectral enclosure for the infinite-dimensional GKW operator; 175 digits |",
     "asserts": "ledger/teorth-optimizationproblems/constants/83a.md",
     "generated": true
   },
@@ -1919,7 +1935,7 @@
     "id": "pin:86a:U",
     "statement": "Last-listed upper-bound table row for Schur–Siegel–Smyth trace constant (86a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/86a.md",
-    "expect": "| $1.8084990$\\* | [Kos2026] | The construction of [SO24] as in [Pin26], with the auxiliary set $A$ chosen by solving the discretised [SO24] primal problem over all $883$ irreducible monic integer polynomials of degree $\\le 7$ with all roots in $[0, 5.3]$ and trace at most twice the degree. $19$ receive positive weight: the eleven of [Pin26]; $x-2$, $x^2-4x+1$, $x^2-4x+2$ and $x^3-6x^2+9x-3$, of trace-to-degree ratio $2$; and $x^6-11x^5+43x^4-73x^3+53x^2-15x+1$, $x^6-11x^5+43x^4-72x^3+51x^2-14x+1$, $x^7-13x^6+64x^5-150x^4+172x^3-89x^2+18x-1$, $x^7-13x^6+63x^5-143x^4+157x^3-78x^2+16x-1$. Auxiliary polynomials whose trace-to-degree ratio exceeds the bound are allowed: [Smi24, Prop. 5.15] and [SO24, Cor. 1.6] place no condition on their traces. The measure $\\mu$ is a step density on cells of width $1/200$, with $633$ nonzero cells, support in $[11/200,\\ 519/100]$ and mass $m = 199999999999999703/200000000000000000$; the bound is $\\int x\\, d\\mu / m = 144679917840593158601/79999999999999881200 = 1.80849897300\\ldots$. Checked in exact rational and arb ball arithmetic (certificate and checkers at commit `90c57242b2f43aa942257154be6731c29898b537`): each $Q \\in A$ is irreducible with only real roots; $\\sum\\_Q b\\_Q \\deg Q \\approx 0.83542\\, m < m$; $\\int \\log\\lvert Q \\rvert\\, d\\mu \\ge 1.99 \\cdot 10^{-6}$ for each $Q \\in A$; and $U\\_\\mu(x) - \\sum\\_Q b\\_Q \\log\\lvert Q(x) \\rvert \\ge 10^{-7}$ for every $x$ in the support (rigorous bisection), hence $\\ge 0$ on all of $\\mathbb{C}$ by the minimum principle. The certificate passes the unmodified checker of [Pin26], and a second checker written from the certificate format and [Smi24], [SO24] only; both certify the margin $10^{-7}$ (the checker of [Pin26] with its positivity test raised to $10^{-7}$). These are the hypotheses of Smith's sufficiency criterion [Smi24], whose theorem then gives $C\\_{86} \\le \\int x\\, d\\mu / m$. Asterisked: a self-archived computer-assisted certificate, not yet independently replayed. |",
+    "expect": "| $1.8084990$ | [Kos2026] | The construction of [SO24] as in [Pin26], with the auxiliary set $A$ chosen by solving the discretised [SO24] primal problem over all $883$ irreducible monic integer polynomials of degree $\\le 7$ with all roots in $[0, 5.3]$ and trace at most twice the degree. $19$ receive positive weight: the eleven of [Pin26]; $x-2$, $x^2-4x+1$, $x^2-4x+2$ and $x^3-6x^2+9x-3$, of trace-to-degree ratio $2$; and $x^6-11x^5+43x^4-73x^3+53x^2-15x+1$, $x^6-11x^5+43x^4-72x^3+51x^2-14x+1$, $x^7-13x^6+64x^5-150x^4+172x^3-89x^2+18x-1$, $x^7-13x^6+63x^5-143x^4+157x^3-78x^2+16x-1$. Auxiliary polynomials whose trace-to-degree ratio exceeds the bound are allowed: [Smi24, Prop. 5.15] and [SO24, Cor. 1.6] place no condition on their traces. The measure $\\mu$ is a step density on cells of width $1/200$, with $633$ nonzero cells, support in $[11/200,\\ 519/100]$ and mass $m = 199999999999999703/200000000000000000$; the bound is $\\int x\\, d\\mu / m = 144679917840593158601/79999999999999881200 = 1.80849897300\\ldots$. Checked in exact rational and arb ball arithmetic (certificate and checkers at commit `90c57242b2f43aa942257154be6731c29898b537`): each $Q \\in A$ is irreducible with only real roots; $\\sum\\_Q b\\_Q \\deg Q \\approx 0.83542\\, m < m$; $\\int \\log\\lvert Q \\rvert\\, d\\mu \\ge 1.99 \\cdot 10^{-6}$ for each $Q \\in A$; and $U\\_\\mu(x) - \\sum\\_Q b\\_Q \\log\\lvert Q(x) \\rvert \\ge 10^{-7}$ for every $x$ in the support (rigorous bisection), hence $\\ge 0$ on all of $\\mathbb{C}$ by the minimum principle. The certificate passes the unmodified checker of [Pin26], and a second checker written from the certificate format and [Smi24], [SO24] only; both certify the margin $10^{-7}$ (the checker of [Pin26] with its positivity test raised to $10^{-7}$). These are the hypotheses of Smith's sufficiency criterion [Smi24], whose theorem then gives $C\\_{86} \\le \\int x\\, d\\mu / m$. Asterisked: a self-archived computer-assisted certificate, not yet independently replayed. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/86a.md",
     "generated": true
   },
@@ -1983,7 +1999,7 @@
     "id": "pin:89a:U",
     "statement": "Last-listed upper-bound table row for Ramsey multiplicity constant of $K\\_4$ (89a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/89a.md",
-    "expect": "| $0.0301388857$* | [Kos2026] | Exact value $1126728298914655736634696330762614467/37384537381450758925419573570384691200 = 0.0301388856953\\ldots$, below [VSJ2026] by $1.87 \\cdot 10^{-9}$ (exact margin $1049256017227412221891173997253/560768060721761383881293603555770368000$). One more balanced sign refinement of the final $3840$-class [VSJ2026] step graphon: every class is split in two, with amplitudes $\\pm\\min(w, 1-w)$ whose signs are chosen by ascent on the cubic term of the [VSJ2026] sign-refinement identity. The result is a $7680$-class step graphon with entries in $2^{-16}\\mathbb{Z}$, whose monochromatic $K\\_4$ density was counted exactly by two independently written programs (the second, written from the witness format alone, also reproduces the [VSJ2026] value exactly). The repository holds only the amplitudes and a script that rebuilds the witness from the [VSJ2026] table (witness SHA-256 `e37d811da4e8c261f30046c5453bb9c63fd9e9700989a33fccc948074c2b2a47`). Asterisked: self-hosted. |",
+    "expect": "| $0.0301388794$ | [SK2026] | Exact value $27220838459434583306277336063848530765605851167/903180180540490237232196590042258640992206848000 = 0.030138879313256\\ldots$. Gradient refinement of the [VSJ2026] step graphon: the same $3840$ blocks of equal weight; the red probabilities between blocks, grouped into $16045$ symmetry classes of block pairs, are moved by $120$ projected-gradient steps and rounded to multiples of $2^{-20}$. The density is computed exactly over every block (the integer numerator modulo $9$ primes, combined by CRT, plus a check prime). Data and checker at commit `3d9431a` of [SK2026]. Self-hosted; independently replayed with separate code by C. Toledo and by A. Canli in the thread of PR #255. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/89a.md",
     "generated": true
   },
@@ -1996,10 +2012,42 @@
     "generated": true
   },
   {
+    "id": "pin:89b:U",
+    "statement": "Last-listed upper-bound table row for Ramsey multiplicity constant of $K\\_5$ (89b.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/89b.md",
+    "expect": "| $15058298592194934908767847/9131939205947984819238469632 < 0.001648970526$* | [Pin2026r4] | Candidate and unrefereed. A $256$-part binary Cayley step graphon with probabilities $0$, $2648/4041$ and $1$. Two separately written (same agent) exact counters agree on the full-matrix and root-fixed red and blue totals; literal-tuple and rejection controls pass. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/89b.md",
+    "generated": true
+  },
+  {
+    "id": "pin:89b:L",
+    "statement": "Last-listed lower-bound table row for Ramsey multiplicity constant of $K\\_5$ (89b.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/89b.md",
+    "expect": "| $0.001524$ | [PPSS2024] | Theorem 1.2, by flag algebras. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/89b.md",
+    "generated": true
+  },
+  {
+    "id": "pin:89c:U",
+    "statement": "Last-listed upper-bound table row for Ramsey multiplicity constant of $K\\_6$ (89c.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/89c.md",
+    "expect": "| $0.7422042116 \\cdot 2^{-14}$* | [SCIEL2026] | Exact value $67432845284234356713012367110897548622422530589772294031336898680659579871445572986246952507783885816983659288359622409120016266716137/1488565707357402911845015158554633286356257506687627387456491927921949262056238946972039271861787782268441644249633132407878864135402815488 = 4.530055002002\\ldots \\times 10^{-5} = 0.742204211528\\ldots \\cdot 2^{-14}$. A step graphon on the same $1024$ blocks in which the red density between blocks $x, y$ is $n\\_w / 2^{32}$ with $w = \\lvert x \\triangle y \\rvert$, $(n\\_0, \\ldots, n\\_{10}) = (2^{32}, 1917548695, 0, 2^{32}, 2^{32}, 0, 81376308, 2^{32}, 2^{32}, 0, 0)$: weights $3, 4, 7, 8$ are red, $2, 5, 9, 10$ blue, and $1$ and $6$ fractional. Found by [SCiEL](https://sciel-rsi-cpil.github.io/), a recursive self-improvement (RSI) system built on cultural transmission, running an open language model (Qwen3.8-27B) that writes and refines search programs scored by the exact density; two independent runs reached the same construction. The density was computed exactly by the task's evaluator and by a separately written program (multisets of column types, integer numerator modulo $61$-bit primes, CRT with a check prime), which also reproduces the [SK2026] fraction exactly. Asterisked: self-hosted. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/89c.md",
+    "generated": true
+  },
+  {
+    "id": "pin:89c:L",
+    "statement": "Last-listed lower-bound table row for Ramsey multiplicity constant of $K\\_6$ (89c.md)",
+    "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/89c.md",
+    "expect": "| $8280981029/250000000000000 = 0.000033123924116$* | [Pin2026r3] | Candidate and unrefereed. An ambient-eight flag-algebra certificate with ordered roots and all type families $(t,m)=(0,4),(2,3),(4,2),(6,1)$; $340$ integer-square PSD blocks. Separately written exact checkers pass all $12346$ classes, with exhaustive labelled coverage and random-colouring normalization. |",
+    "asserts": "ledger/teorth-optimizationproblems/constants/89c.md",
+    "generated": true
+  },
+  {
     "id": "pin:8a:U",
     "statement": "Last-listed upper-bound table row for Classical zero-free region constant (8a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/8a.md",
-    "expect": "| $4.896$ | [BTY2026] | Bellotti–Trudgian–Yang: $\\zeta(\\sigma+it)\\ne 0$ for $t\\ge 3$ and $\\sigma > 1 - 1/(4.896\\log t)$; extends to $\\lvert t\\rvert \\ge 2$ using verified RH up to $H = 3\\cdot 10^{12}$. A companion Theorem 2 sharpens the constant further to $4.8594$ conditionally on unpublished improvements to prior inputs. |",
+    "expect": "| $4.81406$* | [V2026] | Closed region: $\\zeta(\\sigma+it)\\ne 0$ for $\\lvert t\\rvert \\geq 2$ and $\\sigma \\geq 1 - 1/(4.81406\\log\\lvert t\\rvert)$. Kadiri's smoothed explicit formula [K2005] with a degree-12 nonnegative trigonometric polynomial, seven height bands with separate multipliers, and a polynomial kernel (normalized autocorrelation of $q(x/a)$, $q(y)=(1-y^2)(1-0.12045365y^2)$, $a=0.52698243$) whose Laplace transform is evaluated exactly. Inputs: [K2005] Theorem 1.1, Proposition 2.1 and (28); RH up to $3\\cdot 10^{12}$ [PT2021]; Yang's region with constant $21.233$ for large $t$ [Y2024]; Lehman's Lemmas 1–2 [L1966]. Interval arithmetic over 29732 closed rectangles and 100352 prime intervals, margin $> 10^{-6}$. Also formalized in Lean 4 over PNT+ (`Varlamov.c8a_nonvanishing`, no `sorry`, standard axioms only), with these published results and [N2017] as explicit hypotheses. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/8a.md",
     "generated": true
   },
@@ -2007,7 +2055,7 @@
     "id": "pin:8a:L",
     "statement": "Last-listed lower-bound table row for Classical zero-free region constant (8a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/8a.md",
-    "expect": "| $2/\\log \\gamma\\_{1} \\approx 0.755106$ | - | Unconditional: $\\gamma\\_{1} = 14.1347\\dots$ is the ordinate of the lowest zero of $\\zeta$, and that zero has $\\sigma = 1/2$, so any admissible $R$ must satisfy $1/2 \\leq 1 - 1/(R\\log\\gamma\\_{1})$. Optimal assuming RH. |",
+    "expect": "| $2/\\log \\gamma\\_{1} \\approx 0.755106$ | - | Unconditional: $\\gamma\\_{1} = 14.1347\\dots$ is the ordinate of the lowest zero of $\\zeta$, and that zero has $\\sigma = 1/2$, so any admissible $R$ must satisfy $1/2 \\leq 1 - 1/(R\\log\\gamma\\_{1})$. Optimal assuming RH, and matched by the upper bound deduced from [OAI2026]. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/8a.md",
     "generated": true
   },
@@ -2039,7 +2087,7 @@
     "id": "pin:9a:L",
     "statement": "Last-listed lower-bound table row for Shannon capacity of the 7-cycle (9a.md)",
     "url": "https://raw.githubusercontent.com/teorth/optimizationproblems/main/constants/9a.md",
-    "expect": "| $3.25883262\\ldots$ | [Tan2026] | Heterogeneous recursion; independent set in ${\\mathcal C}\\_{7}^{\\boxtimes 500}$. Certificates: https://github.com/tandonravi/C7-Shannon-Capacity-Heterogeneous-Recursion |",
+    "expect": "| $3.258838705444608\\ldots$* | [LT2026] | Independent set of size $M$ (349 digits) in ${\\mathcal C}\\_{7}^{\\boxtimes 680}$: Tan's certified heterogeneous-Gao left patterns (N<S<G15AX,G5,P15A8>,G5>, N<S<G15AX,sG15AX,P15A5>,sG15AX>, N<S<G15AX,sG15Ah,P15A8>,sG15Ah>, N<S<G15X,G10,P15X>,G5>, P10A) applied to new right factors, combined by the BPZ rule S3b and terminal code K4a. An exact integer check proves $M^{500}>M\\_{\\mathrm{Tan}}^{680}$. Improves Tan2026 by about $6.1\\cdot 10^{-6}$. [Certificate and stdlib-Python exact checker, pinned commit](https://github.com/gomyway/c9-shannon-c7-lower-bound-certificate/tree/b5d6c2c2c981f89f5c62f3db9d26dab045464f81); `certificate.json` SHA-256: `8d55f7465bdedf6b1ea9c4ad3504c1b68c93705500590ff11b6fca66cb9d1f2a`; `check_c9.py` SHA-256: `9591b7f2c53faef015a1043003ce3b48a270bea6d0bec2f42db57d60167349fb`. |",
     "asserts": "ledger/teorth-optimizationproblems/constants/9a.md",
     "generated": true
   }
