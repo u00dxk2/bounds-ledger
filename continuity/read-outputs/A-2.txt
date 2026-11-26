@@ -1,7 +1,7 @@
 # read-output sidecar for A-2 — written by check-due-gates-dispositioned --run
 # readCommand: node scripts/reverify.mjs --check
-# ran: 2026-11-19T15:47:44.279Z · exit: 0
-# lines: 1 · sha256: 8eb85b0589e6cb6c (first 16 hex of the output below)
+# ran: 2026-11-26T16:27:09.612Z · exit: 0
+# lines: 1 · sha256: 944c72831c7818a4 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
-No drift. 121 files match upstream 87b4ebbd426ff8db597a2004cc45da17903bdcf2.
+No drift. 124 files match upstream 83e93c372e2e4889b12e5ada3a7c3422521e7baf.

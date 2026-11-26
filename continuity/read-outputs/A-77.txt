@@ -1,11 +1,20 @@
 # read-output sidecar for A-77 — written by check-due-gates-dispositioned --run
 # readCommand: node C:/dev/skylark/bounds-ledger/scripts/check-upstream-reports.mjs
-# ran: 2026-11-19T15:48:48.494Z · exit: 0
-# lines: 5 · sha256: 9c3884aad0c954c4 (first 16 hex of the output below)
+# ran: 2026-11-26T16:29:02.937Z · exit: 1
+# lines: 14 · sha256: 45955ca6426e3d8d (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
-# upstream report states — 2026-11-19T15:48:48.140Z
+# upstream report states — 2026-11-26T16:29:02.285Z
 3 recorded report(s) in teorth/optimizationproblems; 3 live row(s) read.
 
-No state transitions. Every recorded report still reads as it did when the baseline was taken.
-RESULT: PASS — 0 transition(s) across 3 recorded report(s) (exit 0)
+CANDIDATE CAUSAL EVENT — issue 218 (constants/46a.md) went OPEN -> CLOSED at 2026-11-22T07:16:17Z.
+  GO LOOK. This says a report we filed changed state, and NOTHING about whether we caused it.
+  Not a G-4 arrival by construction: we authored and sent this artifact.
+  To quiet it, verify what happened and update state/closedAt in ledger/upstream-reports.json, saying in the commit what you verified.
+
+CANDIDATE CAUSAL EVENT — issue 289 (constants/87a.md) went OPEN -> CLOSED at 2026-11-22T07:16:18Z.
+  GO LOOK. This says a report we filed changed state, and NOTHING about whether we caused it.
+  Not a G-4 arrival by construction: we authored and sent this artifact.
+  To quiet it, verify what happened and update state/closedAt in ledger/upstream-reports.json, saying in the commit what you verified.
+
+RESULT: ATTENTION — 2 transition(s), 0 unrecorded, 0 not in listing (exit 1)
