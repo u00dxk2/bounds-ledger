@@ -67,7 +67,8 @@ export function pageTitle(r) {
 // table's prose or heading (45a's values bound an upper and a lower density that may not exist; 52a's
 // bound a limsup and a liminf of a threshold whose existence is conjectured). Two rounds, one defect
 // class, so the shape changed: CLAIMS LESS. A value is not safe to show without the context a snippet
-// cannot carry, so the snippet shows none and sends the reader to the rows. Do not re-add values without
+// cannot carry, so the snippet shows none of its own (the constant's title, upstream's name for it, is
+// repeated as before and may itself contain one, as 10c's does) and sends the reader to the rows. Do not re-add values without
 // a design that carries that context; a qualifier word list is the shape both rounds ruled out.
 export function pageDescription(r, mirroredOn = null) {
   const lead = mirroredOn ? `Last-listed rows, mirrored ${mirroredOn}.` : "Last-listed rows.";
@@ -85,23 +86,30 @@ export function mirrorDate(fetchedAt) {
 }
 
 // The page check, a STATED RULE judged on the rendered page, whose failure mode is a refusal:
-//   1. exactly one `<meta name="description"` and one `og:description` on the page;
+//   1. exactly one `<meta name="description"` and one `og:description`, with equal content (ogMismatch);
 //   2. the description's first sentence is exactly "Last-listed rows, mirrored <D>." for the given D;
-//   3. the footer states that same D;
+//   3. the footer's mirror sentence states that same D;
 //   4. no digit in the description outside that date and the page's own title (so no value can creep
 //      back in by a template edit).
-// Ceiling, named rather than chased: it reads the HTML as text, so a description tag hidden inside an
-// HTML comment would still be counted. This renderer writes no comments in the head.
+// What it does NOT claim, named rather than chased (Codex r3): the description repeats the constant's
+// TITLE, and a title can itself carry a value in words or digits (10c's is "six standard deviations
+// suffice"); that is the page's own heading and upstream's name, so it is exempt, and a value spelled
+// in words outside the title would not be seen. It reads the HTML as text, so a tag hidden inside an
+// HTML comment would still be counted; this renderer writes no comments in the head.
 export function pageMismatch(r, html, mirroredOn) {
   const h = String(html);
   const tags = (h.match(/<meta name="description"/g) || []).length;
   const og = (h.match(/<meta property="og:description"/g) || []).length;
   if (tags !== 1 || og !== 1) return `${r.id}: the page carries ${tags} description and ${og} og:description tag(s), not 1 and 1`;
+  // og:description's CONTENT, on every page (Codex r3: only the fixture compared it).
+  const ogBad = ogMismatch(h);
+  if (ogBad) return `${r.id}: link-preview tags: ${ogBad}`;
   const desc = renderedDescription(h);
   const lead = `Last-listed rows, mirrored ${mirroredOn}.`;
   if (!desc.startsWith(`${lead} `)) return `${r.id}: the description does not open with "${lead}": ${desc.slice(0, 80)}`;
+  // The footer's mirror sentence itself, not the date anywhere in the footer (Codex r3).
   const footer = (h.match(/<footer>[\s\S]*?<\/footer>/) || [""])[0];
-  if (!footer.includes(` on ${mirroredOn} `)) return `${r.id}: the footer does not state the mirror date ${mirroredOn}, so the preview would say more than the page`;
+  if (!footer.includes(`</code> on ${mirroredOn} — a snapshot at that commit`)) return `${r.id}: the footer's mirror sentence does not state the mirror date ${mirroredOn}, so the preview would say more than the page`;
   const rest = desc.slice(lead.length).replace(plainTitle(r.title), "");
   if (/\d/.test(rest)) return `${r.id}: the description carries a number outside the mirror date and the title: ${desc}`;
   return null;
@@ -1364,7 +1372,12 @@ async function selftest() {
     assert.match(String(pageMismatch(row, dated, "2026-11-24")), /does not open with/, "a description carrying a different date from the manifest's must be refused");
     const noFooterDate = dated.replace(` on ${D} — a snapshot`, " — a snapshot");
     assert.ok(noFooterDate !== dated, "red-arm setup: the footer's date must be removable");
-    assert.match(String(pageMismatch(row, noFooterDate, D)), /footer does not state/, "a description dated where the page body is not must be refused");
+    assert.match(String(pageMismatch(row, noFooterDate, D)), /footer's mirror sentence does not state/, "a description dated where the page body is not must be refused");
+    const dateElsewhere = noFooterDate.replace("</footer>", `<p>Last checked on ${D} UTC.</p></footer>`);
+    assert.match(String(pageMismatch(row, dateElsewhere, D)), /footer's mirror sentence does not state/, "the date elsewhere in the footer must not stand in for the mirror sentence");
+    const ogOnly = dated.replace(/(<meta property="og:description" content=")/, "$1Upper 2.5. ");
+    assert.ok(ogOnly !== dated, "red-arm setup: og:description alone must be alterable");
+    assert.match(String(pageMismatch(row, ogOnly, D)), /link-preview tags/, "an og:description that differs from the description must be refused on every page, not only the fixture");
     const withValue = dated.replaceAll(`mirrored ${D}. Read`, `mirrored ${D}. Upper 2.5. Read`);
     assert.ok(withValue !== dated, "red-arm setup: a value must be insertable into both description tags");
     assert.match(String(pageMismatch(row, withValue, D)), /carries a number/, "a value re-added to the description must be refused");
