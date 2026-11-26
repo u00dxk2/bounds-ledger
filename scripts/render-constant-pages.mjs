@@ -56,100 +56,54 @@ export function pageTitle(r) {
 // page shows one published label, and an unresolved drift is not on it). The daily re-check stays in
 // the footer, which states it with its own caveat; a snippet cannot carry that caveat.
 //
-// PER-PAGE VALUES (2026-11-26). A search result or link preview now names the page's own last-listed
-// values and the day the mirror was taken, inside the first ~100 characters, so a reader sees the
-// number and its age before clicking. The date is the day the MIRROR was taken (manifest fetchedAt, in
-// MT), written "mirrored", never "as of" (round 0: upstream may move later that day) and never a change
-// date ("when each row last changed" was refuted above).
+// THE MIRROR DATE, AND NO VALUES (2026-11-26). The description now opens with the day the mirror was
+// taken (manifest fetchedAt as an MT day), written "mirrored", never "as of" (round 0: upstream may move
+// later that day) and never a change date. The footer states the same day, so the preview says nothing
+// the page does not (Codex r2 2026-11-26: the date was in the description only).
 //
-// WHICH VALUES ARE LIFTED — A STATED RULE WHOSE FAILURE MODE IS "on the page" (Codex r1, 2026-11-26).
-// A value appears only when the WHOLE last-listed row is: a bare decimal (optionally inside one `$`
-// pair), then a cell of bracketed reference keys only (`[W2022]`, `[HS2003], [KKL2003]`), then nothing
-// but empty cells. Any note, any symbol, any other word in the row and that side is left to the page.
-// Why the whole row: r1 refuted the earlier first-cell rule on 81a (upper 2.1594 needs GRH, said only
-// in the note), 67a (a conjectured endpoint), 86a (awaiting replay) and the "trivial" 0/1 rows. Judging
-// which notes qualify a value would be an ever-growing word list, so NO note is judged: a row with one
-// is simply not lifted. This lifts few values (11 of 246 sides at 83e93c3, an upstream sha) and says
-// nothing those rows' own text does not say.
-const cellsOf = (row) => String(row).trim().replace(/^\|/, "").replace(/\|\s*$/, "").split(/(?<!\\)\|/).map((c) => c.trim());
-const REF_LIST = /^\[[^\][\s][^\][]*\](?:\s*,\s*\[[^\][\s][^\][]*\])*$/;
-const BARE = /^(?:\$(\d+(?:\.\d+)?)\$|(\d+(?:\.\d+)?))$/;
-export function plainValue(row) {
-  if (!row) return null;
-  const [value, refs = "", ...rest] = cellsOf(row);
-  const m = value.match(BARE);
-  if (!m || !REF_LIST.test(refs) || rest.some(Boolean)) return null;
-  return m[1] ?? m[2];
+// Bound VALUES were in this description for two review rounds the same day and were withdrawn. Round 1
+// refuted lifting a row's first cell (a note in the row could make it conditional: 81a needs GRH); round
+// 2 refuted lifting even a row with no note, because the qualifier can sit OUTSIDE the row, in the
+// table's prose or heading (45a's values bound an upper and a lower density that may not exist; 52a's
+// bound a limsup and a liminf of a threshold whose existence is conjectured). Two rounds, one defect
+// class, so the shape changed: CLAIMS LESS. A value is not safe to show without the context a snippet
+// cannot carry, so the snippet shows none and sends the reader to the rows. Do not re-add values without
+// a design that carries that context; a qualifier word list is the shape both rounds ruled out.
+export function pageDescription(r, mirroredOn = null) {
+  const lead = mirroredOn ? `Last-listed rows, mirrored ${mirroredOn}.` : "Last-listed rows.";
+  return `${lead} Read the rows and any notes on the page before citing. ${plainTitle(r.title)} in teorth/optimizationproblems, with a link to the upstream source file and a citation you can copy.`;
 }
 
 // The manifest's fetchedAt as an MT calendar date. Only the full UTC timestamp reverify.mjs writes is
-// accepted (Codex r1: a bare "2026-11-25" parses as UTC midnight and would publish the previous MT day).
+// accepted, and the date must survive a round trip, so V8's roll-over of "2026-02-30" into March is
+// refused (Codex r1: a bare "2026-11-25" parses as UTC midnight, the previous MT day; r2: the roll-over).
 export function mirrorDate(fetchedAt) {
   if (typeof fetchedAt !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/.test(fetchedAt)) return null;
   const t = Date.parse(fetchedAt);
-  if (!Number.isFinite(t)) return null;
+  if (!Number.isFinite(t) || new Date(t).toISOString().slice(0, 10) !== fetchedAt.slice(0, 10)) return null;
   return new Date(t).toLocaleDateString("en-CA", { timeZone: "America/Denver" });
 }
 
-export function pageDescription(r, mirroredOn = null) {
-  const lead = mirroredOn ? `Last-listed rows, mirrored ${mirroredOn}` : "Last-listed rows";
-  const part = (name, row) => {
-    if (!row) return `${name} not pinned`;
-    const v = plainValue(row);
-    return v === null ? `${name} on the page` : `${name} ${v}`;
-  };
-  const values = r.upper && r.lower && plainValue(r.upper) === null && plainValue(r.lower) === null
-    ? "both on the page"
-    : `${part("upper", r.upper)}, ${part("lower", r.lower)}`;
-  return `${lead}: ${values}. Read the rows and any notes on the page before citing. ${plainTitle(r.title)} in teorth/optimizationproblems, with a link to the upstream source file and a citation you can copy.`;
-}
-
-// The text check. Every "upper N" / "lower N" the description names must EQUAL that side's whole first
-// cell (N or $N$): no rounding, no truncation, no swapped side, no number lifted out of a larger cell
-// (Codex r1: a digit-token test accepted 0.53 out of a cell meaning -0.53). With `mirroredOn` it also
-// requires that date, every side the lift rule makes eligible, and the value clause inside 150
-// characters (Codex r1: a dropped date or value passed). Returns null when all hold, else the reason.
-// Reads only the clause before the first ". " so a number in the title is never judged.
-export function descriptionMismatch(r, desc, mirroredOn = null) {
-  const d = String(desc);
-  // Presence first: an absent or reshaped description carries no numbers and would otherwise pass.
-  if (!/^Last-listed rows(, mirrored \d{4}-\d{2}-\d{2})?:/.test(d)) return `${r.id}: the description does not open with its value clause: ${d.slice(0, 80)}`;
-  if (mirroredOn && !d.startsWith(`Last-listed rows, mirrored ${mirroredOn}: `)) return `${r.id}: the description does not carry the mirror date ${mirroredOn}`;
-  const clause = d.split(". ")[0];
-  const named = [...clause.matchAll(/\b(upper|lower) (\d+(?:\.\d+)?)\b/g)];
-  for (const [, side, n] of named) {
-    const row = side === "upper" ? r.upper : r.lower;
-    const first = row ? boundCell(row).trim() : null;
-    if (first !== n && first !== `$${n}$`) return `${r.id}: the description names ${side} ${n}, which is not that side's whole pinned first cell`;
-  }
-  // Any other digit in the clause is a value this check cannot attribute to a side, so it refuses it.
-  const rest = clause.replace(/^Last-listed rows, mirrored \d{4}-\d{2}-\d{2}:/, "").replace(/\b(upper|lower) \d+(?:\.\d+)?\b/g, "");
-  if (/\d/.test(rest)) return `${r.id}: the description's value clause carries a number not attached to a side: ${clause}`;
-  if (mirroredOn) {
-    for (const [side, row] of [["upper", r.upper], ["lower", r.lower]]) {
-      const v = plainValue(row);
-      if (v !== null && !named.some(([, s, n]) => s === side && n === v)) return `${r.id}: the ${side} row is eligible to be named (${v}) and the description omits it`;
-    }
-    if (clause.length + 1 > 150) return `${r.id}: the value clause ends at character ${clause.length + 1}, past the 150 a search result keeps`;
-  }
-  return null;
-}
-
-// The page check, judged on the RENDERED page (Codex r1: comparing the description with the pins alone
-// could not see a renderer that swapped the visible rows). Exactly one description tag; the text check
-// above; and every named value equal to the first cell of the row the page SHOWS on that side.
+// The page check, a STATED RULE judged on the rendered page, whose failure mode is a refusal:
+//   1. exactly one `<meta name="description"` and one `og:description` on the page;
+//   2. the description's first sentence is exactly "Last-listed rows, mirrored <D>." for the given D;
+//   3. the footer states that same D;
+//   4. no digit in the description outside that date and the page's own title (so no value can creep
+//      back in by a template edit).
+// Ceiling, named rather than chased: it reads the HTML as text, so a description tag hidden inside an
+// HTML comment would still be counted. This renderer writes no comments in the head.
 export function pageMismatch(r, html, mirroredOn) {
-  const tags = String(html).match(/<meta name="description"/g) || [];
-  if (tags.length !== 1) return `${r.id}: the page carries ${tags.length} description tags, not 1`;
-  const desc = renderedDescription(html);
-  const text = descriptionMismatch(r, desc, mirroredOn);
-  if (text) return text;
-  for (const [, side, n] of desc.split(". ")[0].matchAll(/\b(upper|lower) (\d+(?:\.\d+)?)\b/g)) {
-    const label = side === "upper" ? "Upper" : "Lower";
-    const shown = String(html).match(new RegExp(`<dt>${label} bound, last-listed row</dt><dd><code>([^<]*)</code>`));
-    const first = shown ? boundCell(unesc(shown[1])).trim() : null;
-    if (first !== n && first !== `$${n}$`) return `${r.id}: the description names ${side} ${n}, and the page's own ${side} row shows ${first === null ? "nothing" : first}`;
-  }
+  const h = String(html);
+  const tags = (h.match(/<meta name="description"/g) || []).length;
+  const og = (h.match(/<meta property="og:description"/g) || []).length;
+  if (tags !== 1 || og !== 1) return `${r.id}: the page carries ${tags} description and ${og} og:description tag(s), not 1 and 1`;
+  const desc = renderedDescription(h);
+  const lead = `Last-listed rows, mirrored ${mirroredOn}.`;
+  if (!desc.startsWith(`${lead} `)) return `${r.id}: the description does not open with "${lead}": ${desc.slice(0, 80)}`;
+  const footer = (h.match(/<footer>[\s\S]*?<\/footer>/) || [""])[0];
+  if (!footer.includes(` on ${mirroredOn} `)) return `${r.id}: the footer does not state the mirror date ${mirroredOn}, so the preview would say more than the page`;
+  const rest = desc.slice(lead.length).replace(plainTitle(r.title), "");
+  if (/\d/.test(rest)) return `${r.id}: the description carries a number outside the mirror date and the title: ${desc}`;
   return null;
 }
 
@@ -1208,7 +1162,7 @@ function side(label, row, changed, kind, hist = null, file = null, root = ROOT) 
 // none, which is how newer-results.mjs's guard proves the block is the ONLY difference it makes.
 // `pulls` is A-83's listing of open upstream pull requests (ledger/open-pull-requests.json), the same way.
 // The <meta name="description"> content of a rendered page, or "" when the tag is absent (an absent tag
-// then fails descriptionMismatch's callers' own presence checks rather than passing as "no numbers").
+// then fails pageMismatch's opening-sentence check rather than passing).
 export function renderedDescription(html) {
   const m = String(html).match(/<meta name="description" content="([^"]*)">/);
   // Undo esc(), so the text judged is the text a reader is shown.
@@ -1244,7 +1198,7 @@ ${auditBlock(r.id, audits, [r.upper, r.lower])}${noteBlock(r.oai)}${newerBlock(n
 </div>
 <div class="cite"><strong>Cite this row</strong><code>${esc(citation(r, sha))}</code></div>
 <footer><p>${esc(DISCLAIMER)}</p>
-<p>Mirrored from <code style="display:inline;padding:.1rem .3rem">teorth/optimizationproblems@${esc(String(sha).slice(0, 7))}</code> — a snapshot at that commit, not a live read.</p>
+<p>Mirrored from <code style="display:inline;padding:.1rem .3rem">teorth/optimizationproblems@${esc(String(sha).slice(0, 7))}</code>${mirroredOn ? ` on ${esc(mirroredOn)}` : ""} — a snapshot at that commit, not a live read.</p>
 <p>${esc(FRESHNESS)} The latest check and its verdict: <a href="${esc(RUNS)}">run history</a>.</p></footer>
 <script>
 ${copyCiteScript("div.cite")}
@@ -1398,76 +1352,52 @@ async function selftest() {
   // say more than the page. One shared check (ogMismatch): every field present, then equal.
   { const bad = ogMismatch(html); assert.equal(bad, null, `a constant page's link-preview tags: ${bad}`); }
 
-  // PER-PAGE VALUES IN THE DESCRIPTION (2026-11-26; reshaped on Codex r1). Meaning first, the exact string last.
+  // THE MIRROR DATE IN THE DESCRIPTION, AND NO VALUES (2026-11-26, after Codex r1 and r2). Meaning first,
+  // the exact string last.
   {
-    // Its own fixture: a liftable row is a bare decimal, bracketed reference keys, nothing else.
-    const vrow = { ...row, upper: "| $2.5$ | [A2020] | |", lower: "| 1.5 | [B2021], [C2022] |" };
     const D = "2026-11-25";
-    const dated = renderPage(vrow, "abc1234def", undefined, null, null, D);
+    const dated = renderPage(row, "abc1234def", undefined, null, null, D);
     const desc = renderedDescription(dated);
-    assert.ok(desc.length > 40 && desc.includes("upper 2.5"), `positive control: the rendered description must exist and lift a value before anything is asserted: ${desc}`);
-    // (1) The checks, red-armed on their own failure shapes BEFORE they are trusted on the real ledger.
-    assert.equal(pageMismatch(vrow, dated, D), null, `the fixture page must pass the page check: ${pageMismatch(vrow, dated, D)}`);
-    const swapped = desc.replace("upper 2.5, lower 1.5", "upper 1.5, lower 2.5");
-    assert.ok(swapped !== desc, "red-arm setup: the side swap must change the description");
-    assert.match(String(descriptionMismatch(vrow, swapped, D)), /upper 1\.5/, "a value shown on the WRONG side must be refused");
-    assert.ok(descriptionMismatch({ ...vrow, upper: "| $1.5027434868$ | [A2020] |" }, desc.replace("upper 2.5", "upper 1.50274"), D),
-      "a truncated value must be refused, not matched as a prefix");
-    assert.match(String(descriptionMismatch({ ...vrow, lower: "| $\\approx -0.53$ | [A2020] |" }, desc.replace("lower 1.5", "lower 0.53"), D)), /whole pinned first cell/,
-      "a number lifted out of a larger cell (here one meaning -0.53) must be refused");
-    assert.ok(descriptionMismatch(vrow, desc.replace("lower 1.5", "lower about 1.5 or 1"), D), "a number not attached to a side must be refused");
-    assert.ok(descriptionMismatch(vrow, "", D), "an absent description must be refused, not passed for carrying no numbers");
-    assert.match(String(descriptionMismatch(vrow, desc.replace(`, mirrored ${D}`, ""), D)), /mirror date/, "a description that drops the mirror date must be refused");
-    assert.match(String(descriptionMismatch(vrow, desc.replace("lower 1.5", "lower on the page"), D)), /omits it/, "a description that drops an eligible value must be refused");
-    const longRow = { ...vrow, upper: `| $${"9".repeat(60)}.5$ | [A2020] |`, lower: `| $${"8".repeat(60)}.5$ | [A2020] |` };
-    assert.match(String(pageMismatch(longRow, renderPage(longRow, "abc1234def", undefined, null, null, D), D)), /past the 150/, "a value clause running past 150 characters must be refused");
-    assert.match(String(pageMismatch(vrow, dated.replace("</title>", `</title>\n<meta name="description" content="x">`), D)), /2 description tags/, "a second description tag must be refused");
-    const rowsSwappedOnPage = dated.replace("<dt>Upper bound, last-listed row</dt><dd><code>| $2.5$", "<dt>Upper bound, last-listed row</dt><dd><code>| $7.5$");
-    assert.ok(rowsSwappedOnPage !== dated, "red-arm setup: the shown upper row must be altered");
-    assert.match(String(pageMismatch(vrow, rowsSwappedOnPage, D)), /page's own upper row shows/, "a description that disagrees with the row the page SHOWS must be refused");
-    // (2) It says what the rows say, nothing more: a note anywhere in the row keeps that side on the page.
-    for (const cell of ["| $2.1594$ | [EC2020] | Conditional on the Generalised Riemann Hypothesis |", "| $0$ | [X] | Trivial. |", "| $4$ | conjectured endpoint |",
-      "| $0.4103735$* | [X] |", "| $1.292*$ | [X] |", "| $\\frac{1}{2}$ | [X] |", "| $0.41\\dots$ | [X] |", "| $1,000$ | [X] |", "| $-1$ | [X] |", "| $1$ $2$ | [X] |", "| 2.5 |", "| 2.5 | (trivial) |"]) {
-      assert.equal(plainValue(cell), null, `a row that is not exactly a bare decimal plus reference keys must not be lifted: ${cell}`);
-    }
-    assert.equal(plainValue("| $1.5$ | [A] |"), "1.5");
-    assert.equal(plainValue("| 3.52| [HS2003], [KKL2003]||"), "3.52");
+    assert.ok(desc.length > 40 && desc.includes(D), `positive control: the rendered description must exist and carry the date before anything is asserted: ${desc}`);
+    // (1) The page check, red-armed on each failure shape BEFORE it is trusted on the real ledger.
+    assert.equal(pageMismatch(row, dated, D), null, `the fixture page must pass the page check: ${pageMismatch(row, dated, D)}`);
+    assert.match(String(pageMismatch(row, dated, "2026-11-24")), /does not open with/, "a description carrying a different date from the manifest's must be refused");
+    const noFooterDate = dated.replace(` on ${D} — a snapshot`, " — a snapshot");
+    assert.ok(noFooterDate !== dated, "red-arm setup: the footer's date must be removable");
+    assert.match(String(pageMismatch(row, noFooterDate, D)), /footer does not state/, "a description dated where the page body is not must be refused");
+    const withValue = dated.replaceAll(`mirrored ${D}. Read`, `mirrored ${D}. Upper 2.5. Read`);
+    assert.ok(withValue !== dated, "red-arm setup: a value must be insertable into both description tags");
+    assert.match(String(pageMismatch(row, withValue, D)), /carries a number/, "a value re-added to the description must be refused");
+    assert.match(String(pageMismatch(row, dated.replace("</title>", `</title>\n<meta name="description" content="x">`), D)), /2 description/, "a second description tag must be refused");
+    assert.match(String(pageMismatch(row, dated.replace(/<meta property="og:description"[^>]*>/, ""), D)), /0 og:description/, "a missing og:description must be refused");
+    assert.match(String(pageMismatch(row, dated.replace(/<meta name="description"[^>]*>/, ""), D)), /0 description/, "a missing description must be refused");
+    // (2) It says what the page says, nothing more.
     assert.ok(desc.includes(". Read the rows and any notes on the page before citing. "), "the description must send the reader to the rows and their notes");
     assert.ok(!/\bas of\b/.test(desc), "the date is when the mirror was taken, never 'as of'");
-    assert.ok(!/\b(upper|lower) bound \d/.test(desc), "a lifted value is named by side, never labelled a bound outright");
+    assert.ok(!/\b(upper|lower)\b/i.test(desc.split(". ")[0]), "the description names no bound value");
     assert.ok(desc.startsWith("Last-listed"), "the description must keep the words last-listed");
     assert.ok(!/best known|record|strongest/i.test(desc), "the description must never call a last-listed row the best known or a record");
     assert.equal(ogMismatch(dated), null, "og:description must still equal the page description");
-    const noted = renderedDescription(renderPage({ ...vrow, upper: "| $2.1594$ | [EC2020] | Conditional on GRH |" }, "abc1234def", undefined, null, null, D));
-    assert.ok(noted.includes("upper on the page, lower 1.5"), `a noted side must fall back to the page: ${noted}`);
-    const texRowBoth = { ...vrow, upper: "| $\\frac{1}{2}$ | [X] |", lower: "| $0.4\\dots$ | [X] |" };
-    const bothTex = renderedDescription(renderPage(texRowBoth, "abc1234def", undefined, null, null, D));
-    assert.ok(bothTex.startsWith(`Last-listed rows, mirrored ${D}: both on the page. `), `two unliftable sides read as one fallback: ${bothTex}`);
-    assert.ok(!/[$\\]/.test(bothTex), "no description may carry a raw $ or backslash");
-    assert.equal(descriptionMismatch(texRowBoth, bothTex, D), null, "the both-fallback description passes the text check");
+    assert.ok(desc.indexOf(D) + D.length <= 150, "the date sits inside the first 150 characters");
+    const undated = renderedDescription(renderPage(row, "abc1234def", undefined, null, null, null));
+    assert.ok(undated.startsWith("Last-listed rows. Read the rows") && !/\d{4}-\d{2}-\d{2}/.test(undated), `with no date the description carries none: ${undated}`);
+    // (3) The date itself.
     assert.equal(mirrorDate("2026-11-25T19:51:51.966Z"), "2026-11-25", "the mirror date is the MT calendar day");
     assert.equal(mirrorDate("2026-11-26T03:00:00.000Z"), "2026-11-25", "an evening-MT fetch stays on its MT day, not the UTC one");
     assert.equal(mirrorDate("2026-11-25"), null, "a date with no time is refused, never read as UTC midnight");
+    assert.equal(mirrorDate("2026-02-30T19:00:00.000Z"), null, "a date V8 would roll over into March is refused");
     assert.equal(mirrorDate("not a date"), null);
-    // (3) The whole committed ledger, not a fixture alone: every real page passes the page check and
-    // carries no LaTeX, and the count of lifted values equals the count of liftable rows.
+    // (4) The whole committed ledger, not a fixture alone: every real page passes the page check,
+    // including titles that carry digits (the title is the only place a digit may sit).
     const realClaims = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
     const realRows = buildRows(realClaims, { withDates: false });
     assert.ok(realRows.length > 100, `positive control: the real ledger must load (${realRows.length} rows)`);
-    let lifted = 0, liftable = 0;
     for (const rr of realRows) {
-      const page = renderPage(rr, "abc1234def", undefined, null, null, D);
-      const bad = pageMismatch(rr, page, D);
+      const bad = pageMismatch(rr, renderPage(rr, "abc1234def", undefined, null, null, D), D);
       assert.equal(bad, null, `real page ${rr.id}: ${bad}`);
-      const d = renderedDescription(page);
-      assert.ok(!/[$\\]/.test(d), `real page ${rr.id}'s description carries LaTeX: ${d}`);
-      lifted += (d.split(". ")[0].match(/\b(upper|lower) \d/g) || []).length;
-      liftable += [rr.upper, rr.lower].filter((s) => plainValue(s) !== null).length;
     }
-    assert.ok(liftable > 0, "positive control: some real row must be liftable");
-    assert.equal(lifted, liftable, "every liftable row, and only those, is named in its page's description");
-    // (4) The exact sentence, last.
-    assert.equal(desc, `Last-listed rows, mirrored ${D}: upper 2.5, lower 1.5. Read the rows and any notes on the page before citing. Test Constant in teorth/optimizationproblems, with a link to the upstream source file and a citation you can copy.`);
+    // (5) The exact sentence, last.
+    assert.equal(desc, `Last-listed rows, mirrored ${D}. Read the rows and any notes on the page before citing. Test Constant in teorth/optimizationproblems, with a link to the upstream source file and a citation you can copy.`);
   }
   // (3) THE WIRING (memory: test the wiring, not the helper). The selector is read OUT of the page's own
   // script and must match an element the page actually renders, holding the citation's <code>. A script
@@ -2645,9 +2575,8 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE, buildRows
   const rows = buildRowsFn(claims);
   // A-53 (b): refuse before anything is composed or written. Nothing above writes.
   if (refuseDroppedAudits("render-constant-pages", { storePath, pageIds: new Set(rows.map((r) => r.id)) })) { process.exitCode = 1; return; }
-  // 2026-11-26: the description names the mirror date and each side's plain value. Refuse an unreadable
-  // date, and any description whose named value is not that side's own pinned number, before anything
-  // is written or compared.
+  // 2026-11-26: the description and the footer name the mirror date. Refuse an unreadable date, and any
+  // page that breaks pageMismatch's rule, before anything is written or compared.
   const mirroredOn = mirrorDate(manifest.fetchedAt);
   if (!mirroredOn) {
     console.log(`RESULT: FAIL — render-constant-pages: the manifest's fetchedAt does not parse as a date, so nothing was composed or written`);
@@ -2658,7 +2587,7 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE, buildRows
   // Judged on the RENDERED head, the description a reader actually gets, not on pageDescription's return.
   const bad = rows.map((r) => pageMismatch(r, pages.get(`${r.id}.html`), mirroredOn)).filter(Boolean);
   if (bad.length) {
-    console.log(`RESULT: FAIL — render-constant-pages: ${bad.length} page description(s) name a value their own cell does not hold, so nothing was written`);
+    console.log(`RESULT: FAIL — render-constant-pages: ${bad.length} page(s) fail the description rule (mirror date in the description and footer, no other number), so nothing was written`);
     for (const b of bad.slice(0, 10)) console.log(`  ${b}`);
     process.exitCode = 1;
     return;
