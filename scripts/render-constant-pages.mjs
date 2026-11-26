@@ -24,7 +24,7 @@ import assert from "node:assert/strict";
 import { buildRows, flagUrl, citation, reportLinks, whenLabel, whenHtml, historyUrl, displayCell, readable } from "./render-site.mjs";
 import { boundCell } from "./lookup.mjs";
 import crypto from "node:crypto";
-import { REPO, esc, copyCiteScript, ogMeta, ogMismatch } from "./lib/html.mjs";
+import { REPO, esc, unesc, copyCiteScript, ogMeta, ogMismatch } from "./lib/html.mjs";
 import { noteBlock } from "./openai-math.mjs";
 import { newerBlock, newerFor, searchLine, loadStore as loadNewerStore, validateStore as validateNewerStore, STORE as NEWER_STORE } from "./newer-results.mjs";
 import { pullsBlock, staleListScript, loadStore as loadPullsStore, validateStore as validatePullsStore, STORE as PULLS_STORE } from "./open-pulls.mjs";
@@ -55,8 +55,63 @@ export function pageTitle(r) {
 // cite" (the page links upstream's file, not the cited paper), "any change this ledger has seen" (the
 // page shows one published label, and an unresolved drift is not on it). The daily re-check stays in
 // the footer, which states it with its own caveat; a snippet cannot carry that caveat.
-export function pageDescription(r) {
-  return `The last-listed upper and lower bounds for ${plainTitle(r.title)} in teorth/optimizationproblems, with a link to the upstream source file and a citation you can copy.`;
+//
+// PER-PAGE VALUES (2026-11-26). A search result or link preview now names the page's own last-listed
+// values and the day the mirror was taken, inside the first ~100 characters, so a reader sees the
+// number and its age before clicking. The date is the day the MIRROR was taken (manifest fetchedAt, in
+// MT), written "mirrored", never "as of" (round 0: upstream may move later that day) and never a change
+// date ("when each row last changed" was refuted above). A value is shown only when the side's pinned
+// cell is a bare decimal, with or without one pair of `$` around it (plainValue); anything else (LaTeX,
+// an asterisk, a fraction, `\dots`) is left to the page, because stripping it would drop the qualifier
+// the cell carries. CLAIMS LESS, deliberately: the value is the FIRST CELL of the last-listed row, and a
+// row's later notes can qualify it ("conditional on GRH", "trivial"). So the clause names the side, not
+// "bound", and the next sentence tells the reader to read each row's notes before citing; no matcher
+// tries to judge which notes qualify (round 0 measured 99 of 110 bare-decimal rows carrying a note).
+// descriptionMismatch() re-reads every named value against its own side's cell, and main() refuses to
+// write or pass --check when it finds one.
+export function plainValue(row) {
+  if (!row) return null;
+  const m = boundCell(row).trim().match(/^(?:\$(\d+(?:\.\d+)?)\$|(\d+(?:\.\d+)?))$/);
+  return m ? (m[1] ?? m[2]) : null;
+}
+
+// The manifest's fetchedAt as an MT calendar date, or null when it does not parse.
+export function mirrorDate(fetchedAt) {
+  const t = Date.parse(fetchedAt);
+  if (!Number.isFinite(t)) return null;
+  return new Date(t).toLocaleDateString("en-CA", { timeZone: "America/Denver" });
+}
+
+export function pageDescription(r, mirroredOn = null) {
+  const lead = mirroredOn ? `Last-listed rows, mirrored ${mirroredOn}` : "Last-listed rows";
+  const part = (name, row) => {
+    if (!row) return `${name} not pinned`;
+    const v = plainValue(row);
+    return v === null ? `${name} on the page` : `${name} ${v}`;
+  };
+  const values = r.upper && r.lower && plainValue(r.upper) === null && plainValue(r.lower) === null
+    ? "both on the page"
+    : `${part("upper", r.upper)}, ${part("lower", r.lower)}`;
+  return `${lead}: ${values}. Read each row's notes on the page before citing. ${plainTitle(r.title)} in teorth/optimizationproblems, with a link to the upstream source file and a citation you can copy.`;
+}
+
+// Every "upper N" / "lower N" the description names must be a whole number token of THAT side's own
+// pinned first cell: no rounding, no truncation, no swapped side. Returns null when it holds, else the
+// reason. Reads only the clause before the first ". " so a number in the title is never judged.
+export function descriptionMismatch(r, desc) {
+  // Presence first: an absent or reshaped description carries no numbers and would otherwise pass.
+  if (!/^Last-listed rows(, mirrored \d{4}-\d{2}-\d{2})?:/.test(String(desc))) return `${r.id}: the description does not open with its value clause: ${String(desc).slice(0, 80)}`;
+  const clause = desc.split(". ")[0];
+  const named = [...clause.matchAll(/\b(upper|lower) (\d+(?:\.\d+)?)\b/g)];
+  for (const [, side, n] of named) {
+    const row = side === "upper" ? r.upper : r.lower;
+    const tokens = row ? boundCell(row).match(/\d+(?:\.\d+)?/g) || [] : [];
+    if (!tokens.includes(n)) return `${r.id}: the description names ${side} ${n}, which is not a whole number in that side's pinned cell`;
+  }
+  // Any other digit in the clause is a value this check cannot attribute to a side, so it refuses it.
+  const rest = clause.replace(/^Last-listed rows, mirrored \d{4}-\d{2}-\d{2}:/, "").replace(/\b(upper|lower) \d+(?:\.\d+)?\b/g, "");
+  if (/\d/.test(rest)) return `${r.id}: the description's value clause carries a number not attached to a side: ${clause}`;
+  return null;
 }
 
 // Every page plus the index, for search engines. robots.txt cannot point at it: crawlers read
@@ -1113,16 +1168,26 @@ function side(label, row, changed, kind, hist = null, file = null, root = ROOT) 
 // `newer` is A-82's store of constructions we checked ourselves (ledger/newer-results.json); null renders
 // none, which is how newer-results.mjs's guard proves the block is the ONLY difference it makes.
 // `pulls` is A-83's listing of open upstream pull requests (ledger/open-pull-requests.json), the same way.
-export function renderPage(r, sha, audits = loadAudits(), newer = loadNewerStore(), pulls = loadPullsStore()) {
+// The <meta name="description"> content of a rendered page, or "" when the tag is absent (an absent tag
+// then fails descriptionMismatch's callers' own presence checks rather than passing as "no numbers").
+export function renderedDescription(html) {
+  const m = String(html).match(/<meta name="description" content="([^"]*)">/);
+  // Undo esc(), so the text judged is the text a reader is shown.
+  return m ? unesc(m[1]) : "";
+}
+
+// `mirroredOn` is the mirror's MT date (mirrorDate of the manifest's fetchedAt); main() always passes it.
+export function renderPage(r, sha, audits = loadAudits(), newer = loadNewerStore(), pulls = loadPullsStore(), mirroredOn = null) {
   const upstream = `${REPO}/blob/main/ledger/teorth-optimizationproblems/constants/${encodeURIComponent(r.id)}.md`;
+  const description = pageDescription(r, mirroredOn);
   return `<!doctype html>
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(pageTitle(r))}</title>
-<meta name="description" content="${esc(pageDescription(r))}">
+<meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${esc(`${SITE}c/${r.id}.html`)}">
-${ogMeta(pageTitle(r), pageDescription(r), `${SITE}c/${r.id}.html`)}
+${ogMeta(pageTitle(r), description, `${SITE}c/${r.id}.html`)}
 <style>${STYLE}</style>
 <a class="back" href="${esc(`${SITE}#c-${r.id}`)}">&larr; all constants</a>
 <h1>${esc(plainTitle(r.title))}</h1>
@@ -1293,6 +1358,65 @@ async function selftest() {
   // must equal the page's own <title>, description and canonical, byte for byte, so a preview can never
   // say more than the page. One shared check (ogMismatch): every field present, then equal.
   { const bad = ogMismatch(html); assert.equal(bad, null, `a constant page's link-preview tags: ${bad}`); }
+
+  // PER-PAGE VALUES IN THE DESCRIPTION (2026-11-26). Meaning first, the exact string last.
+  {
+    const dated = renderPage(row, "abc1234def", undefined, null, null, "2026-11-25");
+    const desc = renderedDescription(dated);
+    assert.ok(desc.length > 40, "positive control: the rendered description must exist before anything is asserted about it");
+    // (1) The value check, red-armed on its own failure shapes BEFORE it is trusted on the real ledger.
+    assert.equal(descriptionMismatch(row, desc), null, `the fixture's own description must pass the value check: ${desc}`);
+    const swapped = desc.replace("upper 2.5, lower 1.5", "upper 1.5, lower 2.5");
+    assert.ok(swapped !== desc, "red-arm setup: the side swap must change the description");
+    assert.match(String(descriptionMismatch(row, swapped)), /upper 1\.5/, "a value shown on the WRONG side must be refused");
+    assert.ok(descriptionMismatch({ ...row, upper: "| $1.5027434868$ | x |" }, desc.replace("upper 2.5", "upper 1.50274")),
+      "a truncated value must be refused, not matched as a prefix");
+    assert.ok(descriptionMismatch(row, desc.replace("lower 1.5", "lower about 1.5 or 1")), "a number not attached to a side must be refused");
+    assert.ok(descriptionMismatch(row, ""), "an absent description must be refused, not passed for carrying no numbers");
+    // (2) The date and the values sit early, where a search result does not cut them.
+    assert.ok(desc.indexOf("mirrored 2026-11-25") >= 0 && desc.indexOf("lower 1.5") + "lower 1.5".length <= 150,
+      `the mirror date and both values must sit inside the first 150 characters: ${desc}`);
+    // (3) It says what the page says, nothing more: a FIRST CELL, whose row's notes can qualify it, so the
+    // reader is sent to those notes, and the date is the mirror's, never an "as of" claim about upstream.
+    assert.ok(desc.includes(". Read each row's notes on the page before citing. "), "the description must send the reader to each row's notes");
+    assert.ok(!/\bas of\b/.test(desc), "the date is when the mirror was taken, never 'as of'");
+    assert.ok(!/\b(upper|lower) bound \d/.test(desc), "a lifted value is a row's first cell, never labelled a bound outright");
+    assert.ok(desc.startsWith("Last-listed"), "the description must keep the words last-listed");
+    assert.ok(!/best known|record|strongest/i.test(desc), "the description must never call a last-listed row the best known or a record");
+    assert.equal(ogMismatch(dated), null, "og:description must still equal the page description");
+    // (4) Only a bare decimal is lifted; every other cell is left to the page, qualifier and all.
+    assert.equal(plainValue("| $1.5$ | x |"), "1.5");
+    assert.equal(plainValue("| 3 |"), "3");
+    for (const cell of ["| $0.4103735$* | x |", "| $1.292*$ | x |", "| $\\frac{1}{2}$ | x |", "| $0.41\\dots$ | x |", "| $1,000$ | x |", "| $-1$ | x |", "| $1$ $2$ | x |"]) {
+      assert.equal(plainValue(cell), null, `a cell that is not a bare decimal must not be lifted into the description: ${cell}`);
+    }
+    const texDesc = renderedDescription(renderPage({ ...row, upper: "| $\\frac{1}{2}$ | x |" }, "abc1234def", undefined, null, null, "2026-11-25"));
+    assert.ok(texDesc.includes("upper on the page, lower 1.5"), `a LaTeX side must fall back to the page: ${texDesc}`);
+    assert.ok(!/[$\\]/.test(texDesc), "no description may carry a raw $ or backslash");
+    const bothTex = renderedDescription(renderPage({ ...row, upper: "| $\\frac{1}{2}$ | x |", lower: "| $0.4\\dots$ | x |" }, "abc1234def", undefined, null, null, "2026-11-25"));
+    assert.ok(bothTex.startsWith("Last-listed rows, mirrored 2026-11-25: both on the page. "), `two LaTeX sides read as one fallback: ${bothTex}`);
+    assert.equal(descriptionMismatch(row, bothTex), null, "the both-fallback description passes the value check");
+    assert.equal(mirrorDate("2026-11-25T19:51:51.966Z"), "2026-11-25", "the mirror date is the MT calendar day");
+    assert.equal(mirrorDate("2026-11-26T03:00:00.000Z"), "2026-11-25", "an evening-MT fetch stays on its MT day, not the UTC one");
+    assert.equal(mirrorDate("not a date"), null);
+    // (5) The whole committed ledger, not a fixture alone: every page's rendered description passes the
+    // value check and carries no LaTeX, and the count of lifted values equals the count of bare cells.
+    const realClaims = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
+    const realRows = buildRows(realClaims, { withDates: false });
+    assert.ok(realRows.length > 100, `positive control: the real ledger must load (${realRows.length} rows)`);
+    let lifted = 0, bare = 0;
+    for (const rr of realRows) {
+      const d = renderedDescription(renderPage(rr, "abc1234def", undefined, null, null, "2026-11-25"));
+      assert.equal(descriptionMismatch(rr, d), null, `real page ${rr.id}: ${descriptionMismatch(rr, d)}`);
+      assert.ok(!/[$\\]/.test(d), `real page ${rr.id}'s description carries LaTeX: ${d}`);
+      lifted += (d.split(". ")[0].match(/\b(upper|lower) \d/g) || []).length;
+      bare += [rr.upper, rr.lower].filter((s) => plainValue(s) !== null).length;
+    }
+    assert.ok(bare > 0, "positive control: some real cell must be a bare decimal");
+    assert.equal(lifted, bare, "every bare-decimal cell, and only those, is named in its page's description");
+    // (6) The exact sentence, last.
+    assert.equal(desc, "Last-listed rows, mirrored 2026-11-25: upper 2.5, lower 1.5. Read each row's notes on the page before citing. Test Constant in teorth/optimizationproblems, with a link to the upstream source file and a citation you can copy.");
+  }
   // (3) THE WIRING (memory: test the wiring, not the helper). The selector is read OUT of the page's own
   // script and must match an element the page actually renders, holding the citation's <code>. A script
   // left querying 'details.cite' (the index's markup) would insert nothing here and fail this line.
@@ -2469,7 +2593,24 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE, buildRows
   const rows = buildRowsFn(claims);
   // A-53 (b): refuse before anything is composed or written. Nothing above writes.
   if (refuseDroppedAudits("render-constant-pages", { storePath, pageIds: new Set(rows.map((r) => r.id)) })) { process.exitCode = 1; return; }
-  const pages =new Map(rows.map((r) => [`${r.id}.html`, renderPage(r, manifest.sha, undefined, newer, pulls)]));
+  // 2026-11-26: the description names the mirror date and each side's plain value. Refuse an unreadable
+  // date, and any description whose named value is not that side's own pinned number, before anything
+  // is written or compared.
+  const mirroredOn = mirrorDate(manifest.fetchedAt);
+  if (!mirroredOn) {
+    console.log(`RESULT: FAIL — render-constant-pages: the manifest's fetchedAt does not parse as a date, so nothing was composed or written`);
+    process.exitCode = 1;
+    return;
+  }
+  const pages =new Map(rows.map((r) => [`${r.id}.html`, renderPage(r, manifest.sha, undefined, newer, pulls, mirroredOn)]));
+  // Judged on the RENDERED head, the description a reader actually gets, not on pageDescription's return.
+  const bad = rows.map((r) => descriptionMismatch(r, renderedDescription(pages.get(`${r.id}.html`)))).filter(Boolean);
+  if (bad.length) {
+    console.log(`RESULT: FAIL — render-constant-pages: ${bad.length} page description(s) name a value their own cell does not hold, so nothing was written`);
+    for (const b of bad.slice(0, 10)) console.log(`  ${b}`);
+    process.exitCode = 1;
+    return;
+  }
   const sitemap = sitemapXml(rows.map((r) => r.id));
 
   // --titles: every converted title, for a human read (manager review, 2026-11-05: a check that only
