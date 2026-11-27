@@ -1,6 +1,6 @@
 # read-output sidecar for A-98 — written by check-due-gates-dispositioned --run
 # readCommand: node scripts/check-import-inert.mjs
-# ran: 2026-11-20T17:07:13.247Z · exit: 0
+# ran: 2026-11-27T16:36:50.209Z · exit: 0
 # lines: 1 · sha256: 099515a3a611e607 (first 16 hex of the output below)
 # truncated: false
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--

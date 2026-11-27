@@ -1,21 +1,20 @@
 # read-output sidecar for A-102 — written by check-due-gates-dispositioned --run
 # readCommand: npm run reports
-# ran: 2026-11-25T20:00:08.790Z · exit: 0
-# lines: 16 · sha256: 8b768097c96f0093 (first 16 hex of the output below)
+# ran: 2026-11-27T16:27:56.338Z · exit: 0
+# lines: 16 · sha256: 7a896be738f4a5fa (first 16 hex of the output below)
 # truncated: false
-# stampedVia: A-59 (one execution, shared byte-identical readCommand — this row was not spawned)
 --8<-- READ OUTPUT BELOW (check-due-gates-dispositioned --run) --8<--
 > bounds-ledger@0.0.0 reports
 > node scripts/report-rate.mjs
 
-# Report arrivals — 2026-11-25 MT · 109 day(s) since the public flip
-raw issues fetched: 41 (pull requests excluded by construction — gh issue list, not the REST issues endpoint)
-  ours (CI bot + owner), excluded: 41
+# Report arrivals — 2026-11-27 MT · 111 day(s) since the public flip
+raw issues fetched: 42 (pull requests excluded by construction — gh issue list, not the REST issues endpoint)
+  ours (CI bot + owner), excluded: 42
   outside, not an arrival:        0
   OUTSIDE ARRIVALS:               0
 
-parts reconcile: 41 + 0 + 0 = 41.
-So 0 is a MEASURED figure: the probe demonstrably sees 41 issue(s) and accounts for every one.
+parts reconcile: 42 + 0 + 0 = 42.
+So 0 is a MEASURED figure: the probe demonstrably sees 42 issue(s) and accounts for every one.
 This counts ARRIVALS, never clicks — the page is static and we are not adding an analytics stack.
 A click measures curiosity; a filed report measures someone who read a row, disbelieved it, and acted.
 G-4 asks for n=1, and this stopped being a LEADING indicator when G-3 closed 2026-08-26:

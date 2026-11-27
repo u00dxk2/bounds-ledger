@@ -2502,12 +2502,12 @@
       "owner": "bounds-ledger",
       "created": "2026-09-28",
       "updated": "2026-11-25",
-      "readCommandLastRun": "2026-11-25T20:00:08.790Z",
+      "readCommandLastRun": "2026-11-27T16:27:56.338Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 17731,
+      "readCommandLastDurationMs": 122874,
       "readCommandLastOutputRef": {
         "lines": 16,
-        "sha256": "8b768097c96f0093"
+        "sha256": "7a896be738f4a5fa"
       },
       "lastEvaluated": "2026-11-25",
       "redate2026_10_28": "Read 2026-10-28: npm run reports, 37 raw issues, 37 ours, 0 outside arrivals, parts reconcile 37+0+0=37. Encounter on the pages stays blind; light day, no build.",
@@ -3464,7 +3464,7 @@
       "status": "open",
       "owner": "bounds-ledger",
       "title": "STANDING: the newer-papers line on every constant page states a dated search; keep it honest — re-run the constants watch and update ledger/newer-results.json, and own that store and its evaluator",
-      "nextCheckDate": "2026-11-27",
+      "nextCheckDate": "2026-12-04",
       "links": [
         "A-86",
         "A-82",
@@ -3473,9 +3473,9 @@
       "readCommand": "node -e \"const j=JSON.parse(require('fs').readFileSync('ledger/newer-results.json','utf8'));console.log('checkedThrough',j.checkedThrough,'windowFrom',j.windowFrom,'papersFound',j.papersFound)\"",
       "onTrigger": "Weekly, and after any resnap that moves the mirror's fetch date: run node scripts/arxiv-watch.mjs --fetch --area constants, have each fetched paper read to docs/arxiv-watch-constants-reader-brief.md, then --check. Only on RESULT: COMPLETE, write checkedThrough (the window end), windowFrom (the window start) and papersFound (the fetched count) into ledger/newer-results.json, re-render with node scripts/render-constant-pages.mjs, commit, push, and read npm run served. A candidate is verified by reading the paper and enters the store only after a cross-family claims pass and an adversarial review (A-82's rule). Never commit the run's output. A change to the line's WORDING goes back through review and David's yes.\n\n ALSO (2026-11-17): when the mirror's fetch date is later than the store's windowFrom, pass --from <the store's windowFrom> to both --fetch and --check, or the window shrinks and drops papers the live lines rest on.",
       "closeWhen": "David decides the line comes off the pages, or the watch is replaced by one that covers a wider search; either is recorded here with its date.",
-      "notes": "Minted 2026-10-30 MT at A-86's close. David answered card 903a38ba on 2026-10-30 (paraphrased: yes, turn it on as written), and the line went live in 92bcf34 on all 120 constant pages. Its first search covered papers submitted 2026-10-28 to 2026-10-30 and found none. The window opens at the mirror's fetch date, so a resnap starts a new window, and the line states the dates it covered rather than claiming continuous coverage (2026-10-17 to 2026-10-27 was never searched). Owner duties moved here from A-86: ledger/newer-results.json, scripts/newer-results.mjs, scripts/step-overlap.mjs and the reverify.yml selftest steps that name A-82. The line is refused, and render-constant-pages refuses the store, if the watcher's query stops being a plain OR of abs: terms or its terms change; that is the reconcile signal, not a bug.\n\n | 2026-11-17: shipped 8981246 (Codex r1 on 5addfd2, same tree, VERDICT: SHIP). Window 2026-09-26 to 2026-11-17 via --from 2026-09-26, 19 papers (14 readings carried over from 2026-10-31, 5 read today). perConstant: 3a and 3d none (3a by hand reading: five values below the strongest lower bound in its table, asterisked rows included, and one, 1.193597, equal within printed precision to the asterisked 1.19359680); 1a, 1b, 1d, 3b not-compared; 1d's reported-stronger entry and constructionLookup withdrawn because a second paper bears on 1d. npm run served '120 checked — 120 served'. OWED: read the unranked and candidate values on 1a, 1b, 1d, 3b by hand (details in tmp/arxiv-watch/2026-11-17/constants/, never committed); a reported-stronger entry needs a claims pass, an adversarial review and a David card first.\n\n2026-11-25 P5: newer-results store checkedThrough 2026-11-17, past its weekly cadence; the watch run is owed and was not run today. Short re-date to 2026-11-27.",
+      "notes": "Minted 2026-10-30 MT at A-86's close. David answered card 903a38ba on 2026-10-30 (paraphrased: yes, turn it on as written), and the line went live in 92bcf34 on all 120 constant pages. Its first search covered papers submitted 2026-10-28 to 2026-10-30 and found none. The window opens at the mirror's fetch date, so a resnap starts a new window, and the line states the dates it covered rather than claiming continuous coverage (2026-10-17 to 2026-10-27 was never searched). Owner duties moved here from A-86: ledger/newer-results.json, scripts/newer-results.mjs, scripts/step-overlap.mjs and the reverify.yml selftest steps that name A-82. The line is refused, and render-constant-pages refuses the store, if the watcher's query stops being a plain OR of abs: terms or its terms change; that is the reconcile signal, not a bug.\n\n | 2026-11-17: shipped 8981246 (Codex r1 on 5addfd2, same tree, VERDICT: SHIP). Window 2026-09-26 to 2026-11-17 via --from 2026-09-26, 19 papers (14 readings carried over from 2026-10-31, 5 read today). perConstant: 3a and 3d none (3a by hand reading: five values below the strongest lower bound in its table, asterisked rows included, and one, 1.193597, equal within printed precision to the asterisked 1.19359680); 1a, 1b, 1d, 3b not-compared; 1d's reported-stronger entry and constructionLookup withdrawn because a second paper bears on 1d. npm run served '120 checked — 120 served'. OWED: read the unranked and candidate values on 1a, 1b, 1d, 3b by hand (details in tmp/arxiv-watch/2026-11-17/constants/, never committed); a reported-stronger entry needs a claims pass, an adversarial review and a David card first.\n\n2026-11-25 P5: newer-results store checkedThrough 2026-11-17, past its weekly cadence; the watch run is owed and was not run today. Short re-date to 2026-11-27.\n\n | 2026-11-27 P1/P3: run done at age 0. arxiv-watch.mjs --fetch --area constants --from 2026-09-26 -> \"RESULT: FETCHED — 21 paper(s)\"; three fresh readers (the constants list grew 120 to 123 since 11-17, so no reading was reused), full text for all 21; --check --area constants --from 2026-09-26 -> \"papers fetched: 21 · verdicts: 21\", \"parts reconcile: 2 + 3 + 16 = 21\", candidates 10, weaker 32, unrankable 13, within precision 1, \"RESULT: COMPLETE\" (exit 1). Store written: checkedThrough 2026-11-27, papersFound 21, 3a none -> not-compared; committed and pushed 8999351, Pages built, live c/3a.html carries the new line. No candidate entered the store; the strongest to read by hand is 2611.19594 on 3b (upper side). One reader disclosed seeing a few bound-table rows by mistake, recorded on its verdict. Output not committed. Next weekly run 2026-12-04.",
       "created": "2026-10-30",
-      "updated": "2026-11-25",
+      "updated": "2026-11-27",
       "gapScopeLimit2026_10_30": "DELIBERATE SCOPE LIMIT, recorded 2026-10-30 MT at the close (the manager review asked that it not be left implied). Papers submitted 2026-10-17 to 2026-10-27 were never searched by any run: the 2026-10-16 run covered 2026-09-26 to 2026-10-16 and today's covered 2026-10-28 to 2026-10-30, because the watcher's window opens at the mirror's fetch date (scripts/arxiv-watch.mjs --area constants) and it takes no start-date override. NOT backfilled today: a backfill needs a new --from flag on a reviewed instrument, whose --check refuses a window start that differs from the mirror date, so it is an instrument change with its own red-arm and review, not a data read. Why this is safe meanwhile: the public line states its exact window (from 2026-10-28) and never claims continuous coverage, so the gap is visible to a reader who reads the dates, not hidden. Revisit by 2026-11-06 (this row's nextCheckDate): either build the --from backfill through review, or keep this limit and say why again. Recorded here so nothing implies the gap was covered.",
       "linkedCommits": [
         "45228ae",
@@ -3493,8 +3493,8 @@
         "lines": 1,
         "sha256": "49f82cdbab694ee1"
       },
-      "expectedSignalBy": "2026-11-27",
-      "lastEvaluated": "2026-11-25",
+      "expectedSignalBy": "2026-12-04",
+      "lastEvaluated": "2026-11-27",
       "redate2026_11_06": "2026-11-06 P5: the old read (newer-results --selftest) passes whether or not the search is current; ledger/newer-results.json says checkedThrough 2026-10-31, six days stale. readCommand re-pointed to print checkedThrough. The constants watch run is owed."
     },
     {
@@ -3546,30 +3546,30 @@
       "status": "open",
       "title": "Anthropic's formal-math repository mapped onto every watched constant (a second release map, beside A-78)",
       "owner": "bounds-ledger",
-      "nextCheckDate": "2026-11-27",
+      "nextCheckDate": "2026-12-04",
       "links": [
         "A-78",
         "A-92"
       ],
-      "readCommand": "node scripts/anthropic-formal-math.mjs --upstream",
+      "readCommand": "gh api repos/anthropics/formal-math/commits/HEAD --jq .sha",
       "closeWhen": "Closes when a re-check finds a pair that bears on a watched constant (that pair then becomes a note decision on its own row, A-78's shape) or when David retires this second release map. Until then, re-check on each nextCheckDate with the readCommand: a new project folder, an unmapped comparator configuration or a changed theorem list exits 1 and is mapped before the pin moves.",
       "note": "Opened 2026-10-30 MT, cycle 3 (David-started; job 1 of the cycle brief). ledger/anthropic-formal-math-map.json pins anthropics/formal-math at 16a5ce4 (an upstream sha; it does not exist in this repo) and covers all 30 theorems the three projects' comparator configurations name (eth 2, 3sum-apsp 5 from EndStatement.lean, zeta23 17 + 6). Seven pairs, each read against the constant's mirrored definition: eth vs 52a, 3sum-apsp vs 15a and 15b, zeta23 vs 8a, 21a, 62a, 62b. All seven are does-not-bear, so nothing renders and no card is owed. 3sum-apsp's PaperStatements.lean is not mapped theorem by theorem; it was searched for the matrix multiplication exponents, and its Corollary_40_fail holds for every omega >= 2. A sibling store rather than an extension of A-78's validator: A-78's is keyed to OpenAI's family numbers and feeds the renderer of live notes, while this store renders nothing. scripts/anthropic-formal-math.mjs validates offline (selftest in npm test and CI, red-armed 2026-10-30: deleting the render refusal turned it red) and --upstream compares the README's project list and every comparator theorem list at the pinned sha (red-armed: one theorem removed from the map exited 1).\n\n | 2026-10-30 MT, after a Codex claims pass (tmp/codex-c3-claims-out.txt, local; reviewer model gpt-daybreak-blue-latest): every non-bearing verdict held and no pair was missed among the 30 theorems. Five sentences were narrowed (52a is a conjectured threshold; the ETH subject's k >= 1 and no-repeated-clause conditions; how 62b was found; the real-valued versions; \"withdrawn\"). One finding changed the code: --upstream compared only the configurations the map named, so it could not see one the map left out. It now reads the repository tree and refuses a comparator configuration that is neither mapped nor named in excludedConfigs (red-armed: removing the paperstatements exclusion exited 1).\n\n pragma: allowlist sha",
       "created": "2026-10-30",
-      "updated": "2026-11-20",
+      "updated": "2026-11-27",
       "linkedCommits": [
         "3703ce3"
       ],
-      "lastEvaluated": "2026-11-20",
-      "readCommandLastRun": "2026-11-20T15:18:56.215Z",
+      "lastEvaluated": "2026-11-27",
+      "readCommandLastRun": "2026-11-27T16:31:44.385Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 2920,
+      "readCommandLastDurationMs": 3099,
       "readCommandLastOutputRef": {
         "lines": 2,
         "sha256": "44d7ce8e3b896784"
       },
-      "expectedSignalBy": "2026-11-27",
+      "expectedSignalBy": "2026-12-04",
       "redate2026_11_06": "2026-11-06 P5: anthropic-formal-math --upstream exit 0, the map holds at the pinned upstream sha (3 projects, 30 theorems, 7 pairs). Weekly look.",
-      "notes": " | 2026-11-13 P5: re-dated to 2026-11-20 (hygiene draft ACCEPTED). --run A-93 exit 0; its output, in continuity/read-outputs/A-93.txt, says the map holds at the pinned upstream commit: 3 project(s), 30 comparator theorem(s), 7 pair(s), all does-not-bear. closeWhen needs a bearing pair or David's retirement; neither present. Weekly look.\n\n2026-11-20 P5: re-dated to 2026-11-27 (hygiene draft ACCEPTED). `node scripts/anthropic-formal-math.mjs --upstream` exit 0; it printed that the map holds at the pinned upstream commit, 7 pairs, does-not-bear 7, bearing 0; closeWhen not met; weekly look."
+      "notes": " | 2026-11-13 P5: re-dated to 2026-11-20 (hygiene draft ACCEPTED). --run A-93 exit 0; its output, in continuity/read-outputs/A-93.txt, says the map holds at the pinned upstream commit: 3 project(s), 30 comparator theorem(s), 7 pair(s), all does-not-bear. closeWhen needs a bearing pair or David's retirement; neither present. Weekly look.\n\n2026-11-20 P5: re-dated to 2026-11-27 (hygiene draft ACCEPTED). `node scripts/anthropic-formal-math.mjs --upstream` exit 0; it printed that the map holds at the pinned upstream commit, 7 pairs, does-not-bear 7, bearing 0; closeWhen not met; weekly look.\n\n | 2026-11-27 P5: hygiene draft ACCEPTED (both commands). The map's read (node scripts/anthropic-formal-math.mjs --upstream) fetches upstream only at its pin 16a5ce4 (an upstream sha; it does not exist in this repo), at scripts/anthropic-formal-math.mjs:133 and :139, so its 'a new project folder exits 1' leg can never fire; its 11-27 output was byte-identical to 11-20 (sha256 44d7ce8e3b896784). Upstream anthropics/formal-math is 5 commits ahead at db8472e (an upstream sha) and added a fourth project, vp-vnp, on 2026-11-23, unmapped here. readCommand re-pointed to print upstream HEAD for a hand compare against the pin until the script gains a HEAD leg; the map owes a vp-vnp mapping. Re-dated to 2026-12-04.\n\n (16a5ce4 and db8472e above are anthropics/formal-math shas, which resolve only upstream; pragma: allowlist sha)"
     },
     {
       "id": "A-94",
@@ -3721,25 +3721,25 @@
       "type": "action",
       "status": "open",
       "owner": "bounds-ledger",
-      "nextCheckDate": "2026-11-27",
+      "nextCheckDate": "2026-12-04",
       "created": "2026-11-06",
-      "updated": "2026-11-20",
-      "notes": "Minted 2026-11-06 at P3, from A-50's first full run (scripts/check-import-inert.mjs). 16 of 48 modules under scripts/ and scripts/lib/ act on import: anthropic-formal-math, catch-rate (hung past 60 s), check-brief (called fetch), check-next-primer (exit 1), check-orphan-shas, check-resolvability, check-self-attribution (exit 2), citation-footprint, eth-openalex-frame (exit 2), extract-pins (rewrites ledger/claims.json), gap-table (rewrites docs/gap-table.json), gates (refused only because the tree was dirty; on a clean tree it would start the verify gate), history-sweep (hung past 60 s), render-state-block (rewrites README.md), sky (exit 2), traffic-snapshot (rewrites continuity/traffic.json). They are listed in KNOWN_NOT_INERT and are not imported by the check. Most dangerous first: gates, extract-pins, render-state-block, gap-table, traffic-snapshot. The fix per module is the scripts/lib/entry-module.mjs guard (isEntryModule) around the command-line top level, then deleting that module's line from KNOWN_NOT_INERT so the check holds it.\n\n | 2026-11-13 P5: re-dated to 2026-11-20 (hygiene draft ACCEPTED), per this row's onTrigger (\"record what outranked it and re-date\"). Outranked by A-102, the day's product change (shipped fec3787 and 92fd997). First --run A-98 exit 0: \"33 of 33 checked module(s) under scripts/ and scripts/lib/ are inert on import; 16 known-not-inert module(s) were not imported (KNOWN_NOT_INERT, A-98).\" Still 16, as at minting; none of gates, extract-pins, render-state-block, gap-table, traffic-snapshot is guarded yet. Exit 0 is not closeable: closeWhen needs KNOWN_NOT_INERT empty.\n\n2026-11-20 P5: re-dated to 2026-11-27 (hygiene draft AMENDED). The helper's read during P3 exited 1, \"NOT INERT scripts/check-audit-lines.mjs / modified README.md during import\", which was the lane's own concurrent README.md edit (A-110). Re-run on a quiet tree at P5 via `check-due-gates-dispositioned.mjs --run A-98`: exit 0, \"37 of 37 checked module(s) under scripts/ and scripts/lib/ are inert on import; 16 known-not-inert module(s) were not imported (KNOWN_NOT_INERT, A-98).\" KNOWN_NOT_INERT is still 16, so closeWhen is not met; the guard work was outranked by the product budget (A-110 today, A-108 next).",
+      "updated": "2026-11-27",
+      "notes": "Minted 2026-11-06 at P3, from A-50's first full run (scripts/check-import-inert.mjs). 16 of 48 modules under scripts/ and scripts/lib/ act on import: anthropic-formal-math, catch-rate (hung past 60 s), check-brief (called fetch), check-next-primer (exit 1), check-orphan-shas, check-resolvability, check-self-attribution (exit 2), citation-footprint, eth-openalex-frame (exit 2), extract-pins (rewrites ledger/claims.json), gap-table (rewrites docs/gap-table.json), gates (refused only because the tree was dirty; on a clean tree it would start the verify gate), history-sweep (hung past 60 s), render-state-block (rewrites README.md), sky (exit 2), traffic-snapshot (rewrites continuity/traffic.json). They are listed in KNOWN_NOT_INERT and are not imported by the check. Most dangerous first: gates, extract-pins, render-state-block, gap-table, traffic-snapshot. The fix per module is the scripts/lib/entry-module.mjs guard (isEntryModule) around the command-line top level, then deleting that module's line from KNOWN_NOT_INERT so the check holds it.\n\n | 2026-11-13 P5: re-dated to 2026-11-20 (hygiene draft ACCEPTED), per this row's onTrigger (\"record what outranked it and re-date\"). Outranked by A-102, the day's product change (shipped fec3787 and 92fd997). First --run A-98 exit 0: \"33 of 33 checked module(s) under scripts/ and scripts/lib/ are inert on import; 16 known-not-inert module(s) were not imported (KNOWN_NOT_INERT, A-98).\" Still 16, as at minting; none of gates, extract-pins, render-state-block, gap-table, traffic-snapshot is guarded yet. Exit 0 is not closeable: closeWhen needs KNOWN_NOT_INERT empty.\n\n2026-11-20 P5: re-dated to 2026-11-27 (hygiene draft AMENDED). The helper's read during P3 exited 1, \"NOT INERT scripts/check-audit-lines.mjs / modified README.md during import\", which was the lane's own concurrent README.md edit (A-110). Re-run on a quiet tree at P5 via `check-due-gates-dispositioned.mjs --run A-98`: exit 0, \"37 of 37 checked module(s) under scripts/ and scripts/lib/ are inert on import; 16 known-not-inert module(s) were not imported (KNOWN_NOT_INERT, A-98).\" KNOWN_NOT_INERT is still 16, so closeWhen is not met; the guard work was outranked by the product budget (A-110 today, A-108 next).\n\n | 2026-11-27 P5: hygiene draft ACCEPTED. --run A-98 exit 0, '37 of 37 checked module(s) under scripts/ and scripts/lib/ are inert on import; 16 known-not-inert module(s) were not imported'; KNOWN_NOT_INERT still 16; outranked today by A-108 (the change feed, shipped 0fe74d5). Re-dated to 2026-12-04.",
       "onTrigger": "On 2026-11-13: run the readCommand. Guard at least the five file-writing or gate-starting modules (gates, extract-pins, render-state-block, gap-table, traffic-snapshot) and delete their lines, or record what outranked it and re-date with that reason.",
       "closeWhen": "KNOWN_NOT_INERT in scripts/check-import-inert.mjs is empty and the check exits 0 over all modules, its literal output pasted here.",
       "readCommand": "node scripts/check-import-inert.mjs",
       "links": [
         "scripts/check-import-inert.mjs"
       ],
-      "readCommandLastRun": "2026-11-20T17:07:13.247Z",
+      "readCommandLastRun": "2026-11-27T16:36:50.209Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 34755,
+      "readCommandLastDurationMs": 80930,
       "readCommandLastOutputRef": {
         "lines": 1,
         "sha256": "099515a3a611e607"
       },
-      "expectedSignalBy": "2026-11-27",
-      "lastEvaluated": "2026-11-20"
+      "expectedSignalBy": "2026-12-04",
+      "lastEvaluated": "2026-11-27"
     },
     {
       "id": "A-99",
@@ -3872,10 +3872,10 @@
       "type": "action",
       "status": "monitoring",
       "owner": "bounds-ledger",
-      "nextCheckDate": "2026-11-27",
+      "nextCheckDate": "2026-12-04",
       "created": "2026-11-12",
-      "updated": "2026-11-20",
-      "notes": "Minted 2026-11-12 at P5, from A-47 slice 24 (manager review of P3 fb99534e named it a defect; the lane named it first). For an UNREACHABLE entry, scripts/render-constant-pages.mjs renders only the generic line and the date it was tried (the verdictText branch for UNREACHABLE never reads claimReader, claimResult or claimNotCovered), so a reader of c/27b.html is not told what reading would settle the claim. For 27b [G1980] (A-47-0108) the answer exists and sits only in the store's notes: pages 14 to 21 of Scientific American vol. 242 no. 2 (February 1980). UNRESOLVED entries already say it through claimResult (33a, 3b, done today). Fix shape: an optional reader-facing field on an UNREACHABLE entry (e.g. settleReader), refused by name in UNUSABLE_CHECKS when malformed, rendered after the tried date, with a selftest in both polarities; then fill it for A-47-0108 and any other UNREACHABLE entry whose notes carry one. A public-surface change: adversarial review before push.\n\n | 2026-11-13 SHIPPED, acceptance met: fec3787 (renderer branch, optional settleReader field, four store values) and 92fd997 (Codex round 1 fixes: one URL per source, wider punctuation refusal), pushed 17:41Z; CI reverify.yml and page-check.yml green on 92fd997; Pages build row for 92fd997 built 17:41:53Z. readCommand at the pushed sha, literal output: `git grep -c \"would settle\" 92fd9972a4ac1f55c7584e03ac29e013d3e1224b -- c/27b.html` printed \"92fd9972a4ac1f55c7584e03ac29e013d3e1224b:c/27b.html:1\". Live fetch of c/17b, c/27b, c/29a, c/33a, c/3e, c/57b, c/80a after the build (each HTTP 200, its cited ref token present): 7 \"The claim we meant to check\", 4 \"What would settle it\", 0 unread-source lines saying \"the claim we checked\"; 33a href now the clean Gallica URL. Selftest block (b2u) red-armed by six mutations, each restored hash-identical. Codex: round 1 on fec3787 two defects, both fixed in 92fd997; round 2 on 92fd997 no defects. NAMED LIMIT (round 2, not matched): sourceSingleUrl cannot see two URLs joined with no whitespace; census 0 of 111 stored sources on 2026-11-13. Manager review of P3 (260e2e57): COMPLETED. MOVED TO monitoring, not closed: the build is done, the outcome read is not. Encounter is blind (A-59); the outcome's only readable event is the first outside report filed through one of these seven rows' links (N = 1), counted by `npm run reports` (2026-11-13: 37 raw, 37 ours, 0 outside arrivals). readCommand re-pointed from the acceptance grep to that read; re-read 2026-11-20.\n\n2026-11-20 P5: re-dated to 2026-11-27 (hygiene draft ACCEPTED). `npm run reports` exit 0, \"OUTSIDE ARRIVALS: 0\" of 37 raw issues, \"parts reconcile: 37 + 0 + 0 = 37.\" A-59 still has no instrument for page readers, so the outcome stays unread; weekly look.",
+      "updated": "2026-11-27",
+      "notes": "Minted 2026-11-12 at P5, from A-47 slice 24 (manager review of P3 fb99534e named it a defect; the lane named it first). For an UNREACHABLE entry, scripts/render-constant-pages.mjs renders only the generic line and the date it was tried (the verdictText branch for UNREACHABLE never reads claimReader, claimResult or claimNotCovered), so a reader of c/27b.html is not told what reading would settle the claim. For 27b [G1980] (A-47-0108) the answer exists and sits only in the store's notes: pages 14 to 21 of Scientific American vol. 242 no. 2 (February 1980). UNRESOLVED entries already say it through claimResult (33a, 3b, done today). Fix shape: an optional reader-facing field on an UNREACHABLE entry (e.g. settleReader), refused by name in UNUSABLE_CHECKS when malformed, rendered after the tried date, with a selftest in both polarities; then fill it for A-47-0108 and any other UNREACHABLE entry whose notes carry one. A public-surface change: adversarial review before push.\n\n | 2026-11-13 SHIPPED, acceptance met: fec3787 (renderer branch, optional settleReader field, four store values) and 92fd997 (Codex round 1 fixes: one URL per source, wider punctuation refusal), pushed 17:41Z; CI reverify.yml and page-check.yml green on 92fd997; Pages build row for 92fd997 built 17:41:53Z. readCommand at the pushed sha, literal output: `git grep -c \"would settle\" 92fd9972a4ac1f55c7584e03ac29e013d3e1224b -- c/27b.html` printed \"92fd9972a4ac1f55c7584e03ac29e013d3e1224b:c/27b.html:1\". Live fetch of c/17b, c/27b, c/29a, c/33a, c/3e, c/57b, c/80a after the build (each HTTP 200, its cited ref token present): 7 \"The claim we meant to check\", 4 \"What would settle it\", 0 unread-source lines saying \"the claim we checked\"; 33a href now the clean Gallica URL. Selftest block (b2u) red-armed by six mutations, each restored hash-identical. Codex: round 1 on fec3787 two defects, both fixed in 92fd997; round 2 on 92fd997 no defects. NAMED LIMIT (round 2, not matched): sourceSingleUrl cannot see two URLs joined with no whitespace; census 0 of 111 stored sources on 2026-11-13. Manager review of P3 (260e2e57): COMPLETED. MOVED TO monitoring, not closed: the build is done, the outcome read is not. Encounter is blind (A-59); the outcome's only readable event is the first outside report filed through one of these seven rows' links (N = 1), counted by `npm run reports` (2026-11-13: 37 raw, 37 ours, 0 outside arrivals). readCommand re-pointed from the acceptance grep to that read; re-read 2026-11-20.\n\n2026-11-20 P5: re-dated to 2026-11-27 (hygiene draft ACCEPTED). `npm run reports` exit 0, \"OUTSIDE ARRIVALS: 0\" of 37 raw issues, \"parts reconcile: 37 + 0 + 0 = 37.\" A-59 still has no instrument for page readers, so the outcome stays unread; weekly look.\n\n | 2026-11-27 P5: hygiene draft ACCEPTED. --run A-102 exit 0, 'OUTSIDE ARRIVALS: 0', 'parts reconcile: 42 + 0 + 0 = 42' (all 42 issues ours, up from 37 on 11-20); third consecutive weekly zero; the outcome stays unread while A-59 (the public pages' blind encounter) has no reader instrument. Re-dated to 2026-12-04.",
       "onTrigger": "On 2026-11-20: run the readCommand. An OUTSIDE ARRIVAL filed through one of the seven rows (17b, 27b, 29a, 33a, 3e, 57b, 80a) is the outcome read: read it and close with it. Zero outside arrivals: re-date a week, or close with the outcome recorded as unread if A-59 still has no instrument.",
       "closeWhen": "The build closed 2026-11-13 (acceptance met, see notes). The row closes when the outcome is read: the first outside report filed through one of the seven rows, or a dated decision that the outcome stays unread while encounter is blind (A-59).",
       "readCommand": "npm run reports",
@@ -3883,15 +3883,15 @@
         "scripts/render-constant-pages.mjs",
         "continuity/depth-audit.json"
       ],
-      "lastEvaluated": "2026-11-20",
-      "readCommandLastRun": "2026-11-25T20:00:08.790Z",
+      "lastEvaluated": "2026-11-27",
+      "readCommandLastRun": "2026-11-27T16:27:56.338Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 17731,
+      "readCommandLastDurationMs": 122874,
       "readCommandLastOutputRef": {
         "lines": 16,
-        "sha256": "8b768097c96f0093"
+        "sha256": "7a896be738f4a5fa"
       },
-      "expectedSignalBy": "2026-11-27"
+      "expectedSignalBy": "2026-12-04"
     },
     {
       "id": "A-103",
@@ -3906,12 +3906,12 @@
       "created": "2026-11-13",
       "updated": "2026-11-14",
       "lastEvaluated": "2026-11-21",
-      "readCommandLastRun": "2026-11-25T20:00:08.790Z",
+      "readCommandLastRun": "2026-11-27T16:27:56.338Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 17731,
+      "readCommandLastDurationMs": 122874,
       "readCommandLastOutputRef": {
         "lines": 16,
-        "sha256": "8b768097c96f0093"
+        "sha256": "7a896be738f4a5fa"
       },
       "expectedSignalBy": "2026-11-28"
     },
@@ -3935,12 +3935,12 @@
         "57ca289"
       ],
       "lastEvaluated": "2026-11-21",
-      "readCommandLastRun": "2026-11-25T20:00:08.790Z",
+      "readCommandLastRun": "2026-11-27T16:27:56.338Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 17731,
+      "readCommandLastDurationMs": 122874,
       "readCommandLastOutputRef": {
         "lines": 16,
-        "sha256": "8b768097c96f0093"
+        "sha256": "7a896be738f4a5fa"
       },
       "expectedSignalBy": "2026-11-28"
     },
@@ -4003,11 +4003,11 @@
       "id": "A-108",
       "title": "A per-constant change feed whose render refuses any id that is not a plain constant id, with names from a reviewed title table",
       "type": "action",
-      "status": "open",
+      "status": "monitoring",
       "owner": "bounds-ledger",
       "nextCheckDate": "2026-12-02",
-      "notes": "Minted 2026-11-16 P5 as A-106's successor, on the orchestrator's close review (bus 4481454a: close A-106 by the stop rule and name the next, narrower design in one dated row). A-106 stopped at Codex round 3: the feed's allowlist test proved the fixed template on VALID fixture ids and could not see the input boundary, and a constant id is the stem of upstream's file name, taken unchecked (scripts/extract-pins.mjs:130; render-site.mjs constantIds), so a crafted file name could have put upstream text into a feed. This design claims less at the INPUT: (1) the feed render refuses, before anything is composed or written, unless every constant id matches ^[0-9]+[a-z]$; a non-matching id is a refusal with the id's position, never an escape or a strip; (2) a constant's name reaches a feed only from a committed, human-reviewed title table (A-107's design, folded in here), an unreviewed title refusing the render; (3) the reader signal stays as A-106 planned it: each entry links this ledger's own commit page, which nothing else on the site links, read through gh api repos/u00dxk2/bounds-ledger/traffic/popular/paths. The unpushed A-106 work is on the local branch a106-feed-draft (4417f1f: the history walk, first-parent ordering, xmlText refusals, feedSkeleton) and can be reused; keep it local, the repo is public and it never reviewed clean. Before building, decide with the orchestrator whether the id refusal belongs in extract-pins.mjs (the source of the id) as well as in the renderer. Outward: Codex code rounds and a claims pass before push; the stop rule applies again from round 1.\n\n | 2026-11-17: the orchestrator answered the banner's question (bus d4c969c8): BOTH. extract-pins.mjs reads the mirror folder itself (:130, any .md), so a snapshot-only refusal is skipped by a file that got there another way; the stem goes unchecked (:134) into id, statement, url and asserts (:80-84) and ledger/claims.json (:142); readers accept any id without a colon (check-resolvability.mjs:107, depth-audit.mjs:245); the upstream H1 title also goes unchecked into statement (:70, :81). Acceptance: a bad stem makes extract-pins exit non-zero with claims.json unchanged, shown red and green. The extract-pins selftest ids t1 to t4 (:110-124) would fail the pattern and must change first.\n\n | 2026-11-19 after close: David chose this feed as the FIRST STEP of direction G-5 (board card dd5392d3, decision 3c541ffb; paraphrased). Its id-refusal work (due 2026-11-23) is now on the product path, not hygiene.\n\n2026-11-25 P5: 2 days late; not built today (the drift cycle took the day). Traffic read: 4 popular paths, no feed exists to be read. Re-dated to 2026-12-02.",
-      "closeWhen": "Feeds live on GitHub Pages for every constant, each render refusing a planted malformed id (shown red through the real render, then green) and a planted unreviewed title; every string in a feed is fixed text, a valid id, an ISO date, a built URL or a reviewed title; a Codex round on the pushed commit returns class verdict NO; then close as built with the outcome read named: a /commit/ path for a linked commit in the popular-paths read, or none by a dated check, said plainly.",
+      "notes": "Minted 2026-11-16 P5 as A-106's successor, on the orchestrator's close review (bus 4481454a: close A-106 by the stop rule and name the next, narrower design in one dated row). A-106 stopped at Codex round 3: the feed's allowlist test proved the fixed template on VALID fixture ids and could not see the input boundary, and a constant id is the stem of upstream's file name, taken unchecked (scripts/extract-pins.mjs:130; render-site.mjs constantIds), so a crafted file name could have put upstream text into a feed. This design claims less at the INPUT: (1) the feed render refuses, before anything is composed or written, unless every constant id matches ^[0-9]+[a-z]$; a non-matching id is a refusal with the id's position, never an escape or a strip; (2) a constant's name reaches a feed only from a committed, human-reviewed title table (A-107's design, folded in here), an unreviewed title refusing the render; (3) the reader signal stays as A-106 planned it: each entry links this ledger's own commit page, which nothing else on the site links, read through gh api repos/u00dxk2/bounds-ledger/traffic/popular/paths. The unpushed A-106 work is on the local branch a106-feed-draft (4417f1f: the history walk, first-parent ordering, xmlText refusals, feedSkeleton) and can be reused; keep it local, the repo is public and it never reviewed clean. Before building, decide with the orchestrator whether the id refusal belongs in extract-pins.mjs (the source of the id) as well as in the renderer. Outward: Codex code rounds and a claims pass before push; the stop rule applies again from round 1.\n\n | 2026-11-17: the orchestrator answered the banner's question (bus d4c969c8): BOTH. extract-pins.mjs reads the mirror folder itself (:130, any .md), so a snapshot-only refusal is skipped by a file that got there another way; the stem goes unchecked (:134) into id, statement, url and asserts (:80-84) and ledger/claims.json (:142); readers accept any id without a colon (check-resolvability.mjs:107, depth-audit.mjs:245); the upstream H1 title also goes unchecked into statement (:70, :81). Acceptance: a bad stem makes extract-pins exit non-zero with claims.json unchanged, shown red and green. The extract-pins selftest ids t1 to t4 (:110-124) would fail the pattern and must change first.\n\n | 2026-11-19 after close: David chose this feed as the FIRST STEP of direction G-5 (board card dd5392d3, decision 3c541ffb; paraphrased). Its id-refusal work (due 2026-11-23) is now on the product path, not hygiene.\n\n2026-11-25 P5: 2 days late; not built today (the drift cycle took the day). Traffic read: 4 popular paths, no feed exists to be read. Re-dated to 2026-12-02.\n\n | 2026-11-27 P5: BUILT and live as 0fe74d5 (P1 24f56d3b, manager review APPROVE; P3 e4b87f5b; consults ffb8f460 and 53be0c6e, both answered). Pages build 0fe74d5 built 2026-11-27T18:28:13Z; live c/5a.xml, changes.xml (109 entries) and c/5a.html byte-equal to the commit; CI reverify.yml and page-check.yml green on 0fe74d57. Codex: r1 2efd81e YES (4), r2 2eb9075 YES (parser class twice; shape changed to refusals), r3 492519c YES (parser class a third time; stopped and consulted; option A), claims pass 063afbc YES (2 sentences narrowed, 5 fix gaps closed in 0fe74d5). closeWhen REPLACED today; the old text read: \"Feeds live on GitHub Pages for every constant, each render refusing a planted malformed id (shown red through the real render, then green) and a planted unreviewed title; every string in a feed is fixed text, a valid id, an ISO date, a built URL or a reviewed title; a Codex round on the pushed commit returns class verdict NO; then close as built with the outcome read named: a /commit/ path for a linked commit in the popular-paths read, or none by a dated check, said plainly.\" Status open -> monitoring: the ship is live and the outcome read is owed. Baseline read 2026-11-27: popular-paths lists one commit page, 7d9b5b1, 1 view, not among the 218 commit links in changes.xml. Encounter blind (A-59). Deferred, each on its own dated row: the bounds-region whitelist grammar, and reviewed constant names (which also take the pre-existing route by which a plain upstream title reaches a page heading, Codex r1 finding 3).",
+      "closeWhen": "BUILT 2026-11-27 as 0fe74d5: an Atom feed for every main-list constant (c/<id>.xml) and changes.xml, each entry fixed text, a valid id, an ISO date or a built URL, claiming only that this ledger's pinned copy of a row, as its extractor reads it, changed (the orchestrator's option (A), consult 53be0c6e). extract-pins.mjs and both renderers refuse a malformed constant id, a malformed, case-variant or duplicate pin id, an impossible history date, and a mirrored file holding an HTML comment, a repeated bounds heading or a fence in its bounds region, each shown red through the real script or by mutation, then green. The earlier \"planted unreviewed title\" clause is dropped: no title reaches a feed (the manager's P1 decision, 2026-11-27), so there is no reviewed-title surface to refuse. CLOSES as built at the outcome read on 2026-12-02: gh api repos/u00dxk2/bounds-ledger/traffic/popular/paths, counting ONLY /commit/ paths whose sha a feed links (a view of an unlinked commit, such as 7d9b5b1 on the 2026-11-27 baseline read, is not a feed reader), the count said plainly, or none by that date, said plainly. Owed before the close: a cross-family read of 063afbc..0fe74d5 (the claims-pass fixes, which landed after the last Codex round).",
       "readCommand": "gh api repos/u00dxk2/bounds-ledger/traffic/popular/paths",
       "links": [
         "scripts/render-constant-pages.mjs",
@@ -4015,7 +4015,7 @@
         "scripts/lib/plain-titles.mjs"
       ],
       "created": "2026-11-16",
-      "updated": "2026-11-25",
+      "updated": "2026-11-27",
       "readCommandLastRun": "2026-11-25T19:52:54.920Z",
       "readCommandLastExit": 0,
       "readCommandLastDurationMs": 4990,
@@ -4023,7 +4023,7 @@
         "lines": 1,
         "sha256": "677e25982a04f1b6"
       },
-      "lastEvaluated": "2026-11-25"
+      "lastEvaluated": "2026-11-27"
     },
     {
       "id": "A-109",
@@ -4068,12 +4068,12 @@
       "created": "2026-11-17",
       "updated": "2026-11-25",
       "lastEvaluated": "2026-11-25",
-      "readCommandLastRun": "2026-11-25T20:00:08.790Z",
+      "readCommandLastRun": "2026-11-27T16:27:56.338Z",
       "readCommandLastExit": 0,
-      "readCommandLastDurationMs": 17731,
+      "readCommandLastDurationMs": 122874,
       "readCommandLastOutputRef": {
         "lines": 16,
-        "sha256": "8b768097c96f0093"
+        "sha256": "7a896be738f4a5fa"
       }
     },
     {
@@ -4160,6 +4160,47 @@
       "notes": "Minted 2026-11-26 MT at the P5 close, on the manager's review (msg 54ee5623), which read P3 as DEFERRED. Shipped instead in a3eee2d: every c/ description and og:description open 'Last-listed rows, mirrored <MT day>.', the footer states the same day, and render-constant-pages pageMismatch() refuses any other number outside the title. Why the values were withdrawn: Codex r1 on ec9ff93 refuted lifting a row's first cell (81a's upper needs GRH; 67a is a conjectured endpoint; 86a awaits replay; trivial 0/1 rows); r2 on 918fb8a refuted even note-free rows, because the context can sit in the table's prose (45a bounds an upper and a lower density that may not exist; 52a bounds a limsup and a liminf of a threshold whose existence is conjectured). r3 FIX FIRST on two checker gaps (fixed a3eee2d); r4 on a3eee2d VERDICT: SHIP. Full record: docs/daily/2026-11-26-prelaunch.md findings block.",
       "created": "2026-11-26",
       "updated": "2026-11-26"
+    },
+    {
+      "id": "A-114",
+      "title": "A strict whitelist grammar for each mirrored file's bounds region, so the pages and feeds read a row only from a shape they can name",
+      "type": "action",
+      "status": "open",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-12-09",
+      "expectedSignalBy": "2026-12-09",
+      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/extract-pins.mjs --selftest",
+      "onTrigger": "On 2026-12-09: write the grammar as a stated rule (every line from the top of the file to the end of the bounds region is one of: an exact '## Known upper bounds' or '## Known lower bounds' heading, a blank line, a table line starting at column 0 with '|', or plain prose that does not start with a space, a tab, '>' or '#'), MEASURE it over all mirrored files before adopting it and record how many it would refuse, then build it as a refusal shared by extract-pins.mjs and both renderers (scripts/lib/mirror-shape.mjs), red-armed. It is a PAGE-level change: the constant pages and index have shown the extractor's row since 2026-07-24, so the pages carry the same exposure the feed does. Cross-family review before push. If the measurement refuses a real file, stop and consult before adopting.",
+      "closeWhen": "The whitelist grammar is adopted as a shared refusal in scripts/lib/mirror-shape.mjs, its measurement over every mirrored file is recorded here (files refused, by name), each rule red-armed through the real scripts, and a cross-family review of the change returns no defect in the grammar's own class; or the orchestrator retires this row with a reason recorded here.",
+      "links": [
+        "scripts/lib/mirror-shape.mjs",
+        "scripts/extract-pins.mjs",
+        "scripts/render-constant-pages.mjs",
+        "scripts/render-site.mjs"
+      ],
+      "notes": "Minted 2026-11-27 P5, condition 3 of the orchestrator's answer to consult 53be0c6e (bus e519f0cc): mint the dated row for the strict WHITELIST grammar of the bounds region, measured over all 123 files BEFORE adoption, scoped as a page-level change; not built today. Why: three Codex rounds on A-108 (r1 on 2efd81e, r2 on 2eb9075, r3 on 492519c) found the same class, the extractor misreading Markdown with line patterns: a pipe line after the table, a fenced fake heading, a comment regex that could erase a table, a heading with closing hashes, a blockquoted fence and a four-space-indented table. The refusals built today (comments, repeated exact headings, fences in the region, split pipe blocks, bad names) stay, and condition 1 forbids adding more line-pattern clauses, so the next step is a grammar that ADMITS named shapes instead of refusing named ones. Measured 2026-11-27 for today's rules: 0 of 123 files refused. Related, pre-existing and not in scope: reverify.mjs can print a malformed upstream file name into the public drift issue before extraction runs (Codex r1, named); its stdout is public, so a change there needs its own review.",
+      "created": "2026-11-27",
+      "updated": "2026-11-27"
+    },
+    {
+      "id": "A-115",
+      "title": "Reviewed constant names for the feeds, and the same review for the page heading a plain upstream title reaches today",
+      "type": "action",
+      "status": "open",
+      "owner": "bounds-ledger",
+      "nextCheckDate": "2026-12-09",
+      "expectedSignalBy": "2026-12-09",
+      "readCommand": "node C:/dev/skylark/bounds-ledger/scripts/render-constant-pages.mjs --titles",
+      "onTrigger": "On 2026-12-09, beside A-113 and W-19 (the Search Console watch): decide whether a feed entry should name its constant. If yes, design a committed, human-reviewed name table covering EVERY title (not only those with markup, which scripts/lib/plain-titles.mjs covers today), through which both the feed and the page heading read, with a refusal for an unreviewed title; measure how many titles it needs; cross-family claims pass before push. If no, re-date with the reason or retire this row.",
+      "closeWhen": "Either a reviewed name table covers every title, the feeds and the page headings read names only through it, and an unreviewed title refuses (red-armed through the real render), with a claims pass on the published names; or a dated decision recorded here keeps the feeds id-only and states how the page heading's plain-title route is handled.",
+      "links": [
+        "scripts/lib/plain-titles.mjs",
+        "scripts/render-constant-pages.mjs",
+        "scripts/render-site.mjs"
+      ],
+      "notes": "Minted 2026-11-27 P5, on the manager's P1 review (SUGGESTION: mint a row, dated, for adding reviewed names; the great version names the constant). Today's feed carries no title at all, by the manager's decision under default authority, so it publishes no upstream text. Codex r1 on 2efd81e (finding 3, MEDIUM, CONFIRMED as a route) found that a plain upstream title with no markup character passes plainTitle() unchanged and reaches the page heading, title and link preview; that route predates A-108 (since 2026-11-05) and no feed reads a title, so it was deferred here rather than fixed in the feed's change.",
+      "created": "2026-11-27",
+      "updated": "2026-11-27"
     }
   ],
   "meta": {
