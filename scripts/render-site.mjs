@@ -30,6 +30,7 @@ import { loadAudits, badgeFor, settledIds, attemptDate, refuseDroppedAudits, DEF
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { REPO, esc, issueUrl, copyCiteScript, ogMeta, ogMismatch } from "./lib/html.mjs";
+import { mirrorFolderRefusal } from "./lib/mirror-shape.mjs";
 import { plainTitle } from "./lib/plain-titles.mjs";
 import { loadMap, notesFor, badgeText, recordCheck } from "./openai-math.mjs";
 
@@ -3558,6 +3559,9 @@ export function cli({ check = false, storePath = DEFAULT_AUDIT_STORE } = {}) {
   // A-53 (b): an audit entry the index badge would silently drop stops the render before anything is
   // composed or written. The page ids come from the claims alone, so this runs before the slow,
   // git-reading composition. Same call as render-constant-pages' main; see refuseDroppedAudits.
+  // A-108 (Codex r2): the mirror folder's names and shapes, before anything is composed (shared rule).
+  const mirrorWhy = mirrorFolderRefusal(join(ROOT, "ledger", "teorth-optimizationproblems", "constants"));
+  if (mirrorWhy) { console.log(`RESULT: FAIL — render-site: refusing — ${mirrorWhy} (scripts/lib/mirror-shape.mjs); nothing was composed or written`); return 1; }
   const pinned = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
   if (refuseDroppedAudits("render-site", { storePath, pageIds: new Set(constantIds(pinned)) })) return 1;
   const { html, claims, manifest } = buildIndexHtml();

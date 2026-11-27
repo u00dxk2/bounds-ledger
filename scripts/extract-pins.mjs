@@ -25,6 +25,7 @@ import { readFile, writeFile, readdir } from "node:fs/promises";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isConstantId, firstBadConstantId, constantIdRefusal } from "./lib/constant-id.mjs";
+import { mirrorShapeRefusal } from "./lib/mirror-shape.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MIRROR = join(ROOT, "ledger", "teorth-optimizationproblems", "constants");
@@ -61,9 +62,9 @@ const RAW_BASE = "https://raw.githubusercontent.com/teorth/optimizationproblems/
 // A-108 Codex r1 (HIGH): the pin is "the last-listed row of the table", and the feed now announces a
 // change to it, so a pipe-prefixed line that is NOT in the table (an example after it, a second table)
 // must never become the pin. Stated rule, a refusal: a bounds section's pipe lines must form ONE
-// contiguous block (comment-only lines are removed first, so a commented-out row inside a table keeps it
-// whole). Anything else throws, and run() refuses before claims.json is written. Measured 2026-11-27:
-// 0 of 246 bounds sections in 123 files break it.
+// contiguous block. Anything else throws, and run() refuses before claims.json is written. Measured
+// 2026-11-27: 0 of 246 bounds sections in 123 files break it. (Comments cannot split a table: a file
+// holding one is refused before this runs, by the shape rule in extractPins.)
 export function tableIsContiguous(section) {
   const idx = section.split("\n").map((l, i) => (l.trim().startsWith("|") ? i : -1)).filter((i) => i >= 0);
   return idx.length === 0 || idx[idx.length - 1] - idx[0] + 1 === idx.length;
@@ -78,9 +79,12 @@ function lastDataRow(section, label = "section") {
 }
 
 function extractPins(base, body) {
-  // Whole-line comments go with their line ending, so they cannot split a table (A-108); then any other
-  // comment text, as before.
-  const clean = body.replace(/\r\n/g, "\n").replace(/^[ \t]*<!--[\s\S]*?-->[ \t]*\n/gm, "").replace(/<!--[\s\S]*?-->/g, "");
+  // A-108 (Codex r2, the same parser class a second time): a file holding an HTML comment, a repeated
+  // bounds heading or a fence in the bounds region is REFUSED, not parsed (scripts/lib/mirror-shape.mjs).
+  // So there is no comment left to strip, and the round-1 comment-stripping regex is gone.
+  const shape = mirrorShapeRefusal(body);
+  if (shape) throw new Error(`${base}.md: ${shape}`);
+  const clean = body.replace(/\r\n/g, "\n");
   const STD = /^(Description of constant|Known (upper|lower) bounds|Additional comments|Further remarks|References|Contribution notes|Certificate )/;
   const title = clean.match(/^# (.+)$/m)?.[1]?.trim()
     ?? [...clean.matchAll(/^## (.+)$/gm)].map((m) => m[1].trim()).find((h) => !STD.test(h))
@@ -129,8 +133,10 @@ function selftest() {
   assert(pins[0].id === "pin:91t:U" && pins[0].expect === "| $\\|\\|A\\|\\|_2 \\le 0.41$ | [B] |", "upper pin = last raw row, escaped pipes intact");
   assert(pins[1].id === "pin:91t:L" && pins[1].expect === "| $0.31$ | [E] |", "lower pin = last raw row");
 
+  // A-108 (Codex r2): a comment is REFUSED, no longer stripped (scripts/lib/mirror-shape.mjs).
+  const refusalOf = (base, body) => { try { extractPins(base, body); return null; } catch (e) { return e.message; } };
   const commented = fixture.replace("| $\\|\\|A\\|\\|_2 \\le 0.41$ | [B] |", "| $0.41$ | [B] |\n<!-- | $0.1$ | [H] | -->");
-  assert(extractPins("92t", commented).pins[0].expect === "| $0.41$ | [B] |", "HTML-commented row ignored");
+  assert(/92t\.md: line \d+ holds an HTML comment marker/.test(refusalOf("92t", commented) || ""), "a file holding an HTML comment is refused by name and line, never parsed");
 
   const empty = fixture.replace(/\| \$0\.31\$ \| \[E\] \|\n/, "");
   const r3 = extractPins("93t", empty);
@@ -146,14 +152,20 @@ function selftest() {
     assert(!isConstantId(bad), `a stem breaking the rule must be refused: ${JSON.stringify(bad)}`);
   }
   // A-108 Codex r1: THE TABLE IS ONE CONTIGUOUS BLOCK. A pipe line after the table (here a fenced
-  // example) must be refused, never pinned; a commented-out row inside the table must not split it.
-  const withExample = fixture.replace("## Known lower bounds", "Example:\n\n```\n| 0.0001 | [Z] |\n```\n\n## Known lower bounds");
-  let refused = null;
-  try { extractPins("95t", withExample); } catch (e) { refused = e.message; }
+  // example or second table) must be refused, never pinned.
+  const withExample = fixture.replace("## Known lower bounds", "Example:\n\n| 0.0001 | [Z] |\n\n## Known lower bounds");
+  const refused = refusalOf("95t", withExample);
   assert(refused && /not one contiguous table/.test(refused) && refused.includes("95t.md Known upper bounds"), `a pipe line outside the table must be refused by name, never pinned: ${refused}`);
-  const innerComment = fixture.replace("| $1/2=0.5$ | [A] |\n", "| $1/2=0.5$ | [A] |\n<!-- | $0.45$ | [X] | -->\n");
-  assert(innerComment !== fixture, "red-arm setup: the commented row must be inserted inside the table");
-  assert(extractPins("96t", innerComment).pins[0].expect === "| $\\|\\|A\\|\\|_2 \\le 0.41$ | [B] |", "a commented-out row inside a table leaves the table whole and the last row unchanged");
+  // A-108 (Codex r2 #1): a fenced fake heading before the real one, a repeated heading, and a fence in
+  // the bounds region are each refused; a fence AFTER the bounds region (10c.md's certificates) is not.
+  const fakeHeading = fixture.replace("## Known upper bounds", "```\n## Known upper bounds\n\n| Bound | Reference |\n| --- | --- |\n| 0.0001 | [Z] |\n```\n\n## Known upper bounds");
+  assert(/opens a code fence|appears 2 times/.test(refusalOf("96t", fakeHeading) || ""), "a fenced fake bounds heading before the real one must be refused");
+  const twice = fixture + "\n## Known upper bounds\n\n| Bound | Reference |\n| --- | --- |\n| 9 | [Q] |\n";
+  assert(/"## Known upper bounds" appears 2 times/.test(refusalOf("98t", twice) || ""), "a repeated bounds heading must be refused");
+  const fenceInRegion = fixture.replace("## Known lower bounds", "```text\nnot a table\n```\n\n## Known lower bounds");
+  assert(/opens a code fence before the bounds tables' region ends/.test(refusalOf("99t", fenceInRegion) || ""), "a fence inside the bounds region must be refused");
+  const fenceAfter = fixture.replace("## References\n", "## Certificate for the bound\n\n```text\n| 1 | 2 |\n```\n\n## References\n");
+  assert(fenceAfter !== fixture && refusalOf("90t", fenceAfter) === null, "a fence after the bounds region (10c.md's certificate shape) is allowed");
   assert(extractPins("97t", fixture.replace(/\n/g, "\r\n")).pins[0].expect === "| $\\|\\|A\\|\\|_2 \\le 0.41$ | [B] |", "CRLF input pins the same row");
 
   const hit = firstBadConstantId(["1a", "2b", "Bad", "3c"]);

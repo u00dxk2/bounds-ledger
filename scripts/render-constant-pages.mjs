@@ -36,6 +36,7 @@ const RUNS = `${REPO}/actions/workflows/reverify.yml`;
 
 import { MARKUP, PLAIN_TITLES, plainTitle } from "./lib/plain-titles.mjs";
 import { CONSTANT_ID, isConstantId, firstBadConstantId, constantIdRefusal } from "./lib/constant-id.mjs";
+import { mirrorFolderRefusal } from "./lib/mirror-shape.mjs";
 export { MARKUP, PLAIN_TITLES, plainTitle };
 
 // DATA-SUFFICIENCY RULE for c/<id>.html (written 2026-11-21, search day; narrowed on Codex's review the
@@ -1580,6 +1581,21 @@ async function selftest() {
       assert.ok(logged.some((l) => l.startsWith("RESULT: FAIL — render-constant-pages: refusing — item 1 has constant id \"Bad\"")), `main() must refuse a bad row id by position before composing anything; logged: ${logged.join(" | ")}`);
       assert.equal(exitSeen, 1, "the refusal exits 1");
     }
+    // A-108 (Codex r2): the folder check both renderers run before composing. On a temporary folder,
+    // both answers: a good folder passes; a bad name, a comment and an unreadable folder each refuse.
+    {
+      const mRoot = mkdtempSync(join(tmpdir(), "a108-mirror-"));
+      try {
+        writeFileSync(join(mRoot, "1a.md"), "# One\n\n## Known upper bounds\n\n| B | R |\n| - | - |\n| 1 | [A] |\n\n## Certificate\n\n```text\nok after the region\n```\n");
+        assert.equal(mirrorFolderRefusal(mRoot), null, "positive control: a well-formed folder (a fence only after the bounds region) passes");
+        writeFileSync(join(mRoot, "Bad.md"), "# Bad\n");
+        assert.match(String(mirrorFolderRefusal(mRoot)), /mirror file "Bad\.md" does not have a constant-id name/, "a planted bad file name is refused");
+        rmSync(join(mRoot, "Bad.md"));
+        writeFileSync(join(mRoot, "2b.md"), "# Two\n\n## Known upper bounds\n\n| B | R |\n| - | - |\n| 2 | [A] <!-- [New record](https://example.invalid) --> |\n");
+        assert.match(String(mirrorFolderRefusal(mRoot)), /mirror file 2b\.md: line 7 holds an HTML comment marker/, "a comment (here hiding a link) is refused by file and line");
+      } finally { rmSync(mRoot, { recursive: true, force: true }); }
+      assert.match(String(mirrorFolderRefusal(join(mRoot, "gone"))), /could not be read/, "an unreadable folder is a refusal, never a pass");
+    }
     // The page links its own feed, in the head and in words, and the all-constants feed.
     const zHtml = renderPage(zRow, "abc1234def");
     assert.ok(zHtml.includes(`<link rel="alternate" type="application/atom+xml" title="9z: recorded changes to its pinned last-listed bound rows" href="${SITE}c/9z.xml">`), "the page head must point feed readers at this constant's feed");
@@ -2887,6 +2903,11 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE, buildRows
   // written. An id is the stem of an upstream file name and reaches file names, URLs and fixed text.
   const badId = firstBadConstantId(rows.map((r) => r.id));
   if (badId) { console.log(`RESULT: FAIL — ${constantIdRefusal("render-constant-pages", badId)}`); process.exitCode = 1; return; }
+  // A-108 (Codex r2 #3, #4): the mirror folder itself, before anything is composed. A planted bad file name
+  // is refused even when claims.json predates it, and a file holding a comment, a repeated bounds heading or
+  // a fence in its bounds region is refused rather than read (a comment-hidden link cannot reach a page).
+  const mirrorWhy = mirrorFolderRefusal(join(ROOT, MIRROR_PREFIX));
+  if (mirrorWhy) { console.log(`RESULT: FAIL — render-constant-pages: refusing — ${mirrorWhy} (scripts/lib/mirror-shape.mjs); nothing was composed or written`); process.exitCode = 1; return; }
   // A-53 (b): refuse before anything is composed or written. Nothing above writes.
   if (refuseDroppedAudits("render-constant-pages", { storePath, pageIds: new Set(rows.map((r) => r.id)) })) { process.exitCode = 1; return; }
   // 2026-11-26: the description and the footer name the mirror date. Refuse an unreadable date, and any
