@@ -1529,6 +1529,19 @@ async function selftest() {
       assert.equal(feedSkeleton(allFeedXml([{ ...zRow, title: HOSTILE }], events)), allConstants, "the all-constants feed must be the fixed template plus ids, dates and built URLs, nothing else (planted title)");
       assert.equal(feedSkeleton(feedXml({ ...row, id: "9w", title: HOSTILE, upperChanged: "2026-07-24", lowerChanged: null }, events)), SK_HEAD("Bounds Ledger: constant <ID>, changes to its pinned last-listed bound rows") + "</feed>\n", "a zero-entry feed is the bare template");
     }
+    // A-108 Codex r1 (LOW): the template check above replaces ids, dates and URLs with placeholders, so it
+    // cannot see WHICH id, date or commit filled them. Checked directly here: every page/feed URL in 9z's
+    // feed names 9z, and every date and every commit sha in it comes from this fixture's own history.
+    {
+      const urlIds = [...feed.matchAll(/bounds-ledger\/c\/([^./#"<\s]+)\.(?:html|xml)/g)].map((m) => m[1]);
+      assert.ok(urlIds.length > 0 && urlIds.every((i) => i === "9z"), `every page or feed URL in 9z's feed must name 9z: ${[...new Set(urlIds)].join(",")}`);
+      const histDates = new Set(history.map((v) => v.date));
+      const feedDates = [...feed.matchAll(/(?<!\d)(\d{4}-\d{2}-\d{2})(?!\d)/g)].map((m) => m[1]);
+      assert.ok(feedDates.length > 0 && feedDates.every((d) => histDates.has(d)), `every date in a feed must be a commit date from its history: ${[...new Set(feedDates)].join(",")}`);
+      const histShas = new Set(history.map((v) => v.sha));
+      const feedShas = [...feed.matchAll(/(?<![0-9a-f])([0-9a-f]{40})(?![0-9a-f])/g)].map((m) => m[1]);
+      assert.ok(feedShas.length > 0 && feedShas.every((s) => histShas.has(s)), "every commit sha in a feed must be one from its history");
+    }
     // ORDER: newest first by position on the main line, so two commits on one day come out newest first.
     const shas = entries.map((en) => ((en.match(/@([0-9a-f]{40})<\/id>/) || [])[1] || "").slice(0, 1));
     assert.deepEqual(shas, ["0", "f", "d", "c"], `entries must be newest first by main-line position, not by date and sha: ${shas.join(",")}`);

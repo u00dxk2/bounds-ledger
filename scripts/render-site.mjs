@@ -43,10 +43,18 @@ export function titleFrom(statement) {
     .trim();
 }
 
+// A-108 Codex r1 (MEDIUM): a generated pin's id is EXACTLY "pin:<constant id>:U" or ":L". Projecting
+// "pin:999z:legacy:U" to "999z" let a malformed claim pass the row guard under a valid id, so every
+// "pin:" claim is held to the whole shape here, the one place both renderers take ids from, and the
+// build REFUSES (throws, before any page, feed or index is composed) rather than skipping the claim.
+export const PIN_ID = /^pin:([0-9]+[a-z]):[UL]$/;
+
 export function constantIds(claims) {
+  const pins = claims.filter((c) => typeof c.id === "string" && c.id.startsWith("pin:"));
+  const bad = pins.find((c) => !PIN_ID.test(c.id));
+  if (bad) throw new Error(`render: refusing — claim id ${JSON.stringify(bad.id)} is not "pin:<digits><one lowercase letter>:U" or ":L" (scripts/lib/constant-id.mjs); nothing was composed or written`);
   return [...new Set(
-    claims.filter((c) => typeof c.id === "string" && c.id.startsWith("pin:"))
-      .map((c) => c.id.split(":")[1])
+    pins.map((c) => c.id.split(":")[1])
   )].sort((a, b) => {
     const na = parseInt(a, 10), nb = parseInt(b, 10);
     return na === nb ? a.localeCompare(b) : na - nb;
@@ -1313,6 +1321,11 @@ async function selftest() {
   const manifest = { sha: "e70b4a45ae3a6218785088591e26521c20cfd49f" };
 
   assert.deepEqual(constantIds(claims), ["2a", "10a"], "ids sort numerically, not lexically, and exclude hand claims");
+  // A-108 Codex r1: a "pin:" claim of any other shape refuses the whole build, never projects to a valid id.
+  for (const badPin of ["pin:999z:legacy:U", "pin:Bad:U", "pin:9z:X", "pin:9z", "pin:9z:U ", "pin::U"]) {
+    assert.throws(() => constantIds([...claims, { id: badPin, statement: "x", url: "https://example.invalid/x", expect: "| 1 |" }]),
+      /render: refusing — claim id/, `a malformed pin id must refuse the build: ${JSON.stringify(badPin)}`);
+  }
   assert.equal(titleFrom(claims[0].statement), "The real Grothendieck constant");
 
   // audits: [] keeps this fixture HERMETIC. buildRows falls back to the live continuity/depth-audit.json,
