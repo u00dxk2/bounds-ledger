@@ -21,7 +21,8 @@ import { isConstantId } from "./constant-id.mjs";
 // refusals must be SEEN. CI does not run extract-pins, so the refusal line itself carries the next step.
 // Fixed text, printed only to the operator's terminal and the local run, never to reverify.mjs's public
 // drift-issue output (docs/gotchas.md records the same rule).
-export const RESNAP_STOPPED = "Resnap stopped: post a bus blocker naming this line, and comment it on the open drift issue.";
+// Conditional wording (Codex r4): the same refusal also prints during a plain CI --check, where no resnap ran.
+export const RESNAP_STOPPED = "If this stopped a resnap, post a bus blocker naming this line, and comment it on the open drift issue.";
 
 const BOUNDS = ["Known upper bounds", "Known lower bounds"];
 const headingRe = (h) => new RegExp(`^##[ \\t]+${h}[ \\t]*$`);

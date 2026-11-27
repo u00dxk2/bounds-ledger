@@ -24,6 +24,7 @@ import { readFileSync, realpathSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { CONSTANT_ID } from "./lib/constant-id.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -228,6 +229,10 @@ export function changeFor(pin, root = ROOT) {
 // last-listed row is often still in the table). The renderer words it that way and the selftest pins it.
 export const FEED_KINDS = new Set(["value", "expression"]);
 
+// The same pin-id shape render-site.mjs's PIN_ID holds the current claims to (kept here as a copy of the
+// pattern, not of a rule: both read the one-to-three-digit constant id from scripts/lib/constant-id.mjs).
+const PIN_ID_SHAPE = new RegExp(`^pin:${CONSTANT_ID.source.slice(1, -1)}:[UL]$`);
+
 export function realDay(d) {
   if (typeof d !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(d)) return false;
   const t = new Date(`${d}T00:00:00Z`);
@@ -244,12 +249,17 @@ export function pinEvents(versions) {
     // day with a four-digit year; git prints "10000-01-01" for a far-future author stamp. Refused, not passed.
     if (!realDay(v.date)) throw new Error(`pinEvents: refusing — version ${v.sha} has the date ${JSON.stringify(v.date)}, which is not a real YYYY-MM-DD day with a four-digit year`);
     const now = new Map();
+    const seenIds = new Set();
     for (const c of Array.isArray(v.claims) ? v.claims : []) {
-      if (c && typeof c.id === "string" && c.id.startsWith("pin:") && typeof c.expect === "string") {
-        // Codex r3 (I5): one id twice in a version would let the walk read one copy and the page another.
-        if (now.has(c.id)) throw new Error(`pinEvents: refusing — version ${v.sha} holds ${JSON.stringify(c.id)} 2 times`);
-        now.set(c.id, c.expect);
-      }
+      if (!c || typeof c.id !== "string" || !c.id.toLowerCase().startsWith("pin:")) continue;
+      // Codex r4 (I2 follow-up): a case-variant or malformed pin id in a historic version refuses, as
+      // render-site's constantIds() does for the current claims, rather than reading as a first appearance.
+      if (!PIN_ID_SHAPE.test(c.id)) throw new Error(`pinEvents: refusing — version ${v.sha} holds the pin id ${JSON.stringify(c.id)}, which is not "pin:<one to three digits><one lowercase letter>:U" or ":L"`);
+      // Codex r3/r4 (I5): one id twice in a version refuses, counted BEFORE expect is checked, so a copy
+      // with a missing expect cannot hide the duplicate.
+      if (seenIds.has(c.id)) throw new Error(`pinEvents: refusing — version ${v.sha} holds ${JSON.stringify(c.id)} 2 times`);
+      seenIds.add(c.id);
+      if (typeof c.expect === "string") now.set(c.id, c.expect);
     }
     if (prev) {
       for (const [id, after] of now) {
