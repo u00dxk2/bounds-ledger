@@ -30,7 +30,7 @@ import { loadAudits, badgeFor, settledIds, attemptDate, refuseDroppedAudits, DEF
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { REPO, esc, issueUrl, copyCiteScript, ogMeta, ogMismatch } from "./lib/html.mjs";
-import { mirrorFolderRefusal } from "./lib/mirror-shape.mjs";
+import { mirrorFolderRefusal, RESNAP_STOPPED } from "./lib/mirror-shape.mjs";
 import { plainTitle } from "./lib/plain-titles.mjs";
 import { loadMap, notesFor, badgeText, recordCheck } from "./openai-math.mjs";
 
@@ -48,12 +48,18 @@ export function titleFrom(statement) {
 // "pin:999z:legacy:U" to "999z" let a malformed claim pass the row guard under a valid id, so every
 // "pin:" claim is held to the whole shape here, the one place both renderers take ids from, and the
 // build REFUSES (throws, before any page, feed or index is composed) rather than skipping the claim.
-export const PIN_ID = /^pin:([0-9]+[a-z]):[UL]$/;
+export const PIN_ID = /^pin:([0-9]{1,3}[a-z]):[UL]$/;
 
 export function constantIds(claims) {
-  const pins = claims.filter((c) => typeof c.id === "string" && c.id.startsWith("pin:"));
+  // Codex r3 (I2): the prefix test is CASE-BLIND, because pinsFor() lowercases ids, so "PIN:4a:U" must not
+  // slip past this check and still be read as 4a's pin. (I5): one id held twice refuses the build.
+  const pins = claims.filter((c) => typeof c.id === "string" && c.id.toLowerCase().startsWith("pin:"));
+  const seen = new Map();
+  for (const c of pins) seen.set(c.id, (seen.get(c.id) || 0) + 1);
+  const dup = [...seen].find(([, n]) => n > 1);
+  if (dup) throw new Error(`render: refusing — claim id ${JSON.stringify(dup[0])} appears ${dup[1]} times in ledger/claims.json; nothing was composed or written`);
   const bad = pins.find((c) => !PIN_ID.test(c.id));
-  if (bad) throw new Error(`render: refusing — claim id ${JSON.stringify(bad.id)} is not "pin:<digits><one lowercase letter>:U" or ":L" (scripts/lib/constant-id.mjs); nothing was composed or written`);
+  if (bad) throw new Error(`render: refusing — claim id ${JSON.stringify(bad.id)} is not "pin:<one to three digits><one lowercase letter>:U" or ":L" (scripts/lib/constant-id.mjs); nothing was composed or written`);
   return [...new Set(
     pins.map((c) => c.id.split(":")[1])
   )].sort((a, b) => {
@@ -1323,7 +1329,11 @@ async function selftest() {
 
   assert.deepEqual(constantIds(claims), ["2a", "10a"], "ids sort numerically, not lexically, and exclude hand claims");
   // A-108 Codex r1: a "pin:" claim of any other shape refuses the whole build, never projects to a valid id.
-  for (const badPin of ["pin:999z:legacy:U", "pin:Bad:U", "pin:9z:X", "pin:9z", "pin:9z:U ", "pin::U"]) {
+  // A-108 Codex r3 (I2, I5): a "pin:" prefix in ANY case is held to the exact shape, and a duplicate pin
+  // id refuses the build (the history walk and the page would otherwise read different copies).
+  assert.throws(() => constantIds([...claims, { id: "pin:10a:U", statement: "dup", url: "https://example.invalid/d", expect: "| 3 |" }]),
+    /render: refusing — claim id "pin:10a:U" appears 2 times/, "a duplicate pin id must refuse the build");
+  for (const badPin of ["pin:999z:legacy:U", "pin:Bad:U", "pin:9z:X", "pin:9z", "pin:9z:U ", "pin::U", "PIN:9z:U", "Pin:10a:U", "pin:1234a:U"]) {
     assert.throws(() => constantIds([...claims, { id: badPin, statement: "x", url: "https://example.invalid/x", expect: "| 1 |" }]),
       /render: refusing — claim id/, `a malformed pin id must refuse the build: ${JSON.stringify(badPin)}`);
   }
@@ -3561,7 +3571,7 @@ export function cli({ check = false, storePath = DEFAULT_AUDIT_STORE } = {}) {
   // git-reading composition. Same call as render-constant-pages' main; see refuseDroppedAudits.
   // A-108 (Codex r2): the mirror folder's names and shapes, before anything is composed (shared rule).
   const mirrorWhy = mirrorFolderRefusal(join(ROOT, "ledger", "teorth-optimizationproblems", "constants"));
-  if (mirrorWhy) { console.log(`RESULT: FAIL — render-site: refusing — ${mirrorWhy} (scripts/lib/mirror-shape.mjs); nothing was composed or written`); return 1; }
+  if (mirrorWhy) { console.log(`RESULT: FAIL — render-site: refusing — ${mirrorWhy} (scripts/lib/mirror-shape.mjs); nothing was composed or written. ${RESNAP_STOPPED}`); return 1; }
   const pinned = JSON.parse(readFileSync(join(ROOT, "ledger", "claims.json"), "utf8"));
   if (refuseDroppedAudits("render-site", { storePath, pageIds: new Set(constantIds(pinned)) })) return 1;
   const { html, claims, manifest } = buildIndexHtml();

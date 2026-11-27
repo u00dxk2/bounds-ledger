@@ -1,14 +1,14 @@
 // THE CONSTANT ID RULE (A-108, 2026-11-27). A constant's id is the stem of upstream's file name in
 // ledger/teorth-optimizationproblems/constants/, and it travels unchecked into claims.json, page and
 // feed file names, URLs and fixed text. So ONE stated rule, a refusal, shared by every reader that takes
-// an id from the mirror: an id is one or more digits followed by ONE lowercase letter, nothing else.
+// an id from the mirror: an id is one to three digits followed by ONE lowercase letter, nothing else (the length cap, Codex r3: a 251-digit id passed the old rule and hit the 255-byte file-name limit after c/ was cleared; today's ids have at most two digits).
 // A name that does not match is REFUSED with its position, never escaped, stripped or skipped.
 // Measured 2026-11-27: all 123 mirrored file stems match, so the rule refuses no real constant today.
 // Why a refusal and not a sanitiser: A-106 stopped at Codex round 3 because a crafted file name could
 // have put upstream text into a feed (A-108's note), and this repo's rule for a repeat class is to claim
 // less with a stated rule whose failure mode is a refusal (portable rule 2).
 
-export const CONSTANT_ID = /^[0-9]+[a-z]$/;
+export const CONSTANT_ID = /^[0-9]{1,3}[a-z]$/;
 
 export const isConstantId = (id) => typeof id === "string" && CONSTANT_ID.test(id);
 
@@ -27,5 +27,5 @@ export function firstBadConstantId(ids) {
 
 /** The fixed refusal sentence, with the offending id JSON-quoted so control characters stay visible. */
 export function constantIdRefusal(label, bad) {
-  return `${label}: refusing — item ${bad.index} has constant id ${JSON.stringify(bad.id)}, which is not one or more digits followed by one lowercase letter (scripts/lib/constant-id.mjs); nothing was composed or written`;
+  return `${label}: refusing — item ${bad.index} has constant id ${JSON.stringify(bad.id)}, which is not one to three digits followed by one lowercase letter (scripts/lib/constant-id.mjs); nothing was composed or written`;
 }

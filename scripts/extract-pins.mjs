@@ -25,7 +25,7 @@ import { readFile, writeFile, readdir } from "node:fs/promises";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isConstantId, firstBadConstantId, constantIdRefusal } from "./lib/constant-id.mjs";
-import { mirrorShapeRefusal } from "./lib/mirror-shape.mjs";
+import { mirrorShapeRefusal, RESNAP_STOPPED } from "./lib/mirror-shape.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MIRROR = join(ROOT, "ledger", "teorth-optimizationproblems", "constants");
@@ -148,7 +148,7 @@ function selftest() {
   // A-108: THE STEM RULE, both answers. A stem that is not digits-then-one-lowercase-letter is refused
   // with its position; the real call site in run() checks EVERY stem before it reads or writes anything.
   for (const ok of ["1a", "10c", "90a"]) assert(isConstantId(ok), `a plain constant id must pass: ${ok}`);
-  for (const bad of ["t1", "1A", "1ab", "a1", "1", "1a ", "1a\n", "../1a", "1a.md", "１a", ""]) {
+  for (const bad of ["t1", "1A", "1ab", "a1", "1", "1a ", "1a\n", "../1a", "1a.md", "１a", "", "1234a", "0".repeat(251) + "a"]) {
     assert(!isConstantId(bad), `a stem breaking the rule must be refused: ${JSON.stringify(bad)}`);
   }
   // A-108 Codex r1: THE TABLE IS ONE CONTIGUOUS BLOCK. A pipe line after the table (here a fenced
@@ -182,7 +182,7 @@ async function run() {
   // (orchestrator, bus d4c969c8): a file that reaches the mirror another way skips a snapshot-only check.
   const bad = firstBadConstantId(files.map((f) => f.replace(/\.md$/, "")));
   if (bad) {
-    console.error(constantIdRefusal("extract-pins", bad));
+    console.error(`${constantIdRefusal("extract-pins", bad)}. ${RESNAP_STOPPED}`);
     process.exitCode = 1;
     return;
   }
@@ -194,7 +194,7 @@ async function run() {
     try { out = extractPins(base, await readFile(join(MIRROR, f), "utf8")); }
     catch (e) {
       // A-108: nothing is written when any file breaks a stated rule (claims.json stays byte-identical).
-      console.error(`extract-pins: refusing — ${e.message}; nothing was composed or written`);
+      console.error(`extract-pins: refusing — ${e.message}; nothing was composed or written. ${RESNAP_STOPPED}`);
       process.exitCode = 1;
       return;
     }

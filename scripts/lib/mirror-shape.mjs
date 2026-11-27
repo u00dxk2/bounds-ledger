@@ -17,6 +17,12 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { isConstantId } from "./constant-id.mjs";
 
+// The orchestrator's condition 3 (consult ffb8f460, 2026-11-27): a resnap that stops on one of these
+// refusals must be SEEN. CI does not run extract-pins, so the refusal line itself carries the next step.
+// Fixed text, printed only to the operator's terminal and the local run, never to reverify.mjs's public
+// drift-issue output (docs/gotchas.md records the same rule).
+export const RESNAP_STOPPED = "Resnap stopped: post a bus blocker naming this line, and comment it on the open drift issue.";
+
 const BOUNDS = ["Known upper bounds", "Known lower bounds"];
 const headingRe = (h) => new RegExp(`^##[ \\t]+${h}[ \\t]*$`);
 
@@ -54,7 +60,7 @@ export function mirrorFolderRefusal(dir) {
   if (!names.length) return `the mirror folder holds no constant files`;
   for (const f of names) {
     const stem = f.slice(0, -3);
-    if (!isConstantId(stem)) return `mirror file ${JSON.stringify(f)} does not have a constant-id name (one or more digits, then one lowercase letter)`;
+    if (!isConstantId(stem)) return `mirror file ${JSON.stringify(f)} does not have a constant-id name (one to three digits, then one lowercase letter)`;
     const why = mirrorShapeRefusal(readFileSync(join(dir, f), "utf8"));
     if (why) return `mirror file ${f}: ${why}`;
   }

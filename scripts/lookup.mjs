@@ -228,15 +228,28 @@ export function changeFor(pin, root = ROOT) {
 // last-listed row is often still in the table). The renderer words it that way and the selftest pins it.
 export const FEED_KINDS = new Set(["value", "expression"]);
 
+export function realDay(d) {
+  if (typeof d !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(d)) return false;
+  const t = new Date(`${d}T00:00:00Z`);
+  return !Number.isNaN(t.getTime()) && t.toISOString().slice(0, 10) === d;
+}
+
 export function pinEvents(versions) {
   const events = new Map();
   let prev = null;
   let seq = 0;
   for (const v of versions || []) {
     seq += 1;
+    // A-108 Codex r3 (I1): the date reaches a feed's <updated> and its prose, so it must be a real calendar
+    // day with a four-digit year; git prints "10000-01-01" for a far-future author stamp. Refused, not passed.
+    if (!realDay(v.date)) throw new Error(`pinEvents: refusing — version ${v.sha} has the date ${JSON.stringify(v.date)}, which is not a real YYYY-MM-DD day with a four-digit year`);
     const now = new Map();
     for (const c of Array.isArray(v.claims) ? v.claims : []) {
-      if (c && typeof c.id === "string" && c.id.startsWith("pin:") && typeof c.expect === "string") now.set(c.id, c.expect);
+      if (c && typeof c.id === "string" && c.id.startsWith("pin:") && typeof c.expect === "string") {
+        // Codex r3 (I5): one id twice in a version would let the walk read one copy and the page another.
+        if (now.has(c.id)) throw new Error(`pinEvents: refusing — version ${v.sha} holds ${JSON.stringify(c.id)} 2 times`);
+        now.set(c.id, c.expect);
+      }
     }
     if (prev) {
       for (const [id, after] of now) {

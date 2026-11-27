@@ -36,7 +36,7 @@ const RUNS = `${REPO}/actions/workflows/reverify.yml`;
 
 import { MARKUP, PLAIN_TITLES, plainTitle } from "./lib/plain-titles.mjs";
 import { CONSTANT_ID, isConstantId, firstBadConstantId, constantIdRefusal } from "./lib/constant-id.mjs";
-import { mirrorFolderRefusal } from "./lib/mirror-shape.mjs";
+import { mirrorFolderRefusal, RESNAP_STOPPED } from "./lib/mirror-shape.mjs";
 export { MARKUP, PLAIN_TITLES, plainTitle };
 
 // DATA-SUFFICIENCY RULE for c/<id>.html (written 2026-11-21, search day; narrowed on Codex's review the
@@ -1211,12 +1211,12 @@ export const ENTRY_REFUSAL = "This feed does not say what the bound cell holds n
 function feedEntryText(r, e) {
   const side = FEED_SIDE[String(e.pin).split(":")[2]] || "a";
   return [
-    `This ledger's pinned copy of the last-listed ${side}-bound row of constant ${r.id}, from teorth/optimizationproblems, changed in its bound cell in a commit dated ${e.date}.`,
+    `This ledger's pinned copy of the ${side}-bound row of constant ${r.id}, as this ledger's extractor reads it from teorth/optimizationproblems, changed in its bound cell in a commit dated ${e.date}.`,
     // A-108 round 0 (2026-11-27): "Upstream keeps" asserted a habit the code cannot show; "can keep" is
     // what Brun's 47a row shows. The date caveat now also names the two things a version-to-version walk
     // cannot see: several upstream edits between two of our versions arrive as ONE entry, and an edit
     // made and undone between them leaves none.
-    `${ENTRY_REFUSAL} Upstream's tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.`,
+    `${ENTRY_REFUSAL} Upstream's tables can keep superseded and weaker rows, and a pinned row is a listing position in the table, not the strongest bound.`,
     `Read this constant's page and its source file before citing: ${SITE}c/${r.id}.html`,
     `The date is the one on this ledger's commit; upstream's own change can be earlier, several upstream edits can fall between two of this ledger's versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: ${commitUrl(e.sha)}`,
   ].join("\n\n");
@@ -1276,7 +1276,7 @@ export function feedXml(r, events) {
   const fallback = [r.upperChanged, r.lowerChanged].filter(Boolean).sort().pop() || "2026-07-24";
   return feedDoc({
     self: feedUrl(r.id),
-    title: `Bounds Ledger: constant ${r.id}, changes to its pinned last-listed bound rows`,
+    title: `Bounds Ledger: constant ${r.id}, changes to its pinned bound rows`,
     alt: `${SITE}c/${r.id}.html`,
     updated: list.length ? list[0].date : fallback,
     entries: list.map((e) => feedEntry(r, e)),
@@ -1320,12 +1320,12 @@ export function feedSkeleton(doc) {
 // A-108 round 0 (2026-11-27): the subtitle now names the three version shapes that yield no entry, and
 // the all-constants title names the constants on the main list (the hand claims and the Ramsey area
 // have no feed), where it said "every constant on this site".
-export const ALL_FEED_TITLE = "Bounds Ledger: the constants on this site's main list, changes to their pinned last-listed bound rows";
-export const feedLinkTitle = (id) => `${id}: recorded changes to its pinned last-listed bound rows`;
-export const FEED_SUBTITLE = "One entry for each change this ledger saw in the bound cell of a pinned last-listed row, comparing each pinned version with the one before it on this ledger's main line. A pin's first appearance, an edit that leaves the bound cell byte for byte the same, and a version in which the pin is missing produce no entry. An entry identifies the constant, the side and the date of this ledger's commit, without quoting the bound cell, and never says what the bound is or whether it moved: a last-listed row is a position in upstream's table, not the strongest bound. The constant's page shows the current pinned rows; the linked commit shows the recorded edit.";
+export const ALL_FEED_TITLE = "Bounds Ledger: the constants on this site's main list, changes to their pinned bound rows";
+export const feedLinkTitle = (id) => `${id}: recorded changes to its pinned bound rows`;
+export const FEED_SUBTITLE = "One entry for each change this ledger saw in the bound cell of a pinned row, as this ledger's extractor reads it, comparing each pinned version with the one before it on this ledger's main line. A pin's first appearance, an edit that leaves the bound cell byte for byte the same, and a version in which the pin is missing produce no entry. An entry identifies the constant, the side and the date of this ledger's commit, without quoting the bound cell, and never says what the bound is or whether it moved: a pinned row is a listing position in upstream's table, not the strongest bound. The constant's page shows the current pinned rows; the linked commit shows the recorded edit.";
 
 function watchLine(r) {
-  return `<p class="watch"><a href="${esc(feedUrl(r.id))}">Watch this constant</a>: an Atom feed with one entry for each change this ledger recorded in the bound cell of a pinned row on this page, comparing consecutive versions of its pins. An entry says which side changed and on what date, without quoting the bound cell; this page shows the current rows, and each entry links the commit that recorded the change. <a href="${esc(`${SITE}${ALL_FEED}`)}">One feed for all the constants on this site's main list</a>.</p>`;
+  return `<p class="watch"><a href="${esc(feedUrl(r.id))}">Watch this constant</a>: an Atom feed with one entry for each change this ledger recorded in the bound cell of a pinned row on this page, as its extractor reads it, comparing consecutive versions of its pins. An entry says which side changed and on what date, without quoting the bound cell; this page shows the current rows, and each entry links the commit that recorded the change. <a href="${esc(`${SITE}${ALL_FEED}`)}">One feed for all the constants on this site's main list</a>.</p>`;
 }
 
 /**
@@ -1519,16 +1519,16 @@ async function selftest() {
     // subsumed, so that this guard is the first a title mutation reaches (KP-78: assertion order).
     {
       const HOSTILE = "A bound improved from 4 to 3 (new record)";
-      const SK_HEAD = (title) => `<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom">\n<id><URL></id>\n<title>${title}</title>\n<subtitle>One entry for each change this ledger saw in the bound cell of a pinned last-listed row, comparing each pinned version with the one before it on this ledger&apos;s main line. A pin&apos;s first appearance, an edit that leaves the bound cell byte for byte the same, and a version in which the pin is missing produce no entry. An entry identifies the constant, the side and the date of this ledger&apos;s commit, without quoting the bound cell, and never says what the bound is or whether it moved: a last-listed row is a position in upstream&apos;s table, not the strongest bound. The constant&apos;s page shows the current pinned rows; the linked commit shows the recorded edit.</subtitle>\n<updated><DATE>T00:00:00Z</updated>\n<author><name>Bounds Ledger</name></author>\n<link rel="self" type="application/atom+xml" href="<URL>"/>\n<link rel="alternate" type="text/html" href="<URL>"/>\n`;
-      const SK_ENTRY = (side) => `<entry>\n<id><URL></id>\n<title><ID> ${side} bound: pinned bound cell changed <DATE></title>\n<updated><DATE>T00:00:00Z</updated>\n<link rel="alternate" type="text/html" href="<URL>"/>\n<link rel="related" href="<URL>"/>\n<content type="text">This ledger&apos;s pinned copy of the last-listed ${side}-bound row of constant <ID>, from teorth/optimizationproblems, changed in its bound cell in a commit dated <DATE>.\n\nThis feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.\n\nRead this constant&apos;s page and its source file before citing: <URL>\n\nThe date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: <URL></content>\n</entry>\n`;
+      const SK_HEAD = (title) => `<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom">\n<id><URL></id>\n<title>${title}</title>\n<subtitle>One entry for each change this ledger saw in the bound cell of a pinned row, as this ledger&apos;s extractor reads it, comparing each pinned version with the one before it on this ledger&apos;s main line. A pin&apos;s first appearance, an edit that leaves the bound cell byte for byte the same, and a version in which the pin is missing produce no entry. An entry identifies the constant, the side and the date of this ledger&apos;s commit, without quoting the bound cell, and never says what the bound is or whether it moved: a pinned row is a listing position in upstream&apos;s table, not the strongest bound. The constant&apos;s page shows the current pinned rows; the linked commit shows the recorded edit.</subtitle>\n<updated><DATE>T00:00:00Z</updated>\n<author><name>Bounds Ledger</name></author>\n<link rel="self" type="application/atom+xml" href="<URL>"/>\n<link rel="alternate" type="text/html" href="<URL>"/>\n`;
+      const SK_ENTRY = (side) => `<entry>\n<id><URL></id>\n<title><ID> ${side} bound: pinned bound cell changed <DATE></title>\n<updated><DATE>T00:00:00Z</updated>\n<link rel="alternate" type="text/html" href="<URL>"/>\n<link rel="related" href="<URL>"/>\n<content type="text">This ledger&apos;s pinned copy of the ${side}-bound row of constant <ID>, as this ledger&apos;s extractor reads it from teorth/optimizationproblems, changed in its bound cell in a commit dated <DATE>.\n\nThis feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a pinned row is a listing position in the table, not the strongest bound.\n\nRead this constant&apos;s page and its source file before citing: <URL>\n\nThe date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: <URL></content>\n</entry>\n`;
       const sides = eventsFor("9z", events).map((e) => (e.pin.endsWith(":U") ? "upper" : "lower"));
       const body = sides.map(SK_ENTRY).join("");
-      const perConstant = SK_HEAD("Bounds Ledger: constant <ID>, changes to its pinned last-listed bound rows") + body + "</feed>\n";
-      const allConstants = SK_HEAD("Bounds Ledger: the constants on this site&apos;s main list, changes to their pinned last-listed bound rows") + body + "</feed>\n";
+      const perConstant = SK_HEAD("Bounds Ledger: constant <ID>, changes to its pinned bound rows") + body + "</feed>\n";
+      const allConstants = SK_HEAD("Bounds Ledger: the constants on this site&apos;s main list, changes to their pinned bound rows") + body + "</feed>\n";
       assert.deepEqual(sides, ["upper", "upper", "lower", "upper"], "positive control: the fixture's four entries, newest first");
       assert.equal(feedSkeleton(feedXml({ ...zRow, title: HOSTILE }, events)), perConstant, "a per-constant feed must be the fixed template plus ids, dates and built URLs, nothing else (planted title)");
       assert.equal(feedSkeleton(allFeedXml([{ ...zRow, title: HOSTILE }], events)), allConstants, "the all-constants feed must be the fixed template plus ids, dates and built URLs, nothing else (planted title)");
-      assert.equal(feedSkeleton(feedXml({ ...row, id: "9w", title: HOSTILE, upperChanged: "2026-07-24", lowerChanged: null }, events)), SK_HEAD("Bounds Ledger: constant <ID>, changes to its pinned last-listed bound rows") + "</feed>\n", "a zero-entry feed is the bare template");
+      assert.equal(feedSkeleton(feedXml({ ...row, id: "9w", title: HOSTILE, upperChanged: "2026-07-24", lowerChanged: null }, events)), SK_HEAD("Bounds Ledger: constant <ID>, changes to its pinned bound rows") + "</feed>\n", "a zero-entry feed is the bare template");
     }
     // A-108 Codex r1 (LOW): the template check above replaces ids, dates and URLs with placeholders, so it
     // cannot see WHICH id, date or commit filled them. Checked directly here: every page/feed URL in 9z's
@@ -1542,6 +1542,15 @@ async function selftest() {
       const histShas = new Set(history.map((v) => v.sha));
       const feedShas = [...feed.matchAll(/(?<![0-9a-f])([0-9a-f]{40})(?![0-9a-f])/g)].map((m) => m[1]);
       assert.ok(feedShas.length > 0 && feedShas.every((s) => histShas.has(s)), "every commit sha in a feed must be one from its history");
+    }
+    // A-108 Codex r3 (I5, I1): a version holding one pin id twice, and a commit date that is not a real
+    // YYYY-MM-DD with a four-digit year (git prints 10000-01-01 for a far-future author stamp), each
+    // REFUSE the history walk, never pick one copy or pass the date through.
+    assert.throws(() => pinEvents([history[0], v("1".repeat(40), "2026-11-01", { "pin:9z:U": U0 })].concat([{ sha: "2".repeat(40), date: "2026-11-02", claims: [{ id: "pin:9z:U", expect: U0 }, { id: "pin:9z:U", expect: "| 3 |" }] }])),
+      /pinEvents: refusing — version 2{40} holds "pin:9z:U" 2 times/, "a duplicate pin in one version must refuse the walk");
+    for (const badDate of ["10000-01-01", "2026-02-30", "2026-1-01", "", undefined]) {
+      assert.throws(() => pinEvents([history[0], { sha: "3".repeat(40), date: badDate, claims: history[0].claims }]),
+        /pinEvents: refusing — version 3{40} has the date/, `a commit date that is not a real four-digit-year day must refuse the walk: ${JSON.stringify(badDate)}`);
     }
     // ORDER: newest first by position on the main line, so two commits on one day come out newest first.
     const shas = entries.map((en) => ((en.match(/@([0-9a-f]{40})<\/id>/) || [])[1] || "").slice(0, 1));
@@ -1563,8 +1572,8 @@ async function selftest() {
     // A-108: THE INPUT BOUNDARY. An id is the stem of an upstream file name; one that breaks the
     // constant-id rule is REFUSED by the feed functions themselves, never escaped into the feed.
     for (const badId of ["9z</id><title>A bound improved", "Bad", "9Z", "9zz", "../9z", "9z\n"]) {
-      assert.throws(() => feedXml({ ...zRow, id: badId }, events), /not one or more digits followed by one lowercase letter/, `feedXml must refuse the id ${JSON.stringify(badId)}`);
-      assert.throws(() => allFeedXml([zRow, { ...row, id: badId }], events), /not one or more digits followed by one lowercase letter/, `allFeedXml must refuse the id ${JSON.stringify(badId)}`);
+      assert.throws(() => feedXml({ ...zRow, id: badId }, events), /not one to three digits followed by one lowercase letter/, `feedXml must refuse the id ${JSON.stringify(badId)}`);
+      assert.throws(() => allFeedXml([zRow, { ...row, id: badId }], events), /not one to three digits followed by one lowercase letter/, `allFeedXml must refuse the id ${JSON.stringify(badId)}`);
     }
     // ...and the whole render refuses before composing anything, through main() itself (check mode, so
     // a removed guard cannot write files here). The assertion is on the refusal's OWN line, so a check-mode
@@ -1598,7 +1607,7 @@ async function selftest() {
     }
     // The page links its own feed, in the head and in words, and the all-constants feed.
     const zHtml = renderPage(zRow, "abc1234def");
-    assert.ok(zHtml.includes(`<link rel="alternate" type="application/atom+xml" title="9z: recorded changes to its pinned last-listed bound rows" href="${SITE}c/9z.xml">`), "the page head must point feed readers at this constant's feed");
+    assert.ok(zHtml.includes(`<link rel="alternate" type="application/atom+xml" title="9z: recorded changes to its pinned bound rows" href="${SITE}c/9z.xml">`), "the page head must point feed readers at this constant's feed");
     assert.ok(zHtml.includes(`<a href="${SITE}c/9z.xml">Watch this constant</a>`) && zHtml.includes(`href="${SITE}${ALL_FEED}"`), "the page must link its feed in words, and the all-constants feed");
     const all = allFeedXml([zRow, { ...row, id: "9y", title: "Other" }], events);
     assert.equal((all.match(/<entry>/g) || []).length, 4, "the all-constants feed carries every constant's entries (9y has none: its only change straddles a gap)");
@@ -2907,7 +2916,7 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE, buildRows
   // is refused even when claims.json predates it, and a file holding a comment, a repeated bounds heading or
   // a fence in its bounds region is refused rather than read (a comment-hidden link cannot reach a page).
   const mirrorWhy = mirrorFolderRefusal(join(ROOT, MIRROR_PREFIX));
-  if (mirrorWhy) { console.log(`RESULT: FAIL — render-constant-pages: refusing — ${mirrorWhy} (scripts/lib/mirror-shape.mjs); nothing was composed or written`); process.exitCode = 1; return; }
+  if (mirrorWhy) { console.log(`RESULT: FAIL — render-constant-pages: refusing — ${mirrorWhy} (scripts/lib/mirror-shape.mjs); nothing was composed or written. ${RESNAP_STOPPED}`); process.exitCode = 1; return; }
   // A-53 (b): refuse before anything is composed or written. Nothing above writes.
   if (refuseDroppedAudits("render-constant-pages", { storePath, pageIds: new Set(rows.map((r) => r.id)) })) { process.exitCode = 1; return; }
   // 2026-11-26: the description and the footer name the mirror date. Refuse an unreadable date, and any
