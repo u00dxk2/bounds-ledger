@@ -212,6 +212,72 @@ export function changeFor(pin, root = ROOT) {
   return { date: meta.date, sha: meta.sha, kind, prevExpect: kind === "value" ? prev.expect : null };
 }
 
+// A-106 (2026-11-16): a pin's observed history, for the per-constant change feed. changeFor()
+// answers "when did this row last move"; a feed has to answer "every time we saw it move", so this
+// reads the versions of ledger/claims.json along the main line (claimsVersions, below), oldest
+// first, and compares each pin with ITS OWN previous version through the same changeKind() the page
+// labels use. `seq` is the version's position on that line, the feed's ordering key.
+//
+// Only "value" and "expression" changes become events: those are the two kinds where the bound cell
+// itself changed. A "text" change says the bound held, and a pin appearing for the first time has
+// nothing to compare against, so neither is an event. A pin missing from the version before is
+// skipped rather than compared with an older one: a gap is not an observation.
+//
+// What an event asserts is only this: the LAST-LISTED row of one side's table changed between two
+// of our commits. It never says the bound improved (lookup.mjs changeFor's Brun note, above: the old
+// last-listed row is often still in the table). The renderer words it that way and the selftest pins it.
+export const FEED_KINDS = new Set(["value", "expression"]);
+
+export function pinEvents(versions) {
+  const events = new Map();
+  let prev = null;
+  let seq = 0;
+  for (const v of versions || []) {
+    seq += 1;
+    const now = new Map();
+    for (const c of Array.isArray(v.claims) ? v.claims : []) {
+      if (c && typeof c.id === "string" && c.id.startsWith("pin:") && typeof c.expect === "string") now.set(c.id, c.expect);
+    }
+    if (prev) {
+      for (const [id, after] of now) {
+        if (!prev.has(id)) continue;
+        const before = prev.get(id);
+        if (before === after) continue;
+        const kind = changeKind(before, after);
+        if (!FEED_KINDS.has(kind)) continue;
+        if (!events.has(id)) events.set(id, []);
+        events.get(id).push({ pin: id, date: v.date, sha: v.sha, seq, kind, before, after });
+      }
+    }
+    prev = now;
+  }
+  return events;
+}
+
+// The versions of ledger/claims.json along this ledger's MAIN LINE (first parents), oldest first, or
+// null when history cannot be read. FIRST-PARENT, not every commit (Codex r1 on 214aba7): a plain
+// path-limited log over merges can put snapshots from two branches next to each other, and comparing
+// those invents a change that happened in neither. Along first parents each version is the parent
+// line of the next, so adjacent versions are real before-and-after. A change made on a side branch
+// is seen as the merge that brought it in. The date is the commit's AUTHOR date (%ad), the same date
+// the page's own labels use (lastChangeMeta above), so the feed and the page agree.
+// A SHALLOW clone is refused rather than read: it holds one version, which would yield zero events
+// and an empty feed for every constant, a confident "nothing moved" built on no history at all.
+export function claimsVersions(root = ROOT) {
+  const git = (args) => execFileSync("git", args, { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"], maxBuffer: 64 * 1024 * 1024 });
+  try {
+    if (git(["rev-parse", "--is-shallow-repository"]).trim() !== "false") return null;
+    const log = git(["log", "--first-parent", "--reverse", "--format=%H %ad", "--date=short", "--", "ledger/claims.json"]).trim();
+    if (!log) return null;
+    return log.split(/\r?\n/).map((line) => {
+      const [sha, date] = line.trim().split(/\s+/);
+      return { sha, date, claims: JSON.parse(git(["show", `${sha}:ledger/claims.json`])) };
+    });
+  } catch {
+    return null;
+  }
+}
+
 function render(id, claims, manifest, root = ROOT) {
   const pins = pinsFor(id, claims);
   const lines = [];

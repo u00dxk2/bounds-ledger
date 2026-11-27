@@ -22,7 +22,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import assert from "node:assert/strict";
 import { buildRows, flagUrl, citation, reportLinks, whenLabel, whenHtml, historyUrl, displayCell, readable } from "./render-site.mjs";
-import { boundCell } from "./lookup.mjs";
+import { boundCell, pinEvents, claimsVersions } from "./lookup.mjs";
 import crypto from "node:crypto";
 import { REPO, esc, unesc, copyCiteScript, ogMeta, ogMismatch } from "./lib/html.mjs";
 import { noteBlock } from "./openai-math.mjs";
@@ -35,6 +35,7 @@ const SITE = "https://u00dxk2.github.io/bounds-ledger/";
 const RUNS = `${REPO}/actions/workflows/reverify.yml`;
 
 import { MARKUP, PLAIN_TITLES, plainTitle } from "./lib/plain-titles.mjs";
+import { CONSTANT_ID, isConstantId, firstBadConstantId, constantIdRefusal } from "./lib/constant-id.mjs";
 export { MARKUP, PLAIN_TITLES, plainTitle };
 
 // DATA-SUFFICIENCY RULE for c/<id>.html (written 2026-11-21, search day; narrowed on Codex's review the
@@ -283,7 +284,8 @@ export function headingLine(file, heading, root = ROOT) {
 export function mirrorFileExact(file, root = ROOT) {
   if (typeof file !== "string" || !file.startsWith(MIRROR_PREFIX)) return false;
   const name = file.slice(MIRROR_PREFIX.length);
-  if (!/^[A-Za-z0-9_-]+\.md$/.test(name)) return false;
+  // A-108: the file name is a constant id plus ".md", by the one shared rule (was /^[A-Za-z0-9_-]+\.md$/).
+  if (!name.endsWith(".md") || !CONSTANT_ID.test(name.slice(0, -3))) return false;
   try { return readdirSync(join(root, MIRROR_PREFIX)).includes(name); } catch { return false; }
 }
 
@@ -1155,6 +1157,177 @@ function side(label, row, changed, kind, hist = null, file = null, root = ROOT) 
 }
 
 /**
+ * A-106 (2026-11-16): A FEED PER CONSTANT, so a reader is TOLD that a row moved instead of having to
+ * come back and look. docs/evangelism-bar.md's friend sentence is "a thing that ... tells you when a
+ * number you cited moved"; on that file's own loop (weeks to months between visits) the page told
+ * nobody, and the October movements were announced to no one.
+ *
+ * WHAT AN ENTRY SAYS: the SIDE and the DATE, and nothing about the row. An entry is one event from
+ * lookup.mjs pinEvents(): the bound cell of one side's pinned last-listed row differs from that pin's
+ * previous version on this ledger's main line. The entry says that, says it does not say what changed
+ * or whether the bound moved, and sends the reader to the page. It carries NO ROW AND NO VALUE.
+ * Codex r1 on 214aba7 (class verdict YES) is why: the first design quoted the row pinned that day,
+ * and (a) upstream's own comment inside a row can say "First improvement on [GHR2007]'s $4/3$"
+ * (3a), so an entry carried an improvement claim in upstream's words, and (b) a feed with several
+ * entries for one side lists former and current values together (47a: 3.879 and 4), which is the
+ * from-to pair this file's header refuses (Brun's constant, 2026-09-01) delivered as a list. Dropping
+ * only the "before" row did not reach either. An entry with no value cannot make either claim.
+ *
+ * Each entry links this ledger's own commit for the re-pin. Nothing else on the site links our commit
+ * pages, so a view of one in GitHub's popular-paths read (`gh api repos/u00dxk2/bounds-ledger/traffic/
+ * popular/paths`) is a possible sign that a feed was read. It is not proof: anyone can browse commits.
+ *
+ * The page still loads nothing at runtime: a link to a feed is not an asset the page fetches.
+ */
+export const FEED_SIDE = { U: "upper", L: "lower" };
+
+// XML text, escaped TOTALLY, a carriage return included (&#13;), since an XML parser rewrites a raw CR
+// to a newline. Characters XML 1.0 cannot carry are REFUSED, never dropped or replaced: the C0 controls
+// other than tab, LF and CR, the noncharacters U+FFFE and U+FFFF, and a lone surrogate, which UTF-8
+// encoding would silently replace with U+FFFD (Codex r1 on 214aba7). The two noncharacters are tested
+// by code point because an editor can write the escape as the literal character.
+export function xmlText(s) {
+  const str = String(s == null ? "" : s);
+  const bad = /[\x00-\x08\x0B\x0C\x0E-\x1F]/.test(str) || !str.isWellFormed() ||
+    [...str].some((ch) => ch.codePointAt(0) === 0xfffe || ch.codePointAt(0) === 0xffff);
+  if (bad) throw new Error("render-constant-pages: feed text carries a character XML 1.0 cannot hold; refusing rather than altering it");
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;").replace(/\r/g, "&#13;");
+}
+
+const feedUrl = (id) => `${SITE}c/${id}.xml`;
+export const ALL_FEED = "changes.xml";
+const commitUrl = (sha) => `${REPO}/commit/${sha}`;
+
+// ONE wording for both event kinds: "value" and "expression" each mean the pinned bound cell differs
+// from its previous version, and the finer split ("same numbers") overstated what changeKind compares
+// (Codex r1: it compares numeral tokens as a multiset, so a sign or an order can differ).
+export const ENTRY_REFUSAL = "This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved.";
+// NO TITLE IN A FEED (Codex r2 on 664202c, class verdict YES a second time): plainTitle() passes any
+// title without markup unchanged, so a title such as "A bound improved from 4 to 3 (new record)" would
+// have reached the feed. Every string in a feed is now fixed text written here, the constant's id, a
+// date, or a URL this file builds; the selftest compares each entry with that template exactly. The
+// page the entry links carries the name.
+function feedEntryText(r, e) {
+  const side = FEED_SIDE[String(e.pin).split(":")[2]] || "a";
+  return [
+    `This ledger's pinned copy of the last-listed ${side}-bound row of constant ${r.id}, from teorth/optimizationproblems, changed in its bound cell in a commit dated ${e.date}.`,
+    // A-108 round 0 (2026-11-27): "Upstream keeps" asserted a habit the code cannot show; "can keep" is
+    // what Brun's 47a row shows. The date caveat now also names the two things a version-to-version walk
+    // cannot see: several upstream edits between two of our versions arrive as ONE entry, and an edit
+    // made and undone between them leaves none.
+    `${ENTRY_REFUSAL} Upstream's tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.`,
+    `Read this constant's page and its source file before citing: ${SITE}c/${r.id}.html`,
+    `The date is the one on this ledger's commit; upstream's own change can be earlier, several upstream edits can fall between two of this ledger's versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: ${commitUrl(e.sha)}`,
+  ].join("\n\n");
+}
+
+function feedEntryTitle(r, e) {
+  const side = FEED_SIDE[String(e.pin).split(":")[2]] || "a";
+  return `${r.id} ${side} bound: pinned bound cell changed ${e.date}`;
+}
+
+function feedEntry(r, e) {
+  return `<entry>
+<id>${xmlText(`${feedUrl(r.id)}#${e.pin}@${e.sha}`)}</id>
+<title>${xmlText(feedEntryTitle(r, e))}</title>
+<updated>${xmlText(`${e.date}T00:00:00Z`)}</updated>
+<link rel="alternate" type="text/html" href="${xmlText(`${SITE}c/${r.id}.html`)}"/>
+<link rel="related" href="${xmlText(commitUrl(e.sha))}"/>
+<content type="text">${xmlText(feedEntryText(r, e))}</content>
+</entry>`;
+}
+
+// Newest first BY POSITION ON THE MAIN LINE (`seq`), not by date (Codex r1: two commits on one day
+// came out oldest first); a tie (two sides in one commit) is ordered by pin id, so the file is stable.
+const newestFirst = (a, b) => (a.seq === b.seq ? a.pin.localeCompare(b.pin) : b.seq - a.seq);
+export function eventsFor(id, events) {
+  const out = [];
+  for (const s of ["U", "L"]) for (const e of (events && events.get(`pin:${id}:${s}`)) || []) out.push(e);
+  return out.sort(newestFirst);
+}
+
+function feedDoc({ id, title, self, alt, updated, entries }) {
+  return `<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+<id>${xmlText(self)}</id>
+<title>${xmlText(title)}</title>
+<subtitle>${xmlText(FEED_SUBTITLE)}</subtitle>
+<updated>${xmlText(`${updated}T00:00:00Z`)}</updated>
+<author><name>Bounds Ledger</name></author>
+<link rel="self" type="application/atom+xml" href="${xmlText(self)}"/>
+<link rel="alternate" type="text/html" href="${xmlText(alt)}"/>
+${entries.join("\n")}${entries.length ? "\n" : ""}</feed>
+`;
+}
+
+// `updated` for a feed with no entry: the later of the page's own two side dates (each a "tracked
+// since" or text-edit date), so the file is deterministic and its date is one the page also shows.
+// A-108: the feed functions refuse an id that breaks the constant-id rule themselves, so a caller that
+// skips main()'s whole-render check (a test, a future script) still cannot write upstream text into a
+// feed's URLs, ids or fixed sentences.
+function refuseBadFeedId(id) {
+  if (!isConstantId(id)) throw new Error(constantIdRefusal("render-constant-pages feed", { index: 0, id }));
+}
+
+export function feedXml(r, events) {
+  refuseBadFeedId(r.id);
+  const list = eventsFor(r.id, events);
+  const fallback = [r.upperChanged, r.lowerChanged].filter(Boolean).sort().pop() || "2026-07-24";
+  return feedDoc({
+    self: feedUrl(r.id),
+    title: `Bounds Ledger: constant ${r.id}, changes to its pinned last-listed bound rows`,
+    alt: `${SITE}c/${r.id}.html`,
+    updated: list.length ? list[0].date : fallback,
+    entries: list.map((e) => feedEntry(r, e)),
+  });
+}
+
+export function allFeedXml(rows, events) {
+  for (const r of rows) refuseBadFeedId(r.id);
+  const all = rows.flatMap((r) => eventsFor(r.id, events).map((e) => ({ r, e })));
+  all.sort((a, b) => (a.e.seq === b.e.seq ? (a.r.id === b.r.id ? a.e.pin.localeCompare(b.e.pin) : a.r.id.localeCompare(b.r.id, "en", { numeric: true })) : b.e.seq - a.e.seq));
+  return feedDoc({
+    self: `${SITE}${ALL_FEED}`,
+    title: ALL_FEED_TITLE,
+    alt: SITE,
+    updated: all.length ? all[0].e.date : "2026-07-24",
+    entries: all.map(({ r, e }) => feedEntry(r, e)),
+  });
+}
+
+// Scoped to what the history walk can see (Codex r1: "each time" overpromised; a renamed pin, or a
+// pin absent from one version, yields no entry).
+// THE ALLOWLIST (orchestrator ruling on consult e26365dd, 2026-11-16): every string in a feed is fixed
+// text written here, an id matched as [0-9]+[a-z], an ISO date, or a URL this renderer builds. This
+// replaces exactly those four kinds of part with placeholders; what is left must equal the fixed
+// template byte for byte (selftest). Anything else that reaches a feed, a title, a row, a value, a
+// comment, survives into the skeleton and fails the comparison. The URL shapes are matched EXACTLY
+// (this site's pages, feeds and entry ids, and this repo's commit pages), never "any URL".
+export function feedSkeleton(doc) {
+  const id = "[0-9]+[a-z]";
+  return String(doc)
+    .replace(new RegExp(`https://u00dxk2\\.github\\.io/bounds-ledger/c/${id}\\.xml#pin:${id}:[UL]@[0-9a-f]{40}`, "g"), "<URL>")
+    .replace(new RegExp(`https://u00dxk2\\.github\\.io/bounds-ledger/c/${id}\\.(?:html|xml)`, "g"), "<URL>")
+    .replace(/https:\/\/u00dxk2\.github\.io\/bounds-ledger\/(?:changes\.xml)?(?![\w./#-])/g, "<URL>")
+    .replace(/https:\/\/github\.com\/u00dxk2\/bounds-ledger\/commit\/[0-9a-f]{40}/g, "<URL>")
+    .replace(/(?<!\d)\d{4}-\d{2}-\d{2}(?!\d)/g, "<DATE>")
+    .replace(new RegExp(`\\b${id}\\b`, "g"), "<ID>");
+}
+
+// Codex r2 (LOW): "names the side and the date only" undersold what an entry names, and "this page says
+// the rest" oversold the page, which shows the current rows, not each past edit.
+// A-108 round 0 (2026-11-27): the subtitle now names the three version shapes that yield no entry, and
+// the all-constants title names the constants on the main list (the hand claims and the Ramsey area
+// have no feed), where it said "every constant on this site".
+export const ALL_FEED_TITLE = "Bounds Ledger: the constants on this site's main list, changes to their pinned last-listed bound rows";
+export const feedLinkTitle = (id) => `${id}: recorded changes to its pinned last-listed bound rows`;
+export const FEED_SUBTITLE = "One entry for each change this ledger saw in the bound cell of a pinned last-listed row, comparing each pinned version with the one before it on this ledger's main line. A pin's first appearance, an edit that leaves the bound cell byte for byte the same, and a version in which the pin is missing produce no entry. An entry identifies the constant, the side and the date of this ledger's commit, without quoting the bound cell, and never says what the bound is or whether it moved: a last-listed row is a position in upstream's table, not the strongest bound. The constant's page shows the current pinned rows; the linked commit shows the recorded edit.";
+
+function watchLine(r) {
+  return `<p class="watch"><a href="${esc(feedUrl(r.id))}">Watch this constant</a>: an Atom feed with one entry for each change this ledger recorded in the bound cell of a pinned row on this page, comparing consecutive versions of its pins. An entry says which side changed and on what date, without quoting the bound cell; this page shows the current rows, and each entry links the commit that recorded the change. <a href="${esc(`${SITE}${ALL_FEED}`)}">One feed for all the constants on this site's main list</a>.</p>`;
+}
+
+/**
  * `pageCitation()` IS GONE (A-40, 2026-09-03) and its absence is the ship.
  *
  * It existed for two days as a `.replace()` that swapped the shared citation's table anchor for
@@ -1189,6 +1362,7 @@ export function renderPage(r, sha, audits = loadAudits(), newer = loadNewerStore
 <meta name="description" content="${esc(description)}">
 <link rel="canonical" href="${esc(`${SITE}c/${r.id}.html`)}">
 ${ogMeta(pageTitle(r), description, `${SITE}c/${r.id}.html`)}
+<link rel="alternate" type="application/atom+xml" title="${esc(feedLinkTitle(r.id))}" href="${esc(feedUrl(r.id))}">
 <style>${STYLE}</style>
 <a class="back" href="${esc(`${SITE}#c-${r.id}`)}">&larr; all constants</a>
 <h1>${esc(plainTitle(r.title))}</h1>
@@ -1204,6 +1378,7 @@ ${auditBlock(r.id, audits, [r.upper, r.lower])}${noteBlock(r.oai)}${newerBlock(n
 <a href="${esc(readable(r.url) || upstream)}">upstream source</a> &middot;
 <a href="${esc(flagUrl(r, sha))}">looks wrong?</a>
 </div>
+${watchLine(r)}
 <div class="cite"><strong>Cite this row</strong><code>${esc(citation(r, sha))}</code></div>
 <footer><p>${esc(DISCLAIMER)}</p>
 <p>Mirrored from <code style="display:inline;padding:.1rem .3rem">teorth/optimizationproblems@${esc(String(sha).slice(0, 7))}</code>${mirroredOn ? ` on ${esc(mirroredOn)}` : ""} — a snapshot at that commit, not a live read.</p>
@@ -1299,6 +1474,110 @@ async function selftest() {
     assert.ok(!/<lastmod\b/i.test(sm), "the sitemap must claim no lastmod");
   }
 
+  // A-106: THE FEEDS. Fixture histories only, never git: CI's check job is a depth-1 clone.
+  // Order follows this repo's KP-78 rule: the guards that carry MEANING first, exact equalities last.
+  {
+    const v = (sha, date, pins) => ({ sha, date, claims: Object.entries(pins).map(([id, expect]) => ({ id, expect })) });
+    // Rows carry distinctive values and, in c, an upstream-style comment that claims an improvement over
+    // the former value (Codex r1's 3a case), so any leak of a row, a value or that wording is visible.
+    const U0 = "| 3.917 | [A] | x |";
+    const U1 = "| 3.903 <b> & \"q\" 'a'\r | [C] | First improvement on [A]'s 3.917 |";
+    const history = [
+      v("a".repeat(40), "2026-07-24", { "pin:9z:U": U0, "pin:9z:L": "| 1.25 | [B] |" }),
+      v("b".repeat(40), "2026-08-02", { "pin:9z:U": "| 3.917 | [A] | x edited |", "pin:9z:L": "| 1.25 | [B] |" }), // text only: no event
+      v("c".repeat(40), "2026-09-10", { "pin:9z:U": U1, "pin:9z:L": "| 1.25 | [B] |", "pin:9y:U": "| 7 |" }),       // value; 9y first seen: no event
+      v("d".repeat(40), "2026-10-01", { "pin:9z:U": U1, "pin:9z:L": "| -1.25 | [B] |" }),                          // same numerals, sign added: expression
+      v("e".repeat(40), "2026-10-05", { "pin:9z:U": U1, "pin:9z:L": "| -1.25 | [B] |", "pin:9y:U": "| 8 |" }),     // 9y absent at d: a gap, no event
+      v("f".repeat(40), "2026-10-20", { "pin:9z:U": "| 3.88 | [D] |", "pin:9z:L": "| -1.25 | [B] |" }),          // two value events on ONE day
+      v("0".repeat(40), "2026-10-20", { "pin:9z:U": "| 3.87 | [E] |", "pin:9z:L": "| -1.25 | [B] |" }),          // (the later one has the lower sha)
+    ];
+    const events = pinEvents(history);
+    const zRow = { ...row, upperChanged: "2026-10-20", lowerChanged: "2026-10-01" };
+    const feed = feedXml(zRow, events);
+    const entries = feed.match(/<entry>[\s\S]*?<\/entry>/g) || [];
+    // Positive control before any absence is asserted.
+    assert.ok(feed.startsWith('<?xml version="1.0" encoding="utf-8"?>') && feed.includes('<feed xmlns="http://www.w3.org/2005/Atom">'), "positive control: the feed must render as an Atom document");
+    assert.equal(entries.length, 4, "one entry per value or bound-cell change; a text-only edit, a first appearance and a gap are not events");
+    // MEANING FIRST (Codex r1 on 214aba7, class verdict YES). No value, no row and no upstream comment
+    // anywhere in the feed, across ALL its entries, so neither an improvement in upstream's words nor a
+    // former-and-current list of values can reach a reader. Each entry says what it does not say.
+    for (const leak of ["3.917", "3.903", "3.88", "3.87", "1.25", "| [", "improvement"]) {
+      assert.ok(!feed.includes(leak), `a feed must carry no row, value or row comment; found ${JSON.stringify(leak)}`);
+    }
+    for (const en of entries) {
+      assert.ok(en.includes(ENTRY_REFUSAL), "every entry must say it does not say what changed or whether the bound moved");
+      assert.ok(!/improv|\brecord\b(?!ed)|best known|strongest known|new bound|\bbeat/i.test(en), `an entry must not claim an improvement or a record: ${en}`);
+      assert.ok(en.includes(`${REPO}/commit/`), "each entry links this ledger's commit for the re-pin (the read a reader's use can show up in)");
+    }
+    // THE ALLOWLIST, BYTE FOR BYTE (orchestrator ruling on consult e26365dd, after Codex r2 on 664202c
+    // found the same class a second time through constant titles): replace the four permitted kinds of
+    // part (fixed text aside: ids, ISO dates, URLs this renderer builds) and what remains of EVERY feed,
+    // per-constant and all-constants, built with a planted hostile title through the real renderer,
+    // must equal this template. A title, row, value or comment reaching a feed survives into the
+    // skeleton and fails here. It replaced a title denylist and a per-entry template check, both
+    // subsumed, so that this guard is the first a title mutation reaches (KP-78: assertion order).
+    {
+      const HOSTILE = "A bound improved from 4 to 3 (new record)";
+      const SK_HEAD = (title) => `<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom">\n<id><URL></id>\n<title>${title}</title>\n<subtitle>One entry for each change this ledger saw in the bound cell of a pinned last-listed row, comparing each pinned version with the one before it on this ledger&apos;s main line. A pin&apos;s first appearance, an edit that leaves the bound cell byte for byte the same, and a version in which the pin is missing produce no entry. An entry identifies the constant, the side and the date of this ledger&apos;s commit, without quoting the bound cell, and never says what the bound is or whether it moved: a last-listed row is a position in upstream&apos;s table, not the strongest bound. The constant&apos;s page shows the current pinned rows; the linked commit shows the recorded edit.</subtitle>\n<updated><DATE>T00:00:00Z</updated>\n<author><name>Bounds Ledger</name></author>\n<link rel="self" type="application/atom+xml" href="<URL>"/>\n<link rel="alternate" type="text/html" href="<URL>"/>\n`;
+      const SK_ENTRY = (side) => `<entry>\n<id><URL></id>\n<title><ID> ${side} bound: pinned bound cell changed <DATE></title>\n<updated><DATE>T00:00:00Z</updated>\n<link rel="alternate" type="text/html" href="<URL>"/>\n<link rel="related" href="<URL>"/>\n<content type="text">This ledger&apos;s pinned copy of the last-listed ${side}-bound row of constant <ID>, from teorth/optimizationproblems, changed in its bound cell in a commit dated <DATE>.\n\nThis feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.\n\nRead this constant&apos;s page and its source file before citing: <URL>\n\nThe date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: <URL></content>\n</entry>\n`;
+      const sides = eventsFor("9z", events).map((e) => (e.pin.endsWith(":U") ? "upper" : "lower"));
+      const body = sides.map(SK_ENTRY).join("");
+      const perConstant = SK_HEAD("Bounds Ledger: constant <ID>, changes to its pinned last-listed bound rows") + body + "</feed>\n";
+      const allConstants = SK_HEAD("Bounds Ledger: the constants on this site&apos;s main list, changes to their pinned last-listed bound rows") + body + "</feed>\n";
+      assert.deepEqual(sides, ["upper", "upper", "lower", "upper"], "positive control: the fixture's four entries, newest first");
+      assert.equal(feedSkeleton(feedXml({ ...zRow, title: HOSTILE }, events)), perConstant, "a per-constant feed must be the fixed template plus ids, dates and built URLs, nothing else (planted title)");
+      assert.equal(feedSkeleton(allFeedXml([{ ...zRow, title: HOSTILE }], events)), allConstants, "the all-constants feed must be the fixed template plus ids, dates and built URLs, nothing else (planted title)");
+      assert.equal(feedSkeleton(feedXml({ ...row, id: "9w", title: HOSTILE, upperChanged: "2026-07-24", lowerChanged: null }, events)), SK_HEAD("Bounds Ledger: constant <ID>, changes to its pinned last-listed bound rows") + "</feed>\n", "a zero-entry feed is the bare template");
+    }
+    // ORDER: newest first by position on the main line, so two commits on one day come out newest first.
+    const shas = entries.map((en) => ((en.match(/@([0-9a-f]{40})<\/id>/) || [])[1] || "").slice(0, 1));
+    assert.deepEqual(shas, ["0", "f", "d", "c"], `entries must be newest first by main-line position, not by date and sha: ${shas.join(",")}`);
+    // ESCAPING and REFUSAL, on xmlText itself: every reserved character, a carriage return kept as
+    // &#13;, a non-BMP character kept, and each character XML 1.0 cannot hold refused, never altered.
+    // The refused characters are built from code points: an editor can write an escape as the character.
+    assert.equal(xmlText("< & > \" ' \r"), "&lt; &amp; &gt; &quot; &apos; &#13;");
+    assert.equal(xmlText(String.fromCodePoint(0x1d400)), String.fromCodePoint(0x1d400), "a well-formed non-BMP character passes unchanged");
+    for (const cp of [0x01, 0x0b, 0xd800, 0xdc00, 0xfffe, 0xffff]) {
+      assert.throws(() => xmlText(`a${String.fromCharCode(cp)}b`), /XML 1\.0 cannot hold/, `U+${cp.toString(16)} must refuse, never be dropped or replaced`);
+    }
+    const textOnly = feed.replace(/<\?xml[^>]*\?>/, "").replace(/<\/?[A-Za-z][^<>]*>/g, "");
+    assert.ok(!/[<>]/.test(textOnly), "no raw < or > may survive in the feed's text");
+    assert.ok(!/&(?!(amp|lt|gt|quot|apos|#13);)/.test(feed), "every & in the feed must begin an entity");
+    // A constant with no event still gets a valid feed, with no entry and a date the page shows.
+    const empty = feedXml({ ...row, id: "9w", upperChanged: "2026-07-24", lowerChanged: "2026-08-14" }, events);
+    assert.ok(empty.includes("<feed ") && !empty.includes("<entry>") && empty.includes("<updated>2026-08-14T00:00:00Z</updated>"), "a constant that never moved gets a valid zero-entry feed dated by its own page");
+    // A-108: THE INPUT BOUNDARY. An id is the stem of an upstream file name; one that breaks the
+    // constant-id rule is REFUSED by the feed functions themselves, never escaped into the feed.
+    for (const badId of ["9z</id><title>A bound improved", "Bad", "9Z", "9zz", "../9z", "9z\n"]) {
+      assert.throws(() => feedXml({ ...zRow, id: badId }, events), /not one or more digits followed by one lowercase letter/, `feedXml must refuse the id ${JSON.stringify(badId)}`);
+      assert.throws(() => allFeedXml([zRow, { ...row, id: badId }], events), /not one or more digits followed by one lowercase letter/, `allFeedXml must refuse the id ${JSON.stringify(badId)}`);
+    }
+    // ...and the whole render refuses before composing anything, through main() itself (check mode, so
+    // a removed guard cannot write files here). The assertion is on the refusal's OWN line, so a check-mode
+    // failure for any other reason (a stale page) cannot pass for it.
+    {
+      const logged = [];
+      const realLog = console.log;
+      const realExit = process.exitCode;
+      console.log = (...a) => logged.push(a.join(" "));
+      try { main({ check: true, buildRowsFn: () => [{ ...row, id: "9z" }, { ...row, id: "Bad" }] }); }
+      finally { console.log = realLog; }
+      const exitSeen = process.exitCode;
+      process.exitCode = realExit;
+      assert.ok(logged.some((l) => l.startsWith("RESULT: FAIL — render-constant-pages: refusing — item 1 has constant id \"Bad\"")), `main() must refuse a bad row id by position before composing anything; logged: ${logged.join(" | ")}`);
+      assert.equal(exitSeen, 1, "the refusal exits 1");
+    }
+    // The page links its own feed, in the head and in words, and the all-constants feed.
+    const zHtml = renderPage(zRow, "abc1234def");
+    assert.ok(zHtml.includes(`<link rel="alternate" type="application/atom+xml" title="9z: recorded changes to its pinned last-listed bound rows" href="${SITE}c/9z.xml">`), "the page head must point feed readers at this constant's feed");
+    assert.ok(zHtml.includes(`<a href="${SITE}c/9z.xml">Watch this constant</a>`) && zHtml.includes(`href="${SITE}${ALL_FEED}"`), "the page must link its feed in words, and the all-constants feed");
+    const all = allFeedXml([zRow, { ...row, id: "9y", title: "Other" }], events);
+    assert.equal((all.match(/<entry>/g) || []).length, 4, "the all-constants feed carries every constant's entries (9y has none: its only change straddles a gap)");
+    // EXACT emitted forms last.
+    assert.ok(entries[0].includes("<title>9z upper bound: pinned bound cell changed 2026-10-20</title>") && entries[2].includes("<title>9z lower bound: pinned bound cell changed 2026-10-01</title>"), `exact titles: ${entries.map((e) => (e.match(/<title>.*<\/title>/) || [""])[0]).join(" | ")}`);
+    assert.ok(feed.includes(`<subtitle>${xmlText(FEED_SUBTITLE)}</subtitle>`) && feed.includes("<updated>2026-10-20T00:00:00Z</updated>\n<author>"), "the feed carries its scoped subtitle, and its updated date is its newest entry's");
+  }
+
   // The cite block names THIS PAGE, not the table anchor — the whole point of the page. Both
   // polarities: the page URL is present AND the anchor form is proven absent, because a citation
   // carrying both would still send readers to the table.
@@ -1354,7 +1633,12 @@ async function selftest() {
   assert.ok(!/url\(/i.test(css) && !/@import/i.test(css), "the stylesheet must load nothing (no url(), no @import)");
   assert.ok(!/<(img|iframe|object|embed|video|audio|source|picture)\b/i.test(html), "a constant page must embed nothing that loads");
   const links = [...html.matchAll(/<link\b[^>]*>/gi)].map((m) => m[0]);
-  assert.ok(links.length === 1 && /rel="canonical"/.test(links[0]), "the only <link> a constant page carries is its canonical address");
+  // A-108 widened this by exactly one: rel="alternate" to the page's OWN feed, which a browser does not
+  // fetch (it is a pointer for feed readers, like an anchor). Any other rel, or a feed for another page,
+  // still fails here.
+  assert.ok(links.length === 2 && /rel="canonical"/.test(links[0]) &&
+    links[1] === `<link rel="alternate" type="application/atom+xml" title="${feedLinkTitle(row.id)}" href="${SITE}c/${row.id}.xml">`,
+    `a constant page carries exactly two <link>s: its canonical address and its own feed; got ${links.join(" ")}`);
   // LINK PREVIEWS REPEAT THE PAGE, they add no claim (2026-11-21). og:title, og:description and og:url
   // must equal the page's own <title>, description and canonical, byte for byte, so a preview can never
   // say more than the page. One shared check (ogMismatch): every field present, then equal.
@@ -1761,14 +2045,14 @@ async function selftest() {
   const dupRoot = mkdtempSync(join(tmpdir(), "refnote-dup-"));
   try {
     mkdirSync(join(dupRoot, MIRROR_PREFIX), { recursive: true });
-    writeFileSync(join(dupRoot, MIRROR_PREFIX, "dup.md"), `## References\n\n- **[DUP1]** Quoted title.\n- **[DUP1]** Another title.\n- **[ONE1]** Quoted title.\n`);
-    assert.ok(referenceEntryLine(`${MIRROR_PREFIX}dup.md`, "ONE1", dupRoot)?.includes("Quoted title"), "positive control: the temporary mirror is read, and a single key there finds its line");
-    assert.equal(referenceEntryLine(`${MIRROR_PREFIX}dup.md`, "DUP1", dupRoot), null, "a key carried by TWO lines must find no line, even when the first of them holds the quote");
+    writeFileSync(join(dupRoot, MIRROR_PREFIX, "91z.md"), `## References\n\n- **[DUP1]** Quoted title.\n- **[DUP1]** Another title.\n- **[ONE1]** Quoted title.\n`);
+    assert.ok(referenceEntryLine(`${MIRROR_PREFIX}91z.md`, "ONE1", dupRoot)?.includes("Quoted title"), "positive control: the temporary mirror is read, and a single key there finds its line");
+    assert.equal(referenceEntryLine(`${MIRROR_PREFIX}91z.md`, "DUP1", dupRoot), null, "a key carried by TWO lines must find no line, even when the first of them holds the quote");
     // PLAIN entry lines (2026-10-14 evening): most of the mirror writes a reference as `- [Key] …`, not
     // `- **[Key]** …`. An entry is a line in the ONE References section; the same key in a table cell, in
     // a sentence, or opening a comment bullet ABOVE that section (3a.md's "- [K2026] generalizes …", review
     // r1 on c5a5dd2) is a citation of it, not the entry. MEANING FIRST: the section rule, then the shapes.
-    writeFileSync(join(dupRoot, MIRROR_PREFIX, "plain.md"), [
+    writeFileSync(join(dupRoot, MIRROR_PREFIX, "92z.md"), [
       "## Bounds",
       "| $x \\le 1$ | [PLN1] | a table row citing it |",
       "## Additional comments",
@@ -1791,7 +2075,7 @@ async function selftest() {
       "- [AFTER1] A bullet after the References section ends.",
       "",
     ].join("\n"));
-    const PLAIN = `${MIRROR_PREFIX}plain.md`;
+    const PLAIN = `${MIRROR_PREFIX}92z.md`;
     assert.equal(referenceEntryLine(PLAIN, "CMT1", dupRoot), null, "a comment bullet OUTSIDE the References section that opens with a key must never be returned as its entry");
     assert.equal(referenceEntryLine(PLAIN, "AFTER1", dupRoot), null, "a bullet after the References section has ended is not an entry");
     assert.ok(referenceEntryLine(PLAIN, "PLN1", dupRoot)?.startsWith("- [PLN1] Ann Author, Jean Name"), "a plain `- [Key] ` entry line must be found, and it must be the entry, not the table row, the sentence or the comment bullet citing it");
@@ -1805,7 +2089,7 @@ async function selftest() {
     // A-99 (2026-11-07): what a bound row cites, and where the reader can go from it. MEANING FIRST —
     // every cited key is listed (no first-key-only credit), each link is called upstream's, never "the
     // paper", and the three no-link cases say so in words — then the parsing shapes, then one exact pin.
-    writeFileSync(join(dupRoot, MIRROR_PREFIX, "cite.md"), [
+    writeFileSync(join(dupRoot, MIRROR_PREFIX, "93z.md"), [
       "## Bounds",
       "| $x \\le 2$ | [AB1], [[CD2](#CD2)] | two works cited |",
       "## References",
@@ -1815,7 +2099,7 @@ async function selftest() {
       "- [JS4] J. S., [click](javascript:alert(1)) and [$x$](https://example.org/tex).",
       "",
     ].join("\n"));
-    const CITE = `${MIRROR_PREFIX}cite.md`;
+    const CITE = `${MIRROR_PREFIX}93z.md`;
     const twoCited = citedHtml(CITE, "| $x \\le 2$ | [AB1], [[CD2](#CD2)] | two works cited |", dupRoot);
     assert.ok(twoCited.includes(">[AB1]</a>") && twoCited.includes(">[CD2]</a>"), "a cell citing two works must list BOTH keys, never credit the bound to the first");
     assert.ok(twoCited.startsWith(`<span class="refs">Cited in this row: `), "the line must say these are what the row cites, not which work proves the bound");
@@ -1842,10 +2126,10 @@ async function selftest() {
     assert.deepEqual(entryLinks("[PDF at commit `adc7f124`](https://x.org/a.pdf)"), [{ label: "PDF at commit adc7f124", href: "https://x.org/a.pdf" }], "markdown backticks in a label are dropped, so the page shows no stray code marks");
     // Exact pin LAST.
     assert.equal(citedHtml(CITE, "| 1 | [AB1] | x |", dupRoot), `<span class="refs">Cited in this row: <a href="${mirrorLineHref(CITE, 4)}">[AB1]</a>, whose entry in upstream&#39;s reference list links to <a href="https://arxiv.org/abs/2011.13266">arXiv:2011.13266</a>, <a href="https://doi.org/10.1/x">10.1/x</a>.</span>`, "exact emitted line for one linked key");
-    writeFileSync(join(dupRoot, MIRROR_PREFIX, "nohead.md"), "- [NH1] An entry in a file with no References heading.\n");
-    writeFileSync(join(dupRoot, MIRROR_PREFIX, "twohead.md"), "## References\n- [TH1] First.\n## References\n- [TH2] Second.\n");
-    assert.equal(referenceEntryLine(`${MIRROR_PREFIX}nohead.md`, "NH1", dupRoot), null, "a file with no References heading finds no line");
-    assert.equal(referenceEntryLine(`${MIRROR_PREFIX}twohead.md`, "TH1", dupRoot), null, "a file with two References headings finds no line");
+    writeFileSync(join(dupRoot, MIRROR_PREFIX, "94z.md"), "- [NH1] An entry in a file with no References heading.\n");
+    writeFileSync(join(dupRoot, MIRROR_PREFIX, "95z.md"), "## References\n- [TH1] First.\n## References\n- [TH2] Second.\n");
+    assert.equal(referenceEntryLine(`${MIRROR_PREFIX}94z.md`, "NH1", dupRoot), null, "a file with no References heading finds no line");
+    assert.equal(referenceEntryLine(`${MIRROR_PREFIX}95z.md`, "TH1", dupRoot), null, "a file with two References headings finds no line");
   } finally { rmSync(dupRoot, { recursive: true, force: true }); }
   // The real case that motivated it: 20c's KL2022 entry is a plain line.
   assert.ok(referenceEntryLine(`${MIRROR_PREFIX}20c.md`, "KL2022")?.includes("Jean Lehec"), "20c's plain KL2022 entry line must be found, carrying the mirror's author text");
@@ -1963,8 +2247,8 @@ async function selftest() {
   const hRoot = mkdtempSync(join(tmpdir(), "a65-"));
   try {
     mkdirSync(join(hRoot, MIRROR_PREFIX), { recursive: true });
-    writeFileSync(join(hRoot, MIRROR_PREFIX, "x.md"), "# X\r\n\r\n## Certificate A\r\n\r\ntext\r\n## Certificate A\r\n## Certificate B\r\n");
-    const xf = `${MIRROR_PREFIX}x.md`;
+    writeFileSync(join(hRoot, MIRROR_PREFIX, "96z.md"), "# X\r\n\r\n## Certificate A\r\n\r\ntext\r\n## Certificate A\r\n## Certificate B\r\n");
+    const xf = `${MIRROR_PREFIX}96z.md`;
     assert.equal(headingLine(xf, "## Certificate B", hRoot), 7, "positive control: a unique heading is found at its line, CRLF or not");
     assert.equal(headingLine(xf, "## Certificate A", hRoot), null, "a heading that appears twice must not be linked to either line");
     assert.equal(headingLine(xf, "## Certificate C", hRoot), null, "an absent heading has no line");
@@ -2139,7 +2423,7 @@ async function selftest() {
   try {
     writeFileSync(join(refusalDir, "bad.json"), "{ not json");
     writeFileSync(join(refusalDir, "good.json"), JSON.stringify({ audits: [goodEntry, staleEntry] }));
-    writeFileSync(join(refusalDir, "drops.json"), JSON.stringify({ audits: [goodEntry, { ...goodEntry, id: "T-RP", source: "ledger/x.md" }] }));
+    writeFileSync(join(refusalDir, "drops.json"), JSON.stringify({ audits: [goodEntry, { ...goodEntry, id: "T-RP", source: "ledger/96z.md" }] }));
     assert.ok(/did not parse/.test((auditStoreRefusal(join(refusalDir, "bad.json")) || [""])[0]),
       "an unparseable store refuses: every entry in it would vanish from every page");
     assert.ok(/^T-RP: source is not an http\(s\) URL$/.test((auditStoreRefusal(join(refusalDir, "drops.json")) || [""])[0]),
@@ -2586,6 +2870,10 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE, buildRows
     return;
   }
   const rows = buildRowsFn(claims);
+  // A-108: every row's id must be a constant id BEFORE any page or feed is composed, compared or
+  // written. An id is the stem of an upstream file name and reaches file names, URLs and fixed text.
+  const badId = firstBadConstantId(rows.map((r) => r.id));
+  if (badId) { console.log(`RESULT: FAIL — ${constantIdRefusal("render-constant-pages", badId)}`); process.exitCode = 1; return; }
   // A-53 (b): refuse before anything is composed or written. Nothing above writes.
   if (refuseDroppedAudits("render-constant-pages", { storePath, pageIds: new Set(rows.map((r) => r.id)) })) { process.exitCode = 1; return; }
   // 2026-11-26: the description and the footer name the mirror date. Refuse an unreadable date, and any
@@ -2606,6 +2894,20 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE, buildRows
     return;
   }
   const sitemap = sitemapXml(rows.map((r) => r.id));
+  // A-106: the feeds read the WHOLE committed history of ledger/claims.json. A shallow clone, or any
+  // history read that fails, refuses here rather than writing 120 empty feeds that would each say
+  // nothing ever moved. Like the page dates, they read COMMITTED history, so a pin-moving cycle needs
+  // the render again after its commit (AGENTS.md § Commands, resnap).
+  const versions = process.argv.includes("--titles") ? [] : claimsVersions(ROOT);
+  if (!versions) {
+    console.log("RESULT: FAIL — render-constant-pages: the history of ledger/claims.json could not be read in full (a shallow clone, or git failed), so nothing was composed or written; the feeds need every committed version");
+    process.exitCode = 1;
+    return;
+  }
+  const events = pinEvents(versions);
+  for (const r of rows) pages.set(`${r.id}.xml`, feedXml(r, events));
+  const allFeed = allFeedXml(rows, events);
+  const ALL_FEED_PATH = join(ROOT, ALL_FEED);
 
   // --titles: every converted title, for a human read (manager review, 2026-11-05: a check that only
   // asks "no $ left?" passes a mangled title). Writes nothing.
@@ -2616,7 +2918,7 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE, buildRows
   }
 
   if (check) {
-    const onDisk = existsSync(OUTDIR) ? readdirSync(OUTDIR).filter((f) => f.endsWith(".html")) : [];
+    const onDisk = existsSync(OUTDIR) ? readdirSync(OUTDIR).filter((f) => f.endsWith(".html") || f.endsWith(".xml")) : [];
     const missing = [...pages.keys()].filter((f) => !onDisk.includes(f));
     const extra = onDisk.filter((f) => !pages.has(f));
     // Compare CONTENT, not line endings — the same normalisation render-site.mjs's --check already
@@ -2630,7 +2932,7 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE, buildRows
       .filter(([f, html]) => onDisk.includes(f) && lf(readFileSync(join(OUTDIR, f), "utf8")) !== lf(html))
       .map(([f]) => f);
     if (missing.length || extra.length || stale.length) {
-      console.log(`RESULT: FAIL — ${missing.length} missing, ${extra.length} orphaned, ${stale.length} stale constant page(s)`);
+      console.log(`RESULT: FAIL — ${missing.length} missing, ${extra.length} orphaned, ${stale.length} stale constant page(s) or feed(s)`);
       for (const f of [...missing, ...extra, ...stale].slice(0, 10)) console.log(`  ${f}`);
       process.exitCode = 1;
       return;
@@ -2640,7 +2942,13 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE, buildRows
       process.exitCode = 1;
       return;
     }
-    console.log(`RESULT: PASS — ${pages.size} constant page(s) match committed state (@ ${String(manifest.sha).slice(0, 7)})`);
+    if (!existsSync(ALL_FEED_PATH) || lf(readFileSync(ALL_FEED_PATH, "utf8")) !== allFeed) {
+      console.log(`RESULT: FAIL — ${ALL_FEED} is ${existsSync(ALL_FEED_PATH) ? "stale" : "missing"}; run node scripts/render-constant-pages.mjs`);
+      process.exitCode = 1;
+      return;
+    }
+    const nFeeds = [...pages.keys()].filter((f) => f.endsWith(".xml")).length;
+    console.log(`RESULT: PASS — ${pages.size - nFeeds} constant page(s), ${nFeeds} feed(s) and ${ALL_FEED} match committed state (@ ${String(manifest.sha).slice(0, 7)})`);
     return;
   }
 
@@ -2650,7 +2958,9 @@ export function main({ check = false, storePath = DEFAULT_AUDIT_STORE, buildRows
   mkdirSync(OUTDIR, { recursive: true });
   for (const [name, html] of pages) writeFileSync(join(OUTDIR, name), html);
   writeFileSync(SITEMAP, sitemap);
-  console.log(`wrote ${pages.size} constant page(s) to c/ and sitemap.xml @ ${String(manifest.sha).slice(0, 7)}`);
+  writeFileSync(ALL_FEED_PATH, allFeed);
+  const nEntries = rows.reduce((n, r) => n + eventsFor(r.id, events).length, 0);
+  console.log(`wrote ${rows.length} constant page(s) and ${rows.length} feed(s) (${nEntries} entries) to c/, plus sitemap.xml and ${ALL_FEED} @ ${String(manifest.sha).slice(0, 7)}`);
 }
 
 // THE ENTRY GUARD, added 2026-09-14 because render-site.mjs now imports badgeFor from this file.

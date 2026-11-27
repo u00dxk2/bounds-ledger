@@ -24,6 +24,7 @@
 import { readFile, writeFile, readdir } from "node:fs/promises";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { isConstantId, firstBadConstantId, constantIdRefusal } from "./lib/constant-id.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MIRROR = join(ROOT, "ledger", "teorth-optimizationproblems", "constants");
@@ -107,27 +108,47 @@ function selftest() {
 
 ## References
 `;
-  const { title, pins } = extractPins("t1", fixture);
+  // A-108: fixture ids follow the constant-id rule too (they were t1 to t4, which the rule refuses).
+  const { title, pins } = extractPins("91t", fixture);
   assert(title === "Test constant", "title from H1");
   assert(pins.length === 2, "two pins");
-  assert(pins[0].id === "pin:t1:U" && pins[0].expect === "| $\\|\\|A\\|\\|_2 \\le 0.41$ | [B] |", "upper pin = last raw row, escaped pipes intact");
-  assert(pins[1].id === "pin:t1:L" && pins[1].expect === "| $0.31$ | [E] |", "lower pin = last raw row");
+  assert(pins[0].id === "pin:91t:U" && pins[0].expect === "| $\\|\\|A\\|\\|_2 \\le 0.41$ | [B] |", "upper pin = last raw row, escaped pipes intact");
+  assert(pins[1].id === "pin:91t:L" && pins[1].expect === "| $0.31$ | [E] |", "lower pin = last raw row");
 
   const commented = fixture.replace("| $\\|\\|A\\|\\|_2 \\le 0.41$ | [B] |", "| $0.41$ | [B] |\n<!-- | $0.1$ | [H] | -->");
-  assert(extractPins("t2", commented).pins[0].expect === "| $0.41$ | [B] |", "HTML-commented row ignored");
+  assert(extractPins("92t", commented).pins[0].expect === "| $0.41$ | [B] |", "HTML-commented row ignored");
 
   const empty = fixture.replace(/\| \$0\.31\$ \| \[E\] \|\n/, "");
-  const r3 = extractPins("t3", empty);
+  const r3 = extractPins("93t", empty);
   assert(r3.pins.length === 1 && r3.notes.some((n) => n.includes("lower: no table rows")), "header-only table yields no pin + a note");
 
   const noH1 = fixture.replace("# Test constant\n", "");
-  assert(extractPins("t4", noH1).pins[0].statement.includes("(t4.md)"), "missing H1 falls back to file base");
+  assert(extractPins("94t", noH1).pins[0].statement.includes("(94t.md)"), "missing H1 falls back to file base");
 
-  console.log("extract-pins selftest: PASS (5 extraction cases)");
+  // A-108: THE STEM RULE, both answers. A stem that is not digits-then-one-lowercase-letter is refused
+  // with its position; the real call site in run() checks EVERY stem before it reads or writes anything.
+  for (const ok of ["1a", "10c", "90a"]) assert(isConstantId(ok), `a plain constant id must pass: ${ok}`);
+  for (const bad of ["t1", "1A", "1ab", "a1", "1", "1a ", "1a\n", "../1a", "1a.md", "１a", ""]) {
+    assert(!isConstantId(bad), `a stem breaking the rule must be refused: ${JSON.stringify(bad)}`);
+  }
+  const hit = firstBadConstantId(["1a", "2b", "Bad", "3c"]);
+  assert(hit && hit.index === 2 && hit.id === "Bad", "the refusal names the first bad stem and its position");
+  assert(firstBadConstantId(["1a", "10c"]) === null, "every good stem: no refusal");
+
+  console.log("extract-pins selftest: PASS (5 extraction cases, the constant-id rule both ways)");
 }
 
 async function run() {
   const files = (await readdir(MIRROR)).filter((f) => f.endsWith(".md")).sort();
+  // A-108: every stem is checked BEFORE any file is read or claims.json is written, so a refusal
+  // leaves claims.json byte-identical. Checked here, at the source of the id, AND in each renderer
+  // (orchestrator, bus d4c969c8): a file that reaches the mirror another way skips a snapshot-only check.
+  const bad = firstBadConstantId(files.map((f) => f.replace(/\.md$/, "")));
+  if (bad) {
+    console.error(constantIdRefusal("extract-pins", bad));
+    process.exitCode = 1;
+    return;
+  }
   const generated = [];
   const noted = [];
   for (const f of files) {

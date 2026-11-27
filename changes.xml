@@ -1,0 +1,1536 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+<id>https://u00dxk2.github.io/bounds-ledger/changes.xml</id>
+<title>Bounds Ledger: the constants on this site&apos;s main list, changes to their pinned last-listed bound rows</title>
+<subtitle>One entry for each change this ledger saw in the bound cell of a pinned last-listed row, comparing each pinned version with the one before it on this ledger&apos;s main line. A pin&apos;s first appearance, an edit that leaves the bound cell byte for byte the same, and a version in which the pin is missing produce no entry. An entry identifies the constant, the side and the date of this ledger&apos;s commit, without quoting the bound cell, and never says what the bound is or whether it moved: a last-listed row is a position in upstream&apos;s table, not the strongest bound. The constant&apos;s page shows the current pinned rows; the linked commit shows the recorded edit.</subtitle>
+<updated>2026-11-25T00:00:00Z</updated>
+<author><name>Bounds Ledger</name></author>
+<link rel="self" type="application/atom+xml" href="https://u00dxk2.github.io/bounds-ledger/changes.xml"/>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/"/>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/1c.xml#pin:1c:L@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>1c lower bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/1c.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 1c, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/1c.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/1d.xml#pin:1d:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>1d upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/1d.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 1d, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/1d.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/3e.xml#pin:3e:L@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>3e lower bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/3e.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 3e, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/3e.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/8a.xml#pin:8a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>8a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/8a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 8a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/8a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/9a.xml#pin:9a:L@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>9a lower bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/9a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 9a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/9a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/10a.xml#pin:10a:L@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>10a lower bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/10a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 10a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/10a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/10a.xml#pin:10a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>10a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/10a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 10a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/10a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/11a.xml#pin:11a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>11a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/11a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 11a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/11a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/13a.xml#pin:13a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>13a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/13a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 13a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/13a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/13b.xml#pin:13b:L@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>13b lower bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/13b.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 13b, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/13b.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/15b.xml#pin:15b:L@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>15b lower bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/15b.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 15b, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/15b.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/19a.xml#pin:19a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>19a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/19a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 19a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/19a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/20a.xml#pin:20a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>20a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/20a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 20a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/20a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/20c.xml#pin:20c:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>20c upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/20c.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 20c, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/20c.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/22a.xml#pin:22a:L@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>22a lower bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/22a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 22a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/22a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/22a.xml#pin:22a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>22a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/22a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 22a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/22a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/31a.xml#pin:31a:L@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>31a lower bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/31a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 31a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/31a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/31a.xml#pin:31a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>31a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/31a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 31a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/31a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/35a.xml#pin:35a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>35a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/35a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 35a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/35a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/41b.xml#pin:41b:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>41b upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/41b.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 41b, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/41b.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/42a.xml#pin:42a:L@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>42a lower bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/42a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 42a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/42a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/42a.xml#pin:42a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>42a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/42a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 42a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/42a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/49a.xml#pin:49a:L@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>49a lower bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/49a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 49a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/49a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/51a.xml#pin:51a:L@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>51a lower bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/51a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 51a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/51a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/57c.xml#pin:57c:L@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>57c lower bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/57c.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 57c, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/57c.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/57c.xml#pin:57c:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>57c upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/57c.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 57c, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/57c.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/59a.xml#pin:59a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>59a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/59a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 59a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/59a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/69a.xml#pin:69a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>69a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/69a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 69a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/69a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/78a.xml#pin:78a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>78a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/78a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 78a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/78a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/80a.xml#pin:80a:L@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>80a lower bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/80a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 80a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/80a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/80a.xml#pin:80a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>80a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/80a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 80a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/80a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/82a.xml#pin:82a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>82a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/82a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 82a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/82a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/83a.xml#pin:83a:L@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>83a lower bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/83a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 83a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/83a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/83a.xml#pin:83a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>83a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/83a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 83a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/83a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/86a.xml#pin:86a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>86a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/86a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 86a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/86a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/89a.xml#pin:89a:U@4210b26ed12471560b6cf5daf6050e7446098ae7</id>
+<title>89a upper bound: pinned bound cell changed 2026-11-25</title>
+<updated>2026-11-25T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/89a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 89a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-11-25.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/89a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/4210b26ed12471560b6cf5daf6050e7446098ae7</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/5a.xml#pin:5a:U@e8f7e7fddf86e3309cae0ff1ad51c69acefa509e</id>
+<title>5a upper bound: pinned bound cell changed 2026-10-28</title>
+<updated>2026-10-28T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/5a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/e8f7e7fddf86e3309cae0ff1ad51c69acefa509e"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 5a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-28.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/5a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/e8f7e7fddf86e3309cae0ff1ad51c69acefa509e</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/1a.xml#pin:1a:U@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>1a upper bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/1a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 1a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/1a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/1b.xml#pin:1b:U@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>1b upper bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/1b.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 1b, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/1b.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/1c.xml#pin:1c:L@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>1c lower bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/1c.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 1c, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/1c.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/1d.xml#pin:1d:U@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>1d upper bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/1d.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 1d, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/1d.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/3a.xml#pin:3a:L@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>3a lower bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/3a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 3a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/3a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/3a.xml#pin:3a:U@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>3a upper bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/3a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 3a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/3a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/16a.xml#pin:16a:L@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>16a lower bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/16a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 16a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/16a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/16a.xml#pin:16a:U@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>16a upper bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/16a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 16a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/16a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/20a.xml#pin:20a:L@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>20a lower bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/20a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 20a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/20a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/20c.xml#pin:20c:L@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>20c lower bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/20c.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 20c, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/20c.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/22b.xml#pin:22b:U@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>22b upper bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/22b.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 22b, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/22b.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/23b.xml#pin:23b:U@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>23b upper bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/23b.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 23b, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/23b.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/24a.xml#pin:24a:U@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>24a upper bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/24a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 24a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/24a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/28a.xml#pin:28a:U@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>28a upper bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/28a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 28a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/28a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/42a.xml#pin:42a:U@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>42a upper bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/42a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 42a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/42a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/44a.xml#pin:44a:U@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>44a upper bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/44a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 44a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/44a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/49a.xml#pin:49a:L@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>49a lower bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/49a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 49a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/49a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/57c.xml#pin:57c:U@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>57c upper bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/57c.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 57c, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/57c.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/65a.xml#pin:65a:U@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>65a upper bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/65a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 65a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/65a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/68a.xml#pin:68a:L@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>68a lower bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/68a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 68a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/68a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/70a.xml#pin:70a:L@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>70a lower bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/70a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 70a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/70a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/84b.xml#pin:84b:U@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>84b upper bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/84b.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 84b, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/84b.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/86a.xml#pin:86a:U@f85e829e91f674fbf5b0c15fb5077f385b43b075</id>
+<title>86a upper bound: pinned bound cell changed 2026-10-26</title>
+<updated>2026-10-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/86a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 86a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/86a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/f85e829e91f674fbf5b0c15fb5077f385b43b075</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/1a.xml#pin:1a:U@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>1a upper bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/1a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 1a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/1a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/1b.xml#pin:1b:U@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>1b upper bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/1b.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 1b, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/1b.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/3a.xml#pin:3a:U@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>3a upper bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/3a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 3a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/3a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/3b.xml#pin:3b:L@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>3b lower bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/3b.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 3b, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/3b.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/3c.xml#pin:3c:L@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>3c lower bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/3c.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 3c, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/3c.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/4b.xml#pin:4b:L@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>4b lower bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/4b.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 4b, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/4b.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/4b.xml#pin:4b:U@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>4b upper bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/4b.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 4b, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/4b.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/7a.xml#pin:7a:U@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>7a upper bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/7a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 7a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/7a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/10a.xml#pin:10a:U@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>10a upper bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/10a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 10a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/10a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/12a.xml#pin:12a:U@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>12a upper bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/12a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 12a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/12a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/13a.xml#pin:13a:L@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>13a lower bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/13a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 13a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/13a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/18a.xml#pin:18a:L@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>18a lower bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/18a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 18a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/18a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/21a.xml#pin:21a:U@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>21a upper bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/21a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 21a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/21a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/31a.xml#pin:31a:U@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>31a upper bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/31a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 31a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/31a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/49a.xml#pin:49a:L@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>49a lower bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/49a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 49a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/49a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/64a.xml#pin:64a:L@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>64a lower bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/64a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 64a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/64a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/82a.xml#pin:82a:U@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>82a upper bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/82a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 82a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/82a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/84a.xml#pin:84a:L@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>84a lower bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/84a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 84a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/84a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/84a.xml#pin:84a:U@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>84a upper bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/84a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 84a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/84a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/86a.xml#pin:86a:U@ee2c4a008a6cb84c9eef043256ca547247c6deac</id>
+<title>86a upper bound: pinned bound cell changed 2026-10-18</title>
+<updated>2026-10-18T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/86a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 86a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-10-18.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/86a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ee2c4a008a6cb84c9eef043256ca547247c6deac</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/1a.xml#pin:1a:L@ce5a57c20757f4e2d6aa6048185800d9a6f597dd</id>
+<title>1a lower bound: pinned bound cell changed 2026-09-26</title>
+<updated>2026-09-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/1a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 1a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/1a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/3b.xml#pin:3b:L@ce5a57c20757f4e2d6aa6048185800d9a6f597dd</id>
+<title>3b lower bound: pinned bound cell changed 2026-09-26</title>
+<updated>2026-09-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/3b.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 3b, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/3b.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/3c.xml#pin:3c:L@ce5a57c20757f4e2d6aa6048185800d9a6f597dd</id>
+<title>3c lower bound: pinned bound cell changed 2026-09-26</title>
+<updated>2026-09-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/3c.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 3c, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/3c.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/4b.xml#pin:4b:L@ce5a57c20757f4e2d6aa6048185800d9a6f597dd</id>
+<title>4b lower bound: pinned bound cell changed 2026-09-26</title>
+<updated>2026-09-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/4b.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 4b, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/4b.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/9a.xml#pin:9a:L@ce5a57c20757f4e2d6aa6048185800d9a6f597dd</id>
+<title>9a lower bound: pinned bound cell changed 2026-09-26</title>
+<updated>2026-09-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/9a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 9a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/9a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/10c.xml#pin:10c:L@ce5a57c20757f4e2d6aa6048185800d9a6f597dd</id>
+<title>10c lower bound: pinned bound cell changed 2026-09-26</title>
+<updated>2026-09-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/10c.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 10c, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/10c.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/10c.xml#pin:10c:U@ce5a57c20757f4e2d6aa6048185800d9a6f597dd</id>
+<title>10c upper bound: pinned bound cell changed 2026-09-26</title>
+<updated>2026-09-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/10c.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 10c, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/10c.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/19a.xml#pin:19a:U@ce5a57c20757f4e2d6aa6048185800d9a6f597dd</id>
+<title>19a upper bound: pinned bound cell changed 2026-09-26</title>
+<updated>2026-09-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/19a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 19a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/19a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/47a.xml#pin:47a:L@ce5a57c20757f4e2d6aa6048185800d9a6f597dd</id>
+<title>47a lower bound: pinned bound cell changed 2026-09-26</title>
+<updated>2026-09-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/47a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 47a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/47a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/47a.xml#pin:47a:U@ce5a57c20757f4e2d6aa6048185800d9a6f597dd</id>
+<title>47a upper bound: pinned bound cell changed 2026-09-26</title>
+<updated>2026-09-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/47a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 47a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/47a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/59a.xml#pin:59a:U@ce5a57c20757f4e2d6aa6048185800d9a6f597dd</id>
+<title>59a upper bound: pinned bound cell changed 2026-09-26</title>
+<updated>2026-09-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/59a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 59a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/59a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/88a.xml#pin:88a:U@ce5a57c20757f4e2d6aa6048185800d9a6f597dd</id>
+<title>88a upper bound: pinned bound cell changed 2026-09-26</title>
+<updated>2026-09-26T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/88a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 88a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-26.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/88a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ce5a57c20757f4e2d6aa6048185800d9a6f597dd</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/8a.xml#pin:8a:L@d834f100eaf2b5043c82caa7e53c3aa15815ba2b</id>
+<title>8a lower bound: pinned bound cell changed 2026-09-05</title>
+<updated>2026-09-05T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/8a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/d834f100eaf2b5043c82caa7e53c3aa15815ba2b"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 8a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-05.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/8a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/d834f100eaf2b5043c82caa7e53c3aa15815ba2b</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/41a.xml#pin:41a:U@d834f100eaf2b5043c82caa7e53c3aa15815ba2b</id>
+<title>41a upper bound: pinned bound cell changed 2026-09-05</title>
+<updated>2026-09-05T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/41a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/d834f100eaf2b5043c82caa7e53c3aa15815ba2b"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 41a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-05.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/41a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/d834f100eaf2b5043c82caa7e53c3aa15815ba2b</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/43a.xml#pin:43a:L@d834f100eaf2b5043c82caa7e53c3aa15815ba2b</id>
+<title>43a lower bound: pinned bound cell changed 2026-09-05</title>
+<updated>2026-09-05T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/43a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/d834f100eaf2b5043c82caa7e53c3aa15815ba2b"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 43a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-05.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/43a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/d834f100eaf2b5043c82caa7e53c3aa15815ba2b</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/47a.xml#pin:47a:U@d834f100eaf2b5043c82caa7e53c3aa15815ba2b</id>
+<title>47a upper bound: pinned bound cell changed 2026-09-05</title>
+<updated>2026-09-05T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/47a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/d834f100eaf2b5043c82caa7e53c3aa15815ba2b"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 47a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-05.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/47a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/d834f100eaf2b5043c82caa7e53c3aa15815ba2b</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/50a.xml#pin:50a:U@d834f100eaf2b5043c82caa7e53c3aa15815ba2b</id>
+<title>50a upper bound: pinned bound cell changed 2026-09-05</title>
+<updated>2026-09-05T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/50a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/d834f100eaf2b5043c82caa7e53c3aa15815ba2b"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 50a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-05.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/50a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/d834f100eaf2b5043c82caa7e53c3aa15815ba2b</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/53a.xml#pin:53a:U@d834f100eaf2b5043c82caa7e53c3aa15815ba2b</id>
+<title>53a upper bound: pinned bound cell changed 2026-09-05</title>
+<updated>2026-09-05T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/53a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/d834f100eaf2b5043c82caa7e53c3aa15815ba2b"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 53a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-05.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/53a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/d834f100eaf2b5043c82caa7e53c3aa15815ba2b</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/88a.xml#pin:88a:U@d834f100eaf2b5043c82caa7e53c3aa15815ba2b</id>
+<title>88a upper bound: pinned bound cell changed 2026-09-05</title>
+<updated>2026-09-05T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/88a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/d834f100eaf2b5043c82caa7e53c3aa15815ba2b"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 88a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-09-05.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/88a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/d834f100eaf2b5043c82caa7e53c3aa15815ba2b</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/3a.xml#pin:3a:L@8a4192a54375d229c3c36099cdaec1f67cc63520</id>
+<title>3a lower bound: pinned bound cell changed 2026-08-23</title>
+<updated>2026-08-23T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/3a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/8a4192a54375d229c3c36099cdaec1f67cc63520"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 3a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-08-23.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/3a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/8a4192a54375d229c3c36099cdaec1f67cc63520</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/15a.xml#pin:15a:U@8a4192a54375d229c3c36099cdaec1f67cc63520</id>
+<title>15a upper bound: pinned bound cell changed 2026-08-23</title>
+<updated>2026-08-23T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/15a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/8a4192a54375d229c3c36099cdaec1f67cc63520"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 15a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-08-23.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/15a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/8a4192a54375d229c3c36099cdaec1f67cc63520</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/81a.xml#pin:81a:U@8a4192a54375d229c3c36099cdaec1f67cc63520</id>
+<title>81a upper bound: pinned bound cell changed 2026-08-23</title>
+<updated>2026-08-23T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/81a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/8a4192a54375d229c3c36099cdaec1f67cc63520"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 81a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-08-23.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/81a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/8a4192a54375d229c3c36099cdaec1f67cc63520</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/2a.xml#pin:2a:U@ec0108284b69a52e42ef25c1e89f3b16a2a0ac37</id>
+<title>2a upper bound: pinned bound cell changed 2026-08-12</title>
+<updated>2026-08-12T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/2a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ec0108284b69a52e42ef25c1e89f3b16a2a0ac37"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 2a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-08-12.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/2a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ec0108284b69a52e42ef25c1e89f3b16a2a0ac37</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/10a.xml#pin:10a:L@ec0108284b69a52e42ef25c1e89f3b16a2a0ac37</id>
+<title>10a lower bound: pinned bound cell changed 2026-08-12</title>
+<updated>2026-08-12T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/10a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ec0108284b69a52e42ef25c1e89f3b16a2a0ac37"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 10a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-08-12.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/10a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ec0108284b69a52e42ef25c1e89f3b16a2a0ac37</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/10a.xml#pin:10a:U@ec0108284b69a52e42ef25c1e89f3b16a2a0ac37</id>
+<title>10a upper bound: pinned bound cell changed 2026-08-12</title>
+<updated>2026-08-12T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/10a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/ec0108284b69a52e42ef25c1e89f3b16a2a0ac37"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed upper-bound row of constant 10a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-08-12.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/10a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/ec0108284b69a52e42ef25c1e89f3b16a2a0ac37</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/10c.xml#pin:10c:L@da17be3e0cca12d295de94f15280d19a6aa9e90a</id>
+<title>10c lower bound: pinned bound cell changed 2026-08-02</title>
+<updated>2026-08-02T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/10c.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/da17be3e0cca12d295de94f15280d19a6aa9e90a"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 10c, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-08-02.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/10c.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/da17be3e0cca12d295de94f15280d19a6aa9e90a</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/38a.xml#pin:38a:L@da17be3e0cca12d295de94f15280d19a6aa9e90a</id>
+<title>38a lower bound: pinned bound cell changed 2026-08-02</title>
+<updated>2026-08-02T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/38a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/da17be3e0cca12d295de94f15280d19a6aa9e90a"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 38a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-08-02.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/38a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/da17be3e0cca12d295de94f15280d19a6aa9e90a</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/71a.xml#pin:71a:L@da17be3e0cca12d295de94f15280d19a6aa9e90a</id>
+<title>71a lower bound: pinned bound cell changed 2026-08-02</title>
+<updated>2026-08-02T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/71a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/da17be3e0cca12d295de94f15280d19a6aa9e90a"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 71a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-08-02.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/71a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/da17be3e0cca12d295de94f15280d19a6aa9e90a</content>
+</entry>
+<entry>
+<id>https://u00dxk2.github.io/bounds-ledger/c/3a.xml#pin:3a:L@60a044ec72b711a6376df384bfaa700fc440bb2d</id>
+<title>3a lower bound: pinned bound cell changed 2026-08-01</title>
+<updated>2026-08-01T00:00:00Z</updated>
+<link rel="alternate" type="text/html" href="https://u00dxk2.github.io/bounds-ledger/c/3a.html"/>
+<link rel="related" href="https://github.com/u00dxk2/bounds-ledger/commit/60a044ec72b711a6376df384bfaa700fc440bb2d"/>
+<content type="text">This ledger&apos;s pinned copy of the last-listed lower-bound row of constant 3a, from teorth/optimizationproblems, changed in its bound cell in a commit dated 2026-08-01.
+
+This feed does not say what the bound cell holds now, what changed in it, or whether the bound moved. Upstream&apos;s tables can keep superseded and weaker rows, and a last-listed row is a position in the table, not the strongest bound.
+
+Read this constant&apos;s page and its source file before citing: https://u00dxk2.github.io/bounds-ledger/c/3a.html
+
+The date is the one on this ledger&apos;s commit; upstream&apos;s own change can be earlier, several upstream edits can fall between two of this ledger&apos;s versions and arrive as one entry, and an edit made and undone between them leaves no entry. That commit: https://github.com/u00dxk2/bounds-ledger/commit/60a044ec72b711a6376df384bfaa700fc440bb2d</content>
+</entry>
+</feed>
